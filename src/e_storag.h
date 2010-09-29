@@ -1,8 +1,8 @@
-/*$Id: e_storag.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: e_storag.h,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,18 @@ protected: // override virtual
   void	   precalc();
   void     dc_begin();
   void     tr_begin()		{STORAGE::dc_begin();}
-  void     tr_restore()		{STORAGE::dc_begin();}
+  void     tr_restore();
   void     dc_advance();
   void     tr_advance();
   bool	   tr_needs_eval()	{return true;}
-  void	   tr_queue_eval()	{q_eval();}
+  //void   tr_queue_eval()	//ELEMENT
+  double   tr_review()		{return const_tr_review();}
   double   tr_probe_num(CS&)const;
 protected:
-  double   integrate();
+  double   differentiate();
   double   tr_c_to_g(double c, double g)const;
+  double   const_tr_review()const;
 
-  double   review(double, double)const;
   double   c_mult()const {return _c_mult;}
   double   c_mult_num()const
 		{const double f[] = {1., 1., 2., 1., 1.}; return f[_method_a];}
@@ -62,10 +63,24 @@ public: // used by commons
   FPOLY1   _q[_keep_time_steps]; /* charge or flux, and deriv.	*/
 protected:
   FPOLY1   _i0;		/* after integration, now		*/
-  FPOLY1   _it1;	/* after integration, 1 time ago	*/
+  double   _it1_f0;	/* after integration, 1 time ago	*/
 protected:
   static METHOD method_select[meNUM_METHODS][meNUM_METHODS];
 };
+/*--------------------------------------------------------------------------*/
+#if 0
+// this works, and saves significant time
+// but possible errors.
+// Errors do not seem significant, but I can't tell without more data.
+// Taking it out to be sure.
+  bool	   tr_needs_eval() {
+    {if (!converged()) {
+      return true;
+    }else{
+      return (STATUS::iter[iSTEP]<2 || !conchk(_y0.x,tr_involts(),OPT::vntol));
+    }}
+  }
+#endif
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

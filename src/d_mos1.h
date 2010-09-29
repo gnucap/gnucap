@@ -1,8 +1,8 @@
-/* $Id: d_mos1.h,v 20.7 2001/09/29 05:31:06 al Exp $ -*- C++ -*-
+/* $Id: d_mos1.model,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ public: // override virtual
   void      print_front(OMSTREAM&)const;
   void      print_params(OMSTREAM&)const;
   void      print_calculated(OMSTREAM&)const;
+  bool      is_valid(const COMMON_COMPONENT*)const;
   void      tr_eval(COMPONENT*)const;
 public: // not virtual
   static int count() {return _count;}

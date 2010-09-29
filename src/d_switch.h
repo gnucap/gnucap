@@ -1,8 +1,8 @@
-/*$Id: d_switch.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: d_switch.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,11 @@ protected:
   void		expand_sb();
 private: // override virtual
   const char* dev_type()const	= 0;
-  int	   numnodes()const	{return 4;}
+  int	   max_nodes()const	{unreachable(); return 4;}
+  int	   min_nodes()const	{unreachable(); return 4;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 2;}
+  int	   net_nodes()const	= 0;
   bool	   is_1port()const	{return true;}
   CARD*	   clone()const		= 0;
   void	   parse(CS&)		= 0;
@@ -74,13 +78,14 @@ private: // override virtual
   //void   map_nodes();		//ELEMENT
   void     precalc();
 
+  void	   tr_alloc_matrix()	{tr_alloc_matrix_passive();}
   void	   dc_begin();
   void	   tr_begin()		{dc_begin();}
   //void   tr_restore();	//CARD/nothing
   void     dc_advance()		{_previous_state = _current_state;}
   void     tr_advance()		{_previous_state = _current_state;}
-  bool	   tr_needs_eval()	{untested(); return true;}
-  void	   tr_queue_eval()	{q_eval();}
+  bool	   tr_needs_eval()	{return true;}
+  //void   tr_queue_eval()	//ELEMENT
   bool	   do_tr();
   void	   tr_load()		{tr_load_passive();}
   //double tr_review();		//CARD/nothing
@@ -92,6 +97,7 @@ private: // override virtual
 				{unreachable(); return tr_outvolts_limited();}
   //double tr_probe_num(CS&)const;//ELEMENT
 
+  void	   ac_alloc_matrix()	{ac_alloc_matrix_passive();}
   void	   ac_begin()		{_ev = _y0.f1; _acg = _m0.c1;}
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
@@ -113,6 +119,7 @@ private:
 public:
   explicit  DEV_VSWITCH()	:SWITCH_BASE(){}
 private: // override virtual
+  int	    net_nodes()const	{return 4;}
   CARD*	    clone()const	{untested();return new DEV_VSWITCH(*this);}
   void	    parse(CS& cmd)	{parse_sb(cmd,4);}
   void	    expand()		{expand_sb();}
@@ -126,6 +133,7 @@ private:
 public:
   explicit  DEV_CSWITCH()	:SWITCH_BASE(){}
 private: // override virtual
+  int	    net_nodes()const	{return 2;}
   CARD*	    clone()const	{untested();return new DEV_CSWITCH(*this);}
   void	    parse(CS& cmd)	{parse_sb(cmd,2);}
   void	    expand();

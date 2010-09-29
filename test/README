@@ -7,7 +7,9 @@ You can run any ".ckt" file in batch mode by typing "gnucap -b name" from
 the shell.  You can run them interactively by starting gnucap then "get
 name".  Then play, change probes, rerun, change values, etc.
 
-The file "test" is a script to automate the testing.  It takes ___ arguments, which all must be supplied.  The diagnostics are poor to nonexistent.
+The file "test" is a script to automate the testing.  It takes 4
+arguments, which all must be supplied.  The diagnostics are poor to
+nonexistent.
 
 The arguments are:
 

@@ -1,8 +1,8 @@
-/*$Id: io_out.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: io_out.cc,v 22.3 2002/05/22 06:24:36 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,7 +149,6 @@ OMSTREAM & OMSTREAM::operator<<(char chr)
 					/* arbitrary printable character    */
   bool count;
   {if (chr=='\t') {
-    untested(); 
     chr = ' ';
     count = false;
   }else{
@@ -180,18 +179,15 @@ OMSTREAM & OMSTREAM::operator<<(char chr)
 	fflush(IO::stream[ii]);
       }else if (chr=='\r') {
 	{if (_cpos[ii] == 0) {
-	  untested(); 
 	  suppress = true;
 	}else{
 	  _cpos[ii] = 0;
 	  fflush(IO::stream[ii]);
 	}}
       }}
-      {if (!suppress) {
+      if (!suppress) {
 	fputc(chr,IO::stream[ii]);
-      }else{
-	untested(); 
-      }}
+      }
     }
   }
   return *this;

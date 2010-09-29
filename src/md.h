@@ -1,8 +1,8 @@
-/*$Id: md.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: md.h,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,12 @@ enum {
   BIGBUFLEN = 2048
 };
 /*--------------------------------------------------------------------------*/
-#if defined(__unix__)
+/* user interface preferences */
+#define I_PROMPT "gnucap> "
+#define CKT_PROMPT ">"
+#define ANTI_COMMENT "*>"
+/*--------------------------------------------------------------------------*/
+#if defined(__unix__) || defined(UNIX)
 /* usual but non-standard collection of includes */
 #include <unistd.h>	  /* chdir, access, getcwd */
 #include <sys/time.h>	  /* struct timeval, may be needed by sys/resource */
@@ -93,7 +98,6 @@ enum {
   #define LINK_TEMPLATES
   #define __FUNCTION__ ""
   #define NEW_IS_BROKEN
-  #define NEEDS_COPY_N
   #define DBL_MAX_IS_VARIABLE
 #else
   #error what compiler are you using??
@@ -117,7 +121,6 @@ enum {
 #define SHELL		OS::getenv("COMSPEC")
 /* machine and compiler patches */
 #define MANUAL_TEMPLATES
-#define NEEDS_COPY_N
 #define NEEDS_GETRUSAGE
 #define NEEDS_RINT
 #define NEW_IS_BROKEN
@@ -174,19 +177,6 @@ typedef std::complex<double> COMPLEX;
   #define prechecked_cast dynamic_cast
 #endif
 
-#if defined(NEEDS_COPY_N)
-namespace std {
-  template <class InputIter, class Size, class OutputIter>
-  pair<InputIter, OutputIter> copy_n(InputIter first, Size count,
-				       OutputIter result) {
-    for ( ; count > 0; --count) {
-      *result++ = *first++;
-    }
-    return pair<InputIter, OutputIter>(first, result);
-  }
-}
-#endif
-
 #if defined(NEEDS_FILL_N)
 namespace std {
   template <class OutputIter, class Size, class Type>
@@ -197,12 +187,6 @@ namespace std {
     return first;
   }
 }
-#endif
-
-#if defined(HAS_EXP_BUG)
-  inline double Exp(double x){untested(); return (x>-200.) ? exp(x) : 0.;}
-#else
-  inline double Exp(double x){return exp(x);}
 #endif
 
 #if defined(NEEDS_IS_INF)

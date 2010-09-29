@@ -1,8 +1,8 @@
-/* $Id: d_mos6.model,v 20.14 2001/10/19 06:21:08 al Exp $ -*- C++ -*-
+/* $Id: d_mos6.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ model MOS6 {
     calculated_parameters {
       double phi "" 
 	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)))";
-      double beta "" calculate="m->kc * tempratio4 * b->w_eff / b->l_eff";
+      double beta "" calculate="m->kc * tempratio4 * s->w_eff / s->l_eff";
       double vbi "" calculate="(fixzero(
 	(m->vto - m->polarity * m->gamma * sqrt(m->phi)
 	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi))";
@@ -131,9 +131,9 @@ model MOS6 {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     double sarg;
     {if (d->vbs <= 0.){
-      sarg = sqrt(t.phi - d->vbs);
+      sarg = sqrt(t->phi - d->vbs);
     }else{
-      sarg = sqrt(t.phi);
+      sarg = sqrt(t->phi);
       sarg = sarg - d->vbs / (sarg+sarg);
       {if (sarg < 0.){
 	untested();
@@ -142,11 +142,11 @@ model MOS6 {
 	untested();
       }}
     }}
-    trace3("", t.phi, d->vbs, sarg);
+    trace3("", t->phi, d->vbs, sarg);
     assert(sarg >= 0.);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-    trace4("", d->vds, t.vbi, m->gamma, m->gamma1);
-    d->von = t.vbi + m->gamma * sarg - m->gamma1 * d->vbs;
+    trace4("", d->vds, t->vbi, m->gamma, m->gamma1);
+    d->von = t->vbi + m->gamma * sarg - m->gamma1 * d->vbs;
     // - m->sigma  * d->vds;  // what is this?????
     d->vgst = d->vgs - d->von;
     trace3("", d->vds, d->von, d->vgst);
@@ -161,12 +161,12 @@ model MOS6 {
       {if (d->vbs <= 0.){
 	vonbm = m->gamma1 + m->gamma / (sarg + sarg);
       }else{
-	vonbm = m->gamma1 + m->gamma * .5 / sqrt(t.phi);
+	vonbm = m->gamma1 + m->gamma * .5 / sqrt(t->phi);
 	untested();
       }}
       trace3("", m->nc, m->lambda0, m->lambda1);
       double logvgon = log(d->vgst);
-      double idsat = t.beta * exp(logvgon * m->nc);
+      double idsat = t->beta * exp(logvgon * m->nc);
       double Lambda = m->lambda0 - m->lambda1 * d->vbs;
       trace4("", vonbm, logvgon, idsat, Lambda);
       

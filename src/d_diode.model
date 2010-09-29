@@ -1,8 +1,8 @@
-/* $Id: d_diode.model,v 20.14 2001/10/19 06:21:08 al Exp $ -*- C++ -*-
+/* $Id: d_diode.model,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,14 +31,17 @@ h_headers {
 #include "e_subckt.h"
 #include "e_model.h"
   enum region_t {INITOFF=-2, REVERSE=-1, UNKNOWN=0, FORWARD=1};
+  enum polarity_t {pP = -1, pN = 1};
   class DEV_DIODE;
   class DEV_ADMITTANCE;
   class DEV_CAPACITANCE;
+  class DEV_RESISTANCE;
 }
 cc_headers {
 #include "e_aux.h"
 #include "d_admit.h"
 #include "d_cap.h"
+#include "d_res.h"
   static bool dummy=false;
   enum {USE_OPT = 0x8000};
 }
@@ -49,28 +52,40 @@ device DIODE {
   id_letter D;
   circuit {
     ports {anode cathode};
-    capacitance Cj {anode cathode} eval=Cj
+    local_nodes {
+      ianode short_to=anode short_if="!OPT::rstray || c->rs_adjusted==0.";
+    }
+    capacitance Cj {ianode cathode} eval=Cj
       omit="c->cj_adjusted == 0. && c->cjsw_adjusted == 0. && m->tt == 0.";
-    admittance Yj {anode cathode} eval=Yj;
+    admittance Yj {ianode cathode} eval=Yj;
+    resistance Rs {anode ianode} value="c->rs_adjusted/c->m"
+      omit="!OPT::rstray || c->rs_adjusted==0.";
   }
   tr_probe {
     Vd = "@n_anode[V] - @n_cathode[V]";
     Id = "@Yj[I] + @Cj[I]";
+    VJ = "@n_ianode[V] - @n_cathode[V]"
+    VSR = "@n_anode[V] - @n_ianode[V]"
+    VRS = "@n_anode[V] - @n_ianode[V]"
     IJ = "@Yj[I]";
     IC = "@Cj[I]";
     CAPCUR = "@Cj[I]";
-    P  = "@Yj[P]  + @Cj[P]";
-    PD = "@Yj[PD] + @Cj[PD]";
-    PS = "@Yj[PS] + @Cj[PS]";
+    P  = "@Yj[P]  + @Cj[P]  + @Rs[P]";
+    PD = "@Yj[PD] + @Cj[PD] + @Rs[PD]";
+    PS = "@Yj[PS] + @Cj[PS] + @Rs[PS]";
     PJ = "@Yj[P]";
     PC = "@Cj[P]";
     Capacitance = "@Cj[Capacitance]";
     CD = "@Cj[Capacitance]";
     CHARGE = "@Cj[Charge]";
-    Req = "@Yj[R]";
-    Geq = "@Yj[Y]";
+    Req = "@Yj[R] + @Rs[R]";
+    Geq = "((@Yj[R] + @Rs[R]) != 0)
+		? (1./(@Yj[R] + @Rs[R]))
+		: @Yj[Y]";
     GD  = "@Yj[Y]";
-    Y   = "@Yj[Y] + @Cj[Y]";
+    Y   = "(@Rs[R] != 0. && (@Yj[Y] + @Cj[Y]) != 0)
+		? 1./((1./(@Yj[Y] + @Cj[Y])) + @Rs[R])
+		: @Yj[Y] + @Cj[Y]";
     Z="port_impedance(@n_anode[],@n_cathode[],lu,tr_probe_num_str(\"Y\"))";
     ZRAW = "port_impedance(@n_anode[], @n_cathode[], lu, 0.)";
     REgion = "static_cast<double>(_region)";
@@ -89,6 +104,8 @@ device DIODE {
 	name=Area default=1.0 positive;
       double perim "perimeter factor"
 	name=Perim default=0.0 positive print_test="perim != 0.";
+      double m "device multiplier"
+	name=M default=1.0 positive print_test="m != 1.";
       bool off "flag: assume reverse biased"
 	name=OFF default=false print_test=off;
       double ic "initial voltage"
@@ -112,24 +129,25 @@ device DIODE {
     calculated_parameters {
       double is_adjusted ""
 	name = IS
-	calculate="((is_raw == NA) ? m->js * area : is_raw)"
-	calc_print_test="is_adjusted != is_raw";
+	calculate="((c->is_raw == NA) ? m->js * c->area : c->is_raw)"
+	calc_print_test="is_adjusted != c->is_raw";
       double rs_adjusted ""
 	name = RS
-	calculate="((rs_raw == NA) ? m->rs / (area+1e-20) : rs_raw)"
-	calc_print_test="rs_adjusted != rs_raw";
+	calculate="((c->rs_raw == NA) ? m->rs / (c->area+1e-20) : c->rs_raw)"
+	calc_print_test="rs_adjusted != c->rs_raw";
       double cj_adjusted ""
 	name = CJ
-	calculate="((cj_raw == NA) ? m->cjo * area : cj_raw)"
-	calc_print_test="cj_adjusted != cj_raw";
+	calculate="((c->cj_raw == NA) ? m->cjo * c->area : c->cj_raw)"
+	calc_print_test="cj_adjusted != c->cj_raw";
       double cjsw_adjusted ""
 	name = CJSW
-	calculate="((cjsw_raw == NA) ? m->cjsw * perim : cjsw_raw)"
-	calc_print_test="cjsw_adjusted != cjsw_raw";
+	calculate="((c->cjsw_raw == NA) ? m->cjsw * c->perim : c->cjsw_raw)"
+	calc_print_test="cjsw_adjusted != c->cjsw_raw";
       double gparallel_adjusted ""
 	name = GParallel
-	calculate="((gparallel_raw == NA) ? m->gparallel*area : gparallel_raw)"
-	print_test="gparallel_adjusted != gparallel_raw";
+	calculate="((c->gparallel_raw == NA)
+		? m->gparallel*c->area : c->gparallel_raw)"
+	print_test="gparallel_adjusted != c->gparallel_raw";
     }
   }
   eval Cj {
@@ -179,6 +197,7 @@ device DIODE {
     }else{
       d->_y0.f0 = d->_y0.x * d->_y0.f1;
     }}
+    d->_y0 *= c->m;
     trace3(d->long_label().c_str(), d->_y0.x, d->_y0.f0, d->_y0.f1);
   }
   eval Yj {
@@ -193,7 +212,7 @@ device DIODE {
     double vt = KoQ * SIM::temp * m->n_factor;
     region_t oldregion = p->_region;
     p->_isat = c->is_adjusted * pow(tempratio, m->xti)
-      * Exp((m->eg/vt) *(tempratio-1));
+      * exp((m->eg/vt) *(tempratio-1));
     trace4("", tempratio, vt, oldregion, p->_isat);
     
     if (m->mos_level > 0 || flags & 0040) { // Spice style limiting
@@ -255,7 +274,7 @@ device DIODE {
       }
     }else if (flags & 0040) { // exact Spice model
       {if (volts >= -3*vt) { // forward and weak reversed
-	double evd = Exp(volts/vt);
+	double evd = exp(volts/vt);
 	y.f0 = p->_isat * (evd-1);
 	y.f1 = p->_isat * evd/vt;
       }else if (m->bv == NA || volts >= m->bv) {
@@ -287,9 +306,9 @@ device DIODE {
 	  untested();
 	  y.f1 = y.f0 = 0.;
 	}else{
-	  double expterm = p->_isat * Exp(volts/vt);	
-	  y.f0 = expterm - p->_isat;/* i = f(x) = _isat * (Exp(volts/vt)-1) */
-	  y.f1 = expterm / vt;	    /* f'(x) = (_isat/vt) * Exp(volts/vt)   */
+	  double expterm = p->_isat * exp(volts/vt);	
+	  y.f0 = expterm - p->_isat;/* i = f(x) = _isat * (exp(volts/vt)-1) */
+	  y.f1 = expterm / vt;	    /* f'(x) = (_isat/vt) * exp(volts/vt)   */
 	}}
 	
 	if (flags & 0002) {	// g = gmin, maintain actual current
@@ -353,6 +372,7 @@ device DIODE {
 	y.f0 = y.f1 * volts;
       }
     }}
+    y *= c->m;
     trace3(d->long_label().c_str(), y.x, y.f0, y.f1);
     p->_gd = y.f1;
   }

@@ -1,8 +1,8 @@
-/*$Id: u_xprobe.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: u_xprobe.h,v 21.8 2002/03/07 08:30:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,24 +48,7 @@ public:
     _modifier(m),
     _dbscale(d) {}
   bool OK()const {return _modifier != mtNONE;}
-  double operator()(mod_t m=mtNONE, bool db = false)const{
-    if (OK()){
-      if (m == mtNONE) {
-	m = _modifier;
-      }
-      double rv = NOT_VALID;
-      switch (m){
-      case mtNONE:  unreachable();		break;
-      case mtMAG:   rv = abs(_value);	break;
-      case mtPHASE: rv = arg(_value)*RTOD;	break;
-      case mtREAL:  rv = real(_value);	break;
-      case mtIMAG:  rv = imag(_value);	break;
-      }
-      return (db) ? _dbscale * log10(std::max(rv,VOLTMIN)) : rv;
-    }else{
-      return NOT_VALID;
-    }
-  }
+  double operator()(mod_t m=mtNONE, bool db = false)const;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

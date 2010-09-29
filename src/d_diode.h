@@ -1,8 +1,8 @@
-/* $Id: d_diode.h,v 20.13 2001/10/15 00:57:11 al Exp $ -*- C++ -*-
+/* $Id: d_diode.model,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,11 @@
 #include "e_subckt.h"
 #include "e_model.h"
   enum region_t {INITOFF=-2, REVERSE=-1, UNKNOWN=0, FORWARD=1};
+  enum polarity_t {pP = -1, pN = 1};
   class DEV_DIODE;
   class DEV_ADMITTANCE;
   class DEV_CAPACITANCE;
+  class DEV_RESISTANCE;
 /*--------------------------------------------------------------------------*/
 class SDP_DIODE
   :public SDP_CARD{
@@ -65,6 +67,7 @@ public: // override virtual
   void      print_front(OMSTREAM&)const;
   void      print_params(OMSTREAM&)const;
   void      print_calculated(OMSTREAM&)const;
+  bool      is_valid(const COMMON_COMPONENT*)const;
   void      tr_eval(COMPONENT*)const;
 public: // not virtual
   static int count() {return _count;}
@@ -104,7 +107,7 @@ public:
   COMMON_COMPONENT* clone()const {return new COMMON_DIODE(*this);}
   void        parse(CS&);
   void        print(OMSTREAM&)const;
-  void        expand();
+  void        expand(const COMPONENT*);
   const char* name()const {return "diode";}
   const SDP_CARD* sdp()const {assert(_sdp); return _sdp;}
   bool      has_sdp()const {return _sdp;}
@@ -114,6 +117,7 @@ private: // strictly internal
 public: // input parameters
   double area;	// area factor
   double perim;	// perimeter factor
+  double m;	// device multiplier
   bool off;	// flag: assume reverse biased
   double ic;	// initial voltage
   double is_raw;	// saturation current
@@ -168,7 +172,12 @@ public:
 private: // override virtual
   char      id_letter()const {return 'D';}
   const char* dev_type()const{return "diode";}
-  int       numnodes()const  {return 2;}
+  int       max_nodes()const  {return 2;}
+  int       min_nodes()const  {return 2;}
+  int       out_nodes()const  {return 2;}
+  int       matrix_nodes()const {return 0;}
+  int       net_nodes()const {return 2;}
+  int       int_nodes()const{return 1;}
   CARD*     clone()const     {return new DEV_DIODE(*this);}
   void      parse(CS&);
   void      print(OMSTREAM&,int)const;
@@ -205,9 +214,10 @@ public: // calculated parameters
 public: // netlist
   DEV_CAPACITANCE* _Cj;
   DEV_ADMITTANCE* _Yj;
+  DEV_RESISTANCE* _Rs;
 private: // node list
-  enum {n_anode=0, n_cathode=1};
-  node_t _nodes[2];
+  enum {n_anode=0, n_cathode=1, n_ianode=-1};
+  node_t _nodes[3];
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

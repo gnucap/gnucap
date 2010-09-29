@@ -1,8 +1,8 @@
-/*$Id: m_matrix.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: m_matrix.cc,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
  * Bump and spike - bordered block diagonal pattern
  */
 /*--------------------------------------------------------------------------*/
+#include "l_stlextra.h"
 #include "u_status.h"
 #include "e_node.h"
 #include "m_matrix.h"
@@ -407,7 +408,7 @@ BSMATRIX<T>& BSMATRIX<T>::fbsub(T* x, const T* b, T* c)
       b = x;
   }
   {
-    std::copy_n(b, _size+1, c);
+    notstd::copy_n(b, _size+1, c);
     int ii = 1;
     for (   ; ii <= _size; ++ii){
       if (b[ii] != 0.){

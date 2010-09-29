@@ -1,8 +1,8 @@
-/*$Id: io_xopen.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: io_xopen.cc,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
  * fill in extension, if necessary
  * open file
  */
+#include "u_opt.h"
 #include "io_.h"
 #include "constant.h"
 #include "declare.h"	/* getcmd */
@@ -48,9 +49,6 @@ void xclose(FILE **fn)
  */
 FILE *xopen(CS& cmd, const char *ext, const char *how)
 {
-  int i;	/* an index */
-  int defalt;	/* flag: we need to add the default extension */
-  FILE *code;	/* a file pointer for the file we found */
   char fname[BIGBUFLEN];
   
   cmd.skipbl();
@@ -58,35 +56,37 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
     cmd = getcmd("file name?  ",fname, BIGBUFLEN);
   }
 					/* copy the name		    */
-					/* and while we're at it ...	    */
-  cmd.skipbl();				/* find out if we want to add the   */
-  defalt = true;			/* default extension		    */
-  for (i = 0;   i < BIGBUFLEN;   ) {
-    char c = cmd.ctoc();
-    if (!c || isspace(c)) {
-      break;
-    }
-    {if (c == '$') {
+  cmd.skipbl();				/* and while we're at it ...	    */
+  {					/* find out if we want to add the   */
+    bool defalt = true;			/* default extension		    */
+    int i;
+    for (i = 0;   i < BIGBUFLEN;   ) {
+      char c = cmd.ctoc();
+      if (!c || isspace(c)) {
+	break;
+      }
+      {if (c == '$') {
+	untested(); 
+	sprintf(&(fname[i]), "%ld", static_cast<long>(time(0)));
+	i = strlen(fname);
+      }else{				/* we want to add the extension	    */
+	fname[i++] = c;			/* if it doesn't already have one,  */
+	{if (c == '.') {		/* as determined by a '.'	    */
+	  defalt = false;		/* not before the directory	    */
+	}else if (strchr(ENDDIR,c)) {	/* separator-terminator character   */
+	  defalt = true;		/* '\' or '/' for msdos,	    */
+	}}
+      }}  				/* ']' or '/' for vms,		    */
+    }					/* '/' for unix  (in ENDDIR)	    */
+    cmd.skip(-1);
+    {if (defalt && ext && *ext && i+strlen(ext)+2 < BIGBUFLEN) {
       untested(); 
-      sprintf(&(fname[i]), "%ld", static_cast<long>(time(0)));
-      i = strlen(fname);
-    }else{				/* we want to add the extension	    */
-      fname[i++] = c;			/* if it doesn't already have one,  */
-      {if (c == '.') {			/* as determined by a '.'	    */
-	defalt = false;			/* not before the directory	    */
-      }else if (strchr(ENDDIR,c)) {	/* separator-terminator character   */
-	defalt = true;			/* '\' or '/' for msdos,	    */
-      }}
-    }}  				/* ']' or '/' for vms,		    */
-  }					/* '/' for unix  (in ENDDIR)	    */
-  cmd.skip(-1);
-  {if (defalt && ext && *ext && i+strlen(ext)+2 < BIGBUFLEN) {
-    untested(); 
-    fname[i++] = '.';			/* add the extension (maybe)	    */
-    strcpy(&fname[i],ext);
-  }else{
-    fname[i] = '\0';
-  }}
+      fname[i++] = '.';			/* add the extension (maybe)	    */
+      strcpy(&fname[i],ext);
+    }else{
+      fname[i] = '\0';
+    }}
+  }
   
   trim(fname);
   if (strlen(fname)==0) {
@@ -95,10 +95,11 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
 
   cmd.skipcom();
   
-  {if ((*how == 'w')   &&   (access(fname,F_OK) == FILE_OK)) {
-    char buffer[BUFLEN];		
-    error(bWARNING, "%s exists.  replace? ", fname);
-    getcmd("", buffer, BUFLEN);
+  FILE *code = NULL;	/* a file pointer for the file we found */
+  {if (!OPT::clobber && (*how == 'w') && (access(fname,F_OK) == FILE_OK)) {
+    char buffer[BUFLEN];
+    std::string msg = std::string(fname) + " exists.  replace? ";
+    getcmd(msg.c_str(), buffer, BUFLEN);
     {if (pmatch(buffer,"Yes")) {	/* should be new file, but	    */
       code = fopen(fname,how);		/* file already exists,  ask	    */
     }else{

@@ -1,8 +1,8 @@
-/*$Id: d_vs.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: d_vs.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,11 @@ public:
 private: // override virtual
   char	   id_letter()const	{return 'V';}
   const char* dev_type()const	{return "vsource";}
-  int	   numnodes()const	{return 2;}
+  int	   max_nodes()const	{return 2;}
+  int	   min_nodes()const	{return 2;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 2;}
+  int	   net_nodes()const	{return 2;}
   bool	   is_source()const	{return true;}
   bool	   f_is_value()const	{return true;}
   CARD*	   clone()const		{return new DEV_VS(*this);}
@@ -43,6 +47,7 @@ private: // override virtual
   //void   map_nodes();		//ELEMENT
   void	   precalc();
 
+  void	   tr_alloc_matrix()	{tr_alloc_matrix_passive();}
   void	   dc_begin();
   void	   tr_begin()		{dc_begin();}
   void	   tr_restore()		{dc_begin();}
@@ -60,6 +65,7 @@ private: // override virtual
   double   tr_involts_limited()const {unreachable(); return 0;}
   //double tr_probe_num(CS&)const;//ELEMENT
 
+  void	   ac_alloc_matrix()	{ac_alloc_matrix_passive();}
   void	   ac_begin()	{_loss1 = _loss0 = 1./OPT::shortckt; _acg = _ev = 0.;}
   void	   do_ac();
   void	   ac_load()		{ac_load_loss(); ac_load_source();}

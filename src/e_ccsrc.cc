@@ -1,8 +1,8 @@
-/*$Id: e_ccsrc.cc,v 20.11 2001/10/07 05:22:34 al Exp $ -*- C++ -*-
+/*$Id: e_ccsrc.cc,v 22.9 2002/07/23 20:09:02 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,6 @@
 #include "ap.h"
 #include "e_ccsrc.h"
 /*--------------------------------------------------------------------------*/
-//	ELEMENT& CCSRC_BASE::parse_more_nodes(CS& cmd, int);
-//	void	 CCSRC_BASE::print(int,int)const;
-/*--------------------------------------------------------------------------*/
 void CCSRC_BASE::parse_more_nodes(CS& cmd, int)
 {
   _input_label = cmd.ctos(TOKENTERM);
@@ -36,7 +33,7 @@ void CCSRC_BASE::parse_more_nodes(CS& cmd, int)
 void CCSRC_BASE::print(OMSTREAM& where, int /*detail*/)const
 {
   where << short_label();
-  printnodes(where,PRINTNODES);
+  printnodes(where);
   where << "  ";
 
   {if (_input){ // has been expanded
@@ -68,13 +65,10 @@ void CCSRC_BASE::expand()
   assert(_input->is_1port()  ||  _input->is_source());
   _n[IN1] = _input->_n[OUT1];
   _n[IN2] = _input->_n[OUT2];
-  _n[IN1].e = _n[IN2].e = INVALID_NODE;
-  assert(port_count() == 2 || port_count() == 4);
-  //     ^^^^first time^^^    ^^repeat expand^^
-  set_port_count(4);
+  //_n[IN1].e = _n[IN2].e = INVALID_NODE;
 }
 /*--------------------------------------------------------------------------*/
-void CCSRC_BASE::set_parameters(const std::string& Label, CARD *Owner,
+void CCSRC_BASE::set_parameters_cc(const std::string& Label, CARD *Owner,
 			       COMMON_COMPONENT *Common, double Value,
 			       const node_t& N0, const node_t& N1,
 			       ELEMENT* Input)

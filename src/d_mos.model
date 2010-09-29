@@ -1,8 +1,8 @@
-/* $Id: d_mos.model,v 20.13 2001/10/15 00:57:11 al Exp $ -*- C++ -*-
+/* $Id: d_mos.model,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
  *	or  .model mname PMOS <args>
  */
 h_headers {
-#include "e_subckt.h"
 #include "d_diode.h"
   class DEV_MOS;		/* this file */
   class COMMON_MOS;
@@ -38,7 +37,7 @@ h_headers {
   class EVAL_MOS_Cgs;
   class DEV_DIODE;		/* external */
   class DEV_CAPACITANCE;
-  class DEV_POLY_G;
+  class DEV_CPOLY_G;
   class DEV_RESISTANCE;
   class MODEL_MOS_BASE;
   class SDP_MOS_BASE;
@@ -59,13 +58,14 @@ device MOS {
     sync;
     ports {drain gate source bulk};
     local_nodes {
-      idrain  short_to=drain  short_if="!OPT::rstray || b->rd == 0.";
-      isource short_to=source short_if="!OPT::rstray || b->rs == 0.";
+      idrain  short_to=drain  short_if="!OPT::rstray || s->rd == 0.";
+      isource short_to=source short_if="!OPT::rstray || s->rs == 0.";
     }
     args db DIODE {
-      area = b->ad;
-      perim = pd;
-      is_raw = b->idsat;
+      m = c->m;
+      area = s->ad;
+      perim = c->pd;
+      is_raw = s->idsat;
       cj_raw = m->cbd;
       cjsw_raw = NA;
       off = true;
@@ -73,31 +73,32 @@ device MOS {
       attach(model());
     }
     args sb DIODE {
-      area = b->as;
-      perim = ps;
-      is_raw = b->issat;
+      m = c->m;
+      area = s->as;
+      perim = c->ps;
+      is_raw = s->issat;
       cj_raw = m->cbs;
       cjsw_raw = NA;
       off = true;
       set_modelname(modelname());
       attach(model());
     }
-    resistance Rs {source isource} value="b->rs"
-      omit="!OPT::rstray || b->rs == 0.";
-    resistance Rd {drain idrain} value="b->rd"
-      omit="!OPT::rstray || b->rd == 0.";
+    resistance Rs {source isource} value="s->rs/c->m"
+      omit="!OPT::rstray || s->rs == 0.";
+    resistance Rd {drain idrain} value="s->rd/c->m"
+      omit="!OPT::rstray || s->rd == 0.";
     diode Ddb {bulk idrain} args="db" reverse="m->polarity==pP"
-      omit="_n[n_bulk].t == _n[n_idrain].t || b->idsat == 0.";
+      omit="_n[n_bulk] == _n[n_idrain] || s->idsat == 0.";
     diode Dsb {bulk isource} args="sb" reverse="m->polarity==pP"
-      omit="_n[n_bulk].t == _n[n_isource].t || b->issat == 0.";
-    capacitance Cgs {gate isource} value="(m->cgso*b->w_eff)" eval=Cgs
-      omit="!OPT::cstray || _n[n_gate].t == _n[n_isource].t";
-    capacitance Cgd {gate idrain} value="(m->cgdo*b->w_eff)" eval=Cgd
-      omit="!OPT::cstray || _n[n_gate].t == _n[n_idrain].t";
-    capacitance Cgb {gate bulk} value="(m->cgbo*b->l_eff)" eval=Cgb
-      omit="!OPT::cstray || _n[n_bulk].t == _n[n_gate].t";
-    poly_g Ids {idrain,isource  gate,isource  idrain,gate
-		bulk,isource  idrain bulk} state=ids;
+      omit="_n[n_bulk] == _n[n_isource] || s->issat == 0.";
+    capacitance Cgs {gate isource} value="(m->cgso*s->w_eff)" eval=Cgs
+      omit="!OPT::cstray || _n[n_gate] == _n[n_isource]";
+    capacitance Cgd {gate idrain} value="(m->cgdo*s->w_eff)" eval=Cgd
+      omit="!OPT::cstray || _n[n_gate] == _n[n_idrain]";
+    capacitance Cgb {gate bulk} value="(m->cgbo*s->l_eff)" eval=Cgb
+      omit="!OPT::cstray || _n[n_bulk] == _n[n_gate]";
+    cpoly_g Ids {idrain,isource  gate,isource  idrain,gate
+		bulk,isource  idrain bulk} state=ids_cpoly;
   }
   tr_probe {
     VDS = "@n_drain[V] - @n_source[V]";
@@ -140,7 +141,7 @@ device MOS {
     CGBm = "@Cgb[EV] - @Cgb[NV]";
     CBD = "@Ddb[Cap]";
     CBS = "@Dsb[Cap]";
-    CGATE = "b->cgate";
+    CGATE = "s->cgate";
     GMR = "gmr";
     GMF = "gmf";
     GM = "(reversed) ? gmr : gmf";
@@ -167,6 +168,7 @@ device MOS {
   device {
     calculated_parameters {
       double ids "" default=0.;
+      double ids_cpoly;
       double gds "dids/dvds" default=0.;
       double gmf "dids/dvgs" default=0.;
       double gmr "dids/dvgd" default=0.;
@@ -225,6 +227,8 @@ device MOS {
   }
   common {
     raw_parameters {
+      double m "device multiplier"
+	name=M default=1.0 positive print_test="m != 1.";
       double l_in "drawn (optical) channel length" name=L positive
 	print_test="l_in != NA";
       double w_in "channel width (drawn)" name=W positive
@@ -250,10 +254,10 @@ device MOS {
     assert(brh);
 
     double cap = brh->value();
-    {if (p->vgst < - b->phi) { 			/* accumulation */
-      cap += b->cgate;
+    {if (p->vgst < - s->phi) { 			/* accumulation */
+      cap += s->cgate;
     }else if (p->vgst < 0.) {			/* depletion */
-      cap += b->cgate * (-p->vgst) / b->phi;
+      cap += s->cgate * (-p->vgst) / s->phi;
     }else{					/* active, overlap only */
     }}
     
@@ -264,6 +268,7 @@ device MOS {
     }else{
       brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
     }}
+    brh->_y0 *= c->m;
     trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
   }
   /*--------------------------------------------------------------------*/
@@ -282,22 +287,22 @@ device MOS {
     {if (!p->reversed) { // treat as Cgs
       if (p->vgst >= 0.) {
 	if (p->vdsat > p->vds) {		/* linear */
-	  cap = (2./3.) * b->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
+	  cap = (2./3.) * s->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
 	  if (p->vgst <= .1) {
 	    cap *= 10. * p->vgst;	// smooth discontinuity
 	  }
 	}
       }
     }else{ // treat as Cgs
-      if (p->vgst >= -b->phi/2.) {		/* depletion  or active */
-	cap = (2./3.) * b->cgate;
+      if (p->vgst >= -s->phi/2.) {		/* depletion  or active */
+	cap = (2./3.) * s->cgate;
 	if (p->vdsat > p->vds) {			/* linear */
 	  double ndif   = p->vdsat - p->vds;
 	  cap *= 1. - (ndif*ndif)/(ddif*ddif);
 	}
 	if (p->vgst <= 0) {
-	  cap *= 1. + p->vgst / (b->phi);
-	  cap *= 1. + p->vgst / (b->phi);
+	  cap *= 1. + p->vgst / (s->phi);
+	  cap *= 1. + p->vgst / (s->phi);
 	}
       }
     }}
@@ -310,6 +315,7 @@ device MOS {
     }else{
       brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
     }}
+    brh->_y0 *= c->m;
     trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
   }
   /*--------------------------------------------------------------------*/
@@ -328,22 +334,22 @@ device MOS {
     {if (p->reversed) { // treat as Cgd
       if (p->vgst >= 0.) {
 	if (p->vdsat > p->vds) {		/* linear */
-	  cap = (2./3.) * b->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
+	  cap = (2./3.) * s->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
 	  if (p->vgst <= .1) {
 	    cap *= 10. * p->vgst;	// smooth discontinuity
 	  }
 	}
       }
     }else{ // treat as Cgs
-      if (p->vgst >= -b->phi/2.) {		/* depletion  or active */
-	cap = (2./3.) * b->cgate;
+      if (p->vgst >= -s->phi/2.) {		/* depletion  or active */
+	cap = (2./3.) * s->cgate;
 	if (p->vdsat > p->vds) {			/* linear */
 	  double ndif   = p->vdsat - p->vds;
 	  cap *= 1. - (ndif*ndif)/(ddif*ddif);
 	}
 	if (p->vgst <= 0) {
-	  cap *= 1. + p->vgst / (b->phi);
-	  cap *= 1. + p->vgst / (b->phi);
+	  cap *= 1. + p->vgst / (s->phi);
+	  cap *= 1. + p->vgst / (s->phi);
 	}
       }
     }}
@@ -356,6 +362,7 @@ device MOS {
     }else{
       brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
     }}
+    brh->_y0 *= c->m;
     trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
   }
   /*--------------------------------------------------------------------*/
@@ -384,7 +391,7 @@ device MOS {
     }else{				/* because it usually makes it worse */
       vgs = Vgs;
     }}
-    {if (_n[n_drain].t == _n[n_gate].t) {	/* gd tied, limiting done */
+    {if (_n[n_drain] == _n[n_gate]) {	/* gd tied, limiting done */
       vds = Vds + (vgs - Vgs);		/* it seems that vds = vgs should */
     					/* work, but it will be a little off */
 					/* if there is resistance */
@@ -512,11 +519,11 @@ bool DEV_MOS::do_tr()
       untested();
       //Vgs = m->vto;
     }
-    if (OPT::mosflags & 0400  &&  _n[n_source].t != _n[n_bulk].t) {
+    if (OPT::mosflags & 0400  &&  _n[n_source] != _n[n_bulk]) {
       untested();
       Vbs = -1;
     }
-    if (_n[n_drain].t == _n[n_gate].t) {
+    if (_n[n_drain] == _n[n_gate]) {
       Vds = Vgs;
     }
   }else if (reversed) {
@@ -531,9 +538,22 @@ bool DEV_MOS::do_tr()
 
   limit_mos(Vds, Vgs, Vbs);// also sets the new vds,vgs,vbs
   m->tr_eval(this);
-
+  {if (reversed) {
+    ids_cpoly = ids + vds*gds + vgs*gmr + vbs*gmbr;
+  }else{
+    ids_cpoly = ids - vds*gds - vgs*gmf - vbs*gmbf;
+  }}
   ids *= polarity;
-
+  ids_cpoly *= polarity;
+  if (c->m != 1.) {
+    ids *= c->m;
+    ids_cpoly *= c->m;
+    gds *= c->m;
+    gmf *= c->m;
+    gmr *= c->m;
+    gmbf *= c->m;
+    gmbr *= c->m;
+  }
   set_converged(subckt().do_tr());
   
   trace3(long_label().c_str(), vds, vgs, vbs);

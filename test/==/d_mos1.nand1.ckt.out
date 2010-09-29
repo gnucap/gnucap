@@ -2,9 +2,9 @@
 #           v(1)       v(2)       v(4)       v(5)       z(5)       iter(0)   
  0.         0.         0.         0.         0.         1.E+12     0.        
 -1.         5.         0.         2.6873     0.         265.02G    1.        
--2.         5.         0.         12.92Meg   0.         265.02G    2.        
--3.         5.         0.         5.0609     0.         265.02G    3.        
--4.         5.         0.         5.0004     0.         265.02G    4.        
+-2.         5.         0.         209.31Meg  0.         265.02G    2.        
+-3.         5.         0.         5.03       0.         265.02G    3.        
+-4.         5.         0.         5.0001     0.         265.02G    4.        
 -5.         5.         0.         5.         0.         265.02G    5.        
 -6.         5.         0.         5.         0.         265.02G    6.        
 -7.         5.         0.         5.         0.         265.02G    7.        
@@ -127,10 +127,11 @@
  9.8n       5.         0.17353    0.085872   4.        
  9.9n       5.         0.16404    0.081225   4.        
  10.n       5.         0.15507    0.076821   4.        
-GnuCap   System status
+Gnucap   System status
 iterations: op=9, dc=0, tran=438, fourier=0, total=591
+transient timesteps: accepted=108, rejected=0, total=108
 nodes: user=5, subckt=0, model=0, total=5
-devices: diodes=5, mosfets=8, gates=0, subckts=1
-commons: diodes=8, mosfets=4, gates=0, subckts=1
-models:  diodes=2, mosfets=2, gates=0, subckts=1
-density=84.0%
+devices: diodes=5, bjts=0, mosfets=8, gates=0, subckts=1
+commons: diodes=8, bjts=0, mosfets=4, gates=0, subckts=1
+models:  diodes=2, bjts=0, mosfets=2, gates=0, subckts=1
+dctran density=76.0%, ac density=76.0%

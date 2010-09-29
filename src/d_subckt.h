@@ -1,8 +1,8 @@
-/*$Id: d_subckt.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: d_subckt.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,11 @@ public:
 private: // override virtual
   char		id_letter()const	{return 'X';}
   const char*	dev_type()const		{untested(); return "subckt";}
-  int		numnodes()const		{untested(); return 0;}
+  int		max_nodes()const	{return PORTS_PER_SUBCKT;}
+  int		min_nodes()const	{return 1;}
+  int		out_nodes()const	{return _num_nodes;}
+  int		matrix_nodes()const	{return 0;}
+  int		net_nodes()const	{return _num_nodes;}
   CARD*		clone()const		{return new DEV_SUBCKT(*this);}
   void		parse(CS&);
   void		print(OMSTREAM&,int)const;
@@ -46,8 +50,9 @@ private: // override virtual
 public:
   static int	count()			{return _count;}
 private:
-  static int	_count;
+  int		_num_nodes;
   node_t	_nodes[PORTS_PER_SUBCKT];
+  static int	_count;
 };
 /*--------------------------------------------------------------------------*/
 class COMMON_SUBCKT : public COMMON_COMPONENT {
@@ -73,8 +78,12 @@ public:
 		~MODEL_SUBCKT();
 private: // override virtual
   char		id_letter()const	{return '\0';}
-  const char*   dev_type()const	{untested(); return "";}
-  int	        numnodes()const	{untested(); return 0;}
+  const char*   dev_type()const		{untested(); return "";}
+  int		max_nodes()const	{return PORTS_PER_SUBCKT;}
+  int		min_nodes()const	{return 1;}
+  int		out_nodes()const	{return 0;}
+  int		matrix_nodes()const	{return 0;}
+  int		net_nodes()const	{return _num_nodes;}
   CARD*		clone()const	{untested(); return new MODEL_SUBCKT(*this);}
   void		parse(CS&);
   void		print(OMSTREAM&,int)const;
@@ -83,6 +92,7 @@ private: // override virtual
 public:
   static int	count()			{return _count;}
 private:
+  int		_num_nodes;
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
 };

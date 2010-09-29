@@ -1,8 +1,8 @@
-/*$Id: e_aux.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: e_aux.cc,v 22.7 2002/07/23 04:23:34 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,13 +34,13 @@ T port_impedance(const node_t& n1, const node_t& n2,
   for (int ii = 0;  ii < mat.size()+2;  ++ii){
     zapit[ii] = 0.;
   }
-  if (n1.m != 0)
-    zapit[n1.m] =  1.;
-  if (n2.m != 0)
-    zapit[n2.m] = -1.;
+  if (n1.m_() != 0)
+    zapit[n1.m_()] =  1.;
+  if (n2.m_() != 0)
+    zapit[n2.m_()] = -1.;
 
   mat.fbsub(zapit);
-  T raw_z = zapit[n1.m] - zapit[n2.m];
+  T raw_z = zapit[n1.m_()] - zapit[n2.m_()];
   delete [] zapit;
   return (parallel != 0.) 
     ? 1. / ((1./raw_z)-parallel)

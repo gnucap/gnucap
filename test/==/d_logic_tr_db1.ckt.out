@@ -230,10 +230,11 @@
  0.0099     1.0305     0.31       5.         3.         3.         1.        
  0.00995    1.7275     1.31       5.         3.         3.         1.        
  0.01       2.5        1.41       5.         3.         3.         1.        
-GnuCap   System status
+Gnucap   System status
 iterations: op=3, dc=0, tran=675, fourier=0, total=906
+transient timesteps: accepted=228, rejected=0, total=228
 nodes: user=8, subckt=0, model=0, total=8
-devices: diodes=2, mosfets=4, gates=1, subckts=0
-commons: diodes=4, mosfets=2, gates=1, subckts=0
-models:  diodes=2, mosfets=2, gates=1, subckts=1
-density=53.1%
+devices: diodes=2, bjts=0, mosfets=4, gates=1, subckts=0
+commons: diodes=4, bjts=0, mosfets=2, gates=1, subckts=0
+models:  diodes=2, bjts=0, mosfets=2, gates=1, subckts=1
+dctran density=53.1%, ac density=53.1%

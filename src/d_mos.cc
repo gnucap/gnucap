@@ -1,8 +1,8 @@
-/* $Id: d_mos.cc,v 20.13 2001/10/15 00:57:11 al Exp $ -*- C++ -*-
+/* $Id: d_mos.model,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "d_mos.h"
 /*--------------------------------------------------------------------------*/
 const double NA(NOT_INPUT);
+const double INF(BIGBIG);
 /*--------------------------------------------------------------------------*/
 int DEV_MOS::_count = 0;
 int COMMON_MOS::_count = -1;
@@ -45,6 +46,7 @@ static COMMON_MOS Default_MOS(CC_STATIC);
 /*--------------------------------------------------------------------------*/
 COMMON_MOS::COMMON_MOS(int c)
   :COMMON_COMPONENT(c),
+   m(1.0),
    l_in(NA),
    w_in(NA),
    ad_in(NA),
@@ -62,6 +64,7 @@ COMMON_MOS::COMMON_MOS(int c)
 /*--------------------------------------------------------------------------*/
 COMMON_MOS::COMMON_MOS(const COMMON_MOS& p)
   :COMMON_COMPONENT(p),
+   m(p.m),
    l_in(p.l_in),
    w_in(p.w_in),
    ad_in(p.ad_in),
@@ -89,6 +92,7 @@ bool COMMON_MOS::operator==(const COMMON_COMPONENT& x)const
 {
   const COMMON_MOS* p = dynamic_cast<const COMMON_MOS*>(&x);
   return (p
+    && m == p->m
     && l_in == p->l_in
     && w_in == p->w_in
     && ad_in == p->ad_in
@@ -106,6 +110,7 @@ void COMMON_MOS::parse(CS& cmd)
   parse_modelname(cmd);
   int here = cmd.cursor();
   do{
+  get(cmd, "M", &m, mPOSITIVE);
   get(cmd, "L", &l_in, mPOSITIVE);
   get(cmd, "W", &w_in, mPOSITIVE);
   get(cmd, "AD", &ad_in, mPOSITIVE);
@@ -122,6 +127,8 @@ void COMMON_MOS::print(OMSTREAM& o)const
 {
   o << "  " << modelname();
   o.setfloatwidth(7);
+  if (m != 1.)
+    o << "  m=" << m;
   if (l_in != NA)
     o << "  l=" << l_in;
   if (w_in != NA)
@@ -139,23 +146,25 @@ void COMMON_MOS::print(OMSTREAM& o)const
   o << '\n';
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_MOS::expand()
+void COMMON_MOS::expand(const COMPONENT* d)
 {
-  const MODEL_MOS_BASE* m = dynamic_cast<const MODEL_MOS_BASE*>(attach_model());
+  const COMMON_MOS* c = this;
+  const MODEL_MOS_BASE* m = dynamic_cast<const MODEL_MOS_BASE*>(attach_model(d));
   if (!m) {
-    untested();
-    error(bERROR, "model " + modelname() + " is not a mosfet");
+    error(bERROR, d->long_label() + ": model " + modelname()
+          + " is not a mosfet\n");
   }
   delete _sdp;
   _sdp = m->new_sdp(this);
   assert(_sdp);
-  const SDP_MOS_BASE* b = dynamic_cast<const SDP_MOS_BASE*>(_sdp);
-  assert(b);
+  const SDP_MOS_BASE* s = dynamic_cast<const SDP_MOS_BASE*>(_sdp);
+  assert(s);
 
   COMMON_DIODE* db = new COMMON_DIODE;
-  db->area = b->ad;
-  db->perim = pd;
-  db->is_raw = b->idsat;
+  db->m = c->m;
+  db->area = s->ad;
+  db->perim = c->pd;
+  db->is_raw = s->idsat;
   db->cj_raw = m->cbd;
   db->cjsw_raw = NA;
   db->off = true;
@@ -164,16 +173,16 @@ void COMMON_MOS::expand()
   attach_common(db, &_db);
 
   COMMON_DIODE* sb = new COMMON_DIODE;
-  sb->area = b->as;
-  sb->perim = ps;
-  sb->is_raw = b->issat;
+  sb->m = c->m;
+  sb->area = s->as;
+  sb->perim = c->ps;
+  sb->is_raw = s->issat;
   sb->cj_raw = m->cbs;
   sb->cjsw_raw = NA;
   sb->off = true;
   sb->set_modelname(modelname());
   sb->attach(model());
   attach_common(sb, &_sb);
-
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -185,8 +194,8 @@ void EVAL_MOS_Cgb::tr_eval(ELEMENT* d)const
   assert(p);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(p->common());
   assert(c);
-  const SDP_MOS_BASE* b = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
-  assert(b);
+  const SDP_MOS_BASE* s = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
+  assert(s);
   const MODEL_MOS_BASE* m = prechecked_cast<const MODEL_MOS_BASE*>(c->model());
   assert(m);
 
@@ -194,10 +203,10 @@ void EVAL_MOS_Cgb::tr_eval(ELEMENT* d)const
     assert(brh);
 
     double cap = brh->value();
-    {if (p->vgst < - b->phi) { 			/* accumulation */
-      cap += b->cgate;
+    {if (p->vgst < - s->phi) { 			/* accumulation */
+      cap += s->cgate;
     }else if (p->vgst < 0.) {			/* depletion */
-      cap += b->cgate * (-p->vgst) / b->phi;
+      cap += s->cgate * (-p->vgst) / s->phi;
     }else{					/* active, overlap only */
     }}
     
@@ -208,6 +217,7 @@ void EVAL_MOS_Cgb::tr_eval(ELEMENT* d)const
     }else{
       brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
     }}
+    brh->_y0 *= c->m;
     trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
 }
 /*--------------------------------------------------------------------------*/
@@ -219,8 +229,8 @@ void EVAL_MOS_Cgd::tr_eval(ELEMENT* d)const
   assert(p);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(p->common());
   assert(c);
-  const SDP_MOS_BASE* b = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
-  assert(b);
+  const SDP_MOS_BASE* s = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
+  assert(s);
   const MODEL_MOS_BASE* m = prechecked_cast<const MODEL_MOS_BASE*>(c->model());
   assert(m);
 
@@ -238,22 +248,22 @@ void EVAL_MOS_Cgd::tr_eval(ELEMENT* d)const
     {if (!p->reversed) { // treat as Cgs
       if (p->vgst >= 0.) {
 	if (p->vdsat > p->vds) {		/* linear */
-	  cap = (2./3.) * b->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
+	  cap = (2./3.) * s->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
 	  if (p->vgst <= .1) {
 	    cap *= 10. * p->vgst;	// smooth discontinuity
 	  }
 	}
       }
     }else{ // treat as Cgs
-      if (p->vgst >= -b->phi/2.) {		/* depletion  or active */
-	cap = (2./3.) * b->cgate;
+      if (p->vgst >= -s->phi/2.) {		/* depletion  or active */
+	cap = (2./3.) * s->cgate;
 	if (p->vdsat > p->vds) {			/* linear */
 	  double ndif   = p->vdsat - p->vds;
 	  cap *= 1. - (ndif*ndif)/(ddif*ddif);
 	}
 	if (p->vgst <= 0) {
-	  cap *= 1. + p->vgst / (b->phi);
-	  cap *= 1. + p->vgst / (b->phi);
+	  cap *= 1. + p->vgst / (s->phi);
+	  cap *= 1. + p->vgst / (s->phi);
 	}
       }
     }}
@@ -266,6 +276,7 @@ void EVAL_MOS_Cgd::tr_eval(ELEMENT* d)const
     }else{
       brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
     }}
+    brh->_y0 *= c->m;
     trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
 }
 /*--------------------------------------------------------------------------*/
@@ -277,8 +288,8 @@ void EVAL_MOS_Cgs::tr_eval(ELEMENT* d)const
   assert(p);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(p->common());
   assert(c);
-  const SDP_MOS_BASE* b = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
-  assert(b);
+  const SDP_MOS_BASE* s = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
+  assert(s);
   const MODEL_MOS_BASE* m = prechecked_cast<const MODEL_MOS_BASE*>(c->model());
   assert(m);
 
@@ -296,22 +307,22 @@ void EVAL_MOS_Cgs::tr_eval(ELEMENT* d)const
     {if (p->reversed) { // treat as Cgd
       if (p->vgst >= 0.) {
 	if (p->vdsat > p->vds) {		/* linear */
-	  cap = (2./3.) * b->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
+	  cap = (2./3.) * s->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
 	  if (p->vgst <= .1) {
 	    cap *= 10. * p->vgst;	// smooth discontinuity
 	  }
 	}
       }
     }else{ // treat as Cgs
-      if (p->vgst >= -b->phi/2.) {		/* depletion  or active */
-	cap = (2./3.) * b->cgate;
+      if (p->vgst >= -s->phi/2.) {		/* depletion  or active */
+	cap = (2./3.) * s->cgate;
 	if (p->vdsat > p->vds) {			/* linear */
 	  double ndif   = p->vdsat - p->vds;
 	  cap *= 1. - (ndif*ndif)/(ddif*ddif);
 	}
 	if (p->vgst <= 0) {
-	  cap *= 1. + p->vgst / (b->phi);
-	  cap *= 1. + p->vgst / (b->phi);
+	  cap *= 1. + p->vgst / (s->phi);
+	  cap *= 1. + p->vgst / (s->phi);
 	}
       }
     }}
@@ -324,12 +335,14 @@ void EVAL_MOS_Cgs::tr_eval(ELEMENT* d)const
     }else{
       brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
     }}
+    brh->_y0 *= c->m;
     trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
 }
 /*--------------------------------------------------------------------------*/
 DEV_MOS::DEV_MOS()
   :BASE_SUBCKT(),
    ids(0.),
+   ids_cpoly(NA),
    gds(0.),
    gmf(0.),
    gmr(0.),
@@ -385,7 +398,6 @@ DEV_MOS::DEV_MOS()
    _Cgb(0),
    _Ids(0)
 {
-  set_inode_count(2);
   _n = _nodes + 2;
   attach_common(&Default_MOS);
   ++_count;
@@ -394,6 +406,7 @@ DEV_MOS::DEV_MOS()
 DEV_MOS::DEV_MOS(const DEV_MOS& p)
   :BASE_SUBCKT(p),
    ids(p.ids),
+   ids_cpoly(p.ids_cpoly),
    gds(p.gds),
    gmf(p.gmf),
    gmr(p.gmr),
@@ -463,7 +476,7 @@ void DEV_MOS::parse(CS& cmd)
   assert(c);
 
   parse_Label(cmd);
-  parse_nodes(cmd,numnodes(),numnodes());
+  parse_nodes(cmd, max_nodes(), min_nodes());
   c->parse(cmd);
   attach_common(c);
 }
@@ -474,7 +487,7 @@ void DEV_MOS::print(OMSTREAM& o, int)const
   assert(c);
 
   o << short_label();
-  printnodes(o,numnodes());
+  printnodes(o);
   c->print(o);
 }
 /*--------------------------------------------------------------------------*/
@@ -482,24 +495,24 @@ void DEV_MOS::expand()
 {
   COMMON_MOS* c = prechecked_cast<COMMON_MOS*>(mutable_common());
   assert(c);
-  c->expand();
+  c->expand(this);
   const MODEL_MOS_BASE* m = prechecked_cast<const MODEL_MOS_BASE*>(c->model());
   assert(m);
-  const SDP_MOS_BASE* b = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
-  assert(b);
+  const SDP_MOS_BASE* s = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
+  assert(s);
 
-  {if (!OPT::rstray || b->rd == 0.) {
+  {if (!OPT::rstray || s->rd == 0.) {
     _n[n_idrain] = _n[n_drain];
   }else{
-    _n[n_idrain].t = STATUS::newnode_model();
+    _n[n_idrain].new_model_node();
   }}
-  {if (!OPT::rstray || b->rs == 0.) {
+  {if (!OPT::rstray || s->rs == 0.) {
     _n[n_isource] = _n[n_source];
   }else{
-    _n[n_isource].t = STATUS::newnode_model();
+    _n[n_isource].new_model_node();
   }}
 
-  {if (!OPT::rstray || b->rs == 0.) {
+  {if (!OPT::rstray || s->rs == 0.) {
     if (_Rs) {
       subckt().erase(_Rs);
       _Rs = NULL;
@@ -511,10 +524,10 @@ void DEV_MOS::expand()
     }
     {{
       node_t nodes[] = {_n[n_source], _n[n_isource]};
-      _Rs->set_parameters("Rs", this, NULL, b->rs, 0, 0, 2, nodes);
+      _Rs->set_parameters("Rs", this, NULL, s->rs/c->m, 0, 0, 2, nodes);
     }}
   }}
-  {if (!OPT::rstray || b->rd == 0.) {
+  {if (!OPT::rstray || s->rd == 0.) {
     if (_Rd) {
       subckt().erase(_Rd);
       _Rd = NULL;
@@ -526,10 +539,10 @@ void DEV_MOS::expand()
     }
     {{
       node_t nodes[] = {_n[n_drain], _n[n_idrain]};
-      _Rd->set_parameters("Rd", this, NULL, b->rd, 0, 0, 2, nodes);
+      _Rd->set_parameters("Rd", this, NULL, s->rd/c->m, 0, 0, 2, nodes);
     }}
   }}
-  {if (_n[n_bulk].t == _n[n_idrain].t || b->idsat == 0.) {
+  {if (_n[n_bulk] == _n[n_idrain] || s->idsat == 0.) {
     if (_Ddb) {
       subckt().erase(_Ddb);
       _Ddb = NULL;
@@ -547,7 +560,7 @@ void DEV_MOS::expand()
       _Ddb->set_parameters("Ddb", this, c->_db, 0., 0, 0, 2, nodes);
     }}
   }}
-  {if (_n[n_bulk].t == _n[n_isource].t || b->issat == 0.) {
+  {if (_n[n_bulk] == _n[n_isource] || s->issat == 0.) {
     if (_Dsb) {
       subckt().erase(_Dsb);
       _Dsb = NULL;
@@ -565,7 +578,7 @@ void DEV_MOS::expand()
       _Dsb->set_parameters("Dsb", this, c->_sb, 0., 0, 0, 2, nodes);
     }}
   }}
-  {if (!OPT::cstray || _n[n_gate].t == _n[n_isource].t) {
+  {if (!OPT::cstray || _n[n_gate] == _n[n_isource]) {
     if (_Cgs) {
       subckt().erase(_Cgs);
       _Cgs = NULL;
@@ -577,10 +590,10 @@ void DEV_MOS::expand()
     }
     {{
       node_t nodes[] = {_n[n_gate], _n[n_isource]};
-      _Cgs->set_parameters("Cgs", this, &Eval_Cgs, (m->cgso*b->w_eff), 0, 0, 2, nodes);
+      _Cgs->set_parameters("Cgs", this, &Eval_Cgs, (m->cgso*s->w_eff), 0, 0, 2, nodes);
     }}
   }}
-  {if (!OPT::cstray || _n[n_gate].t == _n[n_idrain].t) {
+  {if (!OPT::cstray || _n[n_gate] == _n[n_idrain]) {
     if (_Cgd) {
       subckt().erase(_Cgd);
       _Cgd = NULL;
@@ -592,10 +605,10 @@ void DEV_MOS::expand()
     }
     {{
       node_t nodes[] = {_n[n_gate], _n[n_idrain]};
-      _Cgd->set_parameters("Cgd", this, &Eval_Cgd, (m->cgdo*b->w_eff), 0, 0, 2, nodes);
+      _Cgd->set_parameters("Cgd", this, &Eval_Cgd, (m->cgdo*s->w_eff), 0, 0, 2, nodes);
     }}
   }}
-  {if (!OPT::cstray || _n[n_bulk].t == _n[n_gate].t) {
+  {if (!OPT::cstray || _n[n_bulk] == _n[n_gate]) {
     if (_Cgb) {
       subckt().erase(_Cgb);
       _Cgb = NULL;
@@ -607,17 +620,17 @@ void DEV_MOS::expand()
     }
     {{
       node_t nodes[] = {_n[n_gate], _n[n_bulk]};
-      _Cgb->set_parameters("Cgb", this, &Eval_Cgb, (m->cgbo*b->l_eff), 0, 0, 2, nodes);
+      _Cgb->set_parameters("Cgb", this, &Eval_Cgb, (m->cgbo*s->l_eff), 0, 0, 2, nodes);
     }}
   }}
   {{
     if (!_Ids) {
-      _Ids = new DEV_POLY_G;
+      _Ids = new DEV_CPOLY_G;
       subckt().push_front(_Ids);
     }
     {{
       node_t nodes[] = {_n[n_idrain], _n[n_isource], _n[n_gate], _n[n_isource], _n[n_idrain], _n[n_gate], _n[n_bulk], _n[n_isource], _n[n_idrain], _n[n_bulk]};
-      _Ids->set_parameters("Ids", this, NULL, 0., 6, &ids, 10, nodes);
+      _Ids->set_parameters("Ids", this, NULL, 0., 6, &ids_cpoly, 10, nodes);
     }}
   }}
   assert(subckt().exists());
@@ -632,8 +645,8 @@ double DEV_MOS::tr_probe_num(CS& cmd)const
   assert(c);
   const MODEL_MOS_BASE* m = prechecked_cast<const MODEL_MOS_BASE*>(c->model());
   assert(m);
-  const SDP_MOS_BASE* b = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
-  assert(b);
+  const SDP_MOS_BASE* s = prechecked_cast<const SDP_MOS_BASE*>(c->sdp());
+  assert(s);
 
   {if (cmd.pmatch("VDS")) {
     return  _n[n_drain].v0() - _n[n_source].v0();
@@ -716,7 +729,7 @@ double DEV_MOS::tr_probe_num(CS& cmd)const
   }else if (cmd.pmatch("CBS")) {
     return  CARD::probe(_Dsb,"Cap");
   }else if (cmd.pmatch("CGATE")) {
-    return  b->cgate;
+    return  s->cgate;
   }else if (cmd.pmatch("GMR")) {
     return  gmr;
   }else if (cmd.pmatch("GMF")) {
@@ -789,7 +802,7 @@ void DEV_MOS::limit_mos(double Vds, double Vgs, double Vbs)
     }else{				/* because it usually makes it worse */
       vgs = Vgs;
     }}
-    {if (_n[n_drain].t == _n[n_gate].t) {	/* gd tied, limiting done */
+    {if (_n[n_drain] == _n[n_gate]) {	/* gd tied, limiting done */
       vds = Vds + (vgs - Vgs);		/* it seems that vds = vgs should */
     					/* work, but it will be a little off */
 					/* if there is resistance */
@@ -918,11 +931,11 @@ bool DEV_MOS::do_tr()
       untested();
       //Vgs = m->vto;
     }
-    if (OPT::mosflags & 0400  &&  _n[n_source].t != _n[n_bulk].t) {
+    if (OPT::mosflags & 0400  &&  _n[n_source] != _n[n_bulk]) {
       untested();
       Vbs = -1;
     }
-    if (_n[n_drain].t == _n[n_gate].t) {
+    if (_n[n_drain] == _n[n_gate]) {
       Vds = Vgs;
     }
   }else if (reversed) {
@@ -937,9 +950,22 @@ bool DEV_MOS::do_tr()
 
   limit_mos(Vds, Vgs, Vbs);// also sets the new vds,vgs,vbs
   m->tr_eval(this);
-
+  {if (reversed) {
+    ids_cpoly = ids + vds*gds + vgs*gmr + vbs*gmbr;
+  }else{
+    ids_cpoly = ids - vds*gds - vgs*gmf - vbs*gmbf;
+  }}
   ids *= polarity;
-
+  ids_cpoly *= polarity;
+  if (c->m != 1.) {
+    ids *= c->m;
+    ids_cpoly *= c->m;
+    gds *= c->m;
+    gmf *= c->m;
+    gmr *= c->m;
+    gmbf *= c->m;
+    gmbr *= c->m;
+  }
   set_converged(subckt().do_tr());
   
   trace3(long_label().c_str(), vds, vgs, vbs);

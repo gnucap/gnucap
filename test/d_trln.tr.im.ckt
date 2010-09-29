@@ -48,5 +48,6 @@ R5l 52 0 100
 .modify R?s=100
 .tr 0 600n 5n trace all
 
+.stat notime
 .end
 

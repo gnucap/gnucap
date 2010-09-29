@@ -1,8 +1,8 @@
-/*$Id: d_cccs.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: d_cccs.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ void DEV_CCCS::precalc()
 /*--------------------------------------------------------------------------*/
 void DEV_CCCS::dc_begin()
 {
-  if (!has_tr_eval()){
+  if (!using_tr_eval()){
     assert(_y0.f0 == LINEAR);
     assert(_y0.f1 == value());
     assert(_loss0 == 0.);
@@ -51,7 +51,7 @@ void DEV_CCCS::dc_begin()
 bool DEV_CCCS::do_tr()
 {
   assert(_input);
-  {if (has_tr_eval()){
+  {if (using_tr_eval()){
     _m0.x = tr_involts_limited();
     _y0.x = _input->tr_amps();
     tr_eval();

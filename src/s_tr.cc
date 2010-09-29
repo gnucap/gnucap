@@ -1,8 +1,8 @@
-/*$Id: s_tr.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: s_tr.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,9 @@
 #include "u_status.h"
 #include "s_tr.h"
 /*--------------------------------------------------------------------------*/
-//	void	TRANSIENT::command(CS&);
+int TRANSIENT::steps_accepted_;
+int TRANSIENT::steps_rejected_;
+int TRANSIENT::steps_total_;
 /*--------------------------------------------------------------------------*/
 void TRANSIENT::command(CS& cmd)
 {

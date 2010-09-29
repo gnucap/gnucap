@@ -1,8 +1,8 @@
-/*$Id: s__aux.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: s__aux.cc,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,13 @@ void SIM::restore()
 {
   for (int ii = 1;  ii <= STATUS::total_nodes;  ++ii) {
     vt1[ii] = v0[ii] = vdc[ii];
+  }
+}
+/*--------------------------------------------------------------------------*/
+void SIM::zero_voltages()
+{
+  for (int ii = 1;  ii <= STATUS::total_nodes;  ++ii) {
+    vt1[ii] = v0[ii] = vdc[ii] = i[ii] = 0.;
   }
 }
 /*--------------------------------------------------------------------------*/

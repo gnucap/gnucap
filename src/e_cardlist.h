@@ -1,8 +1,8 @@
-/*$Id: e_cardlist.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.h,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
  */
 #ifndef E_CARDLIST_H
 #define E_CARDLIST_H
-#include "md.h"
+#include "u_nodemap.h"
 /*--------------------------------------------------------------------------*/
 // defined here
 class CARD_LIST;
@@ -34,6 +34,8 @@ class CARD;
 class CARD_LIST {
 private:
   std::list<CARD*> _cl;
+public:
+  NODE_MAP _nm;
 public:
   // internal types
   typedef std::list<CARD*>::iterator iterator;
@@ -94,6 +96,7 @@ public:
   CARD_LIST& expand();
   CARD_LIST& map_nodes();
   CARD_LIST& precalc();
+  CARD_LIST& tr_alloc_matrix();
   CARD_LIST& dc_begin();
   CARD_LIST& tr_begin();
   CARD_LIST& tr_restore();
@@ -106,6 +109,7 @@ public:
   double     tr_review();
   CARD_LIST& tr_accept();
   CARD_LIST& tr_unload();
+  CARD_LIST& ac_alloc_matrix();
   CARD_LIST& ac_begin();
   CARD_LIST& do_ac();
   CARD_LIST& ac_load();

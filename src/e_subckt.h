@@ -1,8 +1,8 @@
-/*$Id: e_subckt.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: e_subckt.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,9 @@ protected:
 protected: // override virtual
   //char  id_letter()const		//CARD/null
   //const char* dev_type()const		//COMPONENT/null
-  //int	  numnodes()const		//COMPONENT/null
+  //int	  max_nodes()const		//COMPONENT/null
+  //int	  num_nodes()const		//COMPONENT/null
+  //int	  min_nodes()const		//COMPONENT/null
   //CARD* clone()const			//CARD/null
   //void  parse(CS&)			//CARD/null
   //void  print(OMSTREAM&,int)const	//CARD/null

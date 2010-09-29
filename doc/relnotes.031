@@ -1,0 +1,126 @@
+Gnucap 0.31 release notes  (03/25/2002)
+
+The most significant changes are the BJT model and "binning".
+
+
+New features:
+
+1. BJT model.
+
+2. "Binning" for all MOS models.
+
+3. Internal element: non-quasi-static poly-capacitor. (needed by BJT).
+
+4. Enhancements to the data structures and model compiler to support
+binning in general.
+
+5. A line prefixed by "*>" is not ignored, in spite of the fact that
+"*" usually begins a comment.  This is a deliberate incompatibility
+with Spice.  If you prefix a line by "*>" it will be interpreted as a
+non-comment in Gnucap, but a comment in Spice.
+
+6. Circuit line prefixes of ">" and command prefixes of "-->" are
+ignored.  This is so you can copy and paste whole lines, without
+having to manually remove the prompt string.
+
+
+Changes that may or may not be improvements.
+
+1. It is not the default to include stray resistance in device models.
+The option "norstray" will revert to the old behavior.  This is only a
+change to the default value of "rstray".
+
+
+Significant internal changes:
+
+1. The internal element non-quasi-static poly-capacitor actually
+works.  It is used by the BJT model, and will eventually be used by
+MOSFET models.
+
+2. There are now two poly_g devices: "CPOLY_G" and "FPOLY_G".  There
+are interface differences that impact modeling.  Previously, there was
+only one, which is equivalent to the "FPOLY_G".
+
+
+Some things that are still partially implemented:
+
+1. BSIM models, charge effects, "alpha0" parameter.  (computed then
+ignored)
+
+2. Configure still doesn't handle everything.
+
+3. The model compiler still requires too much raw coding.
+
+
+General comments:
+
+The new BJT model seems to pass the CircuitSim90 test cases as well as
+anything else, except where a missing feature prevented it from
+working.  A few files would not run because of named nodes.  One file
+(ring11) failed completely.  This file also has MOSFETs, with level 2
+models.  The MOS level 2 model is not as robust as the BJT.  I believe
+the problem is due to the voltage sync bug that still impacts the MOS
+model.
+
+Most of the models have has a reasonable amount of testing in DC, but
+inadequate testing in AC and transient.  The BJT model has had more
+testing than the others in AC and transient.  All differences
+(relative to other simulators) that were observed can be attributed to
+differences in transient step size control or tolerance checking.
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+
+Bugs (newly discovered, not fixed):
+
+1. In some cases, it is possible for the voltages at various stages of
+model evaluation to get out of sync with each other.  In particular,
+when device limiting occurs, the conversion from FPOLY to CPOLY form
+may use the unlimited voltages, resulting in an erroneous conversion.
+This problem has been fixed (before release) in the DC BJT model.  The
+charge portion of the BJT model may still have the problem, but the
+symptom rarely shows.  The MOS model is known to still have the
+problem.  The symptom of the problem is occasional slow convergence or
+non convergence.  There can be a single incorrect iteration that
+throws the solution far from the intended path, then it usually
+recovers eventually.  The fix is known, but I wanted to get the BJT
+model out, so this fix will wait for the next release.
+
+2. The "modify" command with multiple arguments seems to take only the
+first one.  It used to work, but is broken in this release.  I am not
+sure when it broke.
+
+
+Hot items for a future release (no promises, but highly probable):
+
+1. Charge effects and substrate current (alpha0) in BSIM models.  They
+are computed, but not loaded to the matrix.  It was deferred waiting
+for the poly-cap, but now that the poly-cap works, this missing part
+of the MOS models should be working soon.
+
+2. JFET model.
+
+3. Completion of multi-rate.
+
+4. Homotopy methods to improve convergence.
+
+5. Transmission line accuracy and speed improvements, using a step
+control mechanism similar to that used for capacitors.
+
+6. Parameterized subcircuits and defined parameters.
+
+7. Spice-3 compatible "B" device.
+
+
+To reach me, try this email address:
+	aldavis@ieee.org
+
+ftp sites:
+	ftp://ftp.gnu.org/gnu/gnucap/gnucap-0.31.tar.gz
+	ftp://ftp.geda.seul.org/pub/geda/dist/gnucap-0.31.tar.gz
+	http://www.geda.seul.org/dist/gnucap-0.31.tar.gz
+	ftp://sunsite.unc.edu/pub/Linux/apps/circuits/gnucap-0.31.tar.gz

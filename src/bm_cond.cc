@@ -1,8 +1,8 @@
-/*$Id: bm_cond.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: bm_cond.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ void EVAL_BM_COND::parse(CS& cmd)
      || set(cmd, "ALL",      &mode, sNONE)
      || (mode = sNONE));
     if (_set[mode]) {
-      cmd.warn(bWARNING, "duplicate mode");
+      cmd.warn(bWARNING, (mode != sNONE) ? "duplicate mode" : "what's this?");
     }
     COMMON_COMPONENT* c = EVAL_BM_ACTION_BASE::parse_func_type(cmd);
 

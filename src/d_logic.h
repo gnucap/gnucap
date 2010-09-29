@@ -1,8 +1,8 @@
-/*$Id: d_logic.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: d_logic.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,11 @@ private: // override virtuals
   char	   id_letter()const	{return 'U';}
   const char* dev_type()const
     {untested(); assert(has_common()); return common()->name();}
-  int	   numnodes()const	{unreachable(); incomplete(); return 2;}
+  int	   max_nodes()const	{return PORTS_PER_GATE;}
+  int	   min_nodes()const	{unreachable(); incomplete(); return 2;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 2;}
+  int	   net_nodes()const	{return _num_nodes;}
   CARD*	   clone()const		{untested(); return new DEV_LOGIC(*this);}
   void	   parse(CS&);
   void	   print(OMSTREAM&,int)const;
@@ -82,6 +86,7 @@ private: // override virtuals
   void	   map_nodes()	{COMPONENT::map_nodes(); subckt().map_nodes();}
   void	   precalc();
 
+  void	   tr_alloc_matrix();
   void	   dc_begin();
   void	   tr_begin();
   void	   tr_restore();
@@ -99,6 +104,7 @@ private: // override virtuals
   double   tr_involts_limited()const	{unreachable(); return 0;}
   double   tr_probe_num(CS&)const;
 
+  void	   ac_alloc_matrix();
   void	   ac_begin();
   void	   do_ac()			{untested(); subckt().do_ac();}
   void	   ac_load()			{unreachable();}
@@ -113,6 +119,7 @@ private:
   bool	   want_digital()const{return subckt().empty() ||
     ((OPT::mode == moDIGITAL) || (OPT::mode == moMIXED && _quality == qGOOD));}
 private:
+  int		_num_nodes;
   int		_lastchangenode;
   int		_quality;
   const char*	_failuremode;

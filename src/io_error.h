@@ -1,10 +1,10 @@
-/*$Id: io_error.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: io_error.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * data for error and exception handling
  *
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,8 +1,8 @@
-/*$Id: d_trln.h,v 20.7 2001/09/29 05:31:06 al Exp $ -*- C++ -*-
+/*$Id: d_trln.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,11 @@ public:
 private: // override virtual
   char		id_letter()const	{return 'T';}
   const char*	dev_type()const		{untested(); return "tline";}
-  int		numnodes()const		{return 4;}
+  int		max_nodes()const	{return 4;}
+  int		min_nodes()const	{return 4;}
+  int		out_nodes()const	{return 4;}
+  int		matrix_nodes()const	{return 4;}
+  int		net_nodes()const	{return 4;}
   CARD*		clone()const	{untested();return new DEV_TRANSLINE(*this);}
   void		parse(CS&);
   void		print(OMSTREAM&,int)const;
@@ -80,13 +84,14 @@ private: // override virtual
   //void	map_nodes();		//ELEMENT
   void		precalc();
 
+  void		tr_alloc_matrix();
   void		dc_begin()		{untested();}
   void		tr_begin();
   //void	tr_restore();		//CARD/nothing
   void		dc_advance()		{tr_advance();}
   void		tr_advance();
   bool		tr_needs_eval()	{return (_if0 != _if1  ||  _ir0 != _ir1);}
-  void		tr_queue_eval()	{if(tr_needs_eval()){q_eval();}}
+  //void	tr_queue_eval()		//ELEMENT
   bool		do_tr();
   void		tr_load();
   double	tr_review();
@@ -98,6 +103,7 @@ private: // override virtual
 			{unreachable(); return volts_limited(_n[IN1],_n[IN2]);}
   //double	tr_probe_num(CS&)const;	//ELEMENT wrong???
 
+  void		ac_alloc_matrix()	{ac_alloc_matrix_extended();}
   //void	ac_begin();		//CARD/nothing
   void		do_ac();
   void		ac_load();

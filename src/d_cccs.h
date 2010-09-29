@@ -1,8 +1,8 @@
-/*$Id: d_cccs.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: d_cccs.h,v 22.10 2002/07/26 03:15:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,12 @@ public:
 private: // override virtual
   char	   id_letter()const	{return 'F';}
   const char* dev_type()const	{return "cccs";}
-  //int	   numnodes()const	//CCSRC_BASE=4
+  //int	   max_nodes()const	//CCSRC_BASE=4
+  //int	   num_nodes()const	//CCSRC_BASE=4
+  //int	   min_nodes()const	//CCSRC_BASE=4
+  //int	   out_nodes()const	//CCSRC_BASE=2
+  //int	   matrix_nodes()const	//CCSRC_BASE=4
+  //int	   net_nodes()const	//CCSRC_BASE=2
   CARD*	   clone()const		{untested(); return new DEV_CCCS(*this);}
   //void   parse(CS&);		//ELEMENT
   //void   print(OMSTREAM,int)const; //CCSRC_BASE
@@ -41,13 +46,14 @@ private: // override virtual
   //void   map_nodes();		//ELEMENT
   void	   precalc();
 
+  void	   tr_alloc_matrix()	{tr_alloc_matrix_active();}
   void	   dc_begin();
   void	   tr_begin()		{dc_begin();}
   void	   tr_restore()		{dc_begin();}
   //void   dc_advance();	//CARD/nothing
   //void   tr_advance();	//CARD/nothing
   //bool   tr_needs_eval();	//CCSRC_BASE
-  //void   tr_queue_eval();	//CCSRC_BASE
+  //void   tr_queue_eval();	//ELEMENT
   bool	   do_tr();
   void	   tr_load()		{tr_load_active();}
   //double tr_review();		//CARD/nothing
@@ -58,6 +64,7 @@ private: // override virtual
   //double tr_involts_limited()const;	//CCSRC_BASE
   //double tr_probe_num(CS&)const;//ELEMENT
 
+  void	    ac_alloc_matrix()	{ac_alloc_matrix_active();}
   void	    ac_begin()		{_ev = _y0.f1;}
   void	    do_ac();
   void	    ac_load()		{unreachable(); incomplete(); /*fake*/}

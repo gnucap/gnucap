@@ -1,6 +1,6 @@
 nmos n gate, saturated 
 #           v(2)       v(3)       v(4)       iter(0)   
- 300.15     2.8132     5.        -1.2349     7.        
+ 300.15     2.8132     5.        -1.2349     6.        
 #           i(Vds)     i(Vbs)     ps(Vds)    ps(Vbs)   
  300.15    -21.868u    0.         109.34u    0.        
 #           id(M1)     is(M1)     ig(M1)     ib(M1)     ibs(M1)    ibd(M1)   

@@ -1,8 +1,8 @@
-/*$Id: mg_.h,v 20.14 2001/10/19 06:21:15 al Exp $ -*- C++ -*-
+/*$Id: mg_.h,v 22.21 2002/10/06 07:21:42 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,30 +86,63 @@ protected:
   std::list<T*> _list;
   virtual void parse(CS& f) = 0;
   virtual ~List_Base() {
-    for (std::list<T*>::iterator i = _list.begin(); i != _list.end(); ++i) {
+    for (typename std::list<T*>::iterator
+	   i = _list.begin(); i != _list.end(); ++i) {
       delete *i;
     }
   }
 public:
-  typedef std::list<T*>::const_iterator const_iterator;
+  typedef typename std::list<T*>::const_iterator const_iterator;
   const_iterator begin()const	 {return _list.begin();}
   const_iterator end()const	 {return _list.end();}
   bool		 is_empty()const {return _list.empty();}
   int		 size()const	 {return _list.size();}
 };
 /*--------------------------------------------------------------------------*/
-template <class T, char, char>
+template <class T, char BEGIN, char END>
 class List
   :public List_Base<T>
 {
-  void parse(CS& f);
+  void parse(CS& file) {
+    C_Comment   dummy_c_comment;
+    Cxx_Comment dummy_cxx_comment;
+    int paren = file.skip1b(BEGIN);
+    int here = file.cursor();
+    {for (;;) {
+      get(file, "/*$$", &dummy_c_comment);
+      get(file, "//$$", &dummy_cxx_comment);
+      if (file.stuck(&here)) {
+	paren -= file.skip1b(END);
+	if (paren == 0) {
+	  break;
+	}
+	T* p = new T(file);
+	{if (!file.stuck(&here)) {
+	  _list.push_back(p);
+	}else {
+	  delete p;
+	  file.warn(0, "not valid here");
+	  break;
+	}}
+      }
+    }}
+  }
 };
 /*--------------------------------------------------------------------------*/
 template <class T>
 class Collection
   :public List_Base<T>
 {
-  void parse(CS& f);
+  void parse(CS& file) {
+    int here = file.cursor();
+    T* m = new T(file);
+    {if (!file.stuck(&here)) {
+      _list.push_back(m);
+    }else{
+      delete m;
+      file.warn(0, "what's this??");
+    }}
+  }
 };
 /*--------------------------------------------------------------------------*/
 class C_Comment
@@ -225,6 +258,7 @@ class Parameter_Block
   Parameter_List _raw;
   Parameter_List _calculated;
   Code_Block	 _code_pre;
+  Code_Block	 _code_mid;
   Code_Block     _code_post;
   void parse(CS& f);
 public:
@@ -233,9 +267,11 @@ public:
   const Parameter_List& raw()const		{return _raw;}
   const Parameter_List& calculated()const	{return _calculated;}
   const Code_Block&	code_pre()const		{return _code_pre;}
+  const Code_Block&	code_mid()const		{return _code_mid;}
   const Code_Block&	code_post()const	{return _code_post;}
   bool is_empty()const {return (calculated().is_empty() 
 				&& code_post().is_empty()
+				&& code_mid().is_empty()
 				&& override().is_empty()
 				&& raw().is_empty()
 				&& code_pre().is_empty());}
@@ -384,6 +420,7 @@ class Model
   Parameter_Block	_size_dependent;
   Parameter_Block	_temperature;
   Code_Block		_tr_eval;
+  Code_Block		_validate;
   Bool_Arg		_is_base;
   void parse(CS& f);
 public:
@@ -398,6 +435,7 @@ public:
   const Parameter_Block& size_dependent()const	{return _size_dependent;}
   const Parameter_Block& temperature()const	{return _temperature;}
   const Code_Block&	 tr_eval()const		{return _tr_eval;}
+  const Code_Block&	 validate()const	{return _validate;}
 };
 typedef Collection<Model> Model_List;
 /*--------------------------------------------------------------------------*/

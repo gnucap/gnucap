@@ -1,8 +1,8 @@
-/* $Id: d_mos4.model,v 20.15 2001/10/30 03:58:55 al Exp $ -*- C++ -*-
+/* $Id: d_mos4.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
  * MOS BSIM1 model.
  * derived from Spice3f4,Copyright 1990 Regents of the University of California
  * 1985 Hong J. Park, Thomas L. Quarles
- * Recoded for GnuCap model compiler, Al Davis, 2000
+ * Recoded for Gnucap model compiler, Al Davis, 2000
  */
 h_headers {
 #include "u_sdp.h"
@@ -142,19 +142,19 @@ model MOS4 {
     d->reverse_if_needed();
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     trace4("", c->lo, m->dl, c->wo, m->dw);
-    trace3("", b->ugs, b->ugsB, d->vbs);
-    double Ugs = b->ugs + b->ugsB * d->vbs;
+    trace3("", s->ugs, s->ugsB, d->vbs);
+    double Ugs = s->ugs + s->ugsB * d->vbs;
     double dUgsdVbs;
     {if(Ugs <= 0) {
       untested();
       Ugs = 0;
       dUgsdVbs = 0.0;
     }else{
-      dUgsdVbs = b->ugsB;
+      dUgsdVbs = s->ugsB;
     }}
     trace2("", Ugs, dUgsdVbs);
     
-    double Uds = b->uds + b->udsB * d->vbs + b->udsD * (d->vds - m->vdd);
+    double Uds = s->uds + s->udsB * d->vbs + s->udsD * (d->vds - m->vdd);
     double dUdsdVbs;
     double dUdsdVds;
     {if(Uds <= 0) {    
@@ -162,19 +162,19 @@ model MOS4 {
       Uds = 0.0;
       dUdsdVbs = dUdsdVds = 0.0;
     }else{
-      double Leff = b->l_eff * 1e6; /* Leff in um */
+      double Leff = s->l_eff * 1e6; /* Leff in um */
       Uds  =  Uds / Leff;
-      dUdsdVbs = b->udsB / Leff;
-      dUdsdVds = b->udsD / Leff;
+      dUdsdVbs = s->udsB / Leff;
+      dUdsdVds = s->udsD / Leff;
     }}
     trace3("", Uds, dUdsdVbs, dUdsdVds);
     
     double Vpb;
     {if(d->vbs <= 0) {
-      Vpb = b->phi - d->vbs;
+      Vpb = s->phi - d->vbs;
       d->sbfwd = false;
     }else{
-      Vpb = b->phi;
+      Vpb = s->phi;
       d->sbfwd = true;
     }}
     double SqrtVpb = sqrt(Vpb);
@@ -184,7 +184,7 @@ model MOS4 {
     double dVthdVbs;
     double dVthdVds;
     {
-      double Eta = b->eta + b->etaB * d->vbs + b->etaD * (d->vds - m->vdd);
+      double Eta = s->eta + s->etaB * d->vbs + s->etaD * (d->vds - m->vdd);
       double dEtadVds;
       double dEtadVbs;
       {if(Eta <= 0) {   
@@ -196,23 +196,23 @@ model MOS4 {
 	dEtadVds = dEtadVbs = 0;
       }else{ 
 	untested();
-	dEtadVds = b->etaD;
-	dEtadVbs = b->etaB;
+	dEtadVds = s->etaD;
+	dEtadVbs = s->etaB;
       }}
       trace3("", Eta, dEtadVds, dEtadVbs);
-      d->von = b->vfb + b->phi + b->k1 * SqrtVpb - b->k2 * Vpb - Eta * d->vds;
+      d->von = s->vfb + s->phi + s->k1 * SqrtVpb - s->k2 * Vpb - Eta * d->vds;
       dVthdVds = -Eta - dEtadVds * d->vds;
-      dVthdVbs = b->k2 - 0.5 * b->k1 / SqrtVpb - dEtadVbs * d->vds;
+      dVthdVbs = s->k2 - 0.5 * s->k1 / SqrtVpb - dEtadVbs * d->vds;
       d->vgst  = d->vgs - d->von;
       trace4("", d->von, dVthdVds, dVthdVbs, d->vgst);
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     double G = 1. - 1./(1.744+0.8364 * Vpb);
-    double A = 1. + 0.5*G*b->k1/SqrtVpb;
+    double A = 1. + 0.5*G*s->k1/SqrtVpb;
     A = std::max(A, 1.0);   /* Modified */
     double Arg = std::max((1 + Ugs * d->vgst), 1.0);
     double dGdVbs = -0.8364 * (1-G) * (1-G);
-    double dAdVbs = 0.25 * b->k1 / SqrtVpb *(2*dGdVbs + G/Vpb);
+    double dAdVbs = 0.25 * s->k1 / SqrtVpb *(2*dGdVbs + G/Vpb);
     trace3("", G, A, Arg);
     trace2("", dGdVbs, dAdVbs);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -234,23 +234,23 @@ model MOS4 {
       double dBeta0dVbs;
       {
 	trace2("", m->tox, m->cox*1e-4);
-	trace3("", b->betaVdd, b->betaVddB, d->vbs);
-	double BetaVdd = (b->betaVdd + b->betaVddB * d->vbs);
-	double dBetaVdd_dVds = std::max(b->betaVddD, 0.0); /* Modified */
+	trace3("", s->betaVdd, s->betaVddB, d->vbs);
+	double BetaVdd = (s->betaVdd + s->betaVddB * d->vbs);
+	double dBetaVdd_dVds = std::max(s->betaVddD, 0.0); /* Modified */
 	trace2("", BetaVdd, dBetaVdd_dVds);
 	{if(d->vds > m->vdd) {
 	  Beta0      = BetaVdd + dBetaVdd_dVds * (d->vds - m->vdd);
 	  dBeta0dVds = dBetaVdd_dVds;
-	  dBeta0dVbs = b->betaVddB;
+	  dBeta0dVbs = s->betaVddB;
 	  trace3("vds>vdd", Beta0, dBeta0dVds, dBeta0dVbs);
 	}else{
-	  double Beta_Vds_0 = (b->betaZero + b->betaZeroB * d->vbs);
+	  double Beta_Vds_0 = (s->betaZero + s->betaZeroB * d->vbs);
 	  double VddSquare = m->vdd * m->vdd;
 	  double C1 = (-BetaVdd + Beta_Vds_0+dBetaVdd_dVds*m->vdd) / VddSquare;
 	  double C2 = 2 * (BetaVdd - Beta_Vds_0) / m->vdd - dBetaVdd_dVds;
 	  trace4("", Beta_Vds_0, VddSquare, C1, C2);
-	  double dBeta_Vds_0_dVbs = b->betaZeroB;
-	  double dBetaVdd_dVbs = b->betaVddB;
+	  double dBeta_Vds_0_dVbs = s->betaZeroB;
+	  double dBetaVdd_dVbs = s->betaVddB;
 	  double dC1dVbs = (dBeta_Vds_0_dVbs - dBetaVdd_dVbs) / VddSquare;
 	  double dC2dVbs = dC1dVbs * (-2) * m->vdd;
 	  trace4("", dBeta_Vds_0_dVbs, dBetaVdd_dVbs, dC1dVbs, dC2dVbs);
@@ -332,10 +332,10 @@ model MOS4 {
      *  Old 'if' statement:  (reversed)                                     *
      *  if( (N0 >=  200) || (d->vgst < Vcut ) || (d->vgst > (-0.5*Vcut)))   */
     
-    //double Vcut  =  - 40. * b->n0 * t.vt ;
-    {if (b->n0 < 200) {
-      double N = b->n0 + b->nB*d->vbs + b->nD*d->vds; /* subthreshold slope */
-      trace4("", b->n0, b->nB, b->nD, N);
+    //double Vcut  =  - 40. * s->n0 * t->vt ;
+    {if (s->n0 < 200) {
+      double N = s->n0 + s->nB*d->vbs + s->nD*d->vds; /* subthreshold slope */
+      trace4("", s->n0, s->nB, s->nD, N);
       if (N < 0.5) {
 	untested();
 	N = 0.5;
@@ -347,8 +347,8 @@ model MOS4 {
       double Warg1 = exp(-d->vds / vt0);
       double Wds   = 1 - Warg1;
       double Wgs   = exp( d->vgst / nvt0);
-      double Warg2  = 6.04965 * Vtsquare * b->betaZero;
-      double Ilimit = 4.5 * Vtsquare * b->betaZero;
+      double Warg2  = 6.04965 * Vtsquare * s->betaZero;
+      double Ilimit = 4.5 * Vtsquare * s->betaZero;
       double Iexp   = Warg2 * Wgs * Wds;
       d->ids += Ilimit * Iexp / (Ilimit + Iexp);
       double Temp1  = Ilimit / (Ilimit + Iexp);
@@ -359,9 +359,9 @@ model MOS4 {
       d->gmf  += Temp1 * Iexp / nvt0;
       /* gds term has been modified to prevent blow up at Vds=0 */
       d->gds += Temp3
-	* (Wds / nvt0 * (dVthdVds + d->vgst * b->nD / N)
+	* (Wds / nvt0 * (dVthdVds + d->vgst * s->nD / N)
 	   + Warg1 / vt0);
-      d->gmbf -= Temp1 * Iexp * (dVthdVbs + d->vgst * b->nB / N) / nvt0;
+      d->gmbf -= Temp1 * Iexp * (dVthdVbs + d->vgst * s->nB / N) / nvt0;
       trace3("", vt0, Vtsquare, nvt0);
       trace4("", Warg1, Wds, Wgs, Warg2);
       trace4("", Ilimit, Iexp, Temp1, Temp3);
@@ -377,18 +377,18 @@ model MOS4 {
     if(d->gmbf < 0.0) d->gmbf = 0.0;
     trace4("final", d->ids, d->gmf, d->gds, d->gmbf);
 
-    trace3("", G, A, b->phi);
+    trace3("", G, A, s->phi);
     trace1("", m->xpart);
     
-    double Vth0 = b->vfb + b->phi + b->k1 * SqrtVpb; // almost same as d->von
+    double Vth0 = s->vfb + s->phi + s->k1 * SqrtVpb; // almost same as d->von
     double Vgs_Vth = d->vgs - Vth0; // almost same as d->vgst
     trace2("", Vth0, Vgs_Vth);
     double Arg1 = A * d->vds;
     double Arg2 = Vgs_Vth - 0.5 * Arg1;
     double Arg3 = d->vds - Arg1;
     trace3("", Arg1, Arg2, Arg3);
-    /*double*/ dVthdVbs = -0.5 * b->k1 / SqrtVpb;
-    /*dbl*/ dAdVbs = 0.5 * b->k1 * (0.5*G/Vpb - 0.8364*(1-G)*(1-G)) / SqrtVpb;
+    /*double*/ dVthdVbs = -0.5 * s->k1 / SqrtVpb;
+    /*dbl*/ dAdVbs = 0.5 * s->k1 * (0.5*G/Vpb - 0.8364*(1-G)*(1-G)) / SqrtVpb;
     trace2("", dVthdVbs, dAdVbs);
     double Ent = std::max(Arg2,1.0e-8);
     double dEntdVds = -0.5 * A;
@@ -396,18 +396,18 @@ model MOS4 {
     trace3("", Ent, dEntdVds, dEntdVbs);
     double VdsPinchoff = std::max(Vgs_Vth / A, 0.0);
     double Vgb  = d->vgs - d->vbs ;
-    double Vgb_Vfb  = Vgb - b->vfb;
+    double Vgb_Vfb  = Vgb - s->vfb;
     trace3("", VdsPinchoff, Vgb, Vgb_Vfb);
     
     {if(Vgb_Vfb < 0) {			/* Accumulation Region */
       untested();
-      d->qgate = b->cgate * Vgb_Vfb;
+      d->qgate = s->cgate * Vgb_Vfb;
       d->qbulk = -d->qgate;
       d->qdrn  = 0. ;
-      d->cggb = b->cgate;
+      d->cggb = s->cgate;
       d->cgdb = 0.;
       d->cgsb = 0.;
-      d->cbgb = -b->cgate;
+      d->cbgb = -s->cgate;
       d->cbdb = 0.;
       d->cbsb = 0.;
       d->cdgb = 0.;
@@ -417,8 +417,8 @@ model MOS4 {
       trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
       trace4("acc", d->qdrn, d->cdgb, d->cddb, d->cdsb);
     }else if (d->vgs < Vth0) {		/* Subthreshold Region */
-      d->qgate = 0.5*b->cgate*b->k1*b->k1*(-1+sqrt(1+4*Vgb_Vfb/(b->k1*b->k1)));
-      d->cggb = b->cgate / sqrt(1 + 4 * Vgb_Vfb / (b->k1 * b->k1));
+      d->qgate = 0.5*s->cgate*s->k1*s->k1*(-1+sqrt(1+4*Vgb_Vfb/(s->k1*s->k1)));
+      d->cggb = s->cgate / sqrt(1 + 4 * Vgb_Vfb / (s->k1 * s->k1));
       d->cgdb = d->cgsb = 0.;
       d->qbulk = -d->qgate;
       d->cbgb = -d->cggb;
@@ -446,18 +446,18 @@ model MOS4 {
       double Argl8 = 6.0 * Ent;
       trace3("", Argl5, Argl7, Argl8);
       
-      d->qgate = b->cgate 
-	* (d->vgs - b->vfb - b->phi - 0.5 * d->vds + d->vds * Argl7);
-      d->cggb = b->cgate * (1.0 - Argl3 / Argl1);
-      d->cgdb = b->cgate * (-0.5 + Arg1 / Argl8 - Argl3 * dEntdVds / Argl1);
-      double cgbb = b->cgate * (d->vds*d->vds*dAdVbs*Ent-Argl3*dEntdVbs)/Argl1;
+      d->qgate = s->cgate 
+	* (d->vgs - s->vfb - s->phi - 0.5 * d->vds + d->vds * Argl7);
+      d->cggb = s->cgate * (1.0 - Argl3 / Argl1);
+      d->cgdb = s->cgate * (-0.5 + Arg1 / Argl8 - Argl3 * dEntdVds / Argl1);
+      double cgbb = s->cgate * (d->vds*d->vds*dAdVbs*Ent-Argl3*dEntdVbs)/Argl1;
       d->cgsb = -(d->cggb + d->cgdb + cgbb);
       trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
       
-      d->qbulk = b->cgate * (-Vth0 + b->vfb + b->phi + 0.5*Arg3 - Arg3*Argl7);
-      d->cbgb = b->cgate * Argl3 * Argl2 / Argl1;
-      d->cbdb = b->cgate * Argl2 * (0.5 - Arg1/Argl8 + Argl3 * dEntdVds/Argl1);
-      double cbbb = -b->cgate * (dVthdVbs + 0.5 * d->vds * dAdVbs
+      d->qbulk = s->cgate * (-Vth0 + s->vfb + s->phi + 0.5*Arg3 - Arg3*Argl7);
+      d->cbgb = s->cgate * Argl3 * Argl2 / Argl1;
+      d->cbdb = s->cgate * Argl2 * (0.5 - Arg1/Argl8 + Argl3 * dEntdVds/Argl1);
+      double cbbb = -s->cgate * (dVthdVbs + 0.5 * d->vds * dAdVbs
 	       +d->vds*d->vds*((1.0-2.0*A)*dAdVbs*Ent-Argl2*A*dEntdVbs)/Argl1);
       d->cbsb = -(d->cbgb + d->cbdb + cbbb);
       trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
@@ -465,10 +465,10 @@ model MOS4 {
       {if (m->xpart >= 1) {
 	/*0/100 partitioning for drain/source chArges at saturation region*/
 	double Argl9 = 0.125 * Argl5 * Argl5; //t
-	d->qdrn = -b->cgate * (0.5*Vgs_Vth - 0.75*Arg1 + 0.125*Arg1*Argl5);
-	d->cdgb = -b->cgate * (0.5 - Argl9);
-	d->cddb = b->cgate * (0.75*A - 0.25*A*Arg1/Ent + Argl9*dEntdVds);
-	double cdbb = b->cgate * (0.5 * dVthdVbs + d->vds * dAdVbs * 
+	d->qdrn = -s->cgate * (0.5*Vgs_Vth - 0.75*Arg1 + 0.125*Arg1*Argl5);
+	d->cdgb = -s->cgate * (0.5 - Argl9);
+	d->cddb = s->cgate * (0.75*A - 0.25*A*Arg1/Ent + Argl9*dEntdVds);
+	double cdbb = s->cgate * (0.5 * dVthdVbs + d->vds * dAdVbs * 
 				  (0.75 - 0.25 * Argl5 ) + Argl9 * dEntdVbs);
 	d->cdsb = -(d->cdgb + d->cddb + cdbb);
 	trace2("", Argl9, cdbb);
@@ -487,12 +487,12 @@ model MOS4 {
 	  untested();
 	  Argl6 = 4.0 / 1.5e1;
 	}}
-	d->qdrn = -b->cgate * (0.5 * (Vgs_Vth-Arg1) + Arg1 * Argl6);
-	d->cdgb = -b->cgate
+	d->qdrn = -s->cgate * (0.5 * (Vgs_Vth-Arg1) + Arg1 * Argl6);
+	d->cdgb = -s->cgate
 	  * (0.5 + Arg1*(4.0*Vgs_Vth-1.5*Arg1)/Argl1 - 2.0*Arg1*Argl4);
-	d->cddb = b->cgate*(0.5*A+2.0*Arg1*dEntdVds*Argl4-A*(2.0*Vgs_VthSquare
+	d->cddb = s->cgate*(0.5*A+2.0*Arg1*dEntdVds*Argl4-A*(2.0*Vgs_VthSquare
 					-3.0*Arg1*Vgs_Vth+0.9*Arg5)/Argl1);
-	double cdbb =b->cgate*(0.5*dVthdVbs+0.5*d->vds*dAdVbs+2.0*Arg1*dEntdVbs
+	double cdbb =s->cgate*(0.5*dVthdVbs+0.5*d->vds*dAdVbs+2.0*Arg1*dEntdVbs
 	     *Argl4-d->vds*(2.0*Vgs_VthSquare*dAdVbs-4.0*A*Vgs_Vth*dVthdVbs-3.0
 	     *Arg1*Vgs_Vth*dAdVbs+1.5*A*Arg1*dVthdVbs+0.9*Arg5*dAdVbs)
 			       /Argl1);
@@ -503,19 +503,19 @@ model MOS4 {
     }else{				/* saturation region */
       assert(d->vds >= VdsPinchoff);
       double Args1 = 1.0 / (3.0 * A);
-      trace2("sat", b->cgate, Args1);
+      trace2("sat", s->cgate, Args1);
       
-      d->qgate = b->cgate * (d->vgs - b->vfb - b->phi - Vgs_Vth * Args1);
-      d->cggb = b->cgate * (1.0 - Args1);
+      d->qgate = s->cgate * (d->vgs - s->vfb - s->phi - Vgs_Vth * Args1);
+      d->cggb = s->cgate * (1.0 - Args1);
       d->cgdb = 0.0;
-      double cgbb = b->cgate * Args1 * (dVthdVbs + Vgs_Vth * dAdVbs / A);
+      double cgbb = s->cgate * Args1 * (dVthdVbs + Vgs_Vth * dAdVbs / A);
       d->cgsb = -(d->cggb + d->cgdb + cgbb);
       trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
       
-      d->qbulk = b->cgate * (b->vfb + b->phi - Vth0 + (1.0-A)*Vgs_Vth*Args1);
-      d->cbgb = b->cgate * (Args1 - 1.0 / 3.0);
+      d->qbulk = s->cgate * (s->vfb + s->phi - Vth0 + (1.0-A)*Vgs_Vth*Args1);
+      d->cbgb = s->cgate * (Args1 - 1.0 / 3.0);
       d->cbdb = 0.0;
-      double cbbb = -b->cgate * ((2.0 / 3.0 + Args1) * dVthdVbs
+      double cbbb = -s->cgate * ((2.0 / 3.0 + Args1) * dVthdVbs
 				 + Vgs_Vth * Args1 * dAdVbs / A);
       d->cbsb = -(d->cbgb + d->cbdb + cbbb);
       trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
@@ -530,10 +530,10 @@ model MOS4 {
       }else{
 	/*40/60 partitioning for drain/source chArges at saturation region*/
 	const double co4v15 = 4./15.;
-	d->qdrn = -co4v15 * b->cgate * Vgs_Vth;
-	d->cdgb = -co4v15 * b->cgate;
+	d->qdrn = -co4v15 * s->cgate * Vgs_Vth;
+	d->cdgb = -co4v15 * s->cgate;
 	d->cddb =  0.0;
-	double cdbb = co4v15 * b->cgate * dVthdVbs;
+	double cdbb = co4v15 * s->cgate * dVthdVbs;
 	d->cdsb = -(d->cdgb + d->cddb + cdbb);
 	trace4("sat 40/60", d->qdrn, d->cdgb, d->cddb, d->cdsb);
       }}

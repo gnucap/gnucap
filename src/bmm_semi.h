@@ -1,8 +1,8 @@
-/*$Id: bmm_semi.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: bmm_semi.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ private: // override virtual
   bool ac_too()const		{untested();return false;}
   void parse(CS&);
   void print(OMSTREAM&)const;
-  void expand() = 0;
+  void expand(const COMPONENT*) = 0;
   void tr_eval(ELEMENT*)const;
 };
 /*--------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ public:
 private: // override virtual
   COMMON_COMPONENT* clone()const 
 			{untested(); return new EVAL_BM_SEMI_CAPACITOR(*this);}
-  void expand();
+  void expand(const COMPONENT*);
 };
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_RESISTOR : public EVAL_BM_SEMI_BASE {
@@ -70,7 +70,7 @@ public:
 private: // override virtual
   COMMON_COMPONENT* clone()const
 			{untested(); return new EVAL_BM_SEMI_RESISTOR(*this);}
-  void expand();
+  void expand(const COMPONENT*);
 };
 /*--------------------------------------------------------------------------*/
 class MODEL_SEMI_CAPACITOR : public MODEL_CARD {

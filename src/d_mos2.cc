@@ -1,8 +1,8 @@
-/* $Id: d_mos2.cc,v 20.13 2001/10/15 00:57:11 al Exp $ -*- C++ -*-
+/* $Id: d_mos2.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "d_mos2.h"
 /*--------------------------------------------------------------------------*/
 const double NA(NOT_INPUT);
+const double INF(BIGBIG);
 /*--------------------------------------------------------------------------*/
 int MODEL_MOS2::_count = 0;
 /*--------------------------------------------------------------------------*/
@@ -56,8 +57,8 @@ TDP_MOS2::TDP_MOS2(const DEV_MOS* d)
   assert(d);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(d->common());
   assert(c);
-  const SDP_MOS2* b = prechecked_cast<const SDP_MOS2*>(c->sdp());
-  assert(b);
+  const SDP_MOS2* s = prechecked_cast<const SDP_MOS2*>(c->sdp());
+  assert(s);
   const MODEL_MOS2* m = prechecked_cast<const MODEL_MOS2*>(c->model());
   assert(m);
 
@@ -67,12 +68,11 @@ TDP_MOS2::TDP_MOS2(const DEV_MOS* d)
       double kt = temp * K;
       double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
       double arg = (m->egap*tempratio - egap) / (2*kt);
-
   vt = kt / Q;
   phi = m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)));
   sqrt_phi = sqrt(phi);
   phi_sqrt_phi = phi * sqrt_phi;
-  beta = m->kp * tempratio4 * b->w_eff / b->l_eff;
+  beta = m->kp * tempratio4 * s->w_eff / s->l_eff;
   uo = m->uo * tempratio4;
   vbi = (fixzero(
 	(m->vto - m->polarity * m->gamma * sqrt(m->phi)
@@ -158,7 +158,6 @@ void MODEL_MOS2::parse_finish()
 	  calc_vto = true;
 	}
       }
-
   if (cox == NA) {
     cox = E_OX/tox;
   }
@@ -229,16 +228,27 @@ void MODEL_MOS2::print_calculated(OMSTREAM& o)const
     o << "* kp=" << kp;
 }
 /*--------------------------------------------------------------------------*/
+bool MODEL_MOS2::is_valid(const COMMON_COMPONENT* cc)const
+{
+  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
+  {if (!c) {
+    return MODEL_MOS123::is_valid(cc);
+  }else{
+    return MODEL_MOS123::is_valid(cc);
+  }}
+}
+/*--------------------------------------------------------------------------*/
 void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 {
   DEV_MOS* d = prechecked_cast<DEV_MOS*>(brh);
   assert(d);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(d->common());
   assert(c);
-  const SDP_MOS2* b = prechecked_cast<const SDP_MOS2*>(c->sdp());
-  assert(b);
+  const SDP_MOS2* s = prechecked_cast<const SDP_MOS2*>(c->sdp());
+  assert(s);
   const MODEL_MOS2* m = this;
-  TDP_MOS2 t(d);
+  const TDP_MOS2 T(d);
+  const TDP_MOS2* t = &T;
 
     #define short_channel	(m->xj != NOT_INPUT  &&  m->xj > 0.)
     #define do_subthreshold	(m->nfs != 0.)
@@ -249,7 +259,7 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     d->reverse_if_needed();
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-    double v_phi_s = t.phi - d->vbs;
+    double v_phi_s = t->phi - d->vbs;
     double sarg, dsarg_dvbs, d2sdb2, sarg3;
     {
       {if (d->vbs <= 0.) {
@@ -260,19 +270,19 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	trace3("sb-ok", sarg, v_phi_s, dsarg_dvbs);
       }else{
 	{if (OPT::mosflags & 01000) {
-	  sarg = t.sqrt_phi / (1. + .5 * d->vbs / t.phi);
-	  dsarg_dvbs = -.5 * sarg * sarg / t.phi_sqrt_phi;
-	  d2sdb2 = -dsarg_dvbs * sarg / t.phi_sqrt_phi;
+	  sarg = t->sqrt_phi / (1. + .5 * d->vbs / t->phi);
+	  dsarg_dvbs = -.5 * sarg * sarg / t->phi_sqrt_phi;
+	  d2sdb2 = -dsarg_dvbs * sarg / t->phi_sqrt_phi;
 	  untested();
 	  trace3("***sb-reversed(01000)***", sarg, v_phi_s, dsarg_dvbs);
 	}else{
-	  sarg = t.sqrt_phi 
-	    / (1. + .5 * d->vbs / t.phi 
-	       + .375 * d->vbs * d->vbs / (t.phi * t.phi));
-	  dsarg_dvbs = (-.5 * sarg * sarg / t.phi_sqrt_phi) 
-	    * (1. + 1.5 * d->vbs / t.phi);
-	  d2sdb2 = (-dsarg_dvbs * sarg / t.phi_sqrt_phi)
-	    - (.75 * sarg / (t.phi_sqrt_phi * t.phi)) 
+	  sarg = t->sqrt_phi 
+	    / (1. + .5 * d->vbs / t->phi 
+	       + .375 * d->vbs * d->vbs / (t->phi * t->phi));
+	  dsarg_dvbs = (-.5 * sarg * sarg / t->phi_sqrt_phi) 
+	    * (1. + 1.5 * d->vbs / t->phi);
+	  d2sdb2 = (-dsarg_dvbs * sarg / t->phi_sqrt_phi)
+	    - (.75 * sarg / (t->phi_sqrt_phi * t->phi)) 
 	    * (2. * d->vbs * dsarg_dvbs + sarg);
 	  untested();
 	  trace3("***sb-reversed(00000)***", sarg, v_phi_s, dsarg_dvbs);
@@ -282,14 +292,14 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
       sarg3 = sarg*sarg*sarg;
       assert(sarg > 0.);
       assert(dsarg_dvbs < 0.);
-      assert(up_order(-1/t.phi, d2sdb2, 1/t.phi));
+      assert(up_order(-1/t->phi, d2sdb2, 1/t->phi));
       trace2("", d2sdb2, sarg3);
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     double barg, dbarg_dvbs, d2bdb2;
     {
       double vbd = d->vbs - d->vds;
-      double v_phi_d = t.phi - vbd;
+      double v_phi_d = t->phi - vbd;
       {if (vbd <= 0.) {
 	barg = sqrt(v_phi_d);
 	dbarg_dvbs = -.5 / barg;
@@ -298,19 +308,19 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	trace4("db-ok", barg, v_phi_d, dbarg_dvbs, d2bdb2);
       }else{
 	{if (OPT::mosflags & 01000) {
-	  barg = t.sqrt_phi / (1. + .5 * vbd / t.phi);
-	  dbarg_dvbs = -.5 * barg * barg / t.phi_sqrt_phi;
-	  d2bdb2 = -dbarg_dvbs * barg / t.phi_sqrt_phi;
+	  barg = t->sqrt_phi / (1. + .5 * vbd / t->phi);
+	  dbarg_dvbs = -.5 * barg * barg / t->phi_sqrt_phi;
+	  d2bdb2 = -dbarg_dvbs * barg / t->phi_sqrt_phi;
 	  untested();
 	  trace4("***db-reversed(00000)***",barg, v_phi_d, dbarg_dvbs, d2bdb2);
 	}else{
-	  barg = t.sqrt_phi 
-	    / (1. + .5 * vbd / t.phi 
-	       + .375 * vbd * vbd / (t.phi * t.phi));
-	  dbarg_dvbs = (-.5 * barg * barg / t.phi_sqrt_phi) 
-	    * (1. + 1.5 * vbd / t.phi);
-	  d2bdb2 = (-dbarg_dvbs * barg / t.phi_sqrt_phi)
-	    - (.75 * barg / (t.phi_sqrt_phi * t.phi)) 
+	  barg = t->sqrt_phi 
+	    / (1. + .5 * vbd / t->phi 
+	       + .375 * vbd * vbd / (t->phi * t->phi));
+	  dbarg_dvbs = (-.5 * barg * barg / t->phi_sqrt_phi) 
+	    * (1. + 1.5 * vbd / t->phi);
+	  d2bdb2 = (-dbarg_dvbs * barg / t->phi_sqrt_phi)
+	    - (.75 * barg / (t->phi_sqrt_phi * t->phi)) 
 	    * (2. * vbd * dbarg_dvbs + barg);
 	  trace4("***db-reversed(00000)***",barg, v_phi_d, dbarg_dvbs, d2bdb2);
 	}}
@@ -318,7 +328,7 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
       }}
       assert(barg > 0.);
       assert(dbarg_dvbs < 0.);
-      assert(up_order(-1/t.phi, d2bdb2, 1/t.phi));
+      assert(up_order(-1/t->phi, d2bdb2, 1/t->phi));
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     double gamma_s, dgamma_s_dvds, dgamma_s_dvbs, dgddb2;
@@ -329,8 +339,8 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	double argd = sqrt(argxd);
 	trace2("", argxd, argd);
 	
-	double alpha_d = b->relxj * (argd - 1.);
-	double dalpha_d_dvds = m->xd / (4. * b->l_eff * argd * barg);
+	double alpha_d = s->relxj * (argd - 1.);
+	double dalpha_d_dvds = m->xd / (4. * s->l_eff * argd * barg);
 	double dalpha_d_dvbs = -dalpha_d_dvds;
 	trace3("", alpha_d, dalpha_d_dvds, dalpha_d_dvbs);
 	
@@ -339,8 +349,8 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	double args = sqrt(argxs);
 	trace2("", argxs, args);
 	
-	double alpha_s = b->relxj * (args - 1.);
-	double dalpha_s_dvbs = -m->xd / (4. * b->l_eff * args * sarg);
+	double alpha_s = s->relxj * (args - 1.);
+	double dalpha_s_dvbs = -m->xd / (4. * s->l_eff * args * sarg);
 	trace2("", alpha_s, dalpha_s_dvbs);
 	
 	gamma_s = m->gamma * (1. - alpha_s - alpha_d);
@@ -348,9 +358,9 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	dgamma_s_dvbs = -m->gamma * (dalpha_d_dvbs + dalpha_s_dvbs);
 	
 	double dasdb2=-m->xd*(d2sdb2+dsarg_dvbs*dsarg_dvbs*m->xd/(m->xj*argxs))
-	  / (b->l_eff*args);
+	  / (s->l_eff*args);
 	double daddb2=-m->xd*(d2bdb2+dbarg_dvbs*dbarg_dvbs*m->xd/(m->xj*argxd))
-	  / (b->l_eff*argd);
+	  / (s->l_eff*argd);
 	dgddb2 = -.5 * m->gamma * (dasdb2 + daddb2);
 	
 	if (gamma_s <= 0. && m->gamma > 0. /* && !IO::suppresserrors */) {
@@ -372,21 +382,21 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
     double vc, vc_eta, dvon_dvbs;
     double xn, vtxn, dxn_dvbs;	/* subthreshold only */
     {
-      double vbin = t.vbi + b->eta_1 * v_phi_s;
+      double vbin = t->vbi + s->eta_1 * v_phi_s;
       d->von = vbin + gamma_s * sarg;
-      dvon_dvbs = -b->eta_1 + dgamma_s_dvbs * sarg + gamma_s * dsarg_dvbs;
+      dvon_dvbs = -s->eta_1 + dgamma_s_dvbs * sarg + gamma_s * dsarg_dvbs;
       trace3("guess", vbin, d->von, dvon_dvbs);
       
       {if (do_subthreshold) {
-	double cdonco = -(gamma_s*dsarg_dvbs + dgamma_s_dvbs*sarg) + b->eta_1;
+	double cdonco = -(gamma_s*dsarg_dvbs + dgamma_s_dvbs*sarg) + s->eta_1;
 	xn = 1. + m->cfsox + cdonco;
-	vtxn = t.vt * xn;
+	vtxn = t->vt * xn;
 	dxn_dvbs = 2. * dgamma_s_dvbs * dsarg_dvbs
 	  + gamma_s * d2sdb2 + dgddb2 * sarg;
 	trace3("do_sub", xn, vtxn, dxn_dvbs);
 	
 	d->von += vtxn;
-	dvon_dvbs += t.vt * dxn_dvbs;
+	dvon_dvbs += t->vt * dxn_dvbs;
 	d->vgst = d->vgs - d->von;
 	trace3("", d->von, dvon_dvbs, d->vgst);
 	
@@ -411,7 +421,7 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
       }}
       double vgsx = (d->subthreshold) ? d->von : d->vgs;
       vc = vgsx - vbin;
-      vc_eta = vc / b->eta;
+      vc_eta = vc / s->eta;
       trace3("", vgsx, vc, vc_eta);
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
@@ -428,17 +438,17 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	duf_dvgs = duf_dvds = duf_dvbs = 0.;
 	trace4("def ufact", ufact, duf_dvgs, duf_dvds, duf_dvbs);
       }}
-      ueff = t.uo * ufact;	/* ???? */
+      ueff = t->uo * ufact;	/* ???? */
       trace2("", ufact, ueff);
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* vdsat  according to Baum's Theory of scattering velocity saturation  */
     int use_vmax = m->vmax != NOT_INPUT;
     {if (use_vmax) {
-      double gammad = gamma_s / b->eta;
+      double gammad = gamma_s / s->eta;
       double v1 = vc_eta + v_phi_s;
       double v2 = v_phi_s;
-      double xv = m->vmax * b->l_eff / ueff;
+      double xv = m->vmax * s->l_eff / ueff;
       double a1 = gammad * (4./3.);
       double b1 = -2. * (v1+xv);
       double c1 = -2. * gammad * xv;			/* end of scope */
@@ -534,14 +544,14 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
       {if (gamma_s > 0.) {
 	double argv = vc_eta + v_phi_s;
 	{if (argv > 0.) {
-	  double gammad = gamma_s / b->eta;
+	  double gammad = gamma_s / s->eta;
 	  double gammd2 = gammad * gammad;
 	  double arg1 = sqrt(1. + 4. * argv / gammd2);
 	  d->vdsat = vc_eta  +  gammd2 * (1.-arg1) / 2.;
-	  dvdsat_dvgs = (1. - 1./arg1) / b->eta;
+	  dvdsat_dvgs = (1. - 1./arg1) / s->eta;
 	  dvdsat_dvbs = (gammad * (1.-arg1) + 2.*argv / (gammad*arg1))
-	    / b->eta * dgamma_s_dvbs
-	    + 1./arg1 + b->eta_1 * dvdsat_dvgs;
+	    / s->eta * dgamma_s_dvbs
+	    + 1./arg1 + s->eta_1 * dvdsat_dvgs;
 	  trace3("!use_vmax,gamma>0,argv>0",d->vdsat,dvdsat_dvgs,dvdsat_dvbs);
 	}else{
 	  d->vdsat = 0.;
@@ -576,13 +586,13 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
     {
       double vbdsat = d->vbs - d->vdsat;
       {if (vbdsat <= 0.) {
-	double v_phi_ds = t.phi - vbdsat;
+	double v_phi_ds = t->phi - vbdsat;
 	bsarg = sqrt(v_phi_ds);
 	dbsarg_dvbs = -.5 / bsarg;
 	trace3("vbdsat <= 0", vbdsat, bsarg, dbsarg_dvbs);
       }else{
-	bsarg = t.sqrt_phi / (1. + .5 * vbdsat / t.phi);
-	dbsarg_dvbs = -.5 * bsarg * bsarg / t.phi_sqrt_phi;
+	bsarg = t->sqrt_phi / (1. + .5 * vbdsat / t->phi);
+	dbsarg_dvbs = -.5 * bsarg * bsarg / t->phi_sqrt_phi;
 	untested();
 	trace3("vbdsat > 0", vbdsat, bsarg, dbsarg_dvbs);
       }}
@@ -597,11 +607,11 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	double argv = vc_eta - d->vdsat;
 	double vqchan = argv - gamma_s * bsarg;
 	double dqdsat = -1. + gamma_s * dbsarg_dvbs;
-	double vl = m->vmax * b->l_eff;
+	double vl = m->vmax * s->l_eff;
 	double dfunds = vl * dqdsat - ueff * vqchan;
-	double dfundg = (vl - ueff * d->vdsat) / b->eta;
-	double dfundb = -vl * (1. + dqdsat - b->eta_1 / b->eta)
-	  + ueff * (gdbdvs - dgamma_s_dvbs * bodys / 1.5) / b->eta;
+	double dfundg = (vl - ueff * d->vdsat) / s->eta;
+	double dfundb = -vl * (1. + dqdsat - s->eta_1 / s->eta)
+	  + ueff * (gdbdvs - dgamma_s_dvbs * bodys / 1.5) / s->eta;
 	dvdsat_dvgs = -dfundg / dfunds;
 	dvdsat_dvbs = -dfundb / dfunds;
 	trace2("use_vmax", dvdsat_dvgs, dvdsat_dvbs);
@@ -627,18 +637,18 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	    }
 	    double xls = sqrt(xlv*xlv + argv);
 	    double dl = (xls-xlv) * xdv;
-	    /* lambda = dl / (b->l_eff * d->vds); */
-	    clfact = (1. - dl / b->l_eff);
-	    dldsat = xdv / (2. * xls * b->l_eff);
+	    /* lambda = dl / (s->l_eff * d->vds); */
+	    clfact = (1. - dl / s->l_eff);
+	    dldsat = xdv / (2. * xls * s->l_eff);
 	  }else{
 	    double argv = (d->vds - d->vdsat) / 4.;
 	    double sargv = sqrt(1. + argv*argv);
 	    {if (argv + sargv >= 0.) {
 	      double dl = m->xd * sqrt(argv + sargv);
-	      /* lambda = dl / (b->l_eff * d->vds); */
-	      clfact = (1. - dl / b->l_eff);
+	      /* lambda = dl / (s->l_eff * d->vds); */
+	      clfact = (1. - dl / s->l_eff);
 	      /* dldsat = lambda * d->vds / (8. * sargv); */
-	      dldsat = dl / (b->l_eff * 8. * sargv);
+	      dldsat = dl / (s->l_eff * 8. * sargv);
 	    }else{
 	      /* lambda = 0.; */
 	      clfact = 1.;
@@ -659,10 +669,10 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
 	}}
 	
 	/* clfact = (1. - lambda * d->vds); */
-	if (clfact < m->xwb/b->l_eff) {
-	  double leff = m->xwb / (2. - (clfact * b->l_eff / m->xwb));
+	if (clfact < m->xwb/s->l_eff) {
+	  double leff = m->xwb / (2. - (clfact * s->l_eff / m->xwb));
 	  double dfact = (leff * leff) / (m->xwb * m->xwb);
-	  clfact = leff / b->l_eff;
+	  clfact = leff / s->l_eff;
 	  dl_dvgs *= dfact;
 	  dl_dvds *= dfact;
 	  dl_dvbs *= dfact;
@@ -682,13 +692,13 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
       double vdsx =  (d->saturated) ? d->vdsat : d->vds;
       double bargx = (d->saturated) ? bsarg : barg;
       double body = bargx*bargx*bargx - sarg3;
-      double expg = (d->subthreshold) ? Exp(d->vgst / vtxn) : 1.;
+      double expg = (d->subthreshold) ? exp(d->vgst / vtxn) : 1.;
       trace4("", vdsx, bargx, body, expg);
       
-      double beta = t.beta * ufact / clfact;
+      double beta = t->beta * ufact / clfact;
       double ids_on = 
-	beta * ((vc - b->eta_2 * vdsx) * vdsx  - (2./3.) * gamma_s * body);
-      double didvds = beta * (vc  -  b->eta * vdsx  -  gamma_s * bargx);
+	beta * ((vc - s->eta_2 * vdsx) * vdsx  - (2./3.) * gamma_s * body);
+      double didvds = beta * (vc  -  s->eta * vdsx  -  gamma_s * bargx);
       fixzero(&didvds, ids_on);
       trace4("", beta, ids_on, didvds, d->saturated);
       
@@ -714,13 +724,13 @@ void MODEL_MOS2::tr_eval(COMPONENT* brh)const
       }
       if (d->subthreshold) {
 	double dxndvd = dgamma_s_dvds * dsarg_dvbs;
-	double dodvds = dgamma_s_dvds * sarg + t.vt * dxndvd;
+	double dodvds = dgamma_s_dvds * sarg + t->vt * dxndvd;
 	double gmw = d->ids * d->vgst / (vtxn * xn);
 	d->gds *= expg;
 	d->gds -= d->gmf * dodvds + gmw * dxndvd;
       }
       
-      d->gmbf = beta * (b->eta_1 * vdsx - gamma_s * (sarg - bargx));
+      d->gmbf = beta * (s->eta_1 * vdsx - gamma_s * (sarg - bargx));
       d->gmbf += ids_on * (duf_dvbs/ufact - dl_dvbs/clfact);
       if (short_channel) {
 	d->gmbf -= beta * (2./3.) * body * dgamma_s_dvbs;

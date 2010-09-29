@@ -1,8 +1,8 @@
-/*$Id: u_opt2.cc,v 20.6 2001/09/23 21:42:35 al Exp $ -*- C++ -*-
+/*$Id: u_opt2.cc,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,8 @@ bool OPT::set_values(CS& cmd)
        || set(cmd, "EULEROnly",  &method, meEULERONLY)
        || set(cmd, "Trapezoidal",&method, meTRAP)
        || set(cmd, "TRAPOnly",	 &method, meTRAPONLY)
-       || set(cmd, "Gear2",	 &method, meGEAR2)
+       || set(cmd, "Gear",	 &method, meGEAR2)
+       || set(cmd, "GEAR2",	 &method, meGEAR2)
        || set(cmd, "GEAR2Only",  &method, meGEAR2ONLY)
        || set(cmd, "TRAPGear",   &method, meTRAPGEAR)
        || set(cmd, "TG",	 &method, meTRAPGEAR)
@@ -85,6 +86,8 @@ bool OPT::set_values(CS& cmd)
     get(cmd, "DEFAD",	    &defad,	mPOSITIVE);
     get(cmd, "DEFAS",	    &defas,	mPOSITIVE);
     get(cmd, "Seed",	    &seed);
+    get(cmd, "CLobber",	    &clobber);
+    get(cmd, "NAMednodes",  &named_nodes);
     get(cmd, "WCZero",	    &wczero,	mPOSITIVE);
     get(cmd, "FLOOR",	    &floor,	mPOSITIVE);
     get(cmd, "VFLOOR",	    &vfloor,	mPOSITIVE);
@@ -114,6 +117,10 @@ bool OPT::set_values(CS& cmd)
       || set(cmd, "ERRor",   &picky,	bERROR)
       || set(cmd, "NOERRor", &picky,	bDISASTER)
       || set(cmd, "DISASTER",&picky,	bDISASTER);
+    cmd.pmatch("PHase") &&
+      (  set(cmd, "Degrees", &phase,	pDEGREES)
+      || set(cmd, "Radians", &phase,	pRADIANS)
+      || cmd.warn(bWARNING, "need degrees or radians"));
     cmd.pmatch("ORder") &&
       (  set(cmd, "Reverse", &order,	oREVERSE)
       || set(cmd, "Forward", &order,	oFORWARD)
@@ -150,6 +157,8 @@ bool OPT::set_values(CS& cmd)
     get(cmd, "DIODEflags",  &diodeflags,  mOCTAL);
     diodeflags = 0;
     get(cmd, "MOSflags",    &mosflags,	  mOCTAL);
+    get(cmd, "QUITCONVfail",&quitconvfail);
+    get(cmd, "EDIT",	    &edit);
     get(cmd, "ITL1",	    &itl[1]);
     get(cmd, "ITL2",	    &itl[2]);
     get(cmd, "ITL3",	    &itl[3]);
@@ -212,6 +221,8 @@ void OPT::print(OMSTREAM& where)
   where << "  defad="  << defad;
   where << "  defas="  << defas;
   where << "  seed="   << seed;
+  where << ((clobber) ? "  clobber" : "  noclobber");
+  where << ((named_nodes) ? "  namednodes" : "  nonamednodes");
   where << "  wczero=" << wczero;
   where << "  dampmax="<< dampmax;
   where << "  dampmin="<< dampmin;
@@ -223,6 +234,7 @@ void OPT::print(OMSTREAM& where)
   where << "  out="    << outwidth;
   where << "  xdivisions=" << xdivisions;
   where << "  ydivisions=" << ydivisions;
+  where << "  phase="  << phase;
   where << "  order="  << order;
   where << "  mode="   << mode;
   where << "  transits=" << transits;
@@ -246,6 +258,7 @@ void OPT::print(OMSTREAM& where)
   where << "  trreject="    << trreject;
   where << "  diodeflags="  << octal(diodeflags);
   where << "  mosflags="    << octal(mosflags);
+  where << ((quitconvfail)?"  quitconvfail":"  noquitconvfail");    
   where << '\n';
 }
 /*--------------------------------------------------------------------------*/

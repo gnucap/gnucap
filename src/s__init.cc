@@ -1,8 +1,8 @@
-/* $Id: s__init.cc,v 20.10 2001/10/05 01:35:36 al Exp $
+/* $Id: s__init.cc,v 22.10 2002/07/25 06:26:00 al Exp $
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 //	 void	SIM::reset_timers();
 //static void	SIM::count_nodes();
 //static void	SIM::alloc_hold_vectors();
-//static void	SIM::determine_matrix_structure(const CARD *stop);
 //	 void	SIM::alloc_vectors();
 //static void	SIM::unalloc_vectors();
 //static void	SIM::uninit();
@@ -90,8 +89,9 @@ void SIM::command_base(CS& cmd)
     aa.reinit(STATUS::total_nodes);
     lu.reinit(STATUS::total_nodes);
     acx.reinit(STATUS::total_nodes);
-    determine_matrix_structure(CARD_LIST::card_list);
-    CARD_LIST::card_list.precalc();  
+    CARD_LIST::card_list.tr_alloc_matrix();
+    CARD_LIST::card_list.ac_alloc_matrix();
+    CARD_LIST::card_list.precalc();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -121,13 +121,12 @@ void SIM::reset_timers()
 /*static*/ void SIM::count_nodes()
 {
   STATUS::user_nodes = 0;
-  for (CARD_LIST::const_iterator
-	 ci=CARD_LIST::card_list.begin();ci!=CARD_LIST::card_list.end();++ci) {
-    CARD* brh = *ci;
-    if (brh->is_device()) {
-      for (int ii = 0;  ii < brh->port_count();  ++ii) {
-	if (brh->_n[ii].e > STATUS::user_nodes) {
-	  STATUS::user_nodes = brh->_n[ii].e;
+  for (CARD_LIST::const_iterator ci = CARD_LIST::card_list.begin();
+       ci != CARD_LIST::card_list.end(); ++ci) {
+    if ((**ci).is_device()) {
+      for (int ii = 0;  ii < (**ci).out_nodes();  ++ii) {
+	if ((**ci)._n[ii].e_() > STATUS::user_nodes) {
+	  STATUS::user_nodes = (**ci)._n[ii].e_();
 	}
       }
     }
@@ -155,33 +154,6 @@ void SIM::alloc_hold_vectors()
 
   vdc = new double[STATUS::total_nodes+1];
   std::fill_n(vdc, STATUS::total_nodes+1, 0);
-}
-/*--------------------------------------------------------------------------*/
-/* determine_matrix_structure: 
- * scan the list and tell the matrix which entries to allocate
- * recursive for subckts
- */
-void SIM::determine_matrix_structure(const CARD_LIST& cl)
-{
-  for (CARD_LIST::const_iterator ci = cl.begin();  ci != cl.end();  ++ci) {
-    const CARD* brh = *ci;
-    if (brh->is_device()) {
-      for (int ii = 0;  ii < brh->port_count();  ++ii) {
-	assert(brh->_n[ii].m != INVALID_NODE);
-	if (brh->_n[ii].m != 0) {
-	  for (int jj = 0;  jj < ii ;  ++jj) {
-	    aa.iwant(brh->_n[ii].m,brh->_n[jj].m);
-	    lu.iwant(brh->_n[ii].m,brh->_n[jj].m);
-	    acx.iwant(brh->_n[ii].m,brh->_n[jj].m);
-	  }
-	  nstat[brh->_n[ii].m].set_needs_analog();
-	}
-      }
-      if (brh->subckt().exists()) {
-	determine_matrix_structure(brh->subckt());
-      }
-    }
-  }
 }
 /*--------------------------------------------------------------------------*/
 /* alloc_vectors:

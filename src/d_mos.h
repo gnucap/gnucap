@@ -1,8 +1,8 @@
-/* $Id: d_mos.h,v 20.13 2001/10/15 00:57:11 al Exp $ -*- C++ -*-
+/* $Id: d_mos.model,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #ifndef D_MOS_H_INCLUDED
 #define D_MOS_H_INCLUDED
 
-#include "e_subckt.h"
 #include "d_diode.h"
   class DEV_MOS;		/* this file */
   class COMMON_MOS;
@@ -41,7 +40,7 @@
   class EVAL_MOS_Cgs;
   class DEV_DIODE;		/* external */
   class DEV_CAPACITANCE;
-  class DEV_POLY_G;
+  class DEV_CPOLY_G;
   class DEV_RESISTANCE;
   class MODEL_MOS_BASE;
   class SDP_MOS_BASE;
@@ -57,7 +56,7 @@ public:
   COMMON_COMPONENT* clone()const {return new COMMON_MOS(*this);}
   void        parse(CS&);
   void        print(OMSTREAM&)const;
-  void        expand();
+  void        expand(const COMPONENT*);
   const char* name()const {return "mosfet";}
   const SDP_CARD* sdp()const {assert(_sdp); return _sdp;}
   bool      has_sdp()const {return _sdp;}
@@ -65,6 +64,7 @@ public:
 private: // strictly internal
   static int _count;
 public: // input parameters
+  double m;	// device multiplier
   double l_in;	// drawn (optical) channel length
   double w_in;	// channel width (drawn)
   double ad_in;	// drain area, drawn
@@ -131,7 +131,12 @@ public:
 private: // override virtual
   char      id_letter()const {return 'M';}
   const char* dev_type()const{return "mosfet";}
-  int       numnodes()const  {return 4;}
+  int       max_nodes()const  {return 4;}
+  int       min_nodes()const  {return 4;}
+  int       out_nodes()const  {return 4;}
+  int       matrix_nodes()const {return 0;}
+  int       net_nodes()const {return 4;}
+  int       int_nodes()const{return 2;}
   CARD*     clone()const     {return new DEV_MOS(*this);}
   void      parse(CS&);
   void      print(OMSTREAM&,int)const;
@@ -165,6 +170,7 @@ private: // not available even to models
 public: // input parameters
 public: // calculated parameters
   double ids;	// 
+  double ids_cpoly;	// 
   double gds;	// dids/dvds
   double gmf;	// dids/dvgs
   double gmr;	// dids/dvgd
@@ -219,7 +225,7 @@ public: // netlist
   DEV_CAPACITANCE* _Cgs;
   DEV_CAPACITANCE* _Cgd;
   DEV_CAPACITANCE* _Cgb;
-  DEV_POLY_G* _Ids;
+  DEV_CPOLY_G* _Ids;
 private: // node list
   enum {n_drain=0, n_gate=1, n_source=2, n_bulk=3, n_idrain=-1, n_isource=-2};
   node_t _nodes[6];

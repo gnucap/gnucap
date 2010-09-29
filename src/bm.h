@@ -1,8 +1,8 @@
-/*$Id: bm.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: bm.h,v 22.13 2002/08/01 16:27:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,21 +27,13 @@
 /*--------------------------------------------------------------------------*/
 class SPLINE;
 /*--------------------------------------------------------------------------*/
-class EVAL_DISPATCHER {
-private:
-  std::map<std::string, COMMON_COMPONENT*> _map;
-public:
-  explicit EVAL_DISPATCHER();
-  COMMON_COMPONENT* operator()(CS& cmd);
-};
-/*--------------------------------------------------------------------------*/
 class EVAL_BM_BASE : public COMMON_COMPONENT {
 protected:
   explicit	EVAL_BM_BASE(int c=0) :COMMON_COMPONENT(c) {}
   explicit	EVAL_BM_BASE(const EVAL_BM_BASE& p)
     :COMMON_COMPONENT(p) {}
 private: // override virtual
-  bool operator==(const COMMON_COMPONENT&)const {incomplete(); return false;}
+  bool operator==(const COMMON_COMPONENT&)const{/*incomplete();*/return false;}
   bool		has_tr_eval()const	{return true;}
   bool		has_ac_eval()const	{return true;}
 };
@@ -71,7 +63,8 @@ protected:
   void		tr_finish_tdv(ELEMENT* d, double val)const;
   void		ac_final_adjust(COMPLEX* y)const;
   void		ac_final_adjust_with_temp(COMPLEX* y)const;
-  double	ioffset(double x)const	{return x + _ioffset;}	
+  double	uic(double x)const	{return (SIM::uic_now()) ? _ic : x;}
+  double	ioffset(double x)const	{return uic(x) + _ioffset;}	
 public: // override virtual
   void		ac_eval(ELEMENT* d)const;
   virtual bool	ac_too()const = 0;
@@ -117,7 +110,7 @@ private: // override virtual
   bool		ac_too()const		{return true;}
   void		parse(CS&);
   void		print(OMSTREAM&)const;
-  void		expand();
+  void		expand(const COMPONENT*);
   void		tr_eval(ELEMENT*d)const
 		    {assert(_func); _func->tr_eval(d);}
   void		ac_eval(ELEMENT*d)const

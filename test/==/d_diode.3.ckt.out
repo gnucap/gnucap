@@ -34,13 +34,14 @@ D1  2  0  ddd  area= 1.
 + 347.63     1.5355p    100.K      346.43     0.0028766  346.43     5.        
  10.        10.        0.59234   -94.077u    94.077u    94.077u    0.59234   
 + 274.17     1.5448p    100.K      273.42     0.0036473  273.42     5.        
-GnuCap   System status
+Gnucap   System status
 iterations: op=6, dc=51, tran=0, fourier=0, total=57
+transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=2, subckt=0, model=0, total=2
-devices: diodes=1, mosfets=0, gates=0, subckts=0
-commons: diodes=1, mosfets=0, gates=0, subckts=0
-models:  diodes=1, mosfets=0, gates=0, subckts=0
-density=100.0%
+devices: diodes=1, bjts=0, mosfets=0, gates=0, subckts=0
+commons: diodes=1, bjts=0, mosfets=0, gates=0, subckts=0
+models:  diodes=1, bjts=0, mosfets=0, gates=0, subckts=0
+dctran density=100.0%, ac density=100.0%
 #           v(1)       v(2)       i(V1)      i(R1)      id(D1)     vd(D1)    
 + req(D1)    cap(D1)    z(D1)      zraw(D1)   y(D1)      z(2)       iter(0)   
  9.999      9.999      0.59233   -94.067u    94.067u    94.067u    0.59233   
@@ -53,10 +54,11 @@ density=100.0%
 + req(D1)    cap(D1)    z(D1)      zraw(D1)   y(D1)      z(2)      
  300.15     10.        0.59234   -94.077u    94.077u    94.077u    0.59234   
 + 274.17     1.5448p    100.K      273.42     0.0036473  273.42    
-GnuCap   System status
+Gnucap   System status
 iterations: op=6, dc=10, tran=0, fourier=0, total=73
+transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=2, subckt=0, model=0, total=2
-devices: diodes=1, mosfets=0, gates=0, subckts=0
-commons: diodes=1, mosfets=0, gates=0, subckts=0
-models:  diodes=1, mosfets=0, gates=0, subckts=0
-density=100.0%
+devices: diodes=1, bjts=0, mosfets=0, gates=0, subckts=0
+commons: diodes=1, bjts=0, mosfets=0, gates=0, subckts=0
+models:  diodes=1, bjts=0, mosfets=0, gates=0, subckts=0
+dctran density=100.0%, ac density=100.0%

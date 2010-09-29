@@ -1,8 +1,8 @@
-/*$Id: m_spline.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: m_spline.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ SPLINE::SPLINE(const std::vector<std::pair<double,double> >& table,
   case 1: construct_order_1(h, d0, dn); break;
   case 0: untested(); /* nothing to do */   break;
   default:
-    error(bDANGER, "illegal spline order (%d), must be 0 or 3\n", _order);
+    error(bDANGER, "illegal spline order (%d), must be 0, 1, 2, 3\n", _order);
     break;
   }
 }

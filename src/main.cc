@@ -1,8 +1,8 @@
-/*$Id: main.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: main.cc,v 22.4 2002/05/27 00:00:47 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ int main(int argc, const char *argv[])
       //try {
       char cmdbuf[BUFLEN];
       CMD::count++;
-      getcmd("-->", cmdbuf, BUFLEN);
+      getcmd(I_PROMPT, cmdbuf, BUFLEN);
       CMD::cmdproc(cmdbuf);
     }else{
       //}catch (...){
@@ -70,11 +70,11 @@ int main(int argc, const char *argv[])
 /*--------------------------------------------------------------------------*/
 static void sign_on(void)
 {
-  IO::mstdout << "GnuCap 0." << PATCHLEVEL << '\n'
+  IO::mstdout << "Gnucap 0." << PATCHLEVEL << '\n'
 	      << "The Gnu Circuit Analysis Package\n"
 	      << "Never trust any version less than 1.0\n"
-	      << "Copyright 1982-2000, Albert Davis\n"
-	      << "GnuCap comes with ABSOLUTELY NO WARRANTY\n"
+	      << "Copyright 1982-2002, Albert Davis\n"
+	      << "Gnucap comes with ABSOLUTELY NO WARRANTY\n"
 	      << "This is free software, and you are welcome\n"
 	      << "to redistribute it under certain conditions\n"
 	      << "according to the GNU General Public License.\n"

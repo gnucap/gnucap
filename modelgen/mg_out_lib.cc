@@ -1,8 +1,8 @@
-/*$Id: mg_out_lib.cc,v 20.14 2001/10/19 06:21:15 al Exp $ -*- C++ -*-
+/*$Id: mg_out_lib.cc,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,10 @@ void make_final_adjust_parameter_list(std::ofstream& out, const Parameter_List& 
 /*--------------------------------------------------------------------------*/
 void make_final_adjust(std::ofstream& out, const Parameter_Block& b)
 {
-  out << b.code_pre() << '\n';
+  out << b.code_pre();
   make_final_adjust_parameter_list(out, b.override());
   make_final_adjust_parameter_list(out, b.raw());
+  out << b.code_mid();
   make_final_adjust_parameter_list(out, b.calculated());
   out << b.code_post();
 }

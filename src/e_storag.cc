@@ -1,8 +1,8 @@
-/*$Id: e_storag.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: e_storag.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,19 +72,34 @@ void STORAGE::precalc()
 void STORAGE::dc_begin()
 {
   _method_a = method_select[OPT::method][_method_u];
-  if (!has_tr_eval()){
+  assert(_keep_time_steps == 4);
+  _time[0] = _time[1] = _time[2] = _time[3] = 0.;
+  _c_mult = NOT_VALID;
+  _dt = NOT_VALID;
+  _i0 = _q[0] = _q[1] = _q[2] = _q[3] = FPOLY1(0., 0., 0.);
+  _it1_f0 = 0.;
+  _m1 = _m0 = CPOLY1(0., 0., 0.);
+  assert(_loss0 == 0.);
+  assert(_loss1 == 0.);
+  if (!using_tr_eval()){
     //assert(_y0.f0 == LINEAR); f0 == f1 * x
     assert(_y0.f1 == value());
-    assert(_loss0 == 0.);
-    assert(_loss1 == 0.);
     assert(converged());
     assert(!constant());
   }
 }
 /*--------------------------------------------------------------------------*/
+void STORAGE::tr_restore()
+{
+  _method_a = method_select[OPT::method][_method_u];
+  assert(_time[0] >= _time[1]);
+  assert(_time[1] >= _time[2]);
+  assert(_time[2] >= _time[3]);
+}
+/*--------------------------------------------------------------------------*/
 void STORAGE::dc_advance()
 {
-  _it1 = _i0;
+  _it1_f0 = _i0.f0;
   assert(SIM::time0 == 0.);
   assert(_keep_time_steps == 4);
   _time[0] = _time[1] = _time[2] = _time[3] = 0.;
@@ -96,7 +111,7 @@ void STORAGE::tr_advance()
 {
   {if (_time[0] < SIM::time0){		// forward
     assert(_keep_time_steps == 4);
-    _it1 = _i0;
+    _it1_f0 = _i0.f0;
     for (int i=_keep_time_steps-1; i>0; --i){
       _time[i] = _time[i-1];
       _q[i] = _q[i-1];
@@ -109,7 +124,12 @@ void STORAGE::tr_advance()
   _c_mult = c_mult_num() / _dt;
 }
 /*--------------------------------------------------------------------------*/
-double STORAGE::integrate()
+/* differentiate: this is what Spice calls "integrate".
+ * returns an approximation of the time derivative of _q,
+ * where _q is an array of states .. charge for capacitors, flux for inductors.
+ * return value is current for capacitors, volts for inductors.
+ */
+double STORAGE::differentiate()
 {
   {if (SIM::mode == sDC  ||  SIM::mode == sOP) {
     return 0.;
@@ -117,17 +137,16 @@ double STORAGE::integrate()
     assert(SIM::mode == sTRAN || SIM::mode == sFOURIER);
     {if (SIM::phase == SIM::pINIT_DC) {
       {if (_time[0] == 0.) {
-	{if (SIM::uic && initial_condition != NOT_INPUT) {
-	  set_limit(initial_condition);
-	  return (_m0.x - initial_condition) / OPT::shortckt;
-	}else{
-	  return 0.;
-	}}
+	return 0.;
       }else{
 	assert(_time[0] > 0);
 	/* leave it alone to restart from a previous solution */
-	return _m0.c0 + _m0.x * _m0.c1; // BUG:: why is this needed??
+	return _i0.f0;
       }}
+    }else if (_time[1] == 0) {
+      // Bogus current in previous step.  Force Euler.
+      //return (_q[0].f0 - _q[1].f0) * c_mult();
+      return (_q[0].f0 - _q[1].f0) / _dt;
     }else{
       assert(SIM::phase == SIM::pTRAN);
       switch (_method_a) {
@@ -137,7 +156,7 @@ double STORAGE::integrate()
       case mEULER:		// first order (stiff) (backward Euler)
 	return (_q[0].f0 - _q[1].f0) * c_mult();
       case mTRAP:		// second order (non-stiff) (trapezoid)
-	return (_q[0].f0 - _q[1].f0) * c_mult() - _it1.f0;
+	return (_q[0].f0 - _q[1].f0) * c_mult() - _it1_f0;
       }
       unreachable();
       return NOT_VALID;
@@ -152,15 +171,14 @@ double STORAGE::tr_c_to_g(double c, double g)const
   }else{
     {if (SIM::phase == SIM::pINIT_DC) {
       {if (_time[0] == 0.) {
-	{if (SIM::uic && initial_condition != NOT_INPUT) {
-	  return 1./OPT::shortckt;
-	}else{
-	  return 0.;
-	}}
+	return 0.;
       }else{
 	return g;
 	// no change, fake
       }}
+    }else if (_time[1] == 0) {
+      // always Euler.
+      return c / _dt;
     }else{
       assert(SIM::phase == SIM::pTRAN);
       return c * c_mult();
@@ -168,7 +186,7 @@ double STORAGE::tr_c_to_g(double c, double g)const
   }}
 }
 /*--------------------------------------------------------------------------*/
-double STORAGE::review(double i0, double it1)const
+double STORAGE::const_tr_review()const
 {
   assert(order() <= _max_order);
   {if (_time[order()+1] <= 0. || _method_a == mEULER){
@@ -186,19 +204,28 @@ double STORAGE::review(double i0, double it1)const
       return NEVER;
     }else{
       double currenttol= OPT::abstol
-	+ OPT::reltol * std::max(std::abs(i0), std::abs(it1));
+	+ OPT::reltol * std::max(std::abs(_i0.f0), std::abs(_it1_f0));
       double chargetol = std::max(std::max(std::abs(_q[0].f0),
 					   std::abs(_q[1].f0)),
 			     OPT::chgtol) * OPT::reltol / _dt;
       double tol = OPT::trtol * std::max(currenttol,chargetol);
       double denom = error_factor() * std::abs(c[order()+1]);
-      double timestep = pow((tol / denom), 1./order());
+      double timestep;
+      {if (order() == 2) { // faster not to use pow.
+	timestep = sqrt(tol / denom);
+      }else if (order() == 1) {
+	untested();
+	timestep = tol / denom;
+      }else{
+	untested();
+	timestep = pow((tol / denom), 1./order());
+      }}
       
       if (timestep <= SIM::dtmin){
 	untested();
 	error(bDANGER,"step control error:%s %g\n",
 	      long_label().c_str(),timestep);
-	error(bTRACE, "q0=%g i0=%g dq0=%g\n", _q[0].f0, i0, c[1]);
+	error(bTRACE, "q0=%g i0=%g dq0=%g\n", _q[0].f0, _i0.f0, c[1]);
 	error(bTRACE, "it=%g qt=%g tol=%g\n", currenttol, chargetol, tol);
 	timestep = SIM::dtmin;
       }
@@ -225,6 +252,8 @@ double STORAGE::tr_probe_num(CS& cmd)const
   }else if (cmd.pmatch("TIMEOld")) {
     untested();
     return _time[1];
+  }else if (cmd.pmatch("TIMEFuture")) {
+    return const_tr_review();
   }else{
     return ELEMENT::tr_probe_num(cmd);
   }}

@@ -1,8 +1,8 @@
-/*$Id: c_comand.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: c_comand.cc,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,23 +28,16 @@
 #include "c_comand.h"
 // testing=nonstrict
 /*--------------------------------------------------------------------------*/
-   void	  CMD::alter(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-   void	  CMD::disto(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-   void	  CMD::model(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-   void	  CMD::noise(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-   void	  CMD::sens(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-   void	  CMD::subckt(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-   void	  CMD::temp(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-   void	  CMD::tf(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::alter(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::disto(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::model(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::noise(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::sens(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::subckt(CS&cmd){untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::tf(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
 /*--------------------------------------------------------------------------*/
-   void	  CMD::options(CS&cmd)	{static OPT o;    o.command(cmd);}
-   void	  CMD::status(CS&cmd)	{static STATUS s; s.command(cmd);}
-/*--------------------------------------------------------------------------*/
-//   void	  CMD::comment(CS&);
-//   void	  CMD::end(CS&);
-//   void	  CMD::pause(CS&);
-//   void	  CMD::quit(CS&);
-//   void	  CMD::title(CS&);
+void CMD::options(CS&cmd)	{static OPT o;    o.command(cmd);}
+void CMD::status(CS&cmd)	{static STATUS s; s.command(cmd);}
 /*--------------------------------------------------------------------------*/
 int CMD::count = 0;
 extern std::string head;
@@ -117,6 +110,18 @@ void CMD::quit(CS&)
     /*nothing*/
     break;
   }
+}
+/*--------------------------------------------------------------------------*/
+void CMD::temp(CS& cmd)
+{
+  double t = NOT_INPUT;
+  int here = cmd.cursor();
+  cmd >> t;
+  {if (!cmd.stuck(&here)) {
+    OPT::tempamb = t - ABS_ZERO;
+  }else{
+    IO::mstdout << ".temp = " << OPT::tempamb + ABS_ZERO << '\n';
+  }}
 }
 /*--------------------------------------------------------------------------*/
 void CMD::title(CS& cmd)

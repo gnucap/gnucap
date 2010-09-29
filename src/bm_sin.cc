@@ -1,8 +1,8 @@
-/*$Id: bm_sin.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: bm_sin.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ void EVAL_BM_SIN::tr_eval(ELEMENT* d)const
   if (reltime > _delay){
     double x = _amplitude * fixzero(sin(kPIx2*_frequency*(reltime-_delay)),1.);
     if (_damping != 0.){
-      x *= Exp(-(reltime-_delay)*_damping);
+      x *= exp(-(reltime-_delay)*_damping);
     }
     ev += x;
   }

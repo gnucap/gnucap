@@ -1,8 +1,8 @@
-/*$Id: bmm_semi.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: bmm_semi.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,24 +82,27 @@ void EVAL_BM_SEMI_BASE::tr_eval(ELEMENT* d)const
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_CAPACITOR::expand()
+void EVAL_BM_SEMI_CAPACITOR::expand(const COMPONENT* d)
 {
   const MODEL_SEMI_CAPACITOR* m 
-    = dynamic_cast<const MODEL_SEMI_CAPACITOR*>(attach_model());
+    = dynamic_cast<const MODEL_SEMI_CAPACITOR*>(attach_model(d));
   if (!m) {
     untested();
-    error(bERROR, "model " + modelname() + " is not a semi-capacitor (C)\n");
+    error(bERROR, d->long_label() + ": model " + modelname()
+	  + " is not a semi-capacitor (C)\n");
   }
   double width = (_width == NOT_INPUT) ? m->_defw : _width;
   double eff_width = width - m->_narrow;
   double eff_length = _length - m->_narrow;
   if (eff_width < 0.) {
     untested();
-    error(bWARNING, modelname() + ": effective width is negative\n");
+    error(bWARNING, d->long_label() + ": " + modelname()
+	  + ": effective width is negative\n");
   }
   if (eff_length < 0.) {
     untested();
-    error(bWARNING, modelname() + ": effective length is negative\n");
+    error(bWARNING, d->long_label() + ": " + modelname()
+	  + ": effective length is negative\n");
   }
 
   _value = m->_cj * eff_length * eff_width
@@ -109,24 +112,27 @@ void EVAL_BM_SEMI_CAPACITOR::expand()
   _value *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_RESISTOR::expand()
+void EVAL_BM_SEMI_RESISTOR::expand(const COMPONENT* d)
 {
   const MODEL_SEMI_RESISTOR* m 
-    = dynamic_cast<const MODEL_SEMI_RESISTOR*>(attach_model());
+    = dynamic_cast<const MODEL_SEMI_RESISTOR*>(attach_model(d));
   if (!m) {
     untested();
-    error(bERROR, "model " + modelname() + " is not a semi-resistor (R)\n");
+    error(bERROR, d->long_label() + ": " + "model " + modelname()
+	  + " is not a semi-resistor (R)\n");
   }
   double width = (_width == NOT_INPUT) ? m->_defw : _width;
   double eff_width = width - m->_narrow;
   double eff_length = _length - m->_narrow;
   if (eff_width <= 0.) {
     untested();
-    error(bERROR, modelname() + ": effective width is negative\n");
+    error(bERROR, d->long_label() + ": " + modelname()
+	  + ": effective width is negative\n");
   }
   if (eff_length < 0.) {
     untested();
-    error(bWARNING, modelname() + ": effective length is negative\n");
+    error(bWARNING, d->long_label() + ": " + modelname()
+	  + ": effective length is negative\n");
   }
 
   _value = m->_rsh * eff_length / eff_width;

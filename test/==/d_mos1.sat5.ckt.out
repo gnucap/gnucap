@@ -1,7 +1,7 @@
 nmos n gate, saturated, js specified (unreasonable value), no bulk source 
 cmosn: rsh - rs - rd conflict: using rsh
 #           v(2)       v(3)       iter(0)   
- 300.15     2.0069     5.         9.        
+ 300.15     2.0069     5.         7.        
 #           i(Vds)     ps(Vds)   
  300.15    -29.931u    149.66u   
 #           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 

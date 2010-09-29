@@ -1,8 +1,8 @@
-/*$Id: d_trln.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: d_trln.cc,v 22.10 2002/07/25 06:26:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ void DEV_TRANSLINE::parse(CS& cmd)
   assert(c);
 
   parse_Label(cmd);
-  parse_nodes(cmd,numnodes(),numnodes());
+  parse_nodes(cmd, max_nodes(), min_nodes());
   c->parse(cmd);
   attach_common(c);
   set_converged();
@@ -220,7 +220,7 @@ void DEV_TRANSLINE::print(OMSTREAM& o, int)const
   assert(c);
 
   o << short_label();
-  printnodes(o,numnodes());
+  printnodes(o);
   c->print(o);
 }
 /*--------------------------------------------------------------------------*/
@@ -230,6 +230,21 @@ void DEV_TRANSLINE::precalc()
   assert(c);
   _forward.set_delay(c->real_td);
   _reflect.set_delay(c->real_td);
+}
+/*--------------------------------------------------------------------------*/
+void DEV_TRANSLINE::tr_alloc_matrix()
+{
+  extern NODE* nstat; // yuck
+  
+  aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  aa.iwant(_n[IN1].m_(), _n[IN2].m_());
+  lu.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  lu.iwant(_n[IN1].m_(), _n[IN2].m_());
+
+  nstat[_n[OUT1].m_()].set_needs_analog();
+  nstat[_n[OUT2].m_()].set_needs_analog();
+  nstat[_n[IN1].m_()].set_needs_analog();
+  nstat[_n[IN2].m_()].set_needs_analog();
 }
 /*--------------------------------------------------------------------------*/
 /* first setup, initial dc, empty the lines
@@ -276,8 +291,8 @@ void DEV_TRANSLINE::tr_load()
     const COMMON_TRANSLINE* 
       c = prechecked_cast<const COMMON_TRANSLINE*>(common());
     assert(c);
-    aa.load_symmetric(_n[OUT1].m, _n[OUT2].m, 1/c->real_z0);
-    aa.load_symmetric(_n[IN1].m,  _n[IN2].m,  1/c->real_z0);
+    aa.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), 1/c->real_z0);
+    aa.load_symmetric(_n[IN1].m_(),  _n[IN2].m_(),  1/c->real_z0);
     lvf = _if0;
     lvr = _ir0;
   }else{
@@ -285,23 +300,23 @@ void DEV_TRANSLINE::tr_load()
     lvr = dn_diff(_ir0, _ir1);
   }}
   if (lvf != 0.) {
-    {if (_n[OUT1].m != 0) {
+    {if (_n[OUT1].m_() != 0) {
       _n[OUT1].i() += lvf;
     }else{
       untested();
     }}
-    if (_n[OUT2].m != 0) {
+    if (_n[OUT2].m_() != 0) {
       untested();
       _n[OUT2].i() -= lvf;
     }
   }
   if (lvr != 0.) {
-    {if (_n[IN1].m != 0) {
+    {if (_n[IN1].m_() != 0) {
       _n[IN1].i() += lvr;
     }else{
       untested();
     }}
-    if (_n[IN2].m != 0) {
+    if (_n[IN2].m_() != 0) {
       untested();
       _n[IN2].i() -= lvr;
     }
@@ -353,10 +368,10 @@ void DEV_TRANSLINE::do_ac()
 /*--------------------------------------------------------------------------*/
 void DEV_TRANSLINE::ac_load()
 {
-  acx.load_symmetric(_n[OUT1].m, _n[OUT2].m, _y11);
-  acx.load_symmetric(_n[IN1].m,  _n[IN2].m,  _y11);
-  acx.load_asymmetric(_n[OUT1].m,_n[OUT2].m, _n[IN2].m,  _n[IN1].m,  _y12);
-  acx.load_asymmetric(_n[IN1].m, _n[IN2].m,  _n[OUT2].m, _n[OUT1].m, _y12);
+  acx.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), _y11);
+  acx.load_symmetric(_n[IN1].m_(),  _n[IN2].m_(),  _y11);
+  acx.load_asymmetric(_n[OUT1].m_(),_n[OUT2].m_(), _n[IN2].m_(),  _n[IN1].m_(),  _y12);
+  acx.load_asymmetric(_n[IN1].m_(), _n[IN2].m_(),  _n[OUT2].m_(), _n[OUT1].m_(), _y12);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

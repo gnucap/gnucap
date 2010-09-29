@@ -1,8 +1,8 @@
-/*$Id: m_cpoly.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: m_cpoly.h,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@ struct FPOLY1{		/* first order polynomial	*/
   FPOLY1&  operator+=(const FPOLY1& s)
 		{untested(); assert(x==s.x); f0+=s.f0; f1+=s.f1; return *this;}
   FPOLY1   operator-()const	{untested(); return FPOLY1(x, -f0, -f1);}
+  double   c1()const		{return f1;}
+  double   c0()const		{return (f0 - x * f1);}
 };
 /*--------------------------------------------------------------------------*/
 struct CPOLY1{		/* first order polynomial	*/
@@ -72,20 +74,22 @@ struct CPOLY1{		/* first order polynomial	*/
   bool	   operator==(const CPOLY1& p)const
 				{return (c1==p.c1 && c0==p.c0 && x==p.x);}
   CPOLY1&  operator*=(double s)	{c0*=s; c1*=s; return *this;}
+  double   f1()const		{return c1;}
+  double   f0()const		{return (c0 + x * c1);}
 };
 /*--------------------------------------------------------------------------*/
 inline FPOLY1::FPOLY1(const CPOLY1& p)
   :x(p.x),
-   f1(p.c1)
+   f0(p.f0()),
+   f1(p.f1())
 {
-  f0 = p.c0 + p.x * p.c1;
 }
 /*--------------------------------------------------------------------------*/
 inline CPOLY1::CPOLY1(const FPOLY1& p)
   :x(p.x),
-   c1(p.f1)
+   c0(p.c0()),
+   c1(p.c1())
 {
-  c0 = p.f0 - p.x * p.f1;      
 }
 /*--------------------------------------------------------------------------*/
 inline FPOLY1& FPOLY1::operator*=(const FPOLY1& s)

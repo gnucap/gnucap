@@ -1,8 +1,8 @@
-/*$Id: mg_out_common.cc,v 20.11 2001/10/07 05:22:16 al Exp $ -*- C++ -*-
+/*$Id: mg_out_common.cc,v 22.17 2002/08/26 04:30:22 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,21 +154,21 @@ void make_common_print(std::ofstream& out, const Device& d)
 /*--------------------------------------------------------------------------*/
 static void make_common_expand(std::ofstream& out, const Device& d)
 {
-  out << "void COMMON_" << d.name() << "::expand()\n"
+  out << "void COMMON_" << d.name() << "::expand(const COMPONENT* d)\n"
     "{\n"
+    "  const COMMON_" << d.name() << "* c = this;\n"
     "  const MODEL_" << d.model_type() << "* m = dynamic_cast<const MODEL_" 
-      << d.model_type() << "*>(attach_model());\n"
+      << d.model_type() << "*>(attach_model(d));\n"
     "  if (!m) {\n"
-    "    untested();\n"
-    "    error(bERROR, \"model \" + modelname() + \" is not a " 
-      << d.parse_name() << "\");\n"
+    "    error(bERROR, d->long_label() + \": model \" + modelname()\n"
+    "          + \" is not a " << d.parse_name() << "\\n\");\n"
     "  }\n"
     "  delete _sdp;\n"
     "  _sdp = m->new_sdp(this);\n"
     "  assert(_sdp);\n"
-    "  const SDP_" << d.model_type() << "* b = dynamic_cast<const SDP_" 
+    "  const SDP_" << d.model_type() << "* s = dynamic_cast<const SDP_" 
       << d.model_type() << "*>(_sdp);\n"
-    "  assert(b);\n";
+    "  assert(s);\n";
   {for (Args_List::const_iterator
 	  p = d.circuit().args_list().begin();
 	p != d.circuit().args_list().end();

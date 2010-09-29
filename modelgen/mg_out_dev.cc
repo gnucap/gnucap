@@ -1,8 +1,8 @@
-/*$Id: mg_out_dev.cc,v 20.12 2001/10/13 05:16:30 al Exp $ -*- C++ -*-
+/*$Id: mg_out_dev.cc,v 22.9 2002/07/23 20:08:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@ static void make_dev_eval(std::ofstream& out, const Eval& e,
     "  const COMMON_" << dev_type << "* c = prechecked_cast<const COMMON_"
       << dev_type << "*>(p->common());\n"
     "  assert(c);\n"
-    "  const SDP_" << model_type << "* b = prechecked_cast<const SDP_"
+    "  const SDP_" << model_type << "* s = prechecked_cast<const SDP_"
       << model_type << "*>(c->sdp());\n"
-    "  assert(b);\n"
+    "  assert(s);\n"
     "  const MODEL_" << model_type << "* m = prechecked_cast<const MODEL_"
       << model_type << "*>(c->model());\n"
     "  assert(m);\n"
@@ -70,7 +70,6 @@ void make_dev_default_constructor(std::ofstream& out,const Device& d)
   }}
   int local_nodes = d.circuit().local_nodes().size();
   out << "\n{\n"
-    "  set_inode_count(" << local_nodes << ");\n"
     "  _n = _nodes + " << local_nodes << ";\n"
     "  attach_common(&Default_" << d.name() << ");\n"
     "  ++_count;\n";
@@ -131,7 +130,7 @@ static void make_dev_parse(std::ofstream& out, const Device& d)
     "  assert(c);\n"
     "\n"
     "  parse_Label(cmd);\n"
-    "  parse_nodes(cmd,numnodes(),numnodes());\n"
+    "  parse_nodes(cmd, max_nodes(), min_nodes());\n"
     "  c->parse(cmd);\n"
     "  attach_common(c);\n"
     "}\n"
@@ -148,7 +147,7 @@ static void make_dev_print(std::ofstream& out, const Device& d)
     "  assert(c);\n"
     "\n"
     "  o << short_label();\n"
-    "  printnodes(o,numnodes());\n"
+    "  printnodes(o);\n"
     "  c->print(o);\n"
     "}\n"
     "/*--------------------------------------"
@@ -244,13 +243,13 @@ static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
 static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
 {
   {if (p.short_if().empty()) {
-    out << "  _n[n_" << p.name() << "].t = STATUS::newnode_model();\n";
+    out << "  _n[n_" << p.name() << "].new_model_node();\n";
   }else{
     out <<
       "  {if (" << p.short_if() << ") {\n"
       "    _n[n_" << p.name() << "] = _n[n_" << p.short_to() << "];\n"
       "  }else{\n"
-      "    _n[n_" << p.name() << "].t = STATUS::newnode_model();\n"
+      "    _n[n_" << p.name() << "].new_model_node();\n"
       "  }}\n";
   }}
 }
@@ -262,13 +261,13 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "  COMMON_" << d.name() << "* c = prechecked_cast<COMMON_"
       << d.name() << "*>(mutable_common());\n"
     "  assert(c);\n"
-    "  c->expand();\n"
+    "  c->expand(this);\n"
     "  const MODEL_" << d.model_type() << "* m = prechecked_cast<const MODEL_"
       << d.model_type() << "*>(c->model());\n"
     "  assert(m);\n"
-    "  const SDP_" << d.model_type() << "* b = prechecked_cast<const SDP_"
+    "  const SDP_" << d.model_type() << "* s = prechecked_cast<const SDP_"
       << d.model_type() << "*>(c->sdp());\n"
-    "  assert(b);\n"
+    "  assert(s);\n"
     "\n";
   {for (Port_List::const_iterator
 	 p = d.circuit().local_nodes().begin();
@@ -356,9 +355,9 @@ static void make_dev_probe(std::ofstream& out, const Device& d)
     "  const MODEL_" << d.model_type() << "* m = prechecked_cast<const MODEL_"
       << d.model_type() << "*>(c->model());\n"
     "  assert(m);\n"
-    "  const SDP_" << d.model_type() << "* b = prechecked_cast<const SDP_"
+    "  const SDP_" << d.model_type() << "* s = prechecked_cast<const SDP_"
       << d.model_type() << "*>(c->sdp());\n"
-    "  assert(b);\n"
+    "  assert(s);\n"
     "\n"
     "  {";
   {for (Probe_List::const_iterator

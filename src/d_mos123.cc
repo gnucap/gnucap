@@ -1,8 +1,8 @@
-/* $Id: d_mos123.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/* $Id: d_mos123.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "d_mos123.h"
 /*--------------------------------------------------------------------------*/
 const double NA(NOT_INPUT);
+const double INF(BIGBIG);
 /*--------------------------------------------------------------------------*/
 int MODEL_MOS123::_count = 0;
 /*--------------------------------------------------------------------------*/
@@ -113,7 +114,6 @@ void MODEL_MOS123::parse_finish()
 	nsub = NA;
 	error(bWARNING,long_label()+": nsub < ni, treating as if not input\n");
       }
-
   if (pbsw == NA) {
     pbsw = pb;
   }
@@ -170,6 +170,16 @@ void MODEL_MOS123::print_calculated(OMSTREAM& o)const
     o << "* phi=" << phi;
   if (true)
     o << "* cox=" << cox;
+}
+/*--------------------------------------------------------------------------*/
+bool MODEL_MOS123::is_valid(const COMMON_COMPONENT* cc)const
+{
+  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
+  {if (!c) {
+    return MODEL_MOS_BASE::is_valid(cc);
+  }else{
+    return MODEL_MOS_BASE::is_valid(cc);
+  }}
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS123::tr_eval(COMPONENT*)const

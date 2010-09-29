@@ -1,8 +1,8 @@
-/*$Id: e_node.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: e_node.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
  *------------------------------------------------------------------
  * node probes
  */
+#include "u_nodemap.h"
 #include "l_denoise.h"
 #include "declare.h"	/*  new_event ... */
 #include "d_logic.h"
@@ -99,7 +100,6 @@ double NODE::tr_probe_num(CS& cmd)const
   }else if (cmd.pmatch("COUNT")) {
     return static_cast<double>(_needs_analog);
   }else{
-    untested();
     return CKT_BASE::tr_probe_num(cmd);
   }}
 }
@@ -341,9 +341,79 @@ NODE& NODE::set_event(double delay)
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+/* name2number: convert node name to node number
+ * returns node number
+ * cnt updated
+ */
+static int name2number(CS& cmd, const CARD* d)
+{
+  {if (OPT::named_nodes) {
+    int here = cmd.cursor();
+    {if (cmd.skiprparen()) {
+      untested();
+      cmd.reset(here);
+      return INVALID_NODE;
+    }else{
+      std::string node = cmd.ctos();
+      {if (!cmd.more()) {
+	untested();
+	cmd.reset(here);
+	return INVALID_NODE;
+      }else if (cmd.stuck(&here)) {
+	untested();
+	return INVALID_NODE;
+      }else{
+	assert(d);
+	CARD* owner = d->owner();
+	CARD_LIST* cl = (owner) 
+	  ? &(owner->subckt()) : &(CARD_LIST::card_list);
+	NODE_MAP* map = &(cl->_nm);
+	return map->new_node(node);
+      }}
+    }}
+  }else{
+    int here = cmd.cursor();
+    int node = cmd.ctoi();
+    {if (cmd.stuck(&here)) {
+      return INVALID_NODE;
+    }else{
+      return node;
+    }}
+  }}
+}
+/*--------------------------------------------------------------------------*/
+void node_t::parse(CS& cmd, const CARD* card)
+{
+  _t = _e = name2number(cmd, card);
+}
+/*--------------------------------------------------------------------------*/
+std::string node_t::name(const CARD* d)const
+{
+  {if (OPT::named_nodes) {
+    //untested();
+    assert(d);
+    CARD* owner = d->owner();
+    CARD_LIST* cl = (owner) 
+      ? &(owner->subckt()) : &(CARD_LIST::card_list);
+    NODE_MAP* map = &(cl->_nm);
+    return (*map)[e_()];
+  }else{
+    //untested();
+    return to_string(e_());
+  }}
+}
+/*--------------------------------------------------------------------------*/
+void node_t::map_subckt_node(int* m)
+{
+  assert(e_() != INVALID_NODE);
+  assert(e_() >= 0);	/* bad node? */
+  assert(m[e_()] >= 0);	/* node map,all mapped and valid */
+  _t = m[e_()];
+}
+/*--------------------------------------------------------------------------*/
 OMSTREAM& operator<<(OMSTREAM& o, const node_t& n)
 {
-  o << n.e;
+  o << n.name(0);
   return o;
 }
 /*--------------------------------------------------------------------------*/

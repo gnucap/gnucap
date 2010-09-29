@@ -1,8 +1,8 @@
-/*$Id: u_opt.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: u_opt.h,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,12 @@ inline OMSTREAM& operator<<(OMSTREAM& o, order_t t){
   return (o << s[t]);
 }
 /*--------------------------------------------------------------------------*/
+enum phase_t {pDEGREES, pRADIANS};
+inline OMSTREAM& operator<<(OMSTREAM& o, phase_t t){
+  const char* s[] = {"degrees", "radians"};
+  return (o << s[t]);
+}
+/*--------------------------------------------------------------------------*/
 /* run_mode   what to do with dot cards on reading		*/
 enum RUN_MODE {
   rIGNORE,	/* treat as comments				*/
@@ -94,7 +100,7 @@ public:
   static double pivtol;	    // minimum acceptable pivot
   static double pivrel;	    // max to min ratio in a column?
   static int numdgt;	    // number of digits to display
-  static double tnom;	    // nominal termperature
+  static double tnom;	    // nominal temperature
   static int cptime;	    // max allowed cpu time (seconds)
   static int limtim;	    // amt of time to reserve for plots
   static int limpts;	    // max points to print
@@ -108,6 +114,8 @@ public:
   static double defas;	    // MOS default source diffusion area
   
   static int seed;	    // random number seed
+  static bool clobber;	    // allow to overwrite files without question
+  static bool named_nodes;  // use alphanumeric node names (false=numbers only)
   static double wczero;	    // worst case zero window
   static double floor;	    // display as zero if less than this
   static double vfloor;	    // display voltages as zero if less than this  
@@ -122,6 +130,7 @@ public:
   static int outwidth;	    // width of output devices
   static double xdivisions; // plot divisions, x axis
   static double ydivisions; // plot divisions, y axis
+  static phase_t phase;	    // how to print phase (degrees or radians)
   static order_t order;	    // ordering method
   static smode_t mode;	    // mixed-mode mode preference
   static int transits;	    // number of good transitions for digital
@@ -147,6 +156,8 @@ public:
   static int foooo;	    // a reusable value to aid development
   static int diodeflags;    // convergence heuristic flags for diode
   static int mosflags;	    // convergence heuristic flags for mosfet
+  static bool quitconvfail; // quit on convergence failure
+  static bool edit;	    // use readline - command editing
   
   static double lowlim;	    // 1 - reltol
   static double uplim;	    // 1 + reltol

@@ -6,7 +6,7 @@ cmosn: is - js conflict
 #           i(Vgs)     i(Vds)     i(Vbs)     ps(Vgs)    ps(Vds)    ps(Vbs)   
  300.15     0.         0.         0.         0.         0.         0.        
 #           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
- 300.15     0.         3.2367     199.E-21   0.         1.0524     1.7555    
+ 300.15     0.         3.2367     221.E-21   0.         1.0524     1.7555    
 #           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
  300.15     0.         107.92u    0.         0.         0.        
 #           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
@@ -18,6 +18,6 @@ cmosn: is - js conflict
 #           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1 iderror(M1
  300.15     0.         0.         0.         0.         0.         ??        
 #           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
- 300.15     99.E-21    3.2367    -99.E-21   -99.E-21   
+ 300.15     111.E-21   3.2367    -111.E-21  -111.E-21  
 #           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
- 300.15     199.E-21   3.2367     0.         0.        
+ 300.15     221.E-21   3.2367     0.         0.        

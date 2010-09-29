@@ -1,4 +1,4 @@
-#$Id: Make2.Debug,v 20.9 2001/10/01 02:53:03 al Exp $ -*- Makefile -*-
+#$Id: Make2.Debug,v 23.1 2002/11/06 07:47:50 al Exp $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
 #
@@ -25,13 +25,19 @@ VPATH = .:..
 # Running the program will give a spew of line markers for debugging.
 
 CCC = g++
+
 CCFLAGS = \
--DUNIX  -g -O -I.. -fno-exceptions -DTRACE_UNTESTED \
+-DUNIX  -g -O -I. -I.. -fno-exceptions -DTRACE_UNTESTED \
+-DHAS_READLINE \
 -Wall -W -Wno-sign-compare -Wpointer-arith -Wcast-qual \
 -Wwrite-strings -Wconversion -Wmissing-prototypes \
 -Woverloaded-virtual -Wlong-long \
 -Wsign-compare -Wcast-align 
-LIBS = -lm
+
+LIBS = \
+-lreadline -ltermcap \
+
+
 LDFLAGS =
 
 .SUFFIXES : .o .cc

@@ -1,8 +1,8 @@
-/*$Id: e_compon.h,v 20.11 2001/10/07 05:22:34 al Exp $ -*- C++ -*-
+/*$Id: e_compon.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ public:
 
   virtual bool operator==(const COMMON_COMPONENT&)const = 0;
   bool operator!=(const COMMON_COMPONENT& x)const {return !(*this == x);}
-  const MODEL_CARD* attach_model()const;
+  const MODEL_CARD* attach_model(const COMPONENT*)const;
   COMMON_COMPONENT& attach(const MODEL_CARD* m) {_model = m; return *this;}
   void set_modelname(const std::string& n) {_modelname = n;}
   void parse_modelname(CS&);
@@ -71,7 +71,7 @@ public:
   virtual COMMON_COMPONENT* clone()const = 0;
   virtual void	parse(CS&)		{unreachable();}
   virtual void	print(OMSTREAM&)const	{unreachable();}
-  virtual void	expand()		{assert(_modelname == "");}
+  virtual void	expand(const COMPONENT*){assert(_modelname == "");}
 
   virtual void	tr_eval(ELEMENT*x)const;
   virtual void	ac_eval(ELEMENT*x)const;
@@ -118,17 +118,21 @@ protected:
 	     ~COMPONENT()		{subckt().destroy(); detach_common();}
 public:
   virtual const char* dev_type()const = 0;
-  virtual int	      numnodes()const = 0;
+  virtual int	max_nodes()const = 0;
+  virtual int	min_nodes()const = 0;
+  virtual int	int_nodes()const	{return 0;}
 protected: // override virtual
   void  expand();
   bool	is_device()const		{return true;}
   void  map_nodes();
+  void  tr_alloc_matrix();
+  void  ac_alloc_matrix();
 protected: // not virtual
   int	parse_nodes(CS&,int,int,int=0);
-  void	printnodes(OMSTREAM&,int,int=0)const;
+  void	printnodes(OMSTREAM&)const;
 
   const MODEL_CARD* attach_model()const	
-		{return (has_common() ? _common->attach_model() : 0);}
+		{return (has_common() ? _common->attach_model(this) : 0);}
   void	attach_common(COMMON_COMPONENT*c) {::attach_common(c,&_common);}
   void	detach_common()			{::detach_common(&_common);}
   void	deflate_common();
@@ -140,8 +144,10 @@ protected: // not virtual
   void	expandsubckt(const std::string& modelname);
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // list and queue management
-  bool	is_q_for_eval() {return (_queued_for_eval>=STATUS::iter[iTOTAL]);}
-  bool	qfe();
+  bool	is_q_for_eval() {return (_q_for_eval>=STATUS::iter[iTOTAL]);}
+  void	mark_q_for_eval()	 {_q_for_eval = STATUS::iter[iTOTAL];}
+  void	mark_always_q_for_eval() {_q_for_eval = INT_MAX;}
+  // mark_as...  doesn't queue it, just marks it as queued.  It might lie.
   void	q_eval();
   void	q_load()	{SIM::loadq.push_back(this);}
   void	q_accept()	{SIM::acceptq.push_back(this);}
@@ -151,13 +157,13 @@ public:
   virtual void set_parameters(const std::string& Label, CARD* Parent,
 			      COMMON_COMPONENT* Common, double Value,
 			      int state_count, double state[],
-			      int port_count, const node_t nodes[]);
-  void	set_slave()	    {_queued_for_eval = INT_MAX; subckt().set_slave();}
+			      int node_count, const node_t nodes[]);
+  void	set_slave()	{mark_always_q_for_eval(); subckt().set_slave();}
   void	set_value(double v) {CARD::set_value(v);}
   void	set_value(double v, COMMON_COMPONENT* c);
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // querys
-  bool	is_slave()const	  {untested(); return (_queued_for_eval==INT_MAX);}
+  bool	is_slave()const	  {untested(); return (_q_for_eval==INT_MAX);}
   bool	has_common()const {return _common;}
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // data access
@@ -167,24 +173,16 @@ private:
   COMMON_COMPONENT* _common;
 private:
   bool _converged;	// convergence status
-  int  _queued_for_eval;
+  int  _q_for_eval;
 };
 /*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-inline bool COMPONENT::qfe()
-{
-  {if (is_q_for_eval()){
-    unreachable();
-    return true;
-  }else{
-    _queued_for_eval=STATUS::iter[iTOTAL];
-    return false;
-  }}
-}
-/*--------------------------------------------------------------------------*/
+/* q_eval: queue this device for evaluation on the next pass,
+ * with a check against doing it twice.
+ */
 inline void COMPONENT::q_eval()
 {
-  {if(!qfe()){
+  {if(!is_q_for_eval()) {
+    mark_q_for_eval();
     SIM::evalq_uc->push_back(this);
   }else{
     unreachable();

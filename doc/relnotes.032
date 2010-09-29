@@ -1,0 +1,132 @@
+Gnucap 0.32 release notes  (09/30/2002)
+
+New features:
+
+1. Series resistance in the diode.  It took 5 minutes to do,
+so it is embarrasing that it wasn't done before.
+
+2. History and command line editing, using Gnu Readline.  Thanks to
+Simon Hoffe for sending me the patch.
+
+3. More parameters in the BJT model.  This gives it better
+compatibility with commercial simulators.  These parameters are beyond
+Spice 3f5.
+
+4. "M" parameter in diode, BJT and MOS devices.  M is the number of
+parallel devices.  Some commercial simulators have this.
+
+
+
+Changes that may or may not be improvements.
+
+1. The definition of the transient option "UIC" has changed.  It is
+now Spice compatible, which means to not attempt to do any solution or
+consistency check.  Just apply the values, assuming anything that
+isn't specified is 0.  The old behavior was to attempt a solution
+while holding the IC values.
+ 
+
+Bug fixes:
+
+1. voltage sync bug.  It still doesn't fix the MOS 2 convergence
+problem.
+
+2. Fix memory leak in POLY components.
+
+3. Fix bug in Fourier that sometimes causes overrun (crash) and time
+sync errors.
+
+4. Modelgen: fix bug in list parsing.
+
+5. Some changes to eliminate warnings when compiling with g++ 3.1.
+
+6. Use Euler differentiation on first step, because trap used a value
+that cannot be known then.  Usually, this doesn't make much
+difference, but there are a few cases where the error can get
+magnified and trigger trapezoidal ringing, leading to a totally bogus
+result.  It most cases, you could hide it with small enough steps.
+These cases should work with default settings now.
+
+7. Fix bug that sometimes caused incorrect handling of initial
+conditions (UIC),
+
+8. Fix bug that caused continuing a transient analysis to give
+incorrect results.
+
+
+
+Significant internal changes:
+
+1. The inductor uses all of the same support functions as the
+capacitor, including "integrate", which is now correctly called
+"differentiate".
+
+2. Most of the code is in place for named nodes.  It mostly works and
+can be turned on with the option "namednodes".  It is off by default
+because it is not complete.  Most likely, it will be finished in the
+next release.
+
+
+
+Some things that are still partially implemented:
+
+1. BSIM models, charge effects, "alpha0" parameter.  (computed then
+ignored)
+
+2. Configure still doesn't handle everything.
+
+3. The model compiler still requires too much raw coding.
+
+4. Named nodes.  If you set the option "namednodes", it will support
+named nodes, but some things don't work, so it is off by default.
+
+5. The preliminary IBIS code is now included.  For now, it is a
+standalone executable, that reads an IBIS file and generates a
+netlist.  The netlist requires some editing to use, and is not fully
+compatible anyway.  It is included in hopes of recruiting help in
+finishing the project.
+
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+2. An occasional bogus calculation in MOSFETS occurs when a device is
+reversed.  This sometimes causes nonconvergence.
+
+3. The "modify" command with multiple arguments seems to take only the
+first one.  It used to work, but is broken in this release.  I am not
+sure when it broke.
+
+
+Hot items for a future release (no promises, but highly probable):
+
+1. Charge effects and substrate current (alpha0) in BSIM models.  They
+are computed, but not loaded to the matrix.  It was deferred waiting
+for the poly-cap, but now that the poly-cap works, this missing part
+of the MOS models should be working soon.
+
+2. JFET model.
+
+3. Completion of multi-rate.
+
+4. Homotopy methods to improve convergence.
+
+5. Transmission line accuracy and speed improvements, using a step
+control mechanism similar to that used for capacitors.
+
+6. Parameterized subcircuits and defined parameters.
+
+7. Spice-3 compatible "B" device.
+
+
+To reach me, try this email address:
+	aldavis@gnu.org
+
+ftp sites:
+	ftp://ftp.gnu.org/gnu/gnucap/gnucap-0.32.tar.gz
+	ftp://ftp.geda.seul.org/pub/geda/dist/gnucap-0.32.tar.gz
+	http://www.geda.seul.org/dist/gnucap-0.32.tar.gz
+	ftp://sunsite.unc.edu/pub/Linux/apps/circuits/gnucap-0.32.tar.gz

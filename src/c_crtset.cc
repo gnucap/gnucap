@@ -1,8 +1,8 @@
-/*$Id: c_crtset.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: c_crtset.cc,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,16 +128,8 @@ struct graph *initcrt()
   switch (crttype){
   case 'b':
     return initbasic(&d);
-#ifdef MSDOS
-  case 'i':
-    return initibm(&d);
-#endif
   case 'p':
     return initpostscript(&d);
-#ifdef SUNVIEW
-  case 's':
-    return initsun(&d);
-#endif
   case 'u':
     return initunix(&d);
   case 'x':

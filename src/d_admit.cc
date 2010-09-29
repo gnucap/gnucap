@@ -1,8 +1,8 @@
-/*$Id: d_admit.cc,v 20.11 2001/10/07 05:22:34 al Exp $ -*- C++ -*-
+/*$Id: d_admit.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
  *		m.x  = volts(control), m.c0 = 0,    acg = m.c1 = mhos
  *		_loss0 == 1/R. (mhos)
  */
+#include "l_stlextra.h"
 #include "d_admit.h"
 /*--------------------------------------------------------------------------*/
 void DEV_ADMITTANCE::precalc()
@@ -47,7 +48,7 @@ void DEV_ADMITTANCE::precalc()
 /*--------------------------------------------------------------------------*/
 bool DEV_ADMITTANCE::do_tr()
 {
-  {if (has_tr_eval()) {
+  {if (using_tr_eval()) {
     _m0.x = tr_involts_limited();
     _y0.x = _m0.x;
     _y0.f0 = _m0.c1 * _m0.x + _m0.c0;	/* BUG:  patch for diode */
@@ -124,7 +125,7 @@ void DEV_VCG::do_ac()
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-/* DEV_POLY_G
+/* DEV_CPOLY_G
  * number of nodes = 2*n_ports
  * number of val, ov = n_ports+1
  * val[0] is the constant part, val[1] is self admittance,
@@ -134,52 +135,70 @@ void DEV_VCG::do_ac()
  * node[2*i] and node[2*i+1] correspond to val[i+1]
  */
 /*--------------------------------------------------------------------------*/
-DEV_POLY_G::DEV_POLY_G()
+DEV_CPOLY_G::DEV_CPOLY_G()
   :ELEMENT(),
    _values(0),
    _old_values(0),
-   _n_ports(0) 
+   _n_ports(0),
+   _time(NOT_VALID),
+   _inputs(0)
 {
 }
 /*--------------------------------------------------------------------------*/
-#if 0
-DEV_POLY_G::DEV_POLY_G(const std::string& label, int n_ports,
-		       const node_t nodes[], double val[], CARD *owner)
-  :ELEMENT(),
-   _values(val),
-   _old_values(0),
-   _n_ports(n_ports) 
+DEV_CPOLY_G::~DEV_CPOLY_G()
 {
-  std::fill_n(_values, n_ports+1, 0.);
-  _old_values = new double[n_ports+1];
-  std::fill_n(_old_values, n_ports+1, 0.);
-  set_Label(label);
-  set_owner(owner);
-  set_port_count(n_ports*2);
-  _n = new node_t[numnodes()];
-  std::copy_n(nodes, numnodes(), _n);
+  delete [] _old_values;
+  {if (net_nodes() > NODES_PER_BRANCH) {
+    delete [] _n;
+  }else{
+    // it is part of a base class
+  }}
 }
-#endif
 /*--------------------------------------------------------------------------*/
-bool DEV_POLY_G::do_tr()
+bool DEV_CPOLY_G::do_tr_con_chk_and_q()
 {
-  assert(_values);
+  q_load();
+
   assert(_old_values);
   set_converged(conchk(_time, SIM::time0));
   _time = SIM::time0;
   {for (int i=0; converged() && i<=_n_ports; ++i) {
     set_converged(conchk(_old_values[i], _values[i]));
   }}
-  double c0 = _values[0];
-  {for (int i=1; i<=_n_ports; ++i) {
-    c0 -= volts_limited(_n[2*i-2],_n[2*i-1]) * _values[i];
-  }}
-  _m0 = CPOLY1(0., c0, _values[1]);
-  q_load();
   return converged();
 }
 /*--------------------------------------------------------------------------*/
-void DEV_POLY_G::tr_load()
+bool DEV_CPOLY_G::do_tr()
+{
+  assert(_values);
+  _m0 = CPOLY1(0., _values[0], _values[1]);
+  return do_tr_con_chk_and_q();
+}
+/*--------------------------------------------------------------------------*/
+bool DEV_FPOLY_G::do_tr()
+{
+  assert(_values);
+  double c0 = _values[0];
+  {if (_inputs) {
+    untested();
+    {for (int i=1; i<=_n_ports; ++i) {
+      c0 -= *(_inputs[i]) * _values[i];
+      trace4("", i, *(_inputs[i]), _values[i], *(_inputs[i]) * _values[i]);
+    }}
+  }else{
+    {for (int i=1; i<=_n_ports; ++i) {
+      c0 -= volts_limited(_n[2*i-2],_n[2*i-1]) * _values[i];
+      trace4("", i, volts_limited(_n[2*i-2],_n[2*i-1]), _values[i],
+	     volts_limited(_n[2*i-2],_n[2*i-1]) * _values[i]);
+    }}
+  }}
+  trace2("", _values[0], c0);
+  _m0 = CPOLY1(0., c0, _values[1]);
+
+  return do_tr_con_chk_and_q();
+}
+/*--------------------------------------------------------------------------*/
+void DEV_CPOLY_G::tr_load()
 {
   tr_load_passive();
   _old_values[0] = _values[0];
@@ -190,7 +209,7 @@ void DEV_POLY_G::tr_load()
   }
 }
 /*--------------------------------------------------------------------------*/
-void DEV_POLY_G::tr_unload()
+void DEV_CPOLY_G::tr_unload()
 {
   //untested();
   std::fill_n(_values, _n_ports+1, 0.);
@@ -201,7 +220,7 @@ void DEV_POLY_G::tr_unload()
   tr_load();
 }
 /*--------------------------------------------------------------------------*/
-double DEV_POLY_G::tr_amps()const
+double DEV_CPOLY_G::tr_amps()const
 {
   double amps = _m0.c0;
   for (int i=1; i<=_n_ports; ++i) {
@@ -210,7 +229,7 @@ double DEV_POLY_G::tr_amps()const
   return amps;
 }
 /*--------------------------------------------------------------------------*/
-void DEV_POLY_G::ac_load()
+void DEV_CPOLY_G::ac_load()
 {
   _acg = _values[1];
   ac_load_passive();
@@ -221,21 +240,46 @@ void DEV_POLY_G::ac_load()
 /*--------------------------------------------------------------------------*/
 /* set: set parameters, used in model building
  */
-void DEV_POLY_G::set_parameters(const std::string& Label, CARD *Owner,
-				COMMON_COMPONENT *Common, double Value,
-				int n_states, double states[],
-				int n_nodes, const node_t nodes[])
+void DEV_CPOLY_G::set_parameters(const std::string& Label, CARD *Owner,
+				 COMMON_COMPONENT *Common, double Value,
+				 int n_states, double states[],
+				 int n_nodes, const node_t nodes[])
+  //				 const double* inputs[])
 {
-  COMPONENT::set_parameters(Label, Owner, Common, Value, 0, 0, n_nodes, nodes);
+  bool first_time = (net_nodes() == 0);
+
+  set_Label(Label);
+  set_owner(Owner);
+  set_value(Value);
+  attach_common(Common);
+
+  {if (first_time) {
+    _n_ports = n_nodes/2; // sets num_nodes() = _n_ports*2
+    assert(_n_ports == n_states-1);
+
+    assert(!_old_values);
+    _old_values = new double[n_states];
+
+    {if (net_nodes() > NODES_PER_BRANCH) {
+      // allocate a bigger node list
+      _n = new node_t[net_nodes()];
+    }else{
+      // use the default node list, already set
+    }}      
+  }else{
+    assert(_n_ports == n_states-1);
+    assert(_old_values);
+    assert(net_nodes() == n_nodes);
+    // assert could fail if changing the number of nodes after a run
+  }}
+
+  //_inputs = inputs;
+  _inputs = 0;
   _values = states;
-  _n_ports = n_nodes/2;
-  assert(_n_ports == n_states-1);
   std::fill_n(_values, n_states, 0.);
-  _old_values = new double[n_states];
   std::fill_n(_old_values, n_states, 0.);
-  set_port_count(n_nodes);
-  _n = new node_t[numnodes()];
-  std::copy_n(nodes, numnodes(), _n);
+  notstd::copy_n(nodes, net_nodes(), _n);
+  assert(net_nodes() == _n_ports * 2);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,8 +1,8 @@
-/*$Id: l_lib.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: l_lib.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 	bool	wmatch(const char*,const char*);
 /*--------------------------------------------------------------------------*/
 //ftos stuff
+	char*	utos(unsigned,char*,int);
+	char*	itos(int,char*,int,int);
 	char*	ftos(double,int,int,int);
 enum {			/* formatting bit-fields */
   ftos_DEFAULT = 0,	/* default formatting, with letters */
@@ -35,6 +37,7 @@ enum {			/* formatting bit-fields */
   ftos_SIGN = 2,	/* always include sign */
   ftos_FILL = 4		/* fill in trailing zeros */
 };
+std::string to_string(unsigned);
 /*--------------------------------------------------------------------------*/
 // wrappers for type conversion
 inline bool wmatch(const std::string& s1,const char* s2){

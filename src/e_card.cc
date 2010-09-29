@@ -1,8 +1,8 @@
-/*$Id: e_card.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: e_card.cc,v 22.13 2002/08/01 16:27:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 //	double	CARD::probe(const CARD*,const string&);
 // 	int	CARD::connects_to(int node)const;
 /*--------------------------------------------------------------------------*/
-double CARD::initial_condition = NOT_INPUT;
 const int POOLSIZE = 4;
 /*--------------------------------------------------------------------------*/
 CARD::CARD()
@@ -42,8 +41,6 @@ CARD::CARD()
    _owner(0),
    _n(0),
    _value(0),
-   _port_count(0),
-   _inode_count(0),
    _constant(false)
 {
 }
@@ -55,8 +52,6 @@ CARD::CARD(const CARD& p)
    _owner(0),
    _n(0),
    _value(p._value),
-   _port_count(p._port_count),
-   _inode_count(p._inode_count),
    _constant(p._constant)
 {
 }
@@ -94,12 +89,12 @@ const std::string CARD::long_label()const
  * returns: how many times this part connects to it.
  * does not traverse subcircuits
  */
-int CARD::connects_to(int node)const
+int CARD::connects_to(const node_t& node)const
 {
   int count = 0;
   if (is_device()) {
-    for (int ii = 0;  ii < port_count();  ++ii) {
-      if (node == _n[ii].t) {
+    for (int ii = 0;  ii < net_nodes();  ++ii) {
+      if (node == _n[ii]) {
         ++count;
       }
     }

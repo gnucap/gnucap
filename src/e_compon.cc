@@ -1,8 +1,8 @@
-/*$Id: e_compon.cc,v 20.11 2001/10/07 05:22:34 al Exp $ -*- C++ -*-
+/*$Id: e_compon.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,29 +27,54 @@
 //#include "e_compon.h"
 #include "e_elemnt.h" // includes e_compon.h
 /*--------------------------------------------------------------------------*/
-static	int	name2number(CS&);
-/*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::~COMMON_COMPONENT()
 {
   trace1("common", _attachcount);
   assert(_attach_count == 0 || _attach_count == CC_STATIC);
 }
 /*--------------------------------------------------------------------------*/
-const MODEL_CARD* COMMON_COMPONENT::attach_model()const
+const MODEL_CARD* COMMON_COMPONENT::attach_model(const COMPONENT* d)const
 {
   {if (modelname() != "") {
+    // search for matching model
     std::list<CARD*>::const_iterator mi =
-      find_ptr(root_model_list.begin(), root_model_list.end(), modelname());
-    {if (mi == root_model_list.end()) {
-      error(bERROR, "can't find model: " + modelname() + '\n');
-      _model = 0;
-    }else{
-      _model = dynamic_cast<const MODEL_CARD*>(*mi);
-      if (!_model) {
-	untested();
-	error(bERROR, modelname() + " is not a .model\n");
+      notstd::find_ptr(root_model_list.begin(), root_model_list.end(),
+		       modelname());
+    if (mi == root_model_list.end()) {
+      // didn't find.  try binned models
+      int bin_count = 0;
+      for (;;) {
+	std::string extended_name = modelname() + '.' + to_string(++bin_count);
+	mi = notstd::find_ptr(root_model_list.begin(), root_model_list.end(),
+		      extended_name);
+	{if (mi == root_model_list.end()) {
+	  {if (bin_count <= 1) {
+	    error(bERROR, d->long_label() + ": can't find model: "
+		  + modelname() + '\n');
+	  }else{
+	    error(bERROR,d->long_label()+": no bins match: "+modelname()+'\n');
+	  }}
+	  _model = 0;
+	}else{
+	  _model = dynamic_cast<const MODEL_CARD*>(*mi);
+	  if (_model && _model->is_valid(this)) {
+	    //matching name and correct bin
+	    break;
+	  }
+	}}
       }
+    }
+
+    // found something, what is it?
+    _model = dynamic_cast<const MODEL_CARD*>(*mi);
+    {if (!_model) {
+      untested();
+      error(bERROR, d->long_label() +": " +modelname() +" is not a .model\n");
+    }else if (!_model->is_valid(this)) {
+      untested();
+      error(bERROR,d->long_label()+": model type mismatch: "+modelname()+'\n');
     }}
+    // must be a model, the right kind
   }else{
     untested();
     assert(!_model);
@@ -78,19 +103,16 @@ void COMMON_COMPONENT::ac_eval(ELEMENT*x)const
 /*--------------------------------------------------------------------------*/
 bool COMMON_COMPONENT::is_equal(const COMMON_COMPONENT& x)const
 {
-  bool rv = _tnom == x._tnom
-    && _modelname == x._modelname;
-  if (rv) {
-    assert(!_model || !x._model || _model == x._model);
-  }
-  return rv;
+  return (_tnom == x._tnom
+    && _modelname == x._modelname
+    && _model == x._model);
 }
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT()
   :CARD(),
    _common(0),
    _converged(false),
-   _queued_for_eval(-1)
+   _q_for_eval(-1)
 {
 }
 /*--------------------------------------------------------------------------*/
@@ -98,49 +120,57 @@ COMPONENT::COMPONENT(const COMPONENT& p)
   :CARD(p),
    _common(0), 
    _converged(p._converged),
-   _queued_for_eval(-1)
+   _q_for_eval(-1)
 {
   attach_common(p._common);
   assert(_common == p._common);
 }
 /*--------------------------------------------------------------------------*/
 /* parse_nodes: parse circuit connections from input string
- * n array must hold at least numnodes+1
+ * n array must hold at least max_nodes+1
  * fills in the rest of the array with INVALIDNODE
  * returns the number of nodes actually read
  */
-int COMPONENT::parse_nodes(CS& cmd, int numnodes, int minfill, int start)
+int COMPONENT::parse_nodes(CS& cmd, int max_nodes, int min_nodes, int start)
 {
   int count = 0;
-  if (start < numnodes) {
+  if (start < max_nodes) {
     int paren = cmd.skiplparen();
-    for (int ii = start;  ii < numnodes;  ++ii) {
-      _n[ii].t = _n[ii].e = name2number(cmd);
-      if (_n[ii].e != INVALID_NODE) {
+    int ii = start;
+    for ( ; ii < max_nodes; ++ii) {
+      _n[ii].parse(cmd, this);
+      if (_n[ii].e_() != INVALID_NODE) {
 	count = ii+1;
       }else{
-	if (ii <= minfill) {
-	  cmd.warn(bDANGER, "need more nodes");
-	  _n[ii].t = _n[ii].e = 0;
-	}
+	break;
       }
+    }
+    for ( ; ii <= min_nodes && ii < max_nodes; ++ii) {
+      if (ii < min_nodes) {
+	cmd.warn(bDANGER, "need more nodes");
+      }
+      _n[ii].set_to_0();  // ii == min_nodes is bjt hack
     }
     paren -= cmd.skiprparen();
     if (paren != 0) {
-      untested();
       cmd.warn(bWARNING, "need )");
     }
   }
-  set_port_count(count);
   return count;
 }
 /*--------------------------------------------------------------------------*/
 /* printnodes: print a node list
  */
-void COMPONENT::printnodes(OMSTREAM& where, int numnodes, int start)const
+void COMPONENT::printnodes(OMSTREAM& o)const
 {
-  for (int ii = start;  ii < numnodes && ii < port_count();  ++ii) {
-    where << "  " << _n[ii];
+  if (OPT::named_nodes) {
+    o << " (";
+  }
+  for (int ii = 0;  ii < net_nodes();  ++ii) {
+    o << "  " << _n[ii].name(this);
+  }
+  if (OPT::named_nodes) {
+    o << ")";
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -158,7 +188,7 @@ void COMPONENT::deflate_common()
 void COMPONENT::expand()
 {
   if (has_common()) {
-    mutable_common()->expand();
+    mutable_common()->expand(this);
   }
   deflate_common();
 }
@@ -166,8 +196,29 @@ void COMPONENT::expand()
 void COMPONENT::map_nodes()
 {
   assert(is_device());
-  for (int ii = -inode_count();  ii < port_count();  ++ii) {
+  int ext_nodes = std::max(net_nodes(), matrix_nodes());
+  for (int ii = -int_nodes();  ii < ext_nodes;  ++ii) {
     _n[ii].map();
+  }
+}
+/*--------------------------------------------------------------------------*/
+void COMPONENT::tr_alloc_matrix()
+{
+  if (is_device()) {
+    assert(matrix_nodes() == 0);
+    if (subckt().exists()) {
+      subckt().tr_alloc_matrix();
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+void COMPONENT::ac_alloc_matrix()
+{
+  if (is_device()) {
+    assert(matrix_nodes() == 0);
+    if (subckt().exists()) {
+      subckt().ac_alloc_matrix();
+    }
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -176,16 +227,15 @@ void COMPONENT::map_nodes()
 void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
 			       COMMON_COMPONENT *Common, double Value,
 			       int , double [],
-			       int Port_Count, const node_t Nodes[])
+			       int node_count, const node_t Nodes[])
 {
   set_Label(Label);
   set_owner(Owner);
   set_value(Value);
   attach_common(Common);
-  for (int i=0; i<Port_Count; ++i) {
-    _n[i] = Nodes[i];
-  }
-  set_port_count(Port_Count);
+
+  assert(node_count <= net_nodes());
+  notstd::copy_n(Nodes, node_count, _n);
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_value(double v, COMMON_COMPONENT* c)
@@ -202,11 +252,12 @@ void attach_common(COMMON_COMPONENT *c, COMMON_COMPONENT** to)
 {
   assert(to);
   {if (c == *to) {
-    // The new and old are the same.  Do nothing.
+    // The new and old are the same object.  Do nothing.
   }else if (!c) {
     // There is no new common.  probably a simple element
     untested();
     detach_common(to);
+    untested();    
   }else if (!*to) {
     // No old one, but have a new one.
     *to = c->attach();
@@ -215,13 +266,13 @@ void attach_common(COMMON_COMPONENT *c, COMMON_COMPONENT** to)
     detach_common(to);
     *to = c->attach();
   }else if (c->_attach_count == 0) {
-    // The one already attached matches the new one. 
+    // The new and old are identical.
     // Use the old one.
     // The new one is not used anywhere, so throw it away.
     delete c;
   }else{
     untested();
-    // The one already attached matches the new one. 
+    // The new and old are identical.
     // Use the old one.
     // The new one is also used somewhere else, so keep it.
   }}
@@ -239,21 +290,6 @@ void detach_common(COMMON_COMPONENT** from)
     }
     *from = NULL;
   }
-}
-/*--------------------------------------------------------------------------*/
-/* name2number: convert node name to node number
- * returns node number
- * cnt updated
- */
-static int name2number(CS& cmd)
-{
-  int test = cmd.cursor();
-  int node = cmd.ctoi();
-  {if (test == cmd.cursor()) {
-    return INVALID_NODE;
-  }else{
-    return node;
-  }}
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

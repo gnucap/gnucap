@@ -1,8 +1,8 @@
-/*$Id: d_subckt.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: d_subckt.cc,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,11 +81,9 @@ bool COMMON_SUBCKT::operator==(const COMMON_COMPONENT& x)const
 }
 /*--------------------------------------------------------------------------*/
 MODEL_SUBCKT::MODEL_SUBCKT()
-  :COMPONENT()
+  :COMPONENT(),
+   _num_nodes(0)
 {
-  for (int ii = 0;  ii < PORTS_PER_SUBCKT;  ++ii) {
-    _nodes[ii].e = _nodes[ii].t = _nodes[ii].m = INVALID_NODE;
-  }
   _n = _nodes;
   //set_label(name);
   root_model_list.push_back(this);
@@ -102,18 +100,22 @@ MODEL_SUBCKT::~MODEL_SUBCKT()
 /*--------------------------------------------------------------------------*/
 void MODEL_SUBCKT::parse(CS& cmd)
 { 
+  // parse the line
   cmd.reset();
   cmd.skiparg();	/* skip known ".subckt" */
   parse_label(cmd);
-  parse_nodes(cmd, PORTS_PER_SUBCKT, 1);
+  _num_nodes = parse_nodes(cmd, max_nodes(), min_nodes());
+
+  // "push" the return place, so when the subckt ends, we can go back
   substack.push_back(SSNODE(short_label(), CARD_LIST::putbefore));
+  // until further notice, attach to the subckt.
   CARD_LIST::putbefore = CARD_LIST::fat_iterator(&(subckt()), subckt().end());
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_SUBCKT::print(OMSTREAM& where, int)const
 {
   where << ".subckt " << short_label() << ' ';
-  printnodes(where, PORTS_PER_SUBCKT);
+  printnodes(where);
   where << '\n';
 
   {if (subckt().exists()) {
@@ -148,19 +150,20 @@ void CMD::ends(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT::DEV_SUBCKT()
+  :BASE_SUBCKT(),
+   _num_nodes(0)
 {
   attach_common(&Default_SUBCKT);
-  for (int ii = 0;  ii < PORTS_PER_SUBCKT;  ++ii) {
-    _nodes[ii].e = _nodes[ii].t = _nodes[ii].m = INVALID_NODE;
-  }
   _n = _nodes;
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
-DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p):BASE_SUBCKT(p)
+DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
+  :BASE_SUBCKT(p),
+   _num_nodes(p._num_nodes)
 {
   //strcpy(modelname, p.modelname); in common
-  for (int ii = 0;  ii < PORTS_PER_SUBCKT;  ++ii) {
+  for (int ii = 0;  ii < max_nodes();  ++ii) {
     _nodes[ii] = p._nodes[ii];
   }
   _n = _nodes;
@@ -175,7 +178,7 @@ void DEV_SUBCKT::parse(CS& cmd)
   assert(!c->has_model());
 
   parse_Label(cmd);
-  parse_nodes(cmd, PORTS_PER_SUBCKT, 1);
+  _num_nodes = parse_nodes(cmd, max_nodes(), min_nodes());
   c->parse_modelname(cmd);
   attach_common(c);
 }
@@ -185,7 +188,7 @@ void DEV_SUBCKT::print(OMSTREAM& where, int)const
   const COMMON_SUBCKT* c = prechecked_cast<const COMMON_SUBCKT*>(common());
   assert(c);
   where << short_label();
-  printnodes(where, PORTS_PER_SUBCKT);
+  printnodes(where);
   where << "  " << c->modelname() << '\n';
 }
 /*--------------------------------------------------------------------------*/
@@ -206,92 +209,101 @@ void COMPONENT::expandsubckt(const std::string& modelname)
 {
   enum {UNUSED=0, USED=-3};
 
+  // get rid of the old one, so we start clean
   if (!subckt().empty()) {
-    untested();
     subckt().destroy();
   }
+  assert(subckt().empty());
 
-  std::list<CARD*>::const_iterator mi =
-    find_ptr(root_model_list.begin(), root_model_list.end(), modelname);
-  {if (mi == root_model_list.end()) {
-    error(bDANGER, "can't find subckt: " + modelname + '\n');
-    assert(subckt().empty());
-    return;
-  }else if(!dynamic_cast<MODEL_SUBCKT*>(*mi)) {
-    untested();
-    error(bDANGER, modelname + " is not a subckt\n");
-    assert(subckt().empty());
-    return;
-  }}
-  const CARD* model = *mi;
+  // find the prototype (.subckt)
+  const CARD* model = 0;
+  {
+    std::list<CARD*>::const_iterator mi =
+      notstd::find_ptr(root_model_list.begin(), root_model_list.end(),
+		       modelname);
+    {if (mi == root_model_list.end()) {
+      error(bDANGER, "can't find subckt: " + modelname + '\n');
+      assert(subckt().empty());
+      return;
+    }else if(!dynamic_cast<MODEL_SUBCKT*>(*mi)) {
+      untested();
+      error(bDANGER, modelname + " is not a subckt\n");
+      assert(subckt().empty());
+      return;
+    }}
+    model = *mi;
+  }
   assert(model);
   
+  // set up the map of external to expanded node numbers
   int map[NODESPERSUBCKT];
-  for (int i = 0; i < NODESPERSUBCKT; ++i) { /* initialize: all nodes unused */
-    map[i] = UNUSED;
-  }
-  for (CARD_LIST::const_iterator
-	 ci = model->subckt().begin(); ci != model->subckt().end(); ++ci) {
-    CARD* scan = *ci;
-    if (scan->is_device()) {				/* mark nodes used */
-      for (int ii = 0;  ii < scan->port_count();  ++ii) {
-	assert(scan->_n[ii].e != INVALID_NODE);
-	if (scan->_n[ii].e >= NODESPERSUBCKT) {
-	  untested(); 
-	  error(bERROR, model->long_label() + ": too many internal nodes\n");
-	}
-	map[scan->_n[ii].e] = USED;
-      }
+  {
+    // initialize - all nodes unused
+    for (int i = 0; i < NODESPERSUBCKT; ++i) {
+      map[i] = UNUSED;
     }
-  }
-  /* map is flags showing USED or UNUSED */
-  map[0] = 0;
-  for (int port = 0; port < model->port_count(); ++port) { /*map ports*/
-    assert(model->_n[port].e != INVALID_NODE);
-    if (model->_n[port].e >= NODESPERSUBCKT) {
-      untested(); 
-      error(bERROR, "internal error: subckt node out of range: "
-	    + model->long_label() + '\n');
-    }
-    map[model->_n[port].e] = _n[port].t;
-  }
-  /* map now has node numbers for ports only -- others still USED or UNUSED */
-  for (int ii = 0;  ii < NODESPERSUBCKT;  ++ii) {
-    if (map[ii] == USED) {
-      map[ii] = STATUS::newnode_subckt(); /* assign number to internal nodes */
-    }
-  }
-  /* map now full of internal node numbers, with all UNUSED == 0 */
-  
-  {if (subckt().empty()) {
-    error(bTRACE, long_label() + ": expanding\n");
+
+    // scan the subckt netlist and mark which nodes are used
+    // this is used to pack out the holes
     for (CARD_LIST::const_iterator
 	   ci = model->subckt().begin(); ci != model->subckt().end(); ++ci) {
-      CARD* scan = *ci;
-      if (scan->is_device()) {			/* copy subckt */
-	CARD* scratch = scan->clone();
-	scratch->set_owner(this);
-	subckt().push_front(scratch);
+      if ((**ci).is_device()) {
+	for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
+	  if ((**ci)._n[ii].e_() >= NODESPERSUBCKT) {
+	    untested(); 
+	    error(bERROR, model->long_label() + ": too many internal nodes\n");
+	  }
+	  map[(**ci)._n[ii].e_()] = USED;
+	}
       }
     }
-  }else{
-    error(bTRACE, long_label() + ": re-expanding\n");
-  }}
+
+    // map is a set of flags showing USED or UNUSED
+    // now we want to turn it into numbers
+    // UNUSED will remain 0, like ground
+    // USED will turn into numbers
+
+    // first, take care of the "port" nodes (external connections)
+    // map them to what the calling circuit wants
+    map[0] = 0;
+    for (int port = 0; port < model->net_nodes(); ++port) {
+      if (model->_n[port].e_() >= NODESPERSUBCKT) {
+	untested(); 
+	error(bERROR, "internal error: subckt node out of range: "
+	      + model->long_label() + '\n');
+      }
+      map[model->_n[port].e_()] = _n[port].t_();
+    }
+    // map now has node numbers for ports only -- others still USED or UNUSED
+
+    // get new node numbers, and assign them to the remaining USED
+    for (int ii = 0;  ii < NODESPERSUBCKT;  ++ii) {
+      if (map[ii] == USED) {
+	map[ii] = STATUS::newnode_subckt();
+      }
+    }
+  }
+  // done. map now full of internal node numbers, with all UNUSED == 0
+  
+  // make a shallow copy of the prototype
+  assert(subckt().empty());
+  error(bTRACE, long_label() + ": expanding\n");
+  for (CARD_LIST::const_iterator
+	 ci = model->subckt().begin(); ci != model->subckt().end(); ++ci) {
+    if ((**ci).is_device()) {
+      CARD* copy = (**ci).clone();
+      copy->set_owner(this);
+      subckt().push_front(copy);
+    }
+  }
   assert(!subckt().empty());
-  {
+  
+  // map the nodes
   for (CARD_LIST::iterator
 	 ci = subckt().begin(); ci != subckt().end(); ++ci) {
-    CARD* scan = *ci;
-      {if (scan->is_device()) {
-	for (int ii = 0;  ii < scan->port_count();  ++ii) {
-	  assert(scan->_n[ii].e != INVALID_NODE);
-	  assert(scan->_n[ii].e >= 0);	 /* bad node? */
-	  assert(map[scan->_n[ii].e] >= 0); /* node map,all mapped and valid */
-	  scan->_n[ii].t = map[scan->_n[ii].e];
-	}
-      }else{
-	untested(); 
-      }}
+    assert((**ci).is_device());
+    for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
+      (**ci)._n[ii].map_subckt_node(map);
     }
   }
 }
@@ -304,7 +316,7 @@ double DEV_SUBCKT::tr_probe_num(CS& cmd)const
   {if (cmd.pmatch("V")) {
     untested(); 
     int nn = cmd.ctoi();
-    return (nn > 0 && nn <= PORTS_PER_SUBCKT) ? _n[nn-1].v0() : NOT_VALID;
+    return (nn > 0 && nn <= net_nodes()) ? _n[nn-1].v0() : NOT_VALID;
   }else if (cmd.pmatch("P")) {
     untested(); 
     double power = 0.;

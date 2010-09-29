@@ -1,8 +1,8 @@
-/*$Id: d_cap.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: d_cap.h,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,11 @@ public:
 protected: // override virtual
   char	   id_letter()const	{return 'C';}
   const char* dev_type()const	{return "capacitor";}
-  int	   numnodes()const	{return 2;}
+  int	   max_nodes()const	{return 2;}
+  int	   min_nodes()const	{return 2;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 2;}
+  int	   net_nodes()const	{return 2;}
   bool	   is_1port()const	{return true;}
   CARD*	   clone()const		{return new DEV_CAPACITANCE(*this);}
   //void   parse(CS&);		//ELEMENT
@@ -44,16 +48,17 @@ protected: // override virtual
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
+  void	   tr_alloc_matrix()	{tr_alloc_matrix_passive();}
   //void   dc_begin();		//STORAGE
   //void   tr_begin();		//STORAGE
   //void   tr_restore();	//STORAGE
   //void   dc_advance();	//STORAGE
   //void   tr_advance();	//STORAGE
   //bool   tr_needs_eval();	//STORAGE
-  //void   tr_queue_eval();	//STORAGE
+  //void   tr_queue_eval();	//ELEMENT
   bool	   do_tr();
   void	   tr_load()		{tr_load_passive();}
-  double   tr_review();
+  //double tr_review();		//STORAGE
   //void   tr_accept();		//CARD/nothing
   void	   tr_unload()		{tr_unload_passive();}
   //double tr_amps()const	//ELEMENT
@@ -61,6 +66,7 @@ protected: // override virtual
   double   tr_involts_limited()const {return tr_outvolts_limited();}
   double   tr_probe_num(CS&)const;
 
+  void	   ac_alloc_matrix()	{ac_alloc_matrix_passive();}
   void	   ac_begin()		{_ev = _y0.f1;}
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
@@ -76,7 +82,11 @@ public:
 private: // override virtual
   char     id_letter()const	{return '\0';}
   const char* dev_type()const	{return "tcap";}
-  int	   numnodes()const	{return 4;}
+  int	   max_nodes()const	{return 4;}
+  int	   min_nodes()const	{return 4;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 4;}
+  int	   net_nodes()const	{return 4;}
   bool	   is_1port()const	{untested(); return false;}
   bool	   is_2port()const	{return true;}
   bool	   f_is_value()const	{untested(); return true;}
@@ -87,16 +97,17 @@ private: // override virtual
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
+  void	   tr_alloc_matrix()	{tr_alloc_matrix_active();}
   //void   dc_begin();		//STORAGE
   //void   tr_begin();		//STORAGE
   //void   tr_restore();	//STORAGE
   //void   dc_advance();	//STORAGE
   //void   tr_advance();	//STORAGE
   //bool   tr_needs_eval();	//STORAGE
-  //void   tr_queue_eval();	//STORAGE
+  //void   tr_queue_eval();	//ELEMENT
   //bool   do_tr();		//DEV_CAPACITANCE
   void	   tr_load()		{tr_load_active();}
-  //double tr_review();		//DEV_CAPACITANCE
+  //double tr_review();		//STORAGE
   //void   tr_accept();		//CARD/nothing
   //void   tr_unload();		//DEV_CAPACITANCE
   //double tr_amps()const	//ELEMENT
@@ -104,6 +115,7 @@ private: // override virtual
   double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
   //double tr_probe_num(CS&)const;//DEV_CAPACITANCE
 
+  void	    ac_alloc_matrix()	{ac_alloc_matrix_active();}
   //void    ac_begin();		//DEV_CAPACITANCE
   //void    do_ac();		//DEV_CAPACITANCE
   void	    ac_load()		{untested(); ac_load_active();}
@@ -120,7 +132,11 @@ public:
 private: // override virtual
   char     id_letter()const	{return '\0';}
   const char* dev_type()const	{return "vccap";}
-  int	   numnodes()const	{return 4;}
+  int	   max_nodes()const	{return 4;}
+  int	   min_nodes()const	{return 4;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 4;}
+  int	   net_nodes()const	{return 4;}
   bool	   is_2port()const	{return true;}
   bool	   f_is_value()const	{untested(); return true;}
   CARD*	   clone()const		{return new DEV_VCCAP(*this);}
@@ -130,16 +146,17 @@ private: // override virtual
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
+  void	   tr_alloc_matrix()	{tr_alloc_matrix_extended();}
   //void   dc_begin();		//STORAGE
   //void   tr_begin();		//STORAGE
   //void   tr_restore();	//STORAGE
   //void   dc_advance();	//STORAGE
   //void   tr_advance();	//STORAGE
   //bool   tr_needs_eval();	//STORAGE
-  //void   tr_queue_eval();	//STORAGE
+  //void   tr_queue_eval();	//ELEMENT
   bool     do_tr();
   //void   tr_load();		//DEV_CAPACITANCE
-  //double tr_review();		//DEV_CAPACITANCE
+  //double tr_review();		//STORAGE
   //void   tr_accept();		//CARD/nothing
   //void   tr_unload();		//DEV_CAPACITANCE
   //double tr_amps()const	//ELEMENT
@@ -147,6 +164,7 @@ private: // override virtual
   double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
   //double tr_probe_num(CS&)const;//DEV_CAPACITANCE
 
+  void	    ac_alloc_matrix()	{ac_alloc_matrix_extended();}
   //void    ac_begin();		//DEV_CAPACITANCE
   //void    do_ac();		//DEV_CAPACITANCE
   //void    ac_load();		//DEV_CAPACITANCE
@@ -154,7 +172,7 @@ private: // override virtual
   //XPROBE  ac_probe_ext(CS&)const;//ELEMENT
 };
 /*--------------------------------------------------------------------------*/
-class DEV_POLY_CAP : public STORAGE {
+class DEV_FPOLY_CAP : public STORAGE {
 private:
   double*  _vy0; // vector form of _y0 _values;
   double*  _vy1; // vector form of _y1 _old_values;
@@ -162,33 +180,39 @@ private:
   double*  _vi1; // vector form of _i1
   int	   _n_ports;
   double   _time;
+  const double** _inputs;
 private:
-  explicit DEV_POLY_CAP(const DEV_POLY_CAP& p)
+  explicit DEV_FPOLY_CAP(const DEV_FPOLY_CAP& p)
     :STORAGE(p) {incomplete(); unreachable();}
 public:
-  explicit DEV_POLY_CAP(const std::string& label, int n_ports, node_t nodes[],
-		      double vy0[], double vy1[], CARD* owner=0);
+  explicit DEV_FPOLY_CAP();
+  ~DEV_FPOLY_CAP();
 private: // override virtual
   char	   id_letter()const	{unreachable(); return '\0';}
   const char* dev_type()const	{unreachable(); return "pcapacitor";}
-  int	   numnodes()const	{unreachable(); return _n_ports*2;}
-  CARD*	   clone()const	       {unreachable(); return new DEV_POLY_CAP(*this);}
+  int	   max_nodes()const	{unreachable(); return 0;}
+  int	   min_nodes()const	{unreachable(); return 0;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return _n_ports*2;}
+  int	   net_nodes()const	{return _n_ports*2;}
+  CARD*	   clone()const	       {unreachable();return new DEV_FPOLY_CAP(*this);}
   //void   parse(CS&);		//ELEMENT
   //void   print(OMSTREAM,int)const; //ELEMENT
   //void   expand();		//CARD/nothing
   //void   map_nodes();		//ELEMENT
   //void   precalc();		//STORAGE
 
+  void	   tr_alloc_matrix()	{tr_alloc_matrix_extended();}
   //void   dc_begin();		//STORAGE
   //void   tr_begin();		//STORAGE
   //void   tr_restore();	//STORAGE
   //void   dc_advance();	//STORAGE
   //void   tr_advance();	//STORAGE
-  //bool   tr_needs_eval();	//STORAGE
-  //void   tr_queue_eval();	//STORAGE
+  bool	   tr_needs_eval()	{return true;}
+  //void   tr_queue_eval();	//ELEMENT
   bool	   do_tr();
   void	   tr_load();
-  double   tr_review()		{return review(_i0.f0, _it1.f0);}
+  double   tr_review()		{return NEVER;}//review(_i0.f0, _it1.f0);}
   //void   tr_accept();		//CARD/nothing
   void	   tr_unload();
   double   tr_amps()const;
@@ -196,11 +220,20 @@ private: // override virtual
   double   tr_involts_limited()const {unreachable(); return NOT_VALID;}
   //double tr_probe_num(CS&)const;//ELEMENT
 
+  void	   ac_alloc_matrix()	{ac_alloc_matrix_extended();}
   //void   ac_begin();		//CARD/nothing
   void	   do_ac()		{ac_load();}
   void	   ac_load();
   COMPLEX  ac_involts()const	{unreachable(); return NOT_VALID;}
   //XPROBE ac_probe_ext(CS&)const;//ELEMENT
+public:
+  void set_parameters(const std::string& Label, CARD* Parent,
+		      COMMON_COMPONENT* Common, double Value,
+		      int state_count, double state[],
+		      int node_count, const node_t nodes[]);
+  //		      const double* inputs[]=0);
+private:
+  bool do_tr_con_chk_and_q();
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

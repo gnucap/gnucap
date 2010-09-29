@@ -1,8 +1,8 @@
-/*$Id: s_fo_set.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: s_fo_set.cc,v 22.5 2002/07/07 07:26:31 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,7 @@ void FOURIER::fftallocate()
   int probes = printlist().size();
   fdata = new COMPLEX*[probes];
   for (int ii = 0;  ii < probes;  ++ii) {
-    fdata[ii] = new COMPLEX[timesteps];
+    fdata[ii] = new COMPLEX[timesteps+100];
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -114,9 +114,9 @@ void FOURIER::fftallocate()
 void FOURIER::fftunallocate()
 {
   for (int ii = 0;  ii < printlist().size();  ++ii) {
-    delete fdata[ii];
+    delete [] fdata[ii];
   }
-  delete fdata;
+  delete [] fdata;
   fdata = NULL;
 }
 /*--------------------------------------------------------------------------*/

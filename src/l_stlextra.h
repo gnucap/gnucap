@@ -1,8 +1,8 @@
-/*$Id: l_stlextra.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: l_stlextra.h,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,18 @@
 #define L_STLEXTRA_H
 #include "md.h"
 /*--------------------------------------------------------------------------*/
+namespace notstd {
+/*--------------------------------------------------------------------------*/
+template <class InputIter, class Size, class OutputIter>
+std::pair<InputIter, OutputIter> copy_n(InputIter first, Size count,
+				   OutputIter result)
+{
+  for ( ; count > 0; --count) {
+    *result++ = *first++;
+  }
+  return std::pair<InputIter, OutputIter>(first, result);
+}
+/*--------------------------------------------------------------------------*/
 /* find_ptr: like the stl find, except that the list contains pointers
    Dereference the pointer in the list, then compare */
 template <class InputIterator, class T>
@@ -42,6 +54,8 @@ inline void to_lower(std::string* s)
   for (std::string::iterator i = s->begin(); i != s->end(); ++i) {
     *i = tolower(*i);
   }
+}
+/*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

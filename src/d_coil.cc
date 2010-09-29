@@ -1,8 +1,8 @@
-/*$Id: d_coil.cc,v 20.7 2001/09/29 05:31:06 al Exp $ -*- C++ -*-
+/*$Id: d_coil.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,25 +20,14 @@
  * 02111-1307, USA.
  *------------------------------------------------------------------
  * inductors
- * y.x = amps,  y.f0 = flux, ev = y.f1 = henrys
- * m.x = volts, m.c0 = amps, acg = m.c1 = mhos.
+ * y.x = amps,  y.f0 = flux,  ev = y.f1 = henrys
+ * q = y history in time
+ * i.x = amps,  i.f0 = volts,      i.f1 = ohms
+ * m.x = volts, m.c0 = amps, acg = m.c1 = mhos
  */
 #include "d_cccs.h"
 #include "ap.h"
 #include "d_coil.h"
-/*--------------------------------------------------------------------------*/
-//		DEV_MUTUAL_L::DEV_MUTUAL_L();
-//		DEV_MUTUAL_L::DEV_MUTUAL_L(const DEV_MUTUAL_L& p);
-//	void	DEV_MUTUAL_L::parse(CS&);
-//	void	DEV_MUTUAL_L::print(int where, int detail)const;
-//	void	DEV_MUTUAL_L::expand();
-
-// 	bool	DEV_INDUCTANCE::do_tr();
-// 	void	DEV_INDUCTANCE::tr_load();
-// 	void	DEV_INDUCTANCE::tr_unload();
-// 	void	DEV_INDUCTANCE::do_ac();
-//	double	DEV_INDUCTANCE::tr_review();
-//	void	DEV_INDUCTANCE::integrate();
 /*--------------------------------------------------------------------------*/
 DEV_MUTUAL_L::DEV_MUTUAL_L()
   :COMPONENT(),
@@ -130,13 +119,13 @@ void DEV_MUTUAL_L::expand()
 
   DEV_CCCS* sub = new DEV_CCCS;
   assert(sub);
-  sub->set_parameters("F" + sec->short_label(), _output, NULL,
+  sub->set_parameters_cc("F" + sec->short_label(), _output, NULL,
 		      -lm / l1, _output->_n[OUT1], _output->_n[OUT2], sec);
   _output->subckt().push_back(sub).expand();
   
   sub = new DEV_CCCS;
   assert(sub);
-  sub->set_parameters("F" + pri->short_label(), _input, NULL,
+  sub->set_parameters_cc("F" + pri->short_label(), _input, NULL,
 		      -lm / l2, _input->_n[OUT1], _input->_n[OUT2], pri);
   _input->subckt().push_back(sub).expand();
 
@@ -150,6 +139,15 @@ void DEV_INDUCTANCE::map_nodes()
   }else{
   }}
   COMPONENT::map_nodes();
+}
+/*--------------------------------------------------------------------------*/
+void DEV_INDUCTANCE::tr_alloc_matrix()
+{
+  {if (subckt().exists()) {
+    subckt().tr_alloc_matrix();
+  }else{
+    tr_alloc_matrix_passive();
+  }}
 }
 /*--------------------------------------------------------------------------*/
 void DEV_INDUCTANCE::precalc()
@@ -195,7 +193,6 @@ void DEV_INDUCTANCE::dc_advance()
   {if (subckt().exists()) {
     subckt().dc_advance();
   }else{
-    _mt1 = _m0;
     STORAGE::dc_advance();
   }}
 }
@@ -205,9 +202,6 @@ void DEV_INDUCTANCE::tr_advance()
   {if (subckt().exists()) {
     subckt().tr_advance();
   }else{
-    if (_time[0] < SIM::time0) { // forward
-      _mt1 = _m0;
-    }
     STORAGE::tr_advance();
   }}
 }
@@ -218,7 +212,6 @@ bool DEV_INDUCTANCE::tr_needs_eval()
     untested();
     return subckt().tr_needs_eval();
   }else{
-    untested();
     return true;
   }}
 }
@@ -237,28 +230,38 @@ bool DEV_INDUCTANCE::do_tr()
   {if (subckt().exists()) {
     set_converged(subckt().do_tr());
   }else{
-    initial_condition = NOT_INPUT;
-    {if (has_tr_eval()) {
-      _m0.x = tr_involts_limited();
-      _y0.x = _m0.c0 + _m0.c1 * _m0.x;
+    double x = NOT_VALID;
+    {if (using_tr_eval()) {
+      x = tr_involts_limited();
+      _y0.x = _m0.c0 + _m0.c1 * x;
       tr_eval();
       if (_y0.f1 == 0.) {
 	untested();
-	error(bPICKY, long_label() + ": short circuit\n");
+	error(bDANGER, long_label() + ": short circuit,  L = 0\n");
 	_y0.f1 = OPT::shortckt;
 	set_converged(conv_check());
       }
     }else{
-      _m0.x = _n[OUT1].v0() - _n[OUT2].v0();
-      _y0.x = _m0.c0 + _m0.c1 * _m0.x;
+      x = _n[OUT1].v0() - _n[OUT2].v0();
+      _y0.x = _m0.c0 + _m0.c1 * x;
       assert(_y0.f1 == value());
       _y0.f0 = _y0.x * _y0.f1;
       assert(converged());
     }}
     store_values();
     q_load();
+
     _q[0] = _y0;
-    integrate();
+
+    // i is really voltage ..
+    // _i0.x = current, _i0.f0 = voltage, _i0.f1 = ohms
+    _i0.x  = _y0.x;
+    _i0.f0 = differentiate();
+    _i0.f1 = tr_c_to_g(_q[0].f1, _i0.f1);
+
+    _m0.x = x;
+    _m0.c1 = 1 / ((_i0.c1()==0) ? OPT::shortckt : _i0.c1());
+    _m0.c0 = -_i0.c0() * _m0.c1;
   }}
   return converged();
 }
@@ -277,7 +280,7 @@ double DEV_INDUCTANCE::tr_review()
   {if (subckt().exists()) {
     return subckt().tr_review();
   }else{
-    return review(_m0.x, _mt1.x);    
+    return STORAGE::tr_review();
   }}
 }
 /*--------------------------------------------------------------------------*/
@@ -289,6 +292,15 @@ void DEV_INDUCTANCE::tr_unload()
   }else{
     untested();
     tr_unload_passive();
+  }}
+}
+/*--------------------------------------------------------------------------*/
+void DEV_INDUCTANCE::ac_alloc_matrix()
+{
+  {if (subckt().exists()) {
+    subckt().ac_alloc_matrix();
+  }else{
+    ac_alloc_matrix_passive();
   }}
 }
 /*--------------------------------------------------------------------------*/
@@ -332,43 +344,26 @@ void DEV_INDUCTANCE::ac_load()
   }}
 }
 /*--------------------------------------------------------------------------*/
-void DEV_INDUCTANCE::integrate()
+double DEV_INDUCTANCE::tr_probe_num(CS& cmd)const
 {
-  {if (SIM::mode == sDC  ||  SIM::mode == sOP  ||  _y0.f1 == 0.) {
-    _m0.c1 = 1./OPT::shortckt;
-    _m0.c0 = 0.;
-  }else if (SIM::phase == SIM::pINIT_DC) {
-    {if (_time[0] == 0.) {
-      {if (SIM::uic && initial_condition != NOT_INPUT) {
-	untested();
-	_m0.c1 = 0.;
-	_m0.c0 = -initial_condition;
-      }else{
-	_m0.c1 = 1./OPT::shortckt;
-	_m0.c0 = 0.;
-      }}
-    }else{
-      untested();
-      /* leave it alone to restore */
-    }}
+  {if (subckt().exists()) {
+    return COMPONENT::tr_probe_num(cmd);
   }else{
-    double dt = _time[0] - _time[1];
-    switch (_method_a) {
-    case mGEAR:
-    case mTRAPGEAR:
-    case mTRAPEULER:
-    case mEULER:
+    {if (cmd.pmatch("PHI") || cmd.pmatch("FLUX")) {
       untested();
-      _m0.c1 = dt / _y0.f1;
-      _m0.c0 = _mt1.c0 + _mt1.c1 * _mt1.x; /* oldi */
-      break;
-    case mTRAP:
-      /* oldi = _mt1.c0 + _mt1.c1 * _mt1.x; */
-      _m0.c1 = dt/(2*_y0.f1);
-      _m0.c0 = _mt1.c0 + (_mt1.c1 + _m0.c1) * _mt1.x;
-      /* oldi + f1*oldv, with combined terms */
-      break;
-    }
+      return _q[0].f0;
+    }else if (cmd.pmatch("INDuctance")) {
+      untested();
+      return _q[0].f1;
+    }else if (cmd.pmatch("DPDT")) {
+      untested();
+      return (_q[0].f0 - _q[1].f0) / _dt;
+    }else if (cmd.pmatch("DPHI")) {
+      untested();
+      return (_q[0].f0 - _q[1].f0);
+    }else{
+      return STORAGE::tr_probe_num(cmd);
+    }}
   }}
 }
 /*--------------------------------------------------------------------------*/

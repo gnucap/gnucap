@@ -1,8 +1,8 @@
-/* $Id: d_mos6.cc,v 20.13 2001/10/15 00:57:11 al Exp $ -*- C++ -*-
+/* $Id: d_mos6.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include "d_mos6.h"
 /*--------------------------------------------------------------------------*/
 const double NA(NOT_INPUT);
+const double INF(BIGBIG);
 /*--------------------------------------------------------------------------*/
 int MODEL_MOS6::_count = 0;
 /*--------------------------------------------------------------------------*/
@@ -42,8 +43,8 @@ TDP_MOS6::TDP_MOS6(const DEV_MOS* d)
   assert(d);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(d->common());
   assert(c);
-  const SDP_MOS6* b = prechecked_cast<const SDP_MOS6*>(c->sdp());
-  assert(b);
+  const SDP_MOS6* s = prechecked_cast<const SDP_MOS6*>(c->sdp());
+  assert(s);
   const MODEL_MOS6* m = prechecked_cast<const MODEL_MOS6*>(c->model());
   assert(m);
 
@@ -54,9 +55,8 @@ TDP_MOS6::TDP_MOS6(const DEV_MOS* d)
       double vt = kt / Q;
       double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
       double arg = (m->egap*tempratio - egap) / (2*kt);
-
   phi = m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)));
-  beta = m->kc * tempratio4 * b->w_eff / b->l_eff;
+  beta = m->kc * tempratio4 * s->w_eff / s->l_eff;
   vbi = (fixzero(
 	(m->vto - m->polarity * m->gamma * sqrt(m->phi)
 	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi));
@@ -142,7 +142,6 @@ void MODEL_MOS6::parse_finish()
 	  }
 	}
       }
-
   if (cox == NA) {
     cox = 0.;
   }
@@ -200,16 +199,27 @@ void MODEL_MOS6::print_calculated(OMSTREAM& o)const
   MODEL_MOS123::print_calculated(o);
 }
 /*--------------------------------------------------------------------------*/
+bool MODEL_MOS6::is_valid(const COMMON_COMPONENT* cc)const
+{
+  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
+  {if (!c) {
+    return MODEL_MOS123::is_valid(cc);
+  }else{
+    return MODEL_MOS123::is_valid(cc);
+  }}
+}
+/*--------------------------------------------------------------------------*/
 void MODEL_MOS6::tr_eval(COMPONENT* brh)const
 {
   DEV_MOS* d = prechecked_cast<DEV_MOS*>(brh);
   assert(d);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(d->common());
   assert(c);
-  const SDP_MOS6* b = prechecked_cast<const SDP_MOS6*>(c->sdp());
-  assert(b);
+  const SDP_MOS6* s = prechecked_cast<const SDP_MOS6*>(c->sdp());
+  assert(s);
   const MODEL_MOS6* m = this;
-  TDP_MOS6 t(d);
+  const TDP_MOS6 T(d);
+  const TDP_MOS6* t = &T;
 
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     trace1(d->long_label().c_str(), d->evaliter());
@@ -219,9 +229,9 @@ void MODEL_MOS6::tr_eval(COMPONENT* brh)const
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     double sarg;
     {if (d->vbs <= 0.){
-      sarg = sqrt(t.phi - d->vbs);
+      sarg = sqrt(t->phi - d->vbs);
     }else{
-      sarg = sqrt(t.phi);
+      sarg = sqrt(t->phi);
       sarg = sarg - d->vbs / (sarg+sarg);
       {if (sarg < 0.){
 	untested();
@@ -230,11 +240,11 @@ void MODEL_MOS6::tr_eval(COMPONENT* brh)const
 	untested();
       }}
     }}
-    trace3("", t.phi, d->vbs, sarg);
+    trace3("", t->phi, d->vbs, sarg);
     assert(sarg >= 0.);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-    trace4("", d->vds, t.vbi, m->gamma, m->gamma1);
-    d->von = t.vbi + m->gamma * sarg - m->gamma1 * d->vbs;
+    trace4("", d->vds, t->vbi, m->gamma, m->gamma1);
+    d->von = t->vbi + m->gamma * sarg - m->gamma1 * d->vbs;
     // - m->sigma  * d->vds;  // what is this?????
     d->vgst = d->vgs - d->von;
     trace3("", d->vds, d->von, d->vgst);
@@ -249,12 +259,12 @@ void MODEL_MOS6::tr_eval(COMPONENT* brh)const
       {if (d->vbs <= 0.){
 	vonbm = m->gamma1 + m->gamma / (sarg + sarg);
       }else{
-	vonbm = m->gamma1 + m->gamma * .5 / sqrt(t.phi);
+	vonbm = m->gamma1 + m->gamma * .5 / sqrt(t->phi);
 	untested();
       }}
       trace3("", m->nc, m->lambda0, m->lambda1);
       double logvgon = log(d->vgst);
-      double idsat = t.beta * exp(logvgon * m->nc);
+      double idsat = t->beta * exp(logvgon * m->nc);
       double Lambda = m->lambda0 - m->lambda1 * d->vbs;
       trace4("", vonbm, logvgon, idsat, Lambda);
       

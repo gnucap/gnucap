@@ -1,8 +1,8 @@
-/* $Id: d_mos_base.h,v 20.7 2001/09/29 05:31:06 al Exp $ -*- C++ -*-
+/* $Id: d_mos_base.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@
 #define D_MOS_BASE_H_INCLUDED
 
 #include "d_mos.h"
-  enum polarity_t {pP = -1, pN = 1};
 /*--------------------------------------------------------------------------*/
 class SDP_MOS_BASE
   :public SDP_DIODE{
@@ -65,6 +64,7 @@ public: // override virtual
   void      print_front(OMSTREAM&)const;
   void      print_params(OMSTREAM&)const;
   void      print_calculated(OMSTREAM&)const;
+  bool      is_valid(const COMMON_COMPONENT*)const;
   void      tr_eval(COMPONENT*)const;
 public: // not virtual
   static int count() {return _count;}
@@ -72,6 +72,10 @@ private: // strictly internal
   static int _count;
 public: // input parameters
   int level;	// dummy
+  double wmax;	// max width
+  double wmin;	// min width
+  double lmax;	// max length
+  double lmin;	// min length
   double is;	// bulk jct sat current
   double js;	// bulk jct sat current per sq meter
   double rsh;	// D & S diffusion sheet resistance

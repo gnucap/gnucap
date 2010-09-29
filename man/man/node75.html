@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 
-<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+<!--Converted with LaTeX2HTML 2K.1beta (1.62)
 original version by:  Nikos Drakos, CBLU, University of Leeds
 * revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
 * with significant contributions from:
@@ -56,17 +56,17 @@ original version by:  Nikos Drakos, CBLU, University of Leeds
 
 <UL>
 <LI><A NAME="tex2html1487"
-  HREF="#SECTION004161000000000000000">Syntax</A>
+  HREF="node75.html#SECTION004161000000000000000">Syntax</A>
 <LI><A NAME="tex2html1488"
-  HREF="#SECTION004162000000000000000">Purpose</A>
+  HREF="node75.html#SECTION004162000000000000000">Purpose</A>
 <LI><A NAME="tex2html1489"
-  HREF="#SECTION004163000000000000000">Comments</A>
+  HREF="node75.html#SECTION004163000000000000000">Comments</A>
 <LI><A NAME="tex2html1490"
-  HREF="#SECTION004164000000000000000">Element Parameters</A>
+  HREF="node75.html#SECTION004164000000000000000">Element Parameters</A>
 <LI><A NAME="tex2html1491"
-  HREF="#SECTION004165000000000000000">Model Parameters</A>
+  HREF="node75.html#SECTION004165000000000000000">Model Parameters</A>
 <LI><A NAME="tex2html1492"
-  HREF="#SECTION004166000000000000000">Probes</A>
+  HREF="node75.html#SECTION004166000000000000000">Probes</A>
 </UL>
 <!--End of Table of Child-Links-->
 <HR>
@@ -109,12 +109,14 @@ parameters, in the argument list (<TT>W</TT> and <TT>L</TT>) have units of meter
 All other dimensions are in meters.
 
 <P>
-The options <TT>rstray</TT> and <TT>norstray</TT> determines whether or not series 
-resistances are included.  Experience has shown that the effect of series 
-resistance is usually not significant, it can significantly degrade the 
-simulation time, and it often increases roundoff errors.  Therefore, 
-<TT>norstray</TT> is the default.  <TT>Norstray</TT> is the equivalent of 
-setting the model parameters <TT>rd</TT>, <TT>rs</TT>, and <TT>rsh</TT> all to zero.
+The options <TT>rstray</TT> and <TT>norstray</TT> determines whether or not
+series resistances are included.  <TT>rstray</TT> is the default.
+Experience has shown that the effect of series resistance is often not
+significant, it can significantly degrade the simulation time, and it
+often increases roundoff errors.  <TT>rstray</TT> is the default for
+Spice compatibility, and because it usually is significant for the BJT
+model.  <TT>Norstray</TT> is the equivalent of setting the model
+parameters <TT>rd</TT>, <TT>rs</TT>, and <TT>rsh</TT> all to zero.
 
 <P>
 Entering a parameter value of 0 is not the same as not specifying
@@ -124,7 +126,7 @@ to calculate it some other way.  If you want it to be calculated,
 don't specify it.
 
 <P>
-Another subtle difference from SPICE is that GnuCap may omit some
+Another subtle difference from SPICE is that Gnucap may omit some
 unnecessary parts of the model, which may affect some reported
 values.  It should not affect any voltages or currents.  For example,
 if the gate and drain are tied, Cgs will be omitted from the model,
@@ -148,8 +150,7 @@ Basic Spice compatible parameters</A>
 <P>
 <DL>
 <DT><STRONG><TT>L</TT> = <I>x</I></STRONG></DT>
-<DD>Drawn channel length.  (Default = <TT>DEFL</TT>
-parameter from <TT>options</TT>. <TT>DEFL default = 100<IMG
+<DD>Drawn channel length.  (Default = <TT>DEFL</TT> parameter from <TT>options</TT>. <TT>DEFL default = 100<IMG
  WIDTH="14" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
  SRC="img24.png"
  ALT="$\mu$"></TT>)
@@ -157,8 +158,7 @@ parameter from <TT>options</TT>. <TT>DEFL default = 100<IMG
 <P>
 </DD>
 <DT><STRONG><TT>W</TT> = <I>x</I></STRONG></DT>
-<DD>Drawn channel width.  (Default = <TT>DEFW</TT>
-parameter from <TT>options</TT>. <TT>DEFW default = 100<IMG
+<DD>Drawn channel width.  (Default = <TT>DEFW</TT> parameter from <TT>options</TT>. <TT>DEFW default = 100<IMG
  WIDTH="14" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
  SRC="img24.png"
  ALT="$\mu$"></TT>)
@@ -166,14 +166,12 @@ parameter from <TT>options</TT>. <TT>DEFW default = 100<IMG
 <P>
 </DD>
 <DT><STRONG><TT>AD</TT> = <I>x</I></STRONG></DT>
-<DD>Area of drain diffusion.  (Default = <TT>DEFAD</TT>
-parameter from <TT>options</TT>. <TT>DEFAD default = 0</TT>)
+<DD>Area of drain diffusion.  (Default = <TT>DEFAD</TT> parameter from <TT>options</TT>. <TT>DEFAD default = 0</TT>)
 
 <P>
 </DD>
 <DT><STRONG><TT>AS</TT> = <I>x</I></STRONG></DT>
-<DD>Area of source diffusion.  (Default = <TT>DEFAS</TT>
-parameter from <TT>options</TT>. <TT>DEFAS default = 0</TT>)
+<DD>Area of source diffusion.  (Default = <TT>DEFAS</TT> parameter from <TT>options</TT>. <TT>DEFAS default = 0</TT>)
 
 <P>
 </DD>
@@ -188,21 +186,16 @@ parameter from <TT>options</TT>. <TT>DEFAS default = 0</TT>)
 <P>
 </DD>
 <DT><STRONG><TT>NRD</TT> = <I>x</I></STRONG></DT>
-<DD>Number of squares of drain diffusion.  
-(Default = 1.)
+<DD>Number of squares of drain diffusion.  (Default = 1.)
 
 <P>
 </DD>
 <DT><STRONG><TT>NRS</TT> = <I>x</I></STRONG></DT>
-<DD>Number of squares of source diffusion.  
-(Default = 1.)
+<DD>Number of squares of source diffusion.  (Default = 1.)
 
 <P>
 </DD>
 </DL>
-
-<P>
-
 <H2><A NAME="SECTION004165000000000000000">
 Model Parameters</A>
 </H2>
@@ -214,9 +207,8 @@ Basic selection - required for all models</A>
 </H3>
 <DL>
 <DT><STRONG><TT>LEVEL</TT> = <I>x</I></STRONG></DT>
-<DD>Model index. (Default = 1) Selects which
-of several models to use.  The choices supported are 1-7,
-corresponding to Spice 3f5.
+<DD>Model index. (Default = 1) Selects which of several models to use.
+The choices supported are 1-7, corresponding to Spice 3f5.
 
 <P>
 </DD>
@@ -226,39 +218,87 @@ Extended control (not in Spice) - all models</A>
 </H3>
 <DL>
 <DT><STRONG><TT>CMODEL</TT> = <I>x</I></STRONG></DT>
-<DD>Capacitance model selector 
-(Default = 1 for level 4,5,7.  Default = 2 for level 1,2,3.  Default =
-3 for level 6.)  The only valid values are 1, 2 and 3.  2 selects
-Meyer capacitance calculations compatible with Spice 2.  3 selects
-Meyer's model campatible with Spice 3.  1 selects not to use Meyer's
-model.
+<DD>Capacitance model selector (Default = 1 for level 4,5,7.  Default = 2
+for level 1,2,3.  Default = 3 for level 6.)  The only valid values are
+1, 2 and 3.  2 selects Meyer capacitance calculations compatible with
+Spice 2.  3 selects Meyer's model compatible with Spice 3.  1 selects
+not to use Meyer's model.
 
 <P>
 </DD>
 </DL>
 <H3><A NAME="SECTION004165300000000000000">
+Binning (not in Spice) - all models</A>
+</H3>
+
+<P>
+Gnucap supports ``binning''.  You can specify any number of models as
+a family.  These models must have the selection parameters <TT>WMAX</TT>,
+<TT>WMIN</TT>, <TT>LMAX</TT>, and <TT>LMIN</TT>.
+
+<P>
+To use ``binning'', define a set of models with the same name, except
+for a numeric extension, beginning at 1.  The models must be numbered
+consecutively.  For example, you might have a set of models: <TT>NM3U.1</TT>, <TT>NM3U.2</TT>, <TT>NM3U.3</TT>, <TT>NM3U.4</TT>, <TT>NM3U.5</TT>, <TT>NM3U.6</TT>.  For the device, you would specify the model <TT>NM3U</TT>.  The
+first model meeting the requirements that length is between <TT>LMIN</TT>
+and <TT>LMAX</TT>, and width is between <TT>WMIN</TT> and <TT>WMAX</TT> will be
+used.  They will be tried in numerical order.
+
+<P>
+If there is a gap in the numbering, only those below the gap will be
+used.  If you want a specific model from a set, disabling binning, you
+can specify its full name.
+
+<P>
+<DL>
+<DT><STRONG><TT>WMAX</TT> = <I>x</I></STRONG></DT>
+<DD>Maximum width. (Default = Infinity.)  The maximum device width that
+may be used with this model.
+
+<P>
+</DD>
+<DT><STRONG><TT>WMIN</TT> = <I>x</I></STRONG></DT>
+<DD>Maximum width. (Default = 0.)  The minimum device width that may be
+used with this model.
+
+<P>
+</DD>
+<DT><STRONG><TT>LMAX</TT> = <I>x</I></STRONG></DT>
+<DD>Maximum length. (Default = Infinity.)  The maximum device length that
+may be used with this model.
+
+<P>
+</DD>
+<DT><STRONG><TT>LMIN</TT> = <I>x</I></STRONG></DT>
+<DD>Maximum length. (Default = 0.)  The minimum device length that may be
+used with this model.
+
+<P>
+</DD>
+</DL>
+<H3><A NAME="SECTION004165400000000000000">
 Substrate coupling - all models</A>
 </H3>
 <DL>
 <DT><STRONG><TT>IS</TT> = <I>x</I></STRONG></DT>
-<DD>Bulk junction saturation current.  If not input,
-it is calculated from <TT>JS</TT>.  If both are input, a warning is
-issued, and the calculated value (from <TT>JS</TT>) is used, if <TT>AD</TT>
-and <TT>AS</TT> are also input.  If neither <TT>IS</TT> or <TT>JS</TT> is
-input, a default value of 1e-14 is used.
+<DD>Bulk junction saturation current.  If not input, it is calculated from
+<TT>JS</TT>.  If both are input, a warning is issued, and the calculated
+value (from <TT>JS</TT>) is used, if <TT>AD</TT> and <TT>AS</TT> are also
+input.  If neither <TT>IS</TT> or <TT>JS</TT> is input, a default value of
+1e-14 is used.
 
 <P>
 </DD>
 <DT><STRONG><TT>JS</TT> = <I>x</I></STRONG></DT>
-<DD>Bulk junction saturation current per sq-meter of
-junction area.  May be used to calculate <TT>IS</TT>.  If a conflict
-exists, a warning is issued.
+<DD>Bulk junction saturation current per square-meter of junction area.  May
+be used to calculate <TT>IS</TT>.  If a conflict exists, a warning is
+issued.
 
 <P>
 </DD>
 <DT><STRONG><TT>FC</TT> = <I>x</I></STRONG></DT>
-<DD>Coefficient for forward bias depletion capacitance
-formula. (Default = 0.5)
+<DD>Coefficient for forward bias depletion capacitance formula. (Default =
+0.5)
 
 <P>
 </DD>
@@ -268,15 +308,14 @@ formula. (Default = 0.5)
 <P>
 </DD>
 <DT><STRONG><TT>CJ</TT> = <I>x</I></STRONG></DT>
-<DD>Zero bias bulk junction bottom capacitance per
-sq-meter of junction area.  If not input, but <TT>NSUB</TT> is, it is
-calculated, otherwise a default value of 0 is used.
+<DD>Zero bias bulk junction bottom capacitance per square-meter of junction
+area.  If not input, but <TT>NSUB</TT> is, it is calculated, otherwise a
+default value of 0 is used.
 
 <P>
 </DD>
 <DT><STRONG><TT>MJ</TT> = <I>x</I></STRONG></DT>
-<DD>Bulk junction bottom grading
-coefficient.  (Default = 0.5)
+<DD>Bulk junction bottom grading coefficient.  (Default = 0.5)
 
 <P>
 </DD>
@@ -286,135 +325,124 @@ coefficient.  (Default = 0.5)
 <P>
 </DD>
 <DT><STRONG><TT>CJSW</TT> = <I>x</I></STRONG></DT>
-<DD>Zero bias bulk junction sidewall
-capacitance per meter of junction perimeter. (Default = 0.)
+<DD>Zero bias bulk junction sidewall capacitance per meter of junction
+perimeter. (Default = 0.)
 
 <P>
 </DD>
 <DT><STRONG><TT>MJSW</TT> = <I>x</I></STRONG></DT>
-<DD>Bulk junction sidewall grading coefficient.
-(Default = 0.33)
-
-<P>
-</DD>
-</DL>
-<H3><A NAME="SECTION004165400000000000000">
-Strays - all models</A>
-</H3>
-<DL>
-<DT><STRONG><TT>RSH</TT> = <I>x</I></STRONG></DT>
-<DD>Drain and source diffusion sheet
-resistance.  If not input, use <TT>RS</TT> and <TT>RD</TT> directly.  If a
-conflict exists, a warning is issued.  The resistance is only used if
-the option <TT>rstray</TT> is set.
-
-<P>
-</DD>
-<DT><STRONG><TT>RD</TT> = <I>x</I></STRONG></DT>
-<DD>Drain ohmic resistance (unscaled).  
-If <TT>RS</TT> is input, the default value of <TT>RD</TT> is 0.  If <TT>RD</TT>
-and <TT>RS</TT> are both not input, and <TT>RSH</TT> is input, they are
-calculated from <TT>RSH</TT>.  If any conflict exists, a warning is
-issued, indicating the action taken, which is believed to be
-compatible with SPICE.  The resistance is only used if the option <TT>rstray</TT> is set.
-
-<P>
-</DD>
-<DT><STRONG><TT>RS</TT> = <I>x</I></STRONG></DT>
-<DD>Source ohmic resistance (unscaled).  
-If <TT>RD</TT> is input, the default value of <TT>RS</TT> is 0.  If <TT>RD</TT>
-and <TT>RS</TT> are both not input, and <TT>RSH</TT> is input, they are
-calculated from <TT>RSH</TT>.  If any conflict exists, a warning is
-issued, indicating the action taken, which is believed to be
-compatible with SPICE.  The resistance is only used if the option <TT>rstray</TT> is set.
-
-<P>
-</DD>
-<DT><STRONG><TT>CBD</TT> = <I>x</I></STRONG></DT>
-<DD>Zero bias B-D junction capacitance (unscaled).  
-If <TT>CBD</TT> is not specified, it is calculated from <TT>CJ</TT>.
-
-<P>
-</DD>
-<DT><STRONG><TT>CBS</TT> = <I>x</I></STRONG></DT>
-<DD>Zero bias B-S junction capacitance (unscaled).  
-If <TT>CBS</TT> is not specified, it is calculated from <TT>CJ</TT>.
-
-<P>
-</DD>
-<DT><STRONG><TT>CGSO</TT> = <I>x</I></STRONG></DT>
-<DD>Gate-source overlap capacitance, per channel
-width. (Default = 0.)
-
-<P>
-</DD>
-<DT><STRONG><TT>CGDO</TT> = <I>x</I></STRONG></DT>
-<DD>Gate-drain overlap capacitance, per channel
-width. (Default = 0.)
-
-<P>
-</DD>
-<DT><STRONG><TT>CGBO</TT> = <I>x</I></STRONG></DT>
-<DD>Gate-bulk overlap capacitance, per channel
-length. (Default = 0.)
+<DD>Bulk junction sidewall grading coefficient.  (Default = 0.33)
 
 <P>
 </DD>
 </DL>
 <H3><A NAME="SECTION004165500000000000000">
-Accepted and ignored - all models</A>
+Strays - all models</A>
 </H3>
 <DL>
-<DT><STRONG><TT>KF</TT> = <I>x</I></STRONG></DT>
-<DD>Flicker noise coefficient.  SPICE parameter
-accepted but not implemented.
+<DT><STRONG><TT>RSH</TT> = <I>x</I></STRONG></DT>
+<DD>Drain and source diffusion sheet resistance.  If not input, use <TT>RS</TT> and <TT>RD</TT> directly.  If a conflict exists, a warning is issued.
+The resistance is only used if the option <TT>rstray</TT> is set.
 
 <P>
 </DD>
-<DT><STRONG><TT>AF</TT> = <I>x</I></STRONG></DT>
-<DD>Flicker noise exponent.  SPICE parameter accepted
-but not implemented.
+<DT><STRONG><TT>RD</TT> = <I>x</I></STRONG></DT>
+<DD>Drain ohmic resistance (unscaled).  If <TT>RS</TT> is input, the default
+value of <TT>RD</TT> is 0.  If <TT>RD</TT> and <TT>RS</TT> are both not input,
+and <TT>RSH</TT> is input, they are calculated from <TT>RSH</TT>.  If any
+conflict exists, a warning is issued, indicating the action taken,
+which is believed to be compatible with SPICE.  The resistance is only
+used if the option <TT>rstray</TT> is set.
+
+<P>
+</DD>
+<DT><STRONG><TT>RS</TT> = <I>x</I></STRONG></DT>
+<DD>Source ohmic resistance (unscaled).  If <TT>RD</TT> is input, the default
+value of <TT>RS</TT> is 0.  If <TT>RD</TT> and <TT>RS</TT> are both not input,
+and <TT>RSH</TT> is input, they are calculated from <TT>RSH</TT>.  If any
+conflict exists, a warning is issued, indicating the action taken,
+which is believed to be compatible with SPICE.  The resistance is only
+used if the option <TT>rstray</TT> is set.
+
+<P>
+</DD>
+<DT><STRONG><TT>CBD</TT> = <I>x</I></STRONG></DT>
+<DD>Zero bias B-D junction capacitance (unscaled).  If <TT>CBD</TT> is not
+specified, it is calculated from <TT>CJ</TT>.
+
+<P>
+</DD>
+<DT><STRONG><TT>CBS</TT> = <I>x</I></STRONG></DT>
+<DD>Zero bias B-S junction capacitance (unscaled).  If <TT>CBS</TT> is not
+specified, it is calculated from <TT>CJ</TT>.
+
+<P>
+</DD>
+<DT><STRONG><TT>CGSO</TT> = <I>x</I></STRONG></DT>
+<DD>Gate-source overlap capacitance, per channel width. (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>CGDO</TT> = <I>x</I></STRONG></DT>
+<DD>Gate-drain overlap capacitance, per channel width. (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>CGBO</TT> = <I>x</I></STRONG></DT>
+<DD>Gate-bulk overlap capacitance, per channel length. (Default = 0.)
 
 <P>
 </DD>
 </DL>
 <H3><A NAME="SECTION004165600000000000000">
+Accepted and ignored - all models</A>
+</H3>
+<DL>
+<DT><STRONG><TT>KF</TT> = <I>x</I></STRONG></DT>
+<DD>Flicker noise coefficient.  SPICE parameter accepted but not
+implemented.
+
+<P>
+</DD>
+<DT><STRONG><TT>AF</TT> = <I>x</I></STRONG></DT>
+<DD>Flicker noise exponent.  SPICE parameter accepted but not implemented.
+
+<P>
+</DD>
+</DL>
+<H3><A NAME="SECTION004165700000000000000">
 Level 1,2,3,6 shared parameters</A>
 </H3>
 <DL>
 <DT><STRONG><TT>VTO</TT> = <I>x</I></STRONG></DT>
-<DD>Zero bias threshold voltage.  If not input,
-but <TT>NSUB</TT> is, it is calculated, otherwise a default value of 0 is
-used.
+<DD>Zero bias threshold voltage.  If not input, but <TT>NSUB</TT> is, it is
+calculated, otherwise a default value of 0 is used.
 
 <P>
 </DD>
 <DT><STRONG><TT>KP</TT> = <I>x</I></STRONG></DT>
-<DD>Transconductance parameter.  If not input, it is
-calculated by <TT>UO</TT> * <TT>COX</TT>.
+<DD>Transconductance parameter.  If not input, it is calculated by <TT>UO</TT> * <TT>COX</TT>.
 
 <P>
 </DD>
 <DT><STRONG><TT>GAMMA</TT> = <I>x</I></STRONG></DT>
-<DD>Bulk threshold parameter.  If not input,
-but <TT>NSUB</TT> is, it is calculated, otherwise a default value of 0 is
-used.
+<DD>Bulk threshold parameter.  If not input, but <TT>NSUB</TT> is, it is
+calculated, otherwise a default value of 0 is used.
 
 <P>
 </DD>
 <DT><STRONG><TT>PHI</TT> = <I>x</I></STRONG></DT>
-<DD>Surface potential.  If not input, but 
-<TT>NSUB</TT> is, it is calculated, otherwise a default value of 0.6 is
-used.  A warning is issued if the calculated value is less than 0.1,
-in which case 0.1 is used.
+<DD>Surface potential.  If not input, but <TT>NSUB</TT> is, it is calculated,
+otherwise a default value of 0.6 is used.  A warning is issued if the
+calculated value is less than 0.1, in which case 0.1 is used.
 
 <P>
 </DD>
 <DT><STRONG><TT>LAMBDA</TT> = <I>x</I></STRONG></DT>
-<DD>Channel length modulation.  If not
-input, it is calculated dynamically during simulation.  If the value
-input is larger than 0.2, a warning is issued, but no correction is
-made.  (accepted but ignored for level 3)
+<DD>Channel length modulation.  If not input, it is calculated dynamically
+during simulation.  If the value input is larger than 0.2, a warning
+is issued, but no correction is made.  (accepted but ignored for level
+3)
 
 <P>
 </DD>
@@ -427,9 +455,9 @@ made.  (accepted but ignored for level 3)
 <DD>Substrate doping.  (atoms / cm<IMG
  WIDTH="11" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
  SRC="img25.png"
- ALT="$^3$">) Used in
-calculation of <TT>VTO</TT>, <TT>GAMMA</TT>, <TT>PHI</TT>, and <TT>CJ</TT>.  If
-not input, default values are used.
+ ALT="$^3$">) Used in calculation of <TT>VTO</TT>,
+<TT>GAMMA</TT>, <TT>PHI</TT>, and <TT>CJ</TT>.  If not input, default values
+are used.
 
 <P>
 </DD>
@@ -437,21 +465,21 @@ not input, default values are used.
 <DD>Surface state density.  (atoms / cm<IMG
  WIDTH="11" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
  SRC="img26.png"
- ALT="$^2$">) (Default
-= 0.) Used, with <TT>NSUB</TT> in calculation of <TT>VTO</TT>.
+ ALT="$^2$">) (Default = 0.) Used, with
+<TT>NSUB</TT> in calculation of <TT>VTO</TT>.
 
 <P>
 </DD>
 <DT><STRONG><TT>XJ</TT> = <I>x</I></STRONG></DT>
-<DD>Metallurgical junction depth. (meters) Used to
-calculate short channel effects.  If not input, do not model short
-channel effects, effectively defaults to 0.
+<DD>Metallurgical junction depth. (meters) Used to calculate short channel
+effects.  If not input, do not model short channel effects,
+effectively defaults to 0.
 
 <P>
 </DD>
 <DT><STRONG><TT>LD</TT> = <I>x</I></STRONG></DT>
-<DD>Lateral diffusion. (Default = 0.)  Effective
-channel length is reduced by 2 * <TT>LD</TT>.
+<DD>Lateral diffusion. (Default = 0.)  Effective channel length is reduced
+by 2 * <TT>LD</TT>.
 
 <P>
 </DD>
@@ -464,8 +492,8 @@ channel length is reduced by 2 * <TT>LD</TT>.
 <P>
 </DD>
 <DT><STRONG><TT>DELTA</TT> = <I>x</I></STRONG></DT>
-<DD>Width effect on threshold voltage.
-(Default = 0.)  (Level 2 and 3 only.)
+<DD>Width effect on threshold voltage.  (Default = 0.)  (Level 2 and 3
+only.)
 
 <P>
 </DD>
@@ -482,7 +510,7 @@ channel length is reduced by 2 * <TT>LD</TT>.
 <P>
 </DD>
 </DL>
-<H3><A NAME="SECTION004165700000000000000">
+<H3><A NAME="SECTION004165800000000000000">
 Level 1</A>
 </H3>
 
@@ -491,7 +519,7 @@ The Level 1 model has no additional parameters.
 
 <P>
 
-<H3><A NAME="SECTION004165800000000000000">
+<H3><A NAME="SECTION004165900000000000000">
 Level 2</A>
 </H3>
 <DL>
@@ -499,49 +527,46 @@ Level 2</A>
 <DD>Fast surface state density.  (atoms / cm<IMG
  WIDTH="11" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
  SRC="img26.png"
- ALT="$^2$">) 
-Used in modeling subthreshold effects.  If not input, do not model
-subthreshold effects.
+ ALT="$^2$">) Used in modeling
+sub-threshold effects.  If not input, do not model sub-threshold
+effects.
 
 <P>
 </DD>
 <DT><STRONG><TT>VMAX</TT> = <I>x</I></STRONG></DT>
-<DD>Maximum drift velocity of carriers. (m/s)
-Used in calculating vdsat, and lambda.  If not input, use a different
-method.  <TT>VMAX</TT> does not always work, if the method fails, the
-alternate method is used and the warning ``Baum's theory rejected'' is
-issued if the error threshold is set to <TT>debug</TT> or worse.
+<DD>Maximum drift velocity of carriers. (m/s) Used in calculating vdsat,
+and lambda.  If not input, use a different method.  <TT>VMAX</TT> does
+not always work, if the method fails, the alternate method is used and
+the warning ``Baum's theory rejected'' is issued if the error
+threshold is set to <TT>debug</TT> or worse.
 
 <P>
 </DD>
 <DT><STRONG><TT>NEFF</TT> = <I>x</I></STRONG></DT>
-<DD>Total channel charge (fixed and mobile)
-coefficient. (Default = 1.)  Used in internal calculation of lambda.
+<DD>Total channel charge (fixed and mobile) coefficient. (Default = 1.)
+Used in internal calculation of lambda.
 
 <P>
 </DD>
 <DT><STRONG><TT>UCRIT</TT> = <I>x</I></STRONG></DT>
-<DD>Critical field for mobility degradation.
-(V/cm) (Default = 1e4)
+<DD>Critical field for mobility degradation.  (V/cm) (Default = 1e4)
 
 <P>
 </DD>
 <DT><STRONG><TT>UEXP</TT> = <I>x</I></STRONG></DT>
-<DD>Critical field exponent in mobility
-degradation.  If not input, do not model mobility degradation,
-effectively defaulting to 0.
+<DD>Critical field exponent in mobility degradation.  If not input, do not
+model mobility degradation, effectively defaulting to 0.
 
 <P>
 </DD>
 <DT><STRONG><TT>UTRA</TT> = <I>x</I></STRONG></DT>
-<DD>Transverse field coefficient.  SPICE 
-parameter accepted but not implemented.  It is also not implemented in
-most versions of SPICE.
+<DD>Transverse field coefficient.  SPICE parameter accepted but not
+implemented.  It is also not implemented in most versions of SPICE.
 
 <P>
 </DD>
 </DL>
-<H3><A NAME="SECTION004165900000000000000">
+<H3><A NAME="SECTION0041651000000000000000">
 Level 3</A>
 </H3>
 <DL>
@@ -549,14 +574,13 @@ Level 3</A>
 <DD>Fast surface state density.  (atoms / cm<IMG
  WIDTH="11" HEIGHT="17" ALIGN="BOTTOM" BORDER="0"
  SRC="img26.png"
- ALT="$^2$">) 
-Same as Level 2.
+ ALT="$^2$">) Same as Level 2.
 
 <P>
 </DD>
 <DT><STRONG><TT>VMAX</TT> = <I>x</I></STRONG></DT>
-<DD>Maximum drift velocity of carriers. (m/s)
-Used in calculating vdsat.  If not input, use a different method.
+<DD>Maximum drift velocity of carriers. (m/s) Used in calculating vdsat.
+If not input, use a different method.
 
 <P>
 </DD>
@@ -576,7 +600,7 @@ Used in calculating vdsat.  If not input, use a different method.
 <P>
 </DD>
 </DL>
-<H3><A NAME="SECTION0041651000000000000000">
+<H3><A NAME="SECTION0041651100000000000000">
 Level 6</A>
 </H3>
 <DL>
@@ -586,7 +610,7 @@ Level 6</A>
 <P>
 </DD>
 <DT><STRONG><TT>NV</TT> = <I>x</I></STRONG></DT>
-<DD>Saturation voltage coeff.
+<DD>Saturation voltage coefficient.
 
 <P>
 </DD>
@@ -596,12 +620,12 @@ Level 6</A>
 <P>
 </DD>
 <DT><STRONG><TT>NC</TT> = <I>x</I></STRONG></DT>
-<DD>Saturation current coeff.
+<DD>Saturation current coefficient.
 
 <P>
 </DD>
 <DT><STRONG><TT>NVTH</TT> = <I>x</I></STRONG></DT>
-<DD>Threshold voltage coeff.
+<DD>Threshold voltage coefficient.
 
 <P>
 </DD>
@@ -621,12 +645,12 @@ Level 6</A>
 <P>
 </DD>
 <DT><STRONG><TT>LAMBDA1</TT> = <I>x</I></STRONG></DT>
-<DD>Channel length modulation param. 1.
+<DD>Channel length modulation parameter. 1.
 
 <P>
 </DD>
 </DL>
-<H3><A NAME="SECTION0041651100000000000000">
+<H3><A NAME="SECTION0041651200000000000000">
 Level 4, 5, 7, 8 (BSIM models) general comments</A>
 </H3>
 
@@ -634,19 +658,19 @@ Level 4, 5, 7, 8 (BSIM models) general comments</A>
 The BSIM models have additional parameters for length, width, and
 product (length * width) dependency.  To get the name, prefix the
 listed parameter with L, W, or P, respectively.  Spice supports the
-``P'' parameter only for BSIM3, but GnuCap supports it for all 3 models.
-For example, VFB is the basic parameter with units of Volts, and LVFB,
-WVFB, and PVFB also exist.  The units of LVFB and WVFB are Volts *
-micron.  The units of PVFB are Volts * micron * micron.  The real
-parameter is calculated by <!-- MATH
- $P = P_0 + P_L / L + P_W / W + P_P / (L*W)$
+``P'' parameter only for BSIM3, but Gnucap supports it for all 3
+models.  For example, VFB is the basic parameter with units of Volts,
+and LVFB, WVFB, and PVFB also exist.  The units of LVFB and WVFB are
+Volts * micron.  The units of PVFB are Volts * micron * micron.  The
+real parameter is calculated by <!-- MATH
+ $P = P_0 + P_L / L + P_W / W + P_P /
+(L*W)$
  -->
 <IMG
  WIDTH="286" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
  SRC="img27.png"
  ALT="$P = P_0 + P_L / L + P_W / W + P_P /
-(L*W)$">,
-where L and W are the effective length and width in microns.
+(L*W)$">, where L and W are the effective length and width in microns.
 
 <P>
 The parameter s are not listed here, but they are the same as Spice
@@ -923,32 +947,27 @@ Probes</A>
 <P>
 </DD>
 <DT><STRONG><TT>P</TT></STRONG></DT>
-<DD>Power dissipation.
-
-<P>
-</DD>
-<DT><STRONG><TT>P</TT></STRONG></DT>
 <DD>Power.
 
 <P>
 </DD>
 <DT><STRONG><TT>PD</TT></STRONG></DT>
-<DD>Power dissipated.  The power dissipated as heat.  
-It is always positive and does not include power sourced.
-It should be the same as P because the mosfet cannot generate energy.
+<DD>Power dissipated.  The power dissipated as heat.  It is always
+positive and does not include power sourced.  It should be the same as
+P because the mosfet cannot generate energy.
 
 <P>
 </DD>
 <DT><STRONG><TT>PS</TT></STRONG></DT>
-<DD>Power sourced.  The power sourced by the part.  
-It is always positive and does not consider its own dissipation.
-It should be 0 because the mosfet cannot generate energy.
+<DD>Power sourced.  The power sourced by the part.  It is always positive
+and does not consider its own dissipation.  It should be 0 because the
+mosfet cannot generate energy.
 
 <P>
 </DD>
 <DT><STRONG><TT>REgion</TT></STRONG></DT>
-<DD>Region code.  A numeric code that represents the region
-it is operating in.  The number is the sum of several factors.  A negative
+<DD>Region code.  A numeric code that represents the region it is
+operating in.  The number is the sum of several factors.  A negative
 code indicates the source and drain are reversed.
 
 <P>
@@ -959,7 +978,7 @@ code indicates the source and drain are reversed.
 <P>
 </DD>
 <DT></DT>
-<DD>2 Not subthreshold.
+<DD>2 Not sub-threshold.
 
 <P>
 </DD>
@@ -990,14 +1009,14 @@ code indicates the source and drain are reversed.
 </DL>
 
 <P>
-All parameters of the internal elements (Ids, Gmr, Gmf, Yds, Gmbr, Gmbf,
-Cgb, Cgd, Cgs, Dsb, Ddb, Rd, Rs) are available.  To access them, concatenate
-the labels for the internal element with the diode, separated by a dot.
-Cgd.M6 is the gate to drain capacitance of M6.
+All parameters of the internal elements (Ids, Gmr, Gmf, Yds, Gmbr,
+Gmbf, Cgb, Cgd, Cgs, Dsb, Ddb, Rd, Rs) are available.  To access them,
+concatenate the labels for the internal element with this device,
+separated by a dot.  Cgd.M6 is the gate to drain capacitance of M6.
 
 <P>
-In this release, there are no probes available in AC analysis except for the
-internal elements.
+In this release, there are no probes available in AC analysis except
+for the internal elements.
 <HR>
 <!--Navigation Panel-->
 <A NAME="tex2html1485"
@@ -1024,7 +1043,7 @@ internal elements.
 <!--End of Navigation Panel-->
 <ADDRESS>
 Al Davis
-2001-10-28
+2002-09-29
 </ADDRESS>
 </BODY>
 </HTML>

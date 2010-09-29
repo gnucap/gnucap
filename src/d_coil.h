@@ -1,8 +1,8 @@
-/*$Id: d_coil.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: d_coil.h,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,11 @@ public:
 private: // override virtual
   char	   id_letter()const	{return 'L';}
   const char* dev_type()const	{return "inductor";}
-  int	   numnodes()const	{return 2;}
+  int	   max_nodes()const	{return 2;}
+  int	   min_nodes()const	{return 2;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 2;}
+  int	   net_nodes()const	{return 2;}
   bool	   is_1port()const	{return true;}
   CARD*	   clone()const		{return new DEV_INDUCTANCE(*this);}
   //void   parse(CS&);		//ELEMENT
@@ -42,6 +46,7 @@ private: // override virtual
   void	   map_nodes();
   void     precalc();
 
+  void	   tr_alloc_matrix();
   void	   dc_begin();
   void	   tr_begin();
   void	   tr_restore();
@@ -57,16 +62,14 @@ private: // override virtual
   //double tr_amps()const	//ELEMENT
   double   tr_involts()const	{return tr_outvolts();}
   double   tr_involts_limited()const {return tr_outvolts_limited();}
-  //double tr_probe_num(CS&)const;//ELEMENT
+  double   tr_probe_num(CS&)const;
 
+  void	   ac_alloc_matrix();
   void	   ac_begin();
   void	   do_ac();
   void	   ac_load();
   COMPLEX  ac_involts()const	{return ac_outvolts();}
   //XPROBE ac_probe_ext(CS&)const;//ELEMENT
-private:
-  void	   integrate();	/* will go away */
-  CPOLY1   _mt1;	/* matrix parameters, 1 time ago, will go away	*/
 };
 /*--------------------------------------------------------------------------*/
 class DEV_MUTUAL_L : public COMPONENT {
@@ -77,7 +80,11 @@ public:
 private: // override virtual
   char	   id_letter()const	{return 'K';}
   const char* dev_type()const	{untested(); return "mutual_inductor";}
-  int	   numnodes()const	{untested(); return 0;}
+  int	   max_nodes()const	{unreachable(); return 0;}
+  int	   min_nodes()const	{unreachable(); return 0;}
+  //int	   out_nodes()const	//CARD 0
+  //int	   matrix_nodes()const	//CARD 0
+  //int	   net_nodes()const	//CARD 0
   bool	   is_2port()const	{untested(); return true;}
   CARD*	   clone()const		{untested(); return new DEV_MUTUAL_L(*this);}
   void	   parse(CS&);

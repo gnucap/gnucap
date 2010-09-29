@@ -1,8 +1,8 @@
-/*$Id: u_probe.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: u_probe.cc,v 22.10 2002/07/26 03:15:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,8 +139,9 @@ double PROBE::value(void)const
 {
   assert(!(_brh && _node));
   {if (!_brh){
-    {if (_node <= STATUS::total_nodes  
-	&&  nstat[NODE::to_internal(_node)].needs_analog()){
+    {if (_node <= STATUS::total_nodes
+	 && _node > 0
+	 &&  nstat[NODE::to_internal(_node)].needs_analog()){
       return nstat[NODE::to_internal(_node)].probe_num(_what);
     }else{
       return probe_node();

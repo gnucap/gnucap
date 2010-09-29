@@ -1,8 +1,8 @@
-/*$Id: c_sweep.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: c_sweep.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,32 +39,38 @@ static char tempfile[] = STEPFILE;
 /*--------------------------------------------------------------------------*/
 void CMD::sweep(CS& cmd)
 {
-  untested();
-  if (cmd.more())
+  {if (cmd.more()) {
     buildfile(cmd);
+  }else{
+    untested();
+  }}
   doit();
   unfault(cmd);
 }
 /*--------------------------------------------------------------------------*/
 static void buildfile(CS& cmd)
 {
-  untested();
   static FILE *fptr;
   
   setup(cmd);
-  if (fptr)
+  if (fptr) {
+    untested();
     fclose(fptr);
-  fptr = fopen( tempfile, "w" );
-  if (!fptr)
+  }
+  fptr = fopen(tempfile, "w");
+  if (!fptr) {
+    untested();
     error(bERROR, "can't open temporary file\n" );
+  }
   fprintf(fptr, "%s\n", cmd.fullstring() );
   
-  for (;;){
+  for (;;) {
     char buffer[BUFLEN];
-    getcmd( ">>>", buffer, BUFLEN );
-    if ( pmatch(buffer,"GO") )
+    getcmd(">>>", buffer, BUFLEN);
+    if (pmatch(buffer,"GO")) {
       break;
-    fprintf(fptr,"%s\n",buffer);
+    }
+    fprintf(fptr, "%s\n", buffer);
   }
   fclose(fptr);
   fptr = NULL;
@@ -72,33 +78,41 @@ static void buildfile(CS& cmd)
 /*--------------------------------------------------------------------------*/
 static void doit()
 {
-  untested();
   static FILE *fptr;
   
-  for ( swp_count[swp_nest]=0 ; swp_count[swp_nest]<=swp_steps[swp_nest] ;
-       swp_count[swp_nest]++ ){
-    if (fptr)
+  for (swp_count[swp_nest]=0; swp_count[swp_nest]<=swp_steps[swp_nest];
+       ++swp_count[swp_nest]) {
+    if (fptr) {
       fclose(fptr);
+    }
     fptr = fopen(tempfile, "r");
-    if (!fptr)
+    if (!fptr) {
+      untested();
       error(bERROR, "can't open %s\n", tempfile);
+    }
     char buffer[BUFLEN];
     fgets(buffer,BUFLEN,fptr);
     CS cmd(buffer);
-    if (cmd.pmatch("SWeep"))
+    {if (cmd.pmatch("SWeep")) {
       setup(cmd);
-    else
+    }else{
+      untested();
       error(bERROR, "bad file format: %s\n", tempfile);
+    }}
     int ind = cmd.cursor();
     strncpy(buffer, "fault                              ", ind);
     buffer[ind-1] = ' ';		/* make sure there is a delimiter   */
     					/* in case the words run together   */
-    for (;;){				/* may wipe out one letter of fault */
+    for (;;) {				/* may wipe out one letter of fault */
       CMD::cmdproc(buffer);
-      if (!fgets(buffer,BUFLEN,fptr))
+      if (!fgets(buffer,BUFLEN,fptr)) {
 	break;
-      if (!crtplot)
+      }
+      {if (!crtplot) {
 	IO::mstdout << swp_count[swp_nest]+1 << "> " << buffer;
+      }else{
+	untested();
+      }}
     }
   }
   fclose(fptr);
@@ -108,20 +122,20 @@ static void doit()
 /*--------------------------------------------------------------------------*/
 static void setup(CS& cmd)
 {
-  untested();
-  for (;;){
-    if (cmd.is_digit()){
+  for (;;) {
+    {if (cmd.is_digit()) {
       swp_steps[swp_nest] = cmd.ctoi() ;
       swp_steps[swp_nest] = (swp_steps[swp_nest]) 
 	? swp_steps[swp_nest]-1
 	: 0;
-    }else if (cmd.pmatch("LInear")){
+    }else if (cmd.pmatch("LInear")) {
+      untested();
       swp_type[swp_nest] = 0;
-    }else if (cmd.pmatch("LOg")){
+    }else if (cmd.pmatch("LOg")) {
       swp_type[swp_nest] = 'L';
     }else{
       break;
-    }
+    }}
   }
 }
 /*--------------------------------------------------------------------------*/

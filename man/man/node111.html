@@ -1,14 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 
-<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+<!--Converted with LaTeX2HTML 2K.1beta (1.62)
 original version by:  Nikos Drakos, CBLU, University of Leeds
 * revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
 * with significant contributions from:
   Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
 <HTML>
 <HEAD>
-<TITLE>Performance</TITLE>
-<META NAME="description" CONTENT="Performance">
+<TITLE>About this document ...</TITLE>
+<META NAME="description" CONTENT="About this document ...">
 <META NAME="keywords" CONTENT="man">
 <META NAME="resource-type" CONTENT="document">
 <META NAME="distribution" CONTENT="global">
@@ -19,192 +19,60 @@ original version by:  Nikos Drakos, CBLU, University of Leeds
 
 <LINK REL="STYLESHEET" HREF="man.css">
 
-<LINK REL="previous" HREF="node110.html">
-<LINK REL="up" HREF="node107.html">
-<LINK REL="next" HREF="node112.html">
+<LINK REL="previous" HREF="node106.html">
+<LINK REL="up" HREF="man.html">
 </HEAD>
 
 <BODY >
 <!--Navigation Panel-->
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_g.png"> 
 <A NAME="tex2html2040"
-  HREF="node112.html">
-<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
-<A NAME="tex2html2036"
-  HREF="node107.html">
+  HREF="man.html">
 <IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
-<A NAME="tex2html2032"
+<A NAME="tex2html2036"
   HREF="node110.html">
 <IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
-<A NAME="tex2html2038"
+<A NAME="tex2html2042"
   HREF="node1.html">
 <IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
 <BR>
-<B> Next:</B> <A NAME="tex2html2041"
-  HREF="node112.html">About this document ...</A>
-<B> Up:</B> <A NAME="tex2html2037"
-  HREF="node107.html">Technical Notes</A>
-<B> Previous:</B> <A NAME="tex2html2033"
-  HREF="node110.html">Data Structures</A>
- &nbsp <B>  <A NAME="tex2html2039"
+<B> Up:</B> <A NAME="tex2html2041"
+  HREF="man.html">Gnucap The Gnu Circuit</A>
+<B> Previous:</B> <A NAME="tex2html2037"
+  HREF="node110.html">Performance</A>
+ &nbsp <B>  <A NAME="tex2html2043"
   HREF="node1.html">Contents</A></B> 
 <BR>
 <BR>
 <!--End of Navigation Panel-->
-<!--Table of Child-Links-->
-<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
 
-<UL>
-<LI><A NAME="tex2html2042"
-  HREF="#SECTION00841000000000000000">Virtual functions</A>
-<LI><A NAME="tex2html2043"
-  HREF="#SECTION00842000000000000000">Inline functions</A>
-</UL>
-<!--End of Table of Child-Links-->
-<HR>
-
-<H1><A NAME="SECTION00840000000000000000">
-Performance</A>
+<H1><A NAME="SECTION00900000000000000000">
+About this document ...</A>
 </H1>
-This section gives some notes on some of the performance issues in
-simulators.  It is not intended to be complete or well organized.
-
-<H2><A NAME="SECTION00841000000000000000">
-Virtual functions</A>
-</H2>
-
-<P>
-There is a question of the impact on speed from the use of virtual
-functions.  The experiment used here is to use the circuit <TT>eq4-2305.ckt</TT> from the examples directory, and try several modified
-versions of the program.  I used a 100 point dc sweep, a version
-between 0.20 and 0.21, and made several modifications for testing
-purposes.  I chose this circuit because it has little to mask the
-effect, and therefore is sort of a worst case.
-
-<P>
-I added an int <TT>foo</TT> to the element class.  I made the function
-<TT>il_trload_source</TT> call a virtual function <TT>virtual_test</TT>
-and stored the result.  The local version body has a print call,
-which should not show,  to make sure it calls the other.  These
-functions simply return a constant, determined by which version of
-the function is called.  Run time is compared, with and without
-this.
-
-<P>
-With 1 virtual function call (included in load)
-<PRE>
-               user      sys    total
-  evaluate    13.45     0.11    13.56
-      load    13.40     0.06    13.47
-        lu     1.91     0.09     2.00
-      back    22.35     0.27    22.61
-    review     0.00     0.00     0.00
-    output     0.11     0.11     0.22
-  overhead     0.23     0.19     0.42
-     total    51.45     0.83    52.28
-</PRE>
-
-<P>
-With 10 virtual function calls (included in load)
-<PRE>
-               user      sys    total
-  evaluate    13.47     0.09    13.57
-      load    24.69     0.17    24.87
-        lu     2.09     0.02     2.11
-      back    22.17     0.35    22.51
-    review     0.00     0.00     0.00
-    output     0.14     0.11     0.25
-  overhead     0.25     0.25     0.50
-     total    62.82     0.99    63.81
-</PRE>
-
-<P>
-No extra function calls (included in load)
-<PRE>
-               user      sys    total
-  evaluate    13.41     0.09    13.50
-      load    11.75     0.05    11.79
-        lu     2.04     0.03     2.07
-      back    22.51     0.33    22.84
-    review     0.00     0.00     0.00
-    output     0.08     0.11     0.19
-  overhead     0.31     0.25     0.56
-     total    50.10     0.86    50.96
-</PRE>
-
-<P>
-My conclusion is that in this context, even a single virtual function
-call is significant (10-15% of the load time), but not so significant
-as to prohibit their use.  The load loop here calls one virtual
-function inside a loop.  The virtual function calls an ordinary
-member function.  Therefore, about 30% of the load time is function
-call overhead.
-
-<P>
-The impact should be less significant for complex models like
-transistors because the calculation time is much higher and would
-serve to hide this better.
-
-<P>
-Spice uses a different architecture, where a single function
-evaluates and loads all elements of a given type.  This avoids
-these two calls.
-
-<H2><A NAME="SECTION00842000000000000000">
-Inline functions</A>
-</H2>
-
-<P>
-For this test, <TT>il_trload_source</TT> is not inline.  Contrast
-to "No extra function calls" and "1 virtual function" above, in
-which this function is inline.
-<PRE>
-               user      sys    total
-  evaluate    13.44     0.15    13.60
-      load    13.85     0.14    13.99
-        lu     1.73     0.02     1.75
-      back    22.89     0.35    23.24
-    review     0.00     0.00     0.00
-  overhead     0.45     0.17     0.63
-     total    52.50     0.94    53.44
-</PRE>
-
-<P>
-This shows (crudely) that the overhead of an ordinary private member
-function call (called from another member function in the same
-class) is significant here.  The cost of a virtual function call
-is comparable to the cost of an ordinary private member function
-call.
-
-<P>
-
-<P>
-<HR>
-<!--Navigation Panel-->
-<A NAME="tex2html2040"
-  HREF="node112.html">
-<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
-<A NAME="tex2html2036"
-  HREF="node107.html">
-<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
-<A NAME="tex2html2032"
-  HREF="node110.html">
-<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
-<A NAME="tex2html2038"
-  HREF="node1.html">
-<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+ <STRONG>Gnucap 
 <BR>
-<B> Next:</B> <A NAME="tex2html2041"
-  HREF="node112.html">About this document ...</A>
-<B> Up:</B> <A NAME="tex2html2037"
-  HREF="node107.html">Technical Notes</A>
-<B> Previous:</B> <A NAME="tex2html2033"
-  HREF="node110.html">Data Structures</A>
- &nbsp <B>  <A NAME="tex2html2039"
-  HREF="node1.html">Contents</A></B> 
-<!--End of Navigation Panel-->
+The Gnu Circuit Analysis Package 
+<BR>
+Users manual</STRONG><P>
+This document was generated using the
+<A HREF="http://www.latex2html.org/"><STRONG>LaTeX</STRONG>2<tt>HTML</tt></A> translator Version 2K.1beta (1.62)
+<P>
+Copyright &#169; 1993, 1994, 1995, 1996,
+<A HREF="http://cbl.leeds.ac.uk/nikos/personal.html">Nikos Drakos</A>, 
+Computer Based Learning Unit, University of Leeds.
+<BR>
+Copyright &#169; 1997, 1998, 1999,
+<A HREF="http://www.maths.mq.edu.au/~ross/">Ross Moore</A>, 
+Mathematics Department, Macquarie University, Sydney.
+<P>
+The command line arguments were: <BR>
+ <STRONG>latex2html</STRONG> <TT>-toc_depth 1 -link 1 -split 4 -local_icons -image_type png man.tex</TT>
+<P>
+The translation was initiated by Al Davis on 2002-09-29
+<BR><HR>
 <ADDRESS>
 Al Davis
-2001-10-19
+2002-09-29
 </ADDRESS>
 </BODY>
 </HTML>

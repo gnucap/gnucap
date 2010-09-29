@@ -1,8 +1,8 @@
-/* $Id: d_mos5.model,v 20.15 2001/10/30 03:58:55 al Exp $ -*- C++ -*-
+/* $Id: d_mos5.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
  * Spice BSIM2 model
  * derived from Spice3f4,Copyright 1990 Regents of the University of California
  * 1988 Min-Chie Jeng, Hong J. Park, Thomas L. Quarles
- * Recoded for GnuCap model compiler, Al Davis, 2000
+ * Recoded for Gnucap model compiler, Al Davis, 2000
  */
 h_headers {
 #include "u_sdp.h"
@@ -214,30 +214,30 @@ model MOS5 {
     double Phisb, dPhisb_dVb, T1s, dT1s_dVb;
     {if (Vbs <= 0.0) {
       d->sbfwd = false;
-      Phisb = b->phi - Vbs;
+      Phisb = s->phi - Vbs;
       dPhisb_dVb = -1.0;
       T1s = sqrt(Phisb);
       dT1s_dVb = -0.5 / T1s;
       trace4("-", Phisb, dPhisb_dVb, T1s, dT1s_dVb);
     }else{
       d->sbfwd = true;
-      double tmp = b->phi / (b->phi + Vbs);
-      Phisb = b->phi * tmp;
+      double tmp = s->phi / (s->phi + Vbs);
+      Phisb = s->phi * tmp;
       dPhisb_dVb = -tmp * tmp;
-      T1s = b->Phis3 / (b->phi + 0.5 * Vbs);
-      dT1s_dVb = -0.5 * T1s * T1s / b->Phis3;
+      T1s = s->Phis3 / (s->phi + 0.5 * Vbs);
+      dT1s_dVb = -0.5 * T1s * T1s / s->Phis3;
       trace4("+", Phisb, dPhisb_dVb, T1s, dT1s_dVb);
     }}
     
-    double Eta = b->eta0 + b->etaB * Vbs;
-    double Ua = b->ua0 + b->uaB * Vbs;
-    double Ub = b->ub0 + b->ubB * Vbs;
-    double U1s = b->u10 + b->u1B * Vbs;
+    double Eta = s->eta0 + s->etaB * Vbs;
+    double Ua = s->ua0 + s->uaB * Vbs;
+    double Ub = s->ub0 + s->ubB * Vbs;
+    double U1s = s->u10 + s->u1B * Vbs;
     trace4("", Eta, Ua, Ub, U1s);
     
-    d->von = b->vfb + b->phi + b->k1*T1s - b->k2*Phisb - Eta*Vds;
+    d->von = s->vfb + s->phi + s->k1*T1s - s->k2*Phisb - Eta*Vds;
     double dVth_dVd = -Eta;
-    double dVth_dVb = b->k1 * dT1s_dVb + b->k2 - b->etaB * Vds;
+    double dVth_dVb = s->k1 * dT1s_dVb + s->k2 - s->etaB * Vds;
     d->vgst = Vgs - d->von;
     trace4("", d->von, dVth_dVd, dVth_dVb, d->vgst);
     
@@ -248,17 +248,17 @@ model MOS5 {
       double dGg_dVb = 0.8364 * tmp * tmp * dPhisb_dVb;
       double T0 = Gg / T1s;
       trace4("", tmp, Gg, dGg_dVb, T0);
-      double tmp1 = 0.5 * T0 * b->k1;
+      double tmp1 = 0.5 * T0 * s->k1;
       Aa = 1.0 + tmp1;
       dAa_dVb = (Aa - 1.0) * (dGg_dVb / Gg - dT1s_dVb / T1s);
       Inv_Aa = 1.0 / Aa;
       trace4("", tmp1, Aa, dAa_dVb, Inv_Aa);
     }
     
-    trace3("", b->vghigh, b->vglow, d->vgst);
+    trace3("", s->vghigh, s->vglow, d->vgst);
     
     double Exp0, Exp1, n, Vgeff, dVgeff_dVg, dVgeff_dVd, dVgeff_dVb;
-    {if ((d->vgst >= b->vghigh) || (b->n0 == 0.0)) {
+    {if ((d->vgst >= s->vghigh) || (s->n0 == 0.0)) {
       Exp0 = NOT_VALID;
       Exp1 = NOT_VALID;
       n = NOT_VALID;
@@ -268,8 +268,8 @@ model MOS5 {
       dVgeff_dVb = -dVth_dVb;
       trace0("vgst>vghigh");
     }else{
-      double Vof = b->vof0 + b->vofB * Vbs + b->vofD * Vds;
-      n = b->n0 + b->nB / T1s + b->nD * Vds;
+      double Vof = s->vof0 + s->vofB * Vbs + s->vofD * Vds;
+      n = s->n0 + s->nB / T1s + s->nD * Vds;
       double tmp = 0.5 / (n * m->Vtm);
       trace3("", Vof, n, tmp);
       
@@ -282,7 +282,7 @@ model MOS5 {
       trace4("", ExpArg1, Exp1, tmp1, tmp2);
       
       // exports Exp0, Vgeff, dVgeff_dVg, dVgeff_dVd, dVgeff_dVb
-      {if (d->vgst <= b->vglow) {
+      {if (d->vgst <= s->vglow) {
 	double ExpArg = d->vgst * tmp;
 	ExpArg = std::max(ExpArg, -30.0);
 	Exp0 = exp(0.5 * Vof + ExpArg);
@@ -290,28 +290,28 @@ model MOS5 {
 	double T0 = n * m->Vtm;
 	dVgeff_dVg = Vgeff * tmp;
 	dVgeff_dVd = dVgeff_dVg * (n / tmp1 * Exp1 - dVth_dVd 
-				   - d->vgst * b->nD / n + T0 * b->vofD);
-	dVgeff_dVb = dVgeff_dVg * (b->vofB * T0 - dVth_dVb 
-				 + b->nB * d->vgst / (n * T1s * T1s) * dT1s_dVb
+				   - d->vgst * s->nD / n + T0 * s->vofD);
+	dVgeff_dVb = dVgeff_dVg * (s->vofB * T0 - dVth_dVb 
+				 + s->nB * d->vgst / (n * T1s * T1s) * dT1s_dVb
 				 + T0 * Inv_Aa * dAa_dVb);
 	trace0("vgst<vglow");
       }else{
-	double ExpArg = b->vglow * tmp;
+	double ExpArg = s->vglow * tmp;
 	ExpArg = std::max(ExpArg, -30.0);
 	Exp0 = exp(0.5 * Vof + ExpArg);
 	Vgeff = sqrt(2.0 * Aa * (1.0 - Exp1)) * m->Vtm * Exp0;
-	double Con1 = b->vghigh;
+	double Con1 = s->vghigh;
 	double Con3 = Vgeff;
 	double Con4 = Con3 * tmp;
-	double SqrVghigh = b->vghigh * b->vghigh;
-	double SqrVglow = b->vglow * b->vglow;
-	double CubVghigh = b->vghigh * SqrVghigh;
-	double CubVglow = b->vglow * SqrVglow;
-	double T0 = 2.0 * b->vghigh;
-	double T1 = 2.0 * b->vglow;
+	double SqrVghigh = s->vghigh * s->vghigh;
+	double SqrVglow = s->vglow * s->vglow;
+	double CubVghigh = s->vghigh * SqrVghigh;
+	double CubVglow = s->vglow * SqrVglow;
+	double T0 = 2.0 * s->vghigh;
+	double T1 = 2.0 * s->vglow;
 	double T2 = 3.0 * SqrVghigh;
 	double T3 = 3.0 * SqrVglow;
-	double T4 = b->vghigh - b->vglow;
+	double T4 = s->vghigh - s->vglow;
 	double T5 = SqrVghigh - SqrVglow;
 	double T6 = CubVghigh - CubVglow;
 	double T7 = Con1 - Con3;
@@ -326,11 +326,11 @@ model MOS5 {
 	  *delta;
 	dVgeff_dVg = (Coeffb + d->vgst*(2.0*Coeffc+3.0*d->vgst*Coeffd)) *delta;
 	T7 = Con3 * tmp;
-	double T8 = dT1s_dVb * b->nB / (T1s * T1s * n);
+	double T8 = dT1s_dVb * s->nB / (T1s * T1s * n);
 	double T9 = n * m->Vtm;
-	double dCon3_dVd = T7*(n*Exp1/tmp1 -b->vglow*b->nD/n + T9*b->vofD);
-	double dCon3_dVb = T7*(T9*Inv_Aa*dAa_dVb + b->vglow*T8 + T9*b->vofB);
-	double dCon4_dVd = tmp * dCon3_dVd - T7 * b->nD / n;
+	double dCon3_dVd = T7*(n*Exp1/tmp1 -s->vglow*s->nD/n + T9*s->vofD);
+	double dCon3_dVb = T7*(T9*Inv_Aa*dAa_dVb + s->vglow*T8 + T9*s->vofB);
+	double dCon4_dVd = tmp * dCon3_dVd - T7 * s->nD / n;
 	double dCon4_dVb = tmp * dCon3_dVb + T7 * T8;
 	
 	double dCoeffb_dVd = dCon4_dVd*(T2*T5-T0*T6) + dCon3_dVd*(T1*T2-T0*T3);
@@ -367,7 +367,7 @@ model MOS5 {
 	double T8 = Ua + 2.0 * Ub * Vgeff;
 	dUvert_dVg = T8 * dVgeff_dVg;
 	dUvert_dVd = T8 * dVgeff_dVd;
-	dUvert_dVb = T8 * dVgeff_dVb + Vgeff * (b->uaB + Vgeff * b->ubB);
+	dUvert_dVb = T8 * dVgeff_dVb + Vgeff * (s->uaB + Vgeff * s->ubB);
 	trace2("", T8, Uvert);
 	trace3("", dUvert_dVg, dUvert_dVd, dUvert_dVb);
       }
@@ -380,7 +380,7 @@ model MOS5 {
 	dVc_dVg = T8 * dVgeff_dVg - T9 * dUvert_dVg;
 	dVc_dVd = T8 * dVgeff_dVd - T9 * dUvert_dVd;
 	dVc_dVb = T8 * dVgeff_dVb 
-	  + b->u1B * Vgeff * Inv_Aa * Inv_Uvert
+	  + s->u1B * Vgeff * Inv_Aa * Inv_Uvert
 	  - Vc * Inv_Aa * dAa_dVb
 	  - T9 * dUvert_dVb;
 	trace3("", T8, T9, Vc);
@@ -408,17 +408,17 @@ model MOS5 {
       
       double Beta, dBeta_dVd, dBeta_dVg, dBeta_dVb;
       {
-	double Beta0 = b->beta0  + b->beta0B * Vbs;
-	double Betas = b->betas0 + b->betasB * Vbs;
-	double Beta2 = b->beta20 + b->beta2B * Vbs + b->beta2G * Vgs;
-	double Beta3 = b->beta30 + b->beta3B * Vbs + b->beta3G * Vgs;
-	double Beta4 = b->beta40 + b->beta4B * Vbs + b->beta4G * Vgs;
+	double Beta0 = s->beta0  + s->beta0B * Vbs;
+	double Betas = s->betas0 + s->betasB * Vbs;
+	double Beta2 = s->beta20 + s->beta2B * Vbs + s->beta2G * Vgs;
+	double Beta3 = s->beta30 + s->beta3B * Vbs + s->beta3G * Vgs;
+	double Beta4 = s->beta40 + s->beta4B * Vbs + s->beta4G * Vgs;
 	double Beta1 = Betas - (Beta0 + m->vdd * (Beta3 - m->vdd * Beta4));
-	trace4("", Beta0, b->beta0, b->beta0B, Vbs);
-	trace4("", Betas, b->betas0, b->betasB, Vgs);
-	trace4("", Beta2, b->beta20, b->beta2B, b->beta2G);
-	trace4("", Beta3, b->beta30, b->beta3B, b->beta3G);
-	trace4("", Beta4, b->beta40, b->beta4B, b->beta4G);
+	trace4("", Beta0, s->beta0, s->beta0B, Vbs);
+	trace4("", Betas, s->betas0, s->betasB, Vgs);
+	trace4("", Beta2, s->beta20, s->beta2B, s->beta2G);
+	trace4("", Beta3, s->beta30, s->beta3B, s->beta3G);
+	trace4("", Beta4, s->beta40, s->beta4B, s->beta4G);
 	trace2("", Beta1, m->vdd);
 	
 	double T0 = Vds * Beta2 / d->vdsat;
@@ -435,33 +435,33 @@ model MOS5 {
 	double T4 = Beta1 * Sqrsech / d->vdsat;
 	double T5 = m->vdd * tanh;
 	dBeta_dVd = Beta3 - 2.0*Beta4*Vds + T4*(Beta2-T0*dVdsat_dVd);
-	dBeta_dVg = T4 * (b->beta2G * Vds - T0 * dVdsat_dVg)
-	  + b->beta3G * (Vds - T5) 
-	  - b->beta4G * (Vds * Vds - m->vdd * T5);
-	double dBeta1_dVb = b->Arg;
-	dBeta_dVb = b->beta0B
+	dBeta_dVg = T4 * (s->beta2G * Vds - T0 * dVdsat_dVg)
+	  + s->beta3G * (Vds - T5) 
+	  - s->beta4G * (Vds * Vds - m->vdd * T5);
+	double dBeta1_dVb = s->Arg;
+	dBeta_dVb = s->beta0B
 	  + dBeta1_dVb * tanh
-	  + Vds * (b->beta3B - Vds * b->beta4B)
-	  + T4 * (b->beta2B * Vds - T0 * dVdsat_dVb);
+	  + Vds * (s->beta3B - Vds * s->beta4B)
+	  + T4 * (s->beta2B * Vds - T0 * dVdsat_dVb);
 	trace3("", T4, T5, dBeta1_dVb);
 	trace4("", Beta, dBeta_dVd, dBeta_dVg, dBeta_dVb);
       }
       
-      {if (d->vgst > b->vglow) {	// not subthreshold
+      {if (d->vgst > s->vglow) {	// not subthreshold
 	d->subthreshold = false;
 	{if (Vds <= d->vdsat) {		// triode region
 	  d->saturated = false;
 	  double T3 = Vds / d->vdsat;
 	  double T4 = T3 - 1.0;
-	  double T2 =  1.0 - b->u1D * T4 * T4;
+	  double T2 =  1.0 - s->u1D * T4 * T4;
 	  double U1 =  U1s * T2;
 	  double Utot = Uvert + U1 * Vds;
 	  Utot = std::max(Utot, 0.5);
 	  double Inv_Utot = 1.0 / Utot;
-	  double T5 = 2.0 * U1s * b->u1D * T4 / d->vdsat;
+	  double T5 = 2.0 * U1s * s->u1D * T4 / d->vdsat;
 	  double dU1_dVd = T5 * (T3 * dVdsat_dVd - 1.0);
 	  double dU1_dVg = T5 * T3 * dVdsat_dVg;
-	  double dU1_dVb = T5 * T3 * dVdsat_dVb + b->u1B * T2;
+	  double dU1_dVb = T5 * T3 * dVdsat_dVb + s->u1B * T2;
 	  double dUtot_dVd = dUvert_dVd + U1 + Vds * dU1_dVd;
 	  double dUtot_dVg = dUvert_dVg + Vds * dU1_dVg;
 	  double dUtot_dVb = dUvert_dVb + Vds * dU1_dVb;
@@ -488,9 +488,9 @@ model MOS5 {
 	  double T1 = Betaeff * Vgeff * Inv_Aa * Inv_Kk;
 	  double T2 = d->ids * Inv_Kk * dKk_dVc;
 	  
-	  {if (b->ai0 != 0.0) {
-	    double Ai = b->ai0 + b->aiB * Vbs;
-	    double Bi = b->bi0 + b->biB * Vbs;
+	  {if (s->ai0 != 0.0) {
+	    double Ai = s->ai0 + s->aiB * Vbs;
+	    double Bi = s->bi0 + s->biB * Vbs;
 	    double T5 = Bi / (Vds - d->vdsat);
 	    T5 = std::min(T5, 30.0);
 	    double T6 = exp(-T5);
@@ -500,7 +500,7 @@ model MOS5 {
 	    double dFR_dVd = T8 * (dVdsat_dVd - 1.0);
 	    double dFR_dVg = T8 * dVdsat_dVg;
 	    double dFR_dVb = T8 * dVdsat_dVb 
-	      + T6 * (b->aiB - Ai * b->biB / (Vds - d->vdsat));
+	      + T6 * (s->aiB - Ai * s->biB / (Vds - d->vdsat));
 	    
 	    d->gds = (T0 * (dBeta_dVd - Betaeff * dUvert_dVd) 
 		     + T1 * dVgeff_dVd - T2 * dVc_dVd) * FR + d->ids * dFR_dVd;
@@ -533,10 +533,10 @@ model MOS5 {
 	double T3 = d->ids / T4;
 	trace4("", d->ids, T2, T4, T3);
 	double FR, dFR_dVd, dFR_dVg, dFR_dVb;
-	{if ((Vds > d->vdsat) && b->ai0 != 0.0) {
+	{if ((Vds > d->vdsat) && s->ai0 != 0.0) {
 	  d->saturated = true;
-	  double Ai = b->ai0 + b->aiB * Vbs;
-	  double Bi = b->bi0 + b->biB * Vbs;
+	  double Ai = s->ai0 + s->aiB * Vbs;
+	  double Bi = s->bi0 + s->biB * Vbs;
 	  double T5 = Bi / (Vds - d->vdsat);
 	  trace3("", Ai, Bi, T5);
 	  T5 = std::min(T5, 30.0);
@@ -547,7 +547,7 @@ model MOS5 {
 	  trace4("", T5, T6, T7, T8);
 	  dFR_dVd = T8 * (dVdsat_dVd - 1.0);
 	  dFR_dVg = T8 * dVdsat_dVg;
-	  dFR_dVb = T8 * dVdsat_dVb + T6 * (b->aiB-Ai*b->biB/(Vds-d->vdsat));
+	  dFR_dVb = T8 * dVdsat_dVb + T6 * (s->aiB-Ai*s->biB/(Vds-d->vdsat));
 	  trace4("ai0!=0", FR, dFR_dVd, dFR_dVg, dFR_dVb);
 	}else{
 	  d->saturated = false;
@@ -559,10 +559,10 @@ model MOS5 {
 	}}
 	
 	d->gds = (T2 * dBeta_dVd 
-		  + T3 * (b->vofD * T4 - dVth_dVd - b->nD * d->vgst / n)
+		  + T3 * (s->vofD * T4 - dVth_dVd - s->nD * d->vgst / n)
 		  + Beta * m->Vtm * T0 * T1) * FR + d->ids * dFR_dVd;
 	d->gmf = (T2 * dBeta_dVg + T3) * FR + d->ids * dFR_dVg;
-	d->gmbf = (T2 * dBeta_dVb + T3 * (b->vofB * T4 - dVth_dVb + b->nB
+	d->gmbf = (T2 * dBeta_dVb + T3 * (s->vofB * T4 - dVth_dVb + s->nB
 		* d->vgst / (n * T1s * T1s) * dT1s_dVb)) * FR + d->ids*dFR_dVb;
 	d->ids *= FR;
       }}
@@ -588,24 +588,24 @@ model MOS5 {
       Vbseff = Vbs;
       dVbseff_dVb = 1.0;
     }else{
-      Vbseff = b->phi - Phisb;
+      Vbseff = s->phi - Phisb;
       dVbseff_dVb = -dPhisb_dVb;
     }}
     trace3("", Vbs, Vbseff, dVbseff_dVb);
     
-    double Arg1 = Vgs - Vbseff - b->vfb;
+    double Arg1 = Vgs - Vbseff - s->vfb;
     double Arg2 = Arg1 - d->vgst;
     trace2("", Arg1, Arg2);
-    double Qbulk = b->One_Third_CoxWL * Arg2;
-    double dQbulk_dVb = b->One_Third_CoxWL * (dVth_dVb - dVbseff_dVb);
-    double dQbulk_dVd = b->One_Third_CoxWL * dVth_dVd;
+    double Qbulk = s->One_Third_CoxWL * Arg2;
+    double dQbulk_dVb = s->One_Third_CoxWL * (dVth_dVb - dVbseff_dVb);
+    double dQbulk_dVd = s->One_Third_CoxWL * dVth_dVd;
     trace3("", Qbulk, dQbulk_dVb, dQbulk_dVd);
     {if (Arg1 <= 0.0) { // accumulation region
-      d->qgate = b->cgate * Arg1;
+      d->qgate = s->cgate * Arg1;
       d->qbulk = -(d->qgate);
       d->qdrn = 0.0;
       
-      d->cggb = b->cgate;
+      d->cggb = s->cgate;
       d->cgdb = 0.0;
       d->cgsb = -d->cggb * (1.0 - dVbseff_dVb);
       
@@ -613,7 +613,7 @@ model MOS5 {
       d->cddb = 0.0;
       d->cdsb = 0.0;
       
-      d->cbgb = -b->cgate;
+      d->cbgb = -s->cgate;
       d->cbdb = 0.0;
       d->cbsb = -d->cgsb;
       trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
@@ -621,13 +621,13 @@ model MOS5 {
       trace4("acc", d->qdrn, d->cdgb, d->cddb, d->cdsb);
     }else if (d->vgst <= 0.0) { // subthreshold
       double T2 = Arg1 / Arg2;
-      double T3 = T2 * T2 * (b->cgate - b->Two_Third_CoxWL * T2);
+      double T3 = T2 * T2 * (s->cgate - s->Two_Third_CoxWL * T2);
       
-      d->qgate = b->cgate * Arg1 * (1.0 - T2 * (1.0 - T2 / 3.0));
+      d->qgate = s->cgate * Arg1 * (1.0 - T2 * (1.0 - T2 / 3.0));
       d->qbulk = -(d->qgate);
       d->qdrn = 0.0;
       
-      d->cggb = b->cgate * (1.0 - T2 * (2.0 - T2));
+      d->cggb = s->cgate * (1.0 - T2 * (2.0 - T2));
       d->cgdb = T3 * dVth_dVd;
       double tmp = T3 * dVth_dVb - (d->cggb + T3) * dVbseff_dVb;
       d->cgsb = -(d->cggb + d->cgdb + tmp);
@@ -645,14 +645,14 @@ model MOS5 {
       trace4("sub", d->qdrn, d->cdgb, d->cddb, d->cdsb);
     }else{
       double Vdsat; // changes dVdsat_dVd, dVdsat_dVg, dVdsat_dVb;
-      {if (d->vgst < b->vghigh) {
+      {if (d->vgst < s->vghigh) {
 	double Uvert = 1.0 + d->vgst * (Ua + d->vgst * Ub);
 	Uvert = std::max(Uvert, 0.2);
 	double Inv_Uvert = 1.0 / Uvert;
 	double dUvert_dVg = Ua + 2.0 * Ub * d->vgst;
 	double dUvert_dVd = -dUvert_dVg * dVth_dVd;
 	double dUvert_dVb = -dUvert_dVg * dVth_dVb 
-	  + d->vgst * (b->uaB + d->vgst * b->ubB);
+	  + d->vgst * (s->uaB + d->vgst * s->ubB);
 	trace2("", Uvert, Inv_Uvert);
 	trace3("", dUvert_dVg, dUvert_dVd, dUvert_dVb);
 	
@@ -662,7 +662,7 @@ model MOS5 {
 	double dVc_dVg = T8 - T9 * dUvert_dVg;
 	double dVc_dVd = -T8 * dVth_dVd - T9 * dUvert_dVd;
 	double dVc_dVb = -T8 * dVth_dVb
-	  + b->u1B * d->vgst * Inv_Aa * Inv_Uvert 
+	  + s->u1B * d->vgst * Inv_Aa * Inv_Uvert 
 	  - Vc * Inv_Aa * dAa_dVb - T9 * dUvert_dVb;
 	trace3("", T8, T9, Vc);
 	trace3("", dVc_dVg, dVc_dVd, dVc_dVb);
@@ -688,7 +688,7 @@ model MOS5 {
 	// keep dVdsat_dVd, dVdsat_dVg, dVdsat_dVb;
       }}
       {if (Vds >= Vdsat) {       /* saturation region */
-	d->cggb = b->Two_Third_CoxWL;
+	d->cggb = s->Two_Third_CoxWL;
 	d->cgdb = -d->cggb * dVth_dVd + dQbulk_dVd;
 	double tmp = -d->cggb * dVth_dVb + dQbulk_dVb;
 	d->cgsb = -(d->cggb + d->cgdb + tmp);
@@ -705,7 +705,7 @@ model MOS5 {
 	trace1("", tmp);
 	
 	d->qbulk = -Qbulk;
-	d->qgate = b->Two_Third_CoxWL * d->vgst + Qbulk;
+	d->qgate = s->Two_Third_CoxWL * d->vgst + Qbulk;
 	d->qdrn = d->cdgb * d->vgst;
 	trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
 	trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
@@ -730,24 +730,24 @@ model MOS5 {
 	double dVgdt_dVb = T6 * dVdsat_dVb -T9 * dVth_dVb;
 	trace3("", dVgdt_dVg, dVgdt_dVd, dVgdt_dVb);
 	
-	d->qgate = b->Two_Third_CoxWL * (d->vgst + Vgdt 
+	d->qgate = s->Two_Third_CoxWL * (d->vgst + Vgdt 
 				   - Vgdt * T0) + Qbulk;
 	d->qbulk = -Qbulk;
-	d->qdrn = -b->One_Third_CoxWL * (0.2 * Vgdt 
+	d->qdrn = -s->One_Third_CoxWL * (0.2 * Vgdt 
 				    + 0.8 * d->vgst + Vgdt * T1 
 				    + 0.2 * T5 * (Vgdt - d->vgst));
 	
-	d->cggb = b->Two_Third_CoxWL * (T2 + T3 * dVgdt_dVg);
-	d->cgdb = b->Two_Third_CoxWL * (T3*dVgdt_dVd-T2*dVth_dVd) + dQbulk_dVd;
-	double tmp = dQbulk_dVb +b->Two_Third_CoxWL*(T3*dVgdt_dVb-T2*dVth_dVb);
+	d->cggb = s->Two_Third_CoxWL * (T2 + T3 * dVgdt_dVg);
+	d->cgdb = s->Two_Third_CoxWL * (T3*dVgdt_dVd-T2*dVth_dVd) + dQbulk_dVd;
+	double tmp = dQbulk_dVb +s->Two_Third_CoxWL*(T3*dVgdt_dVb-T2*dVth_dVb);
 	d->cgsb = -(d->cggb + d->cgdb + tmp);
 	trace1("", tmp);
 	
 	T2 = 0.8 - 0.4 * T1 * (2.0 * T1 + T0 + T0 * (T1 - T0));
 	T3 = 0.2 + T1 + T0 * (1.0 - 0.4 * T0 * (T1 + 3.0 * T0));
-	d->cdgb = -b->One_Third_CoxWL * (T2 + T3 * dVgdt_dVg);
-	d->cddb = b->One_Third_CoxWL * (T2 * dVth_dVd - T3 * dVgdt_dVd);
-	tmp = b->One_Third_CoxWL * (T2 * dVth_dVb - T3 * dVgdt_dVb);
+	d->cdgb = -s->One_Third_CoxWL * (T2 + T3 * dVgdt_dVg);
+	d->cddb = s->One_Third_CoxWL * (T2 * dVth_dVd - T3 * dVgdt_dVd);
+	tmp = s->One_Third_CoxWL * (T2 * dVth_dVb - T3 * dVgdt_dVb);
 	d->cdsb = -(d->cdgb + tmp + d->cddb);
 	trace3("", T2, T3, tmp);
 	

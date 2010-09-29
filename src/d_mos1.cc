@@ -1,8 +1,8 @@
-/* $Id: d_mos1.cc,v 20.13 2001/10/15 00:57:11 al Exp $ -*- C++ -*-
+/* $Id: d_mos1.model,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "d_mos1.h"
 /*--------------------------------------------------------------------------*/
 const double NA(NOT_INPUT);
+const double INF(BIGBIG);
 /*--------------------------------------------------------------------------*/
 int MODEL_MOS1::_count = 0;
 /*--------------------------------------------------------------------------*/
@@ -40,8 +41,8 @@ TDP_MOS1::TDP_MOS1(const DEV_MOS* d)
   assert(d);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(d->common());
   assert(c);
-  const SDP_MOS1* b = prechecked_cast<const SDP_MOS1*>(c->sdp());
-  assert(b);
+  const SDP_MOS1* s = prechecked_cast<const SDP_MOS1*>(c->sdp());
+  assert(s);
   const MODEL_MOS1* m = prechecked_cast<const MODEL_MOS1*>(c->model());
   assert(m);
 
@@ -52,9 +53,8 @@ TDP_MOS1::TDP_MOS1(const DEV_MOS* d)
       double vt = kt / Q;
       double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
       double arg = (m->egap*tempratio - egap) / (2*kt);
-
   phi = m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)));
-  beta = m->kp * tempratio4 * b->w_eff / b->l_eff;
+  beta = m->kp * tempratio4 * s->w_eff / s->l_eff;
   sqrt_phi = sqrt(phi);
 }
 /*--------------------------------------------------------------------------*/
@@ -119,10 +119,8 @@ void MODEL_MOS1::parse_finish()
 	  }
 	}else{
 	  // tox is input, nsub isn't
-	  untested();
 	}}
       }
-
   if (cox == NA) {
     cox = 0.;
   }
@@ -172,16 +170,27 @@ void MODEL_MOS1::print_calculated(OMSTREAM& o)const
     o << "* kp=" << kp;
 }
 /*--------------------------------------------------------------------------*/
+bool MODEL_MOS1::is_valid(const COMMON_COMPONENT* cc)const
+{
+  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
+  {if (!c) {
+    return MODEL_MOS123::is_valid(cc);
+  }else{
+    return MODEL_MOS123::is_valid(cc);
+  }}
+}
+/*--------------------------------------------------------------------------*/
 void MODEL_MOS1::tr_eval(COMPONENT* brh)const
 {
   DEV_MOS* d = prechecked_cast<DEV_MOS*>(brh);
   assert(d);
   const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(d->common());
   assert(c);
-  const SDP_MOS1* b = prechecked_cast<const SDP_MOS1*>(c->sdp());
-  assert(b);
+  const SDP_MOS1* s = prechecked_cast<const SDP_MOS1*>(c->sdp());
+  assert(s);
   const MODEL_MOS1* m = this;
-  TDP_MOS1 t(d);
+  const TDP_MOS1 T(d);
+  const TDP_MOS1* t = &T;
 
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     trace1(d->long_label().c_str(), d->evaliter());
@@ -192,14 +201,14 @@ void MODEL_MOS1::tr_eval(COMPONENT* brh)const
     double sarg, dsarg_dvbs;
     {
       {if (d->vbs <= 0.) {
-	sarg = sqrt(t.phi - d->vbs);
+	sarg = sqrt(t->phi - d->vbs);
 	dsarg_dvbs = -.5 / sarg;
 	d->sbfwd = false;
 	trace2("sb-ok", sarg, dsarg_dvbs);
       }else{
 	untested();
-	sarg = t.sqrt_phi / (1. + .5 * d->vbs / t.phi);
-	dsarg_dvbs = -.5 * sarg * sarg / t.phi*t.sqrt_phi; /* is wrong!! */
+	sarg = t->sqrt_phi / (1. + .5 * d->vbs / t->phi);
+	dsarg_dvbs = -.5 * sarg * sarg / t->phi*t->sqrt_phi; /* is wrong!! */
 	d->sbfwd = true;
 	trace2("***sb-reversed***", sarg, dsarg_dvbs);
       }}
@@ -213,7 +222,7 @@ void MODEL_MOS1::tr_eval(COMPONENT* brh)const
       }}
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-    d->von = m->vto + m->gamma * (sarg - t.sqrt_phi);
+    d->von = m->vto + m->gamma * (sarg - t->sqrt_phi);
     d->vgst = d->vdsat = d->vgs - d->von;
     if (d->vdsat < 0.) {
       d->vdsat = 0.;
@@ -227,15 +236,15 @@ void MODEL_MOS1::tr_eval(COMPONENT* brh)const
       d->gds = d->gmf = d->ids = d->gmbf = 0.;
       trace4("cut", d->ids, d->gmf, d->gds, d->gmbf);
     }else if (d->saturated) {
-      d->gmf  = t.beta * d->vgst * (1. + Lambda * d->vds);
+      d->gmf  = t->beta * d->vgst * (1. + Lambda * d->vds);
       d->ids = d->gmf * (.5 * d->vgst);
-      d->gds = .5 * t.beta * Lambda * d->vgst * d->vgst;
+      d->gds = .5 * t->beta * Lambda * d->vgst * d->vgst;
       d->gmbf = - d->gmf * m->gamma * dsarg_dvbs;
       trace4("sat", d->ids, d->gmf, d->gds, d->gmbf);
-    }else{ /* linear */
-      d->gmf  = t.beta * d->vds * (1. + Lambda * d->vds);
+    }else{ /* triode */
+      d->gmf  = t->beta * d->vds * (1. + Lambda * d->vds);
       d->ids = d->gmf * (d->vgst - .5*d->vds);
-      d->gds = t.beta * ((d->vgst - d->vds) 
+      d->gds = t->beta * ((d->vgst - d->vds) 
 			 + Lambda * d->vds * (2.*d->vgst - 1.5*d->vds));
       d->gmbf = -d->gmf * m->gamma * dsarg_dvbs;
       trace4("lin", d->ids, d->gmf, d->gds, d->gmbf);

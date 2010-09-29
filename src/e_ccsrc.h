@@ -1,8 +1,8 @@
-/*$Id: e_ccsrc.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: e_ccsrc.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,28 +34,29 @@ protected:
   explicit	CCSRC_BASE(const CCSRC_BASE& p)
     :ELEMENT(p), _input_label(p._input_label), _input(p._input) {untested();}
 protected: // override virtual
-  int	   numnodes()const	{return 4;}
+  int	   max_nodes()const	{return 4;}
+  int	   min_nodes()const	{return 4;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 4;}
+  int	   net_nodes()const	{return 2;}
   void	   parse_more_nodes(CS&, int);
   void	   print(OMSTREAM& where, int detail)const;
   void	   expand();
-  bool	   tr_needs_eval()	{untested(); return true;}
-  void	   tr_queue_eval()	{q_eval();}
+  bool	   tr_needs_eval()	{return true;}
+  //void   tr_queue_eval()	//ELEMENT
   void	   tr_unload()		{untested(); tr_unload_active();}
-  double   tr_involts()const
-		{untested(); return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
+  double   tr_involts()const	{return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
   double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
   COMPLEX  ac_involts()const {untested();return _n[IN1].vac()-_n[IN2].vac();}
   bool	   is_2port()const		{return true;}  
 public:
-  void	set_parameters(const std::string& Label, CARD* Parent,
+  void	set_parameters_cc(const std::string& Label, CARD* Parent,
 		       COMMON_COMPONENT* Common, double Value,
 		       const node_t& N0, const node_t& N1,
 		       ELEMENT* Input);
 protected:
   std::string	_input_label;
   ELEMENT*	_input;
-private:
-  enum	{PRINTNODES = 2};
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

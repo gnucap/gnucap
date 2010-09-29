@@ -1,8 +1,8 @@
-/*$Id: d_coment.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: d_coment.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ private:
 public:
   explicit	DEV_COMMENT()	:CARD()  {set_constant(true);}
 private: // override virtual
-  char		id_letter()const{return '\0';}
+  char		id_letter()const	{return '\0';}
   const char*	dev_type()const	{untested(); return "comment";}
   CARD*		clone()const	{untested(); return new DEV_COMMENT(*this);}
   void		parse(CS& cmd);

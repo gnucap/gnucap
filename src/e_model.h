@@ -1,8 +1,8 @@
-/*$Id: e_model.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: e_model.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,11 +51,10 @@ public:
 		~MODEL_CARD();
 
 protected: // override virtuals
-  char		id_letter()const	{return '\0';}
-  int		numnodes()const		{unreachable(); return 0;}
-  CARD*		clone()const		{unreachable(); return 0;}
-  void		parse(CS&);
-  void		print(OMSTREAM&,int)const;
+  char	id_letter()const	{return '\0';}
+  CARD* clone()const		{unreachable(); return 0;}
+  void	parse(CS&);
+  void	print(OMSTREAM&,int)const;
   
 public:
   virtual void	tr_eval(COMPONENT*)const{unreachable();}
@@ -69,6 +68,7 @@ public:
   virtual void print_front(OMSTREAM&)const {unreachable();};
   virtual void print_params(OMSTREAM&)const {unreachable();};
   virtual void print_calculated(OMSTREAM&)const {unreachable();};
+  virtual bool is_valid(const COMMON_COMPONENT*)const {return true;}
 public:
   double _tnom;
 };

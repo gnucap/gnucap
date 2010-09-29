@@ -1,8 +1,8 @@
-/*$Id: u_opt1.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: u_opt1.cc,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,8 @@ double	OPT::defad = 0.;
 double	OPT::defas = 0.;
 
 int	OPT::seed = 1;
+bool	OPT::clobber = false;
+bool	OPT::named_nodes = false;
 double	OPT::wczero = 1e-9;
 double	OPT::floor = 1e-21;
 double	OPT::vfloor = 1e-15;
@@ -68,6 +70,7 @@ int	OPT::inwidth = 80;
 int	OPT::outwidth = 80;
 double	OPT::xdivisions = 4.;
 double	OPT::ydivisions = 4.;
+phase_t	OPT::phase = pDEGREES;
 order_t	OPT::order = oAUTO;
 smode_t	OPT::mode = moMIXED;
 int	OPT::transits = 2;
@@ -83,7 +86,7 @@ double	OPT::vmax =  5;
 double	OPT::vmin = -5;
 double	OPT::dtmin = 1e-12;
 double	OPT::dtratio = 1e9;
-bool	OPT::rstray = false;
+bool	OPT::rstray = true;
 bool	OPT::cstray = true;
 int	OPT::harmonics = 9;
 double	OPT::trstepgrow = 2.;
@@ -93,6 +96,8 @@ bool	OPT::showall = false;
 int	OPT::foooo = 0;
 int	OPT::diodeflags = 0;
 int	OPT::mosflags = 0;
+bool	OPT::quitconvfail = false;
+bool	OPT::edit = true;
 
 double	OPT::lowlim = 1. - OPT::reltol;
 double	OPT::uplim = 1. + OPT::reltol;

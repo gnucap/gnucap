@@ -1,9 +1,5 @@
 1lin.ckt
 ap_ctof.2.ckt
-19c19
-< ACS   System status
----
-> GnuCap   System status
 ap_ctof.ckt
 bm_complex.1.ckt
 bm_cond.1.ckt
@@ -18,13 +14,6 @@ bm_fit.2.4.ckt
 bm_fit.3.1.ckt
 bm_fit.3.2.ckt
 bm_fit.3.3.ckt
-bmm_cap.1.ckt
-bmm_cap.2.ckt
-bmm_res.1.ckt
-bmm_res.2.ckt
-bmm_res.3.ckt
-bmm_res.4.ckt
-bmm_res.5.ckt
 bm_poly.1.ckt
 bm_poly.2.ckt
 bm_posy.1.ckt
@@ -45,27 +34,35 @@ bm_table.3.1.ckt
 bm_table.3.2.ckt
 bm_table.3.3.ckt
 bm_tanh.1.ckt
+bmm_cap.1.ckt
+bmm_cap.2.ckt
+bmm_res.1.ckt
+bmm_res.2.ckt
+bmm_res.3.ckt
+bmm_res.4.ckt
+bmm_res.5.ckt
 c.ckt
-25c25
-< ACS   System status
----
-> GnuCap   System status
 c_delete.ckt
 c_getckt.ckt
-charge-cons2.ckt
-509c509
-< ACS   System status
----
-> GnuCap   System status
-charge-cons3.ckt
-509c509
-< ACS   System status
----
-> GnuCap   System status
-charge-cons.ckt
 c_list.ckt
 c_modify.ckt
+charge-cons.ckt
+charge-cons2.ckt
+charge-cons3.ckt
 current.ckt
+d_bjt-diffpair-ccs.ckt
+d_bjt-diffpair-cjc.ckt
+d_bjt-diffpair-dc.ckt
+d_bjt-diffpair-nocap.ckt
+d_bjt-diffpair-tf.ckt
+d_bjt-diffpair-tr.ckt
+d_bjt-diffpair-tran.ckt
+d_bjt-pnp.ckt
+d_bjt-rca3040.ckt
+d_bjt-rtlinv.ckt
+d_bjt-schmitt-bypass.ckt
+d_bjt-schmitt-nobypass.ckt
+d_bjt.ckt
 d_cap.1.ckt
 d_cap.2.ckt
 d_cap.3.ckt
@@ -74,6 +71,7 @@ d_cap.5.ckt
 d_cap.6.ckt
 d_cap.ic1.ckt
 d_cap.ic2.ckt
+d_cap.ic4.ckt
 d_cccs.1.ckt
 d_cccs.2.ckt
 d_cccs.3.ckt
@@ -86,147 +84,37 @@ d_coil.1.ckt
 d_coil.2.ckt
 d_coil.3.ckt
 d_coil.4.ckt
-35c35
-< ACS   System status
----
-> GnuCap   System status
 d_coil.5.ckt
-dcsweep.ckt
 d_diode.1.ckt
-37c37
-< ACS   System status
----
-> GnuCap   System status
-56c56
-< ACS   System status
----
-> GnuCap   System status
 d_diode.2.ckt
 d_diode.3.ckt
-37c37
-< ACS   System status
----
-> GnuCap   System status
-56c56
-< ACS   System status
----
-> GnuCap   System status
 d_logic.1.ckt
-8c8
-< ACS   System status
----
-> GnuCap   System status
 d_logic.2.ckt
-8c8
-< ACS   System status
----
-> GnuCap   System status
 d_logic.3.ckt
-8c8
-< ACS   System status
----
-> GnuCap   System status
 d_logic.4.ckt
-20c20
-< ACS   System status
----
-> GnuCap   System status
 d_logic.5.ckt
-20c20
-< ACS   System status
----
-> GnuCap   System status
 d_logic.6.ckt
-20c20
-< ACS   System status
----
-> GnuCap   System status
 d_logic.7.ckt
-20c20
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_ab1.ckt
-214c214
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_ab2.ckt
-426c426
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_an1.ckt
-214c214
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_an2.ckt
-426c426
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_db1.ckt
-233c233
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_db2.ckt
-504c504
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_dn1.ckt
-233c233
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_dn2.ckt
-504c504
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_mb1a.ckt
-230c230
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_mb1b.ckt
-214c214
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_mb2a.ckt
-490c490
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_mb2b.ckt
-458c458
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_mn1a.ckt
-230c230
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_mn1b.ckt
-214c214
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_mn2a.ckt
-490c490
-< ACS   System status
----
-> GnuCap   System status
 d_logic_tr_mn2b.ckt
-458c458
-< ACS   System status
----
-> GnuCap   System status
 d_macro.1.ckt
+d_mos1.bin1.ckt
+d_mos1.bin2.ckt
+d_mos1.bin3.ckt
 d_mos1.inv1.ckt
 d_mos1.inv2.ckt
 d_mos1.lin1.ckt
@@ -236,17 +124,13 @@ d_mos1.lin2.ckt
 d_mos1.lin3.ckt
 d_mos1.lin4.ckt
 d_mos1.lin5.ckt
-d_mos1.n0.ckt
-d_mos1.n-1.ckt
 d_mos1.n+1.ckt
+d_mos1.n-1.ckt
+d_mos1.n0.ckt
 d_mos1.nand1.ckt
-130c130
-< ACS   System status
----
-> GnuCap   System status
-d_mos1.p0.ckt
-d_mos1.p-1.ckt
 d_mos1.p+1.ckt
+d_mos1.p-1.ckt
+d_mos1.p0.ckt
 d_mos1.plin.ckt
 d_mos1.psat.ckt
 d_mos1.sat1.ckt
@@ -267,17 +151,13 @@ d_mos2.lin2.ckt
 d_mos2.lin3.ckt
 d_mos2.lin4.ckt
 d_mos2.lin5.ckt
-d_mos2.n0.ckt
-d_mos2.n-1.ckt
 d_mos2.n+1.ckt
+d_mos2.n-1.ckt
+d_mos2.n0.ckt
 d_mos2.nand1.ckt
-130c130
-< ACS   System status
----
-> GnuCap   System status
-d_mos2.p0.ckt
-d_mos2.p-1.ckt
 d_mos2.p+1.ckt
+d_mos2.p-1.ckt
+d_mos2.p0.ckt
 d_mos2.plin.ckt
 d_mos2.psat.ckt
 d_mos2.sat1.ckt
@@ -297,17 +177,13 @@ d_mos3.lin2.ckt
 d_mos3.lin3.ckt
 d_mos3.lin4.ckt
 d_mos3.lin5.ckt
-d_mos3.n0.ckt
-d_mos3.n-1.ckt
 d_mos3.n+1.ckt
+d_mos3.n-1.ckt
+d_mos3.n0.ckt
 d_mos3.nand1.ckt
-130c130
-< ACS   System status
----
-> GnuCap   System status
-d_mos3.p0.ckt
-d_mos3.p-1.ckt
 d_mos3.p+1.ckt
+d_mos3.p-1.ckt
+d_mos3.p0.ckt
 d_mos3.plin.ckt
 d_mos3.psat.ckt
 d_mos3.sat000.ckt
@@ -319,8 +195,8 @@ d_mos3.sat4.ckt
 d_mos3.sat5.ckt
 d_mos3.sat6.ckt
 d_mos3.sat7.ckt
-d_mos3.sts000.ckt
 d_mos3.sts.ckt
+d_mos3.sts000.ckt
 d_mos3.zero.ckt
 d_mos4.1.ckt
 d_mos4.2.ckt
@@ -333,17 +209,13 @@ d_mos6.lin1z.ckt
 d_mos6.lin2.ckt
 d_mos6.lin2r.ckt
 d_mos6.lin2z.ckt
-d_mos6.n0.ckt
-d_mos6.n-1.ckt
 d_mos6.n+1.ckt
+d_mos6.n-1.ckt
+d_mos6.n0.ckt
 d_mos6.nand1.ckt
-129c129
-< ACS   System status
----
-> GnuCap   System status
-d_mos6.p0.ckt
-d_mos6.p-1.ckt
 d_mos6.p+1.ckt
+d_mos6.p-1.ckt
+d_mos6.p0.ckt
 d_mos6.plin.ckt
 d_mos6.psat.ckt
 d_mos6.sat1.ckt
@@ -354,18 +226,14 @@ d_mos6.sat2.ckt
 d_mos6.sat2r.ckt
 d_mos6.sat3.ckt
 d_mos6.sat3r.ckt
-d_mos6.sts000.ckt
 d_mos6.sts.ckt
+d_mos6.sts000.ckt
 d_mos6.zero.ckt
 d_mos7.alpha.ckt
 d_mos7.inv1.ckt
 d_mos7.lin1.ckt
 d_mos7.lin2.ckt
 d_mos7.nand1.ckt
-183c183
-< ACS   System status
----
-> GnuCap   System status
 d_mos7.plin.ckt
 d_mos7.psat.ckt
 d_mos7.sat1.ckt
@@ -385,6 +253,7 @@ d_switch.v.ckt
 d_switch.vr.ckt
 d_tcap.1.ckt
 d_tcap.2.ckt
+d_tcap.3.ckt
 d_trln.ac.ckt
 d_trln.tr.100.im.ckt
 d_trln.tr.100.nim.ckt
@@ -405,8 +274,10 @@ d_vcr.3.ckt
 d_vcr.4.ckt
 d_vcr.5.ckt
 d_vcvs.1.ckt
+dcsweep.ckt
 e_ccsrc.1.ckt
 e_ccsrc.2.ckt
+e_storag.1.ckt
 eq3-1153.ckt
 eq3-1153.tr-b.ckt
 eq3-1153.tr-nb.ckt
@@ -415,22 +286,15 @@ eqb1.ckt
 eqboost.ckt
 eqflat.ckt
 eqmodify.ckt
-e_storag.1.ckt
 l.ckt
 nmos100.ckt
 nmos15.ckt
-14c14
-< ACS   System status
----
-> GnuCap   System status
 nmp100.ckt
-opamp-ol.ckt
 opamp-ol-disto.ckt
+opamp-ol.ckt
 opamp-vf.ckt
-217c217
-< ACS   System status
----
-> GnuCap   System status
+oscillator.1.ckt
+oscillator.2.ckt
 sl.ckt
 trcurve.ckt
 trcurves.ckt

@@ -1,8 +1,8 @@
-/*$Id: mg_out_root.cc,v 20.10 2001/10/05 01:35:25 al Exp $ -*- C++ -*-
+/*$Id: mg_out_root.cc,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ static void make_header(std::ofstream& out, const File& in,
     "/*--------------------------------------"
     "------------------------------------*/\n"
     "const double NA(NOT_INPUT);\n"
+    "const double INF(BIGBIG);\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
 }

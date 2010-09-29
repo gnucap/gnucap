@@ -1,8 +1,8 @@
-/*$Id: bm_exp.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: bm_exp.cc,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ void EVAL_BM_EXP::parse(CS& cmd)
     get(cmd, "TAU1",	&_tau1);
     get(cmd, "TD2",	&_td2);
     get(cmd, "TAU2",	&_tau2);
-    get(cmd, "PERiod",	&_period);
+    get(cmd, "PEriod",	&_period);
     parse_base(cmd);
   }while (cmd.more() && !cmd.stuck(&here));
   if (_period == 0.) {
@@ -93,17 +93,19 @@ void EVAL_BM_EXP::parse(CS& cmd)
   parse_base_finish();
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_EXP::print(OMSTREAM& where)const
+void EVAL_BM_EXP::print(OMSTREAM& o)const
 {
-  where << "  " << name()
-	<< "  iv="	<< _iv
-	<< "  pv="	<< _pv
-	<< "  td1="	<< _td1
-	<< "  tau1="	<< _tau1
-	<< "  td2="	<< _td2
-	<< "  tau2="	<< _tau2
-	<< "  period="	<< _period;
-  print_base(where);
+  o << "  " << name()
+    << "  iv="	 << _iv
+    << "  pv="	 << _pv
+    << "  td1="	 << _td1
+    << "  tau1=" << _tau1
+    << "  td2="	 << _td2
+    << "  tau2=" << _tau2;
+  if (_period != _default_period) {
+    o << "  period=" << _period;
+  }
+  print_base(o);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_EXP::tr_eval(ELEMENT* d)const
@@ -111,10 +113,10 @@ void EVAL_BM_EXP::tr_eval(ELEMENT* d)const
   double ev = _iv;
   for (double time = SIM::time0;  time >= 0;  time -= _period){
     if (time > _td1){
-      ev += (_pv - _iv) * (1. - Exp(-(time-_td1)/_tau1));
+      ev += (_pv - _iv) * (1. - exp(-(time-_td1)/_tau1));
     }
     if (time > _td2){
-      ev += (_iv - _pv) * (1. - Exp(-(time-_td2)/_tau2));
+      ev += (_iv - _pv) * (1. - exp(-(time-_td2)/_tau2));
     }
   }
   tr_finish_tdv(d, ev);

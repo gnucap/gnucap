@@ -1,8 +1,8 @@
-/*$Id: s_fo_out.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: s_fo_out.cc,v 22.5 2002/07/07 07:26:31 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
  * functions needed in addition to the transient analysis
  * to perform the fourier command.
  */
+#include "u_opt.h"
 #include "u_prblst.h"
 #include "constant.h"
 #include "declare.h"	/* plclose, plclear, fft */
@@ -43,6 +44,7 @@ void FOURIER::store()
   int ii = 0;
   for (PROBELIST::const_iterator
 	 p=printlist().begin();  p!=printlist().end();  ++p){
+    assert(stepno < timesteps);
     fdata[ii][stepno] = p->value();
     ++ii;
   }
@@ -81,7 +83,9 @@ void FOURIER::fohead(const PROBE& prob)
 void FOURIER::foprint(COMPLEX *data)
 {
   int startstep = stepnum(0., fstep, fstart);
+  assert(startstep >= 0);
   int stopstep  = stepnum(0., fstep, fstop );
+  assert(stopstep < timesteps);
   COMPLEX maxvalue = find_max(data,std::max(1,startstep),stopstep);
   if (maxvalue == 0.){
     untested();
@@ -90,6 +94,8 @@ void FOURIER::foprint(COMPLEX *data)
   data[0] /= 2;
   for (int ii = startstep;  ii <= stopstep;  ++ii){
     double frequency = fstep * ii;
+    assert(ii >= 0);
+    assert(ii < timesteps);
     COMPLEX unscaled = data[ii];
     COMPLEX scaled = unscaled / maxvalue;
     unscaled *= 2;
@@ -129,7 +135,7 @@ static COMPLEX find_max(COMPLEX *data, int start, int stop)
  */
 static double phaze(COMPLEX x)
 {
-  return arg(x)* RTOD;
+  return (OPT::phase == pDEGREES) ? arg(x)* RTOD : arg(x);
 }
 /*--------------------------------------------------------------------------*/
 static double db(COMPLEX value)

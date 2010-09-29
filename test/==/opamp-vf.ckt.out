@@ -4,17 +4,18 @@
 +  pivtol= 100.f  pivrel= 0.001  numdgt=5  tnom= 27.  cptime=30000
 +  limtim=2  limpts=201  lvlcod=2  lvltim=2  method=trap  maxord=2
 +  itl1=100  itl2=50  itl3=6  itl4=20  itl5=5000  itl6=0  itl7=1
-+  itl8=99  defl= 100.u  defw= 100.u  defad= 0.  defas= 0.  seed=1
-+  wczero= 1.n  dampmax= 1.  dampmin= 0.5  dampstrategy=11
-+  roundofftol= 100.f  tempamb= 27.  short= 10.u  in=80  out=80
-+  xdivisions= 4.  ydivisions= 4.  order=auto  mode=mixed
-+  transits=2  nodupcheck  bypass  incmode  lubypass  fbbypass  traceload
-+  itermin=1  limit= 100.E+18  vmax= 5.  vmin=-5.  dtmin= 1.p
-+  dtratio= 1.G  norstray  cstray  harmonics=9  trstepgrow= 2.
-+  trstepshrink= 2.  trreject= 0.5  diodeflags=0  mosflags=0
++  itl8=99  defl= 100.u  defw= 100.u  defad= 0.  defas= 0.  seed=1  noclobber
++  nonamednodes  wczero= 1.n  dampmax= 1.  dampmin= 0.5
++  dampstrategy=11  roundofftol= 100.f  tempamb= 27.  short= 10.u
++  in=80  out=80  xdivisions= 4.  ydivisions= 4.  phase=degrees
++  order=auto  mode=mixed  transits=2  nodupcheck  bypass  incmode  lubypass
++  fbbypass  traceload  itermin=1  limit= 100.E+18  vmax= 5.  vmin=-5.
++  dtmin= 1.p  dtratio= 1.G  rstray  cstray  harmonics=9
++  trstepgrow= 2.  trstepshrink= 2.  trreject= 0.5  diodeflags=0
++  mosflags=0  noquitconvfail
 #           iter(0)    v(1)       v(3)       v(4)       v(5)       v(6)      
 + v(7)       v(8)       v(9)      
- 300.15     17.       -1.         0.87713    0.88005   -1.9308    -0.99994   
+ 300.15     20.       -1.         0.87708    0.87996   -1.9308    -0.99994   
 +-1.6303    -2.5        2.5       
 vdb(6)-90.              -60.             -30.               0.              30.
 vp(6)-180.              -90.              0.                90.            180.
@@ -46,11 +47,11 @@ vp(6)-180.              -90.              0.                90.            180.
  63.096K| +               .                .          *      .                |
  100.K  |                 .                .      *          .             +  |
  158.49K|                 .                .  *              .         +      |
- 251.19K|                 .                *                 .      +         |
+ 251.19K|                 .                *                 .     +          |
  398.11K|                 .             *  .                 .   +            |
  630.96K|                 .           *    .                 . +              |
  1.Meg  |                 .        *       .                 .+               |
- 1.5849M|                 .      *         .                +.                |
+ 1.5849M|                 .     *          .                +.                |
  2.5119M|                 .   *            .                +.                |
  3.9811M|                 .*               .                +.                |
  6.3096M|                *.                .                +.                |
@@ -214,10 +215,11 @@ v(6)  -4.               -2.               0.                2.               4.
  990.u  |                 .                .        *        .                |
  0.001  |                 .                .        *        .                |
         +-----------------+----------------+-----------------+----------------+
-GnuCap   System status
-iterations: op=17, dc=357, tran=716, fourier=0, total=1251
-nodes: user=9, subckt=0, model=0, total=9
-devices: diodes=10, mosfets=8, gates=0, subckts=0
-commons: diodes=16, mosfets=8, gates=0, subckts=0
-models:  diodes=2, mosfets=2, gates=0, subckts=0
-density=75.3%
+Gnucap   System status
+iterations: op=20, dc=353, tran=724, fourier=0, total=1258
+transient timesteps: accepted=125, rejected=0, total=125
+nodes: user=9, subckt=0, model=16, total=25
+devices: diodes=16, bjts=0, mosfets=8, gates=0, subckts=0
+commons: diodes=16, bjts=0, mosfets=8, gates=0, subckts=0
+models:  diodes=2, bjts=0, mosfets=2, gates=0, subckts=0
+dctran density=44.6%, ac density=44.6%

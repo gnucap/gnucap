@@ -109,3 +109,11 @@ R5l  52  0  100.
  36.Meg     1.         0.33333    0.33333    0.56692    0.70075    0.34144    11.618u    0.30501    0.21373    0.3938     0.45752   
  38.Meg     1.         0.33333    0.33333    0.8385     0.88166    0.16036    10.378u    0.23085    0.20353    0.46932    0.48709   
  40.Meg     1.         0.33333    0.33333    1.         1.         10.031u    9.9999u    0.2        0.2        0.5        0.5       
+Gnucap   System status
+iterations: op=0, dc=0, tran=0, fourier=0, total=84
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=52, subckt=0, model=0, total=52
+devices: diodes=0, bjts=0, mosfets=0, gates=0, subckts=0
+commons: diodes=0, bjts=0, mosfets=0, gates=0, subckts=0
+models:  diodes=0, bjts=0, mosfets=0, gates=0, subckts=0
+dctran density=5.6%, ac density=6.0%

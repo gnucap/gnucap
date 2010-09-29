@@ -1,4 +1,4 @@
-#$Id: Make.aux,v 20.16 2001/10/31 01:57:30 al Exp $ -*- Makefile -*-
+#$Id: Make1,v 22.18 2002/08/31 16:31:53 al Exp $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
 #
@@ -21,7 +21,7 @@
 #------------------------------------------------------------------------
 TARGET = gnucap
 #------------------------------------------------------------------------
-MODELS = d_diode.model d_mos.model \
+MODELS = d_diode.model d_bjt.model d_mos.model \
 d_mos_base.model d_mos123.model d_mos1.model d_mos2.model d_mos3.model \
 d_mos4.model d_mos5.model d_mos6.model d_mos7.model
 #------------------------------------------------------------------------
@@ -32,14 +32,14 @@ ap_construct.cc ap_convert.cc ap_error.cc ap_get.cc ap_match.cc \
 ap_skip.cc \
 m_fft.cc m_interp.cc m_matrix.cc m_spline.cc \
 l_ftos.cc l_timer.cc l_trim.cc io_xopen.cc l_pmatch.cc l_wmatch.cc \
-u_sdp.cc u_prblst.cc u_probe.cc \
+u_sdp.cc u_prblst.cc u_probe.cc u_xprobe.cc \
 e_base.cc e_node.cc e_aux.cc e_cardlist.cc e_card.cc e_model.cc \
 e_compon.cc e_elemnt.cc e_ccsrc.cc e_storag.cc \
 bm.cc bm_complex.cc bm_cond.cc bm_exp.cc bm_fit.cc bm_generator.cc \
 bm_model.cc bm_poly.cc bm_posy.cc bm_pulse.cc bm_pwl.cc \
 bm_sffm.cc bm_sin.cc bm_tanh.cc bm_value.cc \
 bmm_table.cc bmm_semi.cc \
-d_admit.cc d_cap.cc d_cccs.cc d_ccvs.cc d_coil.cc d_coment.cc \
+d_admit.cc d_bjt.cc d_cap.cc d_cccs.cc d_ccvs.cc d_coil.cc d_coment.cc \
 d_cs.cc d_diode.cc d_dot.cc d_logic.cc d_logicmod.cc \
 d_mos_base.cc d_mos123.cc d_mos1.cc d_mos2.cc d_mos3.cc d_mos4.cc \
 d_mos5.cc d_mos6.cc d_mos7.cc d_mos.cc \
@@ -54,7 +54,7 @@ s_tr.cc s_tr_rev.cc s_tr_set.cc s_tr_swp.cc \
 s_fo.cc s_fo_out.cc s_fo_set.cc \
 plot.cc plotbasi.cc plotline.cc plotpost.cc plotunix.cc plotx.cc \
 c__cmd.cc c_comand.cc c_crtset.cc c_delete.cc \
-c_fanout.cc c_file.cc c_genrat.cc c_getckt.cc c_insert.cc \
+c_fanout.cc c_file.cc c_genrat.cc c_getckt.cc \
 c_list.cc c_modify.cc c_nodset.cc c_prbcmd.cc c_sweep.cc \
 c_sim.cc c_system.cc main.cc
 #------------------------------------------------------------------------
@@ -65,14 +65,14 @@ ap_construct.o ap_convert.o ap_error.o ap_get.o ap_match.o \
 ap_skip.o \
 m_fft.o m_interp.o m_matrix.o m_spline.o \
 l_ftos.o l_timer.o l_trim.o io_xopen.o l_pmatch.o l_wmatch.o \
-u_sdp.o u_prblst.o u_probe.o \
+u_sdp.o u_prblst.o u_probe.o u_xprobe.o \
 e_base.o e_node.o e_aux.o e_cardlist.o e_card.o e_model.o \
 e_compon.o e_elemnt.o e_ccsrc.o e_storag.o \
 bm.o bm_complex.o bm_cond.o bm_exp.o bm_fit.o bm_generator.o \
 bm_model.o bm_poly.o bm_posy.o bm_pulse.o bm_pwl.o \
 bm_sffm.o bm_sin.o bm_tanh.o bm_value.o \
 bmm_table.o bmm_semi.o \
-d_admit.o d_cap.o d_cccs.o d_ccvs.o d_coil.o d_coment.o \
+d_admit.o d_bjt.o d_cap.o d_cccs.o d_ccvs.o d_coil.o d_coment.o \
 d_cs.o d_diode.o d_dot.o d_logic.o d_logicmod.o \
 d_mos_base.o d_mos123.o d_mos1.o d_mos2.o d_mos3.o d_mos4.o \
 d_mos5.o d_mos6.o d_mos7.o d_mos.o \
@@ -87,7 +87,7 @@ s_tr.o s_tr_rev.o s_tr_set.o s_tr_swp.o \
 s_fo.o s_fo_out.o s_fo_set.o \
 plot.o plotbasi.o plotline.o plotpost.o plotunix.o plotx.o \
 c__cmd.o c_comand.o c_crtset.o c_delete.o \
-c_fanout.o c_file.o c_genrat.o c_getckt.o c_insert.o \
+c_fanout.o c_file.o c_genrat.o c_getckt.o \
 c_list.o c_modify.o c_nodset.o c_prbcmd.o c_sweep.o \
 c_sim.o c_system.o main.o
 #------------------------------------------------------------------------
@@ -95,11 +95,11 @@ HDRS = \
 md.h io_.h io_error.h io_trace.h u_opt.h mode.h constant.h declare.h \
 ap.h m_cpoly.h m_divdiff.h m_interp.h m_matrix.h m_spline.h \
 l_compar.h l_denoise.h l_jmpbuf.h l_lib.h l_stlextra.h l_timer.h \
-u_sdp.h u_prblst.h u_probe.h u_xprobe.h \
+u_nodemap.h u_sdp.h u_prblst.h u_probe.h u_xprobe.h \
 bm.h bmm_table.h bmm_semi.h \
 e_base.h e_node.h e_aux.h e_cardlist.h e_card.h e_model.h \
 e_compon.h e_subckt.h e_elemnt.h e_ccsrc.h e_storag.h \
-d_admit.h d_cap.h d_cccs.h \
+d_admit.h d_bjt.h d_cap.h d_cccs.h \
 d_ccvs.h d_coil.h d_coment.h d_cs.h d_diode.h d_dot.h d_logic.h \
 d_mos_base.h d_mos123.h d_mos1.h d_mos2.h d_mos3.h d_mos4.h \
 d_mos5.h d_mos6.h d_mos7.h d_mos.h \
@@ -116,18 +116,20 @@ Make3 Makefile doc TAGS configure
 #------------------------------------------------------------------------
 ALL = $(HDRS) $(SRCS) $(MODELS) $(OTHER)
 #------------------------------------------------------------------------
-DELETED = d_mosc.cc
+DELETED =
 #------------------------------------------------------------------------
 %.cc : %.model modelgen
 	./modelgen -cc $<
 	-ln -s ../$@ .
+#	mv -f ../$@ .
 #------------------------------------------------------------------------
 %.h : %.model modelgen
 	./modelgen -h $<
 	-ln -s ../$@ .
+#	mv -f ../$@ .
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
-#$Id: Make.aux,v 20.16 2001/10/31 01:57:30 al Exp $ -*- Makefile -*-
+#$Id: Make2.g++,v 23.1 2002/11/06 07:47:50 al Exp $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
 #
@@ -153,9 +155,15 @@ VPATH = .:..
 # Standard base for g++.
 
 CCC = g++
+
 CCFLAGS = \
--DUNIX -O2 -DNDEBUG -I.. -fno-exceptions -W
-LIBS = -lm
+-DHAS_READLINE \
+-DUNIX -O2 -DNDEBUG -I.. -I. -fno-exceptions -W
+
+LIBS = \
+-lreadline -ltermcap \
+
+
 LDFLAGS =
 
 .SUFFIXES : .o .cc
@@ -178,7 +186,7 @@ $(TARGET): $(OBJS)
 # Please send the changes to aldavis@ieee.org
 #------------------------------------------------------------
 #------------------------------------------------------------
-#$Id: Make.aux,v 20.16 2001/10/31 01:57:30 al Exp $ -*- Makefile -*-
+#$Id: Make3,v 21.4 2002/01/29 06:36:23 al Exp $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
 #
@@ -221,7 +229,7 @@ backup:
 clean:
 	-rm *.o
 #------------------------------------------------------------------------
-depend: $(SRCS)
+depend: $(SRCS) $(HDRS)
 	$(CCC) -MM $(CCFLAGS) $(SRCS) > Make.depend
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------

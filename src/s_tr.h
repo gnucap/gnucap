@@ -1,8 +1,8 @@
-/*$Id: s_tr.h,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: s_tr.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,6 +85,15 @@ private:
   double approxtime;	// guess at best time for next step
   STEP_CAUSE control;	// why this time (enum)
   bool printnow;	// flag: print this step
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+private:
+  static int steps_accepted_;
+  static int steps_rejected_;
+  static int steps_total_;
+public:
+  static int steps_accepted() {return steps_accepted_;}
+  static int steps_rejected() {return steps_rejected_;}
+  static int steps_total() {return steps_total_;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

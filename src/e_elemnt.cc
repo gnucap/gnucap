@@ -1,8 +1,8 @@
-/*$Id: e_elemnt.cc,v 20.7 2001/09/29 05:31:06 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.cc,v 22.11 2002/07/26 03:16:17 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,21 +76,20 @@ bool ELEMENT::skip_dev_type(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void ELEMENT::parse_more_nodes(CS& cmd, int gotnodes)
 {
-  int inports = is_2port();
-  parse_nodes(cmd, 2*inports+2, 2*inports+2, gotnodes);
+  parse_nodes(cmd, max_nodes(), min_nodes(), gotnodes);
   //		   max		min	     start
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::parse(CS& cmd)
 {
   parse_Label(cmd);
-  int gotnodes = parse_nodes(cmd,numnodes(),0);
-  //				 max	    min
+  int gotnodes = parse_nodes(cmd, max_nodes(), 0);
+  //				  max	       min for this pass
   COMMON_COMPONENT* c = 0;
 
   // HSPICE compatibility kluge.
   // The device type or function type could be stuck between the nodes.
-  if (gotnodes < numnodes()) {
+  if (gotnodes < min_nodes()) {
     skip_dev_type(cmd); // (redundant)
     c = EVAL_BM_ACTION_BASE::parse_func_type(cmd);
     parse_more_nodes(cmd, gotnodes);
@@ -128,7 +127,7 @@ void ELEMENT::print(OMSTREAM& where, int /*detail*/)const
     where << '.' << dev_type() << ' ';
   }
   where << short_label();
-  printnodes(where, numnodes());
+  printnodes(where);
   if (!has_common() || value() != 0) {
     where << ' ' << value();
   }
@@ -136,6 +135,106 @@ void ELEMENT::print(OMSTREAM& where, int /*detail*/)const
     common()->print(where);
   }
   where << '\n';
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::tr_alloc_matrix_passive()
+{
+  assert(matrix_nodes() == 2);
+  assert(is_device());
+  //assert(!subckt().exists()); ok for subckt to exist for logic
+  assert(_n[OUT1].m_() != INVALID_NODE);
+  assert(_n[OUT2].m_() != INVALID_NODE);
+  aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  lu.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  extern NODE* nstat; // yuck
+  nstat[_n[OUT1].m_()].set_needs_analog();
+  nstat[_n[OUT2].m_()].set_needs_analog();
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::tr_alloc_matrix_active()
+{
+  assert(matrix_nodes() == 4);
+  assert(is_device());
+  assert(!subckt().exists());
+  assert(_n[OUT1].m_() != INVALID_NODE);
+  assert(_n[OUT2].m_() != INVALID_NODE);
+  assert(_n[IN1].m_() != INVALID_NODE);
+  assert(_n[IN2].m_() != INVALID_NODE);
+
+  //aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  aa.iwant(_n[OUT1].m_(),_n[IN1].m_());
+  aa.iwant(_n[OUT1].m_(),_n[IN2].m_());
+  aa.iwant(_n[OUT2].m_(),_n[IN1].m_());
+  aa.iwant(_n[OUT2].m_(),_n[IN2].m_());
+  //aa.iwant(_n[IN1].m_(),_n[IN2].m_());
+
+  //lu.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  lu.iwant(_n[OUT1].m_(),_n[IN1].m_());
+  lu.iwant(_n[OUT1].m_(),_n[IN2].m_());
+  lu.iwant(_n[OUT2].m_(),_n[IN1].m_());
+  lu.iwant(_n[OUT2].m_(),_n[IN2].m_());
+  //lu.iwant(_n[IN1].m_(),_n[IN2].m_());
+
+  extern NODE* nstat; // yuck
+  nstat[_n[OUT1].m_()].set_needs_analog();
+  nstat[_n[OUT2].m_()].set_needs_analog();
+  nstat[_n[IN1].m_()].set_needs_analog();
+  nstat[_n[IN2].m_()].set_needs_analog();
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::tr_alloc_matrix_extended()
+{
+  extern NODE* nstat; // yuck
+
+  assert(is_device());
+  {if (subckt().exists()) {
+    unreachable();
+    subckt().tr_alloc_matrix();
+  }else{
+    for (int ii = 0;  ii < matrix_nodes();  ++ii) {
+      assert(_n[ii].m_() != INVALID_NODE);
+      if (_n[ii].m_() != 0) {
+	for (int jj = 0;  jj < ii ;  ++jj) {
+	  aa.iwant(_n[ii].m_(),_n[jj].m_());
+	  lu.iwant(_n[ii].m_(),_n[jj].m_());
+	}
+	nstat[_n[ii].m_()].set_needs_analog();
+      }
+    }
+  }}
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::ac_alloc_matrix_passive()
+{
+  acx.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::ac_alloc_matrix_active()
+{
+  //acx.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  acx.iwant(_n[OUT1].m_(),_n[IN1].m_());
+  acx.iwant(_n[OUT1].m_(),_n[IN2].m_());
+  acx.iwant(_n[OUT2].m_(),_n[IN1].m_());
+  acx.iwant(_n[OUT2].m_(),_n[IN2].m_());
+  //acx.iwant(_n[IN1].m_(),_n[IN2].m_());
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::ac_alloc_matrix_extended()
+{
+  assert(is_device());
+  {if (subckt().exists()) {
+    unreachable();
+    subckt().ac_alloc_matrix();
+  }else{
+    for (int ii = 0;  ii < matrix_nodes();  ++ii) {
+      assert(_n[ii].m_() != INVALID_NODE);
+      if (_n[ii].m_() != 0) {
+	for (int jj = 0;  jj < ii ;  ++jj) {
+	  acx.iwant(_n[ii].m_(),_n[jj].m_());
+	}
+      }
+    }
+  }}
 }
 /*--------------------------------------------------------------------------*/
 double ELEMENT::tr_amps()const
@@ -161,7 +260,6 @@ double ELEMENT::tr_probe_num(CS& cmd)const
     double p = tr_amps() * tr_outvolts();
     return (p < 0.) ? -p : 0.;
   }else if (cmd.pmatch("INput")) {
-    untested();
     return _y0.x;
   }else if (cmd.pmatch("F")) {
     if (_y0.f0 == LINEAR) {
@@ -208,7 +306,6 @@ double ELEMENT::tr_probe_num(CS& cmd)const
   }else if (cmd.pmatch("ZRAW")) {
     return port_impedance(_n[OUT1], _n[OUT2], lu, 0.);
   }else{
-    untested();
     return COMPONENT::tr_probe_num(cmd);
   }}
 }

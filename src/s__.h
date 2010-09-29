@@ -1,8 +1,8 @@
-/*$Id: s__.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: s__.h,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@ class CS;
 class PROBELIST;
 /*--------------------------------------------------------------------------*/
 class SIM : public CKT_BASE {
-friend class NODE;
-friend class node_t;
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+  friend class NODE;
+  friend class node_t;
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 public:
   enum PHASE { // which of the many steps...
     pNONE,	/* not doing anything, reset by cmd interpreter */
@@ -52,7 +52,7 @@ protected:
     tITERATION = 4,	/* show every iteration, including nonconverged	*/
     tVERBOSE   = 5	/* show extended diagnostics			*/
   };
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 public:
   static double freq;		/* AC frequency to analyze at (Hertz) */
   static COMPLEX jomega;	/* AC frequency to analyze at (radians) */
@@ -71,13 +71,12 @@ public:
   static bool freezetime;	/* flag: don't advance stored time */
   static double genout;		/* tr dc input to circuit (generator) */
 
-  static std::deque<CARD*> evalq1;
-  static std::deque<CARD*> evalq2;
-  static std::deque<CARD*> evalq_last;
+  static std::deque<CARD*> evalq1; /* evaluate queues -- alternate between */
+  static std::deque<CARD*> evalq2; /* build one while other is processed */
   static std::vector<CARD*> loadq;
   static std::vector<CARD*> acceptq;
-  static std::deque<CARD*>* evalq;
-  static std::deque<CARD*>* evalq_uc;
+  static std::deque<CARD*>* evalq;   /* pointer to evalq to process */
+  static std::deque<CARD*>* evalq_uc;/* pointer to evalq under construction */
 protected: 
   static double last_time;	/* time at which "volts" is valid */
   static int	*nm;		/* node map (external to internal)	*/
@@ -91,51 +90,55 @@ protected:
   OMSTREAM out;			/* places to send the results		*/
  
 public:
-	int stepno;		/* count of visible (saved) steps */
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+	  int stepno;		/* count of visible (saved) steps */
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
   const std::string long_label()const {unreachable(); return "";}
 private:
- virtual void	setup(CS&)	= 0;
- virtual void	sweep()		= 0;
- virtual void	finish()	{}
- virtual bool	is_step_rejected()const {return false;}
+  virtual void	setup(CS&)	= 0;
+  virtual void	sweep()		= 0;
+  virtual void	finish()	{}
+  virtual bool	is_step_rejected()const {return false;}
 public:
 		~SIM()		{uninit();}
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+public:					/* inline here */
+  static bool	uic_now()	{return uic && phase==pINIT_DC && time0==0.;}
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 public:					/* s__init.cc */
- static	void	init();
- static	void	uninit();
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+  static void	init();
+  static void	uninit();
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:				/* s__aux.cc */
-	void	set_limit();
-	void	keep();
-	void	restore();	
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+	 void	set_limit();
+	 void	keep();
+	 void	restore();
+	 void   zero_voltages();
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:
-  	void	command_base(CS&);	/* s__init.cc */
-	void	reset_timers();	
- static	void	alloc_hold_vectors();
- static	void	determine_matrix_structure(const CARD_LIST&);
-	void	alloc_vectors();
- static	void	unalloc_vectors();
- static	void	count_nodes();
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
- static	void	map_nodes();		/* s__map.cc */
- static void	order_reverse();
- static void	order_forward();
- static void	order_auto();
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-	PROBELIST& alarmlist();		/* s__out.cc */
-	PROBELIST& plotlist();
-	PROBELIST& printlist();
-	PROBELIST& storelist();
-	void	outdata(double);
-	void	head(double,double, bool,const char*);
-	void	print(double);
-	void	alarm();
-virtual	void	store();
- /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+  	 void	command_base(CS&);	/* s__init.cc */
+	 void	reset_timers();	
+  static void	alloc_hold_vectors();
+  static void	determine_matrix_structure(const CARD_LIST&);
+	 void	alloc_vectors();
+  static void	unalloc_vectors();
+  static void	count_nodes();
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+  static void	map_nodes();		/* s__map.cc */
+  static void	order_reverse();
+  static void	order_forward();
+  static void	order_auto();
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+	 PROBELIST& alarmlist();	/* s__out.cc */
+	 PROBELIST& plotlist();
+	 PROBELIST& printlist();
+	 PROBELIST& storelist();
+	 void	outdata(double);
+	 void	head(double,double, bool,const char*);
+	 void	print(double);
+	 void	alarm();
+  virtual void	store();
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:				/* s__solve.cc */
 	bool	solve(int,int);
 private:

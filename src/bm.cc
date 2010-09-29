@@ -1,8 +1,8 @@
-/*$Id: bm.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: bm.cc,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,15 @@ const double _default_tc1	(0);
 const double _default_tc2	(0);
 const double _default_ic	(NOT_INPUT);
 /*--------------------------------------------------------------------------*/
-EVAL_DISPATCHER bm_dispatcher;
+class EVAL_DISPATCHER {
+private:
+  std::map<std::string, COMMON_COMPONENT*> _map;
+public:
+  explicit EVAL_DISPATCHER();
+  COMMON_COMPONENT* operator()(CS& cmd);
+};
+/*--------------------------------------------------------------------------*/
+static EVAL_DISPATCHER bm_dispatcher;
 /*--------------------------------------------------------------------------*/
 EVAL_DISPATCHER::EVAL_DISPATCHER()
 {
@@ -62,7 +70,7 @@ COMMON_COMPONENT* EVAL_DISPATCHER::operator()(CS& cmd)
     int here = cmd.cursor();
     std::string s;
     cmd >> s;
-    to_lower(&s);
+    notstd::to_lower(&s);
     const COMMON_COMPONENT* p = _map[s];
     {if (p) {
       if (dynamic_cast<const EVAL_BM_POLY*>(p)
@@ -148,21 +156,19 @@ void EVAL_BM_ACTION_BASE::parse_base_finish()
 		   || _ic != _default_ic);
 }
 /*--------------------------------------------------------------------------*/
-#define UN untested
 void EVAL_BM_ACTION_BASE::print_base(OMSTREAM& where)const
 {
-  if(_bandwidth!= _default_bandwidth){where<<"  bandwidth="<<_bandwidth;UN();}
-  if(_delay    != _default_delay)    {where<<"  delay="	   <<_delay;    UN();}
-  if(_phase    != _default_phase)    {where<<"  phase="	   <<_phase;    UN();}
-  if(_ioffset  != _default_ioffset)  {where<<"  ioffset="  <<_ioffset;  UN();}
-  if(_ooffset  != _default_ooffset)  {where<<"  ooffset="  <<_ooffset;  UN();}
-  if(_scale    != _default_scale)    {where<<"  scale="	   <<_scale;    UN();}
-  if(_tnom     != OPT::tnom)	     {where<<"  tnom=" <<_tnom+ABS_ZERO;UN();}
-  if(_tc1      != _default_tc1)	     {where<<"  tc1="	   <<_tc1;      UN();}
-  if(_tc2      != _default_tc2)	     {where<<"  tc2="	   <<_tc2;      UN();}
+  if(_bandwidth!= _default_bandwidth){where<<"  bandwidth="<<_bandwidth;}
+  if(_delay    != _default_delay)    {where<<"  delay="	   <<_delay;}
+  if(_phase    != _default_phase)    {where<<"  phase="	   <<_phase;}
+  if(_ioffset  != _default_ioffset)  {where<<"  ioffset="  <<_ioffset;}
+  if(_ooffset  != _default_ooffset)  {where<<"  ooffset="  <<_ooffset;}
+  if(_scale    != _default_scale)    {where<<"  scale="	   <<_scale;}
+  if(_tnom     != OPT::tnom)	     {where<<"  tnom="	   <<_tnom+ABS_ZERO;}
+  if(_tc1      != _default_tc1)	     {where<<"  tc1="	   <<_tc1;}
+  if(_tc2      != _default_tc2)	     {where<<"  tc2="	   <<_tc2;}
   if(_ic       != _default_ic)	     {where<<"  ic="	   <<_ic;}
 }
-#undef UN
 /*--------------------------------------------------------------------------*/
 double EVAL_BM_ACTION_BASE::temp_adjust()const
 {
@@ -178,7 +184,6 @@ void EVAL_BM_ACTION_BASE::tr_final_adjust(FPOLY1* y, bool f_is_value)const
   }
   *y *= temp_adjust();
   y->f0 += _ooffset;
-  CARD::initial_condition = _ic;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::tr_finish_tdv(ELEMENT* d, double val)const

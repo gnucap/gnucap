@@ -1,8 +1,8 @@
-/*$Id: d_vcr.h,v 20.7 2001/09/29 05:31:06 al Exp $ -*- C++ -*-
+/*$Id: d_vcr.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,11 @@ public:
 private: // override virtual
   char	   id_letter()const	{return '\0';}
   const char* dev_type()const	{return "vcr";}
-  int	   numnodes()const	{return 4;}
+  int	   max_nodes()const	{return 4;}
+  int	   min_nodes()const	{return 4;}
+  int	   out_nodes()const	{return 2;}
+  int	   matrix_nodes()const	{return 4;}
+  int	   net_nodes()const	{return 4;}
   bool	   is_2port()const	{return true;}
   CARD*	   clone()const		{untested(); return new DEV_VCR(*this);}
   //void   parse(CS&);		//ELEMENT
@@ -43,6 +47,7 @@ private: // override virtual
   //void   map_nodes();		//ELEMENT
   void	   precalc();
 
+  void	   tr_alloc_matrix()	{tr_alloc_matrix_extended();}
   //void   dc_begin();		//CARD/nothing
   //void   tr_begin();		//CARD/nothing
   //void   tr_restore();	//CARD/nothing
@@ -61,6 +66,7 @@ private: // override virtual
   double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
   //double tr_probe_num(CS&)const;//ELEMENT
 
+  void	   ac_alloc_matrix()	{ac_alloc_matrix_extended();}
   void	   ac_begin();
   void	   do_ac();
   void	   ac_load()		{ac_load_loss(); ac_load_active();}

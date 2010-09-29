@@ -1,14 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 
-<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+<!--Converted with LaTeX2HTML 2K.1beta (1.62)
 original version by:  Nikos Drakos, CBLU, University of Leeds
 * revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
 * with significant contributions from:
   Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
 <HTML>
 <HEAD>
-<TITLE>Architecture</TITLE>
-<META NAME="description" CONTENT="Architecture">
+<TITLE>Technical Notes</TITLE>
+<META NAME="description" CONTENT="Technical Notes">
 <META NAME="keywords" CONTENT="man">
 <META NAME="resource-type" CONTENT="document">
 <META NAME="distribution" CONTENT="global">
@@ -19,9 +19,9 @@ original version by:  Nikos Drakos, CBLU, University of Leeds
 
 <LINK REL="STYLESHEET" HREF="man.css">
 
-<LINK REL="next" HREF="node107.html">
-<LINK REL="previous" HREF="node105.html">
-<LINK REL="up" HREF="node105.html">
+<LINK REL="next" HREF="node111.html">
+<LINK REL="previous" HREF="node104.html">
+<LINK REL="up" HREF="man.html">
 <LINK REL="next" HREF="node107.html">
 </HEAD>
 
@@ -31,7 +31,7 @@ original version by:  Nikos Drakos, CBLU, University of Leeds
   HREF="node107.html">
 <IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
 <A NAME="tex2html1971"
-  HREF="node105.html">
+  HREF="man.html">
 <IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
 <A NAME="tex2html1965"
   HREF="node105.html">
@@ -41,176 +41,41 @@ original version by:  Nikos Drakos, CBLU, University of Leeds
 <IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
 <BR>
 <B> Next:</B> <A NAME="tex2html1976"
-  HREF="node107.html">Transient analysis</A>
+  HREF="node107.html">Architecture</A>
 <B> Up:</B> <A NAME="tex2html1972"
-  HREF="node105.html">Technical Notes</A>
+  HREF="man.html">Gnucap The Gnu Circuit</A>
 <B> Previous:</B> <A NAME="tex2html1966"
-  HREF="node105.html">Technical Notes</A>
+  HREF="node105.html">Using the model compiler</A>
  &nbsp <B>  <A NAME="tex2html1974"
   HREF="node1.html">Contents</A></B> 
 <BR>
 <BR>
 <!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00800000000000000000">
+Technical Notes</A>
+</H1>
+
+<P>
+<BR><HR>
 <!--Table of Child-Links-->
 <A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
 
 <UL>
 <LI><A NAME="tex2html1977"
-  HREF="#SECTION00811000000000000000">File organization</A>
+  HREF="node107.html">Architecture</A>
 <LI><A NAME="tex2html1978"
-  HREF="#SECTION00812000000000000000">Building, Makefiles</A>
+  HREF="node108.html">Transient analysis</A>
 <LI><A NAME="tex2html1979"
-  HREF="#SECTION00813000000000000000">Program flow</A>
+  HREF="node109.html">Data Structures</A>
+<LI><A NAME="tex2html1980"
+  HREF="node110.html">Performance</A>
 </UL>
 <!--End of Table of Child-Links-->
-<HR>
-
-<H1><A NAME="SECTION00810000000000000000">
-Architecture</A>
-</H1>
-
-<H2><A NAME="SECTION00811000000000000000">
-File organization</A>
-</H2>
-
-<P>
-GnuCap source files are organized into groups by the name prefix as follows:
-
-<P>
-<DL>
-<DT><STRONG>ap</STRONG></DT>
-<DD>``Argparse''.  Generic parser and lexical analysis library.
-</DD>
-<DT><STRONG>bm</STRONG></DT>
-<DD>Behavioral modeling.
-</DD>
-<DT><STRONG>c</STRONG></DT>
-<DD>Commands.
-</DD>
-<DT><STRONG>d</STRONG></DT>
-<DD>Devices and models.
-</DD>
-<DT><STRONG>e</STRONG></DT>
-<DD>Device and model base classes.  (``e'' comes from
-  ``electrical'' and is retained because of inertia.)
-</DD>
-<DT><STRONG>io</STRONG></DT>
-<DD>Input and output library, raw, generic.
-</DD>
-<DT><STRONG>l</STRONG></DT>
-<DD>Library.  General purpose functions and classes that do not
-  fit elsewhere.
-</DD>
-<DT><STRONG>m</STRONG></DT>
-<DD>Math library.
-</DD>
-<DT><STRONG>plot</STRONG></DT>
-<DD>Obsolete plotting that should be replaced.
-</DD>
-<DT><STRONG>s</STRONG></DT>
-<DD>Simulation engine.
-</DD>
-<DT><STRONG>u</STRONG></DT>
-<DD>Utility functions and classes.  GnuCap Specific.
-</DD>
-</DL>
-
-<P>
-The files <TT>ap_</TT>, <TT>io_</TT>, <TT>l_</TT>, <TT>m_</TT> are not GnuCap
-specific.  Although they were created for GnuCap, they are public domain
-and may be used by anyone for any purpose.
-
-<P>
-The remaining files <TT>bm_</TT>, <TT>c_</TT>, <TT>d_</TT>, <TT>e_</TT>,
-<TT>s_</TT>, <TT>u_</TT> are GnuCap specific, and reuse is subject to the
-Gnu Public License.
-
-<P>
-Some of the <TT>d_</TT> files are automatically generated during
-compilation.  Do not change them, because your changes may be lost in
-a recompile.  For licensing and distribution legal purposes, these
-files are considered to be ``object'' code, even though they are
-readable C++.
-
-<P>
-The files <TT>d_.model</TT>, where present, contain the actual model
-descriptions as input for <TT>modelgen</TT>, the model compiler.
-These files are the source that is used to generate the corresponding
-<TT>.cc</TT> and <TT>.h</TT> files.  All changes should be done to the <TT>.model</TT> file.  For GPL purposes, these files are considered to be
-``source''.
-
-<H2><A NAME="SECTION00812000000000000000">
-Building, Makefiles</A>
-</H2>
-
-<P>
-GnuCap uses a 4 part Makefile, designed for simultaneous builds on
-several systems.  A true Makefile is built by selecting and catenating
-the four pieces.  A master Makefile switches to a subdirectory and
-builds a specialized Makefile there.
-
-<P>
-<DL>
-<DT><STRONG>Make1</STRONG></DT>
-<DD>The file list.  Specific to this program.
-</DD>
-<DT><STRONG>Make2</STRONG></DT>
-<DD>Compiler and system dependencies.  Specific to the
-  compiler.  In some cases, hardware dependencies are here.  There are
-  several provided.  Choose the one that matches your system.
-</DD>
-<DT><STRONG>Make3</STRONG></DT>
-<DD>Basic ``make'' targets.  Generic.
-</DD>
-<DT><STRONG>Make.depend</STRONG></DT>
-<DD>List of dependencies.
-</DD>
-</DL>
-<H2><A NAME="SECTION00813000000000000000">
-Program flow</A>
-</H2>
-
-<P>
-It all starts at ``<TT>main</TT>'', in <TT>main.cc</TT>.  The function
-``<TT>main</TT>'' has a loop that gets input and calls ``<TT>  CMD::cmdproc</TT>'' to dispatch the command.
-
-<P>
-Batch mode is done in ``<TT>process_cmd_line</TT>'', by using ``<TT>  CMD::cmdproc</TT>'' to execute the commands ``<TT>get</TT>'' or ``<TT>&lt;</TT>''
-which is passed to ``<TT>CMD::cmdproc</TT>'' as text.
-
-<P>
-The function ``<TT>CMD::cmdproc</TT>'' dispatches the command to its
-handler.  The handlers are located in the ``<TT>CMD</TT>'' namespace, and
-the ``<TT>c_</TT>'' files.
-
-<P>
-<HR>
-<!--Navigation Panel-->
-<A NAME="tex2html1975"
-  HREF="node107.html">
-<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
-<A NAME="tex2html1971"
-  HREF="node105.html">
-<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
-<A NAME="tex2html1965"
-  HREF="node105.html">
-<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
-<A NAME="tex2html1973"
-  HREF="node1.html">
-<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
-<BR>
-<B> Next:</B> <A NAME="tex2html1976"
-  HREF="node107.html">Transient analysis</A>
-<B> Up:</B> <A NAME="tex2html1972"
-  HREF="node105.html">Technical Notes</A>
-<B> Previous:</B> <A NAME="tex2html1966"
-  HREF="node105.html">Technical Notes</A>
- &nbsp <B>  <A NAME="tex2html1974"
-  HREF="node1.html">Contents</A></B> 
-<!--End of Navigation Panel-->
+<BR><HR>
 <ADDRESS>
 Al Davis
-2001-10-28
+2002-09-29
 </ADDRESS>
 </BODY>
 </HTML>

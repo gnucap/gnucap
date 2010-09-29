@@ -1,8 +1,8 @@
-/*$Id: e_node.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: e_node.h,v 22.18 2002/08/31 16:31:53 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,31 +161,41 @@ public: // exported to logic devices
 };
 /*--------------------------------------------------------------------------*/
 class node_t {
-public:
-  int m;		// mapped, after reordering
-  int t;		// m == nm[t] if properly set up
-  int e;		// external, user numbers, t = subs exp
+private:
+  int _m;		// mapped, after reordering
+  int _t;		// m == nm[t] if properly set up
+  int _e;		// external, user numbers, t = subs exp
 private:
   static bool node_is_valid(int i) {return i>=0 && i<=STATUS::total_nodes;}
   static int  to_internal(int i)
 		{assert(node_is_valid(i)); assert(SIM::nm); return SIM::nm[i];}
 public:
+  int	      m_()const 		{return _m;}
+  int	      t_()const 		{return _t;} // d_subckt.cc:271 only
+  int	      e_()const			{return _e;}
+  std::string name(const CARD*)const;
+  void	      parse(CS&, const CARD*);
+  void	      set_to_0()		{_t = _e = 0;}
+  void	      new_model_node()		{_t = STATUS::newnode_model();}
+  void	      map_subckt_node(int* map_array);
   bool	      is_valid()const
-		{return node_is_valid(t) && m==to_internal(t);}
-  node_t&     map()			{m=to_internal(t); return *this;}
-  explicit    node_t() : m(INVALID_NODE), t(INVALID_NODE), e(INVALID_NODE) {}
-	      node_t(const node_t& p)	:m(p.m), t(p.t), e(p.e) {}
-  explicit    node_t(int ee)		:m(INVALID_NODE), t(ee), e(ee) {map();}
-  node_t&     operator=(int n)		{t=e=n; return map();}
+		{return node_is_valid(_t) && _m==to_internal(_t);}
+  node_t&     map()			{_m=to_internal(_t); return *this;}
+  explicit    node_t() : _m(INVALID_NODE),_t(INVALID_NODE),_e(INVALID_NODE) {}
+	      node_t(const node_t& p)	:_m(p._m), _t(p._t), _e(p._e) {}
+  explicit    node_t(int ee)	    :_m(INVALID_NODE), _t(ee), _e(ee) {map();}
+  bool	      operator==(const node_t& p)const  {return _t == p._t;}
+  bool	      operator!=(const node_t& p)const  {return !(*this == p);}
+  node_t&     operator=(int n)		{_t=_e=n; return map();}
   NODE&	      operator*()const
-    {assert(is_valid());extern NODE*nstat;assert(nstat);return nstat[m];}
+    {assert(is_valid());extern NODE*nstat;assert(nstat);return nstat[m_()];}
   NODE*	      operator->()const
-    {assert(is_valid());extern NODE*nstat;assert(nstat);return&(nstat[m]);}
-  double      v0()const			{return SIM::v0[m];}	/* rvalues */
-  double      vdc()const		{return SIM::vdc[m];}
-  COMPLEX     vac()const		{return SIM::ac[m];}
-  double&     i()			{return SIM::i[m];}	/* lvalues */
-  COMPLEX&    iac()			{return SIM::ac[m];}
+    {assert(is_valid());extern NODE*nstat;assert(nstat);return&(nstat[m_()]);}
+  double      v0()const			{return SIM::v0[m_()];}	/* rvalues */
+  double      vdc()const		{return SIM::vdc[m_()];}
+  COMPLEX     vac()const		{return SIM::ac[m_()];}
+  double&     i()			{return SIM::i[m_()];}	/* lvalues */
+  COMPLEX&    iac()			{return SIM::ac[m_()];}
 };
 OMSTREAM& operator<<(OMSTREAM& o, const node_t& n);
 /*--------------------------------------------------------------------------*/

@@ -1,8 +1,8 @@
-/*$Id: d_switch.cc,v 20.7 2001/09/29 05:31:06 al Exp $ -*- C++ -*-
+/*$Id: d_switch.cc,v 22.9 2002/07/23 20:09:02 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ SWITCH_BASE::SWITCH_BASE(const SWITCH_BASE& p)
   untested();
 }
 /*--------------------------------------------------------------------------*/
-void SWITCH_BASE::parse_sb(CS& cmd, int numnodes)
+void SWITCH_BASE::parse_sb(CS& cmd, int num_nodes)
 {
   assert(has_common());
   COMMON_SWITCH* c = prechecked_cast<COMMON_SWITCH*>(common()->clone());
@@ -141,7 +141,7 @@ void SWITCH_BASE::parse_sb(CS& cmd, int numnodes)
   assert(!c->has_model());
 
   parse_Label(cmd);
-  parse_nodes(cmd, numnodes, numnodes);
+  parse_nodes(cmd, num_nodes, num_nodes);
   {if (typeid(*this) == typeid(DEV_CSWITCH)){
     _input_label = cmd.ctos(TOKENTERM);
     _input_label[0] = toupper(_input_label[0]);
@@ -151,7 +151,7 @@ void SWITCH_BASE::parse_sb(CS& cmd, int numnodes)
   c->parse_modelname(cmd);
   int here = cmd.cursor();
   /**/ ::set(cmd, "OFF",    &_ic, _OFF)
-    || ::set(cmd, "ON",	   &_ic, _ON)
+    || ::set(cmd, "ON",	    &_ic, _ON)
     || ::set(cmd, "UNKNOWN",&_ic, _UNKNOWN);
   {if (cmd.stuck(&here)){
     cmd.check(bWARNING, "need off, on, or unknown");
@@ -166,7 +166,7 @@ void SWITCH_BASE::print(OMSTREAM& where, int)const
   const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
   assert(c);
   where << short_label();
-  printnodes(where, numnodes());
+  printnodes(where);
   {if (_input){
     where << "  " << _input->short_label();
   }else{

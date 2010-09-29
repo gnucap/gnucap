@@ -1,14 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 
-<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+<!--Converted with LaTeX2HTML 2K.1beta (1.62)
 original version by:  Nikos Drakos, CBLU, University of Leeds
 * revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
 * with significant contributions from:
   Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
 <HTML>
 <HEAD>
-<TITLE>Summary</TITLE>
-<META NAME="description" CONTENT="Summary">
+<TITLE>The easy way</TITLE>
+<META NAME="description" CONTENT="The easy way">
 <META NAME="keywords" CONTENT="man">
 <META NAME="resource-type" CONTENT="document">
 <META NAME="distribution" CONTENT="global">
@@ -27,125 +27,52 @@ original version by:  Nikos Drakos, CBLU, University of Leeds
 
 <BODY >
 <!--Navigation Panel-->
-<A NAME="tex2html1910"
+<A NAME="tex2html1914"
   HREF="node102.html">
 <IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
-<A NAME="tex2html1906"
+<A NAME="tex2html1910"
   HREF="node100.html">
 <IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
-<A NAME="tex2html1900"
+<A NAME="tex2html1904"
   HREF="node100.html">
 <IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
-<A NAME="tex2html1908"
+<A NAME="tex2html1912"
   HREF="node1.html">
 <IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
 <BR>
-<B> Next:</B> <A NAME="tex2html1911"
-  HREF="node102.html">Details</A>
-<B> Up:</B> <A NAME="tex2html1907"
+<B> Next:</B> <A NAME="tex2html1915"
+  HREF="node102.html">If that doesn't work</A>
+<B> Up:</B> <A NAME="tex2html1911"
   HREF="node100.html">Installation</A>
-<B> Previous:</B> <A NAME="tex2html1901"
+<B> Previous:</B> <A NAME="tex2html1905"
   HREF="node100.html">Installation</A>
- &nbsp <B>  <A NAME="tex2html1909"
+ &nbsp <B>  <A NAME="tex2html1913"
   HREF="node1.html">Contents</A></B> 
 <BR>
 <BR>
 <!--End of Navigation Panel-->
 
 <H1><A NAME="SECTION00610000000000000000">
-Summary</A>
+The easy way</A>
 </H1>
 
 <P>
-This version requires a two-step build.  First you build the model
-compiler, then you build the simulator.  You can usually get away with
-only building the simulator.
+For this version, you can use either the GNU style "configure;make"
+style build process, or the old ACS style.  If it works for you, use
+the GNU style.
 
 <P>
-So ..
-cd to modelgen, type make (as below)
-then go back down and cd to src, type make (as below)
+For the GNU style build, just type "./configure" then "make" from the
+project's root directory.  This will configure both the model compiler
+and the simulator, and then build the model compiler first, then use
+it to build the simulator.  That should be all that is needed.  You do
+not to read any further.
 
 <P>
-If it fails, go into its build directory (the one containing the .o
-files) and manually create a symbolic link to the model compiler.
-
-<P>
-"Type make" really means ......
-
-<P>
-Usually, you can just type "make".  This will make a "release"
-version, with optimization on and extra debug code out.  It will build
-in the O subdirectory.  This assumes you have g++ in a reasonable
-configuration.
-
-<P>
-To make a "debug" version (slow, with additional error checking), type
-"make debug".  If you have a recent g++ compiler, this should build it
-in the O-DEBUG subdirectory.
-
-<P>
-If your compiler is not g=++, but called by "CC", try "make CC".  This
-is believed to work with some compilers.  Some of them do not
-implement the full language, so they cannot be used.  Try it.  There
-is a special one "sun4-CC" for a Sun running Solaris with the most
-recent version of Sun's compiler.  It will not work with older
-versions.
-
-<P>
-To make a "release" version for a particular system, type make
-followed by your system type, such as "make linux".  This will build
-it in a subdirectory (in this case LINUX).  With this method, you can
-build for multiple systems in the same directory.
-
-<P>
-Look at "Makefile" for a list of supported systems, and clues of how
-to do it on others.  Most of them have not been tried in years.
-
-<P>
-If it doesn't work, edit only a "Make2.*" file, and possibly <TT>md.h</TT> or
-<TT>md.cc</TT>.  All nonportabilities are confined to these files.
-
-<P>
-It does require a recent and proper C++ compiler with a proper
-library, including STL.  Gnu compilers older than 2.8 will probably
-not work.  Anything else that old will also probably not work.  Any
-high quality C++ compiler available today should work.
-
-<P>
-To install ....
-
-<P>
-Just move or copy the executable to where you want it.
-
-<P>
-<HR>
-<!--Navigation Panel-->
-<A NAME="tex2html1910"
-  HREF="node102.html">
-<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
-<A NAME="tex2html1906"
-  HREF="node100.html">
-<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
-<A NAME="tex2html1900"
-  HREF="node100.html">
-<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
-<A NAME="tex2html1908"
-  HREF="node1.html">
-<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
-<BR>
-<B> Next:</B> <A NAME="tex2html1911"
-  HREF="node102.html">Details</A>
-<B> Up:</B> <A NAME="tex2html1907"
-  HREF="node100.html">Installation</A>
-<B> Previous:</B> <A NAME="tex2html1901"
-  HREF="node100.html">Installation</A>
- &nbsp <B>  <A NAME="tex2html1909"
-  HREF="node1.html">Contents</A></B> 
-<!--End of Navigation Panel-->
+<BR><HR>
 <ADDRESS>
 Al Davis
-2001-10-28
+2002-09-29
 </ADDRESS>
 </BODY>
 </HTML>

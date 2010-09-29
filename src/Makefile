@@ -1,4 +1,4 @@
-#$Id: Makefile,v 20.5 2001/09/17 15:43:17 al Exp $
+#$Id: Makefile,v 22.21 2002/10/06 07:21:50 al Exp $
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
 #
@@ -25,6 +25,10 @@
 # If yours is not here, look for a similar one and copy.
 # The special configurations listed here allow you to do multiple builds
 # from the same source directory, and patch some problems.
+#-----------------------------------------------------------------------------
+# The default is to use the makefile built by "configure"
+default: nothing
+	(cd O; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 # The most common configuration is g++
 # This should work if it is properly installed
@@ -111,6 +115,9 @@ checkout: nothing
 #-----------------------------------------------------------------------------
 clean: nothing
 	-rm */*.o */*.obj */*.h */*.cc
+#-----------------------------------------------------------------------------
+install: nothing
+	cp O/gnucap /usr/local/bin
 #-----------------------------------------------------------------------------
 nothing:
 #-----------------------------------------------------------------------------

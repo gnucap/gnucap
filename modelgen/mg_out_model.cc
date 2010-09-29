@@ -1,8 +1,8 @@
-/*$Id: mg_out_model.cc,v 20.14 2001/10/19 06:21:15 al Exp $ -*- C++ -*-
+/*$Id: mg_out_model.cc,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,9 +80,9 @@ static void make_tdp_constructor(std::ofstream& out, const Model& m)
 	<< "* c = prechecked_cast<const COMMON_" << m.dev_type()
 	<< "*>(d->common());\n"
       "  assert(c);\n"
-      "  const SDP_" << m.name() << "* b = prechecked_cast<const SDP_" 
+      "  const SDP_" << m.name() << "* s = prechecked_cast<const SDP_" 
 	<< m.name() << "*>(c->sdp());\n"
-      "  assert(b);\n"
+      "  assert(s);\n"
       "  const MODEL_" << m.name() << "* m = prechecked_cast<const MODEL_" 
 	<< m.name() << "*>(c->model());\n"
       "  assert(m);\n";
@@ -283,6 +283,28 @@ static void make_model_print_calculated(std::ofstream& out, const Model& m)
     "------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
+static void make_model_is_valid(std::ofstream& out, const Model& m)
+{
+  out << "bool MODEL_" << m.name()
+      << "::is_valid(const COMMON_COMPONENT* cc)const\n"
+    "{\n"
+    "  const COMMON_" << m.dev_type() << "* c = dynamic_cast<const COMMON_"
+      << m.dev_type() << "*>(cc);\n"
+    "  {if (!c) {\n"
+    "    return MODEL_" << m.inherit() << "::is_valid(cc);\n"
+    "  }else{\n";
+  {if (m.validate().is_empty()) {
+    out << "    return MODEL_" << m.inherit() << "::is_valid(cc);\n";
+  }else{
+    out << "    const MODEL_" << m.name() << "* m = this;"
+      << m.validate();
+  }}
+  out << "  }}\n"
+    "}\n"
+    "/*--------------------------------------"
+    "------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
 static void make_tr_eval(std::ofstream& out, const Model& m)
 {
   out << "void MODEL_" << m.name() << "::tr_eval(COMPONENT*";
@@ -297,12 +319,13 @@ static void make_tr_eval(std::ofstream& out, const Model& m)
 	<< "* c = prechecked_cast<const COMMON_" << m.dev_type() 
 	<< "*>(d->common());\n"
       "  assert(c);\n"
-      "  const SDP_" << m.name() << "* b = prechecked_cast<const SDP_" 
+      "  const SDP_" << m.name() << "* s = prechecked_cast<const SDP_" 
 	<< m.name() << "*>(c->sdp());\n"
-      "  assert(b);\n"
+      "  assert(s);\n"
       "  const MODEL_" << m.name() << "* m = this;\n";
     if (!m.temperature().is_empty()) {
-      out << "  TDP_" << m.name() << " t(d);\n";
+      out << "  const TDP_" << m.name() << " T(d);\n";
+      out << "  const TDP_" << m.name() << "* t = &T;\n";
     }
     out << m.tr_eval();
   }}
@@ -326,6 +349,7 @@ void make_cc_model(std::ofstream& out, const Model& m)
   make_model_print_front(out, m);
   make_model_print_params(out, m);
   make_model_print_calculated(out, m);
+  make_model_is_valid(out, m);
   make_tr_eval(out, m);
   out << "/*--------------------------------------"
     "------------------------------------*/\n";

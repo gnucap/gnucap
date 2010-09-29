@@ -1,8 +1,8 @@
-/*$Id: c_file.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: c_file.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,10 +24,16 @@
  * >   == all output to a file (redirect stdout)
  * bare command closes the file
  */
+#include "u_opt.h"
 #include "io_.h"
 #include "declare.h"	/* pllocate */
 #include "ap.h"
 #include "c_comand.h"
+
+#if defined(HAS_READLINE)
+  #include <readline/readline.h>
+  #include <readline/history.h>
+#endif
 /*--------------------------------------------------------------------------*/
 //	void	CMD::logger(CS&);
 //	void	CMD::file(CS&);
@@ -114,12 +120,36 @@ void CMD::file(CS& cmd)
  */
 char *getcmd(const char *prompt, char *buffer, int buflen)
 {
+  assert(prompt);
+  assert(buffer);
   pllocate();
-  IO::mstdout << prompt << " \b";	/* prompt & flush buffer */
-  if (!fgets(buffer, buflen, stdin)) {
-    error(bEXIT, "EOF on stdin\n");
-  }
-  all_except(IO::mstdout, mout) << '\r';		/* reset col counter */
+#if defined(HAS_READLINE)
+  if (OPT::edit) {
+    char* line_read = readline(prompt);
+    if (!line_read) {
+      error(bEXIT, "EOF on stdin\n");
+    }
+    // readline gets a new buffer every time, so copy it to where we want it
+    char* end_of_line = (char*)memccpy(buffer, line_read, 0, buflen-1);
+    {if (!end_of_line) {
+      buffer[buflen-1] = '\0';
+    }else{
+      *end_of_line = '\0';
+    }}
+    free(line_read);
+    
+    if (*buffer) {
+      add_history(buffer);
+    }
+  }else
+#endif
+    {
+      IO::mstdout << prompt;	/* prompt & flush buffer */
+      if (!fgets(buffer, buflen, stdin)) {	/* read line */
+	error(bEXIT, "EOF on stdin\n");
+      }
+    }
+  all_except(IO::mstdout, mout) << '\n';	/* reset col counter */
   trim(buffer);
   all_of(mlog, mout) << buffer << '\n';
   return buffer;

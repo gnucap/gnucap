@@ -1,14 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 
-<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+<!--Converted with LaTeX2HTML 2K.1beta (1.62)
 original version by:  Nikos Drakos, CBLU, University of Leeds
 * revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
 * with significant contributions from:
   Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
 <HTML>
 <HEAD>
-<TITLE>Using the model compiler</TITLE>
-<META NAME="description" CONTENT="Using the model compiler">
+<TITLE>Adding models</TITLE>
+<META NAME="description" CONTENT="Adding models">
 <META NAME="keywords" CONTENT="man">
 <META NAME="resource-type" CONTENT="document">
 <META NAME="distribution" CONTENT="global">
@@ -19,864 +19,111 @@ original version by:  Nikos Drakos, CBLU, University of Leeds
 
 <LINK REL="STYLESHEET" HREF="man.css">
 
-<LINK REL="previous" HREF="node103.html">
-<LINK REL="up" HREF="node103.html">
+<LINK REL="next" HREF="node106.html">
+<LINK REL="previous" HREF="node100.html">
+<LINK REL="up" HREF="man.html">
 <LINK REL="next" HREF="node105.html">
 </HEAD>
 
 <BODY >
 <!--Navigation Panel-->
-<A NAME="tex2html1943"
+<A NAME="tex2html1948"
   HREF="node105.html">
 <IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
-<A NAME="tex2html1939"
-  HREF="node103.html">
+<A NAME="tex2html1944"
+  HREF="man.html">
 <IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
-<A NAME="tex2html1935"
+<A NAME="tex2html1938"
   HREF="node103.html">
 <IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
-<A NAME="tex2html1941"
+<A NAME="tex2html1946"
   HREF="node1.html">
 <IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
 <BR>
-<B> Next:</B> <A NAME="tex2html1944"
-  HREF="node105.html">Technical Notes</A>
-<B> Up:</B> <A NAME="tex2html1940"
-  HREF="node103.html">Adding models</A>
-<B> Previous:</B> <A NAME="tex2html1936"
-  HREF="node103.html">Adding models</A>
- &nbsp <B>  <A NAME="tex2html1942"
+<B> Next:</B> <A NAME="tex2html1949"
+  HREF="node105.html">Using the model compiler</A>
+<B> Up:</B> <A NAME="tex2html1945"
+  HREF="man.html">Gnucap The Gnu Circuit</A>
+<B> Previous:</B> <A NAME="tex2html1939"
+  HREF="node103.html">Details, custom compilation</A>
+ &nbsp <B>  <A NAME="tex2html1947"
   HREF="node1.html">Contents</A></B> 
 <BR>
 <BR>
 <!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00700000000000000000">
+Adding models</A>
+</H1>
+Gnucap has three distinct styles of adding models:
+
+<P>
+<DL>
+<DT><STRONG>Model Compiler</STRONG></DT>
+<DD>is the easiest way to add models, but the least
+  flexible.  The model compiler generates .cc and .h files using the
+  <EM>enhanced subcircuit</EM> mode.  It is possible to develop models
+  with almost no knowledge of the simulator internals.  In most cases,
+  this is the preferred way.  The standard MOSFET and diode models are
+  done this way.
+</DD>
+<DT><STRONG>Enhanced subcircuit</STRONG></DT>
+<DD>is less efficient than <EM>primitive</EM> but
+  has other advantages that make it preferable to <EM>primitive</EM> when
+  you can use it.  The model is defined as a combination of equations
+  and topology.  The AC and pole-zero code is inherited from a base
+  class, so you don't need to to it.  You need to understand the
+  simulator's internals, and it is not likely to be portable to other
+  simulators.
+</DD>
+<DT><STRONG>Primitive</STRONG></DT>
+<DD>should be used only when absolutely necessary.  If it
+  is done correctly, it will result in the fastest execution, but you
+  need to do everything.  It requires thorough knowledge of the
+  simulator internals, including how Gnucap is different from other
+  simulators.  If you miss some of the details, it is possible that
+  your model will work but slow down the simulator significantly.
+  Most of the primitive devices (resistors, sources) are done this
+  way.  A few device types that have special considerations, like
+  gates and transmission lines, are also done this way.
+</DD>
+</DL>
+<BR><HR>
 <!--Table of Child-Links-->
 <A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
 
 <UL>
-<LI><A NAME="tex2html1945"
-  HREF="#SECTION00711000000000000000">Device section</A>
-<LI><A NAME="tex2html1946"
-  HREF="#SECTION00712000000000000000">Model section</A>
-<LI><A NAME="tex2html1947"
-  HREF="#SECTION00713000000000000000">Accessing data in code blocks</A>
-<LI><A NAME="tex2html1948"
-  HREF="#SECTION00714000000000000000">Parameter lists</A>
+<LI><A NAME="tex2html1950"
+  HREF="node105.html">Using the model compiler</A>
 </UL>
 <!--End of Table of Child-Links-->
 <HR>
-
-<H1><A NAME="SECTION00710000000000000000">
-Using the model compiler</A>
-</H1>
-
-<P>
-This section is a first cut at documentation.  If you actually want to
-install a model, please ask for more information.  Your questions will
-help me write the more complete documentation.  (aldavis@ieee.org)
-
-<P>
-To create a model using this method, you create one file, with the
-extension <TT>.model</TT>.  A separate program, <TT>modelgen</TT> processes
-this file to generate the appropriate <TT>.cc</TT> and <TT>.h</TT> files.
-The resulting files are equivalent to the subcircuit method of
-creating models.
-
-<P>
-There are two primary sections, <TT>device</TT> and <TT>model</TT>.  Most
-models have both, but a device can use several different <TT>model</TT>s
-as long as they are derived from a common base and designed to work
-together.  It is standard practice to share like this.  For example,
-all of the MOS models use the same <TT>device</TT> section.
-
-<P>
-Any <TT>model</TT> can inherit from another <TT>model</TT>, thus reducing
-the need for repetition when code or parameters are the same in
-different models, and allowing several to use the same <TT>device</TT>
-section.
-
-<P>
-This model compiler has restrictions that will be removed in future
-releases.  Not all device types can be fully done with it, due to
-missing features.  Often, it is necessary to finish the job manually.
-In this release (0.30), the diode fully uses it, but not the way I
-want to.  The MOSFET uses the <TT>cc_direct</TT> to finish the job.  Two
-functions <TT>do_tr</TT> and <TT>tr_needs_eval</TT> must be provided this
-way.  Code placed here is simply copied out.
-
-<P>
-As a general rule, when using the name = value form, the value is
-delimited by whitespace, or possibly other tokens.  If you want blanks
-in the value string, put it in quotes.  It is recommended to quote any
-value string that is comprised of more than one word, even if there
-are no blanks.
-
-<H2><A NAME="SECTION00711000000000000000">
-Device section</A>
-</H2>
-
-<P>
-<DL>
-<DT><STRONG><TT>parse_name</TT></STRONG></DT>
-<DD>(required)
-This is the name of the device, to be recognized by the parser, in
-GnuCap native format.  Example: <TT>diode</TT>.
-
-<P>
-</DD>
-<DT><STRONG><TT>id_letter</TT></STRONG></DT>
-<DD>(required)
-This is the letter used to identify the device, when the <TT>parse_name</TT> is omitted (Spice format).  Example: <TT>D</TT> identifies a
-diode.
-
-<P>
-</DD>
-<DT><STRONG><TT>model_type</TT></STRONG></DT>
-<DD>(required)
-This is the name of the model type associated with this device type.
-It can be the name of the one matching type, or the name of a base
-from which a family can be derived.
-
-<P>
-</DD>
-<DT><STRONG><TT>circuit</TT></STRONG></DT>
-<DD>(required)
-This is a subsection containing a netlist representing the internal
-structure of the device.  See the section <EM>circuit subsection</EM> for
-details.
-
-<P>
-</DD>
-<DT><STRONG><TT>tr_probe</TT></STRONG></DT>
-<DD>(optional)
-This is a subsection containing a list of internal probes to be made
-available to the user.  See the section <EM>Tr_probe subsection</EM> for
-details.
-
-<P>
-</DD>
-<DT><STRONG><TT>device</TT></STRONG></DT>
-<DD>(required)
-This is a subsection describing the non-shared data relating to the
-device.  Information here is unique to this device.  It is primarily
-state information.  See the section <EM>Device subsection</EM> for
-details.
-
-<P>
-</DD>
-<DT><STRONG><TT>common</TT></STRONG></DT>
-<DD>(optional)
-This is a subsection describing the shared data relating to the device.
-Information here may be shared between similar devices.  It is
-primarily information that is read from the circuit description.  See
-the section <EM>Common subsection</EM> for details.
-
-<P>
-</DD>
-<DT><STRONG><TT>tr_eval</TT></STRONG></DT>
-<DD>(optional)
-This is a subsection which will eventually contain evaluation code for
-the whole device.  For now, it is a stub, which is used as a flag.
-See the section <EM>Tr_eval subsection</EM> for details.  If this
-subsection is omitted, it is considered to be a pure subcircuit.
-
-<P>
-</DD>
-<DT><STRONG><TT>eval</TT></STRONG></DT>
-<DD>(optional)
-There may be any number of <TT>eval</TT> subsections, which are specific
-evaluators for internal elements.  See the section <EM>Evaluators</EM>
-for details.
-
-<P>
-</DD>
-</DL>
-<H3><A NAME="SECTION00711100000000000000">
-Circuit subsection</A>
-</H3>
-
-<P>
-The circuit subsection has 5 parts, in order.
-
-<P>
-
-<OL>
-<LI>The optional keyword ``<TT>sync</TT>'' says that the entire subcircuit
-representing the device must be evaluated synchronously.  Without this
-keyword, it is treated as a subcircuit made of independent elements.
-
-<P>
-</LI>
-<LI>The port list ``<TT>ports</TT>'', which is a list of the nodes
-interfacing to the outside.
-
-<P>
-</LI>
-<LI>A list of local internal nodes, not visible outside.
-
-<P>
-Each local node may have two optional attributes:
-
-<P>
-<DL>
-<DT><STRONG><TT>short_if</TT></STRONG></DT>
-<DD>This specifies a conditional which if true will result in this node
-being omitted.
-
-<P>
-</DD>
-<DT><STRONG><TT>short_to</TT></STRONG></DT>
-<DD>This specifies another node which will be substituted for this node if
-the <TT>short_if</TT> condition is true.
-
-<P>
-</DD>
-</DL>
-
-<P>
-</LI>
-<LI>Any number of named and typed <TT>args</TT> sections.  Each section
-contains name = value pairs which assign values to elements in the
-subcircuit.  It is used only for more complex elements like diodes.
-
-<P>
-</LI>
-<LI>A list of circuit elements that comprise the model.  Each has three
-required fields, then a list of optional key = value pairs.
-
-<P>
-The required fields, in order, are:
-
-<P>
-
-<UL>
-<LI>The type of element.  This is usually one of resistance, capacitance,
-admittance, or poly_g, but can be any device type, including those
-created by modelgen.
-
-<P>
-</LI>
-<LI>The label, a string used to refer to it.
-
-<P>
-</LI>
-<LI>A node list, in curly braces.
-
-<P>
-</LI>
-</UL>
-
-<P>
-After that, optional fields are used to assign attributes.  Not all
-are legal or appropriate with all element types.
-
-<P>
-<DL>
-<DT><STRONG><TT>value</TT></STRONG></DT>
-<DD>This must evaluate to a constant, which is interpreted as the nominal
-value of the element.
-
-<P>
-</DD>
-<DT><STRONG><TT>eval</TT></STRONG></DT>
-<DD>This is the name of an <TT>eval</TT> section, which specifies nonlinear,
-and depenndent characteristics.
-
-<P>
-</DD>
-<DT><STRONG><TT>args</TT></STRONG></DT>
-<DD>This refers to an <TT>args</TT> section, described previously.  It is
-used only for advanced element types, as those created by modelgen.
-
-<P>
-</DD>
-<DT><STRONG><TT>reverse</TT></STRONG></DT>
-<DD>This specifies an expression, that when evaluated will tell whether to
-reverse the element.  If it evaluates to true, the node pairs are
-interchanged.  If there are two nodes, they are interchanged.  If
-there are four, the first pair are interchanged and the second pair
-are interchanges.  The pattern repeats for as many nodes as there are.
-This is used with diodes, which may be reversed depending on whether
-the device being defined is N-type or P-type.
-
-<P>
-</DD>
-<DT><STRONG><TT>omit</TT></STRONG></DT>
-<DD>This specifies an expression, that when evaluated will tell whether to
-omit the element.  If it evaluates to true, the element is omitted.
-
-<P>
-</DD>
-<DT><STRONG><TT>state</TT></STRONG></DT>
-<DD>This specifies a the name of a device state variable that is applied
-to this element.  This state variable must be one of those defined
-under <TT>calculated parameters</TT>.  It is primarily intended for the
-<TT>poly_g</TT> and <TT>poly_cap</TT> element types.  In the <TT>calculated
-parameters</TT> section, the following parameters are its derivatives.  If
-the poly element has N node pairs, the following N parameters are the
-derivatives, with respect to each voltage, in order.
-
-<P>
-</DD>
-</DL>
-
-<P>
-</LI>
-</OL>
-<H3><A NAME="SECTION00711200000000000000">
-Tr_probe subsection</A>
-</H3>
-
-<P>
-The <TT>tr_probe</TT> subsection is where you list the probes for
-transient and DC analysis.  It is a list of name = value pairs, where
-the value is an expression that calculates or looks up the value.
-
-<P>
-You can reference any device parameter directly, or others with the
-appropriate struct prefixing.
-
-<P>
-You can reference probes on internal elements with the syntax ``<TT>@</TT>'', followed by the element label, followed by the probe name in
-square brackets.  For example, ``<TT>@Cj[Capacitance]</TT>'' refers to
-the probe named ``Capacitance'' on the element ``Cj''.  It is your
-responsibility to see that the element actually exists, and that it
-has a probe with that name.
-
-<P>
-You can reference node voltages with the same syntax, but the
-``device'' name is formed by prefixing the node name with ``<TT>n_</TT>''.
-
-<P>
-You can also call functions, and make arbitrary expressions.  In
-general, the code is just copied over, with the exception of the
-probes, which are modified to the internal format.
-
-<P>
-The probe name in the generated model will be non-case-sensitive.  To
-the model compiler, upper case letters must match exactly, and lower
-case letters are optional.  For example, ``<TT>CGSOvl</TT>'' in the model
-file can be referred to as <TT>cgso</TT>, <TT>cgsov</TT>, or <TT>cgsovl</TT>,
-or any variants differing only in case.
-
-<H3><A NAME="SECTION00711300000000000000">
-Device subsection</A>
-</H3>
-
-<P>
-This subsection defines information that is not shared between
-instances.  In general, that which must be maintained as different,
-even though devices are identical, is placed here.
-
-<P>
-
-<H4><A NAME="SECTION00711310000000000000">
-Calculated_parameters subsubsection</A>
-</H4>
-
-<P>
-This subsubsection lists all of the ``calculated parameters''.  In
-this case, it means that which is calculated during simulation, the
-state information.
-
-<P>
-The format for each item is: type, name, comment, attributes, semicolon.
-
-<P>
-The only attribute appropriate is ``<TT>default</TT>'', which is the
-default value set by the constructor.
-
-<H3><A NAME="SECTION00711400000000000000">
-Common subsection</A>
-</H3>
-
-<P>
-This section defines information that the simulator may share between
-instances.  Most parameters specified by the user are placed here,
-allowing the simulator to share data for identical devices.
-
-<P>
-
-<H4><A NAME="SECTION00711410000000000000">
-Unnamed subsubsection</A>
-</H4>
-
-<P>
-You can designate one of the <TT>raw_parameters</TT> to be the
-``value''.  When a number is given without a name, it is assigned to
-this one.
-
-<P>
-
-<H4><A NAME="SECTION00711420000000000000">
-Raw_parameters subsubsection</A>
-</H4>
-
-<P>
-This subsubsection lists all of the ``raw parameters'', the parameters
-supplied by the user on the instance line.  The format and available
-attributes are described in the ``Parameter lists'' section, which
-follows.
-
-<P>
-
-<H4><A NAME="SECTION00711430000000000000">
-Calculated_parameters subsubsection</A>
-</H4>
-
-<P>
-This subsubsection lists all of the ``calculated parameters'', the
-parameters not supplied by the user on the instance line.  Instead,
-the are calculated based on other input.  The format and available
-attributes are described in the ``Parameter lists'' section, which
-follows.
-
-<H3><A NAME="SECTION00711500000000000000">
-Tr_eval subsection</A>
-</H3>
-
-<P>
-In this release, this section is a dummy.  Put a stub here if you
-define a <TT>do_tr</TT> later.  Otherwise leave it out.  This will change
-in a future release.
-
-<H3><A NAME="SECTION00711600000000000000">
-Evaluators</A>
-</H3>
-
-<P>
-The <TT>eval</TT> sections are evaluators that turn the primitive
-resistors and capacitors into advanced behavioral elements.
-
-<P>
-The body is the core of a C++ function, which is copied over directly
-after attaching some headers.  Given some ``x'', this function
-computes ``f(x)'' and its derivative with respect to x.  The primary
-communication is through the structure ``<TT>d-&gt;_y0</TT>''.  The input is
-``<TT>d-&gt;_y0.x</TT>''.  You must evaluate the function, and place the
-result in ``<TT>d-&gt;_y0.f0</TT>'' and its derivative in ``<TT>d-&gt;_y0.f1</TT>''.  The exact meaning of these values depends on what type
-of element it is.
-
-<P>
-For the primitives ...
-
-<P>
-<DL>
-<DT><STRONG>resistance</STRONG></DT>
-<DD>x is current, y0 is voltage, y1 is resistance
-
-<P>
-</DD>
-<DT><STRONG>admittance</STRONG></DT>
-<DD>x is voltage, y0 is current, y1 is admittance
-
-<P>
-</DD>
-<DT><STRONG>capacitance</STRONG></DT>
-<DD>x is voltage, y0 is charge, y1 is capacitance
-
-<P>
-</DD>
-<DT><STRONG>inductance</STRONG></DT>
-<DD>x is current, y0 is flux, y1 is inductance
-
-<P>
-</DD>
-<DT><STRONG>vccs</STRONG></DT>
-<DD>x is voltage, y0 is current, y1 is transconductance
-
-<P>
-</DD>
-</DL>
-
-<P>
-In addition, all relevant parameters are available with the
-appropriate prefix.  See the section <EM>accessing data in code
-blocks</EM>.  Most are read-only.
-
-<P>
-The prefix <TT>d-&gt;</TT> refers to the element being processed.  This data
-is read-write.
-
-<H2><A NAME="SECTION00712000000000000000">
-Model section</A>
-</H2>
-
-<P>
-<DL>
-<DT><STRONG><TT>base</TT></STRONG></DT>
-<DD>(optional)
-The keyword <TT>BASE</TT> is used as a flag to say this is a base for
-other models.  When the base flag is set, others can be derived from
-it and used interchangeably with the same device type.
-
-<P>
-</DD>
-<DT><STRONG><TT>dev_type</TT></STRONG></DT>
-<DD>(required, all)
-This is the name of the device type associated with this model type.
-
-<P>
-</DD>
-<DT><STRONG><TT>level</TT></STRONG></DT>
-<DD>(optional, final only)
-When several models are derived from a base, the numeric level is used
-as a parameter to select which one to use.
-
-<P>
-</DD>
-<DT><STRONG><TT>inherit</TT></STRONG></DT>
-<DD>(optional)
-The model being defined inherits from the named base model.  There is
-no limit to the depth if inheritance.
-
-<P>
-</DD>
-<DT><STRONG><TT>keys</TT></STRONG></DT>
-<DD>(required for base, optional otherwise)
-This is a list of the keywords that are used to identify the model,
-and assign attributes.  See the section <EM>Keys subsection</EM> for
-details.
-
-<P>
-</DD>
-<DT><STRONG><TT>independent</TT></STRONG></DT>
-<DD>(optional)
-This is a section describing parameters that are not dependent on size
-or temperature.  See the section <EM>Independent subsection</EM> for
-details.
-
-<P>
-</DD>
-<DT><STRONG><TT>size_dependent</TT></STRONG></DT>
-<DD>(optional)
-This is a section describing parameters that are dependent on size.
-See the section <EM>Size_dependent subsection</EM> for details.
-
-<P>
-</DD>
-<DT><STRONG><TT>temperature_dependent</TT></STRONG></DT>
-<DD>(optional)
-This is a section describing parameters that are dependent on
-temperature.  See the section <EM>Temperature_dependent subsection</EM>
-for details.
-
-<P>
-</DD>
-<DT><STRONG><TT>tr_eval</TT></STRONG></DT>
-<DD>(required once in hierarchy)
-This is a section containing evaluation code for the whole device.
-See the section <EM>Tr_eval subsection</EM> for details.
-
-<P>
-</DD>
-</DL>
-<H3><A NAME="SECTION00712100000000000000">
-Keys subsection</A>
-</H3>
-
-<P>
-The <TT>keys</TT> subsection consists of a number of keywords that are
-used in the <TT>.model</TT> statement to identify this model.  Different
-keys can be used to represent variants, such as ``<TT>NMOS</TT>'' and
-``<TT>PMOS</TT>'' to represent the N and P channel devices.  Each one is
-followed by an assignment to be made when the key is present.
-
-<P>
-It is required, at least once in the hierarchy.  Additional keys can
-be used to select a particular model, as an alternative to the <TT>level</TT> parameter.
-
-<H3><A NAME="SECTION00712200000000000000">
-Independent subsection</A>
-</H3>
-
-<P>
-The <TT>independent</TT> subsection list all of the ``independent''
-parameters supplied by the user in the <TT>.model</TT> statement.
-
-<P>
-
-<H4><A NAME="SECTION00712210000000000000">
-Raw_parameters subsubsection</A>
-</H4>
-
-<P>
-This subsubsection lists all of the ``raw parameters'', the parameters
-supplied by the user on the <TT>.model</TT> line.  The format and
-available attributes are described in the ``Parameter lists'' section,
-which follows.
-
-<P>
-
-<H4><A NAME="SECTION00712220000000000000">
-Calculated_parameters subsubsection</A>
-</H4>
-
-<P>
-This subsubsection lists all of the ``calculated parameters'', the
-parameters not supplied by the user.  Instead, they are calculated
-based on other input.  The format and available attributes are
-described in the ``Parameter lists'' section, which follows.
-
-<P>
-
-<H4><A NAME="SECTION00712230000000000000">
-Override subsubsection</A>
-</H4>
-
-<P>
-This subsubsection lists parameters that have already been defined in
-base classes, that need a change for this particular type.  You can
-override most attributes, giving the benefit of defining it locally,
-while retaining most from the base.  The format and available
-attributes are described in the ``Parameter lists'' section, which
-follows.
-
-<P>
-
-<H4><A NAME="SECTION00712240000000000000">
-Code_pre and Code_post subsections</A>
-</H4>
-
-<P>
-These subsubsections define C++ code that is inserted into the
-function that calculates values, scales, and checks limits.  The block
-<TT>code_pre</TT> is inserted before the automatically generated code.
-The block <TT>code_post</TT> is inserted after the automatically
-generated code.
-
-<H3><A NAME="SECTION00712300000000000000">
-Size_dependent subsection</A>
-</H3>
-
-<P>
-The <TT>size_dependent</TT> subsubsection is similar to the <TT>independent</TT> subsubsection except that it defines a base paramater and
-scale factors so a custom value can be generated based on the device
-size.
-
-<P>
-Every parameter in this subsubsection actually generates a set of
-four.  The first is the base, as in the <TT>independent</TT>
-subsubsection.  In addition, the same name prefixed by ``<TT>L</TT>'' is
-the length dependency, the name prefixed by ``<TT>W</TT>'' is the width
-dependency, and the name prefixed by ``<TT>P</TT>'' is the product
-(length * width) dependency.
-
-<P>
-You must provide a <TT>code_pre</TT> section, which must declare and
-define values for ``<TT>L</TT>'' (length) and ``<TT>W</TT>'' (width).
-
-<P>
-The actual value is calculated by: <TT>nom + ld/L + wd/W +
-pd/(W*L);</TT>, where <TT>nom</TT> is the nominal value, <TT>ld</TT> is the
-length dependency (key name has the ``<TT>L</TT>'' prefix), <TT>wd</TT> is
-the width dependency (key name has the ``<TT>W</TT>'' prefix), and <TT>pd</TT> is the product dependency (key name has the ``<TT>P</TT>'' prefix).
-
-<H3><A NAME="SECTION00712400000000000000">
-Temperature_dependent subsection</A>
-</H3>
-
-<P>
-The <TT>temperature_dependent</TT> subsubsection contains a list of
-parameters that are calculated based on temperature, and two code
-blocks (<TT>code_pre</TT> and <TT>code_post</TT> to make the calculations.
-
-<P>
-This code is evaluated at run time, possibly every time step, whenever
-temperature changes.  Some Spice models throw calculations not related
-to temperature into the temperature block.  This is very bad practice.
-In GnuCap, temperature is local and time variant.
-
-<H3><A NAME="SECTION00712500000000000000">
-Tr_eval subsection</A>
-</H3>
-
-<P>
-The <TT>tr_eval</TT> subsubsection is the actual model evaluation code
-for nonlinear DC and transient analysis.  This code must calculate all
-state variables (data listed as ``<TT>calculated</TT>'' in the <TT>device</TT> section, except those that are part of one of the subcircuit
-elements.  Inputs and outputs are through the <TT>d-&gt;</TT> structure.
-
-<P>
-This function only needs to fill in the <TT>calculated</TT> data.  The
-details, like differentiating charge in capacitors, is left to the
-subcircuit elements.  It is also not necessary to check convergence.
-This, too, is left to the subcircuit elements.
-
-<H2><A NAME="SECTION00713000000000000000">
-Accessing data in code blocks</A>
-</H2>
-
-<P>
-Most parameters are available, usually read-only, in any code block,
-with the appropriate prefix:
-
-<P>
-<DL>
-<DT><STRONG><TT>p-&gt;</TT></STRONG></DT>
-<DD>The parent device, usually the device being defined by the <TT>.model</TT> file.  This is usually the ``calculated parameters'' under
-``device'' in the <TT>.model</TT> file.
-
-<P>
-</DD>
-<DT><STRONG><TT>c-&gt;</TT></STRONG></DT>
-<DD>The ``common'' belonging to the parent device.  This consists of all
-of the parameters in the <TT>common</TT> section of the <TT>.model</TT>
-file.
-
-<P>
-</DD>
-<DT><STRONG><TT>m-&gt;</TT></STRONG></DT>
-<DD>This is the ``model'' parameters, all of the parameters in the <TT>model</TT> section of the <TT>.model</TT> file, except those listed as ``size
-dependent''.
-
-<P>
-</DD>
-<DT><STRONG><TT>b-&gt;</TT></STRONG></DT>
-<DD>This is the sized value of the size dependent parameters in the <TT>model</TT> section.  ``B'' is for ``bin'', which is derived from the
-concept of ``binning'' of models.
-
-<P>
-</DD>
-<DT><STRONG><TT>d-&gt;</TT></STRONG></DT>
-<DD>This is the device parameters.  In evaluation functions, it is
-read-write.
-
-<P>
-</DD>
-<DT><STRONG><TT>t.</TT></STRONG></DT>
-<DD>This is the device values, scaled by temperature.
-
-<P>
-</DD>
-</DL>
-
-<P>
-
-<H2><A NAME="SECTION00714000000000000000">
-Parameter lists</A>
-</H2>
-
-<P>
-The format for each item is: type, name, comment, attributes, semicolon.
-
-<P>
-The available attributes are:
-
-<P>
-<DL>
-<DT><STRONG><TT>name</TT></STRONG></DT>
-<DD>This is the name to be used for input in the data file.  It is also
-the name this parameter is listed as when the internal data is
-printed.
-
-<P>
-</DD>
-<DT><STRONG><TT>alt_name</TT></STRONG></DT>
-<DD>This is an alternate name used for input.
-
-<P>
-</DD>
-<DT><STRONG><TT>default</TT></STRONG></DT>
-<DD>This is the initial default value, set by the constructor.
-
-<P>
-</DD>
-<DT><STRONG><TT>calculate</TT></STRONG></DT>
-<DD>If no value is supplied, the program will calculate it using this
-formula.
-
-<P>
-</DD>
-<DT><STRONG><TT>quiet_min</TT></STRONG></DT>
-<DD>If the input or calculated value is less than this number, substitute
-this number without warning.
-
-<P>
-</DD>
-<DT><STRONG><TT>quiet_max</TT></STRONG></DT>
-<DD>If the input or calculated value is more than this number, substitute
-this number without warning.
-
-<P>
-</DD>
-<DT><STRONG><TT>final_default</TT></STRONG></DT>
-<DD>This is the final default value, supplied after all attempts to fill
-or calculate it fail.
-
-<P>
-</DD>
-<DT><STRONG><TT>offset</TT></STRONG></DT>
-<DD>Add this number to the input value to get the value actually stored in
-memory.  Example: <TT>double temperature ``'' offset=273;</TT>.  This
-sample allows data entry in degrees Celsius, but storage in Kelvin.
-
-<P>
-</DD>
-<DT><STRONG><TT>scale</TT></STRONG></DT>
-<DD>Multiply the input value by this number to get the value actually
-stored in memory.  Example: <TT>double length ``'' offset=1e6;</TT>.
-This sample allows data entry in microns, but storage in meters.
-
-<P>
-</DD>
-<DT><STRONG><TT>positive</TT></STRONG></DT>
-<DD>This number is always positive.  The magnitude of the entered value is
-stored.
-
-<P>
-</DD>
-<DT><STRONG><TT>octal</TT></STRONG></DT>
-<DD>The number read is interpreted as octal (base 8), instead of the usual
-base 10.
-
-<P>
-</DD>
-<DT><STRONG><TT>print_test</TT></STRONG></DT>
-<DD>This is a test to determine whether the value is printed in a standard
-listing or not.  The value is printed only if this test evaluates to
-true at run time.  If <TT>print_test</TT> is omitted, it is always
-printed.
-
-<P>
-</DD>
-<DT><STRONG><TT>calc_print_test</TT></STRONG></DT>
-<DD>This is a test to determine whether the value is printed as a comment
-in a standard listing or not.  The value is printed only if this test
-evaluates to true at run time.  If <TT>calc_print_test</TT> is omitted,
-it is never printed.
-
-<P>
-</DD>
-</DL>
-
-<HR>
 <!--Navigation Panel-->
-<A NAME="tex2html1943"
+<A NAME="tex2html1948"
   HREF="node105.html">
 <IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
-<A NAME="tex2html1939"
-  HREF="node103.html">
+<A NAME="tex2html1944"
+  HREF="man.html">
 <IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
-<A NAME="tex2html1935"
+<A NAME="tex2html1938"
   HREF="node103.html">
 <IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
-<A NAME="tex2html1941"
+<A NAME="tex2html1946"
   HREF="node1.html">
 <IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
 <BR>
-<B> Next:</B> <A NAME="tex2html1944"
-  HREF="node105.html">Technical Notes</A>
-<B> Up:</B> <A NAME="tex2html1940"
-  HREF="node103.html">Adding models</A>
-<B> Previous:</B> <A NAME="tex2html1936"
-  HREF="node103.html">Adding models</A>
- &nbsp <B>  <A NAME="tex2html1942"
+<B> Next:</B> <A NAME="tex2html1949"
+  HREF="node105.html">Using the model compiler</A>
+<B> Up:</B> <A NAME="tex2html1945"
+  HREF="man.html">Gnucap The Gnu Circuit</A>
+<B> Previous:</B> <A NAME="tex2html1939"
+  HREF="node103.html">Details, custom compilation</A>
+ &nbsp <B>  <A NAME="tex2html1947"
   HREF="node1.html">Contents</A></B> 
 <!--End of Navigation Panel-->
 <ADDRESS>
 Al Davis
-2001-10-28
+2002-09-29
 </ADDRESS>
 </BODY>
 </HTML>

@@ -1,4 +1,4 @@
-%$Id: fourier.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+%$Id: fourier.tex,v 21.13 2002/03/25 05:37:03 al Exp $
 % man commands fourier .
 %------------------------------------------------------------------------
 \section{{\tt FOURIER} command}
@@ -23,14 +23,14 @@ results in the frequency domain.
 
 This command is slightly different and more flexible than the SPICE
 counterpart.  SPICE always gives you the fundamental and 9 harmonics.
-GnuCap will do the same if you only specify one frequency.  SPICE has
-the probes on the same line.  GnuCap requires you to specify the probes
+Gnucap will do the same if you only specify one frequency.  SPICE has
+the probes on the same line.  Gnucap requires you to specify the probes
 with the {\tt print} command.  
 
-SPICE uses the last piece of a transient that was already done.  GnuCap
+SPICE uses the last piece of a transient that was already done.  Gnucap
 does its own transient analysis, continuing from where the most recent
 one left off, and choosing the step size to match the Fourier
-Transform to be done.  Because of this the GnuCap Fourier analysis is
+Transform to be done.  Because of this the Gnucap Fourier analysis is
 much more accurate than SPICE.
 
 The nodes to look at must have been previously selected by the {\tt

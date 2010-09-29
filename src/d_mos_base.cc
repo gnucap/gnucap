@@ -1,8 +1,8 @@
-/* $Id: d_mos_base.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/* $Id: d_mos_base.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include "d_mos_base.h"
 /*--------------------------------------------------------------------------*/
 const double NA(NOT_INPUT);
+const double INF(BIGBIG);
 /*--------------------------------------------------------------------------*/
 int MODEL_MOS_BASE::_count = 0;
 /*--------------------------------------------------------------------------*/
@@ -75,6 +76,10 @@ TDP_MOS_BASE::TDP_MOS_BASE(const DEV_MOS*)
 MODEL_MOS_BASE::MODEL_MOS_BASE()
   :MODEL_DIODE(),
    level(1),
+   wmax(INF),
+   wmin(0),
+   lmax(INF),
+   lmin(0),
    is(NA),
    js(NA),
    rsh(NA),
@@ -113,6 +118,10 @@ void MODEL_MOS_BASE::parse_params(CS& cmd)
   get(cmd, "KF", &kf);
   get(cmd, "AF", &af);
   get(cmd, "LEVEL", &level);
+  get(cmd, "WMAX", &wmax, mPOSITIVE);
+  get(cmd, "WMIN", &wmin, mPOSITIVE);
+  get(cmd, "LMAX", &lmax, mPOSITIVE);
+  get(cmd, "LMIN", &lmin, mPOSITIVE);
   get(cmd, "IS", &is);
   get(cmd, "JS", &js);
   get(cmd, "RSH", &rsh);
@@ -128,7 +137,6 @@ void MODEL_MOS_BASE::parse_params(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS_BASE::parse_finish()
 {
-
   _tnom = std::max(_tnom, 1.0);
   egap = 1.16 - (7.02e-4*_tnom*_tnom) / (_tnom+1108.);
 
@@ -202,6 +210,14 @@ void MODEL_MOS_BASE::print_params(OMSTREAM& o)const
     o << "  af=" << af;
   if (false)
     o << "  level=" << level;
+  if (wmax<INF)
+    o << "  wmax=" << wmax;
+  if (wmin>0)
+    o << "  wmin=" << wmin;
+  if (lmax<INF)
+    o << "  lmax=" << lmax;
+  if (lmin>0)
+    o << "  lmin=" << lmin;
   if (is != NA)
     o << "  is=" << is;
   if (js != NA)
@@ -226,6 +242,18 @@ void MODEL_MOS_BASE::print_params(OMSTREAM& o)const
 void MODEL_MOS_BASE::print_calculated(OMSTREAM& o)const
 {
   o << "";
+}
+/*--------------------------------------------------------------------------*/
+bool MODEL_MOS_BASE::is_valid(const COMMON_COMPONENT* cc)const
+{
+  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
+  {if (!c) {
+    return MODEL_DIODE::is_valid(cc);
+  }else{
+    const MODEL_MOS_BASE* m = this;
+    return c->l_in >= m->lmin && c->l_in <= m->lmax
+      && c->w_in >= m->wmin && c->w_in <= m->wmax;
+  }}
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS_BASE::tr_eval(COMPONENT*)const

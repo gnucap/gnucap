@@ -1,8 +1,8 @@
-/*$Id: d_cs.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: d_cs.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ void DEV_CS::precalc()
 /*--------------------------------------------------------------------------*/
 void DEV_CS::dc_begin()
 {
-  if (!has_tr_eval()){
+  if (!using_tr_eval()){
     assert(_loss0 == 0.);
     assert(_loss1 == 0.);
     assert(_y0.x  == 0.);
@@ -58,7 +58,7 @@ void DEV_CS::dc_begin()
 bool DEV_CS::do_tr()
 {
   assert(_m0.x == 0.);
-  {if (has_tr_eval()){
+  {if (using_tr_eval()){
     _y0.x = SIM::time0;
     tr_eval();
     store_values();

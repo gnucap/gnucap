@@ -1,8 +1,8 @@
-/*$Id: u_statu2.cc,v 20.15 2001/10/30 03:58:55 al Exp $ -*- C++ -*-
+/*$Id: u_statu2.cc,v 22.10 2002/07/26 03:15:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,16 +26,18 @@
  *   If "allocate" is changed, this must also be changed.
  */
 #include "d_subckt.h"
+#include "d_bjt.h"
 #include "d_logic.h"
 #include "d_mos_base.h"
 #include "ap.h"
+#include "s_tr.h"
 #include "u_status.h"
 /*--------------------------------------------------------------------------*/
 //	void	STATUS::command(CS& cmd);
 /*--------------------------------------------------------------------------*/
 void STATUS::command(CS& cmd)
 { 
-  IO::mstdout << "GnuCap   System status\n";
+  IO::mstdout << "Gnucap   System status\n";
   init();
   
   if (!cmd.pmatch("Notime")){  
@@ -72,24 +74,29 @@ void STATUS::command(CS& cmd)
   }
 
   IO::mstdout.form(
-	  "iterations: op=%d, dc=%d, tran=%d, fourier=%d, total=%d\n",
-	  iter[sOP], iter[sDC], iter[sTRAN], iter[sFOURIER], iter[iTOTAL]);
+	"iterations: op=%d, dc=%d, tran=%d, fourier=%d, total=%d\n",
+	iter[sOP], iter[sDC], iter[sTRAN], iter[sFOURIER], iter[iTOTAL]);
   IO::mstdout.form(
-	  "nodes: user=%d, subckt=%d, model=%d, total=%d\n",
-	  user_nodes, subckt_nodes, model_nodes, total_nodes);
+	"transient timesteps: accepted=%d, rejected=%d, total=%d\n",
+	TRANSIENT::steps_accepted(), TRANSIENT::steps_rejected(),
+	TRANSIENT::steps_total());
   IO::mstdout.form(
-	  "devices: diodes=%d, mosfets=%d, gates=%d, subckts=%d\n",
-	  DEV_DIODE::count(), DEV_MOS::count(),
-	  DEV_LOGIC::count(), DEV_SUBCKT::count());
+	"nodes: user=%d, subckt=%d, model=%d, total=%d\n",
+	user_nodes, subckt_nodes, model_nodes, total_nodes);
   IO::mstdout.form(
-	  "commons: diodes=%d, mosfets=%d, gates=%d, subckts=%d\n",
-	  COMMON_DIODE::count(), COMMON_MOS::count(),
-	  COMMON_LOGIC::count(), COMMON_SUBCKT::count());
+	"devices: diodes=%d, bjts=%d, mosfets=%d, gates=%d, subckts=%d\n",
+	DEV_DIODE::count(), DEV_BJT::count(), DEV_MOS::count(),
+	DEV_LOGIC::count(), DEV_SUBCKT::count());
   IO::mstdout.form(
-	  "models:  diodes=%d, mosfets=%d, gates=%d, subckts=%d\n",
-	  MODEL_DIODE::count(), MODEL_MOS_BASE::count(),
-	  MODEL_LOGIC::count(), MODEL_SUBCKT::count());
-  IO::mstdout.form("density=%.1f%%\n", aa.density()*100.);
+	"commons: diodes=%d, bjts=%d, mosfets=%d, gates=%d, subckts=%d\n",
+	COMMON_DIODE::count(), COMMON_BJT::count(), COMMON_MOS::count(),
+	COMMON_LOGIC::count(), COMMON_SUBCKT::count());
+  IO::mstdout.form(
+	"models:  diodes=%d, bjts=%d, mosfets=%d, gates=%d, subckts=%d\n",
+	MODEL_DIODE::count(), MODEL_BJT::count(), MODEL_MOS_BASE::count(),
+	MODEL_LOGIC::count(), MODEL_SUBCKT::count());
+  IO::mstdout.form("dctran density=%.1f%%, ac density=%.1f%%\n",
+		   aa.density()*100., acx.density()*100.);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

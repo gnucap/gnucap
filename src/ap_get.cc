@@ -1,8 +1,8 @@
-/*$Id: ap_get.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: ap_get.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ bool get(CS& cmd, const std::string& key, int* val, AP_MOD mod, int scale)
       case mSCALE:    untested(); *val = int(cmd.ctof())*scale;	break;
       case mOFFSET:   untested(); *val = int(cmd.ctof())+scale;	break;
       case mINVERT:   untested(); *val = 1 / int(cmd.ctof());	break;
-      case mPOSITIVE: untested(); *val = abs(int(cmd.ctof()));	break;
+      case mPOSITIVE: untested(); *val = std::abs(int(cmd.ctof())); break;
       case mOCTAL:		  *val = cmd.ctoo();		break;
       case mHEX:      untested(); *val = cmd.ctox();		break;
     }

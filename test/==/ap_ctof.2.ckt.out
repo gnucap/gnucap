@@ -16,5 +16,5 @@ R0708  7  8  473.7E+78
 R0800  8  0 -3.44E+30
 R0809  8  9  3.44E+30
 R0900  9  0  foo ()
-GnuCap   System status
-can't find model: foo
+Gnucap   System status
+R0900: can't find model: foo

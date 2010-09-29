@@ -1,8 +1,8 @@
-/*$Id: s__solve.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: s__solve.cc,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
  *------------------------------------------------------------------
  * solve one step of a transient or dc analysis
  */
+#include "l_stlextra.h"
 #include "e_card.h"
 #include "constant.h"
 #include "u_status.h"
@@ -80,7 +81,6 @@ bool SIM::solve(int itl, int trace)
       load_matrix();
       solve_equations();
       if (STATUS::iter[iSTEP] >= OPT::itl[OPT::TRACE]) {
-	untested();
 	IO::suppresserrors = false;
       }
     }
@@ -110,11 +110,11 @@ void SIM::advance_time(void)
   static double last_iter_time;
   {if (SIM::time0 > 0) {
     {if (SIM::time0 > last_iter_time) {	/* moving forward */
-      std::copy_n(v0, STATUS::total_nodes+1, vt1);
+      notstd::copy_n(v0, STATUS::total_nodes+1, vt1);
     }else{				/* moving backward */
       /* don't save voltages.  They're wrong! */
       /* instead, restore a clean start for iteration */
-      std::copy_n(vt1, STATUS::total_nodes+1, v0);
+      notstd::copy_n(vt1, STATUS::total_nodes+1, v0);
     }}
     CARD_LIST::card_list.tr_advance();
   }else{

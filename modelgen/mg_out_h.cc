@@ -1,8 +1,8 @@
-/*$Id: mg_out_h.cc,v 20.13 2001/10/15 00:57:04 al Exp $ -*- C++ -*-
+/*$Id: mg_out_h.cc,v 22.12 2002/07/26 08:01:55 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,7 @@ static void make_model(std::ofstream& out, const Model& m)
     "  void      print_front(OMSTREAM&)const;\n"
     "  void      print_params(OMSTREAM&)const;\n"
     "  void      print_calculated(OMSTREAM&)const;\n"
+    "  bool      is_valid(const COMMON_COMPONENT*)const;\n"
     "  void      tr_eval(COMPONENT*)const;\n"
     "public: // not virtual\n"
     "  static int count() {return _count;}\n"
@@ -142,7 +143,7 @@ static void make_common(std::ofstream& out, const Device& d)
     "  COMMON_COMPONENT* clone()const {return new "<<class_name<<"(*this);}\n"
     "  void        parse(CS&);\n"
     "  void        print(OMSTREAM&)const;\n"
-    "  void        expand();\n"
+    "  void        expand(const COMPONENT*);\n"
     "  const char* name()const {return \"" << d.parse_name() << "\";}\n"
     "  const SDP_CARD* sdp()const {assert(_sdp); return _sdp;}\n"
     "  bool      has_sdp()const {return _sdp;}\n"
@@ -188,7 +189,13 @@ static void make_device(std::ofstream& out, const Device& d)
     "private: // override virtual\n"
     "  char      id_letter()const {return '" << d.id_letter() << "';}\n"
     "  const char* dev_type()const{return \"" << d.parse_name() << "\";}\n"
-    "  int       numnodes()const  {return " << d.num_nodes() << ";}\n"
+    "  int       max_nodes()const  {return " << d.num_nodes() << ";}\n"
+    "  int       min_nodes()const  {return " << d.num_nodes() << ";}\n"
+    "  int       out_nodes()const  {return " << d.num_nodes() << ";}\n"
+    "  int       matrix_nodes()const {return 0;}\n"
+    "  int       net_nodes()const {return " << d.num_nodes() << ";}\n"
+    "  int       int_nodes()const{return " 
+      << d.circuit().local_nodes().size() << ";}\n"
     "  CARD*     clone()const     {return new " << class_name << "(*this);}\n"
     "  void      parse(CS&);\n"
     "  void      print(OMSTREAM&,int)const;\n"

@@ -1,8 +1,8 @@
-/*$Id: c_modify.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: c_modify.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,12 +90,12 @@ static double sweep_fix(CS& cmd, const CARD *brh)
   double start = cmd.ctof();
   double value = start;
   if (swp_steps[swp_nest] != 0   &&   cmd.is_float()){
-    untested();
     double last = cmd.ctof();
     double offset = static_cast<double>(swp_count[swp_nest]) 
       / static_cast<double>(swp_steps[swp_nest]);
     {if (swp_type[swp_nest]=='L'){
       {if (start == 0.){
+	untested();
 	error(bERROR, "log sweep can't pass zero\n");
 	value = 0;
       }else{
@@ -104,11 +104,13 @@ static double sweep_fix(CS& cmd, const CARD *brh)
     }else{
       value = start + (last-start) * offset;
     }}
-    if (!crtplot){
+    {if (!crtplot){
       IO::mstdout.setfloatwidth(7)
 	<< swp_count[swp_nest]+1 << "> sweep " << brh->long_label()
 	<< " =" << value << '\n';
-    }
+    }else{
+      untested();
+    }}
   }
   return value;
 }

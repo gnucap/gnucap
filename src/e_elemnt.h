@@ -1,8 +1,8 @@
-/*$Id: e_elemnt.h,v 20.7 2001/09/29 05:31:06 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.h,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,9 @@ protected: // override virtual
   bool	   tr_needs_eval()	{return !constant();}
   void	   tr_queue_eval()	{if(tr_needs_eval()) {q_eval();}}
   void	   map_nodes() {assert(!subckt().exists()); COMPONENT::map_nodes();}
-  
+  void	   tr_alloc_matrix() = 0;
+  void	   ac_alloc_matrix() = 0;
+
 protected: // inline, below
   double   dampdiff(double&, const double&, bool);
 
@@ -76,11 +78,19 @@ protected: // inline, below
 			    COMPLEX value);
 
   bool	   conv_check()const;
+  bool	   using_tr_eval()const;
   bool	   has_tr_eval()const;
   bool	   has_ac_eval()const;
   void	   tr_eval();
   void	   ac_eval();
 protected: // in .cc
+  void	   tr_alloc_matrix_passive();
+  void	   tr_alloc_matrix_active();
+  void	   tr_alloc_matrix_extended();
+  void	   ac_alloc_matrix_passive();
+  void	   ac_alloc_matrix_active();
+  void	   ac_alloc_matrix_extended();
+
   double   tr_outvolts()const	{return dn_diff(_n[OUT1].v0(), _n[OUT2].v0());}
   double   tr_outvolts_limited()const{return volts_limited(_n[OUT1],_n[OUT2]);}
   COMPLEX  ac_outvolts()const	{return _n[OUT1].vac() - _n[OUT2].vac();}
@@ -124,7 +134,7 @@ inline void ELEMENT::tr_load_shunt()
 {
   double d = dampdiff(_loss0, _loss1, true);
   if (d != 0.) {
-    aa.load_symmetric(_n[OUT1].m, _n[OUT2].m, d);
+    aa.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), d);
   }
   _loss1 = _loss0;
 }
@@ -140,7 +150,7 @@ inline void ELEMENT::tr_unload_shunt()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_shunt()
 {
-  acx.load_symmetric(_n[OUT1].m, _n[OUT2].m, _loss0);
+  acx.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), _loss0);
 }
 /*--------------------------------------------------------------------------*/
  inline void ELEMENT::tr_load_loss()
@@ -164,10 +174,10 @@ inline void ELEMENT::tr_load_source()
 
   double dc0 = dampdiff(_m0.c0, _m1.c0, true);
   if (dc0 != 0.) {
-    if (_n[OUT2].m != 0) {
+    if (_n[OUT2].m_() != 0) {
       _n[OUT2].i() += dc0;
     }
-    if (_n[OUT1].m != 0) {
+    if (_n[OUT1].m_() != 0) {
       _n[OUT1].i() -= dc0;
     }
   }
@@ -187,10 +197,10 @@ inline void ELEMENT::tr_unload_source()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_source()
 {
-  if (_n[OUT2].m != 0) {
+  if (_n[OUT2].m_() != 0) {
     _n[OUT2].iac() += _acg;
   }
-  if (_n[OUT1].m != 0) {
+  if (_n[OUT1].m_() != 0) {
     _n[OUT1].iac() -= _acg;
   }
 }
@@ -199,7 +209,7 @@ inline void ELEMENT::tr_load_passive()
 {
   double d = dampdiff(_m0.c1, _m1.c1, true);
   if (d != 0.) {
-    aa.load_symmetric(_n[OUT1].m, _n[OUT2].m, d);
+    aa.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), d);
   }
   tr_load_source();
 }
@@ -215,14 +225,14 @@ inline void ELEMENT::tr_unload_passive()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_passive()
 {
-  acx.load_symmetric(_n[OUT1].m, _n[OUT2].m, _acg);
+  acx.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), _acg);
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_active()
 {
   double d = dampdiff(_m0.c1, _m1.c1, true);
   if (d != 0.) {
-    aa.load_asymmetric(_n[OUT1].m, _n[OUT2].m, _n[IN1].m, _n[IN2].m, d);
+    aa.load_asymmetric(_n[OUT1].m_(), _n[OUT2].m_(), _n[IN1].m_(), _n[IN2].m_(), d);
   }
   tr_load_source();
 }
@@ -240,7 +250,7 @@ inline void ELEMENT::tr_unload_active()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_active()
 {
-  acx.load_asymmetric(_n[OUT1].m, _n[OUT2].m, _n[IN1].m, _n[IN2].m, _acg);
+  acx.load_asymmetric(_n[OUT1].m_(), _n[OUT2].m_(), _n[IN1].m_(), _n[IN2].m_(), _acg);
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_extended(const node_t& no1, const node_t& no2,
@@ -249,7 +259,7 @@ inline void ELEMENT::tr_load_extended(const node_t& no1, const node_t& no2,
 {
   double d = dampdiff(*value, *old_value, true);
   if (d != 0.) {
-    aa.load_asymmetric(no1.m, no2.m, ni1.m, ni2.m, d);
+    aa.load_asymmetric(no1.m_(), no2.m_(), ni1.m_(), ni2.m_(), d);
   }
   *old_value = *value;
 }
@@ -258,7 +268,7 @@ inline void ELEMENT::ac_load_extended(const node_t& no1, const node_t& no2,
 				      const node_t& ni1, const node_t& ni2,
 				      COMPLEX value)
 {
-  acx.load_asymmetric(no1.m, no2.m, ni1.m, ni2.m, value);
+  acx.load_asymmetric(no1.m_(), no2.m_(), ni1.m_(), ni2.m_(), value);
 }
 /*--------------------------------------------------------------------------*/
 inline bool ELEMENT::conv_check()const
@@ -270,7 +280,12 @@ inline bool ELEMENT::conv_check()const
 /*--------------------------------------------------------------------------*/
 inline bool ELEMENT::has_tr_eval()const
 {
-  return (has_probes() || (has_common() && common()->has_tr_eval()));
+  return (has_common() && common()->has_tr_eval());
+}
+/*--------------------------------------------------------------------------*/
+inline bool ELEMENT::using_tr_eval()const
+{
+  return (has_probes() || has_tr_eval());
 }
 /*--------------------------------------------------------------------------*/
 inline bool ELEMENT::has_ac_eval()const

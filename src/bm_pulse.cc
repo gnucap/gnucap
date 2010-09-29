@@ -1,8 +1,8 @@
-/*$Id: bm_pulse.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: bm_pulse.cc,v 22.14 2002/08/02 15:58:41 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,11 +80,11 @@ void EVAL_BM_PULSE::parse(CS& cmd)
     }
     get(cmd, "IV",	&_iv);
     get(cmd, "PV",	&_pv);
-    get(cmd, "DELAY",	&_delay);
-    get(cmd, "RISE",	&_rise);
-    get(cmd, "FALL",	&_fall);
-    get(cmd, "WIDTH",	&_width);
-    get(cmd, "PERIOD",	&_period);
+    get(cmd, "Delay",	&_delay);
+    get(cmd, "Rise",	&_rise);
+    get(cmd, "Fall",	&_fall);
+    get(cmd, "Width",	&_width);
+    get(cmd, "PEriod",	&_period);
     parse_base(cmd);
   }while (cmd.more() && !cmd.stuck(&here));
   if (_width == 0.) {

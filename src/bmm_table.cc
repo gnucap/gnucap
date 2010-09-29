@@ -1,8 +1,8 @@
-/*$Id: bmm_table.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: bmm_table.cc,v 22.4 2002/05/27 00:00:47 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,12 +72,13 @@ void EVAL_BM_TABLE::tr_eval(ELEMENT* d)const
   tr_final_adjust(&(d->_y0), d->f_is_value());
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_TABLE::expand()
+void EVAL_BM_TABLE::expand(const COMPONENT* d)
 {
-  const MODEL_TABLE* m = dynamic_cast<const MODEL_TABLE*>(attach_model());
+  const MODEL_TABLE* m = dynamic_cast<const MODEL_TABLE*>(attach_model(d));
   if (!m) {
     untested();
-    error(bERROR, "model " + modelname() + " is not a table\n");
+    error(bERROR, d->long_label() + "model " + modelname()
+	  + " is not a table\n");
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -142,6 +143,7 @@ void MODEL_TABLE::print_params(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 void MODEL_TABLE::parse_finish()
 {
+  assert(!_spline);
   _spline = new SPLINE(_table, _below, _above, _order);
 }
 /*--------------------------------------------------------------------------*/

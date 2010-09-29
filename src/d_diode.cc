@@ -1,8 +1,8 @@
-/* $Id: d_diode.cc,v 20.12 2001/10/13 05:16:35 al Exp $ -*- C++ -*-
+/* $Id: d_diode.model,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,12 +32,14 @@
 #include "e_aux.h"
 #include "d_admit.h"
 #include "d_cap.h"
+#include "d_res.h"
   static bool dummy=false;
   enum {USE_OPT = 0x8000};
 #include "ap.h"
 #include "d_diode.h"
 /*--------------------------------------------------------------------------*/
 const double NA(NOT_INPUT);
+const double INF(BIGBIG);
 /*--------------------------------------------------------------------------*/
 int MODEL_DIODE::_count = 0;
 /*--------------------------------------------------------------------------*/
@@ -109,7 +111,6 @@ void MODEL_DIODE::parse_params(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void MODEL_DIODE::parse_finish()
 {
-
   _tnom = std::max(_tnom, 1.0);
   if (cjo == NA) {
     cjo = 0.0;
@@ -186,6 +187,16 @@ void MODEL_DIODE::print_calculated(OMSTREAM& o)const
   o << "";
 }
 /*--------------------------------------------------------------------------*/
+bool MODEL_DIODE::is_valid(const COMMON_COMPONENT* cc)const
+{
+  const COMMON_DIODE* c = dynamic_cast<const COMMON_DIODE*>(cc);
+  {if (!c) {
+    return MODEL_CARD::is_valid(cc);
+  }else{
+    return MODEL_CARD::is_valid(cc);
+  }}
+}
+/*--------------------------------------------------------------------------*/
 void MODEL_DIODE::tr_eval(COMPONENT*)const
 {
 }
@@ -199,6 +210,7 @@ COMMON_DIODE::COMMON_DIODE(int c)
   :COMMON_COMPONENT(c),
    area(1.0),
    perim(0.0),
+   m(1.0),
    off(false),
    ic(NA),
    is_raw(NA),
@@ -220,6 +232,7 @@ COMMON_DIODE::COMMON_DIODE(const COMMON_DIODE& p)
   :COMMON_COMPONENT(p),
    area(p.area),
    perim(p.perim),
+   m(p.m),
    off(p.off),
    ic(p.ic),
    is_raw(p.is_raw),
@@ -249,6 +262,7 @@ bool COMMON_DIODE::operator==(const COMMON_COMPONENT& x)const
   return (p
     && area == p->area
     && perim == p->perim
+    && m == p->m
     && off == p->off
     && ic == p->ic
     && is_raw == p->is_raw
@@ -270,6 +284,7 @@ void COMMON_DIODE::parse(CS& cmd)
   do{
   get(cmd, "Area", &area, mPOSITIVE);
   get(cmd, "Perim", &perim, mPOSITIVE);
+  get(cmd, "M", &m, mPOSITIVE);
   get(cmd, "OFF", &off);
   get(cmd, "IC", &ic);
   get(cmd, "IS", &is_raw, mPOSITIVE);
@@ -288,6 +303,8 @@ void COMMON_DIODE::print(OMSTREAM& o)const
   o << "  area=" << area;
   if (perim != 0.)
     o << "  perim=" << perim;
+  if (m != 1.)
+    o << "  m=" << m;
   if (off)
     o << "  off=" << off;
   if (ic != NA)
@@ -305,24 +322,25 @@ void COMMON_DIODE::print(OMSTREAM& o)const
   o << '\n';
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_DIODE::expand()
+void COMMON_DIODE::expand(const COMPONENT* d)
 {
-  const MODEL_DIODE* m = dynamic_cast<const MODEL_DIODE*>(attach_model());
+  const COMMON_DIODE* c = this;
+  const MODEL_DIODE* m = dynamic_cast<const MODEL_DIODE*>(attach_model(d));
   if (!m) {
-    untested();
-    error(bERROR, "model " + modelname() + " is not a diode");
+    error(bERROR, d->long_label() + ": model " + modelname()
+          + " is not a diode\n");
   }
   delete _sdp;
   _sdp = m->new_sdp(this);
   assert(_sdp);
-  const SDP_DIODE* b = dynamic_cast<const SDP_DIODE*>(_sdp);
-  assert(b);
-
-  is_adjusted = ((is_raw == NA) ? m->js * area : is_raw);
-  rs_adjusted = ((rs_raw == NA) ? m->rs / (area+1e-20) : rs_raw);
-  cj_adjusted = ((cj_raw == NA) ? m->cjo * area : cj_raw);
-  cjsw_adjusted = ((cjsw_raw == NA) ? m->cjsw * perim : cjsw_raw);
-  gparallel_adjusted = ((gparallel_raw == NA) ? m->gparallel*area : gparallel_raw);
+  const SDP_DIODE* s = dynamic_cast<const SDP_DIODE*>(_sdp);
+  assert(s);
+  is_adjusted = ((c->is_raw == NA) ? m->js * c->area : c->is_raw);
+  rs_adjusted = ((c->rs_raw == NA) ? m->rs / (c->area+1e-20) : c->rs_raw);
+  cj_adjusted = ((c->cj_raw == NA) ? m->cjo * c->area : c->cj_raw);
+  cjsw_adjusted = ((c->cjsw_raw == NA) ? m->cjsw * c->perim : c->cjsw_raw);
+  gparallel_adjusted = ((c->gparallel_raw == NA)
+		? m->gparallel*c->area : c->gparallel_raw);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -334,8 +352,8 @@ void EVAL_DIODE_Cj::tr_eval(ELEMENT* d)const
   assert(p);
   const COMMON_DIODE* c = prechecked_cast<const COMMON_DIODE*>(p->common());
   assert(c);
-  const SDP_DIODE* b = prechecked_cast<const SDP_DIODE*>(c->sdp());
-  assert(b);
+  const SDP_DIODE* s = prechecked_cast<const SDP_DIODE*>(c->sdp());
+  assert(s);
   const MODEL_DIODE* m = prechecked_cast<const MODEL_DIODE*>(c->model());
   assert(m);
 
@@ -385,6 +403,7 @@ void EVAL_DIODE_Cj::tr_eval(ELEMENT* d)const
     }else{
       d->_y0.f0 = d->_y0.x * d->_y0.f1;
     }}
+    d->_y0 *= c->m;
     trace3(d->long_label().c_str(), d->_y0.x, d->_y0.f0, d->_y0.f1);
 }
 /*--------------------------------------------------------------------------*/
@@ -396,8 +415,8 @@ void EVAL_DIODE_Yj::tr_eval(ELEMENT* d)const
   assert(p);
   const COMMON_DIODE* c = prechecked_cast<const COMMON_DIODE*>(p->common());
   assert(c);
-  const SDP_DIODE* b = prechecked_cast<const SDP_DIODE*>(c->sdp());
-  assert(b);
+  const SDP_DIODE* s = prechecked_cast<const SDP_DIODE*>(c->sdp());
+  assert(s);
   const MODEL_DIODE* m = prechecked_cast<const MODEL_DIODE*>(c->model());
   assert(m);
 
@@ -412,7 +431,7 @@ void EVAL_DIODE_Yj::tr_eval(ELEMENT* d)const
     double vt = KoQ * SIM::temp * m->n_factor;
     region_t oldregion = p->_region;
     p->_isat = c->is_adjusted * pow(tempratio, m->xti)
-      * Exp((m->eg/vt) *(tempratio-1));
+      * exp((m->eg/vt) *(tempratio-1));
     trace4("", tempratio, vt, oldregion, p->_isat);
     
     if (m->mos_level > 0 || flags & 0040) { // Spice style limiting
@@ -474,7 +493,7 @@ void EVAL_DIODE_Yj::tr_eval(ELEMENT* d)const
       }
     }else if (flags & 0040) { // exact Spice model
       {if (volts >= -3*vt) { // forward and weak reversed
-	double evd = Exp(volts/vt);
+	double evd = exp(volts/vt);
 	y.f0 = p->_isat * (evd-1);
 	y.f1 = p->_isat * evd/vt;
       }else if (m->bv == NA || volts >= m->bv) {
@@ -506,9 +525,9 @@ void EVAL_DIODE_Yj::tr_eval(ELEMENT* d)const
 	  untested();
 	  y.f1 = y.f0 = 0.;
 	}else{
-	  double expterm = p->_isat * Exp(volts/vt);	
-	  y.f0 = expterm - p->_isat;/* i = f(x) = _isat * (Exp(volts/vt)-1) */
-	  y.f1 = expterm / vt;	    /* f'(x) = (_isat/vt) * Exp(volts/vt)   */
+	  double expterm = p->_isat * exp(volts/vt);	
+	  y.f0 = expterm - p->_isat;/* i = f(x) = _isat * (exp(volts/vt)-1) */
+	  y.f1 = expterm / vt;	    /* f'(x) = (_isat/vt) * exp(volts/vt)   */
 	}}
 	
 	if (flags & 0002) {	// g = gmin, maintain actual current
@@ -572,6 +591,7 @@ void EVAL_DIODE_Yj::tr_eval(ELEMENT* d)const
 	y.f0 = y.f1 * volts;
       }
     }}
+    y *= c->m;
     trace3(d->long_label().c_str(), y.x, y.f0, y.f1);
     p->_gd = y.f1;
 }
@@ -582,10 +602,10 @@ DEV_DIODE::DEV_DIODE()
    _gd(NA),
    _isat(NA),
    _Cj(0),
-   _Yj(0)
+   _Yj(0),
+   _Rs(0)
 {
-  set_inode_count(0);
-  _n = _nodes + 0;
+  _n = _nodes + 1;
   attach_common(&Default_DIODE);
   ++_count;
 }
@@ -596,10 +616,11 @@ DEV_DIODE::DEV_DIODE(const DEV_DIODE& p)
    _gd(p._gd),
    _isat(p._isat),
    _Cj(0),
-   _Yj(0)
+   _Yj(0),
+   _Rs(0)
 {
-  _n = _nodes + 0;
-  for (int ii = -0; ii < 2; ++ii) {
+  _n = _nodes + 1;
+  for (int ii = -1; ii < 2; ++ii) {
     _n[ii] = p._n[ii];
   }
   ++_count;
@@ -612,7 +633,7 @@ void DEV_DIODE::parse(CS& cmd)
   assert(c);
 
   parse_Label(cmd);
-  parse_nodes(cmd,numnodes(),numnodes());
+  parse_nodes(cmd, max_nodes(), min_nodes());
   c->parse(cmd);
   attach_common(c);
 }
@@ -623,7 +644,7 @@ void DEV_DIODE::print(OMSTREAM& o, int)const
   assert(c);
 
   o << short_label();
-  printnodes(o,numnodes());
+  printnodes(o);
   c->print(o);
 }
 /*--------------------------------------------------------------------------*/
@@ -631,12 +652,17 @@ void DEV_DIODE::expand()
 {
   COMMON_DIODE* c = prechecked_cast<COMMON_DIODE*>(mutable_common());
   assert(c);
-  c->expand();
+  c->expand(this);
   const MODEL_DIODE* m = prechecked_cast<const MODEL_DIODE*>(c->model());
   assert(m);
-  const SDP_DIODE* b = prechecked_cast<const SDP_DIODE*>(c->sdp());
-  assert(b);
+  const SDP_DIODE* s = prechecked_cast<const SDP_DIODE*>(c->sdp());
+  assert(s);
 
+  {if (!OPT::rstray || c->rs_adjusted==0.) {
+    _n[n_ianode] = _n[n_anode];
+  }else{
+    _n[n_ianode].new_model_node();
+  }}
 
   {if (c->cj_adjusted == 0. && c->cjsw_adjusted == 0. && m->tt == 0.) {
     if (_Cj) {
@@ -649,7 +675,7 @@ void DEV_DIODE::expand()
       subckt().push_front(_Cj);
     }
     {{
-      node_t nodes[] = {_n[n_anode], _n[n_cathode]};
+      node_t nodes[] = {_n[n_ianode], _n[n_cathode]};
       _Cj->set_parameters("Cj", this, &Eval_Cj, 0., 0, 0, 2, nodes);
     }}
   }}
@@ -659,8 +685,23 @@ void DEV_DIODE::expand()
       subckt().push_front(_Yj);
     }
     {{
-      node_t nodes[] = {_n[n_anode], _n[n_cathode]};
+      node_t nodes[] = {_n[n_ianode], _n[n_cathode]};
       _Yj->set_parameters("Yj", this, &Eval_Yj, 0., 0, 0, 2, nodes);
+    }}
+  }}
+  {if (!OPT::rstray || c->rs_adjusted==0.) {
+    if (_Rs) {
+      subckt().erase(_Rs);
+      _Rs = NULL;
+    }
+  }else{
+    if (!_Rs) {
+      _Rs = new DEV_RESISTANCE;
+      subckt().push_front(_Rs);
+    }
+    {{
+      node_t nodes[] = {_n[n_anode], _n[n_ianode]};
+      _Rs->set_parameters("Rs", this, NULL, c->rs_adjusted/c->m, 0, 0, 2, nodes);
     }}
   }}
   assert(subckt().exists());
@@ -674,13 +715,19 @@ double DEV_DIODE::tr_probe_num(CS& cmd)const
   assert(c);
   const MODEL_DIODE* m = prechecked_cast<const MODEL_DIODE*>(c->model());
   assert(m);
-  const SDP_DIODE* b = prechecked_cast<const SDP_DIODE*>(c->sdp());
-  assert(b);
+  const SDP_DIODE* s = prechecked_cast<const SDP_DIODE*>(c->sdp());
+  assert(s);
 
   {if (cmd.pmatch("Vd")) {
     return  _n[n_anode].v0() - _n[n_cathode].v0();
   }else if (cmd.pmatch("Id")) {
     return  CARD::probe(_Yj,"I") + CARD::probe(_Cj,"I");
+  }else if (cmd.pmatch("VJ")) {
+    return  _n[n_ianode].v0() - _n[n_cathode].v0();
+  }else if (cmd.pmatch("VSR")) {
+    return  _n[n_anode].v0() - _n[n_ianode].v0();
+  }else if (cmd.pmatch("VRS")) {
+    return  _n[n_anode].v0() - _n[n_ianode].v0();
   }else if (cmd.pmatch("IJ")) {
     return  CARD::probe(_Yj,"I");
   }else if (cmd.pmatch("IC")) {
@@ -688,11 +735,11 @@ double DEV_DIODE::tr_probe_num(CS& cmd)const
   }else if (cmd.pmatch("CAPCUR")) {
     return  CARD::probe(_Cj,"I");
   }else if (cmd.pmatch("P")) {
-    return  CARD::probe(_Yj,"P") + CARD::probe(_Cj,"P");
+    return  CARD::probe(_Yj,"P") + CARD::probe(_Cj,"P") + CARD::probe(_Rs,"P");
   }else if (cmd.pmatch("PD")) {
-    return  CARD::probe(_Yj,"PD") + CARD::probe(_Cj,"PD");
+    return  CARD::probe(_Yj,"PD") + CARD::probe(_Cj,"PD") + CARD::probe(_Rs,"PD");
   }else if (cmd.pmatch("PS")) {
-    return  CARD::probe(_Yj,"PS") + CARD::probe(_Cj,"PS");
+    return  CARD::probe(_Yj,"PS") + CARD::probe(_Cj,"PS") + CARD::probe(_Rs,"PS");
   }else if (cmd.pmatch("PJ")) {
     return  CARD::probe(_Yj,"P");
   }else if (cmd.pmatch("PC")) {
@@ -704,13 +751,13 @@ double DEV_DIODE::tr_probe_num(CS& cmd)const
   }else if (cmd.pmatch("CHARGE")) {
     return  CARD::probe(_Cj,"Charge");
   }else if (cmd.pmatch("Req")) {
-    return  CARD::probe(_Yj,"R");
+    return  CARD::probe(_Yj,"R") + CARD::probe(_Rs,"R");
   }else if (cmd.pmatch("Geq")) {
-    return  CARD::probe(_Yj,"Y");
+    return  (( CARD::probe(_Yj,"R") + CARD::probe(_Rs,"R") ) != 0) ? (1./( CARD::probe(_Yj,"R") + CARD::probe(_Rs,"R") )) : CARD::probe(_Yj,"Y");
   }else if (cmd.pmatch("GD")) {
     return  CARD::probe(_Yj,"Y");
   }else if (cmd.pmatch("Y")) {
-    return  CARD::probe(_Yj,"Y") + CARD::probe(_Cj,"Y");
+    return  ( CARD::probe(_Rs,"R") != 0. && ( CARD::probe(_Yj,"Y") + CARD::probe(_Cj,"Y") ) != 0) ? 1./((1./( CARD::probe(_Yj,"Y") + CARD::probe(_Cj,"Y") )) + CARD::probe(_Rs,"R") ) : CARD::probe(_Yj,"Y") + CARD::probe(_Cj,"Y");
   }else if (cmd.pmatch("Z")) {
     return  port_impedance( _n[n_anode] , _n[n_cathode] ,lu,tr_probe_num_str("Y"));
   }else if (cmd.pmatch("ZRAW")) {

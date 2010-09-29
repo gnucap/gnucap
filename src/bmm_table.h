@@ -1,8 +1,8 @@
-/*$Id: bmm_table.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: bmm_table.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
  * 02111-1307, USA.
  *------------------------------------------------------------------
  * behavioral modeling
- * Spice3 compatible "semiconductor resistor and capacitor""
  */
 #include "e_model.h" 
 #include "bm.h"
@@ -39,7 +38,7 @@ private: // override virtual
   bool ac_too()const		{untested();return false;}
   void parse(CS&);
   void print(OMSTREAM&)const;
-  void expand();
+  void expand(const COMPONENT*);
   void tr_eval(ELEMENT*)const;
 };
 /*--------------------------------------------------------------------------*/

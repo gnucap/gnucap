@@ -1,8 +1,8 @@
-/*$Id: l_ftos.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: l_ftos.cc,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@
 #include "l_lib.h"
 #include "constant.h"
 /*--------------------------------------------------------------------------*/
-static	char*	utos(unsigned,char*,int);
-static	char*	itos(int,char*,int,int);
+	char*	utos(unsigned,char*,int);
+	char*	itos(int,char*,int,int);
 	char*	ftos(double,int,int,int);
 /*--------------------------------------------------------------------------*/
 const int POOLSIZE = 100;
@@ -49,6 +49,7 @@ static double ftos_floor = 1e-99;
 /*--------------------------------------------------------------------------*/
 char* utos(unsigned num, char *str, int len)
 {
+  assert(str);
   if (len==0) {
     return str;				/* reject zero length  */
   }
@@ -74,8 +75,16 @@ char* utos(unsigned num, char *str, int len)
   return str;
 }
 /*--------------------------------------------------------------------------*/
-static char* itos(int num, char *str, int len, int fmt)
+std::string to_string(unsigned n)
 {
+  char s[100];
+  sprintf(s, "%u", n);
+  return s;
+}
+/*--------------------------------------------------------------------------*/
+char* itos(int num, char *str, int len, int fmt)
+{
+  assert(str);
   char sign;
   {if (num < 0) {
     sign = '-';

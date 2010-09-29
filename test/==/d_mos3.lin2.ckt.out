@@ -2,7 +2,7 @@ nmos n gate, linear, lambda not specified, short channel
 cmosn: rsh - rs - rd conflict: using rsh
 cmosn: is - js conflict
 #           v(1)       v(2)       v(3)       v(4)       iter(0)   
- 300.15     3.2367     0.0099729  0.01      -1.2349     6.        
+ 300.15     3.2367     0.0099729  0.01      -1.2349     5.        
 #           i(Vgs)     i(Vds)     i(Vbs)     ps(Vgs)    ps(Vds)    ps(Vbs)   
  300.15     0.        -27.101u    0.         0.         271.01n    0.        
 #           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 

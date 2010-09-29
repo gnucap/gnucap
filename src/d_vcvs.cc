@@ -1,8 +1,8 @@
-/*$Id: d_vcvs.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: d_vcvs.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ void DEV_VCVS::precalc()
 void DEV_VCVS::dc_begin()
 {
   _loss1 = _loss0 = 1./OPT::shortckt;
-  if (!has_tr_eval()){
+  if (!using_tr_eval()){
     assert(_y0.f0 == LINEAR);
     assert(_y0.f1 == value());
     _m0.c1 = -_loss0 * _y0.f1;
@@ -51,7 +51,7 @@ void DEV_VCVS::dc_begin()
 /*--------------------------------------------------------------------------*/
 bool DEV_VCVS::do_tr()
 {
-  {if (has_tr_eval()){
+  {if (using_tr_eval()){
     _m0.x = tr_involts_limited();
     _y0.x = _m0.x;
     tr_eval();

@@ -1,8 +1,8 @@
-/*$Id: io_error.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: io_error.cc,v 22.13 2002/08/01 16:27:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ extern JMP_BUF env;
 void error(int badness, const char* fmt, ...)
 {
   if (badness >= OPT::picky) {
-    char buffer[BIGBUFLEN];
+    char buffer[BIGBUFLEN] = "";
     va_list arg_ptr;
     va_start(arg_ptr,fmt);
     vsprintf(buffer,fmt,arg_ptr);

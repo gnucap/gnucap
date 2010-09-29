@@ -1,8 +1,8 @@
-/*$Id: c__cmd.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: c__cmd.cc,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,11 @@ void CMD::cmdproc(const std::string& cs)
   
   timecheck.stop().reset().start();
 
+  cmd.ematch(ANTI_COMMENT);
+  while (cmd.ematch(I_PROMPT)) {
+    /* skip any number of these */
+  }
+
        if (cmd.pmatch("Ac"))	   ac(cmd);
   else if (cmd.pmatch("ALArm"))    alarm(cmd);
   else if (cmd.pmatch("ALTer"))    alter(cmd);
@@ -65,7 +70,6 @@ void CMD::cmdproc(const std::string& cs)
   else if (cmd.pmatch("GET"))	   get(cmd);
   else if (cmd.pmatch("IC"))	   ic(cmd);
   else if (cmd.pmatch("INClude"))  include(cmd);
-  else if (cmd.pmatch("INSert"))   insert(cmd);
   else if (cmd.pmatch("List"))	   do_list(cmd);
   else if (cmd.pmatch("LOg"))	   logger(cmd);
   else if (cmd.pmatch("MACro"))	   subckt(cmd);
@@ -91,7 +95,7 @@ void CMD::cmdproc(const std::string& cs)
   else if (cmd.pmatch("STatus"))   status(cmd);
   else if (cmd.pmatch("SUbckt"))   subckt(cmd);
   else if (cmd.pmatch("SWeep"))    sweep(cmd);
-  else if (cmd.pmatch("TEmp"))	   temp(cmd);
+  else if (cmd.pmatch("TEmperature")) temp(cmd);
   else if (cmd.pmatch("TF"))	   tf(cmd);
   else if (cmd.pmatch("TItle"))    title(cmd);
   else if (cmd.pmatch("TRansient"))tr(cmd);

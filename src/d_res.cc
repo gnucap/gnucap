@@ -1,8 +1,8 @@
-/*$Id: d_res.cc,v 20.9 2001/10/01 02:53:03 al Exp $ -*- C++ -*-
+/*$Id: d_res.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ void DEV_RESISTANCE::precalc()
 /*--------------------------------------------------------------------------*/
 void DEV_RESISTANCE::dc_begin()
 {
-  if (!has_tr_eval()){
+  if (!using_tr_eval()){
     assert(_y0.f0 == LINEAR);
     assert(_y0.f1 == value() || _y0.f1 == OPT::shortckt);
     assert(conchk(_m0.c1, 1./_y0.f1));
@@ -57,7 +57,7 @@ void DEV_RESISTANCE::dc_begin()
 /*--------------------------------------------------------------------------*/
 bool DEV_RESISTANCE::do_tr()
 {
-  {if (has_tr_eval()){
+  {if (using_tr_eval()){
     _m0.x = tr_involts_limited();
     _y0.x = _m0.c0 + _m0.c1 * _m0.x;
     tr_eval();
@@ -93,7 +93,7 @@ void DEV_RESISTANCE::do_ac()
     _acg = 1. / _ev;
   }else{
     assert(_ev == _y0.f1);
-    assert(has_tr_eval() || _ev == value());
+    assert(has_tr_eval() || _ev == value() || _ev == OPT::shortckt);
   }}
   ac_load();
 }

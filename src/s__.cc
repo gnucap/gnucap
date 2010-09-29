@@ -1,8 +1,8 @@
-/*$Id: s__.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: s__.cc,v 22.5 2002/07/07 07:26:31 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ COMPLEX*SIM::ac = NULL;
 double	SIM::genout = 0.;
 std::deque<CARD*> SIM::evalq1;
 std::deque<CARD*> SIM::evalq2;
-std::deque<CARD*> SIM::evalq_last;
 std::vector<CARD*> SIM::loadq;
 std::vector<CARD*> SIM::acceptq;
 std::deque<CARD*>* SIM::evalq    = &SIM::evalq1;

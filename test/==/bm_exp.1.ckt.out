@@ -402,6 +402,6 @@
  19.95n     0.1141    
  20.n       0.11296   
 .option out=170 
-V1  1  0  EXP  iv= 0.  pv= 1.  td1= 1.n  tau1= 5.n  td2= 10.n  tau2= 5.n  period= Inf
+V1  1  0  EXP  iv= 0.  pv= 1.  td1= 1.n  tau1= 5.n  td2= 10.n  tau2= 5.n
 .print tran v 1 
 .tran 0 20n .05n 

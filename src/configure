@@ -2,5 +2,11 @@
 ln -s ../modelgen/O/modelgen .
 mkdir O
 (cd O; ln -s ../../modelgen/O/modelgen modelgen)
-cat Make1 Make2.g++ Make3 Make.depend >O/Makefile
+if [ -f /usr/lib/libreadline.a -a -f /usr/lib/libtermcap.a ] ; then
+    echo "using readline"
+    cat Make1 Make2.g++ Make3 Make.depend >O/Makefile
+else
+    echo "either libtermcap or libreadline is missing - not using readline"
+    cat Make1 Make2.g++ Make3 Make.depend |grep -vi readline >O/Makefile
+fi
 exit 0

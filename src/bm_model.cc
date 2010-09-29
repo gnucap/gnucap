@@ -1,8 +1,8 @@
-/*$Id: bm_model.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: bm_model.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,21 +58,21 @@ void EVAL_BM_MODEL::print(OMSTREAM& where)const
   }}
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_MODEL::expand()
+void EVAL_BM_MODEL::expand(const COMPONENT* d)
 {
-  const MODEL_CARD* m = attach_model();
+  const MODEL_CARD* m = attach_model(d);
   if (!m) {
-    untested();
-    error(bERROR, "can't find model " + modelname());
+    unreachable();
+    error(bERROR, d->long_label() + ": can't find model: " + modelname());
   }
   EVAL_BM_ACTION_BASE* c = dynamic_cast<EVAL_BM_ACTION_BASE*>(m->new_common());
   if (!c) {
-    error(bERROR, "model type mismatch");
+    error(bERROR, d->long_label() + ": model type mismatch");
   }
   c->set_modelname(modelname());
   CS args(_arglist);
   c->parse(args);
-  c->expand();
+  c->expand(d);
   attach_common(c, &_func);
 }
 /*--------------------------------------------------------------------------*/

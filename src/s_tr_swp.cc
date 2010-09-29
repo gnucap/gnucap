@@ -1,8 +1,8 @@
-/*$Id: s_tr_swp.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: s_tr_swp.cc,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,11 +72,16 @@ void TRANSIENT::sweep(void)
   phase = pINIT_DC;
   genout = gen();
   IO::suppresserrors = trace < tVERBOSE;
-  bool converged = solve(OPT::itl[OPT::DCBIAS],trace);
-  if (!converged) {
-    untested();
-    error(bWARNING, "did not converge\n");
-  }
+  {if (uic_now()) {
+    zero_voltages();
+    CARD_LIST::card_list.do_tr();    //evaluate_models
+  }else{
+    bool converged = solve(OPT::itl[OPT::DCBIAS],trace);
+    if (!converged) {
+      untested();
+      error(bWARNING, "did not converge\n");
+    }
+  }}
   review(); 
   accept();
 
@@ -92,7 +97,7 @@ void TRANSIENT::sweep(void)
     phase = pTRAN;
     genout = gen();
     IO::suppresserrors = trace < tVERBOSE;
-    converged = solve(OPT::itl[OPT::TRHIGH],trace);
+    bool converged = solve(OPT::itl[OPT::TRHIGH],trace);
     review();
     
     {if (approxtime > time0) {
@@ -103,13 +108,21 @@ void TRANSIENT::sweep(void)
     
     {if (trace >= tREJECTED) {
       printnow = true;
+    }else if (!converged && OPT::quitconvfail) {
+      printnow = true;
     }else if (!converged  ||  approxtime <= time0) {
-      printnow = false;
+      if (printnow) {
+	--stepno;
+	printnow = false;
+      }
     }} // else (usual case) use the value set in next
     
     if (printnow) {
       keep();
       outdata(time0);
+    }
+    if (!converged && OPT::quitconvfail) {
+      error(bERROR, "convergence failure, giving up\n");
     }
   }
 }
@@ -231,6 +244,7 @@ bool TRANSIENT::next(void)
   
   time0 = newtime;
   ++STATUS::control[cSTEPS];
+  ++steps_total_;
   STATUS::review.stop();
   return (time0 <= tstop + dtmin);
 }
@@ -248,6 +262,7 @@ void TRANSIENT::accept(void)
     acceptq.clear();
     CARD_LIST::card_list.tr_accept();
   }}
+  ++steps_accepted_;
   STATUS::accept.stop();
 }
 /*--------------------------------------------------------------------------*/
@@ -255,6 +270,7 @@ void TRANSIENT::reject(void)
 {
   STATUS::accept.start();
   acceptq.clear();
+  ++steps_rejected_;
   STATUS::accept.stop();
 }
 /*--------------------------------------------------------------------------*/

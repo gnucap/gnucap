@@ -1,9 +1,9 @@
-%$Id: architecture.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+%$Id: architecture.tex,v 21.13 2002/03/25 05:37:03 al Exp $
 % man Tech architecture .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
 %
-% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+% This file is part of "Gnucap", the Gnu Circuit Analysis Package
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 %------------------------------------------------------------------------
 \subsection{File organization}
 
-GnuCap source files are organized into groups by the name prefix as follows:
+Gnucap source files are organized into groups by the name prefix as follows:
 
 \begin{description}
 \item[ap] ``Argparse''.  Generic parser and lexical analysis library.
@@ -37,15 +37,15 @@ GnuCap source files are organized into groups by the name prefix as follows:
 \item[m] Math library.
 \item[plot] Obsolete plotting that should be replaced.
 \item[s] Simulation engine.
-\item[u] Utility functions and classes.  GnuCap Specific.
+\item[u] Utility functions and classes.  Gnucap Specific.
 \end{description}
 
-The files {\tt ap\_\*}, {\tt io\_\*}, {\tt l\_\*}, {\tt m\_\*} are not GnuCap
-specific.  Although they were created for GnuCap, they are public domain
+The files {\tt ap\_\*}, {\tt io\_\*}, {\tt l\_\*}, {\tt m\_\*} are not Gnucap
+specific.  Although they were created for Gnucap, they are public domain
 and may be used by anyone for any purpose.
 
 The remaining files {\tt bm\_\*}, {\tt c\_\*}, {\tt d\_\*}, {\tt e\_\*},
-{\tt s\_\*}, {\tt u\_\*} are GnuCap specific, and reuse is subject to the
+{\tt s\_\*}, {\tt u\_\*} are Gnucap specific, and reuse is subject to the
 Gnu Public License.
 
 Some of the {\tt d\_\*} files are automatically generated during
@@ -63,7 +63,7 @@ These files are the source that is used to generate the corresponding
 %------------------------------------------------------------------------
 \subsection{Building, Makefiles}
 
-GnuCap uses a 4 part Makefile, designed for simultaneous builds on
+Gnucap uses a 4 part Makefile, designed for simultaneous builds on
 several systems.  A true Makefile is built by selecting and catenating
 the four pieces.  A master Makefile switches to a subdirectory and
 builds a specialized Makefile there.

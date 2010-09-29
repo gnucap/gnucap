@@ -1,8 +1,8 @@
-/*$Id: c_comand.h,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: c_comand.h,v 22.7 2002/07/23 04:23:34 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,6 @@ private:
   static  void	help(CS&);
   static  void	ic(CS&);
   static  void	include(CS&);
-  static  void	insert(CS&);
   static  void	do_list(CS&);
   static  void	logger(CS&);
   static  void	mark(CS&);

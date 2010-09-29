@@ -1,8 +1,8 @@
-/*$Id: c_getckt.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: c_getckt.cc,v 22.4 2002/05/27 00:00:47 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include "bmm_semi.h"
 #include "bmm_table.h"
 #include "d_admit.h"
+#include "d_bjt.h"
 #include "d_cap.h"
 #include "d_cccs.h"
 #include "d_ccvs.h"
@@ -84,7 +85,7 @@ void CMD::build(CS& cmd)
   CARD* brh;
   do{
     char buffer[BIGBUFLEN];
-    getcmd(">",buffer,BIGBUFLEN);
+    getcmd(CKT_PROMPT, buffer, BIGBUFLEN);
     CS cs(buffer);
     brh = parsebranch(cs, true);
   }while (exists(brh));
@@ -239,8 +240,11 @@ static CARD *parsebranch(CS& cmd, bool alwaysdupcheck)
 static CARD *cparse(CS& cmd)
 {
   cmd.skipbl();
-  if (cmd.is_digit())
-    cmd.ctoi();	/* ignore line numbers */
+  cmd.is_digit() && cmd.ctoi();	/* ignore line numbers */
+  cmd.ematch(ANTI_COMMENT); /* mark so spice ignores but gnucap reads */
+  while (cmd.ematch(CKT_PROMPT)) {
+    /* skip any number of these */
+  }
   
   CARD* brh = NULL;
   char id_letter = toupper(cmd.peek());
@@ -268,7 +272,7 @@ static CARD *cparse(CS& cmd)
     case 'N':	cmd.warn(bWARNING, "illegal type"); break;
     case 'O':	cmd.warn(bWARNING, "illegal type"); break;
     case 'P':	cmd.warn(bWARNING, "illegal type"); break;
-    case 'Q':	cmd.warn(bWARNING, "illegal type"); break;
+    case 'Q':	brh = new DEV_BJT;		    break;
     case 'R':	brh = new DEV_RESISTANCE;	    break;
     case 'S':	brh = new DEV_VSWITCH;		    break;
     case 'T':	brh = new DEV_TRANSLINE;	    break;
@@ -317,6 +321,7 @@ static CARD* do_dot(CS& cmd)
   else if (cmd.pmatch("MACro"))		 return new MODEL_SUBCKT;
   else if (cmd.pmatch("SUBckt"))	 return new MODEL_SUBCKT;
   else if (cmd.pmatch("ADMittance"))	 return new DEV_ADMITTANCE;
+  else if (cmd.pmatch("BJT"))		 return new DEV_BJT;
   else if (cmd.pmatch("CAPacitor"))	 return new DEV_CAPACITANCE;
   else if (cmd.pmatch("CCCs"))  	 return new DEV_CCCS;
   else if (cmd.pmatch("CCVs"))  	 return new DEV_CCVS;
@@ -346,8 +351,8 @@ static CARD* do_model(CS& cmd)
 {
   cmd.skiparg(); // skip name
   if      (cmd.pmatch("D"    )) return new MODEL_DIODE;
-  else if (cmd.pmatch("NPN"  )) cmd.warn(bWARNING, "not implemented");
-  else if (cmd.pmatch("PNP"  )) cmd.warn(bWARNING, "not implemented");
+  else if (cmd.pmatch("NPN"  )) return new MODEL_BJT;
+  else if (cmd.pmatch("PNP"  )) return new MODEL_BJT;
   else if (cmd.pmatch("NJF"  )) cmd.warn(bWARNING, "not implemented");
   else if (cmd.pmatch("PJF"  )) cmd.warn(bWARNING, "not implemented");
   else if (cmd.pmatch("NMOS" )) return do_mos_model(cmd);

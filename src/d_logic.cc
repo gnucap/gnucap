@@ -1,8 +1,8 @@
-/*$Id: d_logic.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: d_logic.cc,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ static LOGIC_NONE Default_LOGIC(CC_STATIC);
 /*--------------------------------------------------------------------------*/
 DEV_LOGIC::DEV_LOGIC()
   :ELEMENT(),
+   _num_nodes(0),
    _lastchangenode(0),
    _quality(qGOOD),
    _failuremode("ok"),
@@ -48,6 +49,7 @@ DEV_LOGIC::DEV_LOGIC()
 /*--------------------------------------------------------------------------*/
 DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
   :ELEMENT(p),
+   _num_nodes(p._num_nodes),
    _lastchangenode(0),
    _quality(qGOOD),
    _failuremode("ok"),
@@ -55,7 +57,8 @@ DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
    _gatemode(moUNKNOWN)   
 {
   untested();
-  for (int ii = 0;  ii < PORTS_PER_GATE;  ++ii) {
+  assert(max_nodes() == PORTS_PER_GATE);
+  for (int ii = 0;  ii < max_nodes();  ++ii) {
     nodes[ii] = p.nodes[ii];
   }
   _n = nodes;
@@ -65,13 +68,12 @@ DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
 void DEV_LOGIC::parse(CS& cmd)
 {
   parse_Label(cmd);
-  int incount = parse_nodes(cmd, PORTS_PER_GATE, BEGIN_IN);
-  if (incount <= BEGIN_IN) {
-    untested();
-    incount = BEGIN_IN +1;
+  _num_nodes = parse_nodes(cmd, max_nodes(), BEGIN_IN);
+  if (_num_nodes <= BEGIN_IN) {
+    _num_nodes = BEGIN_IN +1;
     cmd.warn(bDANGER, "need more nodes");
   }
-  incount -= BEGIN_IN;
+  int incount = net_nodes() - BEGIN_IN;
   std::string modelname = cmd.ctos(TOKENTERM);
 
   COMMON_LOGIC* c = 0;
@@ -94,7 +96,7 @@ void DEV_LOGIC::print(OMSTREAM& where, int)const
   const COMMON_LOGIC* c = prechecked_cast<const COMMON_LOGIC*>(common());
   assert(c);
   where << short_label();
-  printnodes(where, PORTS_PER_GATE);
+  printnodes(where);
   where << ' ' << c->modelname() << ' ' << c->name() << '\n'; 
 }
 /*--------------------------------------------------------------------------*/
@@ -108,9 +110,7 @@ void DEV_LOGIC::expand()
     error(bERROR, "model "+c->modelname()+" is not a logic family (LOGIC)\n");
   }
 
-  char s_incount[BUFLEN];
-  sprintf(s_incount, "%u", c->incount);
-  expandsubckt(c->modelname() + c->name() + s_incount);
+  expandsubckt(c->modelname() + c->name() + to_string(c->incount));
 
   {if (subckt().empty()) {
     _gatemode = moDIGITAL;
@@ -128,6 +128,12 @@ void DEV_LOGIC::precalc()
   subckt().precalc();
 }
 /*--------------------------------------------------------------------------*/
+void DEV_LOGIC::tr_alloc_matrix()
+{
+  subckt().tr_alloc_matrix();
+  tr_alloc_matrix_passive();
+}
+/*--------------------------------------------------------------------------*/
 void DEV_LOGIC::dc_begin()
 {
   {if (subckt().empty()) {
@@ -135,7 +141,7 @@ void DEV_LOGIC::dc_begin()
   }else{
     _gatemode = (OPT::mode==moMIXED) ? moANALOG : OPT::mode;
   }}
-  NODE* outnode = &(nstat[_n[OUTNODE].m]);
+  NODE* outnode = &(nstat[_n[OUTNODE].m_()]);
   outnode->set_mode(_gatemode);
   _oldgatemode = _gatemode;
   subckt().dc_begin();
@@ -149,7 +155,7 @@ void DEV_LOGIC::tr_begin()
   }else{
     _gatemode = (OPT::mode==moMIXED) ? moANALOG : OPT::mode;
   }}
-  NODE* outnode = &(nstat[_n[OUTNODE].m]);
+  NODE* outnode = &(nstat[_n[OUTNODE].m_()]);
   outnode->set_mode(_gatemode);
   _oldgatemode = _gatemode;
   subckt().tr_begin();
@@ -171,7 +177,7 @@ void DEV_LOGIC::dc_advance()
 {
   if (_gatemode != _oldgatemode) {
     tr_unload();
-    NODE* outnode = &(nstat[_n[OUTNODE].m]);
+    NODE* outnode = &(nstat[_n[OUTNODE].m_()]);
     outnode->set_mode(_gatemode);
     _oldgatemode = _gatemode;
   }
@@ -188,7 +194,7 @@ void DEV_LOGIC::dc_advance()
  */
 void DEV_LOGIC::tr_advance()
 {
-  NODE* outnode = &(nstat[_n[OUTNODE].m]);
+  NODE* outnode = &(nstat[_n[OUTNODE].m_()]);
   if (_gatemode != _oldgatemode) {
     tr_unload();
     outnode->set_mode(_gatemode);
@@ -240,7 +246,7 @@ void DEV_LOGIC::tr_queue_eval()
 bool DEV_LOGIC::tr_eval_digital()
 {
   assert(_gatemode == moDIGITAL);
-  NODE* outnode = &(nstat[_n[OUTNODE].m]);
+  NODE* outnode = &(nstat[_n[OUTNODE].m_()]);
   
   switch (SIM::phase) {
   case SIM::pDC_SWEEP:	untested(); tr_accept();break;
@@ -313,6 +319,7 @@ void DEV_LOGIC::tr_accept()
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   /* Check quality and get node info to local array. */
   /* side effect --- generate digital values for analog nodes */
+  assert(PORTS_PER_GATE == max_nodes());
   NODE* ns[PORTS_PER_GATE];
   {
     _n[OUTNODE]->to_logic(m);
@@ -324,8 +331,7 @@ void DEV_LOGIC::tr_accept()
     trace0(long_label().c_str());
     trace2(ns[OUTNODE]->failure_mode(), OUTNODE, ns[OUTNODE]->quality());
     
-    for (int ii = BEGIN_IN;  ii < port_count();  ++ii) {
-      assert(ii < PORTS_PER_GATE);
+    for (int ii = BEGIN_IN;  ii < net_nodes();  ++ii) {
       _n[ii]->to_logic(m);
       ns[ii] = &*(_n[ii]);
       if (ns[ii]->quality() < _quality) {
@@ -408,6 +414,11 @@ void DEV_LOGIC::tr_unload()
   tr_unload_passive();
 }
 /*--------------------------------------------------------------------------*/
+void DEV_LOGIC::ac_alloc_matrix()
+{
+  subckt().ac_alloc_matrix();
+}
+/*--------------------------------------------------------------------------*/
 void DEV_LOGIC::ac_begin()
 {
   untested();
@@ -421,13 +432,13 @@ void DEV_LOGIC::ac_begin()
 double DEV_LOGIC::tr_probe_num(CS& what)const
 {
   untested();
-  return nstat[_n[OUTNODE].m].tr_probe_num(what);
+  return nstat[_n[OUTNODE].m_()].tr_probe_num(what);
 }
 /*--------------------------------------------------------------------------*/
 XPROBE DEV_LOGIC::ac_probe_ext(CS& what)const
 {
   untested();
-  return nstat[_n[OUTNODE].m].ac_probe_ext(what);
+  return nstat[_n[OUTNODE].m_()].ac_probe_ext(what);
 }
 /*--------------------------------------------------------------------------*/
 bool COMMON_LOGIC::operator==(const COMMON_COMPONENT& x)const

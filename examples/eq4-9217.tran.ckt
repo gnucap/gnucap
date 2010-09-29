@@ -103,8 +103,8 @@ C27    34  35  150.p
 C28    36  37  150.p
 E2     34   0  32  33  10.K
 E3     37   0  35  36  10.K
-.option acct
 .ends eq
+*>.option acct showall
 .print tran v(5)
-.tran .00001 .001 0 
+.tran .00001 .001 0
 .end

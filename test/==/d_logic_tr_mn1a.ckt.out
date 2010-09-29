@@ -3,7 +3,7 @@
  300.15     0.         0.01       5.         3.01       9.         0.        
 #Time       v(1)       l(1)       v(2)       l(2)       iter(0)    control(0)
  0.         2.5        1.41       2.4995     1.41       17.        1.        
- 500.n      2.5079     1.41       2.2469     2.41       16.        5.        
+ 500.n      2.5079     1.41       2.2469     2.41       10.        5.        
  1.u        2.5157     1.41       2.134      2.41       6.         5.        
  2.u        2.5314     1.41       1.9806     0.31       6.         8.        
  4.u        2.5628     1.41       1.7763     0.31       6.         8.        
@@ -31,7 +31,7 @@
  900.u      1.0305     0.21       4.8642     3.21       6.         1.        
  950.u      1.7275     0.21       4.5075     3.21       6.         1.        
  0.001      2.5        1.21       2.5677     2.21       11.        1.        
- 0.00105    3.2725     3.11       0.49394    0.11       10.        1.        
+ 0.00105    3.2725     3.11       0.49394    0.11       7.         1.        
  0.0011     3.9695     3.11       0.13655    0.11       6.         1.        
  0.00115    4.5225     3.11       0.025518   0.11       6.         1.        
  0.0012     4.8776     3.11       0.0016644  0.11       6.         1.        
@@ -227,10 +227,11 @@
  0.0099     1.0305     0.01       5.         3.         3.         1.        
  0.00995    1.7275     0.01       5.         3.         3.         1.        
  0.01       2.5        1.01       5.         3.         3.         1.        
-GnuCap   System status
-iterations: op=9, dc=0, tran=814, fourier=0, total=1048
+Gnucap   System status
+iterations: op=9, dc=0, tran=805, fourier=0, total=1039
+transient timesteps: accepted=225, rejected=0, total=225
 nodes: user=8, subckt=0, model=0, total=8
-devices: diodes=2, mosfets=4, gates=1, subckts=0
-commons: diodes=4, mosfets=2, gates=1, subckts=0
-models:  diodes=2, mosfets=2, gates=1, subckts=1
-density=53.1%
+devices: diodes=2, bjts=0, mosfets=4, gates=1, subckts=0
+commons: diodes=4, bjts=0, mosfets=2, gates=1, subckts=0
+models:  diodes=2, bjts=0, mosfets=2, gates=1, subckts=1
+dctran density=53.1%, ac density=53.1%

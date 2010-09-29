@@ -1,8 +1,8 @@
-/*$Id: e_cardlist.cc,v 20.10 2001/10/05 01:35:36 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.cc,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,12 +29,12 @@
 /*--------------------------------------------------------------------------*/
 CARD_LIST::iterator CARD_LIST::find(const std::string& short_name)
 {
-  return find_ptr(begin(), end(), short_name);
+  return notstd::find_ptr(begin(), end(), short_name);
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::const_iterator CARD_LIST::find(const std::string& short_name)const
 {
-  return find_ptr(begin(), end(), short_name);
+  return notstd::find_ptr(begin(), end(), short_name);
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::erase(iterator ci)
@@ -93,6 +93,17 @@ CARD_LIST& CARD_LIST::precalc()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
     (**ci).precalc();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+/* tr_alloc_matrix: allocate solution matrix
+ * also sets some flags for mixed-mode
+ */
+CARD_LIST& CARD_LIST::tr_alloc_matrix()
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    (**ci).tr_alloc_matrix();
   }
   return *this;
 }
@@ -234,6 +245,16 @@ CARD_LIST& CARD_LIST::tr_unload()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
     (**ci).tr_unload();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+/* ac_alloc_matrix: allocate solution matrix
+ */
+CARD_LIST& CARD_LIST::ac_alloc_matrix()
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    (**ci).ac_alloc_matrix();
   }
   return *this;
 }

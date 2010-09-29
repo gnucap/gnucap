@@ -1,8 +1,8 @@
-/*$Id: mg_in.cc,v 20.14 2001/10/19 06:21:15 al Exp $ -*- C++ -*-
+/*$Id: mg_in.cc,v 22.21 2002/10/06 07:21:42 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 static C_Comment   dummy_c_comment;
 static Cxx_Comment dummy_cxx_comment;
 /*--------------------------------------------------------------------------*/
+#if 0
 template <class T, char BEGIN, char END>
 void List<T, BEGIN, END>::parse(CS& file)
 {
@@ -34,18 +35,20 @@ void List<T, BEGIN, END>::parse(CS& file)
   {for (;;) {
     get(file, "/*$$", &dummy_c_comment);
     get(file, "//$$", &dummy_cxx_comment);
-    paren -= file.skip1b(END);
-    if (paren == 0) {
-      break;
+    if (file.stuck(&here)) {
+      paren -= file.skip1b(END);
+      if (paren == 0) {
+	break;
+      }
+      T* p = new T(file);
+      {if (!file.stuck(&here)) {
+	_list.push_back(p);
+      }else {
+	delete p;
+	file.warn(0, "not valid here");
+	break;
+      }}
     }
-    T* p = new T(file);
-    {if (!file.stuck(&here)) {
-      _list.push_back(p);
-    }else {
-      delete p;
-      file.warn(0, "not valid here");
-      break;
-    }}
   }}
 }
 /*--------------------------------------------------------------------------*/
@@ -61,6 +64,7 @@ void Collection<T>::parse(CS& file)
     file.warn(0, "what's this??");
   }}
 }
+#endif
 /*--------------------------------------------------------------------------*/
 void Parameter::parse(CS& file)
 {
@@ -134,6 +138,7 @@ void Parameter_Block::parse(CS& file)
     get(file, "RAW_parameters",		&_raw);
     get(file, "CALCulated_parameters",	&_calculated);
     get(file, "CODE_PRE",		&_code_pre);
+    get(file, "CODE_MID",		&_code_mid);
     get(file, "CODE_POST",		&_code_post);
     get(file, "/*$$",			&dummy_c_comment);
     get(file, "//$$",			&dummy_cxx_comment);
@@ -166,7 +171,7 @@ void Port::parse(CS& file)
 {
   file >> _name;
   int here = file.cursor();
-  for (;;) {
+  {for (;;) {
     get(file, "SHORT_TO",	&_short_to);
     get(file, "SHORT_IF",	&_short_if);
     {if (file.skip1(";,")) {
@@ -177,7 +182,7 @@ void Port::parse(CS& file)
     }else if (file.stuck(&here)) {
       break;
     }}
-  }
+  }}
 }
 /*--------------------------------------------------------------------------*/
 void Element::parse(CS& file)
@@ -234,9 +239,9 @@ void Circuit::parse(CS& file)
       file.warn(0, "premature EOF (Circuit)");
       break;
     }}
-    file >> _element_list;
-    get(file, "/*$$",			&dummy_c_comment);
-    get(file, "//$$",			&dummy_cxx_comment);
+    get(file, "/*$$", &dummy_c_comment)
+      || get(file, "//$$", &dummy_cxx_comment)
+      || (file >> _element_list);
     if (file.stuck(&here)) {
       file.warn(0, "bad Circuit");
       break;
@@ -259,6 +264,7 @@ void Model::parse(CS& file)
     get(file, "SIZE_dependent",		&_size_dependent);
     get(file, "TEMPerature_dependent",	&_temperature);
     get(file, "TR_Eval",		&_tr_eval);
+    get(file, "VALidate",		&_validate);
     get(file, "/*$$",			&dummy_c_comment);
     get(file, "//$$",			&dummy_cxx_comment);
     paren -= file.skip1b("}");

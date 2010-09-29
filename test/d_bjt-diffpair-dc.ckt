@@ -1,0 +1,79 @@
+difpair ckt - simple differential pair
+* modified from Spice-3 examples
+
+*>.opt rstray cstray
+*.tf v(5) vin
+*.dc vin -0.25 0.25 0.005
+*.ac dec 10 1 10ghz
+
+vin 1 0 sin(0 0.1 5meg) ac 1 dc 0
+vcc 8 0 12
+vee 9 0 -12
+q1 4 2 6 0 qnl
+q2 5 3 6 0 qnl
+rs1 1 2 1k
+rs2 3 0 1k
+rc1 4 8 10k
+rc2 5 8 10k
+q3 6 7 9 0 qnl
+q4 7 7 9 0 qnl
+rbias 7 8 20k
+*.model qnl npn(bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf cjc=2pf
+*+   va=50)
+.model qnl npn(bf=80 rb=100 va=50 ccs=2pf tf=0.3ns tr=6ns cje=3pf cjc=2pf)
+
+*>.print op v(nodes)
+*>.op
+*>.print op vb(q*)
+*>.op
+*>.print op vbi(q*)
+*>.op
+*>.print op i(v*)
+*>.op
+*>.print op ic(q*)
+*>.op
+*>.print op ice(q*)
+*>.op
+*>.print op ib(q*)
+*>.op
+*>.print op ipi(q*)
+*>.op
+*>.print op imu(q*)
+*>.op
+*>.print op ie(q*)
+*>.op
+*>.print op vbe(q*)
+*>.op
+*>.print op vbei(q*)
+*>.op
+*>.print op vbc(q*)
+*>.op
+*>.print op vbci(q*)
+*>.op
+*>.print op gm(q*)
+*>.op
+*>.print op gpi(q*)
+*>.op
+*>.print op gmu(q*)
+*>.op
+*>.print op gx(q*)
+*>.op
+*>.print op go(q*)
+*>.op
+*>.print op cpi(q*)
+*>.op
+*>.print op cmu(q*)
+*>.op
+*>.print op cbx(q*)
+*>.op
+*>.print op ccs(q*)
+*>.op
+*>.print op i(r*)
+*>.op
+*>.print op p(r*)
+*>.op
+*>.print op i(v*)
+*>.op
+*>.print op p(v*)
+.op
+.end

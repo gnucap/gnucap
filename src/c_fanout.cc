@@ -1,8 +1,8 @@
-/*$Id: c_fanout.cc,v 20.5 2001/09/17 15:43:17 al Exp $ -*- C++ -*-
+/*$Id: c_fanout.cc,v 22.7 2002/07/23 04:23:34 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
- * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 //	void	CMD::fanout(CS&);
-static	void	checklist(const CARD_LIST&,int,OMSTREAM);
+static	void	checklist(const CARD_LIST&, const node_t&, OMSTREAM);
 /*--------------------------------------------------------------------------*/
 void CMD::fanout(CS& cmd)
 {
@@ -81,7 +81,7 @@ void CMD::fanout(CS& cmd)
   out << "Node:  Branches\n";
   for (int ii = start;  ii <= stop;  ++ii){
     out.form("%4u:",ii);
-    checklist(CARD_LIST::card_list, ii, out);
+    checklist(CARD_LIST::card_list, node_t(ii), out);
     out << '\n';
   }
 }
@@ -89,7 +89,7 @@ void CMD::fanout(CS& cmd)
 /* checklist: print a list of all elements connecting to a node
  *	recursive, for subckts
  */
-static void checklist(const CARD_LIST& cl, int node, OMSTREAM out)
+static void checklist(const CARD_LIST& cl, const node_t& node, OMSTREAM out)
 {
   for (CARD_LIST::const_iterator ci = cl.begin(); ci != cl.end(); ++ci){
     if ((**ci).is_device()){
