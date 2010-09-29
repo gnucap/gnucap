@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+> command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc14">2.4</A>&nbsp;&nbsp;<TT>&gt;</TT> command</H2>
+<A NAME="@default43"></A>
+<A NAME="@default44"></A>
+<A NAME="@default45"></A>
+<A NAME="@default46"></A>
+<A NAME="@default47"></A>
+<A NAME="@default48"></A>
+
+<H3>2.4.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>&gt;</TT> <I>file</I><BR>
+<TT>&gt;&gt;</TT> <I>file</I><BR>
+<TT>&gt;</TT>
+
+
+<H3>2.4.2&nbsp;&nbsp;Purpose</H3>
+Saves a copy of all program output (except help) in a file.
+
+<H3>2.4.3&nbsp;&nbsp;Comments</H3>
+<TT>&gt;</TT> creates a new file for this output. If the file already exists, the
+old one is lost, and replaced by the new one.<BR>
+<BR>
+<TT>&gt;&gt;</TT> appends to an existing file, if it exists, otherwise it creates one.<BR>
+<BR>
+A bare <TT>&gt;</TT> closes the file.
+
+<H3>2.4.4&nbsp;&nbsp;Examples</H3>
+<DL COMPACT=compact><DT><B><TT>&gt; run1</TT></B><DD> Save everything in a file <TT>run1</TT> in the current
+directory. If <TT>run1</TT> already exists, the old one is gone.<BR>
+<BR>
+<DT><B><TT>&gt;&gt; allof</TT></B><DD> Save everything in a file <TT>allof</TT>. If <TT>allof</TT> already exists, it is kept, and the new data is added to the end.<BR>
+<BR>
+<DT><B><TT>&gt;</TT></B><DD> Close the file. Stop saving.</DL>
+
+	
+</BODY>
+</HTML>

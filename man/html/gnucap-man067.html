@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+Voltage Controlled Capacitor
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc66">3.8</A>&nbsp;&nbsp;Voltage Controlled Capacitor</H2>
+
+<H3>3.8.1&nbsp;&nbsp;Syntax</H3>
+
+Preferred syntax:<BR>
+<TT>.VCCAP</TT> <I>label n+ n-- nc+ nc--</I> <I>expression</I><BR>
+Alternate syntax:<BR>
+<TT>G</TT><I>xxxxxxx n+ n--</I> VCCAP <I>nc+ nc--</I> <I>expression</I>
+
+
+<H3>3.8.2&nbsp;&nbsp;Purpose</H3>
+Voltage controlled capacitor.
+
+<H3>3.8.3&nbsp;&nbsp;Probes</H3>
+All probes that apply to ordinary capacitors also apply here.
+
+<H3>3.8.4&nbsp;&nbsp;Comments</H3>
+<I>N+</I> and <I>n--</I> are the positive and negative element (output) nodes,
+respectively. <I>Nc+</I> and <I>nc--</I> are the positive and negative
+controlling nodes, respectively. <I>Value</I> is the transfactor in
+Farads per volt.<BR>
+<BR>
+The simulator will faithfully give you a negative capacitor if it
+seems appropriate. Usually, this part is used with a behavioral
+modeling function, like PWL, which allows you to specify a table of
+capacitance vs. voltage.
+
+</BODY>
+</HTML>

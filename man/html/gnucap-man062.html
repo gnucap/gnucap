@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+Trans-capacitor
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc61">3.3</A>&nbsp;&nbsp;Trans-capacitor</H2>
+
+<H3>3.3.1&nbsp;&nbsp;Syntax</H3>
+
+ <TT>.TCAPacitor</TT> <I>label n+ n-- nc+ nc-- expression</I><BR>
+<TT>.TCAPacitor</TT> <I>label n+ n-- nc+ nc-- value</I>
+ {<TT>IV=</TT><I>initial-voltage</I>}<BR>
+<TT>.TCAPacitor</TT> <I>label n+ n-- model</I> {<TT>L=</TT><I>length</I>}
+ {<TT>W=</TT><I>width</I>} {<TT>IC=</TT><I>initial-voltage</I>}
+
+
+<H3>3.3.2&nbsp;&nbsp;Purpose</H3>
+Trans-capacitor, or charge transfer device.
+
+<H3>3.3.3&nbsp;&nbsp;Probes</H3>
+All probes that apply to ordinary capacitors also apply here.
+
+<H3>3.3.4&nbsp;&nbsp;Comments</H3>
+<I>N+</I> and <I>n--</I> are the positive and negative element nodes,
+respectively. <I>Nc+</I> and <I>nc--</I> are the positive and negative
+controlling nodes, respectively. <BR>
+<BR>
+This device places a charge between the output nodes that depends on
+the voltage on its input nodes. If you parallel the input with the
+output, it becomes an ordinary capacitor. While the use of this
+device may appear straightforward, be careful. It is easy to use it
+in an unstable way.<BR>
+<BR>
+All options, expressions, models, and probes that apply to ordinary
+capacitors can also be used here.<BR>
+<BR>
+It is used internally in some transistor models.
+
+</BODY>
+</HTML>

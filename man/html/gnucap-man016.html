@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+AC command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc15">2.5</A>&nbsp;&nbsp;<TT>AC</TT> command</H2>
+<A NAME="@default49"></A>
+<A NAME="@default50"></A>
+<A NAME="@default51"></A>
+<A NAME="@default52"></A>
+
+<H3>2.5.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>AC</TT> {<I>options</I> ...} <I>start stop stepsize</I> {<I>options</I> ...}
+
+
+<H3>2.5.2&nbsp;&nbsp;Purpose</H3>
+Performs a small signal, steady state, AC analysis. Sweeps frequency.
+
+<H3>2.5.3&nbsp;&nbsp;Comments</H3>
+<A NAME="@default53"></A>
+The AC command does a linear analysis about an operating point. <EM>It is absolutely
+necessary to do an <TT>OP</TT> analysis first on any nonlinear circuit. Not
+doing this is the equivalent of testing it with the power off.</EM><BR>
+<BR>
+Three parameters are normally needed for an AC analysis: start frequency,
+stop frequency and step size, in this order. If all of these are omitted,
+the values from the most recent AC analysis are used.<BR>
+<BR>
+If only one frequency is specified, a single point analysis will be done.<BR>
+<BR>
+If only a new step size is specified, the old start and stop are kept and
+only the step size is changed. This is indicated by a keyword: <TT>by</TT>,
+<TT>times</TT>, <TT>decade</TT> or <TT>octave</TT>, or a symbol: <TT>+</TT> or <TT>*</TT>.<BR>
+<BR>
+If the start frequency is zero, the program will still do an AC analysis.
+The actual frequency can be considered to be the limit as the frequency
+approaches zero. It is, therefore, still possible to have a non-zero
+phase angle, but delays are not shown because they may be infinite.<BR>
+<BR>
+The nodes to look at must have been previously selected by the <TT>print</TT> or
+<TT>plot</TT> command. This is different fron Spice.
+
+<H3>2.5.4&nbsp;&nbsp;Options</H3>
+<DL COMPACT=compact><DT><B><TT>+</TT> <I>stepsize</I></B><DD> Linear sweep. Add <I>stepsize</I> to get the next step. Same as <TT>By</TT>.<BR>
+<BR>
+<DT><B><TT>*</TT> <I>multiplier</I></B><DD> Log sweep. Multiply by
+<I>multiplier</I> to get the next step.<BR>
+<BR>
+<DT><B><TT>&gt;</TT> <I>file</I></B><DD> Send results of analysis to <I>file</I>.<BR>
+<BR>
+<DT><B><TT>&gt;&gt;</TT> <I>file</I></B><DD> Append results to <I>file</I>.<BR>
+<BR>
+<DT><B><TT>By</TT> <I>stepsize</I></B><DD> Linear sweep. Add <I>stepsize</I> to get the next step. Same as <TT>+</TT>.<BR>
+<BR>
+<DT><B><TT>Decade</TT> <I>steps</I></B><DD> Log sweep. Use <I>steps</I> steps per decade.<BR>
+<BR>
+<DT><B><TT>NOPlot</TT></B><DD> Suppress plotting.<BR>
+<BR>
+<DT><B><TT>Octave</TT> <I>steps</I></B><DD> Log sweep. Use <I>steps</I> steps per octave.<BR>
+<BR>
+<DT><B><TT>PLot</TT></B><DD> Graphic output, when plotting is
+normally off.<BR>
+<BR>
+<DT><B><TT>Print</TT></B><DD> Send results to printer.<BR>
+<BR>
+<DT><B><TT>Quiet</TT></B><DD> Suppress console output.<BR>
+<BR>
+<DT><B><TT>TEmperature</TT> <I>degrees</I></B><DD> Temperature,
+degrees C.<BR>
+<BR>
+<DT><B><TT>TImes</TT> <I>multiplier</I></B><DD> Log sweep. Multiply
+by <I>multiplier</I> to get the next step.</DL>
+
+
+<H3>2.5.5&nbsp;&nbsp;Examples</H3>
+<DL COMPACT=compact><DT><B><TT>ac 10m</TT></B><DD> A single point AC analysis at 10 mHz.<BR>
+<BR>
+<DT><B><TT>ac 1000 3000 100</TT></B><DD> Sweep from 1000 Hz to 3000 Hz in 100 Hz steps.<BR>
+<BR>
+<DT><B><TT>ac 1000 3000 Octave</TT></B><DD> Sweep from 1000 Hz to 3000 Hz in octave
+steps. Since the sweep cannot end at 3000 Hz, in this case, the last step
+will really be 4000 Hz.<BR>
+<BR>
+<DT><B><TT>ac by 250</TT></B><DD> Keep the same limits as before, but use 250 Hz
+steps. In this case, it means to sweep from 1000 to 3000 Hz, because that
+it what it was the last time.<BR>
+<BR>
+<DT><B><TT>ac 5000 1000 -250</TT></B><DD> You can sweep downward, if you want.
+Remember that the increment would be negative.<BR>
+<BR>
+<DT><B><TT>ac 20 20k *2</TT></B><DD> Double the frequency to get the next step.<BR>
+<BR>
+<DT><B><TT>ac 20k 20 *.5</TT></B><DD> You can do a log sweep downward, too. A
+multiplier of less than one moves it down.<BR>
+<BR>
+<DT><B><TT>ac</TT></B><DD> Do the same AC sweep again.<BR>
+<BR>
+<DT><B><TT>ac &gt;afile</TT></B><DD> Save the results in the file <TT>afile</TT>. The
+file will look just like the screen. It will have all probe points. It
+will be a plot, if plotting is enabled. It will have the numbers in
+abbreviated notation. (10 nanovolts is <TT>10.n</TT>.)</DL>
+
+	
+</BODY>
+</HTML>

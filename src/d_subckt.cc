@@ -1,4 +1,4 @@
-/*$Id: d_subckt.cc,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
+/*$Id: d_subckt.cc,v 24.12 2003/12/14 01:58:35 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -82,7 +82,7 @@ bool COMMON_SUBCKT::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 MODEL_SUBCKT::MODEL_SUBCKT()
   :COMPONENT(),
-   _num_nodes(0)
+   _net_nodes(0)
 {
   _n = _nodes;
   //set_label(name);
@@ -104,7 +104,7 @@ void MODEL_SUBCKT::parse(CS& cmd)
   cmd.reset();
   cmd.skiparg();	/* skip known ".subckt" */
   parse_label(cmd);
-  _num_nodes = parse_nodes(cmd, max_nodes(), min_nodes());
+  _net_nodes = parse_nodes(cmd, max_nodes(), min_nodes());
 
   // "push" the return place, so when the subckt ends, we can go back
   substack.push_back(SSNODE(short_label(), CARD_LIST::putbefore));
@@ -141,7 +141,6 @@ void CMD::ends(CS& cmd)
   }}
   if (cmd.more()) {
     if (!cmd.pmatch(t._name)) {
-      untested(); 
       error(bERROR, std::string("ends tag [") + cmd.tail()
 	    + "] does not match subckt [" + t._name + "]\n");
     }
@@ -151,7 +150,7 @@ void CMD::ends(CS& cmd)
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT::DEV_SUBCKT()
   :BASE_SUBCKT(),
-   _num_nodes(0)
+   _net_nodes(0)
 {
   attach_common(&Default_SUBCKT);
   _n = _nodes;
@@ -160,7 +159,7 @@ DEV_SUBCKT::DEV_SUBCKT()
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
   :BASE_SUBCKT(p),
-   _num_nodes(p._num_nodes)
+   _net_nodes(p._net_nodes)
 {
   //strcpy(modelname, p.modelname); in common
   for (int ii = 0;  ii < max_nodes();  ++ii) {
@@ -178,7 +177,7 @@ void DEV_SUBCKT::parse(CS& cmd)
   assert(!c->has_model());
 
   parse_Label(cmd);
-  _num_nodes = parse_nodes(cmd, max_nodes(), min_nodes());
+  _net_nodes = parse_nodes(cmd, max_nodes(), min_nodes());
   c->parse_modelname(cmd);
   attach_common(c);
 }

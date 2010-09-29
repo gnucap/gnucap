@@ -1,4 +1,4 @@
-/*$Id: l_ftos.cc,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
+/*$Id: l_ftos.cc,v 24.4 2003/04/06 10:35:36 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -139,7 +139,8 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
     for (iii=0; iii<fieldwidth; ++iii) { /* build a clean blank string */
       str[iii] = ' ';
     }
-    for (assert(iii==fieldwidth); iii<MAXLENGTH; ++iii) {
+    assert(iii==fieldwidth);
+    for ( ; iii<MAXLENGTH; ++iii) {
       str[iii] = '\0';
     }
   }

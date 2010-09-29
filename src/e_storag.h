@@ -1,4 +1,4 @@
-/*$Id: e_storag.h,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
+/*$Id: e_storag.h,v 24.12 2003/12/14 01:58:35 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -29,8 +29,10 @@ enum METHOD {mTRAPGEAR, mEULER, mTRAP, mGEAR, mTRAPEULER};
 /*--------------------------------------------------------------------------*/
 class STORAGE : public ELEMENT {
 protected:
-  explicit STORAGE()			:ELEMENT(),  _method_a(mTRAPGEAR)  {}
-  explicit STORAGE(const STORAGE& p)	:ELEMENT(p), _method_a(p._method_a) {}
+  explicit STORAGE()			
+    :ELEMENT(), _method_u(meUNKNOWN), _method_a(mTRAPGEAR)  {}
+  explicit STORAGE(const STORAGE& p)
+    :ELEMENT(p), _method_u(p._method_u), _method_a(p._method_a) {}
 protected: // override virtual
   void	   precalc();
   void     dc_begin();
@@ -55,6 +57,7 @@ protected:
   {const double f[]={1./2., 1./2., 1./12., 1./2., 1./2.}; return f[_method_a];}
 protected:
   enum {_max_order = 2, _keep_time_steps=_max_order+2};
+  method_t _method_u;	/* method to use for this part per user */
   METHOD   _method_a;	/* actual integration method (auto)	*/
   double   _time[_keep_time_steps];
   double   _dt;

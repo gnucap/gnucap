@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+Adding models
+</TITLE>
+</HEAD>
+<BODY >
+
+<H1><A NAME="htoc103">Chapter&nbsp;6</A>&nbsp;&nbsp;Adding models</H1>
+
+Gnucap has three distinct styles of adding models:
+<DL COMPACT=compact><DT>
+<B>Model Compiler</B><DD> is the easiest way to add models, but the least
+ flexible. The model compiler generates .cc and .h files using the
+ <EM>enhanced subcircuit</EM> mode. It is possible to develop models
+ with almost no knowledge of the simulator internals. In most cases,
+ this is the preferred way. The standard MOSFET and diode models are
+ done this way.
+<DT><B>Enhanced subcircuit</B><DD> is less efficient than <EM>primitive</EM> but
+ has other advantages that make it preferable to <EM>primitive</EM> when
+ you can use it. The model is defined as a combination of equations
+ and topology. The AC and pole-zero code is inherited from a base
+ class, so you don't need to to it. You need to understand the
+ simulator's internals, and it is not likely to be portable to other
+ simulators.
+<DT><B>Primitive</B><DD> should be used only when absolutely necessary. If it
+ is done correctly, it will result in the fastest execution, but you
+ need to do everything. It requires thorough knowledge of the
+ simulator internals, including how Gnucap is different from other
+ simulators. If you miss some of the details, it is possible that
+ your model will work but slow down the simulator significantly.
+ Most of the primitive devices (resistors, sources) are done this
+ way. A few device types that have special considerations, like
+ gates and transmission lines, are also done this way.
+</DL>
+
+<UL>
+<LI><A HREF="gnucap-man105.html">Using the model compiler</A>
+</UL>
+
+</BODY>
+</HTML>

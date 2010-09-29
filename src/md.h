@@ -1,4 +1,4 @@
-/*$Id: md.h,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
+/*$Id: md.h,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -64,7 +64,7 @@
 /* constants related to memory size, word size, etc */
 enum {
   BUFLEN = 256,
-  BIGBUFLEN = 2048
+  BIGBUFLEN = 4096
 };
 /*--------------------------------------------------------------------------*/
 /* user interface preferences */
@@ -73,10 +73,6 @@ enum {
 #define ANTI_COMMENT "*>"
 /*--------------------------------------------------------------------------*/
 #if defined(__unix__) || defined(UNIX)
-/* usual but non-standard collection of includes */
-#include <unistd.h>	  /* chdir, access, getcwd */
-#include <sys/time.h>	  /* struct timeval, may be needed by sys/resource */
-#include <sys/resource.h> /* getrusage, used for timer  */
 /* file names, etc. */
 #define	ENDDIR		"/"
 #define PATHSEP		':'
@@ -87,69 +83,52 @@ enum {
 #define STEPFILE   	"/tmp/SXXXXXX"
 #define PLOTFILE    	"gnucap.plot"
 #define SHELL		OS::getenv("SHELL")
+/* usual but non-standard collection of includes */
+#include <unistd.h>	  /* chdir, access, getcwd */
+#include <sys/time.h>	  /* struct timeval, may be needed by sys/resource */
+#include <sys/resource.h> /* getrusage, used for timer  */
 /* machine and compiler patches */
 #if defined(__sun__)
   #define NEEDS_IS_INF
 #endif
 #if defined(__GNUG__)
   #define MANUAL_TEMPLATES
-#elif defined(__SUNPRO_CC)
-  #include <setjmp.h>
-  #define LINK_TEMPLATES
-  #define __FUNCTION__ ""
-  #define NEW_IS_BROKEN
-  #define DBL_MAX_IS_VARIABLE
 #else
   #error what compiler are you using??
 #endif
 /*--------------------------------------------------------------------------*/
 #elif defined(__WIN32__)
-/* usual but non-standard collection of includes */
-#include <windows.h>
-#include <io.h>
-#include <direct.h>
-#include <time.h>
 /* file names, etc. */
 #define	ENDDIR		"/\\"
 #define PATHSEP		';'
-#define SYSTEMSTARTFILE	"gnucap.ini"
+#define SYSTEMSTARTFILE	"gnucap.rc"
 #define SYSTEMSTARTPATH	OS::getenv("PATH")
-#define USERSTARTFILE	"gnucap.ini"
+#define USERSTARTFILE	"gnucap.rc"
 #define	USERSTARTPATH	OS::getenv("HOME")
 #define STEPFILE   	"/tmp/SXXXXXX"
 #define PLOTFILE    	"gnucap.plot"
 #define SHELL		OS::getenv("COMSPEC")
-/* machine and compiler patches */
-#define MANUAL_TEMPLATES
-#define NEEDS_GETRUSAGE
-#define NEEDS_RINT
-#define NEW_IS_BROKEN
-#define ABS_IS_BROKEN
-#define SIGSETJMP_IS_BROKEN
-enum {F_OK=0, X_OK=1, W_OK=2, R_OK=4};
-inline int strcasecmp(const char a[], const char b[]){
-  return stricmp(a,b);
-}
-const char __FUNCTION__[] = "";
-#if defined(__BORLANDC__)
-  #include <setjmp.h>
-  typedef int off_t;
-  #define NEEDS_IS_INF
-  #define NEEDS_IS_NAN
-  #define DBL_MAX_IS_VARIABLE
-#elif defined(MICROSOFT)
-  #define MIN_MAX_IS_BROKEN
-  #define CONST_IS_BROKEN
-  inline int isinf(double x){
-    if (_fpclass(x) == _FPCLASS_PINF){
+#if defined(__MINGW32__)
+  /* usual but non-standard collection of includes */
+  #include <unistd.h>	  /* chdir, access, getcwd */
+  #include <sys/time.h>	  /* struct timeval, may be needed by sys/resource */
+  //#include <sys/resource.h> /* getrusage, used for timer  */
+  /* machine and compiler patches */
+  #define MANUAL_TEMPLATES
+  #define NEEDS_GETRUSAGE
+  #define SIGSETJMP_IS_BROKEN
+  inline int isinf(double x)
+  {  
+    {if (_fpclass(x) == _FPCLASS_PINF){
       return 1;
     }else if (_fpclass(x) == _FPCLASS_NINF){
       return -1;
     }else{
       return 0;
-    }
+    }}
   }
-  inline int isnan(double x){
+  inline int isnan(double x)
+  {
     return _isnan(x);
   }
 #else
@@ -163,7 +142,6 @@ const char __FUNCTION__[] = "";
 /* The various libraries are inconsistent about what is in std.
  * cover up the inconsistency.
  */
-//using namespace std;
 /*--------------------------------------------------------------------------*/
 /* my standard collection of includes */
 #include "io_error.h"
@@ -237,6 +215,9 @@ int getrusage(int,struct rusage*);
 #endif
 
 #if defined(SIGSETJMP_IS_BROKEN)
+  #undef sigjmp_buf
+  #undef siglongjmp
+  #undef sigsetjmp
   #define sigjmp_buf jmp_buf
   #define siglongjmp(a,b) longjmp(a,b)
   #define sigsetjmp(a,b) setjmp(a)

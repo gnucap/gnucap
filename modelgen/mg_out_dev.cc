@@ -1,4 +1,4 @@
-/*$Id: mg_out_dev.cc,v 22.9 2002/07/23 20:08:57 al Exp $ -*- C++ -*-
+/*$Id: mg_out_dev.cc,v 24.13 2003/12/16 06:51:46 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -61,6 +61,9 @@ void make_dev_default_constructor(std::ofstream& out,const Device& d)
 {
   out << "DEV_" << d.name() << "::DEV_" << d.name() << "()\n"
     "  :BASE_SUBCKT()";
+  if (d.max_nodes() != d.min_nodes()) {
+    out << ",\n   _net_nodes(0)";
+  }
   make_construct_parameter_list(out, d.device().raw());
   make_construct_parameter_list(out, d.device().calculated());
   {for (Element_List::const_iterator
@@ -68,9 +71,8 @@ void make_dev_default_constructor(std::ofstream& out,const Device& d)
        p != d.circuit().elements().end(); ++p) {
     out << ",\n   _" << (**p).name() << "(0)";
   }}
-  int local_nodes = d.circuit().local_nodes().size();
   out << "\n{\n"
-    "  _n = _nodes + " << local_nodes << ";\n"
+    "  _n = _nodes + int_nodes();\n"
     "  attach_common(&Default_" << d.name() << ");\n"
     "  ++_count;\n";
   {for (Parameter_List::const_iterator
@@ -94,6 +96,9 @@ void make_dev_copy_constructor(std::ofstream& out, const Device& d)
   out << "DEV_" << d.name() << "::DEV_" << d.name()
       << "(const DEV_" << d.name() << "& p)\n"
     "  :BASE_SUBCKT(p)";
+  if (d.max_nodes() != d.min_nodes()) {
+    out << ",\n   _net_nodes(p._net_nodes)";
+  }
   make_copy_construct_parameter_list(out, d.device().raw());
   make_copy_construct_parameter_list(out, d.device().calculated());
   {for (Element_List::const_iterator
@@ -101,11 +106,9 @@ void make_dev_copy_constructor(std::ofstream& out, const Device& d)
        p != d.circuit().elements().end(); ++p) {
     out << ",\n   _" << (**p).name() << "(0)";
   }}
-  int local_nodes = d.circuit().local_nodes().size();
-  int port_nodes  = d.circuit().ports().size();
   out << "\n{\n"
-    "  _n = _nodes + " << local_nodes << ";\n"
-    "  for (int ii = -" <<local_nodes <<"; ii < " <<port_nodes <<"; ++ii) {\n"
+    "  _n = _nodes + int_nodes();\n"
+    "  for (int ii = -int_nodes(); ii < max_nodes(); ++ii) {\n"
     "    _n[ii] = p._n[ii];\n"
     "  }\n"
     "  ++_count;\n";
@@ -129,9 +132,14 @@ static void make_dev_parse(std::ofstream& out, const Device& d)
       << d.name() << "*>(common()->clone());\n"
     "  assert(c);\n"
     "\n"
-    "  parse_Label(cmd);\n"
-    "  parse_nodes(cmd, max_nodes(), min_nodes());\n"
-    "  c->parse(cmd);\n"
+    "  parse_Label(cmd);\n";
+  if (d.max_nodes() != d.min_nodes()) {
+    out << "  _net_nodes = parse_nodes(cmd, max_nodes(), min_nodes());\n"
+      "  _net_nodes = std::max(_net_nodes, min_nodes());\n";
+  }else{
+    out << "  parse_nodes(cmd, max_nodes(), min_nodes());\n";
+  }
+  out << "  c->parse(cmd);\n"
     "  attach_common(c);\n"
     "}\n"
     "/*--------------------------------------"
@@ -167,11 +175,11 @@ static void make_set_parameters(std::ofstream& out, const Element& e)
   }}
   out << ", " << ((e.value() != "") ? e.value() : "0.");
   {if (e.state() != "") {
-    out << ", " << e.ports().size()/2+1 << ", &" << e.state();
+    out << ", " << e.num_nodes()/2+1 << ", &" << e.state();
   }else{
     out << ", 0, 0";
   }}
-  out << ", " << e.ports().size() << ", nodes);\n";
+  out << ", " << e.num_nodes() << ", nodes);\n";
 }
 /*--------------------------------------------------------------------------*/
 static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
@@ -340,7 +348,7 @@ static std::string fix_expression(const std::string& in)
   return out;
 }
 
-// BUG:: sometimes craches here with g++-3.0.1 (but not any other
+// BUG:: sometimes crashes here with g++-3.0.1 (but not any other
 // version) when using string class.  I don't know why.  Perhaps bug
 // in 3.0.1 string class. (Mandrake 8.1)
 // Use old style C functions instead.

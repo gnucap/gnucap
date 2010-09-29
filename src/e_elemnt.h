@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.h,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.h,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -83,6 +83,11 @@ protected: // inline, below
   bool	   has_ac_eval()const;
   void	   tr_eval();
   void	   ac_eval();
+#ifdef KNEECHORD
+  int      inverse();      // see inverse.cc
+  void     knee_chord();   // see inverse.cc
+#endif
+
 protected: // in .cc
   void	   tr_alloc_matrix_passive();
   void	   tr_alloc_matrix_active();
@@ -97,10 +102,11 @@ protected: // in .cc
   double   tr_probe_num(CS&)const;
   XPROBE   ac_probe_ext(CS&)const;
 
-  virtual  double  tr_amps()const;
   virtual  double  tr_involts()const = 0;
   virtual  double  tr_involts_limited()const = 0;
+  virtual  double  tr_amps()const;
   virtual  COMPLEX ac_involts()const = 0;
+  virtual  COMPLEX ac_amps()const;
 private:
   int      _loaditer;	// load iteration number
   node_t   _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
@@ -110,7 +116,6 @@ protected:
   double   _loss0;	// shunt conductance
   double   _loss1;
   COMPLEX  _acg;	// ac admittance matrix values
-  method_t _method_u;	// method to use for this part per user
 public: // commons
   FPOLY1   _y0;		// iteration parameters, new
   FPOLY1   _y1;		// iteration parameters, 1 iter ago
@@ -297,6 +302,13 @@ inline void ELEMENT::tr_eval()
 {
   {if (has_common() && common()->has_tr_eval()) {
     common()->tr_eval(this);
+#ifdef KNEECHORD
+    switch (OPT::strategy) {
+    case stNEWTON:			break;
+    case stKNEECHORD:	knee_chord();	break;
+    case stSECANT:	incomplete();	break;
+    }
+#endif
   }else{
     // can get here if a simple device has probes
     _y0.f1 = value();

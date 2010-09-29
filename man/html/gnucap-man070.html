@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+H: Current Controlled Voltage Source
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc69">3.11</A>&nbsp;&nbsp;<TT>H</TT>: Current Controlled Voltage Source</H2>
+
+<H3>3.11.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>H</TT><I>xxxxxxx n+ n-- ce</I> <I>value</I><BR>
+<TT>H</TT><I>xxxxxxx n+ n-- ce</I> <I>expression</I><BR>
+<TT>.CCVS</TT> <I>label n+ n-- ce</I> <I>expression</I>
+
+
+<H3>3.11.2&nbsp;&nbsp;Purpose</H3>
+Current controlled voltage source, or transresistance block.
+
+<H3>3.11.3&nbsp;&nbsp;Comments</H3>
+<I>N+</I> and <I>n--</I> are the positive and negative element (output)
+nodes, respectively. <I>Ce</I> is the name of an element through
+which the controlling current flows. The direction of positive
+controlling current is from the positive node, through the element,
+to the negative node of <I>ce</I>. <I>Value</I> is the transresistance
+in Ohms.<BR>
+<BR>
+The controlling element can be any simple two terminal element.
+Unlike SPICE, it does not need to be a voltage source.
+ </BODY>
+</HTML>

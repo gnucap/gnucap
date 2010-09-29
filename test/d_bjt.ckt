@@ -6,6 +6,7 @@ rb2 2 0 1.6k
 rc 3 1 10k
 re 4 0 1k
 q1 3 2 4 0 foo
+*>.width out=80
 *>.list
 *>.print op v(nodes)
 *>.op trace iter

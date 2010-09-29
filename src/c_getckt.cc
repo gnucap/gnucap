@@ -1,4 +1,4 @@
-/*$Id: c_getckt.cc,v 22.4 2002/05/27 00:00:47 al Exp $ -*- C++ -*-
+/*$Id: c_getckt.cc,v 24.20 2004/01/18 07:42:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -161,16 +161,17 @@ static void getmerge(CS& cmd)
   bool  quiet = false;		/* don't echo title */
   int here = cmd.cursor();
   do{
-    get(cmd, "Echo",  &echoon);
-    get(cmd, "List",  &liston);
-    get(cmd, "Quiet", &quiet);
+    0
+      || get(cmd, "Echo",  &echoon)
+      || get(cmd, "List",  &liston)
+      || get(cmd, "Quiet", &quiet)
+      ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.check(bWARNING, "need echo, list, or quiet");
   
   {
     std::string buffer(getlines(filen)); // title
     if (buffer.empty()) {
-      untested();
       error(bWARNING, "empty circuit file\n");
     }
     head = buffer;

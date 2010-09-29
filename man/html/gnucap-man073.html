@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+K: Coupled (Mutual) Inductors
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc72">3.14</A>&nbsp;&nbsp;<TT>K</TT>: Coupled (Mutual) Inductors</H2>
+
+<H3>3.14.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>K</TT><I>xxxxxxx</I> <TT>L</TT><I>yyyyyyy</I> <TT>L</TT><I>zzzzzzz</I> <I>value</I><BR>
+<TT>.MUTual_inductor</TT> <I>label</I> <TT>L</TT><I>yyyyyyy</I> <TT>L</TT><I>zzzzzzz</I>
+	<I>value</I>
+
+
+<H3>3.14.2&nbsp;&nbsp;Purpose</H3>
+Coupled mutual inductance.
+
+<H3>3.14.3&nbsp;&nbsp;Comments</H3>
+K couples two inductors. The value is the coefficient of coupling. Using the dot convention, place a dot on the first node of each inductor.<BR>
+<BR>
+The coefficient of coupling is given by <I>K</I> = <I>M</I><SUB><FONT SIZE=2><I>ij</I></FONT></SUB>/<I>sqrt</I>(<I>L</I><SUB><FONT SIZE=2><I>i</I></FONT></SUB> <I>L</I><SUB><FONT SIZE=2><I>j</I></FONT></SUB>.
+
+<H3>3.14.4&nbsp;&nbsp;Bugs</H3>
+This release does not support multiple coupled inductors.
+ </BODY>
+</HTML>

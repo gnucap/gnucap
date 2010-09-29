@@ -127,38 +127,40 @@ bool MODEL_MOS4::parse_front(CS& cmd)
   return MODEL_MOS_BASE::parse_front(cmd);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_MOS4::parse_params(CS& cmd)
+bool MODEL_MOS4::parse_params(CS& cmd)
 {
-  get(cmd, "DIODElevel", &mos_level);
-  get(cmd, "PHI", &phi, mPOSITIVE);
-  get(cmd, "VFB", &vfb);
-  get(cmd, "K1", &k1, mPOSITIVE);
-  get(cmd, "K2", &k2, mPOSITIVE);
-  get(cmd, "ETA", &eta);
-  get(cmd, "X2E", &etaB);
-  get(cmd, "X3E", &etaD);
-  get(cmd, "MUZ", &mobZero);
-  get(cmd, "X2MZ", &mobZeroB);
-  get(cmd, "MUS", &mobVdd);
-  get(cmd, "X2MS", &mobVddB);
-  get(cmd, "X3MS", &mobVddD);
-  get(cmd, "U0", &ugs);
-  get(cmd, "X2U0", &ugsB);
-  get(cmd, "U1", &uds);
-  get(cmd, "X2U1", &udsB);
-  get(cmd, "X3U1", &udsD);
-  get(cmd, "N0", &n0);
-  get(cmd, "NB", &nB);
-  get(cmd, "ND", &nD);
-  get(cmd, "DL", &dl, mSCALE, MICRON2METER);
-  get(cmd, "DW", &dw, mSCALE, MICRON2METER);
-  get(cmd, "TOX", &tox, mSCALE, MICRON2METER);
-  get(cmd, "VDD", &vdd);
-  get(cmd, "WDF", &wdf);
-  get(cmd, "DELL", &dell);
-  get(cmd, "TEMP", &temp);
-  get(cmd, "XPART", &xpart);
-  MODEL_MOS_BASE::parse_params(cmd);
+  return ONE_OF
+    || get(cmd, "DIODElevel", &mos_level)
+    || get(cmd, "PHI", &phi, mPOSITIVE)
+    || get(cmd, "VFB", &vfb)
+    || get(cmd, "K1", &k1, mPOSITIVE)
+    || get(cmd, "K2", &k2, mPOSITIVE)
+    || get(cmd, "ETA", &eta)
+    || get(cmd, "X2E", &etaB)
+    || get(cmd, "X3E", &etaD)
+    || get(cmd, "MUZ", &mobZero)
+    || get(cmd, "X2MZ", &mobZeroB)
+    || get(cmd, "MUS", &mobVdd)
+    || get(cmd, "X2MS", &mobVddB)
+    || get(cmd, "X3MS", &mobVddD)
+    || get(cmd, "U0", &ugs)
+    || get(cmd, "X2U0", &ugsB)
+    || get(cmd, "U1", &uds)
+    || get(cmd, "X2U1", &udsB)
+    || get(cmd, "X3U1", &udsD)
+    || get(cmd, "N0", &n0)
+    || get(cmd, "NB", &nB)
+    || get(cmd, "ND", &nD)
+    || get(cmd, "DL", &dl, mSCALE, MICRON2METER)
+    || get(cmd, "DW", &dw, mSCALE, MICRON2METER)
+    || get(cmd, "TOX", &tox, mSCALE, MICRON2METER)
+    || get(cmd, "VDD", &vdd)
+    || get(cmd, "WDF", &wdf)
+    || get(cmd, "DELL", &dell)
+    || get(cmd, "TEMP", &temp)
+    || get(cmd, "XPART", &xpart)
+    || MODEL_MOS_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS4::parse_finish()
@@ -238,12 +240,7 @@ void MODEL_MOS4::print_calculated(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 bool MODEL_MOS4::is_valid(const COMMON_COMPONENT* cc)const
 {
-  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
-  {if (!c) {
-    return MODEL_MOS_BASE::is_valid(cc);
-  }else{
-    return MODEL_MOS_BASE::is_valid(cc);
-  }}
+  return MODEL_MOS_BASE::is_valid(cc);
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS4::tr_eval(COMPONENT* brh)const

@@ -1,4 +1,4 @@
-/*$Id: l_compar.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: l_compar.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -37,6 +37,11 @@ inline bool in_order(T a, T b, T c)
 template <class T>
 inline T to_range(T a, T b, T c)
    {return std::min(std::max(a,b),c);}
+
+/* is_equal: returns true if all 3 are equal */
+template <class T>
+inline bool is_equal(T a, T b, T c)
+   {return (a == b) && (b == c);}
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

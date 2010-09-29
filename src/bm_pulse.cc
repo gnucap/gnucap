@@ -1,4 +1,4 @@
-/*$Id: bm_pulse.cc,v 22.14 2002/08/02 15:58:41 al Exp $ -*- C++ -*-
+/*$Id: bm_pulse.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -58,42 +58,42 @@ EVAL_BM_PULSE::EVAL_BM_PULSE(const EVAL_BM_PULSE& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_PULSE::parse(CS& cmd)
+void EVAL_BM_PULSE::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    double* i;
-    for (i = &_iv;  i < &_end;  ++i){
-      double value=NOT_VALID;
-      cmd >> value;
-      if (cmd.stuck(&here)){
-	break;
-      }
-      *i = value;
+  for (double* i = &_iv;  i < &_end;  ++i){
+    double value=NOT_VALID;
+    cmd >> value;
+    if (cmd.stuck(&here)){
+      break;
     }
-    assert(i <= &_end);
-    paren -= cmd.skiprparen();
-    if (paren != 0){
-      untested();
-      cmd.warn(bWARNING, "need )");
-    }
-    get(cmd, "IV",	&_iv);
-    get(cmd, "PV",	&_pv);
-    get(cmd, "Delay",	&_delay);
-    get(cmd, "Rise",	&_rise);
-    get(cmd, "Fall",	&_fall);
-    get(cmd, "Width",	&_width);
-    get(cmd, "PEriod",	&_period);
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
+    *i = value;
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_PULSE::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "IV", 	  &_iv)
+    || get(cmd, "PV", 	  &_pv)
+    || get(cmd, "Delay",  &_delay)
+    || get(cmd, "Rise",	  &_rise)
+    || get(cmd, "Fall",	  &_fall)
+    || get(cmd, "Width",  &_width)
+    || get(cmd, "PEriod", &_period)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_PULSE::parse_finish()
+{
   if (_width == 0.) {
     _width = _default_width;
   }
   if (_period == 0.) {
     _period = _default_period;
   }
-  parse_base_finish();
+  EVAL_BM_ACTION_BASE::parse_finish();
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_PULSE::print(OMSTREAM& where)const

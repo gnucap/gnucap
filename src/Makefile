@@ -1,8 +1,8 @@
-#$Id: Makefile,v 22.21 2002/10/06 07:21:50 al Exp $
+#$Id: Makefile,v 24.7 2003/05/30 08:08:17 al Exp $
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
 #
-# This file is part of "GnuCap", the Gnu Circuit Analysis Package
+# This file is part of "Gnucap", the Gnu Circuit Analysis Package
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,6 +49,15 @@ debug: nothing
 	cat Make1 Make2.Debug Make3 Make.depend >O-DEBUG/Makefile
 	(cd O-DEBUG; ${MAKE} -k)
 #-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# MS Windows using mingw32
+# This should work if it is properly installed
+# and has the proper libraries and headers.
+# It is optimized for speed.  Debugging is off.
+mingw: nothing
+	-mkdir MSW
+	cat Make1 Make2.mingw32 Make3 Make.depend >MSW/Makefile
+	(cd MSW; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 # Windows using Borland 5.5
 borland: nothing
@@ -118,6 +127,10 @@ clean: nothing
 #-----------------------------------------------------------------------------
 install: nothing
 	cp O/gnucap /usr/local/bin
+#-----------------------------------------------------------------------------
+date: nothing
+	cat Make1 Make2.g++ Make3 >Make.aux
+	${MAKE} -f Make.aux date
 #-----------------------------------------------------------------------------
 nothing:
 #-----------------------------------------------------------------------------

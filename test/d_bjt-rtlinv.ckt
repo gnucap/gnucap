@@ -1,7 +1,7 @@
 rtlinv ckt - cascaded rtl inverters
 * modified from Spice-3 examples
 
-.width in=72
+.width in=72 out=80
 *>.option rstray
 
 vcc 6 0 5

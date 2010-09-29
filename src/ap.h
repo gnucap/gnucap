@@ -1,4 +1,4 @@
-/*$Id: ap.h,v 21.14 2002/03/26 09:20:25 al Exp $  -*- C++ -*-
+/*$Id: ap.h,v 24.16 2004/01/11 02:47:28 al Exp $  -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -34,6 +34,8 @@ enum AP_MOD{
   mOCTAL,	/* read the number in octal */
   mHEX		/* read the number in hex */
 };
+
+const bool ONE_OF = false;
 
 class CS_FILE {};
 

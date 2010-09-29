@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+GENERATOR command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc30">2.20</A>&nbsp;&nbsp;<TT>GENERATOR</TT> command</H2>
+<A NAME="@default97"></A>
+<A NAME="@default98"></A>
+<A NAME="@default99"></A>
+<A NAME="@default100"></A>
+<A NAME="@default101"></A>
+<A NAME="@default102"></A>
+
+<H3>2.20.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>Generator</TT> {<I>option-name</I>=<I>value</I> ...}
+
+
+<H3>2.20.2&nbsp;&nbsp;Purpose</H3>
+Sets up an input waveform for <TT>transient</TT> and <TT>Fourier</TT> analysis.
+Emulates a laboratory type function generator.
+
+<H3>2.20.3&nbsp;&nbsp;Comments</H3>
+This command sets up a singal source that is conceptually separate
+from the circuit. To use it, make the value of a component
+"generator(1)", or substitute a scale factor for the parameter.<BR>
+<BR>
+The SPICE style input functions also work, but are considered to
+be part of the circuit, instead of part of the test equipment.<BR>
+<BR>
+The parameters available are designed to emulate the controls on a function
+generator. There are actually two generators here: sine wave and pulse. If
+both are on (by setting non-zero parameters) the sine wave is modulated by
+the pulse, but either can be used alone.<BR>
+<BR>
+Unless you change it, it is a unit-step function at time 0. The purpose of
+the command is to change it.<BR>
+<BR>
+This command does not affect <TT>AC</TT> or <TT>DC</TT> analysis in any way. It
+is only for <TT>transient</TT> and <TT>Fourier</TT> analysis. In <TT>AC</TT>
+analysis, the input signal is always a sine wave at the analysis frequency.<BR>
+<BR>
+Typical usage is the name of the control followed by its value, or just plain
+<TT>Generator</TT> to display the present values.<BR>
+<BR>
+The actual time when switching takes place is ambiguous by one time step. If
+precise time switching is necessary, use the <TT>Skip</TT> option on the
+transient analysis command, to force more resolution. This ambiguity can
+usually be avoided by specifying finite rise and fall times.
+<A NAME="@default103"></A>
+<A NAME="@default104"></A>
+
+<H3>2.20.4&nbsp;&nbsp;Parameters</H3>
+<DL COMPACT=compact><DT><B><TT>Frequency</TT></B><DD> The frequency of the sine wave generator for a transient
+analysis. The sine wave is modulated by the pulse generator. A frequency
+of zero puts the pulse generator on line directly.<BR>
+<BR>
+<DT><B><TT>Amplitude</TT></B><DD> The overall amplitude of the pulse and sine wave. A
+scale factor. It applies to everything except the <I>offset</I> and <I>init</I> values.<BR>
+<BR>
+<DT><B><TT>Phase</TT></B><DD> The phase of the sine wave, at the instant it is first
+turned on.<BR>
+<BR>
+<DT><B><TT>MAx</TT></B><DD> The amplitude of the pulse, when it is `on'. (During the
+<I>width</I> time) If the sine wave is on (frequency not zero) this is the
+amplitude of the sine wave during the first part of the period. The <I>max</I> is scaled by <I>ampl</I>.<BR>
+<BR>
+<DT><B><TT>MIn</TT></B><DD> The amplitude of the pulse, when it is `off'. (After it
+falls, but before the next period begins.) Although we have called these
+<I>min</I> and <I>max</I>, there is no requirement that <I>max</I> be larger
+than <I>min</I>. If the sine wave is on, this is its amplitude during the
+second part of the period. The <I>min</I> is scaled by <I>ampl</I>.<BR>
+<BR>
+<DT><B><TT>Offset</TT></B><DD> The DC offset applied to the entire signal, at all times
+after the initial delay. The <I>offset</I> is <B>not</B> scaled by <I>ampl</I>.<BR>
+<BR>
+<DT><B><TT>Init</TT></B><DD> The initial value of the pulse generator output. It will
+have this value starting at time 0, until <I>Delay</I> time has elapsed. It
+will never return to this value, unless you restart at time 0.<BR>
+<BR>
+<DT><B><TT>Rise</TT></B><DD> The rise time, or the time it takes to go from <I>MIn</I>
+to <I>MAx</I>, or for the first rise, <I>Init</I> to <I>MAx</I>. The rise is
+linear.<BR>
+<BR>
+<DT><B><TT>Fall</TT></B><DD> The fall time. (The time required to go from <I>MAx</I>
+back to <I>MIn</I>.)<BR>
+<BR>
+<DT><B><TT>Delay</TT></B><DD> The waiting time before the first rise.<BR>
+<BR>
+<DT><B><TT>Width</TT></B><DD> The length of time the output of the generator has the
+value <I>Max</I>. A width of zero means that the output remains high for the
+remainder of the period. If you really want a width of zero, use a very
+small number, less than the step size.<BR>
+<BR>
+<DT><B><TT>Period</TT></B><DD> The time for repetition of the pulse. It must be
+greater than the sum of rise + fall + width. A period of zero means that
+the signal is not periodic and so will not repeat.</DL>
+
+
+<H3>2.20.5&nbsp;&nbsp;Examples</H3>
+The generator command ...
+<DL COMPACT=compact><DT><B><TT>gen</TT></B><DD> Display the present settings.<BR>
+<BR>
+<DT><B><TT>gen Freq=1k</TT></B><DD> Sets the sine wave to 1 kHz. All other parameters
+are as they were before.<BR>
+<BR>
+<DT><B><TT>gen Freq=0</TT></B><DD> Turns off the sine wave, leaving only the pulse.<BR>
+<BR>
+<DT><B><TT>gen Ampl=0</TT></B><DD> Sets the amplitude to zero, which means the circuit
+has no input, except for possibly a DC offset.<BR>
+<BR>
+<DT><B><TT>gen Period=.001 Freq=1m</TT></B><DD> Sets the period back to 1 millisecond.
+Applies 1 mHz modulation to the pulse, resulting in a pulsed sine wave. In
+this case, a 100 microsecond 10 volt burst, repeating every millisecond.
+Between bursts, you will get 2.5 volts, with reversed phase. The old
+values, in this case from 2 lines back (above) are kept. (<TT>Ampl 5 Rise
+10u Fall 10u</TT> ...)<BR>
+<BR>
+<DT><B><TT>gen Freq=60 Phase=90 Delay=.1</TT></B><DD> The sine wave frequency is 60
+Hertz. Its phase is 90 degrees when it turns on, at time .1 seconds. It
+turns on sharply at the peak.</DL>
+A component using it ...
+<DL COMPACT=compact><DT><B><TT>V12 1 0 generator(1)</TT></B><DD> Use the generator as the circuit
+input through this voltage source. The DC and AC values are 0.<BR>
+<BR>
+<DT><B><TT>V12 1 0 tran generator(1) ac 10 dc 5</TT></B><DD> Same as before, except
+that the AC value is 10 and DC value is 5.<BR>
+<BR>
+<DT><B><TT>Rinput 1 0 tran generator(1)</TT></B><DD> Unlike SPICE, the functions
+can be used on other components. The resistance varies in time
+according to the "generator".</DL>
+	
+</BODY>
+</HTML>

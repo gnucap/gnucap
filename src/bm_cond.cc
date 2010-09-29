@@ -1,4 +1,4 @@
-/*$Id: bm_cond.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_cond.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -63,14 +63,16 @@ void EVAL_BM_COND::parse(CS& cmd)
 
   do {
     SIM_MODE mode(sNONE);
-    (   set(cmd, "AC",	     &mode, sAC)
-     || set(cmd, "OP",	     &mode, sOP)
-     || set(cmd, "DC",	     &mode, sDC)
-     || set(cmd, "TRANsient",&mode, sTRAN)
-     || set(cmd, "FOURier",  &mode, sFOURIER)
-     || set(cmd, "ELSE",     &mode, sNONE)
-     || set(cmd, "ALL",      &mode, sNONE)
-     || (mode = sNONE));
+    0
+      || set(cmd, "AC",	     &mode, sAC)
+      || set(cmd, "OP",	     &mode, sOP)
+      || set(cmd, "DC",	     &mode, sDC)
+      || set(cmd, "TRANsient",&mode, sTRAN)
+      || set(cmd, "FOURier",  &mode, sFOURIER)
+      || set(cmd, "ELSE",     &mode, sNONE)
+      || set(cmd, "ALL",      &mode, sNONE)
+      || (mode = sNONE)
+      ;
     if (_set[mode]) {
       cmd.warn(bWARNING, (mode != sNONE) ? "duplicate mode" : "what's this?");
     }

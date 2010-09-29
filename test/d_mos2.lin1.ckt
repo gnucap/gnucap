@@ -35,5 +35,6 @@ Vbs   4  0 -1.234875
 .op
 .print dc v(1) v(2) v(3) i(vds)
 .dc vgs -10 10 1
+.width out=80
 .list
 .end

@@ -1,4 +1,4 @@
-/* $Id: d_mos7.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos7.model,v 24.4 2003/04/06 10:36:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -114,16 +114,16 @@ SDP_MOS7::SDP_MOS7(const COMMON_COMPONENT* cc)
   vth0 = ((m->vth0.nom() == NA)
     ? NA
     : m->vth0(L, W));
-  ua = m->ua(L, W);
   ua1 = m->ua1(L, W);
-  ub = m->ub(L, W);
+  ua = m->ua(L, W);
   ub1 = m->ub1(L, W);
-  uc = ((m->uc.nom() == NA)
-    ? ((m->mobMod==3) ? -0.0465 : -0.0465e-9)
-    : m->uc(L, W));
+  ub = m->ub(L, W);
   uc1 = ((m->uc1.nom() == NA)
     ? ((m->mobMod==3) ? -0.056 : -0.056e-9)
     : m->uc1(L, W));
+  uc = ((m->uc.nom() == NA)
+    ? ((m->mobMod==3) ? -0.0465 : -0.0465e-9)
+    : m->uc(L, W));
   u0 = ((m->u0.nom() == NA)
     ? ((m->polarity == pN) ? 0.067 : 0.025)
     : m->u0(L, W));
@@ -326,12 +326,12 @@ MODEL_MOS7::MODEL_MOS7()
    drout(0.56),
    dsub(NA),
    vth0(NA),
-   ua(2.25e-9),
    ua1(4.31e-9),
-   ub(5.87e-19),
+   ua(2.25e-9),
    ub1(-7.61e-18),
-   uc(NA),
+   ub(5.87e-19),
    uc1(NA),
+   uc(NA),
    u0(NA),
    ute(-1.5),
    voff(-0.08),
@@ -385,16 +385,12 @@ MODEL_MOS7::MODEL_MOS7()
    Lw(0.0),
    Lwn(1.0),
    Lwl(0.0),
-   Lmin(0.0),
-   Lmax(1.0),
    Wint(0.0),
    Wl(0.0),
    Wln(1.0),
    Ww(0.0),
    Wwn(1.0),
    Wwl(0.0),
-   Wmin(0.0),
-   Wmax(1.0),
    dwc(NA),
    dlc(NA),
    noia(NA),
@@ -423,125 +419,123 @@ bool MODEL_MOS7::parse_front(CS& cmd)
   return MODEL_MOS_BASE::parse_front(cmd);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_MOS7::parse_params(CS& cmd)
+bool MODEL_MOS7::parse_params(CS& cmd)
 {
-  get(cmd, "DIODElevel", &mos_level);
-  get(cmd, "CDSC", &cdsc);
-  get(cmd, "CDSCB", &cdscb);
-  get(cmd, "CDSCD", &cdscd);
-  get(cmd, "CIT", &cit);
-  get(cmd, "NFACTOR", &nfactor);
-  get(cmd, "XJ", &xj);
-  get(cmd, "VSAT", &vsat);
-  get(cmd, "AT", &at);
-  get(cmd, "A0", &a0);
-  get(cmd, "AGS", &ags);
-  get(cmd, "A1", &a1);
-  get(cmd, "A2", &a2);
-  get(cmd, "KETA", &keta);
-  get(cmd, "NSUB", &nsub);
-  get(cmd, "NCH", &npeak);
-  get(cmd, "NGATE", &ngate);
-  get(cmd, "GAMMA1", &gamma1);
-  get(cmd, "GAMMA2", &gamma2);
-  get(cmd, "VBX", &vbx);
-  get(cmd, "VBM", &vbm);
-  get(cmd, "XT", &xt);
-  get(cmd, "K1", &k1);
-  get(cmd, "KT1", &kt1);
-  get(cmd, "KT1L", &kt1l);
-  get(cmd, "KT2", &kt2);
-  get(cmd, "K2", &k2);
-  get(cmd, "K3", &k3);
-  get(cmd, "K3B", &k3b);
-  get(cmd, "W0", &w0);
-  get(cmd, "NLX", &nlx);
-  get(cmd, "DVT0", &dvt0);
-  get(cmd, "DVT1", &dvt1);
-  get(cmd, "DVT2", &dvt2);
-  get(cmd, "DVT0W", &dvt0w);
-  get(cmd, "DVT1W", &dvt1w);
-  get(cmd, "DVT2W", &dvt2w);
-  get(cmd, "DROUT", &drout);
-  get(cmd, "DSUB", &dsub);
-  get(cmd, "VTH0", &vth0);
-  get(cmd, "UA", &ua);
-  get(cmd, "UA1", &ua1);
-  get(cmd, "UB", &ub);
-  get(cmd, "UB1", &ub1);
-  get(cmd, "UC", &uc);
-  get(cmd, "UC1", &uc1);
-  get(cmd, "U0", &u0);
-  get(cmd, "UTE", &ute);
-  get(cmd, "VOFF", &voff);
-  get(cmd, "DELTA", &delta);
-  get(cmd, "RDSW", &rdsw);
-  get(cmd, "PRWG", &prwg);
-  get(cmd, "PRWB", &prwb);
-  get(cmd, "PRT", &prt);
-  get(cmd, "ETA0", &eta0);
-  get(cmd, "ETAB", &etab);
-  get(cmd, "PCLM", &pclm);
-  get(cmd, "PDIBLC1", &pdibl1);
-  get(cmd, "PDIBLC2", &pdibl2);
-  get(cmd, "pdiblcb", &pdiblb);
-  get(cmd, "PSCBE1", &pscbe1);
-  get(cmd, "PSCBE2", &pscbe2);
-  get(cmd, "PVAG", &pvag);
-  get(cmd, "WR", &wr);
-  get(cmd, "DWG", &dwg);
-  get(cmd, "DWB", &dwb);
-  get(cmd, "B0", &b0);
-  get(cmd, "B1", &b1);
-  get(cmd, "ALPHA0", &alpha0);
-  get(cmd, "BETA0", &beta0);
-  get(cmd, "ELM", &elm);
-  get(cmd, "VFBCV", &vfbcv);
-  get(cmd, "CGSL", &cgsl);
-  get(cmd, "CGDL", &cgdl);
-  get(cmd, "CKAPPA", &ckappa);
-  get(cmd, "CF", &cf);
-  get(cmd, "CLC", &clc);
-  get(cmd, "CLE", &cle);
-  get(cmd, "CAPMOD", &capMod);
-  get(cmd, "NQSMOD", &nqsMod);
-  get(cmd, "MOBMOD", &mobMod);
-  get(cmd, "NOIMOD", &noiMod);
-  get(cmd, "PARAMCHK", &paramChk);
-  get(cmd, "BINUNIT", &binUnit);
-  get(cmd, "VERSION", &version);
-  get(cmd, "TOX", &tox);
-  get(cmd, "XPART", &xpart);
-  get(cmd, "JSW", &jctSidewallSatCurDensity);
-  get(cmd, "MJSWG", &mjswg);
-  get(cmd, "PBSWG", &pbswg);
-  get(cmd, "CJSWG", &unitLengthGateSidewallJctCap);
-  get(cmd, "NJ", &jctEmissionCoeff);
-  get(cmd, "XTI", &jctTempExponent);
-  get(cmd, "LINT", &Lint);
-  get(cmd, "LL", &Ll);
-  get(cmd, "LLN", &Lln);
-  get(cmd, "LW", &Lw);
-  get(cmd, "LWN", &Lwn);
-  get(cmd, "LWL", &Lwl);
-  get(cmd, "LMIN", &Lmin);
-  get(cmd, "LMAX", &Lmax);
-  get(cmd, "WINT", &Wint);
-  get(cmd, "WL", &Wl);
-  get(cmd, "WLN", &Wln);
-  get(cmd, "WW", &Ww);
-  get(cmd, "WWN", &Wwn);
-  get(cmd, "WWL", &Wwl);
-  get(cmd, "WMIN", &Wmin);
-  get(cmd, "WMAX", &Wmax);
-  get(cmd, "DWC", &dwc);
-  get(cmd, "DLC", &dlc);
-  get(cmd, "NOIA", &noia);
-  get(cmd, "NOIB", &noib);
-  get(cmd, "NOIC", &noic);
-  get(cmd, "EM", &em);
-  get(cmd, "EF", &ef);
-  MODEL_MOS_BASE::parse_params(cmd);
+  return ONE_OF
+    || get(cmd, "DIODElevel", &mos_level)
+    || get(cmd, "CDSC", &cdsc)
+    || get(cmd, "CDSCB", &cdscb)
+    || get(cmd, "CDSCD", &cdscd)
+    || get(cmd, "CIT", &cit)
+    || get(cmd, "NFACTOR", &nfactor)
+    || get(cmd, "XJ", &xj)
+    || get(cmd, "VSAT", &vsat)
+    || get(cmd, "AT", &at)
+    || get(cmd, "A0", &a0)
+    || get(cmd, "AGS", &ags)
+    || get(cmd, "A1", &a1)
+    || get(cmd, "A2", &a2)
+    || get(cmd, "KETA", &keta)
+    || get(cmd, "NSUB", &nsub)
+    || get(cmd, "NCH", &npeak)
+    || get(cmd, "NGATE", &ngate)
+    || get(cmd, "GAMMA1", &gamma1)
+    || get(cmd, "GAMMA2", &gamma2)
+    || get(cmd, "VBX", &vbx)
+    || get(cmd, "VBM", &vbm)
+    || get(cmd, "XT", &xt)
+    || get(cmd, "K1", &k1)
+    || get(cmd, "KT1", &kt1)
+    || get(cmd, "KT1L", &kt1l)
+    || get(cmd, "KT2", &kt2)
+    || get(cmd, "K2", &k2)
+    || get(cmd, "K3", &k3)
+    || get(cmd, "K3B", &k3b)
+    || get(cmd, "W0", &w0)
+    || get(cmd, "NLX", &nlx)
+    || get(cmd, "DVT0", &dvt0)
+    || get(cmd, "DVT1", &dvt1)
+    || get(cmd, "DVT2", &dvt2)
+    || get(cmd, "DVT0W", &dvt0w)
+    || get(cmd, "DVT1W", &dvt1w)
+    || get(cmd, "DVT2W", &dvt2w)
+    || get(cmd, "DROUT", &drout)
+    || get(cmd, "DSUB", &dsub)
+    || get(cmd, "VTH0", &vth0)
+    || get(cmd, "UA1", &ua1)
+    || get(cmd, "UA", &ua)
+    || get(cmd, "UB1", &ub1)
+    || get(cmd, "UB", &ub)
+    || get(cmd, "UC1", &uc1)
+    || get(cmd, "UC", &uc)
+    || get(cmd, "U0", &u0)
+    || get(cmd, "UTE", &ute)
+    || get(cmd, "VOFF", &voff)
+    || get(cmd, "DELTA", &delta)
+    || get(cmd, "RDSW", &rdsw)
+    || get(cmd, "PRWG", &prwg)
+    || get(cmd, "PRWB", &prwb)
+    || get(cmd, "PRT", &prt)
+    || get(cmd, "ETA0", &eta0)
+    || get(cmd, "ETAB", &etab)
+    || get(cmd, "PCLM", &pclm)
+    || get(cmd, "PDIBLC1", &pdibl1)
+    || get(cmd, "PDIBLC2", &pdibl2)
+    || get(cmd, "PDIBLCB", &pdiblb)
+    || get(cmd, "PSCBE1", &pscbe1)
+    || get(cmd, "PSCBE2", &pscbe2)
+    || get(cmd, "PVAG", &pvag)
+    || get(cmd, "WR", &wr)
+    || get(cmd, "DWG", &dwg)
+    || get(cmd, "DWB", &dwb)
+    || get(cmd, "B0", &b0)
+    || get(cmd, "B1", &b1)
+    || get(cmd, "ALPHA0", &alpha0)
+    || get(cmd, "BETA0", &beta0)
+    || get(cmd, "ELM", &elm)
+    || get(cmd, "VFBCV", &vfbcv)
+    || get(cmd, "CGSL", &cgsl)
+    || get(cmd, "CGDL", &cgdl)
+    || get(cmd, "CKAPPA", &ckappa)
+    || get(cmd, "CF", &cf)
+    || get(cmd, "CLC", &clc)
+    || get(cmd, "CLE", &cle)
+    || get(cmd, "CAPMOD", &capMod)
+    || get(cmd, "NQSMOD", &nqsMod)
+    || get(cmd, "MOBMOD", &mobMod)
+    || get(cmd, "NOIMOD", &noiMod)
+    || get(cmd, "PARAMCHK", &paramChk)
+    || get(cmd, "BINUNIT", &binUnit)
+    || get(cmd, "VERSION", &version)
+    || get(cmd, "TOX", &tox)
+    || get(cmd, "XPART", &xpart)
+    || get(cmd, "JSW", &jctSidewallSatCurDensity)
+    || get(cmd, "MJSWG", &mjswg)
+    || get(cmd, "PBSWG", &pbswg)
+    || get(cmd, "CJSWG", &unitLengthGateSidewallJctCap)
+    || get(cmd, "NJ", &jctEmissionCoeff)
+    || get(cmd, "XTI", &jctTempExponent)
+    || get(cmd, "LINT", &Lint)
+    || get(cmd, "LL", &Ll)
+    || get(cmd, "LLN", &Lln)
+    || get(cmd, "LW", &Lw)
+    || get(cmd, "LWN", &Lwn)
+    || get(cmd, "LWL", &Lwl)
+    || get(cmd, "WINT", &Wint)
+    || get(cmd, "WL", &Wl)
+    || get(cmd, "WLN", &Wln)
+    || get(cmd, "WW", &Ww)
+    || get(cmd, "WWN", &Wwn)
+    || get(cmd, "WWL", &Wwl)
+    || get(cmd, "DWC", &dwc)
+    || get(cmd, "DLC", &dlc)
+    || get(cmd, "NOIA", &noia)
+    || get(cmd, "NOIB", &noib)
+    || get(cmd, "NOIC", &noic)
+    || get(cmd, "EM", &em)
+    || get(cmd, "EF", &ef)
+    || MODEL_MOS_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS7::parse_finish()
@@ -676,12 +670,12 @@ void MODEL_MOS7::print_params(OMSTREAM& o)const
   drout.print(o, "drout");
   dsub.print(o, "dsub");
   vth0.print(o, "vth0");
-  ua.print(o, "ua");
   ua1.print(o, "ua1");
-  ub.print(o, "ub");
+  ua.print(o, "ua");
   ub1.print(o, "ub1");
-  uc.print(o, "uc");
+  ub.print(o, "ub");
   uc1.print(o, "uc1");
+  uc.print(o, "uc");
   u0.print(o, "u0");
   ute.print(o, "ute");
   voff.print(o, "voff");
@@ -738,16 +732,12 @@ void MODEL_MOS7::print_params(OMSTREAM& o)const
   o << "  lw=" << Lw;
   o << "  lwn=" << Lwn;
   o << "  lwl=" << Lwl;
-  o << "  lmin=" << Lmin;
-  o << "  lmax=" << Lmax;
   o << "  wint=" << Wint;
   o << "  wl=" << Wl;
   o << "  wln=" << Wln;
   o << "  ww=" << Ww;
   o << "  wwn=" << Wwn;
   o << "  wwl=" << Wwl;
-  o << "  wmin=" << Wmin;
-  o << "  wmax=" << Wmax;
   if (dwc != NA)
     o << "  dwc=" << dwc;
   if (dlc != NA)
@@ -769,12 +759,7 @@ void MODEL_MOS7::print_calculated(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 bool MODEL_MOS7::is_valid(const COMMON_COMPONENT* cc)const
 {
-  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
-  {if (!c) {
-    return MODEL_MOS_BASE::is_valid(cc);
-  }else{
-    return MODEL_MOS_BASE::is_valid(cc);
-  }}
+  return MODEL_MOS_BASE::is_valid(cc);
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS7::tr_eval(COMPONENT* brh)const

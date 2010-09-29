@@ -187,58 +187,60 @@ bool MODEL_MOS5::parse_front(CS& cmd)
   return MODEL_MOS_BASE::parse_front(cmd);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_MOS5::parse_params(CS& cmd)
+bool MODEL_MOS5::parse_params(CS& cmd)
 {
-  get(cmd, "DIODElevel", &mos_level);
-  get(cmd, "PHI", &phi);
-  get(cmd, "VFB", &vfb);
-  get(cmd, "K1", &k1);
-  get(cmd, "K2", &k2);
-  get(cmd, "ETA0", &eta0);
-  get(cmd, "ETAB", &etaB);
-  get(cmd, "MU0", &mob0);
-  get(cmd, "MU0B", &mob0B);
-  get(cmd, "MUS0", &mobs0);
-  get(cmd, "MUSB", &mobsB);
-  get(cmd, "MU20", &mob20);
-  get(cmd, "MU2B", &mob2B);
-  get(cmd, "MU2G", &mob2G);
-  get(cmd, "MU30", &mob30);
-  get(cmd, "MU3B", &mob3B);
-  get(cmd, "MU3G", &mob3G);
-  get(cmd, "MU40", &mob40);
-  get(cmd, "MU4B", &mob4B);
-  get(cmd, "MU4G", &mob4G);
-  get(cmd, "UA0", &ua0);
-  get(cmd, "UAB", &uaB);
-  get(cmd, "UB0", &ub0);
-  get(cmd, "UBB", &ubB);
-  get(cmd, "U10", &u10);
-  get(cmd, "U1B", &u1B);
-  get(cmd, "U1D", &u1D);
-  get(cmd, "N0", &n0, mPOSITIVE);
-  get(cmd, "NB", &nB);
-  get(cmd, "ND", &nD);
-  get(cmd, "VOF0", &vof0);
-  get(cmd, "VOFB", &vofB);
-  get(cmd, "VOFD", &vofD);
-  get(cmd, "AI0", &ai0);
-  get(cmd, "AIB", &aiB);
-  get(cmd, "BI0", &bi0);
-  get(cmd, "BIB", &biB);
-  get(cmd, "VGHIGH", &vghigh);
-  get(cmd, "VGLOW", &vglow);
-  get(cmd, "DL", &dl, mSCALE, MICRON2METER);
-  get(cmd, "DW", &dw, mSCALE, MICRON2METER);
-  get(cmd, "TOX", &tox, mSCALE, MICRON2METER);
-  get(cmd, "VDD", &vdd);
-  get(cmd, "VGG", &vgg);
-  get(cmd, "VBB", &vbb);
-  get(cmd, "WDF", &wdf);
-  get(cmd, "DELL", &dell);
-  get(cmd, "TEMP", &temp, mOFFSET, -ABS_ZERO);
-  get(cmd, "XPART", &xpart);
-  MODEL_MOS_BASE::parse_params(cmd);
+  return ONE_OF
+    || get(cmd, "DIODElevel", &mos_level)
+    || get(cmd, "PHI", &phi)
+    || get(cmd, "VFB", &vfb)
+    || get(cmd, "K1", &k1)
+    || get(cmd, "K2", &k2)
+    || get(cmd, "ETA0", &eta0)
+    || get(cmd, "ETAB", &etaB)
+    || get(cmd, "MU0", &mob0)
+    || get(cmd, "MU0B", &mob0B)
+    || get(cmd, "MUS0", &mobs0)
+    || get(cmd, "MUSB", &mobsB)
+    || get(cmd, "MU20", &mob20)
+    || get(cmd, "MU2B", &mob2B)
+    || get(cmd, "MU2G", &mob2G)
+    || get(cmd, "MU30", &mob30)
+    || get(cmd, "MU3B", &mob3B)
+    || get(cmd, "MU3G", &mob3G)
+    || get(cmd, "MU40", &mob40)
+    || get(cmd, "MU4B", &mob4B)
+    || get(cmd, "MU4G", &mob4G)
+    || get(cmd, "UA0", &ua0)
+    || get(cmd, "UAB", &uaB)
+    || get(cmd, "UB0", &ub0)
+    || get(cmd, "UBB", &ubB)
+    || get(cmd, "U10", &u10)
+    || get(cmd, "U1B", &u1B)
+    || get(cmd, "U1D", &u1D)
+    || get(cmd, "N0", &n0, mPOSITIVE)
+    || get(cmd, "NB", &nB)
+    || get(cmd, "ND", &nD)
+    || get(cmd, "VOF0", &vof0)
+    || get(cmd, "VOFB", &vofB)
+    || get(cmd, "VOFD", &vofD)
+    || get(cmd, "AI0", &ai0)
+    || get(cmd, "AIB", &aiB)
+    || get(cmd, "BI0", &bi0)
+    || get(cmd, "BIB", &biB)
+    || get(cmd, "VGHIGH", &vghigh)
+    || get(cmd, "VGLOW", &vglow)
+    || get(cmd, "DL", &dl, mSCALE, MICRON2METER)
+    || get(cmd, "DW", &dw, mSCALE, MICRON2METER)
+    || get(cmd, "TOX", &tox, mSCALE, MICRON2METER)
+    || get(cmd, "VDD", &vdd)
+    || get(cmd, "VGG", &vgg)
+    || get(cmd, "VBB", &vbb)
+    || get(cmd, "WDF", &wdf)
+    || get(cmd, "DELL", &dell)
+    || get(cmd, "TEMP", &temp, mOFFSET, -ABS_ZERO)
+    || get(cmd, "XPART", &xpart)
+    || MODEL_MOS_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS5::parse_finish()
@@ -342,12 +344,7 @@ void MODEL_MOS5::print_calculated(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 bool MODEL_MOS5::is_valid(const COMMON_COMPONENT* cc)const
 {
-  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
-  {if (!c) {
-    return MODEL_MOS_BASE::is_valid(cc);
-  }else{
-    return MODEL_MOS_BASE::is_valid(cc);
-  }}
+  return MODEL_MOS_BASE::is_valid(cc);
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS5::tr_eval(COMPONENT* brh)const

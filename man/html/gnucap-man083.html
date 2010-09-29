@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+X: Subcircuit Call
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc82">3.24</A>&nbsp;&nbsp;<TT>X</TT>: Subcircuit Call</H2>
+
+<H3>3.24.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>X</TT><I>xxxxxxx n1</I> {<I>n2 n3 ...</I>} <I>subname</I>
+
+
+<H3>3.24.2&nbsp;&nbsp;Purpose</H3>
+Subcircuit call
+
+<H3>3.24.3&nbsp;&nbsp;Comments</H3>
+Subcircuits are used by specifying pseudo-elements beginning with <TT>X</TT>,
+followed by the connection nodes.
+
+<H3>3.24.4&nbsp;&nbsp;Probes</H3>
+<DL COMPACT=compact><DT><B><TT>V</TT><I>x</I></B><DD> Port (terminal node) voltage. <I>x</I> is
+which port to probe. 1 is the first node in the "X" statement, 2
+is the second, and so on.<BR>
+<BR>
+<DT><B><TT>P</TT></B><DD> Power. The sum of the power probes for all the internal elements.<BR>
+<BR>
+<DT><B><TT>PD</TT></B><DD> Power dissipated. The total power dissipated as heat.<BR>
+<BR>
+<DT><B><TT>PS</TT></B><DD> Power sourced. The total power generated.</DL>
+In this release, there are no probes available in AC analysis except for the
+internal elements. More parameters will be added. Internal elements can be
+probed by concatenating the internal part label with the subcircuit label.
+R5.X7 is R5 inside X7.
+ </BODY>
+</HTML>

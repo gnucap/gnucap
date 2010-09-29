@@ -1,4 +1,4 @@
-/*$Id: mg_in.cc,v 22.21 2002/10/06 07:21:42 al Exp $ -*- C++ -*-
+/*$Id: mg_in.cc,v 24.12 2003/12/14 01:58:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -71,21 +71,23 @@ void Parameter::parse(CS& file)
   file >> _type >> _code_name >> _comment;
   int here = file.cursor();
   {for (;;) {
-    get(file, "NAME",		&_user_name);
-    get(file, "ALT_name",	&_alt_name);
-    get(file, "DEFAult",	&_default_val);
-    get(file, "OFFSet",		&_offset);
-    set(file, "POSItive",	&_positive,	true);
-    set(file, "OCTAl",		&_octal,	true);
-    get(file, "PRINt_test",	&_print_test);
-    get(file, "CALC_Print_test",&_calc_print_test);
-    get(file, "SCALe",		&_scale);
-    get(file, "CALCUlate",	&_calculate);
-    get(file, "QUIET_MIn",	&_quiet_min);
-    get(file, "QUIET_MAx",	&_quiet_max);
-    get(file, "FINAl_default",	&_final_default);
-    get(file, "/*$$",		&dummy_c_comment);
-    get(file, "//$$",		&dummy_cxx_comment);
+    0 
+      || get(file, "NAME",	     &_user_name)
+      || get(file, "ALT_name",	     &_alt_name)
+      || get(file, "DEFAult",	     &_default_val)
+      || get(file, "OFFSet",	     &_offset)
+      || set(file, "POSItive",	     &_positive,	true)
+      || set(file, "OCTAl",	     &_octal,		true)
+      || get(file, "PRINt_test",     &_print_test)
+      || get(file, "CALC_Print_test",&_calc_print_test)
+      || get(file, "SCALe",	     &_scale)
+      || get(file, "CALCUlate",	     &_calculate)
+      || get(file, "QUIET_MIn",	     &_quiet_min)
+      || get(file, "QUIET_MAx",	     &_quiet_max)
+      || get(file, "FINAl_default",  &_final_default)
+      || get(file, "/*$$",	     &dummy_c_comment)
+      || get(file, "//$$",	     &dummy_cxx_comment)
+      ;
     {if (file.skip1(";")) {
       break;
     }else if (!file.more()) {
@@ -133,15 +135,17 @@ void Parameter_Block::parse(CS& file)
   int paren = file.skip1b("{");
   int here = file.cursor();
   {for (;;) {
-    get(file, "UNNAmed",		&_unnamed_value);
-    get(file, "OVERride",		&_override);
-    get(file, "RAW_parameters",		&_raw);
-    get(file, "CALCulated_parameters",	&_calculated);
-    get(file, "CODE_PRE",		&_code_pre);
-    get(file, "CODE_MID",		&_code_mid);
-    get(file, "CODE_POST",		&_code_post);
-    get(file, "/*$$",			&dummy_c_comment);
-    get(file, "//$$",			&dummy_cxx_comment);
+    0
+      || get(file, "UNNAmed",		&_unnamed_value)
+      || get(file, "OVERride",		&_override)
+      || get(file, "RAW_parameters",	&_raw)
+      || get(file, "CALCulated_parameters",&_calculated)
+      || get(file, "CODE_PRE",		&_code_pre)
+      || get(file, "CODE_MID",		&_code_mid)
+      || get(file, "CODE_POST",		&_code_post)
+      || get(file, "/*$$",		&dummy_c_comment)
+      || get(file, "//$$",		&dummy_cxx_comment)
+      ;
     paren -= file.skip1b("}");
     {if (paren == 0) {
       break;
@@ -172,8 +176,10 @@ void Port::parse(CS& file)
   file >> _name;
   int here = file.cursor();
   {for (;;) {
-    get(file, "SHORT_TO",	&_short_to);
-    get(file, "SHORT_IF",	&_short_if);
+    0
+      || get(file, "SHORT_TO",	&_short_to)
+      || get(file, "SHORT_IF",	&_short_if)
+      ;
     {if (file.skip1(";,")) {
       break;
     }else if (!file.more()) {
@@ -190,14 +196,16 @@ void Element::parse(CS& file)
   file >> _dev_type >> _name >> _port_list;
   int here = file.cursor();
   {for (;;) {
-    get(file, "EVAL",	&_eval);
-    get(file, "VALue",	&_value);
-    get(file, "ARGS",	&_args);
-    get(file, "OMIT",	&_omit);
-    get(file, "REVerse",&_reverse);
-    get(file, "STAte",  &_state);
-    get(file, "/*$$",	&dummy_c_comment);
-    get(file, "//$$",	&dummy_cxx_comment);
+    0
+      || get(file, "EVAL",	&_eval)
+      || get(file, "VALue",	&_value)
+      || get(file, "ARGS",	&_args)
+      || get(file, "OMIT",	&_omit)
+      || get(file, "REVerse",	&_reverse)
+      || get(file, "STAte",	&_state)
+      || get(file, "/*$$",	&dummy_c_comment)
+      || get(file, "//$$",	&dummy_cxx_comment)
+      ;
     {if (file.skip1(";")) {
       break;
     }else if (!file.more()) {
@@ -224,7 +232,8 @@ void Circuit::parse(CS& file)
   get(file, "/*$$", &dummy_c_comment);
   get(file, "//$$", &dummy_cxx_comment);
   get(file, "SYNC", &_sync) && file.skip1(";");
-  (get(file, "PORts", &_port_list) && file.skip1(";"))
+  (get(file, "PORts", &_required_nodes)
+   && ((file >> _optional_nodes), file.skip1(";")))
     || file.warn(0, "need Ports");
   get(file, "LOCal_nodes", &_local_nodes) && file.skip1(";");
   int here = file.cursor();
@@ -239,9 +248,11 @@ void Circuit::parse(CS& file)
       file.warn(0, "premature EOF (Circuit)");
       break;
     }}
-    get(file, "/*$$", &dummy_c_comment)
+    0
+      || get(file, "/*$$", &dummy_c_comment)
       || get(file, "//$$", &dummy_cxx_comment)
-      || (file >> _element_list);
+      || (file >> _element_list)
+      ;
     if (file.stuck(&here)) {
       file.warn(0, "bad Circuit");
       break;
@@ -255,18 +266,20 @@ void Model::parse(CS& file)
   int paren = file.skip1b("{");
   int here = file.cursor();
   {for (;;) {
-    get(file, "BASE",			&_is_base);
-    get(file, "LEVEl",			&_level);
-    get(file, "DEV_type",		&_dev_type);
-    get(file, "INHErit",		&_inherit);
-    get(file, "KEYS",			&_key_list);
-    get(file, "INDEpendent",		&_independent);
-    get(file, "SIZE_dependent",		&_size_dependent);
-    get(file, "TEMPerature_dependent",	&_temperature);
-    get(file, "TR_Eval",		&_tr_eval);
-    get(file, "VALidate",		&_validate);
-    get(file, "/*$$",			&dummy_c_comment);
-    get(file, "//$$",			&dummy_cxx_comment);
+    0
+      || get(file, "BASE",		&_is_base)
+      || get(file, "LEVEl",		&_level)
+      || get(file, "DEV_type",		&_dev_type)
+      || get(file, "INHErit",		&_inherit)
+      || get(file, "KEYS",		&_key_list)
+      || get(file, "INDEpendent",	&_independent)
+      || get(file, "SIZE_dependent",	&_size_dependent)
+      || get(file, "TEMPerature_dependent", &_temperature)
+      || get(file, "TR_Eval",		&_tr_eval)
+      || get(file, "VALidate",		&_validate)
+      || get(file, "/*$$",		&dummy_c_comment)
+      || get(file, "//$$",		&dummy_cxx_comment)
+      ;
     paren -= file.skip1b("}");
     {if (paren == 0) {
       break;
@@ -286,18 +299,20 @@ void Device::parse(CS& file)
   int paren = file.skip1b("{");
   int here = file.cursor();
   {for (;;) {
-    get(file, "PARSe_name",	&_parse_name);
-    get(file, "ID_letter",	&_id_letter);
-    get(file, "MODel_type",	&_model_type);
-    get(file, "CIRcuit",	&_circuit);
-    get(file, "TR_Probes",	&_probes);
-    get(file, "DEVIce", 	&_device);
-    get(file, "COMmon", 	&_common);
-    get(file, "TR_Eval",	&_tr_eval);
-    get(file, "EVAL",		&_eval_list);
-    get(file, "FUNction",	&_function_list);
-    get(file, "/*$$",		&dummy_c_comment);
-    get(file, "//$$",		&dummy_cxx_comment);
+    0
+      || get(file, "PARSe_name",&_parse_name)
+      || get(file, "ID_letter",	&_id_letter)
+      || get(file, "MODel_type",&_model_type)
+      || get(file, "CIRcuit",	&_circuit)
+      || get(file, "TR_Probes",	&_probes)
+      || get(file, "DEVIce",	&_device)
+      || get(file, "COMmon", 	&_common)
+      || get(file, "TR_Eval",	&_tr_eval)
+      || get(file, "EVAL",	&_eval_list)
+      || get(file, "FUNction",	&_function_list)
+      || get(file, "/*$$",	&dummy_c_comment)
+      || get(file, "//$$",	&dummy_cxx_comment)
+      ;
     paren -= file.skip1b("}");
     {if (paren == 0) {
       break;
@@ -361,14 +376,16 @@ File::File(const std::string& file_name)
   get(_file, "/*$$",		&_head);
   int here = _file.cursor();
   {for (;;) {
-    get(_file, "H_Headers",	&_h_headers);
-    get(_file, "CC_Headers",	&_cc_headers);
-    get(_file, "DEVice", 	&_device_list);
-    get(_file, "MODel", 	&_model_list);
-    get(_file, "H_Direct", 	&_h_direct);
-    get(_file, "CC_Direct",	&_cc_direct);
-    get(_file, "/*$$",		&dummy_c_comment);
-    get(_file, "//$$",		&dummy_cxx_comment);
+    0
+      || get(_file, "H_Headers", &_h_headers)
+      || get(_file, "CC_Headers",&_cc_headers)
+      || get(_file, "DEVice",	 &_device_list)
+      || get(_file, "MODel", 	 &_model_list)
+      || get(_file, "H_Direct",  &_h_direct)
+      || get(_file, "CC_Direct", &_cc_direct)
+      || get(_file, "/*$$",	 &dummy_c_comment)
+      || get(_file, "//$$",	 &dummy_cxx_comment)
+      ;
     {if (!_file.more()) {
       break;
     }else if (_file.stuck(&here)) {

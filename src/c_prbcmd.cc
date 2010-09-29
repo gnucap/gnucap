@@ -1,4 +1,4 @@
-/*$Id: c_prbcmd.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: c_prbcmd.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -70,12 +70,14 @@ static void do_probe(CS& cmd, PROBELIST *probes)
     action = aNEW;		/* .probe ac + ..... 		    */
   }}				/* which will not clear first	    */
 
-  /**/ set(cmd, "TRan",	  &simtype,	sTRAN)
-    || set(cmd, "AC",	  &simtype,	sAC)
-    || set(cmd, "DC",	  &simtype,	sDC)
-    || set(cmd, "OP",	  &simtype,	sOP)
-    || set(cmd, "FOurier", &simtype,	sFOURIER);
-
+  0
+    || set(cmd, "TRan",	   &simtype,	sTRAN)
+    || set(cmd, "AC",	   &simtype,	sAC)
+    || set(cmd, "DC",	   &simtype,	sDC)
+    || set(cmd, "OP",	   &simtype,	sOP)
+    || set(cmd, "FOurier", &simtype,	sFOURIER)
+    ;
+  
   if (!simtype){			/* must be all simtypes */
     {if (cmd.end()){				/* list all */
       probes[sTRAN].listing("tran");

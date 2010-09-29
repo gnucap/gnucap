@@ -1,4 +1,4 @@
-/*$Id: bm_complex.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_complex.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -37,27 +37,17 @@ EVAL_BM_COMPLEX::EVAL_BM_COMPLEX(const EVAL_BM_COMPLEX& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COMPLEX::parse(CS& cmd)
+void EVAL_BM_COMPLEX::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    double real = NOT_VALID;
-    double imag = 0.;
-    cmd >> real >> imag;
-    {if (cmd.gotit(here)){
-      _value = COMPLEX(real,imag);
-    }else{
-      untested();
-    }}
-    paren -= cmd.skiprparen();
-    if (paren != 0){
-      untested();
-      cmd.warn(bWARNING, "need )");
-    }
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+  double real = NOT_VALID;
+  double imag = 0.;
+  cmd >> real >> imag;
+  {if (cmd.gotit(here)){
+    _value = COMPLEX(real,imag);
+  }else{
+    untested();
+  }}
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_COMPLEX::print(OMSTREAM& where)const

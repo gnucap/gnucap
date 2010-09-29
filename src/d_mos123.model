@@ -1,4 +1,4 @@
-/* $Id: d_mos123.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos123.model,v 24.7 2003/06/12 04:59:26 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -62,10 +62,25 @@ model MOS123 {
 	print_test="nss != 0.0 || nsub != NA";
       double xj "metallurgical junction depth"
 	name=XJ default=NA positive;
-      double ld "lateral diffusion"
-	name=LD default=0.0;
+
+      double lmlt "length shrink factor"
+	name=LMLT default=1.0 print_test="lmlt!=1.0";
+      double del "channel length reduction each side"
+	name=DEL default=0.0 print_test="del!=0.0";
+      double ld "lateral length diffusion"
+	name=LD alt_name=DLAT alt_name=LADT default=0.0;
+      double xl "length bias accounts for masking and etching effects"
+	name=XL alt_name=DL alt_name=LDEL default=0.0 print_test="xl!=0.0";
+
+      double wmlt "width shrink factor"
+	name=WMLT default=1.0 print_test="wmlt!=1.0";
+      double wd "width diffusion"
+	name=WD default=0.0 print_test="wd!=0.0";
+      double xw "width bias accounts for masking and etching effects"
+	name=XW alt_name=DW alt_name=WDEL default=0.0 print_test="xw!=0.0";
+
       double uo "surface mobility" 
-	name=UO default="(600.*CM2M2)" scale=CM2M2;
+	name=UO alt_name=U0 default="(600.*CM2M2)" scale=CM2M2;
       int tpg "type of gate material - really gate_t"
 	name=TPG default=gtOPP;
     }
@@ -98,7 +113,10 @@ model MOS123 {
   }
   size_dependent {
     override {
-      double l_eff "" calculate="l_eff - 2. * m->ld";
+      double l_eff "" 
+	calculate="l_eff * m->lmlt + m->xl - 2. * (m->ld + m->del)";
+      double w_eff "" 
+	calculate="w_eff * m->wmlt + m->xw - 2. * m->wd";
       double cgate "" calculate="m->cox * w_eff * l_eff";
       double phi "" calculate="m->phi";
     }

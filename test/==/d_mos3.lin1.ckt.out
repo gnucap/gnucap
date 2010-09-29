@@ -44,7 +44,7 @@ cmosn: is - js conflict
  9.         9.         0.0099966  0.01      -3.389u    
  10.        10.        0.0099962  0.01      -3.8307u   
 Vgs  1  0  DC   3.236734    
-M1  2  1  0  4  cmosn  l= 9.u  w= 9.u  nrd= 1.  nrs= 1.
+M1  2  1  0  4  cmosn  l= 9.u  w= 9.u
 Vds  3  0  DC   0.01
 Rds  2  3  1.
 Vbs  4  0  DC  -1.234875    
@@ -79,3 +79,4 @@ Vbs  4  0  DC  -1.234875
 .op 
 .print dc v(1) v(2) v(3) i(vds) 
 .dc vgs -10 10 1 
+.width out=80 

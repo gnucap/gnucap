@@ -6,8 +6,7 @@
 V1  1  0  DC   2.  AC   5.
 R1  1  2  1.K
 R2  2  0  t1  l= 1.u  w= 2.u  temp= 37.
-.model  t1  r  (  tnom= 27.  rsh= 1.K  narrow= 0.  defw= 1.u  tc1= 0.1
-+  tc2= 0.)
+.model  t1  r  (  rsh= 1.K  narrow= 0.  defw= 1.u  tc1= 0.1  tc2= 0.  tnom= 27.)
 *+()
 .print op v(nodes) r(r*) 
 .print ac v(nodes) 

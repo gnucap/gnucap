@@ -1,4 +1,4 @@
-/*$Id: e_node.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: e_node.cc,v 24.23 2004/02/01 21:12:55 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -44,15 +44,46 @@
 //	NODE&	NODE::set_event(double delay)
 double volts_limited(const node_t & n1, const node_t & n2);
 /*--------------------------------------------------------------------------*/
-inline LOGICVAL& LOGICVAL::set_in_transition()
+const _LOGICVAL LOGICVAL::or_truth[lvNUM_STATES][lvNUM_STATES] = {
+  {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
+  {lvRISING,  lvRISING,  lvRISING,  lvSTABLE1, lvRISING},
+  {lvFALLING, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
+  {lvSTABLE1, lvSTABLE1, lvSTABLE1, lvSTABLE1, lvSTABLE1},
+  {lvUNKNOWN, lvRISING,  lvUNKNOWN, lvSTABLE1, lvUNKNOWN}
+};
+/*--------------------------------------------------------------------------*/
+const _LOGICVAL LOGICVAL::xor_truth[lvNUM_STATES][lvNUM_STATES] = {
+  {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
+  {lvRISING,  lvFALLING, lvRISING,  lvFALLING, lvUNKNOWN},
+  {lvFALLING, lvRISING,  lvFALLING, lvRISING,  lvUNKNOWN},
+  {lvSTABLE1, lvFALLING, lvRISING,  lvSTABLE0, lvUNKNOWN},
+  {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN}
+};
+/*--------------------------------------------------------------------------*/
+const _LOGICVAL LOGICVAL::and_truth[lvNUM_STATES][lvNUM_STATES] = {
+  {lvSTABLE0, lvSTABLE0, lvSTABLE0, lvSTABLE0, lvSTABLE0},
+  {lvSTABLE0, lvRISING,  lvFALLING, lvRISING,  lvUNKNOWN},
+  {lvSTABLE0, lvFALLING, lvFALLING, lvFALLING, lvFALLING},
+  {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
+  {lvSTABLE0, lvUNKNOWN, lvFALLING, lvUNKNOWN, lvUNKNOWN}
+};
+/*--------------------------------------------------------------------------*/
+const _LOGICVAL LOGICVAL::not_truth[lvNUM_STATES] = {
+  lvSTABLE1, lvFALLING, lvRISING,  lvSTABLE0, lvUNKNOWN  
+};
+/*--------------------------------------------------------------------------*/
+static _LOGICVAL prop_truth[lvNUM_STATES][lvNUM_STATES] = {
+  {lvSTABLE0, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
+  {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN},
+  {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN},
+  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvSTABLE1, lvUNKNOWN},
+  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN}
+};
+/*--------------------------------------------------------------------------*/
+inline LOGICVAL& LOGICVAL::set_in_transition(LOGICVAL newval)
 {
-  switch (_lv) {
-  case lvSTABLE0: _lv = lvRISING; break;
-  case lvRISING:  untested(); break;
-  case lvFALLING: untested(); break;
-  case lvSTABLE1: _lv = lvFALLING; break;
-  case lvUNKNOWN: untested(); break;
-  }
+  _lv = prop_truth[_lv][newval];
+  assert(_lv != lvUNKNOWN);
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -156,14 +187,14 @@ NODE& NODE::to_logic(const MODEL_LOGIC* f)
   }
   _family = f;
 
+
   if (is_analog() &&  _d_iter < _a_iter) {
-    switch (SIM::phase) { // BUG:: hack to avoid crash on restart with t=0
+    switch (SIM::phase) {
     case SIM::pDC_SWEEP:
     case SIM::pINIT_DC:	_lastchange=_old_lastchange=0;_lv=lvUNKNOWN;break;
     case SIM::pTRAN:	break;
     case SIM::pNONE:	unreachable(); break;
     }
-
     _dt = SIM::time0 - _lastchange;
     {if (_dt < 0.) {
       error(bPICKY, "time moving backwards.  was %g, now %g\n",
@@ -238,7 +269,6 @@ NODE& NODE::to_logic(const MODEL_LOGIC* f)
 	untested();
 	error(bDANGER, "inflection???\n");
 	set_bad_quality("in transition but no change");
-	//assert(is_in_transition());
 	/* state (rise/fall)  unchanged */
       }}
     }}
@@ -315,6 +345,8 @@ NODE& NODE::propagate()
 /*--------------------------------------------------------------------------*/
 NODE& NODE::force_initial_value(LOGICVAL v)
 {
+  assert(SIM::phase == SIM::pINIT_DC || SIM::phase == SIM::pDC_SWEEP);
+  assert(SIM::time0 == 0.);
   assert(is_unknown());
   assert(is_digital());
   _lv = v; // BUG ??
@@ -325,9 +357,9 @@ NODE& NODE::force_initial_value(LOGICVAL v)
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-NODE& NODE::set_event(double delay)
+NODE& NODE::set_event(double delay, LOGICVAL v)
 {
-  _lv.set_in_transition();
+  _lv.set_in_transition(v);
   if (SIM::phase == SIM::pTRAN  &&  in_transit()) { 
     untested();
     set_bad_quality("race");
@@ -350,17 +382,14 @@ static int name2number(CS& cmd, const CARD* d)
   {if (OPT::named_nodes) {
     int here = cmd.cursor();
     {if (cmd.skiprparen()) {
-      untested();
       cmd.reset(here);
       return INVALID_NODE;
     }else{
       std::string node = cmd.ctos();
       {if (!cmd.more()) {
-	untested();
 	cmd.reset(here);
 	return INVALID_NODE;
       }else if (cmd.stuck(&here)) {
-	untested();
 	return INVALID_NODE;
       }else{
 	assert(d);

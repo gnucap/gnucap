@@ -1,4 +1,4 @@
-/*$Id: mg_out_common.cc,v 22.17 2002/08/26 04:30:22 al Exp $ -*- C++ -*-
+/*$Id: mg_out_common.cc,v 24.5 2003/04/27 01:04:58 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -129,9 +129,11 @@ static void make_common_parse(std::ofstream& out, const Device& d)
       "  }\n";
   }
   out << "  int here = cmd.cursor();\n"
-    "  do{\n";
+    "  do{\n"
+    "    0\n";
   make_get_param_list(out, d.common().raw());
-  out << "  }while (cmd.more() && !cmd.stuck(&here));\n"
+  out << "    ;\n"
+    "  }while (cmd.more() && !cmd.stuck(&here));\n"
     "  cmd.check(bWARNING, \"what's this?\");\n"
     "}\n"
     "/*--------------------------------------"

@@ -1,4 +1,4 @@
-/*$Id: e_card.h,v 22.13 2002/08/01 16:27:25 al Exp $ -*- C++ -*-
+/*$Id: e_card.h,v 24.12 2003/12/14 01:58:35 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -88,7 +88,7 @@ public:					// query functions.
   static double	probe(const CARD*,const std::string&);
   int		connects_to(const node_t& node)const;
   //--------------------------------------------------------------------
-protected:				// query functions. deferred inline
+public:					// query functions. deferred inline
   bool	evaluated();
   //--------------------------------------------------------------------
 public:					// query functions. virtual constant
@@ -113,8 +113,9 @@ public:					// query functions.
   int		     evaliter()const	{return STATUS::iter[iTOTAL];}
   bool		     constant()const	{return _constant;}
   //--------------------------------------------------------------------
-protected:				// modifiers.
+public:					// modifiers.
   virtual void	set_slave()		{untested(); subckt().set_slave();}
+protected:
   virtual void  set_value(double v)	{_value = v;}
 public:
   virtual void  set_value(double v, COMMON_COMPONENT*)
@@ -127,7 +128,6 @@ public:
   void	  set_owner(CARD* o)	{assert(!_owner||_owner==o); _owner=o;}
   void	  set_constant(bool c)	{_constant = c;}
   //--------------------------------------------------------------------
-  friend class CARD_LIST;
   friend CARD_LIST::fat_iterator findbranch(CS&,CARD_LIST::fat_iterator);
 };
 /*--------------------------------------------------------------------------*/

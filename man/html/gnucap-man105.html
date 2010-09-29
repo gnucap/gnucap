@@ -1,0 +1,495 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+Using the model compiler
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc104">6.1</A>&nbsp;&nbsp;Using the model compiler</H2>
+This section is a first cut at documentation. If you actually want to
+install a model, please ask for more information. Your questions will
+help me write the more complete documentation. (aldavis@ieee.org)<BR>
+<BR>
+To create a model using this method, you create one file, with the
+extension <TT>.model</TT>. A separate program, <TT>modelgen</TT> processes
+this file to generate the appropriate <TT>.cc</TT> and <TT>.h</TT> files.
+The resulting files are equivalent to the subcircuit method of
+creating models.<BR>
+<BR>
+There are two primary sections, <TT>device</TT> and <TT>model</TT>. Most
+models have both, but a device can use several different <TT>model</TT>s
+as long as they are derived from a common base and designed to work
+together. It is standard practice to share like this. For example,
+all of the MOS models use the same <TT>device</TT> section.<BR>
+<BR>
+Any <TT>model</TT> can inherit from another <TT>model</TT>, thus reducing
+the need for repetition when code or parameters are the same in
+different models, and allowing several to use the same <TT>device</TT>
+section.<BR>
+<BR>
+This model compiler has restrictions that will be removed in future
+releases. Not all device types can be fully done with it, due to
+missing features. Often, it is necessary to finish the job manually.
+In this release (0.30), the diode fully uses it, but not the way I
+want to. The MOSFET uses the <TT>cc_direct</TT> to finish the job. Two
+functions <TT>do_tr</TT> and <TT>tr_needs_eval</TT> must be provided this
+way. Code placed here is simply copied out.<BR>
+<BR>
+As a general rule, when using the name = value form, the value is
+delimited by whitespace, or possibly other tokens. If you want blanks
+in the value string, put it in quotes. It is recommended to quote any
+value string that is comprised of more than one word, even if there
+are no blanks.
+
+<H3>6.1.1&nbsp;&nbsp;Device section</H3>
+<DL COMPACT=compact><DT><B><TT>parse_name</TT></B><DD> (required)
+This is the name of the device, to be recognized by the parser, in
+Gnucap native format. Example: <TT>diode</TT>.<BR>
+<BR>
+<DT><B><TT>id_letter</TT></B><DD> (required)
+This is the letter used to identify the device, when the <TT>parse_name</TT> is omitted (Spice format). Example: <TT>D</TT> identifies a
+diode.<BR>
+<BR>
+<DT><B><TT>model_type</TT></B><DD> (required)
+This is the name of the model type associated with this device type.
+It can be the name of the one matching type, or the name of a base
+from which a family can be derived.<BR>
+<BR>
+<DT><B><TT>circuit</TT></B><DD> (required)
+This is a subsection containing a netlist representing the internal
+structure of the device. See the section <EM>circuit subsection</EM> for
+details.<BR>
+<BR>
+<DT><B><TT>tr_probe</TT></B><DD> (optional)
+This is a subsection containing a list of internal probes to be made
+available to the user. See the section <EM>Tr_probe subsection</EM> for
+details.<BR>
+<BR>
+<DT><B><TT>device</TT></B><DD> (required)
+This is a subsection describing the non-shared data relating to the
+device. Information here is unique to this device. It is primarily
+state information. See the section <EM>Device subsection</EM> for
+details.<BR>
+<BR>
+<DT><B><TT>common</TT></B><DD> (optional)
+This is a subsection describing the shared data relating to the device.
+Information here may be shared between similar devices. It is
+primarily information that is read from the circuit description. See
+the section <EM>Common subsection</EM> for details.<BR>
+<BR>
+<DT><B><TT>tr_eval</TT></B><DD> (optional)
+This is a subsection which will eventually contain evaluation code for
+the whole device. For now, it is a stub, which is used as a flag.
+See the section <EM>Tr_eval subsection</EM> for details. If this
+subsection is omitted, it is considered to be a pure subcircuit.<BR>
+<BR>
+<DT><B><TT>eval</TT></B><DD> (optional)
+There may be any number of <TT>eval</TT> subsections, which are specific
+evaluators for internal elements. See the section <EM>Evaluators</EM>
+for details.</DL>
+
+
+<H4>Circuit subsection</H4>
+The circuit subsection has 5 parts, in order.
+<OL type=1><LI>The optional keyword ``<TT>sync</TT>'' says that the entire subcircuit
+representing the device must be evaluated synchronously. Without this
+keyword, it is treated as a subcircuit made of independent elements.<BR>
+<BR>
+<LI>The port list ``<TT>ports</TT>'', which is a list of the nodes
+interfacing to the outside.<BR>
+<BR>
+<LI>A list of local internal nodes, not visible outside.<BR>
+<BR>
+Each local node may have two optional attributes:
+<DL COMPACT=compact><DT><B><TT>short_if</TT></B><DD>
+This specifies a conditional which if true will result in this node
+being omitted.<BR>
+<BR>
+<DT><B><TT>short_to</TT></B><DD>
+This specifies another node which will be substituted for this node if
+the <TT>short_if</TT> condition is true.</DL><BR>
+<BR>
+<LI>Any number of named and typed <TT>args</TT> sections. Each section
+contains name = value pairs which assign values to elements in the
+subcircuit. It is used only for more complex elements like diodes.<BR>
+<BR>
+<LI>A list of circuit elements that comprise the model. Each has three
+required fields, then a list of optional key = value pairs.<BR>
+<BR>
+The required fields, in order, are:
+<UL><LI>The type of element. This is usually one of resistance, capacitance,
+admittance, or poly_g, but can be any device type, including those
+created by modelgen.<BR>
+<BR>
+<LI>The label, a string used to refer to it.<BR>
+<BR>
+<LI>A node list, in curly braces.</UL><BR>
+After that, optional fields are used to assign attributes. Not all
+are legal or appropriate with all element types.
+<DL COMPACT=compact><DT><B><TT>value</TT></B><DD>
+This must evaluate to a constant, which is interpreted as the nominal
+value of the element.<BR>
+<BR>
+<DT><B><TT>eval</TT></B><DD>
+This is the name of an <TT>eval</TT> section, which specifies nonlinear,
+and depenndent characteristics.<BR>
+<BR>
+<DT><B><TT>args</TT></B><DD>
+This refers to an <TT>args</TT> section, described previously. It is
+used only for advanced element types, as those created by modelgen.<BR>
+<BR>
+<DT><B><TT>reverse</TT></B><DD>
+This specifies an expression, that when evaluated will tell whether to
+reverse the element. If it evaluates to true, the node pairs are
+interchanged. If there are two nodes, they are interchanged. If
+there are four, the first pair are interchanged and the second pair
+are interchanges. The pattern repeats for as many nodes as there are.
+This is used with diodes, which may be reversed depending on whether
+the device being defined is N-type or P-type.<BR>
+<BR>
+<DT><B><TT>omit</TT></B><DD>
+This specifies an expression, that when evaluated will tell whether to
+omit the element. If it evaluates to true, the element is omitted.<BR>
+<BR>
+<DT><B><TT>state</TT></B><DD>
+This specifies a the name of a device state variable that is applied
+to this element. This state variable must be one of those defined
+under <TT>calculated parameters</TT>. It is primarily intended for the
+<TT>poly_g</TT> and <TT>poly_cap</TT> element types. In the <TT>calculated
+parameters</TT> section, the following parameters are its derivatives. If
+the poly element has N node pairs, the following N parameters are the
+derivatives, with respect to each voltage, in order.</DL></OL>
+
+
+<H4>Tr_probe subsection</H4>
+The <TT>tr_probe</TT> subsection is where you list the probes for
+transient and DC analysis. It is a list of name = value pairs, where
+the value is an expression that calculates or looks up the value.<BR>
+<BR>
+You can reference any device parameter directly, or others with the
+appropriate struct prefixing.<BR>
+<BR>
+You can reference probes on internal elements with the syntax ``<TT>@</TT>'', followed by the element label, followed by the probe name in
+square brackets. For example, ``<TT>@Cj[Capacitance]</TT>'' refers to
+the probe named ``Capacitance'' on the element ``Cj''. It is your
+responsibility to see that the element actually exists, and that it
+has a probe with that name.<BR>
+<BR>
+You can reference node voltages with the same syntax, but the
+``device'' name is formed by prefixing the node name with ``<TT>n_</TT>''.<BR>
+<BR>
+You can also call functions, and make arbitrary expressions. In
+general, the code is just copied over, with the exception of the
+probes, which are modified to the internal format.<BR>
+<BR>
+The probe name in the generated model will be non-case-sensitive. To
+the model compiler, upper case letters must match exactly, and lower
+case letters are optional. For example, ``<TT>CGSOvl</TT>'' in the model
+file can be referred to as <TT>cgso</TT>, <TT>cgsov</TT>, or <TT>cgsovl</TT>,
+or any variants differing only in case.
+
+<H4>Device subsection</H4>
+This subsection defines information that is not shared between
+instances. In general, that which must be maintained as different,
+even though devices are identical, is placed here.<BR>
+<BR>
+
+<H5>Calculated_parameters subsubsection</H5>
+This subsubsection lists all of the ``calculated parameters''. In
+this case, it means that which is calculated during simulation, the
+state information.<BR>
+<BR>
+The format for each item is: type, name, comment, attributes, semicolon.<BR>
+<BR>
+The only attribute appropriate is ``<TT>default</TT>'', which is the
+default value set by the constructor.
+
+<H4>Common subsection</H4>
+This section defines information that the simulator may share between
+instances. Most parameters specified by the user are placed here,
+allowing the simulator to share data for identical devices.<BR>
+<BR>
+
+<H5>Unnamed subsubsection</H5>
+You can designate one of the <TT>raw_parameters</TT> to be the
+``value''. When a number is given without a name, it is assigned to
+this one.<BR>
+<BR>
+
+<H5>Raw_parameters subsubsection</H5>
+This subsubsection lists all of the ``raw parameters'', the parameters
+supplied by the user on the instance line. The format and available
+attributes are described in the ``Parameter lists'' section, which
+follows.<BR>
+<BR>
+
+<H5>Calculated_parameters subsubsection</H5>
+This subsubsection lists all of the ``calculated parameters'', the
+parameters not supplied by the user on the instance line. Instead,
+the are calculated based on other input. The format and available
+attributes are described in the ``Parameter lists'' section, which
+follows.
+
+<H4>Tr_eval subsection</H4>
+In this release, this section is a dummy. Put a stub here if you
+define a <TT>do_tr</TT> later. Otherwise leave it out. This will change
+in a future release.
+
+<H4>Evaluators</H4>
+The <TT>eval</TT> sections are evaluators that turn the primitive
+resistors and capacitors into advanced behavioral elements.<BR>
+<BR>
+The body is the core of a C++ function, which is copied over directly
+after attaching some headers. Given some ``x'', this function
+computes ``f(x)'' and its derivative with respect to x. The primary
+communication is through the structure ``<TT>d-&gt;_y0</TT>''. The input is
+``<TT>d-&gt;_y0.x</TT>''. You must evaluate the function, and place the
+result in ``<TT>d-&gt;_y0.f0</TT>'' and its derivative in ``<TT>d-&gt;_y0.f1</TT>''. The exact meaning of these values depends on what type
+of element it is.<BR>
+<BR>
+For the primitives ...
+<DL COMPACT=compact><DT><B>resistance</B><DD>
+x is current, y0 is voltage, y1 is resistance<BR>
+<BR>
+<DT><B>admittance</B><DD>
+x is voltage, y0 is current, y1 is admittance<BR>
+<BR>
+<DT><B>capacitance</B><DD>
+x is voltage, y0 is charge, y1 is capacitance<BR>
+<BR>
+<DT><B>inductance</B><DD>
+x is current, y0 is flux, y1 is inductance<BR>
+<BR>
+<DT><B>vccs</B><DD>
+x is voltage, y0 is current, y1 is transconductance</DL>
+In addition, all relevant parameters are available with the
+appropriate prefix. See the section <EM>accessing data in code
+blocks</EM>. Most are read-only.<BR>
+<BR>
+The prefix <TT>d-&gt;</TT> refers to the element being processed. This data
+is read-write.
+
+<H3>6.1.2&nbsp;&nbsp;Model section</H3>
+<DL COMPACT=compact><DT><B><TT>base</TT></B><DD> (optional)
+The keyword <TT>BASE</TT> is used as a flag to say this is a base for
+other models. When the base flag is set, others can be derived from
+it and used interchangeably with the same device type.<BR>
+<BR>
+<DT><B><TT>dev_type</TT></B><DD> (required, all)
+This is the name of the device type associated with this model type.<BR>
+<BR>
+<DT><B><TT>level</TT></B><DD> (optional, final only)
+When several models are derived from a base, the numeric level is used
+as a parameter to select which one to use.<BR>
+<BR>
+<DT><B><TT>inherit</TT></B><DD> (optional)
+The model being defined inherits from the named base model. There is
+no limit to the depth if inheritance.<BR>
+<BR>
+<DT><B><TT>keys</TT></B><DD> (required for base, optional otherwise)
+This is a list of the keywords that are used to identify the model,
+and assign attributes. See the section <EM>Keys subsection</EM> for
+details.<BR>
+<BR>
+<DT><B><TT>independent</TT></B><DD> (optional)
+This is a section describing parameters that are not dependent on size
+or temperature. See the section <EM>Independent subsection</EM> for
+details.<BR>
+<BR>
+<DT><B><TT>size_dependent</TT></B><DD> (optional)
+This is a section describing parameters that are dependent on size.
+See the section <EM>Size_dependent subsection</EM> for details.<BR>
+<BR>
+<DT><B><TT>temperature_dependent</TT></B><DD> (optional)
+This is a section describing parameters that are dependent on
+temperature. See the section <EM>Temperature_dependent subsection</EM>
+for details.<BR>
+<BR>
+<DT><B><TT>tr_eval</TT></B><DD> (required once in hierarchy)
+This is a section containing evaluation code for the whole device.
+See the section <EM>Tr_eval subsection</EM> for details.</DL>
+
+
+<H4>Keys subsection</H4>
+The <TT>keys</TT> subsection consists of a number of keywords that are
+used in the <TT>.model</TT> statement to identify this model. Different
+keys can be used to represent variants, such as ``<TT>NMOS</TT>'' and
+``<TT>PMOS</TT>'' to represent the N and P channel devices. Each one is
+followed by an assignment to be made when the key is present.<BR>
+<BR>
+It is required, at least once in the hierarchy. Additional keys can
+be used to select a particular model, as an alternative to the <TT>level</TT> parameter.
+
+<H4>Independent subsection</H4>
+The <TT>independent</TT> subsection list all of the ``independent''
+parameters supplied by the user in the <TT>.model</TT> statement.<BR>
+<BR>
+
+<H5>Raw_parameters subsubsection</H5>
+This subsubsection lists all of the ``raw parameters'', the parameters
+supplied by the user on the <TT>.model</TT> line. The format and
+available attributes are described in the ``Parameter lists'' section,
+which follows.<BR>
+<BR>
+
+<H5>Calculated_parameters subsubsection</H5>
+This subsubsection lists all of the ``calculated parameters'', the
+parameters not supplied by the user. Instead, they are calculated
+based on other input. The format and available attributes are
+described in the ``Parameter lists'' section, which follows.<BR>
+<BR>
+
+<H5>Override subsubsection</H5>
+This subsubsection lists parameters that have already been defined in
+base classes, that need a change for this particular type. You can
+override most attributes, giving the benefit of defining it locally,
+while retaining most from the base. The format and available
+attributes are described in the ``Parameter lists'' section, which
+follows.<BR>
+<BR>
+
+<H5>Code_pre and Code_post subsections</H5>
+These subsubsections define C++ code that is inserted into the
+function that calculates values, scales, and checks limits. The block
+<TT>code_pre</TT> is inserted before the automatically generated code.
+The block <TT>code_post</TT> is inserted after the automatically
+generated code.
+
+<H4>Size_dependent subsection</H4>
+The <TT>size_dependent</TT> subsubsection is similar to the <TT>independent</TT> subsubsection except that it defines a base paramater and
+scale factors so a custom value can be generated based on the device
+size.<BR>
+<BR>
+Every parameter in this subsubsection actually generates a set of
+four. The first is the base, as in the <TT>independent</TT>
+subsubsection. In addition, the same name prefixed by ``<TT>L</TT>'' is
+the length dependency, the name prefixed by ``<TT>W</TT>'' is the width
+dependency, and the name prefixed by ``<TT>P</TT>'' is the product
+(length * width) dependency.<BR>
+<BR>
+You must provide a <TT>code_pre</TT> section, which must declare and
+define values for ``<TT>L</TT>'' (length) and ``<TT>W</TT>'' (width).<BR>
+<BR>
+The actual value is calculated by: <TT>nom + ld/L + wd/W +
+pd/(W*L);</TT>, where <TT>nom</TT> is the nominal value, <TT>ld</TT> is the
+length dependency (key name has the ``<TT>L</TT>'' prefix), <TT>wd</TT> is
+the width dependency (key name has the ``<TT>W</TT>'' prefix), and <TT>pd</TT> is the product dependency (key name has the ``<TT>P</TT>'' prefix).
+
+<H4>Temperature_dependent subsection</H4>
+The <TT>temperature_dependent</TT> subsubsection contains a list of
+parameters that are calculated based on temperature, and two code
+blocks (<TT>code_pre</TT> and <TT>code_post</TT> to make the calculations.<BR>
+<BR>
+This code is evaluated at run time, possibly every time step, whenever
+temperature changes. Some Spice models throw calculations not related
+to temperature into the temperature block. This is very bad practice.
+In Gnucap, temperature is local and time variant.
+
+<H4>Tr_eval subsection</H4>
+The <TT>tr_eval</TT> subsubsection is the actual model evaluation code
+for nonlinear DC and transient analysis. This code must calculate all
+state variables (data listed as ``<TT>calculated</TT>'' in the <TT>device</TT> section, except those that are part of one of the subcircuit
+elements. Inputs and outputs are through the <TT>d-&gt;</TT> structure.<BR>
+<BR>
+This function only needs to fill in the <TT>calculated</TT> data. The
+details, like differentiating charge in capacitors, is left to the
+subcircuit elements. It is also not necessary to check convergence.
+This, too, is left to the subcircuit elements.
+
+<H3>6.1.3&nbsp;&nbsp;Accessing data in code blocks</H3>
+Most parameters are available, usually read-only, in any code block,
+with the appropriate prefix:
+<DL COMPACT=compact><DT><B><TT>p-&gt;</TT></B><DD>
+The parent device, usually the device being defined by the <TT>.model</TT> file. This is usually the ``calculated parameters'' under
+``device'' in the <TT>.model</TT> file.<BR>
+<BR>
+<DT><B><TT>c-&gt;</TT></B><DD>
+The ``common'' belonging to the parent device. This consists of all
+of the parameters in the <TT>common</TT> section of the <TT>.model</TT>
+file.<BR>
+<BR>
+<DT><B><TT>m-&gt;</TT></B><DD>
+This is the ``model'' parameters, all of the parameters in the <TT>model</TT> section of the <TT>.model</TT> file, except those listed as ``size
+dependent''.<BR>
+<BR>
+<DT><B><TT>b-&gt;</TT></B><DD>
+This is the sized value of the size dependent parameters in the <TT>model</TT> section. ``B'' is for ``bin'', which is derived from the
+concept of ``binning'' of models.<BR>
+<BR>
+<DT><B><TT>d-&gt;</TT></B><DD>
+This is the device parameters. In evaluation functions, it is
+read-write.<BR>
+<BR>
+<DT><B><TT>t.</TT></B><DD>
+This is the device values, scaled by temperature.</DL>
+
+<H3>6.1.4&nbsp;&nbsp;Parameter lists</H3>
+The format for each item is: type, name, comment, attributes, semicolon.<BR>
+<BR>
+The available attributes are:
+<DL COMPACT=compact><DT><B><TT>name</TT></B><DD>
+This is the name to be used for input in the data file. It is also
+the name this parameter is listed as when the internal data is
+printed.<BR>
+<BR>
+<DT><B><TT>alt_name</TT></B><DD>
+This is an alternate name used for input.<BR>
+<BR>
+<DT><B><TT>default</TT></B><DD>
+This is the initial default value, set by the constructor.<BR>
+<BR>
+<DT><B><TT>calculate</TT></B><DD>
+If no value is supplied, the program will calculate it using this
+formula.<BR>
+<BR>
+<DT><B><TT>quiet_min</TT></B><DD>
+If the input or calculated value is less than this number, substitute
+this number without warning.<BR>
+<BR>
+<DT><B><TT>quiet_max</TT></B><DD>
+If the input or calculated value is more than this number, substitute
+this number without warning.<BR>
+<BR>
+<DT><B><TT>final_default</TT></B><DD>
+This is the final default value, supplied after all attempts to fill
+or calculate it fail.<BR>
+<BR>
+<DT><B><TT>offset</TT></B><DD>
+Add this number to the input value to get the value actually stored in
+memory. Example: <TT>double temperature ``'' offset=273;</TT>. This
+sample allows data entry in degrees Celsius, but storage in Kelvin.<BR>
+<BR>
+<DT><B><TT>scale</TT></B><DD>
+Multiply the input value by this number to get the value actually
+stored in memory. Example: <TT>double length ``'' offset=1e6;</TT>.
+This sample allows data entry in microns, but storage in meters.<BR>
+<BR>
+<DT><B><TT>positive</TT></B><DD>
+This number is always positive. The magnitude of the entered value is
+stored.<BR>
+<BR>
+<DT><B><TT>octal</TT></B><DD>
+The number read is interpreted as octal (base 8), instead of the usual
+base 10.<BR>
+<BR>
+<DT><B><TT>print_test</TT></B><DD>
+This is a test to determine whether the value is printed in a standard
+listing or not. The value is printed only if this test evaluates to
+true at run time. If <TT>print_test</TT> is omitted, it is always
+printed.<BR>
+<BR>
+<DT><B><TT>calc_print_test</TT></B><DD>
+This is a test to determine whether the value is printed as a comment
+in a standard listing or not. The value is printed only if this test
+evaluates to true at run time. If <TT>calc_print_test</TT> is omitted,
+it is never printed.</DL>
+
+
+</BODY>
+</HTML>

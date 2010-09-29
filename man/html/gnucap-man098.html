@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+TANH: Hyperbolic tangent transfer function
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc97">4.13</A>&nbsp;&nbsp;<TT>TANH</TT>: Hyperbolic tangent transfer function</H2>
+
+<H3>4.13.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>TANH</TT> <I>gain limit</I><BR>
+<TT>TANH</TT> <I>args</I>
+
+
+<H3>4.13.2&nbsp;&nbsp;Purpose</H3>
+Defines a hyperbolic tangent, or soft limiting, transfer function.
+
+<H3>4.13.3&nbsp;&nbsp;Comments</H3>
+There is no corresponding capability in any SPICE that I know of, but
+you can get close with POLY. <BR>
+<BR>
+For capacitors, this function defines <EM>charge</EM> as a function of
+voltage. For inductors, it defines <EM>flux</EM> as a function of
+current.<BR>
+<BR>
+For fixed sources, it defines voltage or current as a function of
+time, which is probably not useful.<BR>
+<BR>
+This function describes a hyperbolic tangent transfer function similar 
+to what you get with a single stage push-pull amplifier, or a simple
+CMOS inverter acting as an amplifier.
+
+<H3>4.13.4&nbsp;&nbsp;Parameters</H3>
+<DL COMPACT=compact><DT><B><TT>GAIN</TT> = <I>x</I></B><DD> The small signal gain at 0 bias. (Required)<BR>
+<BR>
+<DT><B><TT>LIMIT</TT> = <I>x</I></B><DD> Maximum output value (soft clipping).
+(Required)</DL>
+
+
+<H3>4.13.5&nbsp;&nbsp;Example</H3> 
+<DL COMPACT=compact><DT><B><TT>E1 2 0 1 0 tanh gain=-10 limit=2 ioffset=2.5 ooffset=2.5</TT></B><DD> 
+This gain block has a small signal gain of -10. The input is
+centered around 2.5 volts. The output is also centered at 2.5 volts.
+It ``clips'' softly at 2 volts above and below the output center, or
+at .5 volts (2.5 - 2) and 4.5 volts (2.5 + 2).</DL>
+
+
+</BODY>
+</HTML>

@@ -1,4 +1,4 @@
-/* $Id: d_mos.model,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
+/* $Id: d_mos.model,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -229,10 +229,8 @@ device MOS {
     raw_parameters {
       double m "device multiplier"
 	name=M default=1.0 positive print_test="m != 1.";
-      double l_in "drawn (optical) channel length" name=L positive
-	print_test="l_in != NA";
-      double w_in "channel width (drawn)" name=W positive
-	print_test="w_in != NA";
+      double l_in "drawn (optical) channel length" name=L positive;
+      double w_in "channel width (drawn)" name=W positive;
       double ad_in "drain area, drawn" name=AD positive
 	print_test="ad_in != NA";
       double as_in "source area, drawn" name=AS positive
@@ -241,8 +239,10 @@ device MOS {
 	print_test="pd != 0.";
       double ps "source perimeter" name=PS positive default=0.0
 	print_test="ps != 0.";
-      double nrd "drain # squares" name=NRD positive default=1.0;
-      double nrs "source # squares" name=NRS positive default=1.0;
+      double nrd "drain # squares" name=NRD positive default=1.0
+	print_test="nrd != 1.";
+      double nrs "source # squares" name=NRS positive default=1.0
+	print_test="nrs != 1.";
     }
   }
   tr_eval {
@@ -432,7 +432,6 @@ device MOS {
     }}
     if (OPT::dampstrategy & dsDEVLIMIT
 	&& (vgs != Vgs || vds != Vds || vbs != Vbs)) {
-      untested();
       SIM::fulldamp = true;
       error(bTRACE, long_label() + ":device limit damp\n");
     }

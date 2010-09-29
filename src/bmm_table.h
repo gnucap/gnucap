@@ -1,4 +1,4 @@
-/*$Id: bmm_table.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bmm_table.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -54,7 +54,7 @@ public:
 private: // override virtual
   COMMON_COMPONENT* new_common()const {return new EVAL_BM_TABLE;}
   bool parse_front(CS&);
-  void parse_params(CS&);
+  bool parse_params(CS&);
   void parse_finish();
   void print_front(OMSTREAM&)const;
   void print_params(OMSTREAM&)const;

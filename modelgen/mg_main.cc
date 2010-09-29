@@ -1,4 +1,4 @@
-/*$Id: mg_main.cc,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
+/*$Id: mg_main.cc,v 24.7 2003/05/30 08:09:52 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -20,6 +20,7 @@
  * 02111-1307, USA.
  */
 #include "mg_out.h"
+#include "patchlev.h"
 /*global*/ int errorcount = 0;
 /*--------------------------------------------------------------------------*/
 int main(int argc, char** argv)
@@ -34,6 +35,18 @@ int main(int argc, char** argv)
       File f(argv[i]);
       make_cc_file(f);
     }}
+  }else if (argc > 2 && strcmp(argv[1],"-v")==0) {
+    std::cerr <<
+      "Gnucap model compiler "  PATCHLEVEL  "\n"
+      "Part of the Gnu Circuit Analysis Package\n"
+      "Never trust any version less than 1.0\n"
+      " or any version with a number that looks like a date.\n"
+      "Copyright 2001-2003, Albert Davis\n"
+      "Gnucap comes with ABSOLUTELY NO WARRANTY\n"
+      "This is free software, and you are welcome\n"
+      "to redistribute it under certain conditions\n"
+      "according to the GNU General Public License.\n"
+      "See the file \"COPYING\" for details.\n";
   }else if (argc > 1) {
     {for (int i=1; i<argc; ++i) {
       File f(argv[i]);

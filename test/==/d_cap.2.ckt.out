@@ -1,6 +1,5 @@
 'c check 
-V1  1  0  PULSE  iv= 0.  pv= 1.  delay= 0.  rise= 0.01  fall= 0.01
-+  width= 1.K  period= 1.K  AC   1.
+V1  1  0  PULSE  iv= 0.  pv= 1.  delay= 0.  rise= 0.01  fall= 0.01  width= 1.K  period= 1.K  AC   1.
 R1  1  2  100.
 C2  2  0  0.01
 #Time       v(1)       v(2)      

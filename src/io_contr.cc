@@ -1,4 +1,4 @@
-/*$Id: io_contr.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: io_contr.cc,v 24.22 2004/02/01 07:12:36 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -87,6 +87,7 @@ void outreset(void)
  */
 OMSTREAM* outset(CS& cmd, OMSTREAM* out)
 {
+  bool echo = false;
   for (;;){
     if (cmd.pmatch("Basic")){
       IO::formaat = ftos_EXP;
@@ -96,8 +97,10 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
     }else if (cmd.pmatch("Pack")){
       (*out).setpack();
     }else if (cmd.pmatch("Quiet")){
+      echo = false;
       (*out).detach(IO::mstdout);
     }else if (cmd.pmatch("Echo") || cmd.pmatch("List")){
+      echo = true;
       (*out).attach(IO::mstdout);
     }else if (cmd.pmatch("SAve")){
       fn = file_open(cmd,"","w",fn);
@@ -109,6 +112,9 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
       (*out).attach(fn);
       IO::formaat = ftos_EXP;
       (*out).setformat(ftos_EXP);
+      if (!echo) {
+	(*out).detach(IO::mstdout);
+      }
     }else{
       break;
     }

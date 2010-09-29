@@ -1,4 +1,4 @@
-/* $Id: d_mos.model,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
+/* $Id: d_mos.model,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -110,15 +110,17 @@ void COMMON_MOS::parse(CS& cmd)
   parse_modelname(cmd);
   int here = cmd.cursor();
   do{
-  get(cmd, "M", &m, mPOSITIVE);
-  get(cmd, "L", &l_in, mPOSITIVE);
-  get(cmd, "W", &w_in, mPOSITIVE);
-  get(cmd, "AD", &ad_in, mPOSITIVE);
-  get(cmd, "AS", &as_in, mPOSITIVE);
-  get(cmd, "PD", &pd, mPOSITIVE);
-  get(cmd, "PS", &ps, mPOSITIVE);
-  get(cmd, "NRD", &nrd, mPOSITIVE);
-  get(cmd, "NRS", &nrs, mPOSITIVE);
+    0
+    || get(cmd, "M", &m, mPOSITIVE)
+    || get(cmd, "L", &l_in, mPOSITIVE)
+    || get(cmd, "W", &w_in, mPOSITIVE)
+    || get(cmd, "AD", &ad_in, mPOSITIVE)
+    || get(cmd, "AS", &as_in, mPOSITIVE)
+    || get(cmd, "PD", &pd, mPOSITIVE)
+    || get(cmd, "PS", &ps, mPOSITIVE)
+    || get(cmd, "NRD", &nrd, mPOSITIVE)
+    || get(cmd, "NRS", &nrs, mPOSITIVE)
+    ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.check(bWARNING, "what's this?");
 }
@@ -129,10 +131,8 @@ void COMMON_MOS::print(OMSTREAM& o)const
   o.setfloatwidth(7);
   if (m != 1.)
     o << "  m=" << m;
-  if (l_in != NA)
-    o << "  l=" << l_in;
-  if (w_in != NA)
-    o << "  w=" << w_in;
+  o << "  l=" << l_in;
+  o << "  w=" << w_in;
   if (ad_in != NA)
     o << "  ad=" << ad_in;
   if (as_in != NA)
@@ -141,8 +141,10 @@ void COMMON_MOS::print(OMSTREAM& o)const
     o << "  pd=" << pd;
   if (ps != 0.)
     o << "  ps=" << ps;
-  o << "  nrd=" << nrd;
-  o << "  nrs=" << nrs;
+  if (nrd != 1.)
+    o << "  nrd=" << nrd;
+  if (nrs != 1.)
+    o << "  nrs=" << nrs;
   o << '\n';
 }
 /*--------------------------------------------------------------------------*/
@@ -398,7 +400,7 @@ DEV_MOS::DEV_MOS()
    _Cgb(0),
    _Ids(0)
 {
-  _n = _nodes + 2;
+  _n = _nodes + int_nodes();
   attach_common(&Default_MOS);
   ++_count;
 }
@@ -462,8 +464,8 @@ DEV_MOS::DEV_MOS(const DEV_MOS& p)
    _Cgb(0),
    _Ids(0)
 {
-  _n = _nodes + 2;
-  for (int ii = -2; ii < 4; ++ii) {
+  _n = _nodes + int_nodes();
+  for (int ii = -int_nodes(); ii < max_nodes(); ++ii) {
     _n[ii] = p._n[ii];
   }
   ++_count;
@@ -843,7 +845,6 @@ void DEV_MOS::limit_mos(double Vds, double Vgs, double Vbs)
     }}
     if (OPT::dampstrategy & dsDEVLIMIT
 	&& (vgs != Vgs || vds != Vds || vbs != Vbs)) {
-      untested();
       SIM::fulldamp = true;
       error(bTRACE, long_label() + ":device limit damp\n");
     }

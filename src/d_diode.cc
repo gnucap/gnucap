@@ -81,32 +81,36 @@ MODEL_DIODE::MODEL_DIODE()
 /*--------------------------------------------------------------------------*/
 bool MODEL_DIODE::parse_front(CS& cmd)
 {
-  return set(cmd, "D", &dummy, true);
+  return ONE_OF
+    || set(cmd, "D", &dummy, true)
+    ;
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_DIODE::parse_params(CS& cmd)
+bool MODEL_DIODE::parse_params(CS& cmd)
 {
-  get(cmd, "TNOM", &_tnom, mOFFSET, -ABS_ZERO);
-  get(cmd, "IS", &js, mPOSITIVE);
-  get(cmd, "RS", &rs, mPOSITIVE);
-  get(cmd, "N", &n_factor, mPOSITIVE);
-  get(cmd, "TT", &tt, mPOSITIVE);
-  get(cmd, "CJo", &cjo, mPOSITIVE);
-  get(cmd, "PB", &pb, mPOSITIVE);
-  get(cmd, "VJ", &pb, mPOSITIVE);
-  get(cmd, "Mj", &mj, mPOSITIVE);
-  get(cmd, "EGap", &eg, mPOSITIVE);
-  get(cmd, "XTI", &xti, mPOSITIVE);
-  get(cmd, "KF", &kf, mPOSITIVE);
-  get(cmd, "AF", &af, mPOSITIVE);
-  get(cmd, "FC", &fc, mPOSITIVE);
-  get(cmd, "BV", &bv, mPOSITIVE);
-  get(cmd, "IBV", &ibv, mPOSITIVE);
-  get(cmd, "CJSw", &cjsw, mPOSITIVE);
-  get(cmd, "PBSw", &pbsw, mPOSITIVE);
-  get(cmd, "MJSw", &mjsw, mPOSITIVE);
-  get(cmd, "GParallel", &gparallel);
-  get(cmd, "FLAgs", &flags, mOCTAL);
+  return ONE_OF
+    || get(cmd, "TNOM", &_tnom, mOFFSET, -ABS_ZERO)
+    || get(cmd, "IS", &js, mPOSITIVE)
+    || get(cmd, "RS", &rs, mPOSITIVE)
+    || get(cmd, "N", &n_factor, mPOSITIVE)
+    || get(cmd, "TT", &tt, mPOSITIVE)
+    || get(cmd, "CJo", &cjo, mPOSITIVE)
+    || get(cmd, "PB", &pb, mPOSITIVE)
+    || get(cmd, "VJ", &pb, mPOSITIVE)
+    || get(cmd, "Mj", &mj, mPOSITIVE)
+    || get(cmd, "EGap", &eg, mPOSITIVE)
+    || get(cmd, "XTI", &xti, mPOSITIVE)
+    || get(cmd, "KF", &kf, mPOSITIVE)
+    || get(cmd, "AF", &af, mPOSITIVE)
+    || get(cmd, "FC", &fc, mPOSITIVE)
+    || get(cmd, "BV", &bv, mPOSITIVE)
+    || get(cmd, "IBV", &ibv, mPOSITIVE)
+    || get(cmd, "CJSw", &cjsw, mPOSITIVE)
+    || get(cmd, "PBSw", &pbsw, mPOSITIVE)
+    || get(cmd, "MJSw", &mjsw, mPOSITIVE)
+    || get(cmd, "GParallel", &gparallel)
+    || get(cmd, "FLAgs", &flags, mOCTAL)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_DIODE::parse_finish()
@@ -189,12 +193,7 @@ void MODEL_DIODE::print_calculated(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 bool MODEL_DIODE::is_valid(const COMMON_COMPONENT* cc)const
 {
-  const COMMON_DIODE* c = dynamic_cast<const COMMON_DIODE*>(cc);
-  {if (!c) {
-    return MODEL_CARD::is_valid(cc);
-  }else{
-    return MODEL_CARD::is_valid(cc);
-  }}
+  return MODEL_CARD::is_valid(cc);
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_DIODE::tr_eval(COMPONENT*)const
@@ -282,16 +281,18 @@ void COMMON_DIODE::parse(CS& cmd)
   }
   int here = cmd.cursor();
   do{
-  get(cmd, "Area", &area, mPOSITIVE);
-  get(cmd, "Perim", &perim, mPOSITIVE);
-  get(cmd, "M", &m, mPOSITIVE);
-  get(cmd, "OFF", &off);
-  get(cmd, "IC", &ic);
-  get(cmd, "IS", &is_raw, mPOSITIVE);
-  get(cmd, "Rs", &rs_raw, mPOSITIVE);
-  get(cmd, "Cjo", &cj_raw, mPOSITIVE);
-  get(cmd, "CJSW", &cjsw_raw, mPOSITIVE);
-  get(cmd, "GParallel", &gparallel_raw);
+    0
+    || get(cmd, "Area", &area, mPOSITIVE)
+    || get(cmd, "Perim", &perim, mPOSITIVE)
+    || get(cmd, "M", &m, mPOSITIVE)
+    || get(cmd, "OFF", &off)
+    || get(cmd, "IC", &ic)
+    || get(cmd, "IS", &is_raw, mPOSITIVE)
+    || get(cmd, "Rs", &rs_raw, mPOSITIVE)
+    || get(cmd, "Cjo", &cj_raw, mPOSITIVE)
+    || get(cmd, "CJSW", &cjsw_raw, mPOSITIVE)
+    || get(cmd, "GParallel", &gparallel_raw)
+    ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.check(bWARNING, "what's this?");
 }
@@ -605,7 +606,7 @@ DEV_DIODE::DEV_DIODE()
    _Yj(0),
    _Rs(0)
 {
-  _n = _nodes + 1;
+  _n = _nodes + int_nodes();
   attach_common(&Default_DIODE);
   ++_count;
 }
@@ -619,8 +620,8 @@ DEV_DIODE::DEV_DIODE(const DEV_DIODE& p)
    _Yj(0),
    _Rs(0)
 {
-  _n = _nodes + 1;
-  for (int ii = -1; ii < 2; ++ii) {
+  _n = _nodes + int_nodes();
+  for (int ii = -int_nodes(); ii < max_nodes(); ++ii) {
     _n[ii] = p._n[ii];
   }
   ++_count;

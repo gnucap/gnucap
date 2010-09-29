@@ -1,4 +1,4 @@
-/*$Id: d_subckt.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
+/*$Id: d_subckt.h,v 24.12 2003/12/14 01:58:35 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -25,7 +25,7 @@
 #define D_SUBCKT_H
 #include "e_subckt.h"
 /*--------------------------------------------------------------------------*/
-#define NODESPERSUBCKT 1000
+#define NODESPERSUBCKT 4000
 #define PORTS_PER_SUBCKT 100
 /*--------------------------------------------------------------------------*/
 class DEV_SUBCKT : public BASE_SUBCKT {
@@ -39,9 +39,9 @@ private: // override virtual
   const char*	dev_type()const		{untested(); return "subckt";}
   int		max_nodes()const	{return PORTS_PER_SUBCKT;}
   int		min_nodes()const	{return 1;}
-  int		out_nodes()const	{return _num_nodes;}
+  int		out_nodes()const	{return _net_nodes;}
   int		matrix_nodes()const	{return 0;}
-  int		net_nodes()const	{return _num_nodes;}
+  int		net_nodes()const	{return _net_nodes;}
   CARD*		clone()const		{return new DEV_SUBCKT(*this);}
   void		parse(CS&);
   void		print(OMSTREAM&,int)const;
@@ -50,7 +50,7 @@ private: // override virtual
 public:
   static int	count()			{return _count;}
 private:
-  int		_num_nodes;
+  int		_net_nodes;
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
 };
@@ -83,7 +83,7 @@ private: // override virtual
   int		min_nodes()const	{return 1;}
   int		out_nodes()const	{return 0;}
   int		matrix_nodes()const	{return 0;}
-  int		net_nodes()const	{return _num_nodes;}
+  int		net_nodes()const	{return _net_nodes;}
   CARD*		clone()const	{untested(); return new MODEL_SUBCKT(*this);}
   void		parse(CS&);
   void		print(OMSTREAM&,int)const;
@@ -92,7 +92,7 @@ private: // override virtual
 public:
   static int	count()			{return _count;}
 private:
-  int		_num_nodes;
+  int		_net_nodes;
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
 };

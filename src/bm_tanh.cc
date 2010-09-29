@@ -1,4 +1,4 @@
-/*$Id: bm_tanh.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_tanh.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -37,24 +37,27 @@ EVAL_BM_TANH::EVAL_BM_TANH(const EVAL_BM_TANH& p)
    _limit(p._limit)
 {
 }
+
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_TANH::parse(CS& cmd)
+void EVAL_BM_TANH::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    double gain=NOT_VALID;
-    double limit=NOT_VALID;
-    cmd >> gain >> limit;
-    {if (cmd.gotit(here)){
-      _gain  = gain;
-      _limit = limit;
-    }else{
-      get(cmd, "Gain",	&_gain);
-      get(cmd, "Limit",	&_limit);
-      parse_base(cmd);
-    }}
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+  double gain=NOT_VALID;
+  double limit=NOT_VALID;
+  cmd >> gain >> limit;
+  if (cmd.gotit(here)){
+    _gain  = gain;
+    _limit = limit;
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_TANH::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "Gain",	&_gain)
+    || get(cmd, "Limit",&_limit)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_TANH::print(OMSTREAM& where)const
@@ -69,9 +72,18 @@ void EVAL_BM_TANH::tr_eval(ELEMENT* d)const
 {
   double x = ioffset(d->_y0.x);
   double aa = x * _gain/_limit;
-  double cosine = cosh(aa);
-  double f1 = _gain / (cosine*cosine);
-  double f0 = _limit * tanh(aa);
+  double f1, f0;
+  {if (aa > LOGBIGBIG) {
+    f1 = 0;
+    f0 = _limit;
+  }else if (aa < -LOGBIGBIG) {
+    f1 = 0;
+    f0 = -_limit;
+  }else{
+    double cosine = cosh(aa);
+    f1 = _gain / (cosine*cosine);
+    f0 = _limit * tanh(aa);
+  }}
   d->_y0 = FPOLY1(x, f0, f1);
   tr_final_adjust(&(d->_y0), d->f_is_value());
 }

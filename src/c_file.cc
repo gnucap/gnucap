@@ -1,4 +1,4 @@
-/*$Id: c_file.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: c_file.cc,v 23.2 2003/01/23 03:53:56 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *

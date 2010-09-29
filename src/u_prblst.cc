@@ -1,4 +1,4 @@
-/*$Id: u_prblst.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: u_prblst.cc,v 24.3 2003/02/26 08:31:35 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -44,7 +44,7 @@ extern NODE* nstat;
 /*--------------------------------------------------------------------------*/
 void PROBE_LISTS::purge(CKT_BASE* brh)
 {
-  for (int i = 0;  i < sCOUNT; ++i){
+  for (int i = 0;  i < sCOUNT; ++i) {
     alarm[i] -= brh;
     plot[i]  -= brh;
     print[i] -= brh;
@@ -55,9 +55,9 @@ void PROBE_LISTS::purge(CKT_BASE* brh)
 void PROBELIST::listing(const std::string& label)const
 {
   IO::mstdout.form("%-7s", label.c_str());
-  for (const_iterator p=bag.begin(); p!=bag.end(); ++p){
+  for (const_iterator p=bag.begin(); p!=bag.end(); ++p) {
     IO::mstdout << ' ' << p->label();
-    if (p->range() != 0.){
+    if (p->range() != 0.) {
       IO::mstdout.setfloatwidth(5) 
 	<< '(' << p->lo() << ',' << p->hi() << ')';
     }
@@ -94,16 +94,16 @@ void PROBELIST::operator-=(CS& cmd)
   int paren = cmd.skiplparen();
   parameter += cmd.ctos(TOKENTERM) + ')';
   paren -= cmd.skiprparen();
-  {if (paren != 0){
+  {if (paren != 0) {
     untested();
     cmd.warn(bWARNING, "need )");
-  }else if (parameter.empty()){
+  }else if (parameter.empty()) {
     untested();
     cmd.warn(bWARNING, "what's this?");
   }}
 
   iterator x = remove(bag.begin(), bag.end(), parameter);
-  {if (x != bag.end()){
+  {if (x != bag.end()) {
     bag.erase(x, bag.end());
   }else{
     untested();
@@ -143,33 +143,33 @@ void PROBELIST::operator-=(CKT_BASE *brh)
 void PROBELIST::operator+=(CS& cmd)
 {
   int oldcount = size();
-
   std::string what(cmd.ctos(TOKENTERM));/* parameter */
-  if (what.empty()){
+  if (what.empty()) {
     untested();
     cmd.warn(bWARNING, "need a probe");
   }
   int paren = cmd.skiplparen();		/* device, node, etc. */
-  {if (cmd.pmatch("NODES")){		/* all nodes */
+  {if (cmd.pmatch("NODES")) {		/* all nodes */
     add_all_nodes(what);
-  }else if (cmd.is_digit()){		/* listed nodes (numbered) */
+  }else if (cmd.is_digit()) {		/* listed nodes (numbered) */
     add_node_list(cmd,what);
-  }else{				/* branches */
+  }else if (cmd.is_alpha() || cmd.match1("*?")) {  /* branches */
     add_branches(cmd,what);
+  }else{
+    cmd.warn(bDANGER, "need device or node");
   }}
   paren -= cmd.skiprparen();
-  if (paren != 0){
-    untested();
+  if (paren != 0) {
     cmd.warn(bWARNING, "need )");
   }
 
-  if (cmd.skiplparen()){		/* range for plotting and alarm */
+  if (cmd.skiplparen()) {		/* range for plotting and alarm */
     double lo = cmd.ctof();
     double hi = cmd.ctof();
-    for (iterator p = bag.begin() + oldcount; p!=bag.end(); ++p){
+    for (iterator p = bag.begin() + oldcount; p!=bag.end(); ++p) {
       p->set_limit(lo,hi);
     }    
-    if (!cmd.skiprparen()){
+    if (!cmd.skiprparen()) {
       untested();
       cmd.check(bWARNING, "need )");
     }
@@ -179,8 +179,8 @@ void PROBELIST::operator+=(CS& cmd)
 void PROBELIST::add_all_nodes(const std::string& what)
 {
   assert(nstat);
-  for (int node = 1;  node <= STATUS::user_nodes;  node++){
-    if (nstat[NODE::to_internal(node)].needs_analog()){
+  for (int node = 1;  node <= STATUS::user_nodes;  node++) {
+    if (nstat[NODE::to_internal(node)].needs_analog()) {
       bag.push_back(PROBE(what,node));
     }
   }
@@ -192,10 +192,10 @@ void PROBELIST::add_all_nodes(const std::string& what)
  */
 void PROBELIST::add_node_list(CS& cmd, const std::string& what)
 {    
-  while (cmd.is_digit()){
+  while (cmd.is_digit()) {
     int mark = cmd.cursor();
     int node = cmd.ctoi();
-    {if (node <= STATUS::total_nodes){
+    {if (node <= STATUS::total_nodes) {
       bag.push_back(PROBE(what,node));
     }else{
       untested();
@@ -214,11 +214,11 @@ void PROBELIST::add_branches(CS& cmd, const std::string& what)
   int cmax = cmd.cursor();
 
   CARD_LIST::fat_iterator ci(&CARD_LIST::card_list);
-  for (;;){
+  for (;;) {
     cmd.reset(mark);
     ci = findbranch(cmd, ci);
     cmax = std::max(cmax, cmd.cursor());
-    if (ci.isend()){
+    if (ci.isend()) {
       break;
     }
     bag.push_back(PROBE(what,*ci));
@@ -233,7 +233,7 @@ void PROBELIST::add_branches(CS& cmd, const std::string& what)
    * Correct behavior is both find all.
    */
   cmd.reset(cmax);
-  if (mark == cmax){
+  if (mark == cmax) {
     cmd.check(bWARNING, "no match");
     cmd.skiparg();
   }

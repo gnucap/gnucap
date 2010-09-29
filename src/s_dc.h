@@ -1,4 +1,4 @@
-/*$Id: s_dc.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_dc.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -34,9 +34,9 @@ public:				/* s_dc_set.cc */
 protected:
 	void	options(CS&);
 private:
-	void	by(CS&);
-	void	decade(CS&);
-	void	times(CS&);
+	bool	by(CS&);
+	bool	decade(CS&);
+	bool	times(CS&);
 private:			/* s_dc_swp.cc */
 	void	sweep();
 	void	first(int);

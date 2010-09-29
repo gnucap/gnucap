@@ -1,4 +1,4 @@
-/*$Id: s_tr_set.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_tr_set.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -123,27 +123,33 @@ void TRANSIENT::options(CS& cmd)
   dtratio = OPT::dtratio;
   int here = cmd.cursor();
   do{
-    get(cmd, "Ambient",	  &temp,   mOFFSET, OPT::tempamb);
-    get(cmd, "Cold",	  &cold);
-    get(cmd, "DTMIn",	  &dtmin,  mPOSITIVE);
-    get(cmd, "DTRatio",	  &dtratio,mPOSITIVE);
-    get(cmd, "Echo",	  &echo);
-    get(cmd, "PLot",	  &ploton);
-    get(cmd, "Reftemp",	  &temp,   mOFFSET, OPT::tnom);
-    get(cmd, "SKip",	  &skip);
-    get(cmd, "Temperature",&temp,   mOFFSET, -ABS_ZERO);
-    cmd.pmatch("TRace") &&
-      (   set(cmd, "None",	&trace, tNONE)
-       || set(cmd, "Off",	&trace, tNONE)
-       || set(cmd, "Warnings",	&trace, tUNDER)
-       || set(cmd, "Alltime",	&trace, tALLTIME)
-       || set(cmd, "Rejected",	&trace, tREJECTED)
-       || set(cmd, "Iterations",&trace, tITERATION)
-       || set(cmd, "Verbose",	&trace, tVERBOSE)
-       || cmd.warn(bWARNING, 
-	  "need none, off, warnings, alltime, rejected, iterations, verbose"));
-    get(cmd, "UIC",	  &uic);
-    outset(cmd,&out);
+    0
+      || get(cmd, "Ambient",	&temp,   mOFFSET, OPT::tempamb)
+      || get(cmd, "Cold",	&cold)
+      || get(cmd, "DTMIn",	&dtmin,  mPOSITIVE)
+      || get(cmd, "DTRatio",	&dtratio,mPOSITIVE)
+      || get(cmd, "Echo",	&echo)
+      || get(cmd, "PLot",	&ploton)
+      || get(cmd, "Reftemp",	&temp,   mOFFSET, OPT::tnom)
+      || get(cmd, "SKip",	&skip)
+      || get(cmd, "Temperature",&temp,   mOFFSET, -ABS_ZERO)
+      || get(cmd, "UIC",	&uic)
+      || (cmd.pmatch("TRace") &&
+	  (0
+	   || set(cmd, "None",	    &trace, tNONE)
+	   || set(cmd, "Off",	    &trace, tNONE)
+	   || set(cmd, "Warnings",  &trace, tUNDER)
+	   || set(cmd, "Alltime",   &trace, tALLTIME)
+	   || set(cmd, "Rejected",  &trace, tREJECTED)
+	   || set(cmd, "Iterations",&trace, tITERATION)
+	   || set(cmd, "Verbose",   &trace, tVERBOSE)
+	   || cmd.warn(bWARNING, "need none, off, warnings, alltime, "
+		       "rejected, iterations, verbose")
+	   
+	   )
+	  )
+      || outset(cmd,&out)
+      ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.check(bWARNING, "what's this?");
 

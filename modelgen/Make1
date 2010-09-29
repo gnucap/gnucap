@@ -1,4 +1,4 @@
-#$Id: Make1,v 20.15 2001/10/30 03:58:50 al Exp $
+#$Id: Make1,v 24.12 2003/12/14 01:58:28 al Exp $
 #
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #------------------------------------------------------------------------
-TARGET = modelgen
+TARGET = gnucap-modelgen
 #------------------------------------------------------------------------
 SRCS = mg_main.cc mg_out_h.cc mg_error.cc mg_in.cc \
 mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc

@@ -1,4 +1,4 @@
-/*$Id: bm_value.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_value.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -37,24 +37,14 @@ EVAL_BM_VALUE::EVAL_BM_VALUE(const EVAL_BM_VALUE& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_VALUE::parse(CS& cmd)
+void EVAL_BM_VALUE::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    double value=NOT_VALID;
-    cmd >> value;
-    if (cmd.gotit(here)){
-      _value = value;
-    }
-    paren -= cmd.skiprparen();
-    if (paren != 0){
-      untested();
-      cmd.warn(bWARNING, "need )");
-    }
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+  double value=NOT_VALID;
+  cmd >> value;
+  if (cmd.gotit(here)){
+    _value = value;
+  }
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_VALUE::print(OMSTREAM& where)const

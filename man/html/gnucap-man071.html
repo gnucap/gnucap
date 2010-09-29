@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+I: Independent Current Source
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc70">3.12</A>&nbsp;&nbsp;<TT>I</TT>: Independent Current Source</H2>
+
+<H3>3.12.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>I</TT><I>xxxxxxx n+ n--</I> <I>value</I><BR>
+<TT>I</TT><I>xxxxxxx n+ n--</I> <I>expression</I><BR>
+<TT>.ISOurce</TT> <I>label n+ n-- expression</I>
+
+
+<H3>3.12.2&nbsp;&nbsp;Purpose</H3>
+Independent current source.
+
+<H3>3.12.3&nbsp;&nbsp;Comments</H3>
+<I>N+</I> and <I>n--</I> are the positive and negative element nodes,
+respectively. Positive current flow is from the positive node, through the
+source, to the negative node. <I>Value</I> is the current in Amperes.<BR>
+<BR>
+All of the SPICE time dependent functions (<TT>pulse</TT>, <TT>sin</TT>, <TT>exp</TT>, <TT>pwl</TT>, and <TT>sffm</TT> are supported. An additional
+function <TT>generator</TT> emulates a laboratory type function generator, for
+a more convenient signal input to the circuit.
+ </BODY>
+</HTML>

@@ -1,4 +1,4 @@
-/*$Id: bmm_table.cc,v 22.4 2002/05/27 00:00:47 al Exp $ -*- C++ -*-
+/*$Id: bmm_table.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -54,14 +54,13 @@ void EVAL_BM_TABLE::parse(CS& cmd)
 	untested();
       }}
     }
-    parse_base(cmd);
+    parse_params(cmd);
   }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+  parse_finish();
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_TABLE::print(OMSTREAM& o)const
 {
-  untested();
   o << "  " << modelname();
   print_base(o);
 }
@@ -99,28 +98,57 @@ bool MODEL_TABLE::parse_front(CS& cmd)
   return set(cmd, "TABLE", &dummy, true);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_TABLE::parse_params(CS& cmd)
+bool MODEL_TABLE::parse_params(CS& cmd)
 {
-  get(cmd, "Order", &_order);
-  get(cmd, "Below", &_below);
-  get(cmd, "Above", &_above);
-  int paren = cmd.skiplparen();
   int here = cmd.cursor();
-  for (;;){
-    double key  =NOT_VALID;
-    double value=NOT_VALID;
-    cmd >> key >> value;
-    if (cmd.stuck(&here)){
-      break;
+  {
+    get(cmd, "Order", &_order);
+    get(cmd, "Below", &_below);
+    get(cmd, "Above", &_above);
+    bool got_opening_paren = cmd.skiplparen();
+    int here = cmd.cursor();
+    double max_key = -BIGBIG;
+    double min_key = BIGBIG;
+    std::deque<std::pair<double,double> > temp_table;
+    for (;;) {
+      double key  =NOT_VALID;
+      double value=NOT_VALID;
+      int old_here = here;
+      cmd >> key >> value;
+      if (cmd.stuck(&here)) {
+	break;
+      }
+      std::pair<double,double> p(key,value);
+      {if (key > max_key) {
+	// table is in ascending order
+	max_key = key;
+	temp_table.push_back(p);
+	if (key < min_key) {
+	  // first time
+	  min_key = key;
+	}
+      }else if (key < min_key) {
+	// table is in decending order
+	min_key = key;
+	temp_table.push_front(p);
+      }else{
+	untested();
+	cmd.warn(bDANGER, old_here, "table is out of order, dropping");
+      }}
     }
-    std::pair<double,double> p(key,value);
-    _table.push_back(p);
+    {if (got_opening_paren && !cmd.skiprparen()) {
+      untested();
+      cmd.warn(bWARNING, "need )");
+    }else if (!got_opening_paren && cmd.skiprparen()) {
+      untested();
+      cmd.warn(bWARNING, here, "need (");
+    }}
+    for (std::deque<std::pair<double,double> >::const_iterator
+	   p = temp_table.begin();  p != temp_table.end();  ++p) {
+      _table.push_back(*p);
+    }
   }
-  paren -= cmd.skiprparen();
-  if (paren != 0){
-    untested();
-    cmd.warn(bWARNING, "need )");
-  }
+  return !(cmd.stuck(&here));
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_TABLE::print_front(OMSTREAM& o)const
@@ -135,7 +163,7 @@ void MODEL_TABLE::print_params(OMSTREAM& o)const
   if (_above != NOT_INPUT) {o << "  above=" << _above;}
   o << "  (";
   for (std::vector<std::pair<double,double> >::const_iterator
-	 p = _table.begin();  p != _table.end();  ++p){
+	 p = _table.begin();  p != _table.end();  ++p) {
     o << "  " << p->first << ',' << p->second;
   }
   o << ")";

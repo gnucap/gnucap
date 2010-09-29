@@ -1,4 +1,4 @@
-/*$Id: d_ccvs.h,v 22.10 2002/07/26 03:15:27 al Exp $ -*- C++ -*-
+/*$Id: d_ccvs.h,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -59,9 +59,9 @@ private: // override virtual
   //double tr_review();		//CARD/nothing
   //void   tr_accept();		//CARD/nothing
   //void   tr_unload();		//CCSRC_BASE
-  //double tr_amps()const	//ELEMENT
   //double tr_involts()const;	//CCSRC_BASE
   //double tr_involts_limited()const;	//CCSRC_BASE
+  double   tr_amps()const	{untested(); return ELEMENT::tr_amps();}
   //double tr_probe_num(CS&)const;//ELEMENT
 
   void	    ac_alloc_matrix()	{ac_alloc_matrix_extended();}
@@ -69,6 +69,7 @@ private: // override virtual
   void	    do_ac();
   void	    ac_load()		{unreachable(); incomplete(); /*fake*/}
   //COMPLEX ac_involts()const;	//CCSRC_BASE
+  COMPLEX   ac_amps()const	{untested(); return ELEMENT::ac_amps();}
   //XPROBE  ac_probe_ext(CS&)const;//ELEMENT
 };
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: s_ac_set.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_ac_set.cc,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -51,104 +51,108 @@ void AC::setup(CS& cmd)
   else if (cmd.pmatch("LIn"))	 lin(cmd);
   else if (cmd.pmatch("Octave")) octave(cmd);
   
-  if (cmd.is_float()){
+  if (cmd.is_float()) {
     start = cmd.ctof();
     stop  = cmd.ctof();
-    if (stop==0.){
+    if (stop==0.) {
       stop = start;
     }
-    if (cmd.is_float()){
+    if (cmd.is_float()) {
       by(cmd);
     }
   }
 
   int here = cmd.cursor();
   do{
-         if (cmd.pmatch("*$$"))    times(cmd);
-    else if (cmd.pmatch("+$$"))    by(cmd);
-    else if (cmd.pmatch("By"))     by(cmd);
-    else if (cmd.pmatch("Decade")) decade(cmd);
-    else if (cmd.pmatch("TImes"))  times(cmd);
-    else if (cmd.pmatch("LIn"))	   lin(cmd);
-    else if (cmd.pmatch("Octave")) octave(cmd);
-    get(cmd, "Ambient",	  &temp,   mOFFSET, OPT::tempamb);
-    get(cmd, "Cold",	  &cold);
-    get(cmd, "CONTinue",  &cont);
-    get(cmd, "Echo",	  &echo);
-    get(cmd, "PLot",	  &ploton);
-    get(cmd, "Reftemp",	  &temp,   mOFFSET, OPT::tnom);
-    get(cmd, "Temperature",&temp,   mOFFSET, -ABS_ZERO);
-    outset(cmd,&out);
+    0
+      || (cmd.pmatch("*$$")	&& times(cmd))
+      || (cmd.pmatch("+$$")	&& by(cmd))
+      || (cmd.pmatch("By")	&& by(cmd))
+      || (cmd.pmatch("Decade")	&& decade(cmd))
+      || (cmd.pmatch("TImes")	&& times(cmd))
+      || (cmd.pmatch("LIn")	&& lin(cmd))
+      || (cmd.pmatch("Octave")	&& octave(cmd))
+      || get(cmd, "Ambient",	&temp,   mOFFSET, OPT::tempamb)
+      || get(cmd, "Cold",	&cold)
+      || get(cmd, "CONTinue",	&cont)
+      || get(cmd, "Echo",	&echo)
+      || get(cmd, "PLot",	&ploton)
+      || get(cmd, "Reftemp",	&temp,   mOFFSET, OPT::tnom)
+      || get(cmd, "Temperature",&temp,mOFFSET, -ABS_ZERO)
+      || outset(cmd,&out)
+      ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.check(bWARNING, "what's this?");
 
   IO::plotout = (ploton) ? IO::mstdout : OMSTREAM();
   initio(out);
-  if (needslinfix){			    // LIN option is # of points.
-    untested();
-    step=(stop-start)/(step-1.);	    // Must compute step after 
-    needslinfix = false;		    // reading start and stop,
-  }					    // but step must be read first
-  if (step==0.){			    // for Spice compatibility
+  if (needslinfix) {			// LIN option is # of points.
+    assert(step >= 2);			// Must compute step after 
+    step=(stop-start)/(step-1.);	// reading start and stop,
+    needslinfix = false;		// but step must be read first
+  }					// for Spice compatibility
+  if (step==0.) {
     step = stop - start;
     linswp = true;
   }
 }
 /*--------------------------------------------------------------------------*/
-void AC::by(CS& cmd)
+bool AC::by(CS& cmd)
 {
   step = cmd.ctof();
   needslinfix = false;
   linswp = true;
+  return true;
 }
 /*--------------------------------------------------------------------------*/
-void AC::decade(CS& cmd)
+bool AC::decade(CS& cmd)
 {
   step = cmd.ctopf();
-  if (step == 0.){
+  if (step == 0.) {
     step = 1.;
   }
   step = pow(10., 1./step);
   needslinfix = false;
   linswp = false;
+  return true;
 }
 /*--------------------------------------------------------------------------*/
-void AC::lin(CS& cmd)
+bool AC::lin(CS& cmd)
 {
   step = cmd.ctopf();		// need to fix step, later
-  if (step == 0.){		// do it at the end of setup
-    step = 1.;			// a kluge, but this is a patch
-    untested();
-  }else{
-    untested();
+  if (step <= 2.) {		// do it at the end of setup
+    step = 2.;			// a kluge, but this is a patch
   }
   needslinfix = true;		// and I am too lazy to do it
   linswp = true;		// right.
+  return true;
 }
 /*--------------------------------------------------------------------------*/
-void AC::octave(CS& cmd)
+bool AC::octave(CS& cmd)
 {
   step = cmd.ctopf();
-  if (step == 0.){
+  if (step == 0.) {
     step = 1.;
     untested();
   }
   step = pow(2.00000001, 1./step);
   needslinfix = false;
   linswp = false;
+  return true;
 }
 /*--------------------------------------------------------------------------*/
-void AC::times(CS& cmd)
+bool AC::times(CS& cmd)
 {
   step = cmd.ctopf();
-  if (step == 0.   &&   start != 0.){
+  if (step == 0.  &&  start != 0.) {
     step = stop / start;
     untested();
   }else{
-    untested();
+    //untested();
   }
   needslinfix = false;
   linswp = false;
+  return true;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

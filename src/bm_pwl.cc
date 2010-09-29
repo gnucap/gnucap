@@ -1,4 +1,4 @@
-/*$Id: bm_pwl.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_pwl.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -43,30 +43,28 @@ EVAL_BM_PWL::EVAL_BM_PWL(const EVAL_BM_PWL& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_PWL::parse(CS& cmd)
+void EVAL_BM_PWL::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    for (;;){
-      double key  =NOT_VALID;
-      double value=NOT_VALID;
-      cmd >> key >> value;
-      if (cmd.stuck(&here)){
-	break;
-      }
-      std::pair<double,double> p(key,value);
-      _table.push_back(p);
+  for (;;){
+    double key  =NOT_VALID;
+    double value=NOT_VALID;
+    cmd >> key >> value;
+    if (cmd.stuck(&here)){
+      break;
     }
-    paren -= cmd.skiprparen();
-    if (paren != 0){
-      cmd.warn(bWARNING, "need )");
-    }
-    get(cmd, "Delta",  &_delta);
-    get(cmd, "SMooth", &_smooth);
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+    std::pair<double,double> p(key,value);
+    _table.push_back(p);
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_PWL::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "Delta",  &_delta)
+    || get(cmd, "SMooth", &_smooth)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_PWL::print(OMSTREAM& where)const

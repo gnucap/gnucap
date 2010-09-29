@@ -1,4 +1,4 @@
-/*$Id: s_dc_set.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_dc_set.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -109,29 +109,34 @@ void DCOP::options(CS& cmd)
   trace = tNONE;
   int here = cmd.cursor();
   do{
-    if      (cmd.is_float())       by(cmd);
-    else if (cmd.pmatch("*$$"))    times(cmd);
-    else if (cmd.pmatch("By"))     by(cmd);
-    else if (cmd.pmatch("Decade")) decade(cmd);
-    else if (cmd.pmatch("TImes"))  times(cmd);
-    get(cmd, "Ambient",	  &temp,   mOFFSET, OPT::tempamb);
-    get(cmd, "Continue",   &cont);
-    get(cmd, "LOop", 	  &loop);
-    get(cmd, "PLot",	  &ploton);
-    get(cmd, "Reftemp",	  &temp,   mOFFSET, OPT::tnom);
-    get(cmd, "REverse",	  &reverse);
-    get(cmd, "Temperature",&temp,   mOFFSET, -ABS_ZERO);
-    cmd.pmatch("TRace") &&
-      (   set(cmd, "None",	&trace, tNONE)
-       || set(cmd, "Off",	&trace, tNONE)
-       || set(cmd, "Warnings",	&trace, tUNDER)
-       || set(cmd, "Alltime",	&trace, tALLTIME)
-       || set(cmd, "Rejected",	&trace, tREJECTED)
-       || set(cmd, "Iterations",&trace, tITERATION)
-       || set(cmd, "Verbose",	&trace, tVERBOSE)
-       || cmd.warn(bWARNING, 
-	  "need none, off, warnings, alltime, rejected, iterations, verbose"));
-    outset(cmd,&out);
+    0
+      || (cmd.is_float()	&& by(cmd))
+      || (cmd.pmatch("*$$")	&& times(cmd))
+      || (cmd.pmatch("By")	&& by(cmd))
+      || (cmd.pmatch("Decade")	&& decade(cmd))
+      || (cmd.pmatch("TImes")	&& times(cmd))
+      || get(cmd, "Ambient",	&temp,   mOFFSET, OPT::tempamb)
+      || get(cmd, "Continue",   &cont)
+      || get(cmd, "LOop", 	&loop)
+      || get(cmd, "PLot",	&ploton)
+      || get(cmd, "Reftemp",	&temp,   mOFFSET, OPT::tnom)
+      || get(cmd, "REverse",	&reverse)
+      || get(cmd, "Temperature",&temp,   mOFFSET, -ABS_ZERO)
+      || (cmd.pmatch("TRace") &&
+	  (0
+	   || set(cmd, "None",	    &trace, tNONE)
+	   || set(cmd, "Off",	    &trace, tNONE)
+	   || set(cmd, "Warnings",  &trace, tUNDER)
+	   || set(cmd, "Alltime",   &trace, tALLTIME)
+	   || set(cmd, "Rejected",  &trace, tREJECTED)
+	   || set(cmd, "Iterations",&trace, tITERATION)
+	   || set(cmd, "Verbose",   &trace, tVERBOSE)
+	   || cmd.warn(bWARNING, "need none, off, warnings, alltime, "
+		       "rejected, iterations, verbose")
+	   )
+	  )
+      || outset(cmd,&out)
+      ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.check(bWARNING, "what's this?");
 
@@ -139,7 +144,7 @@ void DCOP::options(CS& cmd)
   initio(out);
 }
 /*--------------------------------------------------------------------------*/
-void DCOP::by(CS& cmd)
+bool DCOP::by(CS& cmd)
 {
   step[0] = cmd.ctof();
   linswp[0] = true;
@@ -147,9 +152,10 @@ void DCOP::by(CS& cmd)
     untested();
     step[0] = stop[0] - start[0];
   }
+  return true;
 }
 /*--------------------------------------------------------------------------*/
-void DCOP::decade(CS& cmd)
+bool DCOP::decade(CS& cmd)
 {
   double junk = cmd.ctopf();
   if (junk == 0.) {
@@ -159,15 +165,17 @@ void DCOP::decade(CS& cmd)
   junk = pow(10., 1./junk);
   step[0] = junk;
   linswp[0] = false;
+  return true;
 }
 /*--------------------------------------------------------------------------*/
-void DCOP::times(CS& cmd)
+bool DCOP::times(CS& cmd)
 {
   untested();
   step[0] = cmd.ctopf();
   linswp[0] = false;
   if (step[0] == 0.  &&  start[0] != 0.)
     step[0] = stop[0] / start[0];
+  return true;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

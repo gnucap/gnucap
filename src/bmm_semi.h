@@ -1,4 +1,4 @@
-/*$Id: bmm_semi.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bmm_semi.h,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -39,6 +39,7 @@ private: // override virtual
   COMMON_COMPONENT* clone()const = 0;
   const char*	name()const	{untested();return modelname().c_str();}
   bool ac_too()const		{untested();return false;}
+  bool parse_params(CS&);
   void parse(CS&);
   void print(OMSTREAM&)const;
   void expand(const COMPONENT*) = 0;
@@ -73,43 +74,53 @@ private: // override virtual
   void expand(const COMPONENT*);
 };
 /*--------------------------------------------------------------------------*/
-class MODEL_SEMI_CAPACITOR : public MODEL_CARD {
+class MODEL_SEMI_BASE : public MODEL_CARD {
 public:
-  double _cj;
-  double _cjsw;
   double _narrow;
   double _defw;
   double _tc1;
   double _tc2;
+protected:
+  explicit MODEL_SEMI_BASE();
+protected: // override virtual
+  COMMON_COMPONENT* new_common()const {return new EVAL_BM_SEMI_CAPACITOR;}
+  bool parse_front(CS&) = 0;
+  bool parse_params(CS&);
+  void parse_finish() {}
+  void print_front(OMSTREAM&)const = 0;
+  void print_params(OMSTREAM&)const;
+  void print_calculated(OMSTREAM&)const {}
+};
+/*--------------------------------------------------------------------------*/
+class MODEL_SEMI_CAPACITOR : public MODEL_SEMI_BASE {
+public:
+  double _cj;
+  double _cjsw;
 public:
   explicit MODEL_SEMI_CAPACITOR();
 private: // override virtual
   COMMON_COMPONENT* new_common()const {return new EVAL_BM_SEMI_CAPACITOR;}
   bool parse_front(CS&);
-  void parse_params(CS&);
-  void parse_finish() {}
+  bool parse_params(CS&);
+  //void parse_finish() {}
   void print_front(OMSTREAM&)const;
   void print_params(OMSTREAM&)const;
-  void print_calculated(OMSTREAM&)const {}
+  //void print_calculated(OMSTREAM&)const {}
 };
 /*--------------------------------------------------------------------------*/
-class MODEL_SEMI_RESISTOR : public MODEL_CARD {
+class MODEL_SEMI_RESISTOR : public MODEL_SEMI_BASE {
 public:
   double _rsh;
-  double _narrow;
-  double _defw;
-  double _tc1;
-  double _tc2;
 public:
   explicit MODEL_SEMI_RESISTOR();
 private: // override virtual
   COMMON_COMPONENT* new_common()const {return new EVAL_BM_SEMI_RESISTOR;}
   bool parse_front(CS&);
-  void parse_params(CS&);
-  void parse_finish() {}
+  bool parse_params(CS&);
+  //void parse_finish() {}
   void print_front(OMSTREAM&)const;
   void print_params(OMSTREAM&)const;
-  void print_calculated(OMSTREAM&)const {}
+  //void print_calculated(OMSTREAM&)const {}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

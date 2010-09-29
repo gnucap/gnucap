@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+Data Structures
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc108">7.3</A>&nbsp;&nbsp;Data Structures</H2>
+
+<H3>7.3.1&nbsp;&nbsp;Parts list</H3>
+<A NAME="@default288"></A>
+<A NAME="@default289"></A>
+
+<H4>Main parts list</H4>
+The primary data storage is in a list of ``cards''. A card is
+anything that can appear in a net list. Cards live here, primarily,
+but there are some other auxilary lists that also contain pointers to
+cards.<BR>
+<BR>
+The list stores pointers, rather than actual objects, because there
+are many types of cards. All are derived from the ``card'', through
+several levels of inheritance.<BR>
+<BR>
+Usually, they are stored in the order they are read from the file,
+except for subcircuits, which are stored in separate lists to preserve 
+the hierarchy.<BR>
+<BR>
+As of release 0.24, the main list is in static storage, so there can
+be only one. This will change. New cards can be inserted anywhere in 
+the list, but usually they are inserted at the end. The mechanism for 
+marking the location is a hybrid of STL and a 15 year old pointer
+scheme, which will also change someday.
+
+<H4>The ``Common'' and ``Eval'' classes</H4>
+The ``common'' serves two distinct purposes. The first is to share
+storage for similar devices. The second is to attach ``evaluators''
+to otherwise simple components for special behavior.<BR>
+<BR>
+Most circuits have many identical elements. The ``common'' enables
+them to share storage. One ``common'' can be attached to many
+devices. When a new device is created, even if it is parses
+separately, an attempt is made to find an appropriate device to share
+with.<BR>
+<BR>
+Simple elements like resistors and capacitors can have ``evaluators''
+attached as commons. These evaluators calculate a function and its
+derivative, and return it in a standard form. Some evaluators are
+used internally, such as in the diode and mosfet models. Some are
+used explicitly, such as in behavioral modeling.
+<BR>
+<BR>
+</BODY>
+</HTML>

@@ -1,4 +1,4 @@
-/* $Id: d_mos123.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos123.model,v 24.7 2003/06/12 04:59:26 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -51,7 +51,7 @@ public:
   ~MODEL_MOS123() {--_count;}
 public: // override virtual
   bool      parse_front(CS&);
-  void      parse_params(CS&);
+  bool      parse_params(CS&);
   void      parse_finish();
   SDP_CARD* new_sdp(const COMMON_COMPONENT* c)const;
   void      print_front(OMSTREAM&)const;
@@ -72,7 +72,13 @@ public: // input parameters
   double nsub;	// substrate doping
   double nss;	// surface state density
   double xj;	// metallurgical junction depth
-  double ld;	// lateral diffusion
+  double lmlt;	// length shrink factor
+  double del;	// channel length reduction each side
+  double ld;	// lateral length diffusion
+  double xl;	// length bias accounts for masking and etching effects
+  double wmlt;	// width shrink factor
+  double wd;	// width diffusion
+  double xw;	// width bias accounts for masking and etching effects
   double uo;	// surface mobility
   int tpg;	// type of gate material - really gate_t
 public: // calculated parameters

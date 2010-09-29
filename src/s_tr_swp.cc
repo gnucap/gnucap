@@ -1,4 +1,4 @@
-/*$Id: s_tr_swp.cc,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
+/*$Id: s_tr_swp.cc,v 24.20 2004/01/18 07:42:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -78,7 +78,6 @@ void TRANSIENT::sweep(void)
   }else{
     bool converged = solve(OPT::itl[OPT::DCBIAS],trace);
     if (!converged) {
-      untested();
       error(bWARNING, "did not converge\n");
     }
   }}
@@ -88,8 +87,6 @@ void TRANSIENT::sweep(void)
   {if (printnow) {
     keep();
     outdata(time0);
-  }else{
-    untested();
   }}
   
   while (next()) {
@@ -106,11 +103,11 @@ void TRANSIENT::sweep(void)
       reject();
     }}
     
-    {if (trace >= tREJECTED) {
+    {if (trace >= tALLTIME) {
       printnow = true;
     }else if (!converged && OPT::quitconvfail) {
       printnow = true;
-    }else if (!converged  ||  approxtime <= time0) {
+    }else if (!converged  ||  approxtime <= time0 || time0+dtmin < tstart) {
       if (printnow) {
 	--stepno;
 	printnow = false;
@@ -163,13 +160,15 @@ int TRANSIENT::step_cause()const
 void TRANSIENT::first(void)
 {
   /* usually, time0, time1 == 0, from setup */
+  assert(time0 == time1);
+  assert(time0 <= tstart);
   STATUS::review.start();
   nexttick = time0 + tstep;		/* set next user step */
   //eq.Clear();				/* empty the queue */
   while (!eq.empty()) {
     eq.pop();
   }
-  printnow = true;
+  printnow = (time0 == tstart || trace >= tALLTIME);
   stepno = 0;
   set_step_cause(scUSER);
   ++STATUS::control[cSTEPS];
@@ -212,11 +211,10 @@ bool TRANSIENT::next(void)
   }
 
   if (newtime < time1 + dtmin) {
-    untested();
     assert(step_cause() < scREJECT);
     error(bDANGER,"very backward time step\n%s\n",
 	  TR::step_cause[step_cause()]);
-    error(bTRACE, "newtime=%e  rejectedtime=%e  oldtime=%e  using=%e\n",
+    error(bDANGER, "newtime=%e  rejectedtime=%e  oldtime=%e  using=%e\n",
 	  newtime, time0, time1, time1 + dtmin);
     newtime = time1 + dtmin;
     set_step_cause(scNO_ADVANCE);
@@ -231,9 +229,8 @@ bool TRANSIENT::next(void)
       nexttick -= tstep;
     }
   }else if (newtime < time0 + dtmin) {
-    untested();
     error(bWARNING, "zero time step\n");
-    error(bLOG, "newtime=%e  rejectedtime=%e  oldtime=%e\n",
+    error(bWARNING, "newtime=%e  rejectedtime=%e  oldtime=%e\n",
 	  newtime, time0, time1);
     time1 = time0;
     newtime = time0 + dtmin;

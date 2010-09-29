@@ -1,4 +1,4 @@
-/*$Id: io_trace.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: io_trace.h,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -29,6 +29,7 @@
 #undef trace2
 #undef trace3
 #undef trace4
+#undef trace5
 #undef untested
 #undef unreachable
 #undef incomplete
@@ -44,6 +45,10 @@
 	s, #x, (double)(x), #y, (double)(y), #z, (double)(z)))
 #define trace4(s,w,x,y,z)(printf("@#@%s  %s=%g  %s=%g  %s=%g  %s=%g\n",\
 	s, #w, (double)(w), #x, (double)(x), #y, (double)(y), #z, (double)(z)))
+#define trace5(s,v,w,x,y,z)\
+	(printf("@#@%s  %s=%g  %s=%g  %s=%g  %s=%g  %s=%g\n",\
+	s, #v, (double)(v), #w, (double)(w), #x, (double)(x),\
+	#y, (double)(y), #z, (double)(z)))
 #else
 #define trace_line()
 #define trace0(s)
@@ -51,6 +56,7 @@
 #define trace2(s,x,y)
 #define trace3(s,x,y,z)
 #define trace4(s,w,x,y,z)
+#define trace5(s,v,w,x,y,z)
 #endif
 
 #define unreachable() (printf("@@#\n@@@unreachable:%s:%u:%s\n", \

@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+D: Diode
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc62">3.4</A>&nbsp;&nbsp;<TT>D</TT>: Diode</H2>
+
+<H3>3.4.1&nbsp;&nbsp;Syntax</H3>
+
+ <TT>D</TT><I>xxxxxxx n+ n-- mname</I> {<I>area</I>} {<I>args</I>}<BR>
+<TT>.DIOde</TT> <I>xxxxxxx n+ n-- mname</I> {<I>area</I>} 
+ {<I>args</I>}
+
+
+<H3>3.4.2&nbsp;&nbsp;Purpose</H3>
+Junction diode.
+
+<H3>3.4.3&nbsp;&nbsp;Comments</H3>
+<I>N+</I> and <I>n--</I> are the positive and negative element nodes,
+respectively. <I>Mname</I> is the model name. <I>Area</I> is the area
+factor. If the area factor is omitted, a value of 1.0 is assumed.
+<I>Args</I> is a list of additional arguments. The parameters
+available are a superset of those available in SPICE.<BR>
+<BR>
+A diode can also use a MOSFET model (type <TT>NMOS</TT> or <TT>PMOS</TT>) to
+represent the equivalent of the source-bulk or drain-bulk diodes.<BR>
+<BR>
+When the element is printed out, by a <TT>list</TT> or <TT>save</TT>
+command, the the computed values of <TT>IS</TT>, <TT>RS</TT>, <TT>CJ</TT>, and
+<TT>CJSW</TT> are printed as a comment if they were not explicitly
+entered.
+
+<H3>3.4.4&nbsp;&nbsp;Element Parameters</H3>
+<DL COMPACT=compact><DT><B><TT>Area</TT> = <I>x</I></B><DD> Area factor. (Default = 1.0) If optional
+ parameters <TT>IS</TT>, <TT>RS</TT>, and <TT>CJO</TT> are not specified, the
+ <TT>.model</TT> value is multiplied by <TT>area</TT> to get the actual
+ value.<BR>
+<BR>
+<DT><B><TT>Perim</TT> = <I>x</I></B><DD> Perimeter factor. (Default = 1.0) If
+ optional parameter <TT>CJSW</TT> is not specified, the <TT>.model</TT>
+ value is multiplied by <TT>perim</TT> to get the actual value.<BR>
+<BR>
+<DT><B><TT>IC</TT> = <I>x</I></B><DD> Initial condition. The initial voltage to
+ use in transient analysis, if the <TT>UIC</TT> option is specified.
+ Default: don't use initial condition. This is presently ignored,
+ but accepted for compatibility.<BR>
+<BR>
+<DT><B><TT>OFF</TT></B><DD> Start iterating with this diode off, in DC analysis.<BR>
+<BR>
+<DT><B><TT>IS</TT> = <I>x</I></B><DD> Saturation current. This overrides <TT>IS</TT>
+ in the <TT>.model</TT>, and is not affected by <TT>area</TT>. Default:
+ use <TT>IS</TT> from <TT>.model</TT> * <TT>area</TT>.<BR>
+<BR>
+<DT><B><TT>RS</TT> = <I>x</I></B><DD> Ohmic (series) resistance. This overrides
+ <TT>RS</TT> in the <TT>.model</TT>, and is not affected by <TT>area</TT>.
+ Default: use <TT>RS</TT> from <TT>.model</TT> * <TT>area</TT>.<BR>
+<BR>
+<DT><B><TT>CJ</TT> = <I>x</I></B><DD> Zero-bias junction capacitance. This
+ overrides <TT>CJ</TT> in the <TT>.model</TT>, and is not affected by <TT>area</TT>. Default: use <TT>CJ</TT> from <TT>.model</TT> * <TT>area</TT>.<BR>
+<BR>
+<DT><B><TT>CJSW</TT> = <I>x</I></B><DD> Zero-bias sidewall capacitance. This
+ overrides <TT>CJSW</TT> in the <TT>.model</TT>, and is not affected by
+ <TT>perim</TT>. Default: use <TT>CJSW</TT> from <TT>.model</TT> * <TT>perim</TT>.<BR>
+<BR>
+<DT><B><TT>GParallel</TT> = <I>x</I></B><DD> Parallel conductance. This overrides
+ <TT>GParallel</TT> in the <TT>.model</TT>, and is not affected by <TT>area</TT>. Default: use <TT>GParallel</TT> from <TT>.model</TT> * <TT>area</TT>.</DL>
+
+
+<H3>3.4.5&nbsp;&nbsp;Model Parameters</H3>
+<DL COMPACT=compact><DT><B><TT>IS</TT> = <I>x</I></B><DD> Normalized saturation current. (Amperes).
+ (Default = 1.0e-14) <TT>IS</TT> is multiplied by the <I>area</I> in the
+ element statement to get the actual saturation current. It may be
+ overridden by specifying <TT>IS</TT> in the element statement.<BR>
+<BR>
+<DT><B><TT>RS</TT> = <I>x</I></B><DD> Normalized ohmic resistance. (Ohms) (Default
+ = 0.) <TT>RS</TT> is multiplied by the <I>area</I> in the element
+ statement to get the actual ohmic resistance. It may be overridden
+ by specifying <TT>RS</TT> in the element statement.<BR>
+<BR>
+<DT><B><TT>N</TT> = <I>x</I></B><DD> Emission coefficient. (Default = 1.0) In
+ ECA-2 the default value was 2.<BR>
+<BR>
+<DT><B><TT>TT</TT> = <I>x</I></B><DD> Transit time. (Default = 0.) The diffusion
+ capacitance is given by: <I>c</I><SUB><FONT SIZE=2><I>d</I></FONT></SUB> = <I>TT</I> <I>g</I><SUB><FONT SIZE=2><I>d</I></FONT></SUB> where <I>g</I><SUB><FONT SIZE=2><I>d</I></FONT></SUB> is the diode
+ conductance.<BR>
+<BR>
+<DT><B><TT>VJ</TT> = <I>x</I></B><DD> Junction potential. (Default = 1.0) Used in
+ computation of capacitance. For compatibility with older versions
+ of SPICE, <TT>PB</TT> is accepted as an alias for <TT>VJ</TT>.<BR>
+<BR>
+<DT><B><TT>CJo</TT> = <I>x</I></B><DD> Normalized zero-bias depletion capacitance.
+ (Default = 0.) <TT>CJo</TT> is multiplied by the <I>area</I> in the
+ element statement to get the actual zero-bias capacitance. It may
+ be overridden by specifying <TT>CJ</TT> in the element statement.<BR>
+<BR>
+<DT><B><TT>Mj</TT> = <I>x</I></B><DD> Grading coefficient. (Default = 0.5)<BR>
+<BR>
+<DT><B><TT>PBSw</TT> = <I>x</I></B><DD> Sidewall junction potential. (Default =
+ PB)<BR>
+<BR>
+<DT><B><TT>CJSw</TT> = <I>x</I></B><DD> Normalized zero-bias sidewall capacitance.
+ (Default = 0.) <TT>CJSw</TT> is multiplied by the <I>perimeter</I> in
+ the element statement to get the actual zero-bias capacitance. It
+ may be overridden by specifying <TT>CJSW</TT> in the element statement.<BR>
+<BR>
+<DT><B><TT>MJSw</TT> = <I>x</I></B><DD> Sidewall grading coefficient. (Default =
+ 0.33)<BR>
+<BR>
+<DT><B><TT>EG</TT> = <I>x</I></B><DD> Activation energy. (electron Volts) (Default
+ = 1.11, silicon.) For other types of diodes, use:
+
+1.11 ev. Silicon (default value)<BR>
+0.69 ev. Schottky barrier<BR>
+0.67 ev. Germanium<BR>
+1.43 ev. GaAs<BR>
+2.26 ev. GaP
+<BR>
+<BR>
+<DT><B><TT>XTI</TT> = <I>x</I></B><DD> Saturation current temperature exponent.
+ (Default = 3.0) For Schottky barrier, use 2.0.<BR>
+<BR>
+<DT><B><TT>KF</TT> = <I>x</I></B><DD> Flicker noise coefficient. (Default = 0.)
+ SPICE parameter accepted but not implemented.<BR>
+<BR>
+<DT><B><TT>AF</TT> = <I>x</I></B><DD> Flicker noise exponent. (Default = 1.0)
+ SPICE parameter accepted but not implemented.<BR>
+<BR>
+<DT><B><TT>FC</TT> = <I>x</I></B><DD> Coefficient for forward bias depletion
+ capacitance formula. (Default = 0.5)<BR>
+<BR>
+<DT><B><TT>BV</TT> = <I>x</I></B><DD> Reverse breakdown voltage. (Default =
+ <FONT FACE=symbol>¥</FONT>.) SPICE parameter accepted but not implemented.<BR>
+<BR>
+<DT><B><TT>IBV</TT> = <I>x</I></B><DD> Current at breakdown voltage. (Default = 1
+ ma.) SPICE parameter accepted but not implemented.<BR>
+<BR>
+<DT><B><TT>GParallel</TT> = <I>x</I></B><DD> Parallel conductance. (Default = 0.)</DL>
+
+
+<H3>3.4.6&nbsp;&nbsp;Probes</H3>
+<DL COMPACT=compact><DT><B><TT>Vd</TT></B><DD> Voltage. The first node (anode) is assumed positive.<BR>
+<BR>
+<DT><B><TT>Id</TT></B><DD> Total current. It flows into the first node (anode),
+ out of the second (cathode). I(Dxxxx) is the same as IJ(Dxxxx) +
+ IC(Dxxxx).<BR>
+<BR>
+<DT><B><TT>VJ</TT></B><DD> Junction voltage. The voltage across the junction,
+ excluding the series resistance.<BR>
+<BR>
+<DT><B><TT>VSR</TT></B><DD> Resistive voltage. The voltage across the series
+ resistance, excluding the junction voltage.<BR>
+<BR>
+<DT><B><TT>IJ</TT></B><DD> Junction current. The current through the junction.
+ IJ(Dxxxx) is the same as I(Yj.Dxxxx).<BR>
+<BR>
+<DT><B><TT>IC</TT></B><DD> Capacitor current. The current through the parallel
+ capacitor. IC(Dxxxx) is the same as I(Cj.Dxxxx).<BR>
+<BR>
+<DT><B><TT>P</TT></B><DD> Power. P(Dxxxx) is the same as PJ(Dxxxx) + PC(Dxxxx).<BR>
+<BR>
+<DT><B><TT>PD</TT></B><DD> Power dissipated. The power dissipated as heat. It
+ is always positive and does not include power sourced. It should be
+ the same as P because the diode is passive.<BR>
+<BR>
+<DT><B><TT>PS</TT></B><DD> Power sourced. The power sourced by the part. It is
+ always positive and does not consider its own dissipation. It
+ should be 0 because the diode is passive.<BR>
+<BR>
+<DT><B><TT>PJ</TT></B><DD> Junction power. PJ(Dxxxx) is the same as P(Yj.Dxxxx).<BR>
+<BR>
+<DT><B><TT>PC</TT></B><DD> Capacitor power. PC(Dxxxx) is the same as
+ P(Cj.Dxxxx).<BR>
+<BR>
+<DT><B><TT>Capacitance</TT></B><DD> Effective capacitance. C(Dxxxx) is the same
+ as Capacitance(Cj.Dxxxx).<BR>
+<BR>
+<DT><B><TT>Req</TT></B><DD> Effective resistance. R(Dxxxx) is the same as
+ R(Yj.Dxxxx).<BR>
+<BR>
+<DT><B><TT>Z</TT></B><DD> Impedance at a port. The port impedance seen looking
+ into the circuit across the branch. It does not include the part
+ itself. In transient analysis, it shows the effective Z-domain
+ impedance, which is a meaningless number if there are capacitors or
+ inductors in the circuit. (DC only)<BR>
+<BR>
+<DT><B><TT>ZRAW</TT></B><DD> Impedance at a port, raw. This is the same as ``Z''
+ except that it includes the part itself. (DC only)<BR>
+<BR>
+<DT><B><TT>REgion</TT></B><DD> Region code. A numeric code that represents the
+ region it is operating in. +1 = forward, -1 = reversed, 0 =
+ unknown, -2 = assumed off.</DL>
+All parameters of the internal elements Yj and Cj are available. To
+access them, concatenate the labels for the internal element with the
+diode, separated by a dot. Yj.D6 is the admittance (Yj) element of
+the diode D6.<BR>
+<BR>
+In this release, there are no probes available in AC analysis except
+for the internal elements.<BR>
+<BR>
+The general element probes do not apply to diodes.
+ </BODY>
+</HTML>

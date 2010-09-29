@@ -1,4 +1,4 @@
-%$Id: print.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: print.tex,v 24.14 2004/01/09 05:27:01 al Exp $
 % man commands print .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -115,6 +115,24 @@ fully valid logic signal.  Nonzero indicates it does not meet the criteria
 for logic simulation.  $c$ indicates how the node was calculated:  $0$
 indicates logic simulation.  $1$ indicates analog simulation of a logic
 device.  $2$ indicates analog simulation of analog devices.
+
+\end{description}
+%------------------------------------------------------------------------
+\subsubsection{AC only}
+
+In addition to those listed here, you can add a suffix ({\tt M, P, R,
+I} and {\tt DB}) for magnitude, phase, real part, imaginary part, and
+decibels, to any valid probe.
+
+\begin{description}
+
+\item[{\tt VI}] Imaginary part of the voltage.
+
+\item[{\tt VDB}] Decibels relative to 1 v.
+
+\item[{\tt ZI}] Imaginary part of the impedance looking into the node.
+
+\item[{\tt ZP}] Impedance phase (angle between voltage and current).  
 
 \end{description}
 %------------------------------------------------------------------------
@@ -288,11 +306,10 @@ passive part and an offset.
 %------------------------------------------------------------------------
 \subsubsection{AC only}
 
-These parameters are available in addition to the above.  In addition
-to those listed here, you can add a suffix ({\tt M, P, R, I} and {\tt
-DB}) for magnitude, phase, real part, imaginary part, and decibels, to 
-any valid probe.  Some of them have a special meaning, which is listed 
-here.  Negative phase is capacitive.  Positive phase is inductive.
+In addition to those listed here, you can add a suffix ({\tt M, P, R,
+I} and {\tt DB}) for magnitude, phase, real part, imaginary part, and
+decibels, to any valid probe.  Negative phase is capacitive.  Positive
+phase is inductive.
 
 \begin{description}
 
@@ -304,7 +321,7 @@ here.  Negative phase is capacitive.  Positive phase is inductive.
 
 \item[{\tt PMDB}] Decibels relative to 1 va.
 
-\item[{\tt PP}] Power phase (angle between voltage and current).  
+\item[{\tt PP}] Power phase (angle between voltage and current).
 
 \end{description}
 %------------------------------------------------------------------------

@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+GENERATOR: Signal Generator time dependent value
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc90">4.6</A>&nbsp;&nbsp;<TT>GENERATOR</TT>: Signal Generator time dependent value</H2>
+
+<H3>4.6.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>GENERATOR</TT> <I>scale</I>
+
+
+<H3>4.6.2&nbsp;&nbsp;Purpose</H3>
+The component ``value'' is dependent on a ``signal generator'',
+manipulated by the ``generator'' command.
+
+<H3>4.6.3&nbsp;&nbsp;Comments</H3>
+For transient analysis, the ``value'' is determined by a signal
+generator, which is considered to be external to the circuit and part
+of the test bench. See the ``generator'' command for more
+information.<BR>
+<BR>
+For AC analysis, the value here is the amplitude.<BR>
+<BR>
+Strictly, all of the functionality and more is available through the
+Spice-like behavioral modeling functions, but this one provides a user 
+interface closer to the function generator that an analog designer
+would use on a real bench. It is mainly used for interactive operation.<BR>
+<BR>
+It also provides backward compatibility with predecessors to Gnucap,
+which used a different netlist format.
+
+</BODY>
+</HTML>

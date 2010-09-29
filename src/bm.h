@@ -1,4 +1,4 @@
-/*$Id: bm.h,v 22.13 2002/08/01 16:27:25 al Exp $ -*- C++ -*-
+/*$Id: bm.h,v 24.21 2004/01/21 15:58:10 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -55,8 +55,6 @@ protected:
   explicit	EVAL_BM_ACTION_BASE(int c=0);
   explicit	EVAL_BM_ACTION_BASE(const EVAL_BM_ACTION_BASE& p);
 		~EVAL_BM_ACTION_BASE() {}
-  void		parse_base(CS&);
-  void		parse_base_finish();
   void		print_base(OMSTREAM&)const;
   double	temp_adjust()const;
   void		tr_final_adjust(FPOLY1* y, bool f_is_value)const;
@@ -68,8 +66,14 @@ protected:
 public: // override virtual
   void		ac_eval(ELEMENT* d)const;
   virtual bool	ac_too()const = 0;
+  void		parse(CS&);
 private: // override virtual
   bool		has_ac_eval()const	{return true;}
+protected: // new virtual
+  virtual void	parse_front()		{}
+  virtual void	parse_numlist(CS&)	{unreachable();}
+  virtual bool	parse_params(CS&);
+  virtual void	parse_finish();
 public:
   bool		has_ext_args()const	{return _has_ext_args;}
   static COMMON_COMPONENT* parse_func_type(CS&);
@@ -88,6 +92,13 @@ private: // override virtual
   const char*	name()const		{unreachable(); return "????";}
   void		parse(CS&);
   void		print(OMSTREAM&)const;
+  void		expand(const COMPONENT*c)
+  {
+    for (int i = 1; i < sCOUNT; ++i) {
+      assert(_func[i]);
+      _func[i]->expand(c);
+    }
+  }
   void		tr_eval(ELEMENT*d)const
 		    {assert(_func[SIM::mode]); _func[SIM::mode]->tr_eval(d);}
   void		ac_eval(ELEMENT*d)const
@@ -111,10 +122,8 @@ private: // override virtual
   void		parse(CS&);
   void		print(OMSTREAM&)const;
   void		expand(const COMPONENT*);
-  void		tr_eval(ELEMENT*d)const
-		    {assert(_func); _func->tr_eval(d);}
-  void		ac_eval(ELEMENT*d)const
-		    {assert(_func); _func->ac_eval(d);}
+  void		tr_eval(ELEMENT*d)const {assert(_func); _func->tr_eval(d);}
+  void		ac_eval(ELEMENT*d)const {assert(_func); _func->ac_eval(d);}
 };
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_COMPLEX : public EVAL_BM_ACTION_BASE {
@@ -128,7 +137,7 @@ private: // override virtual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_COMPLEX(*this);}
   const char*	name()const		{return "COMPLEX";}
   bool		ac_too()const		{return true;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*)const;
   void		ac_eval(ELEMENT*)const;
@@ -152,7 +161,9 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_EXP(*this);}
   const char*	name()const		{return "EXP";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
+  void		parse_finish();
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -174,7 +185,10 @@ private: // override virtual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_FIT(*this);}
   const char*	name()const		{return "FIT";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_front();
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
+  void		parse_finish();
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -189,7 +203,7 @@ private: // override virtual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_GENERATOR(*this);}
   const char*	name()const		{return "GENERATOR";}
   bool		ac_too()const		{return true;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
   void		ac_eval(ELEMENT*d)const;
@@ -209,7 +223,8 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_POLY(*this);}
   const char*	name()const		{return "POLY";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -230,7 +245,8 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_POSY(*this);}
   const char*	name()const		{return "POSY";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -253,7 +269,9 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_PULSE(*this);}
   const char*	name()const		{return "PULSE";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
+  void		parse_finish();
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -272,7 +290,8 @@ private: // override virtual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_PWL(*this);}
   const char*	name()const		{return "PWL";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -293,7 +312,8 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_SFFM(*this);}
   const char*	name()const		{return "SFFM";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -314,7 +334,8 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_SIN(*this);}
   const char*	name()const		{return "SIN";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -331,7 +352,8 @@ private: // override virtual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_TANH(*this);}
   const char*	name()const		{return "TANH";}
   bool		ac_too()const		{return false;}
-  void		parse(CS&);
+  void		parse_numlist(CS&);
+  bool		parse_params(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
 };
@@ -348,10 +370,9 @@ private: // override virtual
   COMMON_COMPONENT* clone()const {untested(); return new EVAL_BM_VALUE(*this);}
   const char*	name()const		{return "VALUE";}
   bool		ac_too()const		{return false;}
+  void		parse_numlist(CS&);
   void		print(OMSTREAM&)const;
   void		tr_eval(ELEMENT*d)const;
-public:
-  void		parse(CS&);
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

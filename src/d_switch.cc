@@ -1,4 +1,4 @@
-/*$Id: d_switch.cc,v 22.9 2002/07/23 20:09:02 al Exp $ -*- C++ -*-
+/*$Id: d_switch.cc,v 24.22 2004/02/01 07:12:36 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -35,7 +35,7 @@
 //	void	MODEL_SWITCH::print(int,int)const;
 //		SWITCH_BASE::SWITCH_BASE();
 //		SWITCH_BASE::SWITCH_BASE(const SWITCH_BASE& p);
-//	void	SWITCH_BASE::parse_sb(CS&,int);
+//	void	SWITCH_BASE::parse(CS&);
 //	void	SWITCH_BASE::print(int,int)const;
 //	void	SWITCH_BASE::expand_sb();
 //	bool	SWITCH_BASE::do_tr();
@@ -71,8 +71,10 @@ void MODEL_SWITCH::parse(CS& cmd)
   cmd.skiparg();		// skip known ".model"
   parse_label(cmd);
   int here = cmd.cursor();
-  /**/ set(cmd, "SW",  &type, VOLTAGE)
-    || set(cmd, "CSW", &type, CURRENT);
+  0
+    || set(cmd, "SW",  &type, VOLTAGE)
+    || set(cmd, "CSW", &type, CURRENT)
+    ;
   if (cmd.stuck(&here)){
     untested();
     cmd.warn(bWARNING, "need sw or csw");
@@ -80,12 +82,14 @@ void MODEL_SWITCH::parse(CS& cmd)
   cmd.skiplparen();
   cmd.stuck(&here);
   do{
-    get(cmd, "VT",   &vt);
-    get(cmd, "VH",   &vh,  mPOSITIVE);
-    get(cmd, "IT",   &vt);
-    get(cmd, "IH",   &vh,  mPOSITIVE);
-    get(cmd, "RON",  &ron);
-    get(cmd, "ROFF", &roff);
+    0
+      || get(cmd, "VT",   &vt)
+      || get(cmd, "VH",   &vh,  mPOSITIVE)
+      || get(cmd, "IT",   &vt)
+      || get(cmd, "IH",   &vh,  mPOSITIVE)
+      || get(cmd, "RON",  &ron)
+      || get(cmd, "ROFF", &roff)
+      ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.skiprparen();
   cmd.check(bWARNING, "what's this?");
@@ -133,7 +137,7 @@ SWITCH_BASE::SWITCH_BASE(const SWITCH_BASE& p)
   untested();
 }
 /*--------------------------------------------------------------------------*/
-void SWITCH_BASE::parse_sb(CS& cmd, int num_nodes)
+void SWITCH_BASE::parse(CS& cmd)
 {
   assert(has_common());
   COMMON_SWITCH* c = prechecked_cast<COMMON_SWITCH*>(common()->clone());
@@ -141,7 +145,7 @@ void SWITCH_BASE::parse_sb(CS& cmd, int num_nodes)
   assert(!c->has_model());
 
   parse_Label(cmd);
-  parse_nodes(cmd, num_nodes, num_nodes);
+  parse_nodes(cmd, net_nodes(), net_nodes());
   {if (typeid(*this) == typeid(DEV_CSWITCH)){
     _input_label = cmd.ctos(TOKENTERM);
     _input_label[0] = toupper(_input_label[0]);
@@ -150,14 +154,14 @@ void SWITCH_BASE::parse_sb(CS& cmd, int num_nodes)
   }}
   c->parse_modelname(cmd);
   int here = cmd.cursor();
-  /**/ ::set(cmd, "OFF",    &_ic, _OFF)
-    || ::set(cmd, "ON",	    &_ic, _ON)
-    || ::set(cmd, "UNKNOWN",&_ic, _UNKNOWN);
-  {if (cmd.stuck(&here)){
+  0
+    || set(cmd, "OFF",    &_ic, _OFF)
+    || set(cmd, "ON",	  &_ic, _ON)
+    || set(cmd, "UNKNOWN",&_ic, _UNKNOWN)
+    ;
+  if (cmd.stuck(&here)){
     cmd.check(bWARNING, "need off, on, or unknown");
-  }else{
-    untested();
-  }}
+  }
   attach_common(c);
 }
 /*--------------------------------------------------------------------------*/
@@ -182,7 +186,7 @@ void SWITCH_BASE::print(OMSTREAM& where, int)const
   where << '\n';
 }
 /*--------------------------------------------------------------------------*/
-void SWITCH_BASE::expand_sb()
+void SWITCH_BASE::expand()
 {
   const MODEL_SWITCH* m = dynamic_cast<const MODEL_SWITCH*>(attach_model());
   if (!m){
@@ -278,7 +282,7 @@ void DEV_CSWITCH::expand()
     error(bERROR,
 	  long_label() + ": " + _input_label + " cannot be used as input\n");
   }
-  expand_sb();
+  SWITCH_BASE::expand();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

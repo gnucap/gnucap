@@ -1,4 +1,4 @@
-/*$Id: e_node.h,v 22.18 2002/08/31 16:31:53 al Exp $ -*- C++ -*-
+/*$Id: e_node.h,v 24.22 2004/02/01 07:12:36 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -42,43 +42,39 @@ enum {
 #define	qBAD	 (0)
 #define qGOOD	 (OPT::transits)
 /*--------------------------------------------------------------------------*/
-enum _LOGICVAL {lvSTABLE0=0,lvRISING=1,lvFALLING=2,lvSTABLE1=3,lvUNKNOWN=4};
+enum _LOGICVAL {lvSTABLE0,lvRISING,lvFALLING,lvSTABLE1,lvUNKNOWN};
+enum {lvNUM_STATES = lvUNKNOWN+1};
 /*--------------------------------------------------------------------------*/
 class LOGICVAL {
-public:
 private:
-  int _lv;
-  LOGICVAL& fix()
-    {if (_lv < lvSTABLE0 || _lv > lvSTABLE1){_lv = lvUNKNOWN;} return *this;}
-  LOGICVAL(int p) :_lv(p)			{fix();}
+  _LOGICVAL _lv;
+  static const _LOGICVAL or_truth[lvNUM_STATES][lvNUM_STATES];
+  static const _LOGICVAL xor_truth[lvNUM_STATES][lvNUM_STATES];
+  static const _LOGICVAL and_truth[lvNUM_STATES][lvNUM_STATES];
+  static const _LOGICVAL not_truth[lvNUM_STATES];
 public:
   LOGICVAL() :_lv(lvUNKNOWN)			{}
   LOGICVAL(const LOGICVAL& p)	:_lv(p._lv)	{}
   LOGICVAL(_LOGICVAL p)		:_lv(p)		{}
 
+  operator _LOGICVAL()const {return static_cast<_LOGICVAL>(_lv);}
+  
   LOGICVAL& operator=(_LOGICVAL p)	{_lv=p; return *this;}
   LOGICVAL& operator=(const LOGICVAL& p){_lv=p._lv; return *this;}
-  LOGICVAL& operator&=(LOGICVAL p) {untested(); _lv &= p._lv; return fix();}
-  LOGICVAL& operator|=(LOGICVAL p) {untested(); _lv |= p._lv; return fix();}
-  LOGICVAL operator~()const {return (_lv==lvUNKNOWN) ?lvUNKNOWN :((~_lv)&3);}
-  LOGICVAL operator^(LOGICVAL p)const{untested();
-    return (_lv==lvUNKNOWN||p._lv==lvUNKNOWN) ? lvUNKNOWN : _lv ^ p._lv;}
 
-  bool is_in_transition()const
-			{untested(); return _lv==lvRISING||_lv==lvFALLING;}
-  bool is_stable()const {untested(); return _lv==lvSTABLE0||_lv==lvSTABLE1;}
+  LOGICVAL& operator&=(LOGICVAL p)
+    {untested(); _lv = and_truth[_lv][p._lv]; return *this;}
+  LOGICVAL& operator|=(LOGICVAL p) {_lv = or_truth[_lv][p._lv]; return *this;}
+  LOGICVAL  operator^(LOGICVAL p)  {untested(); return xor_truth[_lv][p._lv];}
+  LOGICVAL  operator~()const	   {return not_truth[_lv];}
+  
   bool is_unknown()const{return _lv == lvUNKNOWN;}
-  bool lv_old()const	{/*assert(_lv!=lvUNKNOWN);*/ return _lv & 2;}
   bool lv_future()const	{assert(_lv!=lvUNKNOWN); return _lv & 1;}
+  bool lv_old()const	{assert(_lv!=lvUNKNOWN); return _lv & 2;}
 
-  bool is_stable0()const{untested(); return _lv == lvSTABLE0;}
   bool is_rising() const{return _lv == lvRISING;}
   bool is_falling()const{return _lv == lvFALLING;}
-  bool is_stable1()const{untested(); return _lv == lvSTABLE1;}
-
-  operator _LOGICVAL()const {return static_cast<_LOGICVAL>(_lv);}
-
-  LOGICVAL& set_in_transition();
+  LOGICVAL& set_in_transition(LOGICVAL newval);
 };
 /*--------------------------------------------------------------------------*/
 class NODE : public CKT_BASE {
@@ -143,7 +139,6 @@ public: // exported to matrix
 public: // exported to logic devices
   int	      d_iter()const		{return _d_iter;}
   bool	      is_unknown()const		{return _lv.is_unknown();}
-  bool        lv_old()const		{return _lv.lv_old();}
   bool        lv_future()const		{return _lv.lv_future();}
   LOGICVAL    lv()const			{return _lv;}
   const char* failure_mode()const	{return _failure_mode;}
@@ -156,7 +151,7 @@ public: // exported to logic devices
   double      to_analog(const MODEL_LOGIC*);
   NODE&	      set_final_time(double t)	{_final_time = t; return *this;}
   NODE&	      set_mode(smode_t m)	{_mode = m; return *this;}
-  NODE&	      set_event(double delay);
+  NODE&	      set_event(double delay, LOGICVAL v);
   NODE&	      propagate();
 };
 /*--------------------------------------------------------------------------*/
@@ -180,6 +175,7 @@ public:
   void	      map_subckt_node(int* map_array);
   bool	      is_valid()const
 		{return node_is_valid(_t) && _m==to_internal(_t);}
+  bool	      is_unconnected()const	{return (_e == INVALID_NODE);}
   node_t&     map()			{_m=to_internal(_t); return *this;}
   explicit    node_t() : _m(INVALID_NODE),_t(INVALID_NODE),_e(INVALID_NODE) {}
 	      node_t(const node_t& p)	:_m(p._m), _t(p._t), _e(p._e) {}
@@ -199,7 +195,7 @@ public:
 };
 OMSTREAM& operator<<(OMSTREAM& o, const node_t& n);
 /*--------------------------------------------------------------------------*/
-double volts_limited(const node_t & n1, const node_t & n2);
+double volts_limited(const node_t& n1, const node_t& n2);
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

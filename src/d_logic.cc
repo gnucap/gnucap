@@ -1,4 +1,4 @@
-/*$Id: d_logic.cc,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
+/*$Id: d_logic.cc,v 24.23 2004/02/01 21:12:55 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -35,7 +35,7 @@ static LOGIC_NONE Default_LOGIC(CC_STATIC);
 /*--------------------------------------------------------------------------*/
 DEV_LOGIC::DEV_LOGIC()
   :ELEMENT(),
-   _num_nodes(0),
+   _net_nodes(0),
    _lastchangenode(0),
    _quality(qGOOD),
    _failuremode("ok"),
@@ -49,7 +49,7 @@ DEV_LOGIC::DEV_LOGIC()
 /*--------------------------------------------------------------------------*/
 DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
   :ELEMENT(p),
-   _num_nodes(p._num_nodes),
+   _net_nodes(p._net_nodes),
    _lastchangenode(0),
    _quality(qGOOD),
    _failuremode("ok"),
@@ -68,11 +68,12 @@ DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
 void DEV_LOGIC::parse(CS& cmd)
 {
   parse_Label(cmd);
-  _num_nodes = parse_nodes(cmd, max_nodes(), BEGIN_IN);
-  if (_num_nodes <= BEGIN_IN) {
-    _num_nodes = BEGIN_IN +1;
+  _net_nodes = parse_nodes(cmd, max_nodes(), BEGIN_IN);
+  if (_net_nodes <= BEGIN_IN) {
+    _net_nodes = BEGIN_IN +1;
     cmd.warn(bDANGER, "need more nodes");
   }
+  assert(net_nodes() == _net_nodes);
   int incount = net_nodes() - BEGIN_IN;
   std::string modelname = cmd.ctos(TOKENTERM);
 
@@ -150,7 +151,6 @@ void DEV_LOGIC::dc_begin()
 void DEV_LOGIC::tr_begin()
 {
   {if (subckt().empty()) {
-    untested();
     _gatemode = moDIGITAL;
   }else{
     _gatemode = (OPT::mode==moMIXED) ? moANALOG : OPT::mode;
@@ -164,7 +164,6 @@ void DEV_LOGIC::tr_begin()
 void DEV_LOGIC::tr_restore()
 {
   {if (subckt().empty()) {
-    untested();
     _gatemode = moDIGITAL;
   }else{
     untested();
@@ -265,10 +264,11 @@ bool DEV_LOGIC::tr_eval_digital()
   _m0.x = 0.;
   _m0.c1 = 1./m->rs;
   _m0.c0 = _y0.f1 / -m->rs;
+  set_converged(conv_check());
   store_values();
   q_load();
   
-  return !outnode->is_unknown();
+  return converged();
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_LOGIC::do_tr()
@@ -370,31 +370,40 @@ void DEV_LOGIC::tr_accept()
       _gatemode = moDIGITAL;
     }
     assert(_gatemode == moDIGITAL);
-    bool bypass = (SIM::bypass_ok
-		   && _lastchangenode == OUTNODE
-		   && SIM::phase == SIM::pTRAN);
-    if (!bypass) {
-      LOGICVAL newstate = c->logic_eval(&ns[BEGIN_IN]);
-      //		     ^^^^^^^^^^
-      {if (ns[OUTNODE]->is_unknown()) {
-	assert(SIM::phase == SIM::pINIT_DC  ||  SIM::phase == SIM::pDC_SWEEP);
-	ns[OUTNODE]->force_initial_value(newstate);
+    if (!SIM::bypass_ok
+	|| _lastchangenode != OUTNODE
+	|| SIM::phase != SIM::pTRAN) {
+      LOGICVAL future_state = c->logic_eval(&ns[BEGIN_IN]);
+      //		         ^^^^^^^^^^
+      {if ((ns[OUTNODE]->is_unknown())
+	  && (SIM::phase == SIM::pINIT_DC || SIM::phase == SIM::pDC_SWEEP)) {
+	ns[OUTNODE]->force_initial_value(future_state);
 	/* This happens when initial DC is digital.
 	 * Answers could be wrong if order in netlist is reversed 
 	 */
-      }else{
-	switch (newstate) {
+      }else if (future_state != ns[OUTNODE]->lv()) {
+	assert(future_state != lvUNKNOWN);
+	switch (future_state) {
 	case lvSTABLE0:	/*nothing*/		break;
-	case lvRISING:  newstate=lvSTABLE0;	break;
-	case lvFALLING: newstate=lvSTABLE1;	break;
+	case lvRISING:  future_state=lvSTABLE0;	break;
+	case lvFALLING: future_state=lvSTABLE1;	break;
 	case lvSTABLE1:	/*nothing*/		break;
-	case lvUNKNOWN: untested(); /*nothing*/	break;
+	case lvUNKNOWN: unreachable();		break;
 	}
-	if (newstate.lv_future() != ns[OUTNODE]->lv_future()) {
-	  ns[OUTNODE]->set_event(m->delay);
-	  //assert(newstate == ns[OUTNODE]->lv_future());
+	/* This handling of rising and falling may seem backwards.
+	 * These states occur when the value has been contaminated 
+	 * by another pending action.  The "old" value is the
+	 * value without this contamination.
+	 * This code is planned for replacement as part of VHDL/Verilog
+	 * conversion, so the kluge stays in for now.
+	 */
+	assert(future_state.lv_old() == future_state.lv_future());
+	if (ns[OUTNODE]->lv() == lvUNKNOWN
+	    || future_state.lv_future() != ns[OUTNODE]->lv_future()) {
+	  ns[OUTNODE]->set_event(m->delay, future_state);
+	  //assert(future_state == ns[OUTNODE]->lv_future());
 	  if (_lastchangenode == OUTNODE) {
-	    untested();
+	    unreachable();
 	    error(bDANGER, "%s:%u:%g non-event state change\n",
 		  long_label().c_str(), STATUS::iter[iTOTAL], SIM::time0);
 	  }

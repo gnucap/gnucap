@@ -1,20 +1,17 @@
 Mutual inductance test circuit 
-V1  1  0  PULSE  iv= 0.  pv= 1.  delay= 0.002  rise= 0.002  fall= 0.002
-+  width= 0.002  period= 0.01  AC   1.
+V1  1  0  PULSE  iv= 0.  pv= 1.  delay= 0.002  rise= 0.002  fall= 0.002  width= 0.002  period= 0.01  AC   1.
 R1a  1  2  22.
 K1  L1a  L1b  0.75
 L1a  2  0  0.56
 L1b  3  0  0.79
 R1b  3  0  75.
-V2  4  0  PULSE  iv= 0.  pv= 1.  delay= 0.002  rise= 0.002  fall= 0.002
-+  width= 0.002  period= 0.01  AC   1.
+V2  4  0  PULSE  iv= 0.  pv= 1.  delay= 0.002  rise= 0.002  fall= 0.002  width= 0.002  period= 0.01  AC   1.
 R2a  4  5  22.
 L2a  5  6  0.06115133  
 L2b  6  0  0.4988487   
 L2c  6  7  0.2911513   
 R2b  7  0  75.
-V3  8  0  PULSE  iv= 0.  pv= 1.  delay= 0.002  rise= 0.002  fall= 0.002
-+  width= 0.002  period= 0.01  AC   1.
+V3  8  0  PULSE  iv= 0.  pv= 1.  delay= 0.002  rise= 0.002  fall= 0.002  width= 0.002  period= 0.01  AC   1.
 R3a  8  9  22.
 L3a  10  0  0.56
 L3b  11  0  0.79

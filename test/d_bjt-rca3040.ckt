@@ -37,6 +37,7 @@ q11     2       14      17      0 qnl
 .model qnl npn bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf
 + cjc=2pf va 50
 
+*>.width out=80
 *>.option rstray
 
 *>.print op v(nodes)

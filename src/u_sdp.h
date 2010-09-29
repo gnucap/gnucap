@@ -1,4 +1,4 @@
-/*$Id: u_sdp.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: u_sdp.h,v 24.4 2003/04/06 10:35:36 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -31,7 +31,7 @@
 class OMSTREAM;
 /*--------------------------------------------------------------------------*/
 class SDP {
-  friend CS& get(CS& cmd, const std::string& key, SDP* value,
+  friend bool get(CS& cmd, const std::string& key, SDP* value,
 		 AP_MOD mod=mNONE, double scale=0);
 private:
   double _nom;	// nominal value

@@ -1,4 +1,4 @@
-/*$Id: e_model.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
+/*$Id: e_model.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -63,7 +63,7 @@ public:
   virtual SDP_CARD* new_sdp(const COMMON_COMPONENT*)const
 					{unreachable();return 0;};
   virtual bool parse_front(CS&) {unreachable(); return false;};
-  virtual void parse_params(CS&) {unreachable();};
+  virtual bool parse_params(CS&) {unreachable(); return false;};
   virtual void parse_finish() {unreachable();};
   virtual void print_front(OMSTREAM&)const {unreachable();};
   virtual void print_params(OMSTREAM&)const {unreachable();};

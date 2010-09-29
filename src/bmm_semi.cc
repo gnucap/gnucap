@@ -1,4 +1,4 @@
-/*$Id: bmm_semi.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bmm_semi.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -44,6 +44,16 @@ EVAL_BM_SEMI_BASE::EVAL_BM_SEMI_BASE(const EVAL_BM_SEMI_BASE& p)
   untested();
 }
 /*--------------------------------------------------------------------------*/
+bool EVAL_BM_SEMI_BASE::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "L",	&_length)
+    || get(cmd, "W",	&_width)
+    || get(cmd, "Temp",	&_temp, mOFFSET, -ABS_ZERO)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
+}
+/*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::parse(CS& cmd)
 {
   int here = cmd.cursor();
@@ -57,12 +67,9 @@ void EVAL_BM_SEMI_BASE::parse(CS& cmd)
 	untested();
       }}
     }
-    get(cmd, "L",	&_length);
-    get(cmd, "W",	&_width);
-    get(cmd, "Temp",	&_temp, mOFFSET, -ABS_ZERO);
-    parse_base(cmd);
+    parse_params(cmd);
   }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+  parse_finish();
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::print(OMSTREAM& o)const
@@ -94,15 +101,15 @@ void EVAL_BM_SEMI_CAPACITOR::expand(const COMPONENT* d)
   double width = (_width == NOT_INPUT) ? m->_defw : _width;
   double eff_width = width - m->_narrow;
   double eff_length = _length - m->_narrow;
-  if (eff_width < 0.) {
+  if (eff_width <= 0.) {
     untested();
     error(bWARNING, d->long_label() + ": " + modelname()
-	  + ": effective width is negative\n");
+	  + ": effective width is negative or zero\n");
   }
-  if (eff_length < 0.) {
+  if (eff_length <= 0.) {
     untested();
     error(bWARNING, d->long_label() + ": " + modelname()
-	  + ": effective length is negative\n");
+	  + ": effective length is negative or zero\n");
   }
 
   _value = m->_cj * eff_length * eff_width
@@ -126,26 +133,28 @@ void EVAL_BM_SEMI_RESISTOR::expand(const COMPONENT* d)
   double eff_length = _length - m->_narrow;
   if (eff_width <= 0.) {
     untested();
-    error(bERROR, d->long_label() + ": " + modelname()
-	  + ": effective width is negative\n");
-  }
-  if (eff_length < 0.) {
-    untested();
     error(bWARNING, d->long_label() + ": " + modelname()
-	  + ": effective length is negative\n");
+	  + ": effective width is negative or zero\n");
+  }
+  if (eff_length <= 0.) {
+    error(bWARNING, d->long_label() + ": " + modelname()
+	  + ": effective length is negative or zero\n");
   }
 
-  _value = m->_rsh * eff_length / eff_width;
+  {if (eff_width != 0.) {
+    _value = m->_rsh * eff_length / eff_width;
+  }else{
+    untested();
+    _value = BIGBIG;
+  }}
 
   double tempdiff = (_temp - m->_tnom);
   _value *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-MODEL_SEMI_CAPACITOR::MODEL_SEMI_CAPACITOR()
+MODEL_SEMI_BASE::MODEL_SEMI_BASE()
   :MODEL_CARD(),
-   _cj(0.),
-   _cjsw(0.),
    _narrow(0.),
    _defw(1e-6),
    _tc1(0.),
@@ -154,21 +163,47 @@ MODEL_SEMI_CAPACITOR::MODEL_SEMI_CAPACITOR()
   _tnom = OPT::tnom;
 }
 /*--------------------------------------------------------------------------*/
+bool MODEL_SEMI_BASE::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "NARROW", &_narrow)
+    || get(cmd, "DEFW", &_defw, mPOSITIVE)
+    || get(cmd, "TC1", &_tc1)
+    || get(cmd, "TC2", &_tc2)
+    || get(cmd, "TNOM", &_tnom, mOFFSET, -ABS_ZERO)
+    ;
+}
+/*--------------------------------------------------------------------------*/
+void MODEL_SEMI_BASE::print_params(OMSTREAM& o)const
+{
+  o << "  narrow=" << _narrow;
+  o << "  defw=" << _defw;
+  o << "  tc1=" << _tc1;
+  o << "  tc2=" << _tc2;
+  o << "  tnom=" << _tnom + ABS_ZERO;
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+MODEL_SEMI_CAPACITOR::MODEL_SEMI_CAPACITOR()
+  :MODEL_SEMI_BASE(),
+   _cj(0.),
+   _cjsw(0.)
+{
+}
+/*--------------------------------------------------------------------------*/
 bool MODEL_SEMI_CAPACITOR::parse_front(CS& cmd)
 {
   bool dummy;
   return set(cmd, "Cap", &dummy, true);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SEMI_CAPACITOR::parse_params(CS& cmd)
+bool MODEL_SEMI_CAPACITOR::parse_params(CS& cmd)
 {
-  get(cmd, "TNOM", &_tnom, mOFFSET, -ABS_ZERO);
-  get(cmd, "CJ", &_cj, mPOSITIVE);
-  get(cmd, "CJSW", &_cjsw, mPOSITIVE);
-  get(cmd, "NARROW", &_narrow);
-  get(cmd, "DEFW", &_defw, mPOSITIVE);
-  get(cmd, "TC1", &_tc1);
-  get(cmd, "TC2", &_tc2);
+  return ONE_OF
+    || get(cmd, "CJ", &_cj, mPOSITIVE)
+    || get(cmd, "CJSW", &_cjsw, mPOSITIVE)
+    || MODEL_SEMI_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_SEMI_CAPACITOR::print_front(OMSTREAM& o)const
@@ -178,25 +213,16 @@ void MODEL_SEMI_CAPACITOR::print_front(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 void MODEL_SEMI_CAPACITOR::print_params(OMSTREAM& o)const
 {
-  o << "  tnom=" << _tnom + ABS_ZERO;
   o << "  cj=" << _cj;
   o << "  cjsw=" << _cjsw;
-  o << "  narrow=" << _narrow;
-  o << "  defw=" << _defw;
-  o << "  tc1=" << _tc1;
-  o << "  tc2=" << _tc2;
+  MODEL_SEMI_BASE::print_params(o);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 MODEL_SEMI_RESISTOR::MODEL_SEMI_RESISTOR()
-  :MODEL_CARD(),
-   _rsh(NOT_INPUT),
-   _narrow(0.),
-   _defw(1e-6),
-   _tc1(0.),
-   _tc2(0.)
+  :MODEL_SEMI_BASE(),
+   _rsh(NOT_INPUT)
 {
-  _tnom = OPT::tnom;
 }
 /*--------------------------------------------------------------------------*/
 bool MODEL_SEMI_RESISTOR::parse_front(CS& cmd)
@@ -205,14 +231,12 @@ bool MODEL_SEMI_RESISTOR::parse_front(CS& cmd)
   return set(cmd, "Res", &dummy, true);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SEMI_RESISTOR::parse_params(CS& cmd)
+bool MODEL_SEMI_RESISTOR::parse_params(CS& cmd)
 {
-  get(cmd, "TNOM", &_tnom, mOFFSET, -ABS_ZERO);
-  get(cmd, "RSH", &_rsh, mPOSITIVE);
-  get(cmd, "NARROW", &_narrow);
-  get(cmd, "DEFW", &_defw, mPOSITIVE);
-  get(cmd, "TC1", &_tc1);
-  get(cmd, "TC2", &_tc2);
+  return ONE_OF
+    || get(cmd, "RSH", &_rsh, mPOSITIVE)
+    || MODEL_SEMI_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_SEMI_RESISTOR::print_front(OMSTREAM& o)const
@@ -222,12 +246,8 @@ void MODEL_SEMI_RESISTOR::print_front(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 void MODEL_SEMI_RESISTOR::print_params(OMSTREAM& o)const
 {
-  o << "  tnom=" << _tnom + ABS_ZERO;
   o << "  rsh=" << _rsh;
-  o << "  narrow=" << _narrow;
-  o << "  defw=" << _defw;
-  o << "  tc1=" << _tc1;
-  o << "  tc2=" << _tc2;
+  MODEL_SEMI_BASE::print_params(o);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

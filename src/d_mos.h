@@ -1,4 +1,4 @@
-/* $Id: d_mos.model,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
+/* $Id: d_mos.model,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *

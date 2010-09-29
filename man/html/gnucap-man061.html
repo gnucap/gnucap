@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+C: Capacitor
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc60">3.2</A>&nbsp;&nbsp;<TT>C</TT>: Capacitor</H2>
+
+<H3>3.2.1&nbsp;&nbsp;Syntax</H3>
+
+ <TT>C</TT><I>xxxxxxx n+ n-- value</I><BR>
+<TT>C</TT><I>xxxxxxx n+ n-- expression</I><BR>
+<TT>C</TT><I>xxxxxxx n+ n-- value</I> 
+ {<TT>IC=</TT><I>initial-voltage</I>}<BR>
+<TT>C</TT><I>xxxxxxx n+ n-- model</I> {<TT>L=</TT><I>length</I>}
+ {<TT>W=</TT><I>width</I>} {<TT>TEMP=</TT><I>temperature</I>}
+ {<TT>IC=</TT><I>initial-voltage</I>}<BR>
+<TT>.CAPacitor</TT> <I>label n+ n-- expression</I>
+
+
+<H3>3.2.2&nbsp;&nbsp;Purpose</H3>
+Capacitor, or general charge storage element.
+
+<H3>3.2.3&nbsp;&nbsp;Probes</H3>
+The following probes (Transient, DC, and OP analysis) are available in
+addition to those available for all basic elements.
+<DL COMPACT=compact><DT><B><TT>DT</TT></B><DD> Time step. The internal time step used for this
+ device for numerical integration. It is not necessarily the same as
+ the global time step.<BR>
+<BR>
+<DT><B><TT>TIME</TT></B><DD> Time. The time of the most recent calculation of
+ this device. It is not necessarily the same as the global time.<BR>
+<BR>
+<DT><B><TT>TIMEOLD</TT></B><DD> The time of the previous calculation of this
+ device. It is not necessarily the same as the global time.<BR>
+<BR>
+<DT><B><TT>TIMEFuture</TT></B><DD> The latest recommended time for the next
+ sample, as determined by this device. The actual time will probably
+ be sooner than this.<BR>
+<BR>
+<DT><B><TT>CHarge</TT></B><DD> The charge stored in this capacitor.<BR>
+<BR>
+<DT><B><TT>Q</TT></B><DD> The same as <TT>Charge</TT>.<BR>
+<BR>
+<DT><B><TT>Capacitance</TT></B><DD> The effective capacitance of this device.
+ For a fixed capacitor, it is constant. It will vary if this device
+ is nonlinear.<BR>
+<BR>
+<DT><B><TT>DQDT</TT></B><DD> The time derivative of charge. Hopefully this is
+ the same as current, but it is calculated a different way and can be
+ used as an accuracy check.<BR>
+<BR>
+<DT><B><TT>DQ</TT></B><DD> The change in charge compared to the previous sample.
+ Its primary use is in debugging models and numerical problems.</DL>
+
+
+<H3>3.2.4&nbsp;&nbsp;Comments</H3>
+<I>N+</I> and <I>n--</I> are the positive and negative element nodes,
+respectively. <I>Value</I> is the capacitance in Farads.<BR>
+<BR>
+The (optional) initial condition is the initial (time = 0) value of
+the capacitor voltage (in Volts). Note that the initial conditions
+(if any) apply only if the <TT>UIC</TT> option is specified on the <TT>transient</TT> command.<BR>
+<BR>
+You may specify the <I>value</I> in one of three forms:
+<OL type=1><LI>A simple value. This is the capacitance in Farads.<BR>
+<BR>
+<LI>An expression, as described in the behavioral modeling chapter.
+ The expression can specify the charge as a function of voltage, or
+ the capacitance as a function of time.<BR>
+<BR>
+<LI>A <I>model</I>, which calculates the capacitance as a function of
+ length and width, referencing a <TT>.model</TT> statement of type <TT>C</TT>. This is compatible with the Spice-3 ``semiconductor
+ capacitor''.</OL>
+
+
+<H3>3.2.5&nbsp;&nbsp;Model statement</H3>
+A model statement may be used,, with model type <TT>C</TT> or <TT>Cap</TT>.
+The parameters are:
+<DL COMPACT=compact><DT><B><TT>CJ</TT> = <I>x</I></B><DD> Junction bottom capacitance. (Farads / meter
+ squared). (Default = 0.)<BR>
+<BR>
+<DT><B><TT>CJSW</TT> = <I>x</I></B><DD> Junction sidewall capacitance. (Farads /
+ meter). (Default = 0.)<BR>
+<BR>
+<DT><B><TT>DEFW</TT> = <I>x</I></B><DD> Default width. (meters). (Default = 1e-6)<BR>
+<BR>
+<DT><B><TT>NARROW</TT> = <I>x</I></B><DD> Narrowing due to side etching. (meters).
+ (Default = 0.)<BR>
+<BR>
+<DT><B><TT>TC1</TT> = <I>x</I></B><DD> First order temperature coefficient.
+ (Farads / degree C). (Default = 0.) (Not in Spice.)<BR>
+<BR>
+<DT><B><TT>TC2</TT> = <I>x</I></B><DD> Second order temperature coefficient.
+ (Farads / degree C squared). (Default = 0.) (Not in Spice.)<BR>
+<BR>
+<DT><B><TT>TNOM</TT> = <I>x</I></B><DD> Parameter measurement temperature.
+ (degrees C.). (Default = 27.) (Not in Spice.)</DL>
+Capacitance is computed by the formula:
+<PRE>
+capacitance = CJ * (L - NARROW) * (W - NARROW)
+  + 2 * CJSW * (L + L - 2 * NARROW)
+</PRE>
+After the nominal value is calculated, it is adjusted for temperature
+by the formula:
+<PRE>
+value *= (1 + TC1 * (T-T0) + TC2 * (T-T0)^2)
+</PRE> </BODY>
+</HTML>

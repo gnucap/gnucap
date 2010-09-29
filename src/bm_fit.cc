@@ -1,4 +1,4 @@
-/*$Id: bm_fit.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_fit.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -61,36 +61,42 @@ EVAL_BM_FIT::~EVAL_BM_FIT()
   delete _spline;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_FIT::parse(CS& cmd)
+void EVAL_BM_FIT::parse_front()
 {
   delete _spline;
   _spline = 0;
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_FIT::parse_numlist(CS& cmd)
+{
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    for (;;){
-      double key  =NOT_VALID;
-      double value=NOT_VALID;
-      cmd >> key >> value;
-      if (cmd.stuck(&here)){
-	break;
-      }
-      std::pair<double,double> p(key,value);
-      _table.push_back(p);
+  for (;;){
+    double key  =NOT_VALID;
+    double value=NOT_VALID;
+    cmd >> key >> value;
+    if (cmd.stuck(&here)){
+      break;
     }
-    paren -= cmd.skiprparen();
-    if (paren != 0){
-      untested();
-      cmd.warn(bWARNING, "need )");
-    }
-    get(cmd, "Order", &_order);
-    get(cmd, "Below", &_below);
-    get(cmd, "Above", &_above);
-    get(cmd, "Delta", &_delta);
-    get(cmd, "SMooth",&_smooth);
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+    std::pair<double,double> p(key,value);
+    _table.push_back(p);
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_FIT::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "Order", &_order)
+    || get(cmd, "Below", &_below)
+    || get(cmd, "Above", &_above)
+    || get(cmd, "Delta", &_delta)
+    || get(cmd, "SMooth",&_smooth)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_FIT::parse_finish()
+{
+  EVAL_BM_ACTION_BASE::parse_finish();
   _spline = new SPLINE(_table, _below, _above, _order);
 }
 /*--------------------------------------------------------------------------*/

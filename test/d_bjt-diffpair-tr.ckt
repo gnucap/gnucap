@@ -2,7 +2,7 @@ difpair ckt - simple differential pair
 * modified from Spice-3 examples
 
 *.opt acct list node lvlcod=2 itermin=0 reltol=.01 abstol=1u vntol=.01
-*>.opt rstray cstray method=euler
+*>.opt rstray cstray method=euler outwidth=80
 .option method=gear order=1
 *.tf v(5) vin
 *.dc vin -0.25 0.25 0.005

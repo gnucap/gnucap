@@ -1,4 +1,4 @@
-/*$Id: d_cap.h,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
+/*$Id: d_cap.h,v 24.20 2004/01/18 07:42:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -44,7 +44,7 @@ protected: // override virtual
   CARD*	   clone()const		{return new DEV_CAPACITANCE(*this);}
   //void   parse(CS&);		//ELEMENT
   //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//CARD/nothing
+  //void   expand();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
@@ -61,9 +61,9 @@ protected: // override virtual
   //double tr_review();		//STORAGE
   //void   tr_accept();		//CARD/nothing
   void	   tr_unload()		{tr_unload_passive();}
-  //double tr_amps()const	//ELEMENT
   double   tr_involts()const	{return tr_outvolts();}
   double   tr_involts_limited()const {return tr_outvolts_limited();}
+  //double tr_amps()const	//ELEMENT
   double   tr_probe_num(CS&)const;
 
   void	   ac_alloc_matrix()	{ac_alloc_matrix_passive();}
@@ -71,6 +71,7 @@ protected: // override virtual
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
   COMPLEX  ac_involts()const	{return ac_outvolts();}
+  //COMPLEX ac_amps()const;	//ELEMENT
   //XPROBE ac_probe_ext(CS&)const;//ELEMENT
 };
 /*--------------------------------------------------------------------------*/
@@ -93,7 +94,7 @@ private: // override virtual
   CARD*	   clone()const		{untested(); return new DEV_TRANSCAP(*this);}
   //void   parse(CS&);		//ELEMENT
   //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//CARD/nothing
+  //void   expand();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
@@ -110,9 +111,9 @@ private: // override virtual
   //double tr_review();		//STORAGE
   //void   tr_accept();		//CARD/nothing
   //void   tr_unload();		//DEV_CAPACITANCE
-  //double tr_amps()const	//ELEMENT
   double   tr_involts()const	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
   double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
+  //double tr_amps()const	//ELEMENT
   //double tr_probe_num(CS&)const;//DEV_CAPACITANCE
 
   void	    ac_alloc_matrix()	{ac_alloc_matrix_active();}
@@ -120,6 +121,7 @@ private: // override virtual
   //void    do_ac();		//DEV_CAPACITANCE
   void	    ac_load()		{untested(); ac_load_active();}
   //COMPLEX ac_involts()const;	//DEV_CAPACITANCE
+  //COMPLEX ac_amps()const;	//ELEMENT
   //XPROBE  ac_probe_ext(CS&)const;//ELEMENT
 };
 /*--------------------------------------------------------------------------*/
@@ -142,7 +144,7 @@ private: // override virtual
   CARD*	   clone()const		{return new DEV_VCCAP(*this);}
   //void   parse(CS&);		//ELEMENT
   //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//CARD/nothing
+  //void   expand();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
@@ -159,9 +161,9 @@ private: // override virtual
   //double tr_review();		//STORAGE
   //void   tr_accept();		//CARD/nothing
   //void   tr_unload();		//DEV_CAPACITANCE
-  //double tr_amps()const	//ELEMENT
   double   tr_involts()const	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
   double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
+  //double tr_amps()const	//ELEMENT
   //double tr_probe_num(CS&)const;//DEV_CAPACITANCE
 
   void	    ac_alloc_matrix()	{ac_alloc_matrix_extended();}
@@ -169,6 +171,7 @@ private: // override virtual
   //void    do_ac();		//DEV_CAPACITANCE
   //void    ac_load();		//DEV_CAPACITANCE
   //COMPLEX ac_involts()const;	//DEV_CAPACITANCE
+  //COMPLEX ac_amps()const;	//ELEMENT
   //XPROBE  ac_probe_ext(CS&)const;//ELEMENT
 };
 /*--------------------------------------------------------------------------*/
@@ -198,7 +201,7 @@ private: // override virtual
   CARD*	   clone()const	       {unreachable();return new DEV_FPOLY_CAP(*this);}
   //void   parse(CS&);		//ELEMENT
   //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//CARD/nothing
+  //void   expand();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   //void   precalc();		//STORAGE
 
@@ -215,9 +218,9 @@ private: // override virtual
   double   tr_review()		{return NEVER;}//review(_i0.f0, _it1.f0);}
   //void   tr_accept();		//CARD/nothing
   void	   tr_unload();
-  double   tr_amps()const;
   double   tr_involts()const	{unreachable(); return NOT_VALID;}
   double   tr_involts_limited()const {unreachable(); return NOT_VALID;}
+  double   tr_amps()const;
   //double tr_probe_num(CS&)const;//ELEMENT
 
   void	   ac_alloc_matrix()	{ac_alloc_matrix_extended();}
@@ -225,6 +228,7 @@ private: // override virtual
   void	   do_ac()		{ac_load();}
   void	   ac_load();
   COMPLEX  ac_involts()const	{unreachable(); return NOT_VALID;}
+  COMPLEX  ac_amps()const	{unreachable(); return NOT_VALID;}
   //XPROBE ac_probe_ext(CS&)const;//ELEMENT
 public:
   void set_parameters(const std::string& Label, CARD* Parent,

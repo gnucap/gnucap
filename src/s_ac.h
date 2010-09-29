@@ -1,4 +1,4 @@
-/*$Id: s_ac.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_ac.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -35,11 +35,11 @@ private:
 	void	solve();
 	void	clear();
 	void	setup(CS&);
-	void	by(CS&);
-	void	decade(CS&);
-	void	lin(CS&);
-	void	octave(CS&);
-	void	times(CS&);
+	bool	by(CS&);
+	bool	decade(CS&);
+	bool	lin(CS&);
+	bool	octave(CS&);
+	bool	times(CS&);
 private:
   double start;		// sweep start time
   double stop;		// sweep stop time

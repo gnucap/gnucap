@@ -1,4 +1,4 @@
-/* $Id: d_bjt.model,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/* $Id: d_bjt.model,v 24.23 2004/02/01 21:12:55 al Exp $ -*- C++ -*-
  * Copyright (C) 2002 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -32,7 +32,6 @@
  *
  * known BUGs
  * 1. excess phase partially implemented, disabled, as if PTF == 0.
- * 2. A warning is issued when the substrate node is not specified.
  */
 /*--------------------------------------------------------------------------*/
 h_headers {
@@ -54,7 +53,7 @@ device BJT {
   id_letter Q;
   circuit {
     sync;
-    ports {col base emit sub};
+    ports {col base emit} {sub};
     local_nodes {
       icol  short_to=col   short_if="!OPT::rstray || m->rc == 0.";
       ibase short_to=base
@@ -68,7 +67,8 @@ device BJT {
     // junction charge effects
     fpoly_cap Cbx {base icol} state=qbx; // qbx, cqbx
     fpoly_cap Cbc {ibase icol} state=qbc; // qbc, cqbc
-    fpoly_cap Ccs {sub icol} state=qcs; // qcs, cqcs
+    fpoly_cap Ccs {sub icol} state=qcs // qcs, cqcs
+	omit="_n[n_sub].is_unconnected()";
     fpoly_cap Cbe {ibase iemit ibase icol} state=qbe; // qbe, cqbe, geqbc
     // parasitics
     resistance Rc {col icol} value="m->rc / (c->area * c->m)"
@@ -620,7 +620,7 @@ model BJT {
 	  }}
 	  arg2 = argtf;
 	  {if(m->itf != 0) {
-	    untested();
+	    //untested();
 	    double temp = cbe / (cbe + m->itf * c->area);
 	    argtf *= temp*temp;
 	    arg2  *= (3-temp-temp);
@@ -761,8 +761,7 @@ bool DEV_BJT::do_tr()
     vcs = m->polarity * volts_limited(_n[n_sub], _n[n_icol]);
   }}
 
-  if (SIM::phase == SIM::pINIT_DC	// initial condition (UIC only)
-       && SIM::uic) {
+  if (SIM::uic_now()) {
     untested();
     {if (c->icvbe != NA) {
       untested();

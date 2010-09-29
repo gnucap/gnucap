@@ -33,6 +33,7 @@ ein 0 2 1 0 1
 + rsh=107.6 cgdo=2.47722e-10 cgso=2.47722e-10
 + cj=0.0002281 mj=0.508000 cjsw=3.077e-10 mjsw=0.193500 pb=0.740000)
 *
+.width out=80
 .print op iter(0) v(nodes)
 .op
 *

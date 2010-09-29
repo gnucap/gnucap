@@ -1,4 +1,4 @@
-/*$Id: e_storag.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: e_storag.cc,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -91,10 +91,25 @@ void STORAGE::dc_begin()
 /*--------------------------------------------------------------------------*/
 void STORAGE::tr_restore()
 {
+  assert(_keep_time_steps == 4);
+  trace2("tr_restore", SIM::time0, SIM::time1);
+  trace4("before", _time[0], _time[1], _time[2], _time[3]);
+
   _method_a = method_select[OPT::method][_method_u];
-  assert(_time[0] >= _time[1]);
-  assert(_time[1] >= _time[2]);
-  assert(_time[2] >= _time[3]);
+  if (_time[0] > SIM::time0) {
+    for (int i=0  ; i<_keep_time_steps-1; ++i) {
+      _time[i] = _time[i+1];
+      _q[i] = _q[i+1];
+    }
+    _time[_keep_time_steps-1] = 0.;
+    _q[_keep_time_steps-1]    = FPOLY1(0., 0., 0.);
+  }
+
+  trace4("after", _time[0], _time[1], _time[2], _time[3]);
+  assert(_time[0] == SIM::time0);
+  assert(_time[1] < _time[0] || _time[0] == 0.);
+  assert(_time[2] < _time[1] || _time[1] == 0.);
+  assert(_time[3] < _time[2] || _time[2] == 0.);
 }
 /*--------------------------------------------------------------------------*/
 void STORAGE::dc_advance()
@@ -109,15 +124,23 @@ void STORAGE::dc_advance()
 /*--------------------------------------------------------------------------*/
 void STORAGE::tr_advance()
 {
+  assert(_keep_time_steps == 4);
+  
   {if (_time[0] < SIM::time0){		// forward
-    assert(_keep_time_steps == 4);
+    assert(_time[3] <= _time[2] || _time[3] == 0.);
+    assert(_time[2] <= _time[1] || _time[2] == 0.);
+    assert(_time[1] <= _time[0] || _time[1] == 0.);
     _it1_f0 = _i0.f0;
     for (int i=_keep_time_steps-1; i>0; --i){
       _time[i] = _time[i-1];
       _q[i] = _q[i-1];
     }
   }else{				// else backward, don't save
-    assert(_time[1] < SIM::time0);
+    assert(_time[1] <= SIM::time0);
+    assert(_time[0] >= SIM::time0);
+    assert(_time[3] < _time[2] || _time[3] == 0.);
+    assert(_time[2] < _time[1] || _time[2] == 0.);
+    assert(_time[1] <= _time[0] || _time[1] == 0.);
   }}
   _time[0] = SIM::time0;
   _dt = _time[0] - _time[1];
@@ -189,7 +212,12 @@ double STORAGE::tr_c_to_g(double c, double g)const
 double STORAGE::const_tr_review()const
 {
   assert(order() <= _max_order);
-  {if (_time[order()+1] <= 0. || _method_a == mEULER){
+  {if (_time[order()+1] <= 0. 
+       || _method_a == mEULER
+       || _time[3] >= _time[2]
+       || _time[2] >= _time[1]
+       || _time[1] >= _time[0]
+       ){
     return NEVER;
   }else{
     double c[_keep_time_steps];
@@ -198,7 +226,7 @@ double STORAGE::const_tr_review()const
       c[i] = _q[i].f0;
     }}
     divided_differences(c, order()+2, _time);
-    // now c[i] is i'th derivative (up to order-1)
+    // now c[i] is i'th derivative (up to order+1)
 
     {if (c[order()+1] == 0){
       return NEVER;
@@ -223,10 +251,14 @@ double STORAGE::const_tr_review()const
       
       if (timestep <= SIM::dtmin){
 	untested();
+	trace4("", _time[0], _time[1], _time[2], _time[3]);
+	trace4("", _q[0].f0, _q[1].f0, _q[2].f0, _q[3].f0);
+	trace4("", c[0], c[1], c[2], c[3]);
+	trace4("", currenttol, chargetol, tol, denom);
 	error(bDANGER,"step control error:%s %g\n",
 	      long_label().c_str(),timestep);
-	error(bTRACE, "q0=%g i0=%g dq0=%g\n", _q[0].f0, _i0.f0, c[1]);
-	error(bTRACE, "it=%g qt=%g tol=%g\n", currenttol, chargetol, tol);
+	error(bDANGER, "q0=%g i0=%g dq0=%g\n", _q[0].f0, _i0.f0, c[1]);
+	error(bERROR, "it=%g qt=%g tol=%g\n", currenttol, chargetol, tol);
 	timestep = SIM::dtmin;
       }
       {if (timestep < _dt * OPT::trreject){

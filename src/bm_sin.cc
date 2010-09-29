@@ -1,4 +1,4 @@
-/*$Id: bm_sin.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_sin.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -52,34 +52,29 @@ EVAL_BM_SIN::EVAL_BM_SIN(const EVAL_BM_SIN& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SIN::parse(CS& cmd)
+void EVAL_BM_SIN::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    double* i;
-    for (i = &_offset;  i < &_end;  ++i){
-      double value=NOT_VALID;
-      cmd >> value;
-      if (cmd.stuck(&here)){
-	break;
-      }
-      *i = value;
+  for (double* i = &_offset;  i < &_end;  ++i){
+    double value=NOT_VALID;
+    cmd >> value;
+    if (cmd.stuck(&here)){
+      break;
     }
-    assert(i <= &_end);
-    paren -= cmd.skiprparen();
-    if (paren != 0){
-      untested();
-      cmd.warn(bWARNING, "need )");
-    }
-    get(cmd, "Offset",	 &_offset);
-    get(cmd, "Amplitude",&_amplitude);
-    get(cmd, "Frequency",&_frequency);
-    get(cmd, "DElay",	 &_delay);
-    get(cmd, "DAmping",	 &_damping);
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+    *i = value;
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_SIN::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "Offset",	&_offset)
+    || get(cmd, "Amplitude",	&_amplitude)
+    || get(cmd, "Frequency",	&_frequency)
+    || get(cmd, "DElay",	&_delay)
+    || get(cmd, "DAmping",	&_damping)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SIN::print(OMSTREAM& where)const

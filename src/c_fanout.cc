@@ -1,4 +1,4 @@
-/*$Id: c_fanout.cc,v 22.7 2002/07/23 04:23:34 al Exp $ -*- C++ -*-
+/*$Id: c_fanout.cc,v 24.2 2003/02/23 09:18:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -66,7 +66,8 @@ void CMD::fanout(CS& cmd)
       break;
     }}
   }
-  
+  SIM::init();
+
   if (start < 0){
     start = 0;
   }

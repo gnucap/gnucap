@@ -1,4 +1,4 @@
-/* $Id: d_mos_base.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos_base.model,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -86,7 +86,6 @@ model MOS_BASE {
     }
     code_post {
       {if ((rs == NA)  &&  (rd != NA)){
-	untested();
 	error(bWARNING,
 	      long_label() + ": rd input, but not rs. setting rs = 0.\n");
 	rs = 0.;
@@ -142,7 +141,6 @@ model MOS_BASE {
 	rd = m->rsh * c->nrd;
 	rs = m->rsh * c->nrs;
       }else{
-	untested();
 	rd = (m->rd != NA) ? m->rd : 0.;
 	rs = (m->rs != NA) ? m->rs : 0.;
       }}

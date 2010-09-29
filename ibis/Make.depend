@@ -1,0 +1,63 @@
+base-math.o: base-math.cc base.h l_lib.h md.h io_error.h io_trace.h ap.h
+expression-reduce.o: expression-reduce.cc macro.h instance.h base.h \
+  l_lib.h md.h io_error.h io_trace.h ap.h expression.h
+macro-reduce.o: macro-reduce.cc macro.h instance.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h expression.h
+base-in.o: base-in.cc base.h l_lib.h md.h io_error.h io_trace.h ap.h
+comp-in.o: comp-in.cc comp.h base.h l_lib.h md.h io_error.h io_trace.h \
+  ap.h
+ebd-in.o: ebd-in.cc ebd.h path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h
+expression-in.o: expression-in.cc macro.h instance.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h expression.h
+error-in.o: error-in.cc ap.h md.h io_error.h io_trace.h
+file-in.o: file-in.cc file.h pkg.h path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h comp.h ebd.h model.h macro.h instance.h expression.h
+instance-in.o: instance-in.cc macro.h instance.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h expression.h
+macro-in.o: macro-in.cc macro.h instance.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h expression.h
+model-in.o: model-in.cc model.h base.h l_lib.h md.h io_error.h io_trace.h \
+  ap.h
+path-in.o: path-in.cc path.h base.h l_lib.h md.h io_error.h io_trace.h \
+  ap.h
+pkg-in.o: pkg-in.cc pkg.h path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h
+comp-net.o: comp-net.cc net.h file.h pkg.h path.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h comp.h ebd.h model.h macro.h instance.h \
+  expression.h
+ebd-net.o: ebd-net.cc ebd.h path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h
+file-net.o: file-net.cc net.h file.h pkg.h path.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h comp.h ebd.h model.h macro.h instance.h \
+  expression.h
+instance-net.o: instance-net.cc net.h file.h pkg.h path.h base.h l_lib.h \
+  md.h io_error.h io_trace.h ap.h comp.h ebd.h model.h macro.h instance.h \
+  expression.h
+macro-net.o: macro-net.cc macro.h instance.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h expression.h
+model-net.o: model-net.cc net.h file.h pkg.h path.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h comp.h ebd.h model.h macro.h instance.h \
+  expression.h
+base-dump.o: base-dump.cc base.h l_lib.h md.h io_error.h io_trace.h ap.h
+comp-dump.o: comp-dump.cc ebd.h path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h comp.h
+ebd-dump.o: ebd-dump.cc ebd.h path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h
+expression-dump.o: expression-dump.cc expression.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h
+file-dump.o: file-dump.cc file.h pkg.h path.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h comp.h ebd.h model.h macro.h instance.h \
+  expression.h
+instance-dump.o: instance-dump.cc macro.h instance.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h expression.h
+macro-dump.o: macro-dump.cc macro.h instance.h base.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h expression.h
+model-dump.o: model-dump.cc model.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h
+path-dump.o: path-dump.cc path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h
+pkg-dump.o: pkg-dump.cc pkg.h path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h
+main.o: main.cc net.h file.h pkg.h path.h base.h l_lib.h md.h io_error.h \
+  io_trace.h ap.h comp.h ebd.h model.h macro.h instance.h expression.h

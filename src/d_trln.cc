@@ -1,4 +1,4 @@
-/*$Id: d_trln.cc,v 22.10 2002/07/25 06:26:00 al Exp $ -*- C++ -*-
+/*$Id: d_trln.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -81,7 +81,6 @@ bool COMMON_TRANSLINE::operator==(const COMMON_COMPONENT& x)const
     && G == p->G
     && is_equal(x);
   if (rv) {
-    untested();
     {for (int i=0; i<NUM_INIT_COND; ++i) {
       rv &= ic[i] == p->ic[i];
     }}
@@ -93,17 +92,20 @@ void COMMON_TRANSLINE::parse(CS& cmd)
 {
   int here = cmd.cursor();
   do{
-    get(cmd, "LEN", &len);
-    get(cmd, "Mult",&len);
-    get(cmd, "R",   &R);
-    get(cmd, "L",   &L);
-    get(cmd, "G",   &G);
-    get(cmd, "C",   &C);
-    get(cmd, "Z0",  &z0);
-    get(cmd, "Zo",  &z0);
-    get(cmd, "TD",  &td);
-    get(cmd, "Freq",&f,  mPOSITIVE);
-    get(cmd, "Nl",  &nl, mPOSITIVE);
+    0
+      || get(cmd, "LEN",  &len)
+      || get(cmd, "Mult", &len)
+      || get(cmd, "R",    &R)
+      || get(cmd, "L",    &L)
+      || get(cmd, "G",    &G)
+      || get(cmd, "C",    &C)
+      || get(cmd, "Z0",   &z0)
+      || get(cmd, "Zo",   &z0)
+      || get(cmd, "Delay",&td)
+      || get(cmd, "TD",   &td)
+      || get(cmd, "Freq", &f,  mPOSITIVE)
+      || get(cmd, "Nl",   &nl, mPOSITIVE)
+      ;
     if (cmd.pmatch("Ic")) {
       untested();
       icset = true;
@@ -116,28 +118,27 @@ void COMMON_TRANSLINE::parse(CS& cmd)
   cmd.check(bWARNING, "what's this?");
 
   {if (td != NOT_INPUT) {
-    untested();
     real_td = len * td;
     // have td.  check for conflicts.
-    {if (f != NOT_INPUT) {
+    if (f != NOT_INPUT) {
       {if (!conchk(td, nl/f, OPT::vntol)) {
 	untested();
 	cmd.warn(bDANGER, 0, "td, f&nl conflict.  using td");
       }else{
 	untested();
       }}
-    }else{
-      untested();
-    }}
+    }
   }else if (f != NOT_INPUT) {
     // try to calculate td by nl/f
     real_td = len * nl / f;      
   }else if (L != NOT_INPUT && C != NOT_INPUT) {
     untested();
     real_td = len * sqrt(L * C);
+  }else if (real_td == NOT_INPUT) {
+    untested();
+    cmd.warn(bDANGER, 0, "can't determine length");
   }else{
     untested();
-    cmd.warn(bERROR, 0, "can't determine length, giving up");
   }}
 
   {if (z0 != NOT_INPUT) {
@@ -147,12 +148,10 @@ void COMMON_TRANSLINE::parse(CS& cmd)
       cmd.warn(bDANGER, 0, "redundant specification both Z0 and LC, using Z0");
     }
   }else{
-    untested();
     {if (L != NOT_INPUT && C != NOT_INPUT) {
       untested();
       real_z0 = sqrt(L / C);
     }else{
-      untested();
       assert(default_z0 == 50.);
       cmd.warn(bDANGER, 0, "can't determine Z0, assuming 50");
       real_z0 = default_z0;
@@ -306,7 +305,6 @@ void DEV_TRANSLINE::tr_load()
       untested();
     }}
     if (_n[OUT2].m_() != 0) {
-      untested();
       _n[OUT2].i() -= lvf;
     }
   }

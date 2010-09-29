@@ -19,36 +19,36 @@ devices: diodes=45, bjts=0, mosfets=30, gates=0, subckts=0
 commons: diodes=60, bjts=0, mosfets=30, gates=0, subckts=0
 models:  diodes=2, bjts=0, mosfets=2, gates=0, subckts=0
 dctran density=27.3%, ac density=27.3%
-Md1  3  2  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml1  1  1  3  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md2  4  3  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml2  1  1  4  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md3  5  4  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml3  1  1  5  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md4  6  5  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml4  1  1  6  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md5  7  6  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml5  1  1  7  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md6  8  7  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml6  1  1  8  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md7  9  8  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml7  1  1  9  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md8  10  9  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml8  1  1  10  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md9  11  10  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml9  1  1  11  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md10  12  11  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml10  1  1  12  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md11  13  12  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml11  1  1  13  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md12  14  13  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml12  1  1  14  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md13  15  14  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml13  1  1  15  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md14  16  15  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml14  1  1  16  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
-Md15  17  16  0  0  modeld  l= 2.u  w= 10.u  nrd= 1.  nrs= 1.
-Ml15  1  1  17  0  modell  l= 2.u  w= 2.u  nrd= 1.  nrs= 1.
+Md1  3  2  0  0  modeld  l= 2.u  w= 10.u
+Ml1  1  1  3  0  modell  l= 2.u  w= 2.u
+Md2  4  3  0  0  modeld  l= 2.u  w= 10.u
+Ml2  1  1  4  0  modell  l= 2.u  w= 2.u
+Md3  5  4  0  0  modeld  l= 2.u  w= 10.u
+Ml3  1  1  5  0  modell  l= 2.u  w= 2.u
+Md4  6  5  0  0  modeld  l= 2.u  w= 10.u
+Ml4  1  1  6  0  modell  l= 2.u  w= 2.u
+Md5  7  6  0  0  modeld  l= 2.u  w= 10.u
+Ml5  1  1  7  0  modell  l= 2.u  w= 2.u
+Md6  8  7  0  0  modeld  l= 2.u  w= 10.u
+Ml6  1  1  8  0  modell  l= 2.u  w= 2.u
+Md7  9  8  0  0  modeld  l= 2.u  w= 10.u
+Ml7  1  1  9  0  modell  l= 2.u  w= 2.u
+Md8  10  9  0  0  modeld  l= 2.u  w= 10.u
+Ml8  1  1  10  0  modell  l= 2.u  w= 2.u
+Md9  11  10  0  0  modeld  l= 2.u  w= 10.u
+Ml9  1  1  11  0  modell  l= 2.u  w= 2.u
+Md10  12  11  0  0  modeld  l= 2.u  w= 10.u
+Ml10  1  1  12  0  modell  l= 2.u  w= 2.u
+Md11  13  12  0  0  modeld  l= 2.u  w= 10.u
+Ml11  1  1  13  0  modell  l= 2.u  w= 2.u
+Md12  14  13  0  0  modeld  l= 2.u  w= 10.u
+Ml12  1  1  14  0  modell  l= 2.u  w= 2.u
+Md13  15  14  0  0  modeld  l= 2.u  w= 10.u
+Ml13  1  1  15  0  modell  l= 2.u  w= 2.u
+Md14  16  15  0  0  modeld  l= 2.u  w= 10.u
+Ml14  1  1  16  0  modell  l= 2.u  w= 2.u
+Md15  17  16  0  0  modeld  l= 2.u  w= 10.u
+Ml15  1  1  17  0  modell  l= 2.u  w= 2.u
 Vdd  1  0  DC   5.
 Vin  2  0  DC   0.8
 .model  MODELD  nmos  (level=2  tnom= 27.  fc= 0.5  pb= 0.8  cj= 0.
@@ -63,6 +63,7 @@ Vin  2  0  DC   0.8
 +  tox= 100.n  ld= 0.  uo= 600.  tpg=1  kp= 28.u  nfs= 0.  delta= 0.
 +)
 *+(* cox= 345.3144u)
+.width out=80 
 .PRINT OP iter(0) V(nodes) 
 .op 
 .options noacct 

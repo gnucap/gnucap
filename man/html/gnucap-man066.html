@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+G: Voltage Controlled Current Source
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc65">3.7</A>&nbsp;&nbsp;<TT>G</TT>: Voltage Controlled Current Source</H2>
+
+<H3>3.7.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>G</TT><I>xxxxxxx n+ n-- nc+ nc--</I> <I>value</I><BR>
+<TT>G</TT><I>xxxxxxx n+ n-- nc+ nc--</I> <I>expression</I><BR>
+<TT>.VCCS</TT> <I>label n+ n-- nc+ nc--</I> <I>expression</I>
+
+
+<H3>3.7.2&nbsp;&nbsp;Purpose</H3>
+Voltage controlled current source, or transconductance block.
+
+<H3>3.7.3&nbsp;&nbsp;Comments</H3>
+<I>N+</I> and <I>n--</I> are the positive and negative element (output)
+nodes, respectively. Current flow is from the positive node, through
+the source, to the negative node. <I>Nc+</I> and <I>nc--</I> are the
+positive and negative controlling nodes, respectively. <I>Value</I> is
+the transconductance in mhos.<BR>
+<BR>
+The letter G can also be used to select the <TT>vccap</TT>, <TT>vcr</TT>,
+and <TT>vcg</TT> devices using a syntax compatible with some other
+simulators.
+ </BODY>
+</HTML>

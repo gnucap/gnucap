@@ -1,4 +1,4 @@
-/*$Id: d_logicmod.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: d_logicmod.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -62,19 +62,21 @@ void MODEL_LOGIC::parse(CS& cmd)
   cmd.skiplparen();
   int here = cmd.cursor();
   do{
-    get(cmd, "DElay",	&delay,	mPOSITIVE);
-    get(cmd, "RIse",	&rise,	mPOSITIVE);
-    get(cmd, "FAll",	&fall,	mPOSITIVE);
-    get(cmd, "RS",	&rs,	mPOSITIVE);
-    get(cmd, "RW",	&rw,	mPOSITIVE);
-    get(cmd, "THH",	&th1);
-    get(cmd, "THL",	&th0);
-    get(cmd, "MR",	&mr,	mPOSITIVE);
-    get(cmd, "MF",	&mf,	mPOSITIVE);
-    get(cmd, "OVer",	&over,	mPOSITIVE);
-    get(cmd, "VMAx",	&vmax);
-    get(cmd, "VMIn",	&vmin);
-    get(cmd, "Unknown",	&unknown);
+    0
+      || get(cmd, "DElay",	&delay,	mPOSITIVE)
+      || get(cmd, "RIse",	&rise,	mPOSITIVE)
+      || get(cmd, "FAll",	&fall,	mPOSITIVE)
+      || get(cmd, "RS",		&rs,	mPOSITIVE)
+      || get(cmd, "RW",		&rw,	mPOSITIVE)
+      || get(cmd, "THH",	&th1)
+      || get(cmd, "THL",	&th0)
+      || get(cmd, "MR",		&mr,	mPOSITIVE)
+      || get(cmd, "MF",		&mf,	mPOSITIVE)
+      || get(cmd, "OVer",	&over,	mPOSITIVE)
+      || get(cmd, "VMAx",	&vmax)
+      || get(cmd, "VMIn",	&vmin)
+      || get(cmd, "Unknown",	&unknown)
+      ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.skiprparen();
   cmd.check(bWARNING, "what's this?");

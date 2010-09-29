@@ -1,4 +1,4 @@
-/*$Id: u_sdp.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: u_sdp.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -24,13 +24,14 @@
 #include "io_.h"
 #include "u_sdp.h"
 /*--------------------------------------------------------------------------*/
-CS& get(CS& cmd, const std::string& key, SDP* value, AP_MOD mod, double scale)
+bool get(CS& cmd, const std::string& key, SDP* value, AP_MOD mod, double scale)
 {
-  get(cmd, key,	      &value->_nom, mod, scale);
-  get(cmd, "W" + key, &value->_wd);
-  get(cmd, "L" + key, &value->_ld);
-  get(cmd, "P" + key, &value->_pd);
-  return cmd;
+  return ONE_OF
+    || get(cmd, key,       &value->_nom, mod, scale)
+    || get(cmd, "W" + key, &value->_wd)
+    || get(cmd, "L" + key, &value->_ld)
+    || get(cmd, "P" + key, &value->_pd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void SDP::print(OMSTREAM& o, const std::string& name)const

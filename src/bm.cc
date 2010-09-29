@@ -1,4 +1,4 @@
-/*$Id: bm.cc,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
+/*$Id: bm.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -123,21 +123,23 @@ EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(const EVAL_BM_ACTION_BASE& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_ACTION_BASE::parse_base(CS& cmd)
+bool EVAL_BM_ACTION_BASE::parse_params(CS& cmd)
 {
-  get(cmd, "Bandwidth",&_bandwidth);
-  get(cmd, "Delay",    &_delay);
-  get(cmd, "Phase",    &_phase);
-  get(cmd, "IOffset",  &_ioffset);
-  get(cmd, "OOffset",  &_ooffset);
-  get(cmd, "Scale",    &_scale);
-  get(cmd, "TNOM",     &_tnom, mOFFSET, -ABS_ZERO);
-  get(cmd, "TC1",      &_tc1);
-  get(cmd, "TC2",      &_tc2);
-  get(cmd, "IC",       &_ic);
+  return ONE_OF
+    || get(cmd, "Bandwidth",&_bandwidth)
+    || get(cmd, "Delay",    &_delay)
+    || get(cmd, "Phase",    &_phase)
+    || get(cmd, "IOffset",  &_ioffset)
+    || get(cmd, "OOffset",  &_ooffset)
+    || get(cmd, "Scale",    &_scale)
+    || get(cmd, "TNOM",     &_tnom, mOFFSET, -ABS_ZERO)
+    || get(cmd, "TC1",      &_tc1)
+    || get(cmd, "TC2",      &_tc2)
+    || get(cmd, "IC",       &_ic)
+    ;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_ACTION_BASE::parse_base_finish()
+void EVAL_BM_ACTION_BASE::parse_finish()
 {
   {if (_tnom == NOT_INPUT){
     _tnom = OPT::tnom;
@@ -154,6 +156,23 @@ void EVAL_BM_ACTION_BASE::parse_base_finish()
 		   || _tc1 != _default_tc1
 		   || _tc2 != _default_tc2
 		   || _ic != _default_ic);
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_ACTION_BASE::parse(CS& cmd)
+{
+  parse_front();
+  int here = cmd.cursor();
+  do{
+    bool got_opening_paren = cmd.skiplparen();
+    parse_numlist(cmd);
+    {if (got_opening_paren && !cmd.skiprparen()) {
+      cmd.warn(bWARNING, "need )");
+    }else if (!got_opening_paren && cmd.skiprparen()) {
+      cmd.warn(bWARNING, here, "need (");
+    }}
+    parse_params(cmd);
+  }while (cmd.more() && !cmd.stuck(&here));
+  parse_finish();
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::print_base(OMSTREAM& where)const

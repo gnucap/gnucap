@@ -1,4 +1,4 @@
-/*$Id: d_vcvs.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: d_vcvs.cc,v 24.9 2003/08/24 03:04:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -43,9 +43,9 @@ void DEV_VCVS::dc_begin()
   if (!using_tr_eval()){
     assert(_y0.f0 == LINEAR);
     assert(_y0.f1 == value());
-    _m0.c1 = -_loss0 * _y0.f1;
-    assert(_m0.c0 == 0.);
     assert(_m1 == _m0);
+    assert(_m0.c0 == 0.);
+    _m0.c1 = -_loss0 * _y0.f1;
   }
 }
 /*--------------------------------------------------------------------------*/

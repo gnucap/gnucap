@@ -1,0 +1,58 @@
+%$Id: gnucap-man.tex,v 24.15 2004/01/11 02:44:22 al Exp $
+% man +
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "Gnucap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\documentclass{book}
+
+%HEVEA\input{index.hva}
+%HEVEA\newcommand{\*}{*}
+%HEVEA\newcommand{\verse}{}
+%HEVEA\newcommand{\endverse}{}
+%HEVEA\newcommand{\sqrt}{sqrt(}
+
+%BEGIN LATEX
+\topmargin 0in
+\oddsidemargin 0in
+\evensidemargin 0in
+\textheight 8.0in
+\textwidth 6.5in
+%END LATEX
+
+\setcounter{tocdepth}{1}
+\makeindex
+\usepackage[dvipdfm]{hyperref}
+
+\begin{document}
+
+\input{title.tex}
+\tableofcontents
+\input{start.tex}
+\input{commands.tex}	
+\input{circuit.tex}
+\input{behavior.tex}	
+\input{install.tex}	
+\input{addmodel.tex}
+\input{tech.tex}
+%\input{gnucap-man.ind}
+
+\end{document}
+%--------------------------------------------------------------------------
+%--------------------------------------------------------------------------

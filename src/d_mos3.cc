@@ -94,17 +94,19 @@ bool MODEL_MOS3::parse_front(CS& cmd)
   return MODEL_MOS123::parse_front(cmd);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_MOS3::parse_params(CS& cmd)
+bool MODEL_MOS3::parse_params(CS& cmd)
 {
-  get(cmd, "DIODElevel", &mos_level);
-  get(cmd, "KP", &kp);
-  get(cmd, "NFS", &nfs, mSCALE, ICM2M2);
-  get(cmd, "VMAx", &vmax);
-  get(cmd, "THEta", &theta);
-  get(cmd, "ETA", &eta);
-  get(cmd, "KAPpa", &kappa);
-  get(cmd, "DELta", &delta);
-  MODEL_MOS123::parse_params(cmd);
+  return ONE_OF
+    || get(cmd, "DIODElevel", &mos_level)
+    || get(cmd, "KP", &kp)
+    || get(cmd, "NFS", &nfs, mSCALE, ICM2M2)
+    || get(cmd, "VMAx", &vmax)
+    || get(cmd, "THEta", &theta)
+    || get(cmd, "ETA", &eta)
+    || get(cmd, "KAPpa", &kappa)
+    || get(cmd, "DELta", &delta)
+    || MODEL_MOS123::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS3::parse_finish()
@@ -204,12 +206,7 @@ void MODEL_MOS3::print_calculated(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 bool MODEL_MOS3::is_valid(const COMMON_COMPONENT* cc)const
 {
-  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
-  {if (!c) {
-    return MODEL_MOS123::is_valid(cc);
-  }else{
-    return MODEL_MOS123::is_valid(cc);
-  }}
+  return MODEL_MOS123::is_valid(cc);
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS3::tr_eval(COMPONENT* brh)const

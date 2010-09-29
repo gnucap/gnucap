@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc,v 22.11 2002/07/26 03:16:17 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.cc,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -34,7 +34,6 @@ ELEMENT::ELEMENT()
    _loss0(0.),
    _loss1(0.),
    _acg(0.),
-   _method_u(meUNKNOWN),
    _y0(),
    _y1(),
    _y2(),
@@ -54,7 +53,6 @@ ELEMENT::ELEMENT(const ELEMENT& p)
    _loss0(p._loss0),
    _loss1(p._loss1),
    _acg(0.),
-   _method_u(p._method_u),
    _y0(),
    _y1(),
    _y2(),
@@ -108,16 +106,18 @@ void ELEMENT::parse(CS& cmd)
   // commons attached to it.  Try to reduce its complexity.
   // "c->deflate()" may return "c" or some simplification of "c".
   COMMON_COMPONENT* dc = c->deflate(); // dc == deflated_common
+
   EVAL_BM_VALUE* dvc = dynamic_cast<EVAL_BM_VALUE*>(dc);  
   {if (dvc && !dvc->has_ext_args()) {
     set_value(dvc->value());
+    delete c;
   }else{
     attach_common(dc);
+    if (dc != c) {
+      delete c;
+    }
   }}
-  if (dc != c) {
-    delete c;
-  }
-
+  
   cmd.check(bDANGER, "what's this?");
 }
 /*--------------------------------------------------------------------------*/
@@ -310,31 +310,33 @@ double ELEMENT::tr_probe_num(CS& cmd)const
   }}
 }
 /*--------------------------------------------------------------------------*/
+COMPLEX ELEMENT::ac_amps()const
+{
+  assert(!is_source());
+  return (ac_involts() * _acg + ac_outvolts() * _loss0);
+}
+/*--------------------------------------------------------------------------*/
 XPROBE ELEMENT::ac_probe_ext(CS& cmd)const
 {
-  COMPLEX admittance = (is_source()) ? COMPLEX(0.) : _acg;
-  COMPLEX source =     (is_source()) ? _acg : COMPLEX(0.);
+  COMPLEX admittance = (is_source()) ? _loss0 : _acg+_loss0;
 
-  {if (cmd.pmatch("V")) {			/* volts (out) */
+  {if (cmd.pmatch("Vout")) {			/* volts (out) */
     return XPROBE(ac_outvolts());
-  }else if (cmd.pmatch("VI")) {			/* volts (in) */
+  }else if (cmd.pmatch("VIN")) {		/* volts (in) */
     return XPROBE(ac_involts());
   }else if (cmd.pmatch("I")) {			/* amps */
-    return XPROBE(ac_involts() * admittance + source + ac_outvolts() * _loss0);
+    return XPROBE(ac_amps());
   }else if (cmd.pmatch("P")) {			/* complex "power" */
-    COMPLEX i = ac_involts() * admittance + source + ac_outvolts() * _loss0;
-    return XPROBE(ac_outvolts() * conj(i), mtREAL, 10.);
+    return XPROBE(ac_outvolts() * conj(ac_amps()), mtREAL, 10.);
   }else if (cmd.pmatch("NV")) {			/* nominal value */
     untested();
     return XPROBE(value());
   }else if (cmd.pmatch("EV")) {			/* effective value */
     return XPROBE(_ev);
   }else if (cmd.pmatch("Y")) {			/* admittance */
-    untested();
     return XPROBE(admittance, mtREAL);
   }else if (cmd.pmatch("R")) {			/* complex "resistance" */
     {if (admittance == 0.) {
-      untested();
       return XPROBE(DBL_MAX);
     }else{
       return XPROBE(1. / admittance);

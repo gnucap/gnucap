@@ -1,0 +1,69 @@
+#$Id: Make1,v 1.59 2003/12/14 01:13:49 al Exp $ -*- Makefile -*-
+#------------------------------------------------------------------------
+TARGET = gnucap-ibis
+#------------------------------------------------------------------------
+SRCS = \
+base-math.cc expression-reduce.cc macro-reduce.cc \
+base-in.cc comp-in.cc ebd-in.cc expression-in.cc error-in.cc file-in.cc \
+instance-in.cc macro-in.cc model-in.cc path-in.cc pkg-in.cc \
+comp-net.cc ebd-net.cc file-net.cc \
+instance-net.cc macro-net.cc model-net.cc \
+base-dump.cc comp-dump.cc ebd-dump.cc expression-dump.cc file-dump.cc \
+instance-dump.cc macro-dump.cc model-dump.cc path-dump.cc pkg-dump.cc \
+main.cc
+#------------------------------------------------------------------------
+OBJS = \
+base-math.o expression-reduce.o macro-reduce.o \
+base-in.o comp-in.o ebd-in.o expression-in.o error-in.o file-in.o \
+instance-in.o macro-in.o model-in.o path-in.o pkg-in.o \
+comp-net.o ebd-net.o file-net.o \
+instance-net.o macro-net.o model-net.o \
+base-dump.o comp-dump.o ebd-dump.o expression-dump.o file-dump.o \
+instance-dump.o macro-dump.o model-dump.o path-dump.o pkg-dump.o \
+main.o \
+ap_construct.o ap_convert.o ap_get.o ap_match.o ap_skip.o l_ftos.o l_trim.o
+#------------------------------------------------------------------------
+HDRS = net.h \
+base.h comp.h ebd.h expression.h file.h \
+instance.h macro.h model.h path.h pkg.h
+#------------------------------------------------------------------------
+OTHER = Make1 Make.aux Make.depend TAGS doc Make2.Debug Make2.g++ \
+ibis.4.0.ibisx-base
+#------------------------------------------------------------------------
+ALL = $(HDRS) $(SRCS) $(MODELS) $(OTHER)
+#------------------------------------------------------------------------
+DELETED =
+#------------------------------------------------------------------------
+MACRO_FILES = ibis.1.0.ibisx ibis.1.1.ibisx ibis.2.0.ibisx ibis.2.1.ibisx \
+ibis.3.0.ibisx ibis.3.1.ibisx ibis.3.2.ibisx ibis.4.0.ibisx
+
+.SUFFIXES : .ibisx .ibisx-base
+.ibisx-base.ibisx:; sed 's/|...|//g' <$< >$@
+#------------------------------------------------------------------------
+all: $(TARGET) $(MACRO_FILES)
+#------------------------------------------------------------------------
+# macro files
+
+ibis.1.0.ibisx-base: ibis.1.1.ibisx-base
+	fgrep -v '|1.1|' $< >$@
+
+ibis.1.1.ibisx-base: ibis.2.0.ibisx-base
+	fgrep -v '|2.0|' $< >$@
+
+ibis.2.0.ibisx-base: ibis.2.1.ibisx-base
+	fgrep -v '|2.1|' $< >$@
+
+ibis.2.1.ibisx-base: ibis.3.0.ibisx-base
+	fgrep -v '|3.0|' $< >$@
+
+ibis.3.0.ibisx-base: ibis.3.1.ibisx-base
+	fgrep -v '|3.1|' $< >$@
+
+ibis.3.1.ibisx-base: ibis.3.2.ibisx-base
+	fgrep -v '|3.2|' $< >$@
+
+ibis.3.2.ibisx-base: ibis.4.0.ibisx-base
+	fgrep -v '|4.0|' $< >$@
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------

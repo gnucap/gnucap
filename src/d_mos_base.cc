@@ -1,4 +1,4 @@
-/* $Id: d_mos_base.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos_base.model,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -51,7 +51,6 @@ SDP_MOS_BASE::SDP_MOS_BASE(const COMMON_COMPONENT* cc)
 	rd = m->rsh * c->nrd;
 	rs = m->rsh * c->nrs;
       }else{
-	untested();
 	rd = (m->rd != NA) ? m->rd : 0.;
 	rs = (m->rs != NA) ? m->rs : 0.;
       }}
@@ -101,38 +100,42 @@ MODEL_MOS_BASE::MODEL_MOS_BASE()
 /*--------------------------------------------------------------------------*/
 bool MODEL_MOS_BASE::parse_front(CS& cmd)
 {
-  return set(cmd, "NMOS", &polarity, pN)
-    || set(cmd, "PMOS", &polarity, pP);
+  return ONE_OF
+    || set(cmd, "NMOS", &polarity, pN)
+    || set(cmd, "PMOS", &polarity, pP)
+    ;
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_MOS_BASE::parse_params(CS& cmd)
+bool MODEL_MOS_BASE::parse_params(CS& cmd)
 {
-  get(cmd, "TNOM", &_tnom, mOFFSET, -ABS_ZERO);
-  get(cmd, "FC", &fc);
-  get(cmd, "PB", &pb, mPOSITIVE);
-  get(cmd, "CJ", &cjo);
-  get(cmd, "MJ", &mj);
-  get(cmd, "CJSW", &cjsw);
-  get(cmd, "PBSW", &pbsw);
-  get(cmd, "MJSW", &mjsw);
-  get(cmd, "KF", &kf);
-  get(cmd, "AF", &af);
-  get(cmd, "LEVEL", &level);
-  get(cmd, "WMAX", &wmax, mPOSITIVE);
-  get(cmd, "WMIN", &wmin, mPOSITIVE);
-  get(cmd, "LMAX", &lmax, mPOSITIVE);
-  get(cmd, "LMIN", &lmin, mPOSITIVE);
-  get(cmd, "IS", &is);
-  get(cmd, "JS", &js);
-  get(cmd, "RSH", &rsh);
-  get(cmd, "RD", &rd);
-  get(cmd, "RS", &rs);
-  get(cmd, "CBD", &cbd);
-  get(cmd, "CBS", &cbs);
-  get(cmd, "CGSo", &cgso);
-  get(cmd, "CGDo", &cgdo);
-  get(cmd, "CGBo", &cgbo);
-  get(cmd, "CMODEL", &cmodel);
+  return ONE_OF
+    || get(cmd, "TNOM", &_tnom, mOFFSET, -ABS_ZERO)
+    || get(cmd, "FC", &fc)
+    || get(cmd, "PB", &pb, mPOSITIVE)
+    || get(cmd, "CJ", &cjo)
+    || get(cmd, "MJ", &mj)
+    || get(cmd, "CJSW", &cjsw)
+    || get(cmd, "PBSW", &pbsw)
+    || get(cmd, "MJSW", &mjsw)
+    || get(cmd, "KF", &kf)
+    || get(cmd, "AF", &af)
+    || get(cmd, "LEVEL", &level)
+    || get(cmd, "WMAX", &wmax, mPOSITIVE)
+    || get(cmd, "WMIN", &wmin, mPOSITIVE)
+    || get(cmd, "LMAX", &lmax, mPOSITIVE)
+    || get(cmd, "LMIN", &lmin, mPOSITIVE)
+    || get(cmd, "IS", &is)
+    || get(cmd, "JS", &js)
+    || get(cmd, "RSH", &rsh)
+    || get(cmd, "RD", &rd)
+    || get(cmd, "RS", &rs)
+    || get(cmd, "CBD", &cbd)
+    || get(cmd, "CBS", &cbs)
+    || get(cmd, "CGSo", &cgso)
+    || get(cmd, "CGDo", &cgdo)
+    || get(cmd, "CGBo", &cgbo)
+    || get(cmd, "CMODEL", &cmodel)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS_BASE::parse_finish()
@@ -141,7 +144,6 @@ void MODEL_MOS_BASE::parse_finish()
   egap = 1.16 - (7.02e-4*_tnom*_tnom) / (_tnom+1108.);
 
       {if ((rs == NA)  &&  (rd != NA)){
-	untested();
 	error(bWARNING,
 	      long_label() + ": rd input, but not rs. setting rs = 0.\n");
 	rs = 0.;

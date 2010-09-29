@@ -1,4 +1,4 @@
-/*$Id: m_cpoly.h,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
+/*$Id: m_cpoly.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -46,7 +46,7 @@ struct FPOLY1{		/* first order polynomial	*/
   double   f0;		/* the function (c0 + x*f1)	*/
   double   f1;		/* the first derivative		*/
   explicit FPOLY1() : x(0), f0(0), f1(0) {}
-           FPOLY1(const FPOLY1& p) : x(p.x), f0(p.f0), f1(p.f1){untested();}
+           FPOLY1(const FPOLY1& p) : x(p.x), f0(p.f0), f1(p.f1) {}
   explicit FPOLY1(double X,double F0,double F1) : x(X), f0(F0), f1(F1) {}
   explicit FPOLY1(const CPOLY1& p);
 

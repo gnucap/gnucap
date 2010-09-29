@@ -1,4 +1,4 @@
-/*$Id: s_tr_rev.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_tr_rev.cc,v 24.20 2004/01/18 07:42:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -45,7 +45,6 @@ void TRANSIENT::review(void)
     double rdt = rtime - time1;/* review dt recommended by PREVIOUS review */
     double adt = time0 - time1;/* actual dt most recently used */
     if (adt > rdt + dtmin){
-      untested();
       error(bDANGER,"internal error: step control (adt=%g,rdt=%g)\n",adt,rdt);
       error(bERROR, "time0=%g  time1=%g  rtime=%g\n", time0, time1, rtime);
     }

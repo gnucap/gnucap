@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+INSERT command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc33">2.23</A>&nbsp;&nbsp;<TT>INSERT</TT> command</H2>
+<A NAME="@default113"></A>
+<A NAME="@default114"></A>
+
+<H3>2.23.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>INsert</TT> <I>node</I><BR>
+<TT>INsert</TT> <I>node, count</I>
+
+
+<H3>2.23.2&nbsp;&nbsp;Purpose</H3>
+Open up node numbers inside a circuit.
+
+<H3>2.23.3&nbsp;&nbsp;Comments</H3>
+To open up an internal node, enter <TT>insert</TT> followed by the number and
+how many. All node numbers higher than the first number will be raised by
+the second. The second (how many) is optional. If omitted, 1 will be
+assumed.
+
+<H3>2.23.4&nbsp;&nbsp;Examples</H3>
+<DL COMPACT=compact><DT><B><TT>insert 8 3</TT></B><DD> Insert 3 nodes before node 8. Adds 3 nodes (8,9,10)
+with no connections. Old node numbers 8 and higher have 3 added to them to
+make room. Old node 8 is now 11, 9 is now 12, 10 is now 13, 11 is 14, etc.<BR>
+<BR>
+<DT><B><TT>insert 6</TT></B><DD> Insert one node at 6. Old nodes 6 and higher are
+incremented by 1. Old node 6 is now 7, 7 is 8, etc.</DL>
+
+	
+</BODY>
+</HTML>

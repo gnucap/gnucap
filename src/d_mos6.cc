@@ -90,21 +90,23 @@ bool MODEL_MOS6::parse_front(CS& cmd)
   return MODEL_MOS123::parse_front(cmd);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_MOS6::parse_params(CS& cmd)
+bool MODEL_MOS6::parse_params(CS& cmd)
 {
-  get(cmd, "LAMBDA", &lambda0);
-  get(cmd, "DIODElevel", &mos_level);
-  get(cmd, "KV", &kv);
-  get(cmd, "NV", &nv);
-  get(cmd, "KC", &kc);
-  get(cmd, "NC", &nc);
-  get(cmd, "NVTH", &nvth);
-  get(cmd, "PS", &ps);
-  get(cmd, "GAMMA1", &gamma1);
-  get(cmd, "SIGMA", &sigma);
-  get(cmd, "LAMBDA0", &lambda0);
-  get(cmd, "LAMBDA1", &lambda1);
-  MODEL_MOS123::parse_params(cmd);
+  return ONE_OF
+    || get(cmd, "LAMBDA", &lambda0)
+    || get(cmd, "DIODElevel", &mos_level)
+    || get(cmd, "KV", &kv)
+    || get(cmd, "NV", &nv)
+    || get(cmd, "KC", &kc)
+    || get(cmd, "NC", &nc)
+    || get(cmd, "NVTH", &nvth)
+    || get(cmd, "PS", &ps)
+    || get(cmd, "GAMMA1", &gamma1)
+    || get(cmd, "SIGMA", &sigma)
+    || get(cmd, "LAMBDA0", &lambda0)
+    || get(cmd, "LAMBDA1", &lambda1)
+    || MODEL_MOS123::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS6::parse_finish()
@@ -201,12 +203,7 @@ void MODEL_MOS6::print_calculated(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 bool MODEL_MOS6::is_valid(const COMMON_COMPONENT* cc)const
 {
-  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
-  {if (!c) {
-    return MODEL_MOS123::is_valid(cc);
-  }else{
-    return MODEL_MOS123::is_valid(cc);
-  }}
+  return MODEL_MOS123::is_valid(cc);
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS6::tr_eval(COMPONENT* brh)const

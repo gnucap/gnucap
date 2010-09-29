@@ -1,4 +1,4 @@
-/*$Id: bm_sffm.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_sffm.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -52,36 +52,31 @@ EVAL_BM_SFFM::EVAL_BM_SFFM(const EVAL_BM_SFFM& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SFFM::parse(CS& cmd)
+void EVAL_BM_SFFM::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    double* i;
-    for (i = &_offset;  i < &_end;  ++i){
-      double value=NOT_VALID;
-      cmd >> value;
-      {if (cmd.stuck(&here)){
-	break;
-      }else{
-	untested();
-      }}
-      *i = value;
-    }
-    assert(i <= &_end);
-    paren -= cmd.skiprparen();
-    if (paren != 0){
+  for (double* i = &_offset;  i < &_end;  ++i){
+    double value=NOT_VALID;
+    cmd >> value;
+    {if (cmd.stuck(&here)){
+      break;
+    }else{
       untested();
-      cmd.warn(bWARNING, "need )");
-    }
-    get(cmd, "Offset",	 &_offset);
-    get(cmd, "Amplitude",&_amplitude);
-    get(cmd, "Carrier",	 &_carrier);
-    get(cmd, "Modindex", &_modindex);
-    get(cmd, "Signal",	 &_signal);
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+    }}
+    *i = value;
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_SFFM::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "Offset",	&_offset)
+    || get(cmd, "Amplitude",	&_amplitude)
+    || get(cmd, "Carrier",	&_carrier)
+    || get(cmd, "Modindex",	&_modindex)
+    || get(cmd, "Signal",	&_signal)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SFFM::print(OMSTREAM& where)const

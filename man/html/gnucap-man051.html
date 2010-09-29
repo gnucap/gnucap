@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+SWEEP command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc50">2.40</A>&nbsp;&nbsp;<TT>SWEEP</TT> command</H2>
+<A NAME="@default260"></A>
+<A NAME="@default261"></A>
+<A NAME="@default262"></A>
+
+<H3>2.40.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>SWeep</TT> {<I>stepcount</I>} <I>partlabel=range</I> ...
+
+
+<H3>2.40.2&nbsp;&nbsp;Purpose</H3>
+Sweep a component (or group of components) over a range. Set up a loop for
+iteration.
+
+<H3>2.40.3&nbsp;&nbsp;Comments</H3>
+This command begins a loop which will sweep a component or group of
+components.<BR>
+<BR>
+When this command is given, the only apparent actions will be a change in the
+prompt from `<TT>--&gt;</TT>' to `<TT>&gt;&gt;&gt;</TT>', and some disk action.<BR>
+<BR>
+The different prompt means that commands are not executed immediately, but
+are stored in a temporary file.<BR>
+<BR>
+The bare command will repeat the same command sequence as the last time <TT>sweep</TT> was run, and not prompt for anything else.<BR>
+<BR>
+Additional components can be swept at the same time by entering a `<TT>FAult</TT>' command at the `<TT>&gt;&gt;&gt;</TT>' prompt. The `<TT>fault</TT>' behaves
+differently here: It accepts a range, which is the sweep limits.<BR>
+<BR>
+The `<TT>go</TT>' command will end the entry sequence, and make it all happen.
+After this, the values are restored. (Also, all <TT>fault</TT>s are restored,
+as if by the `<TT>restore</TT>' command.)<BR>
+<BR>
+All commands can be used in this mode. Of course, some of them are not
+really useful (<TT>quit</TT>) because they work as usual.<BR>
+<BR>
+Only linear, ordinary parts can be swept. (No semiconductor devices, or
+elements using behavioral modeling.) The tolerance remains unchanged. If
+you attempt to sweep a nonlinear or otherwise strange part, it becomes
+ordinary and linear during the sweep.
+
+<H3>2.40.4&nbsp;&nbsp;Example</H3>
+<PRE>
+--&gt;sweep  5   R14=1,100k   R15=100k,1
+&gt;&gt;&gt;list
+&gt;&gt;&gt;ac 500 2k oct
+&gt;&gt;&gt;go
+</PRE>
+This sequence of commands says to simultaneously sweep R14 and R15 in 5 steps,
+in opposite directions, list the circuit and do an AC analysis for each step.<BR>
+<BR>
+Assuming the circuit was:
+<PRE>
+     R14  1   0   50k
+     R15  2   0   50k
+</PRE>
+The result of this sequence would be:
+<PRE>
+     R14  1   0   1
+     R15  2   0   100k
+</PRE><I>an AC analysis</I>
+<PRE>
+     R14  1   0   25.75k
+     R15  2   0   75.25k
+</PRE><I>an AC analysis</I>
+<PRE>
+     R14  1   0   50.5k
+     R15  2   0   50.5k
+</PRE><I>an AC analysis</I>
+<PRE>
+     R14  1   0   75.25k
+     R15  2   0   25.75k
+</PRE><I>an AC analysis</I>
+<PRE>
+     R14  1   0   100k
+     R15  2   0   1
+</PRE><I>an AC analysis</I><BR>
+<BR>
+After all this is done, the circuit is restored, so <TT>list</TT> would show:
+<PRE>
+     R14  1   0   50k
+     R15  2   0   50k
+</PRE>
+You could accomplish the same thing by entering <TT>fault</TT> commands at the
+`<TT>&gt;&gt;&gt;</TT>' prompt.
+<PRE>
+--&gt;sweep  5
+&gt;&gt;&gt;fault  R14=1, 100k
+&gt;&gt;&gt;fault  R15=100k, 1
+&gt;&gt;&gt;list
+&gt;&gt;&gt;ac 500 2k oct
+&gt;&gt;&gt;go
+</PRE>	
+</BODY>
+</HTML>

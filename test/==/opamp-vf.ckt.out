@@ -4,7 +4,7 @@
 +  pivtol= 100.f  pivrel= 0.001  numdgt=5  tnom= 27.  cptime=30000
 +  limtim=2  limpts=201  lvlcod=2  lvltim=2  method=trap  maxord=2
 +  itl1=100  itl2=50  itl3=6  itl4=20  itl5=5000  itl6=0  itl7=1
-+  itl8=99  defl= 100.u  defw= 100.u  defad= 0.  defas= 0.  seed=1  noclobber
++  itl8=99  defl= 100.u  defw= 100.u  defad= 0.  defas= 0.  seed=1  clobber
 +  nonamednodes  wczero= 1.n  dampmax= 1.  dampmin= 0.5
 +  dampstrategy=11  roundofftol= 100.f  tempamb= 27.  short= 10.u
 +  in=80  out=80  xdivisions= 4.  ydivisions= 4.  phase=degrees

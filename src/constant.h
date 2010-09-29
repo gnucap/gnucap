@@ -1,4 +1,4 @@
-/*$Id: constant.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: constant.h,v 24.4 2003/04/06 10:35:36 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -59,6 +59,9 @@ const double NEVER     =  (DBL_MAX)*(.9447958);	/* unlikely number	  */
 const double NOT_INPUT = -(DBL_MAX)*(.9547658);	/* unlikely number	  */
 const double NOT_VALID = -(DBL_MAX)*(.9647958);	/* unlikely number	  */
 const double LINEAR    = -(DBL_MAX)*(.9747958);	/* unlikely number	  */
+
+const double LOGBIGBIG = log(BIGBIG);
+
 const double VOLTMIN   =  1.0e-50;
 const double PWRMIN    =  1.0e-100;
 

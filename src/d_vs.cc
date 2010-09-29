@@ -1,4 +1,4 @@
-/*$Id: d_vs.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: d_vs.cc,v 24.21 2004/01/21 15:58:10 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -43,14 +43,22 @@ void DEV_VS::dc_begin()
 {
   _loss1 = _loss0 = 1./OPT::shortckt;
   if (!using_tr_eval()){
-    set_limit(value());
+    {if (_n[OUT2].m_() == 0) {
+      set_limit(value());
+    }else if (_n[OUT1].m_() == 0) {
+      untested();
+      set_limit(-value());
+    }else{
+      // BUG: don't set limit
+      untested();
+    }}
     assert(_y0.x == 0.);
     assert(_y0.f0 == 0.);
     assert(_y0.f1 == value());
-    assert(_m0.x == 0.);
-    _m0.c0 = -_loss0 * _y0.f1;
-    assert(_m0.c1 == 0.);
     assert(_m1 == _m0);
+    assert(_m0.x == 0.);
+    assert(_m0.c1 == 0.);
+    _m0.c0 = -_loss0 * _y0.f1;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -60,7 +68,13 @@ bool DEV_VS::do_tr()
   {if (using_tr_eval()){
     _y0.x = SIM::time0;
     tr_eval();
-    set_limit(_y0.f1);
+    {if (_n[OUT2].m_() == 0) {
+      set_limit(_y0.f1);
+    }else if (_n[OUT1].m_() == 0) {
+      set_limit(-_y0.f1);
+    }else{
+      // BUG: don't set limit
+    }}
     store_values();
     q_load();
     _m0.c0 = -_loss0 * _y0.f1;
@@ -85,6 +99,7 @@ void DEV_VS::do_ac()
     ac_eval();
     _acg = -_loss0 * _ev;
   }else{
+    untested();
     assert(_acg == 0.);
   }}
   ac_load();

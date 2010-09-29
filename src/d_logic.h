@@ -1,4 +1,4 @@
-/*$Id: d_logic.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
+/*$Id: d_logic.h,v 24.22 2004/02/01 07:12:36 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -27,7 +27,6 @@
 #include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
 class MODEL_LOGIC : public MODEL_CARD {
-friend class DEV_LOGIC;
 public:
   explicit	MODEL_LOGIC();
 		~MODEL_LOGIC()		{--_count;}
@@ -78,7 +77,7 @@ private: // override virtuals
   int	   min_nodes()const	{unreachable(); incomplete(); return 2;}
   int	   out_nodes()const	{return 2;}
   int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	{return _num_nodes;}
+  int	   net_nodes()const	{return _net_nodes;}
   CARD*	   clone()const		{untested(); return new DEV_LOGIC(*this);}
   void	   parse(CS&);
   void	   print(OMSTREAM&,int)const;
@@ -99,9 +98,9 @@ private: // override virtuals
   double   tr_review();
   void	   tr_accept();
   void	   tr_unload();
-  //double tr_amps()const		//ELEMENT
   double   tr_involts()const		{unreachable(); return 0;}
   double   tr_involts_limited()const	{unreachable(); return 0;}
+  //double tr_amps()const		//ELEMENT
   double   tr_probe_num(CS&)const;
 
   void	   ac_alloc_matrix();
@@ -109,6 +108,7 @@ private: // override virtuals
   void	   do_ac()			{untested(); subckt().do_ac();}
   void	   ac_load()			{unreachable();}
   COMPLEX  ac_involts()const		{unreachable(); return 0.;}
+  COMPLEX  ac_amps()const		{unreachable(); return 0.;}
   XPROBE   ac_probe_ext(CS&)const;
 public:
   static int count()			{return _count;}
@@ -119,7 +119,7 @@ private:
   bool	   want_digital()const{return subckt().empty() ||
     ((OPT::mode == moDIGITAL) || (OPT::mode == moMIXED && _quality == qGOOD));}
 private:
-  int		_num_nodes;
+  int		_net_nodes;
   int		_lastchangenode;
   int		_quality;
   const char*	_failuremode;
@@ -185,8 +185,8 @@ private:
   explicit LOGIC_NOR(const LOGIC_NOR& p) :COMMON_LOGIC(p){untested();++_count;}
   COMMON_COMPONENT* clone()const {untested(); return new LOGIC_NOR(*this);}
 public:
-  explicit LOGIC_NOR(int c=0)		  :COMMON_LOGIC(c) {untested();}
-  LOGICVAL logic_eval(NODE** ns)const {untested(); LOGICVAL out(lvSTABLE0);
+  explicit LOGIC_NOR(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(NODE** ns)const {LOGICVAL out(lvSTABLE0);
     for (int ii=0; ii<incount; ++ii){out |= ns[ii]->lv();} return ~out;}
   virtual const char* name()const	  {return "nor";}
 };

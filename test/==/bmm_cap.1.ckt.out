@@ -26,12 +26,10 @@
  215.44Meg  1.         0.073672  -85.775    -22.654    
  464.16Meg  1.         0.034269  -88.036    -29.302    
  1.G        1.         0.015913  -89.088    -35.965    
-V1  1  0  TRAN  PWL(   0., 0.   1.999999n, 0.   2.000001n, 1.)  DC   2.  AC  
-+ 1.
+V1  1  0  TRAN  PWL(   0., 0.   1.999999n, 0.   2.000001n, 1.)  DC   2.  AC   1.
 R1  1  2  1.K
 C2  2  0  t1  l= 1.u  w= 2.u
-.model  t1  c  (  tnom= 27.  cj= 5.  cjsw= 0.  narrow= 0.  defw= 1.u
-+  tc1= 0.  tc2= 0.)
+.model  t1  c  (  cj= 5.  cjsw= 0.  narrow= 0.  defw= 1.u  tc1= 0.  tc2= 0.  tnom= 27.)
 *+()
 .print op v(nodes) c(c2) 
 .print tran v(nodes) 

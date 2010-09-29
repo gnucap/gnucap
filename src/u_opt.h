@@ -1,4 +1,4 @@
-/*$Id: u_opt.h,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
+/*$Id: u_opt.h,v 24.11 2003/11/21 03:29:03 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -72,6 +72,17 @@ enum RUN_MODE {
   rSCRIPT,	/* execute now, as a command, then restore mode	*/
   rBATCH	/* execute now, as a command, then exit		*/
 };
+/*--------------------------------------------------------------------------*/
+/* secant strategy is not implemented but it is a well known
+ * method which may sometime be added
+ */
+#ifdef KNEECHORD
+enum strategy_t {stNEWTON, stKNEECHORD, stSECANT};
+inline OMSTREAM& operator<<(OMSTREAM& o, strategy_t t){
+  const char* s[] = {"newton", "kneechord", "secant"};
+  return (o << s[t]);
+}
+#endif
 /*--------------------------------------------------------------------------*/
 enum {dsINIT=001, dsRANGE=002, dsDEVLIMIT=004, dsDEVREGION=010, dsREVERSE=020};
 /*--------------------------------------------------------------------------*/
@@ -170,6 +181,9 @@ public:
 			    // 6=source stepping iteration limit
 			    // 7=worst case iteration limit
 			    // 8=trace nonconvergence start iteration
+#ifdef KNEECHORD
+  static strategy_t strategy; // What method we use to encourage non-linear devices to converge
+#endif
 };
 /*--------------------------------------------------------------------------*/
 class ENV {

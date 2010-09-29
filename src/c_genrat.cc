@@ -1,4 +1,4 @@
-/*$Id: c_genrat.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: c_genrat.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -48,18 +48,20 @@ void CMD::generator(CS& cmd)
   OMSTREAM where = (cmd.more())  ?  OMSTREAM()  :  IO::mstdout;
   int here = cmd.cursor();
   do{
-    ::get(cmd, "Frequency", &freq,	mPOSITIVE);
-    ::get(cmd, "Amplitude", &ampl);
-    ::get(cmd, "Phase",	    &phaz);
-    ::get(cmd, "MAx",	    &maxv);
-    ::get(cmd, "MIn",	    &minv);
-    ::get(cmd, "Offset",    &offset);
-    ::get(cmd, "Init",	    &init);
-    ::get(cmd, "Rise",	    &rise,	mPOSITIVE);
-    ::get(cmd, "Fall",	    &fall,	mPOSITIVE);
-    ::get(cmd, "Delay",	    &delay,	mPOSITIVE);
-    ::get(cmd, "Width",	    &width,	mPOSITIVE);
-    ::get(cmd, "PEriod",    &period,	mPOSITIVE);
+    0
+      || ::get(cmd, "Frequency",&freq,	mPOSITIVE)
+      || ::get(cmd, "Amplitude",&ampl)
+      || ::get(cmd, "Phase",	&phaz)
+      || ::get(cmd, "MAx",	&maxv)
+      || ::get(cmd, "MIn",	&minv)
+      || ::get(cmd, "Offset",	&offset)
+      || ::get(cmd, "Init",	&init)
+      || ::get(cmd, "Rise",	&rise,	mPOSITIVE)
+      || ::get(cmd, "Fall",	&fall,	mPOSITIVE)
+      || ::get(cmd, "Delay",	&delay,	mPOSITIVE)
+      || ::get(cmd, "Width",	&width,	mPOSITIVE)
+      || ::get(cmd, "PEriod",   &period,mPOSITIVE)
+      ;
   }while (cmd.more() && !cmd.stuck(&here));
   cmd.check(bWARNING, "what's this");
 

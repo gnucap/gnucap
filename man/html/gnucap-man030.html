@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+FOURIER command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc29">2.19</A>&nbsp;&nbsp;<TT>FOURIER</TT> command</H2>
+<A NAME="@default93"></A>
+<A NAME="@default94"></A>
+<A NAME="@default95"></A>
+<A NAME="@default96"></A>
+
+<H3>2.19.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>Fourier</TT> <I>start stop stepsize</I> {<I>options</I> ...}
+
+
+<H3>2.19.2&nbsp;&nbsp;Purpose</H3>
+Performs a nonlinear time domain (transient) analysis, but displays the
+results in the frequency domain.<BR>
+<BR>
+<I>Start</I>, <I>stop</I>, and <I>stepsize</I> are frequencies.
+
+<H3>2.19.3&nbsp;&nbsp;Comments</H3>
+This command is slightly different and more flexible than the SPICE
+counterpart. SPICE always gives you the fundamental and 9 harmonics.
+Gnucap will do the same if you only specify one frequency. SPICE has
+the probes on the same line. Gnucap requires you to specify the probes
+with the <TT>print</TT> command. <BR>
+<BR>
+SPICE uses the last piece of a transient that was already done. Gnucap
+does its own transient analysis, continuing from where the most recent
+one left off, and choosing the step size to match the Fourier
+Transform to be done. Because of this the Gnucap Fourier analysis is
+much more accurate than SPICE.<BR>
+<BR>
+The nodes to look at must have been previously selected by the <TT>print</TT> or <TT>plot</TT> command.<BR>
+<BR>
+Three parameters are normally needed for a Fourier analysis: start
+frequency, stop frequency and step size, in this order.<BR>
+<BR>
+If the start frequency is omitted it is assumed to be 0. The two
+remaining parameters are stop and step, such that stop &gt; step.<BR>
+<BR>
+If only one frequency is specified, it is assumed to be step size,
+which is equivalent to the fundamental frequency. The start
+frequency is zero and the stop frequency is set according the <TT>harmonics</TT> option (from the <TT>options</TT> command. The default is
+9 harmonics.<BR>
+<BR>
+If two frequencies are specified, they are stop and step. The
+order doesn't matter since stop is always larger than step.<BR>
+<BR>
+Actually, this command does a nonlinear time domain analysis, then
+performs a Fourier transform on the data to get the frequency data.
+The transient analysis parameters (start, stop, step) are determined
+by the program as necessary to produce the desired spectral results.
+The internal time steps are selected to match the Fourier points,
+so there is no interpolation done.<BR>
+<BR>
+The underlying transient analysis begins where the previous one
+left off. If you specify the "cold" option, it begins at time =
+0. Often repeating a run will improve the accuracy by giving more
+time for initial transients to settle out.<BR>
+<BR>
+See also: <TT>Transient</TT> command.
+
+<H3>2.19.4&nbsp;&nbsp;Options</H3>
+<DL COMPACT=compact><DT><B><TT>&gt;</TT> <I>file</I></B><DD> Send results of analysis to <I>file</I>.<BR>
+<BR>
+<DT><B><TT>&gt;&gt;</TT> <I>file</I></B><DD> Append results to <I>file</I>.<BR>
+<BR>
+<DT><B><TT>Cold</TT></B><DD> Zero initial conditions. Cold start from power-up.<BR>
+<BR>
+<DT><B><TT>Quiet</TT></B><DD> Suppress console output.<BR>
+<BR>
+<DT><B><TT>SKip</TT> <I>count</I></B><DD> Force at least <I>count</I> internal
+transient time steps for each one used.<BR>
+<BR>
+<DT><B><TT>STiff</TT></B><DD> Use a different integration method,
+that will suppress overshoot when the step size is too
+small.<BR>
+<BR>
+<DT><B><TT>TEmperature</TT> <I>degrees</I></B><DD> Temperature,
+degrees C.<BR>
+<BR>
+<DT><B><TT>TRACe</TT> <I>n</I></B><DD> Show extended information during solution.
+Must be followed by one of the following:
+<DL COMPACT=compact><DT>
+<B><TT>Off</TT></B><DD> No extended trace information (default, override .opt)
+<DT><B><TT>Warnings</TT></B><DD> Show extended warnings
+<DT><B><TT>Alltime</TT></B><DD> Show all accepted internal time steps.
+<DT><B><TT>Rejected</TT></B><DD> Show all internal time steps including rejected steps.
+<DT><B><TT>Iterations</TT></B><DD> Show every iteration.
+<DT><B><TT>Verbose</TT></B><DD> Show extended diagnostics.
+</DL></DL>
+
+
+<H3>2.19.5&nbsp;&nbsp;Examples</H3>
+<DL COMPACT=compact><DT><B><TT>fourier 1Meg</TT></B><DD> Analyze the spectrum assuming a fundamental
+frequency of 1 mHz. Use the <TT>harmonics</TT> option to determine
+how many harmonics (usually 9) to display.<BR>
+<BR>
+<DT><B><TT>fourier 40 20k 20</TT></B><DD> Analyze the spectrum from 40 Hz to 20 kHz in
+20 Hz steps. This will result in a transient analysis with 25 micro-second
+steps. (1 / 40k). It will run for .05 second. (1 / 20).<BR>
+<BR>
+<DT><B><TT>fourier 0 20k 20</TT></B><DD> Similar to the previous example, but show the
+DC and 20 Hz terms, also.<BR>
+<BR>
+<DT><B><TT>fourier</TT></B><DD> No parameters mean use the same ones as the last time.
+In this case: from 0 to 20 kHz, in 20 Hz steps.<BR>
+<BR>
+<DT><B><TT>fourier Skip 10</TT></B><DD> Do 10 transient steps internally for every step
+that is used. In this case it means to internally step at 2.5 micro-second,
+or 10 steps for every one actually used.<BR>
+<BR>
+<DT><B><TT>fourier Cold</TT></B><DD> Restart at time = 0. This will show the
+spectrum of the power-on transient.</DL>
+
+
+</BODY>
+</HTML>

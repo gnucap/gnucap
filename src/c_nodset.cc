@@ -1,4 +1,4 @@
-/*$Id: c_nodset.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: c_nodset.cc,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -65,13 +65,16 @@ void NODESET::command(CS& cmd)
 void NODESET::add_list(CS& cmd)
 {
   while (cmd.pmatch("V")) {
-    int paren = cmd.skiplparen();
+    int here = cmd.cursor();
+    bool got_opening_paren = cmd.skiplparen();
     int node = cmd.ctoi();
-    paren -= cmd.skiprparen();
-    if (paren != 0) {
+    {if (got_opening_paren && !cmd.skiprparen()) {
       untested();
-      cmd.check(bWARNING, "need )");
-    }
+      cmd.warn(bWARNING, "need )");
+    }else if (!got_opening_paren && cmd.skiprparen()) {
+      untested();
+      cmd.warn(bWARNING, here, "need (");
+    }}
     cmd.skipequal();
     int mark = cmd.cursor();
     double voltage = cmd.ctof();

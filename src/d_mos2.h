@@ -60,7 +60,7 @@ public:
   ~MODEL_MOS2() {--_count;}
 public: // override virtual
   bool      parse_front(CS&);
-  void      parse_params(CS&);
+  bool      parse_params(CS&);
   void      parse_finish();
   SDP_CARD* new_sdp(const COMMON_COMPONENT* c)const;
   void      print_front(OMSTREAM&)const;

@@ -1,4 +1,4 @@
-/*$Id: bm_poly.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_poly.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -45,29 +45,27 @@ EVAL_BM_POLY::EVAL_BM_POLY(const EVAL_BM_POLY& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_POLY::parse(CS& cmd)
+void EVAL_BM_POLY::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    for (;;){
-      double value=NOT_VALID;
-      cmd >> value;
-      if (cmd.stuck(&here)){
-	break;
-      }
-      _c.push_back(value);
+  for (;;){
+    double value=NOT_VALID;
+    cmd >> value;
+    if (cmd.stuck(&here)){
+      break;
     }
-    paren -= cmd.skiprparen();
-    if (paren != 0){
-      cmd.warn(bWARNING, "need )");
-    }
-    get(cmd, "MIn", &_min);
-    get(cmd, "MAx", &_max);
-    get(cmd, "Abs", &_abs);
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+    _c.push_back(value);
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_POLY::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "MIn", &_min)
+    || get(cmd, "MAx", &_max)
+    || get(cmd, "Abs", &_abs)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_POLY::print(OMSTREAM& where)const

@@ -1,4 +1,4 @@
-/*$Id: ap_get.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: ap_get.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -29,7 +29,8 @@ bool get(CS& cmd, const std::string& key, bool* val, AP_MOD m)
   std::string false_key("NO" + key);
 
   {if (cmd.dmatch(key)){
-    /**/ set(cmd, "1",     val, true)
+    0
+      || set(cmd, "1",     val, true)
       || set(cmd, "0",     val, false)
       || set(cmd, "True",  val, true)
       || set(cmd, "False", val, false)
@@ -37,7 +38,8 @@ bool get(CS& cmd, const std::string& key, bool* val, AP_MOD m)
       || set(cmd, "No",    val, false)
       || set(cmd, "#True", val, true)
       || set(cmd, "#False",val, false)
-      || (*val = true);
+      || (*val = true)
+      ;
     cmd.reset(cmd.cursor()); // cheat: set "ok" flag to true
     if (m==mINVERT){
       untested();

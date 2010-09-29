@@ -1,4 +1,4 @@
-/*$Id: mg_out_h.cc,v 22.12 2002/07/26 08:01:55 al Exp $ -*- C++ -*-
+/*$Id: mg_out_h.cc,v 24.12 2003/12/14 01:58:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -90,7 +90,7 @@ static void make_model(std::ofstream& out, const Model& m)
     "  ~" << class_name << "() {--_count;}\n"
     "public: // override virtual\n"
     "  bool      parse_front(CS&);\n"
-    "  void      parse_params(CS&);\n"
+    "  bool      parse_params(CS&);\n"
     "  void      parse_finish();\n"
     "  SDP_CARD* new_sdp(const COMMON_COMPONENT* c)const;\n"
     "  void      print_front(OMSTREAM&)const;\n"
@@ -189,12 +189,18 @@ static void make_device(std::ofstream& out, const Device& d)
     "private: // override virtual\n"
     "  char      id_letter()const {return '" << d.id_letter() << "';}\n"
     "  const char* dev_type()const{return \"" << d.parse_name() << "\";}\n"
-    "  int       max_nodes()const  {return " << d.num_nodes() << ";}\n"
-    "  int       min_nodes()const  {return " << d.num_nodes() << ";}\n"
-    "  int       out_nodes()const  {return " << d.num_nodes() << ";}\n"
-    "  int       matrix_nodes()const {return 0;}\n"
-    "  int       net_nodes()const {return " << d.num_nodes() << ";}\n"
-    "  int       int_nodes()const{return " 
+    "  int       max_nodes()const  {return " << d.max_nodes() << ";}\n"
+    "  int       min_nodes()const  {return " << d.min_nodes() << ";}\n";
+  {if (d.max_nodes() != d.min_nodes()) {
+    out << "  int       out_nodes()const  {return _net_nodes;}\n"
+      "  int       matrix_nodes()const {return 0;}\n"
+      "  int       net_nodes()const {return _net_nodes;}\n";
+  }else{
+    out << "  int       out_nodes()const  {return " << d.max_nodes() <<";}\n"
+      "  int       matrix_nodes()const {return 0;}\n"
+      "  int       net_nodes()const {return " << d.max_nodes() << ";}\n";
+  }}
+  out << "  int       int_nodes()const{return " 
       << d.circuit().local_nodes().size() << ";}\n"
     "  CARD*     clone()const     {return new " << class_name << "(*this);}\n"
     "  void      parse(CS&);\n"
@@ -239,8 +245,11 @@ static void make_device(std::ofstream& out, const Device& d)
   }}
   out << 
     "private: // not available even to models\n"
-    "  static int _count;\n"
-    "public: // input parameters\n";
+    "  static int _count;\n";
+  if (d.max_nodes() != d.min_nodes()) {
+    out << "  int _net_nodes;\n";
+  }
+  out <<  "public: // input parameters\n";
   {for (Parameter_List::const_iterator
 	 p = d.device().raw().begin();
        p != d.device().raw().end(); ++p) {
@@ -265,11 +274,17 @@ static void make_device(std::ofstream& out, const Device& d)
     "  enum {";
   int port_nodes = 0;
   {for (Port_List::const_iterator
-	 p = d.circuit().ports().begin();
-       p != d.circuit().ports().end(); ++p) {
-    if (p != d.circuit().ports().begin()) {
+	 p = d.circuit().req_nodes().begin();
+       p != d.circuit().req_nodes().end(); ++p) {
+    if (p != d.circuit().req_nodes().begin()) {
       out << ", ";
     }
+    out << "n_" << (**p).name() << "=" << port_nodes++;
+  }}
+  {for (Port_List::const_iterator
+	 p = d.circuit().opt_nodes().begin();
+       p != d.circuit().opt_nodes().end(); ++p) {
+    out << ", ";
     out << "n_" << (**p).name() << "=" << port_nodes++;
   }}
   int local_nodes = 0;

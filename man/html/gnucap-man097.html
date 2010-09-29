@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+SIN: Sinusoidal time dependent value
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc96">4.12</A>&nbsp;&nbsp;<TT>SIN</TT>: Sinusoidal time dependent value</H2>
+
+<H3>4.12.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>SIN</TT> <I>args</I><BR>
+<TT>SIN</TT> <I>offset amplitude frequency delay damping</I>
+
+
+<H3>4.12.2&nbsp;&nbsp;Purpose</H3>
+The component value is a sinusoidal function of time, with optional
+exponential decay.
+
+<H3>4.12.3&nbsp;&nbsp;Comments</H3>
+For voltage and current sources, this is the same as the Spice <TT>SIN</TT> function, with some extensions.<BR>
+<BR>
+It generates either a steady sinusoid, or a damped sinusoid.<BR>
+<BR>
+If <EM>delay</EM> and <EM>damping</EM> are both zero, you get a steady sine
+wave at the specified <EM>frequency</EM>. Otherwise, you get a damped
+pulsed sine wave, starting after <EM>delay</EM> and damping out with a
+time constant of 1/<EM>damping</EM>.<BR>
+<BR>
+The shape of the waveform is described by the following algorithm:
+<PRE>
+reltime = time - _delay
+if (reltime &gt; 0.){
+  ev = _amplitude * sin(2*PI*_freq*reltime);
+  if (_damping != 0.){
+    ev *= exp(-reltime*_damping);
+  }
+  ev += _offset;
+}else{
+  ev = _offset;
+}
+</PRE>
+<H3>4.12.4&nbsp;&nbsp;Parameters</H3>
+<DL COMPACT=compact><DT><B><TT>Offset</TT> = <I>x</I></B><DD> DC offset. (Default = 0.)<BR>
+<BR>
+<DT><B><TT>Amplitude</TT> = <I>x</I></B><DD> Peak amplitude. (Default = 1.)<BR>
+<BR>
+<DT><B><TT>Frequency</TT> = <I>x</I></B><DD> Frequency, Hz. (required)<BR>
+<BR>
+<DT><B><TT>Delay</TT> = <I>x</I></B><DD> Turn on delay, seconds. (Default = 0.)<BR>
+<BR>
+<DT><B><TT>Damping</TT> = <I>x</I></B><DD> Damping factor, 1/seconds. (Default = 0.)</DL>
+
+
+</BODY>
+</HTML>

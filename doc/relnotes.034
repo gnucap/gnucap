@@ -1,0 +1,65 @@
+Gnucap 0.34 release notes  (02/01/2004)
+
+This is a bug fix and compatibility release.
+
+1. Fix bug causing incorrect interpolation of backwards tables.
+            
+2. Fix tanh overflow bug.
+            
+3. Fix some parsing bugs.
+            
+4. Fix occasional "double load" bug.
+            
+5. Fix AC sweep with one point.
+            
+6. Transient start time really works.
+            
+7. Fix occasional assert fail after option short is changed.
+            
+8. Fix memory leak resulting from failure to delete unused common.
+
+9. Fix a Z probe bug that sometimes gave wrong answers.
+
+10. Fix a limiting bug that sometimes caused non-convergence.
+
+11. Configure handles isnan.
+
+12. Improvements to logic initialization.  It is still not correct.
+
+
+Some things that are still partially implemented:
+
+1. BSIM models, charge effects, "alpha0" parameter.  (computed then
+ignored)
+
+2. Configure still doesn't handle everything.
+
+3. The model compiler still requires too much raw coding.
+
+4. Named nodes.  If you set the option "namednodes", it will support
+named nodes, but some things don't work, so it is off by default.
+
+5. The preliminary IBIS code is now included.  For now, it is a
+standalone executable, that reads an IBIS file and generates a
+netlist.  The netlist requires some editing to use, and is not fully
+compatible anyway.  It is included in hopes of recruiting help in
+finishing the project.
+
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+2. An occasional bogus calculation in MOSFETS occurs when a device is
+reversed.  This sometimes causes nonconvergence.
+
+3. Initialization is strange when repeating an analysis without an
+intermediate edit.
+
+
+
+Hot items for a future release (no promises, but highly probable):
+
+1. Verilog-AMS and VHDL-AMS support.

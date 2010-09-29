@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+LIST command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc34">2.24</A>&nbsp;&nbsp;<TT>LIST</TT> command</H2>
+<A NAME="@default115"></A>
+<A NAME="@default116"></A>
+<A NAME="@default117"></A>
+<A NAME="@default118"></A>
+<A NAME="@default119"></A>
+
+<H3>2.24.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>List</TT> {<I>label ...</I>}<BR>
+<TT>List</TT> {<I>label</I> - <I>label</I>}
+
+
+<H3>2.24.2&nbsp;&nbsp;Purpose</H3>
+Lists the circuit in memory.
+
+<H3>2.24.3&nbsp;&nbsp;Comments</H3>
+Plain <TT>List</TT> will list the whole circuit on the console.<BR>
+<BR>
+<TT>List</TT> with a component label asks for that one only. Wildcards are
+supported: <TT>?</TT> matches any character, once. <TT>*</TT> matches zero or
+more of any character.<BR>
+<BR>
+For several components, list them.<BR>
+<BR>
+For a range, specify two labels separated by a dash.
+
+<H3>2.24.4&nbsp;&nbsp;Examples</H3>
+<DL COMPACT=compact><DT><B><TT>list</TT></B><DD> List the entire circuit to the console.<BR>
+<BR>
+<DT><B><TT>list R11</TT></B><DD> Show the component <TT>R11</TT>.<BR>
+<BR>
+<DT><B><TT>list D12 - C5</TT></B><DD> List the part of the netlist from <TT>M12</TT> to
+<TT>C5</TT>, inclusive. <TT>D12</TT> must be before <TT>C5</TT> in the list.<BR>
+<BR>
+<DT><B><TT>list D* C*</TT></B><DD> List all diodes and capacitors.</DL>
+
+	
+</BODY>
+</HTML>

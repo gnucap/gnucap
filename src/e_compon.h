@@ -1,4 +1,4 @@
-/*$Id: e_compon.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
+/*$Id: e_compon.h,v 24.10 2003/10/18 05:14:15 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -85,9 +85,6 @@ public:
 	  bool	      has_model()const	{return _model;}
 
   bool is_equal(const COMMON_COMPONENT&)const;
-private:
-  COMMON_COMPONENT* attach() {++_attach_count; return this;}
-  int detach()		     {assert(_attach_count>0);return --_attach_count;}
 protected:
   double	_tnom;
 private:

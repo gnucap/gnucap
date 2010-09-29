@@ -1,8 +1,7 @@
 difpair ckt - simple differential pair
 * modified from Spice-3 examples
 
-*.width in=72
-*>.opt rstray
+*>.opt rstray outwidth=80
 *.tf v(5) vin
 *.dc vin -0.25 0.25 0.005
 

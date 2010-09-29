@@ -10,7 +10,7 @@ M1   3  2  0  0  m  l= 50.u  w= 50.u  nrd= 1.  nrs= 1.
 + mjsw= 0.33  tox= 110.n  nsub= 2.2E+15  nss= 32.G  nfs= 0.  tpg=1  xj= 2.95u 
 + ld= 2.4485u  uo= 575.  ucrit= 49.K  uexp= 0.1  neff= 1.  fc= 0.5  delta= 0. 
 +)
-.options limpts=2000 itl5=10000
+.options limpts=2000 itl5=10000 outwidth=80
 .print op v nodes 
 .plot tran v(1)(-2,2) v(2)(-2,2) 
 .op 

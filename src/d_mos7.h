@@ -1,4 +1,4 @@
-/* $Id: d_mos7.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos7.model,v 24.4 2003/04/06 10:36:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -75,12 +75,12 @@ public:
   double drout;	// DIBL coefficient of output resistance
   double dsub;	// DIBL coefficient in the subthreshold region
   double vth0;	// Threshold voltage
-  double ua;	// Linear gate dependence of mobility m/v
   double ua1;	// Temperature coefficient of ua m/v
-  double ub;	// Quadratic gate dependence of mobility (m/V)**2
+  double ua;	// Linear gate dependence of mobility m/v
   double ub1;	// Temperature coefficient of ub (m/V)**2
-  double uc;	// Body-bias dependence of mobility
+  double ub;	// Quadratic gate dependence of mobility (m/V)**2
   double uc1;	// Temperature coefficient of uc
+  double uc;	// Body-bias dependence of mobility
   double u0;	// Low-field mobility at Tnom
   double ute;	// Temperature coefficient of mobility
   double voff;	// Threshold voltage offset
@@ -166,7 +166,7 @@ public:
   ~MODEL_MOS7() {--_count;}
 public: // override virtual
   bool      parse_front(CS&);
-  void      parse_params(CS&);
+  bool      parse_params(CS&);
   void      parse_finish();
   SDP_CARD* new_sdp(const COMMON_COMPONENT* c)const;
   void      print_front(OMSTREAM&)const;
@@ -219,12 +219,12 @@ public: // input parameters
   SDP drout;	// DIBL coefficient of output resistance
   SDP dsub;	// DIBL coefficient in the subthreshold region
   SDP vth0;	// Threshold voltage
-  SDP ua;	// Linear gate dependence of mobility m/v
   SDP ua1;	// Temperature coefficient of ua m/v
-  SDP ub;	// Quadratic gate dependence of mobility (m/V)**2
+  SDP ua;	// Linear gate dependence of mobility m/v
   SDP ub1;	// Temperature coefficient of ub (m/V)**2
-  SDP uc;	// Body-bias dependence of mobility
+  SDP ub;	// Quadratic gate dependence of mobility (m/V)**2
   SDP uc1;	// Temperature coefficient of uc
+  SDP uc;	// Body-bias dependence of mobility
   SDP u0;	// Low-field mobility at Tnom
   SDP ute;	// Temperature coefficient of mobility
   SDP voff;	// Threshold voltage offset
@@ -278,16 +278,12 @@ public: // input parameters
   double Lw;	// Length reduction parameter
   double Lwn;	// Length reduction parameter
   double Lwl;	// Length reduction parameter
-  double Lmin;	// Minimum length for the model
-  double Lmax;	// Maximum length for the model
   double Wint;	// Width reduction parameter
   double Wl;	// Width reduction parameter
   double Wln;	// Width reduction parameter
   double Ww;	// Width reduction parameter
   double Wwn;	// Width reduction parameter
   double Wwl;	// Width reduction parameter
-  double Wmin;	// Minimum width for the model
-  double Wmax;	// Maximum width for the model
   double dwc;	// Delta W for C-V model
   double dlc;	// Delta L for C-V model
   double noia;	// Flicker noise parameter, oxide trap density A

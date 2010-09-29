@@ -1,4 +1,5 @@
-mg_main.o: mg_main.cc mg_out.h mg_.h md.h io_error.h io_trace.h ap.h
+mg_main.o: mg_main.cc mg_out.h mg_.h md.h io_error.h io_trace.h ap.h \
+  patchlev.h
 mg_out_h.o: mg_out_h.cc mg_out.h mg_.h md.h io_error.h io_trace.h ap.h
 mg_error.o: mg_error.cc ap.h md.h io_error.h io_trace.h
 mg_in.o: mg_in.cc mg_.h md.h io_error.h io_trace.h ap.h

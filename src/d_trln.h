@@ -1,4 +1,4 @@
-/*$Id: d_trln.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
+/*$Id: d_trln.h,v 24.20 2004/01/18 07:42:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -80,7 +80,7 @@ private: // override virtual
   CARD*		clone()const	{untested();return new DEV_TRANSLINE(*this);}
   void		parse(CS&);
   void		print(OMSTREAM&,int)const;
-  //void	expand();		//CARD/nothing
+  //void	expand();		//COMPONENT
   //void	map_nodes();		//ELEMENT
   void		precalc();
 

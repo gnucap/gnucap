@@ -1,4 +1,4 @@
-/* $Id: d_mos_base.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos_base.model,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -58,7 +58,7 @@ public:
   ~MODEL_MOS_BASE() {--_count;}
 public: // override virtual
   bool      parse_front(CS&);
-  void      parse_params(CS&);
+  bool      parse_params(CS&);
   void      parse_finish();
   SDP_CARD* new_sdp(const COMMON_COMPONENT* c)const;
   void      print_front(OMSTREAM&)const;

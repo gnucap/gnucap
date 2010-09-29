@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+OP command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc41">2.31</A>&nbsp;&nbsp;<TT>OP</TT> command</H2>
+<A NAME="@default140"></A>
+<A NAME="@default141"></A>
+<A NAME="@default142"></A>
+<A NAME="@default143"></A>
+<A NAME="@default144"></A>
+<A NAME="@default145"></A>
+
+<H3>2.31.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>OP</TT> <I>start stop stepsize</I> {<I>options</I> ...}
+
+
+<H3>2.31.2&nbsp;&nbsp;Purpose</H3>
+Performs a nonlinear DC steady state analysis, with no input. If a
+temperature range is given, it sweeps the temperature.
+
+<H3>2.31.3&nbsp;&nbsp;Comments</H3>
+There are substantial extensions beyond the capabilities of the SPICE <TT>op</TT> command.<BR>
+<BR>
+If there are numeric arguments, they represent a temperature sweep. They are
+the start and stop temperatures in degrees Celsius, and the step size, in
+order. They are saved between commands, so no arguments will repeat the
+previous sweep.<BR>
+<BR>
+This command will use the <TT>op</TT> probe set, instead of automatically
+printing all nodes and source currents, so you must do "<TT>print
+op</TT> ...." before running op. We did it this way because we believe
+that printing everything all the time is usually unnecessary clutter.
+All of the information available from SPICE and more is available
+here. See the <TT>print</TT> command and the device descriptions for
+more details.<BR>
+<BR>
+A single parameter represents a single temperature. Two parameters instruct
+the computer to analyze for those two points only.<BR>
+<BR>
+This command also sets up the quiescent point for subsequent <TT>AC</TT>
+analysis. It is necessary to do this for nonlinear circuits. The last step
+in the sweep determines the quiescent point for the AC analysis.
+
+<H3>2.31.4&nbsp;&nbsp;Options</H3>
+<DL COMPACT=compact><DT><B><TT>*</TT> <I>multiplier</I></B><DD> Log sweep. Multiply the
+<EM>absolute</EM> temperature by <I>multiplier</I> to get the
+next step. The fact that it is offset to absolute zero
+may make the step sizes look strange.<BR>
+<BR>
+<DT><B><TT>&gt;</TT> <I>file</I></B><DD> Send results of analysis to <I>file</I>.<BR>
+<BR>
+<DT><B><TT>&gt;&gt;</TT> <I>file</I></B><DD> Append results to <I>file</I>.<BR>
+<BR>
+<DT><B><TT>BY</TT> <I>stepsize</I></B><DD> Linear sweep. Add <I>stepsize</I> to get the next step.<BR>
+<BR>
+<DT><B><TT>Continue</TT></B><DD> Use the last step of a <TT>OP</TT>,
+<TT>DC</TT> or <TT>Transient</TT> analysis as the first guess.<BR>
+<BR>
+<DT><B><TT>Input</TT> <I>volts</I></B><DD> Apply <I>volts</I> input to
+the circuit, instead of zero.<BR>
+<BR>
+<DT><B><TT>LOop</TT></B><DD> Repeat the sweep, backwards.<BR>
+<BR>
+<DT><B><TT>PLot</TT></B><DD> Graphic output, when plotting is
+normally off.<BR>
+<BR>
+<DT><B><TT>Print</TT></B><DD> Send results to printer.<BR>
+<BR>
+<DT><B><TT>Quiet</TT></B><DD> Suppress console output.<BR>
+<BR>
+<DT><B><TT>REverse</TT></B><DD> Sweep in the opposite direction.<BR>
+<BR>
+<DT><B><TT>TAble</TT></B><DD> Tabular output. Override default plot.<BR>
+<BR>
+<DT><B><TT>TEmperature</TT> <I>degrees</I></B><DD> Temperature,
+degrees C. Override the sweep.<BR>
+<BR>
+<DT><B><TT>TImes</TT> <I>multiplier</I></B><DD> Log sweep. Multiply
+the <B>absolute</B> temperature by <I>multiplier</I> to get
+the next step.<BR>
+<BR>
+<DT><B><TT>TRace</TT> <I>n</I></B><DD> Show extended information during solution.
+Must be followed by one of the following:
+<DL COMPACT=compact><DT>
+<B><TT>Off</TT></B><DD> No extended trace information (default, override .opt)
+<DT><B><TT>Warnings</TT></B><DD> Show extended warnings
+<DT><B><TT>Iterations</TT></B><DD> Show every iteration.
+<DT><B><TT>Verbose</TT></B><DD> Show extended diagnostics.
+</DL></DL>
+
+
+<H3>2.31.5&nbsp;&nbsp;Examples</H3>
+<DL COMPACT=compact><DT><B><TT>op 27</TT></B><DD> Do a DC operating point simulation at temperature 27
+degrees Celsius.<BR>
+<BR>
+<DT><B><TT>op -50 200 25</TT></B><DD> Sweep the temperature from -50 to 200 in 25
+degree steps. Do a DC operating point simulation at each step.<BR>
+<BR>
+<DT><B><TT>op</TT></B><DD> With no parameters, it uses the same ones as the last time.
+In this case, from -50 to 200 in 25 degree steps.<BR>
+<BR>
+<DT><B><TT>op 200 -50 -25</TT></B><DD> You can sweep downward, by asking for a negative
+increment.<BR>
+<BR>
+<DT><B><TT>op Input 2.3</TT></B><DD> Apply an input to the circuit of 2.3 volts. This
+overrides the default of no input.<BR>
+<BR>
+<DT><B><TT>op TEmperature 75</TT></B><DD> Simulate at 75 degrees, this time. This isn't
+remembered for next time.<BR>
+<BR>
+<DT><B><TT>op</TT></B><DD> Since the last time used the <TT>TEmperature</TT> option, go
+back one more to find what the sweep parameters were. In this case, downward
+from 200 to -50 in 25 degree steps. (Because we did it 3 commands ago.)</DL>
+
+	
+</BODY>
+</HTML>

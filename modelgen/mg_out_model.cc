@@ -1,4 +1,4 @@
-/*$Id: mg_out_model.cc,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
+/*$Id: mg_out_model.cc,v 24.16 2004/01/11 02:46:32 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -32,7 +32,7 @@ static void make_sdp_constructor(std::ofstream& out, const Model& m)
       "  const COMMON_" << m.dev_type()
 	<< "* c = prechecked_cast<const COMMON_" << m.dev_type() << "*>(cc);\n"
       "  assert(c);\n"
-	<< "  const MODEL_" << m.name() 
+      "  const MODEL_" << m.name() 
 	<< "* m = prechecked_cast<const MODEL_" 
 	<< m.name() << "*>(c->model());\n"
       "  assert(m);\n"
@@ -126,28 +126,25 @@ static void make_model_parse_front(std::ofstream& out, const Model& m)
   {if (!m.key_list().is_empty()) {
     out << " cmd)\n"
       "{\n"
-      "  return ";
-    Key_List::const_iterator k = m.key_list().begin();
-    {for (;;) {
-      out << "set(cmd, \"" << (**k).name() << "\", &" << (**k).var() << ", " 
-	  << (**k).value() << ")";
-      ++k;
-      if (k == m.key_list().end()) {
-	break;
-      }
-      out << "\n    || ";
+      "  return ONE_OF\n";
+    {for (Key_List::const_iterator k = m.key_list().begin();
+	  k != m.key_list().end();
+	  ++k) {
+      out << "    || set(cmd, \"" << (**k).name() << "\", &" 
+	  << (**k).var() << ", " << (**k).value() << ")\n";
     }}
-    {if (!m.is_base()) {
-      out << "\n    || MODEL_" << m.inherit() << "::parse_front(cmd);\n";
-    }else{
-      out << ";\n";
-    }}
+    if (!m.is_base()) {
+      untested();
+      out << "    || MODEL_" << m.inherit() << "::parse_front(cmd)\n";
+    }
+    out << "    ;\n";
   }else{
     {if (!m.is_base()) {
       out << " cmd)\n"
 	"{\n"
 	"  return MODEL_" << m.inherit() << "::parse_front(cmd);\n";
     }else{
+      untested();
       out << ")\n"
 	"{\n"
 	"  return true;\n";
@@ -160,14 +157,17 @@ static void make_model_parse_front(std::ofstream& out, const Model& m)
 /*--------------------------------------------------------------------------*/
 static void make_model_parse_params(std::ofstream& out, const Model& m)
 {
-  out << "void MODEL_" << m.name() << "::parse_params(CS& cmd)\n{\n";
+  out << "bool MODEL_" << m.name() << "::parse_params(CS& cmd)\n"
+    "{\n"
+    "  return ONE_OF\n";
   make_get_param_list(out, m.independent().override());
   make_get_param_list(out, m.size_dependent().raw());
   make_get_param_list(out, m.independent().raw());
   if (!m.is_base()) {
-    out << "  MODEL_" << m.inherit() << "::parse_params(cmd);\n";
+    out << "    || MODEL_" << m.inherit() << "::parse_params(cmd)\n";
   }
-  out << "}\n"
+  out << "    ;\n"
+    "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
 }
@@ -285,22 +285,23 @@ static void make_model_print_calculated(std::ofstream& out, const Model& m)
 /*--------------------------------------------------------------------------*/
 static void make_model_is_valid(std::ofstream& out, const Model& m)
 {
-  out << "bool MODEL_" << m.name()
+  out <<
+    "bool MODEL_" << m.name()
       << "::is_valid(const COMMON_COMPONENT* cc)const\n"
-    "{\n"
-    "  const COMMON_" << m.dev_type() << "* c = dynamic_cast<const COMMON_"
-      << m.dev_type() << "*>(cc);\n"
-    "  {if (!c) {\n"
-    "    return MODEL_" << m.inherit() << "::is_valid(cc);\n"
-    "  }else{\n";
+    "{\n";
   {if (m.validate().is_empty()) {
-    out << "    return MODEL_" << m.inherit() << "::is_valid(cc);\n";
+    out << "  return MODEL_" << m.inherit() << "::is_valid(cc);\n";
   }else{
-    out << "    const MODEL_" << m.name() << "* m = this;"
-      << m.validate();
+    out << "  const COMMON_" << m.dev_type()
+	<< "* c = dynamic_cast<const COMMON_" << m.dev_type() << "*>(cc);\n"
+      "  {if (!c) {\n"
+      "    return MODEL_" << m.inherit() << "::is_valid(cc);\n"
+      "  }else{\n"
+      "    const MODEL_" << m.name() << "* m = this;"
+	<< m.validate() <<
+      "  }}\n";
   }}
-  out << "  }}\n"
-    "}\n"
+  out << "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
 }
@@ -324,8 +325,8 @@ static void make_tr_eval(std::ofstream& out, const Model& m)
       "  assert(s);\n"
       "  const MODEL_" << m.name() << "* m = this;\n";
     if (!m.temperature().is_empty()) {
-      out << "  const TDP_" << m.name() << " T(d);\n";
-      out << "  const TDP_" << m.name() << "* t = &T;\n";
+      out << "  const TDP_" << m.name() << " T(d);\n"
+	"  const TDP_" << m.name() << "* t = &T;\n";
     }
     out << m.tr_eval();
   }}

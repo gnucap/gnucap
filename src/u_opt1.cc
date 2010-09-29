@@ -1,4 +1,4 @@
-/*$Id: u_opt1.cc,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
+/*$Id: u_opt1.cc,v 24.18 2004/01/11 06:57:39 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -54,7 +54,7 @@ double	OPT::defad = 0.;
 double	OPT::defas = 0.;
 
 int	OPT::seed = 1;
-bool	OPT::clobber = false;
+bool	OPT::clobber = true;
 bool	OPT::named_nodes = false;
 double	OPT::wczero = 1e-9;
 double	OPT::floor = 1e-21;
@@ -67,7 +67,7 @@ double	OPT::tempamb = 27.0-ABS_ZERO;
 double	OPT::shortckt = 10e-6;
 int	OPT::picky = bPICKY;
 int	OPT::inwidth = 80;
-int	OPT::outwidth = 80;
+int	OPT::outwidth = 9999;
 double	OPT::xdivisions = 4.;
 double	OPT::ydivisions = 4.;
 phase_t	OPT::phase = pDEGREES;
@@ -115,3 +115,6 @@ int	OPT::itl[OPT::ITL_COUNT] = {
 };
 
 RUN_MODE ENV::run_mode = rBATCH;
+#ifdef KNEECHORD
+strategy_t OPT::strategy = stNEWTON; /* Default is Newton's Method, fastest */
+#endif

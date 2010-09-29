@@ -1,4 +1,4 @@
-/*$Id: mg_out_lib.cc,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
+/*$Id: mg_out_lib.cc,v 24.5 2003/04/27 01:04:58 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -78,18 +78,17 @@ static void make_get_one_param(std::ofstream& out, const Parameter& p,
 		     const std::string& name)
 {
   if (!(name.empty())) {
-    out << "  get(cmd, \"" << name << "\", &" << p.code_name();
+    out << "    || get(cmd, \"" << name << "\", &" << p.code_name();
     {if (!(p.offset().empty())) {
-      out << ", mOFFSET, " << p.offset() << ");\n";
+      out << ", mOFFSET, " << p.offset();
     }else if (p.positive()) {
-      out << ", mPOSITIVE);\n";
+      out << ", mPOSITIVE";
     }else if (p.octal()) {
-      out << ", mOCTAL);\n";
+      out << ", mOCTAL";
     }else if (!(p.scale().empty())) {
-      out << ", mSCALE, " << p.scale() << ");\n";
-    }else{
-      out << ");\n";
+      out << ", mSCALE, " << p.scale();
     }}
+    out << ")\n";
   }
 }
 /*--------------------------------------------------------------------------*/

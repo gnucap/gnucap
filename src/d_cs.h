@@ -1,4 +1,4 @@
-/*$Id: d_cs.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
+/*$Id: d_cs.h,v 24.20 2004/01/18 07:42:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -43,7 +43,7 @@ private: // override virtual
   CARD*	   clone()const		{return new DEV_CS(*this);}
   //void   parse(CS&);		//ELEMENT
   //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//CARD/nothing
+  //void   expand();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   void	   precalc();
 
@@ -60,16 +60,17 @@ private: // override virtual
   //double tr_review();		//CARD/nothing
   //void   tr_accept();		//CARD/nothing
   void	   tr_unload()		{tr_unload_source();}
+  double   tr_involts()const	{return 0.;}
+  double   tr_involts_limited()const {unreachable(); return 0.;}
   //double tr_amps()const	//ELEMENT
-  double   tr_involts()const	{return 0;}
-  double   tr_involts_limited()const {unreachable(); return 0;}
   //double tr_probe_num(CS&)const;//ELEMENT
 
   void	   ac_alloc_matrix()	{/* nothing */}
   void	   ac_begin()		{_acg = _ev = 0.;}
   void	   do_ac();
   void	   ac_load()		{ac_load_source();}
-  COMPLEX  ac_involts()const	{return 1.;}
+  COMPLEX  ac_involts()const	{return 0.;}
+  COMPLEX  ac_amps()const	{return _acg;}
   //XPROBE ac_probe_ext(CS&)const;//ELEMENT
 };
 /*--------------------------------------------------------------------------*/

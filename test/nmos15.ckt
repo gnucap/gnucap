@@ -33,6 +33,7 @@ vdd 1 0 5
 vin 2 0 .8
 .MODEL MODELD NMOS (level=2 KP=28U VTO=0.7 LAMBDA=0.01 GAMMA=0.9 PHI=0.5)
 .MODEL MODELL NMOS (level=2 KP=28U VTO=0.7 LAMBDA=0.01 GAMMA=0.9 PHI=0.5)
+.width out=80
 .PRINT OP iter(0) V(nodes)
 .op
 .options noacct

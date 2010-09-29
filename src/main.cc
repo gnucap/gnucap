@@ -1,4 +1,4 @@
-/*$Id: main.cc,v 22.4 2002/05/27 00:00:47 al Exp $ -*- C++ -*-
+/*$Id: main.cc,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -70,15 +70,16 @@ int main(int argc, const char *argv[])
 /*--------------------------------------------------------------------------*/
 static void sign_on(void)
 {
-  IO::mstdout << "Gnucap 0." << PATCHLEVEL << '\n'
-	      << "The Gnu Circuit Analysis Package\n"
-	      << "Never trust any version less than 1.0\n"
-	      << "Copyright 1982-2002, Albert Davis\n"
-	      << "Gnucap comes with ABSOLUTELY NO WARRANTY\n"
-	      << "This is free software, and you are welcome\n"
-	      << "to redistribute it under certain conditions\n"
-	      << "according to the GNU General Public License.\n"
-	      << "See the file \"COPYING\" for details\n";
+  IO::mstdout <<
+    "Gnucap "  PATCHLEVEL  "\n"
+    "The Gnu Circuit Analysis Package\n"
+    "Never trust any version less than 1.0\n"
+    "Copyright 1982-2002, Albert Davis\n"
+    "Gnucap comes with ABSOLUTELY NO WARRANTY\n"
+    "This is free software, and you are welcome\n"
+    "to redistribute it under certain conditions\n"
+    "according to the GNU General Public License.\n"
+    "See the file \"COPYING\" for details.\n";
 }
 /*--------------------------------------------------------------------------*/
 static void read_startup_files(void)

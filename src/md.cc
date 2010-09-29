@@ -1,4 +1,4 @@
-/*$Id: md.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: md.cc,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -33,6 +33,7 @@
 	void    setup_traps(void);
 static	void	new_ex_handler();
 extern "C" {
+  static void	sig_abrt(SIGNALARGS);
   static void	sig_int(SIGNALARGS);
   static void	sig_fpe(SIGNALARGS);
 }
@@ -42,6 +43,7 @@ void setup_traps(void)
 {
   signal(SIGFPE,sig_fpe);
   signal(SIGINT,sig_int);
+  signal(SIGABRT,sig_abrt);
 #if !defined(NEW_IS_BROKEN)
   std::set_new_handler(new_ex_handler);
 #endif
@@ -54,6 +56,16 @@ static void new_ex_handler()
   error(bERROR, "out of memory\n");
 }
 #endif
+/*--------------------------------------------------------------------------*/
+/* sig_abrt: trap asserts
+ */
+extern "C" {
+  static void sig_abrt(SIGNALARGS)
+  {
+    signal(SIGINT,sig_abrt);
+    error(bERROR, "\n");
+  }
+}
 /*--------------------------------------------------------------------------*/
 /* sig_int: what to do on receipt of interrupt signal (SIGINT)
  * cancel batch files, then back to command mode.
@@ -82,8 +94,8 @@ int getrusage(int /*who*/, struct rusage *rusage)
   double ticks = (double)clock();
   rusage->ru_stime.tv_sec = rusage->ru_stime.tv_usec = 0;
   rusage->ru_utime.tv_usec =
-    (long)fmod(ticks, (double)CLK_TCK) * (1000000./(double)CLK_TCK);
-  rusage->ru_utime.tv_sec = (long)(ticks/(double)CLK_TCK);
+    static_cast<long>(fmod(ticks, (double)CLK_TCK)*(1000000./(double)CLK_TCK));
+  rusage->ru_utime.tv_sec = static_cast<long>(ticks/(double)CLK_TCK);
   return 0;
 }
 #endif

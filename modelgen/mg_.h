@@ -1,4 +1,4 @@
-/*$Id: mg_.h,v 22.21 2002/10/06 07:21:42 al Exp $ -*- C++ -*-
+/*$Id: mg_.h,v 24.12 2003/12/14 01:58:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -344,6 +344,7 @@ public:
   const std::string& omit()const 	{return _omit;}
   const std::string& reverse()const 	{return _reverse;}
   const std::string& state()const	{return _state;}
+	int	     num_nodes()const	{return ports().size();}
 };
 typedef Collection<Element> Element_List;
 /*--------------------------------------------------------------------------*/
@@ -379,7 +380,8 @@ class Circuit
   :public Base
 {
   bool		_sync;
-  Port_List	_port_list;
+  Port_List	_required_nodes;
+  Port_List	_optional_nodes;
   Port_List	_local_nodes;
   Element_List	_element_list;
   Args_List	_args_list;
@@ -387,11 +389,14 @@ class Circuit
 public:
   Circuit() : _sync(false) {}
   bool		      sync()const	 {return _sync;}
-  const Port_List&    ports()const	 {return _port_list;}
+  const Port_List&    req_nodes()const	 {return _required_nodes;}
+  const Port_List&    opt_nodes()const	 {return _optional_nodes;}
   const Port_List&    local_nodes()const {return _local_nodes;}
   const Element_List& elements()const	 {return _element_list;}
   const Args_List&    args_list()const	 {return _args_list;}
-	int	      num_nodes()const	 {return ports().size();}
+	int	      min_nodes()const	 {return req_nodes().size();}
+        int	      max_nodes()const {return opt_nodes().size()+min_nodes();}
+	int	      net_nodes()const	 {return max_nodes();}
 };
 /*--------------------------------------------------------------------------*/
 class Probe
@@ -466,7 +471,9 @@ public:
   const Code_Block&	 tr_eval()const		{return _tr_eval;}
   const Eval_List&	 eval_list()const	{return _eval_list;}
   const Function_List&	 function_list()const	{return _function_list;}
-  	int		 num_nodes()const	{return circuit().num_nodes();}
+    	int		 min_nodes()const	{return circuit().min_nodes();}
+    	int		 max_nodes()const	{return circuit().max_nodes();}
+    	int		 net_nodes()const	{return circuit().net_nodes();}
 };
 typedef Collection<Device> Device_List;
 /*--------------------------------------------------------------------------*/

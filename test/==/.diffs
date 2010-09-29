@@ -2,6 +2,9 @@
 ap_ctof.2.ckt
 ap_ctof.ckt
 bm_complex.1.ckt
+bm_complex.2.ckt
+bm_complex.3.ckt
+bm_complex.4.ckt
 bm_cond.1.ckt
 bm_cond.2.ckt
 bm_exp.1.ckt
@@ -34,6 +37,7 @@ bm_table.3.1.ckt
 bm_table.3.2.ckt
 bm_table.3.3.ckt
 bm_tanh.1.ckt
+bm_tanh.2.ckt
 bmm_cap.1.ckt
 bmm_cap.2.ckt
 bmm_res.1.ckt

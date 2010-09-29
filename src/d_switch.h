@@ -1,4 +1,4 @@
-/*$Id: d_switch.h,v 22.12 2002/07/26 08:02:01 al Exp $ -*- C++ -*-
+/*$Id: d_switch.h,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -61,9 +61,7 @@ class SWITCH_BASE : public ELEMENT {
 protected:
   explicit	SWITCH_BASE();
   explicit	SWITCH_BASE(const SWITCH_BASE& p);
-  void		parse_sb(CS&,int);
-  void		expand_sb();
-private: // override virtual
+protected: // override virtual
   const char* dev_type()const	= 0;
   int	   max_nodes()const	{unreachable(); return 4;}
   int	   min_nodes()const	{unreachable(); return 4;}
@@ -72,9 +70,9 @@ private: // override virtual
   int	   net_nodes()const	= 0;
   bool	   is_1port()const	{return true;}
   CARD*	   clone()const		= 0;
-  void	   parse(CS&)		= 0;
+  void	   parse(CS&);
   void     print(OMSTREAM&,int)const;
-  void     expand()		= 0;		
+  void     expand();
   //void   map_nodes();		//ELEMENT
   void     precalc();
 
@@ -91,10 +89,10 @@ private: // override virtual
   //double tr_review();		//CARD/nothing
   //void   tr_accept();		//CARD/nothing
   void	   tr_unload()		{tr_unload_passive();}
-  //double tr_amps()const	//ELEMENT
   double   tr_involts()const	{return tr_outvolts();}
   double   tr_involts_limited()const
 				{unreachable(); return tr_outvolts_limited();}
+  //double tr_amps()const	//ELEMENT
   //double tr_probe_num(CS&)const;//ELEMENT
 
   void	   ac_alloc_matrix()	{ac_alloc_matrix_passive();}
@@ -102,6 +100,7 @@ private: // override virtual
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
   COMPLEX  ac_involts()const	{return ac_outvolts();}
+  //COMPLEX ac_amps()const;	//ELEMENT
   //XPROBE ac_probe_ext(CS&)const;//ELEMENT
 protected:
   std::string	_input_label;		/*this is here instead of in Cswitch*/
@@ -121,8 +120,6 @@ public:
 private: // override virtual
   int	    net_nodes()const	{return 4;}
   CARD*	    clone()const	{untested();return new DEV_VSWITCH(*this);}
-  void	    parse(CS& cmd)	{parse_sb(cmd,4);}
-  void	    expand()		{expand_sb();}
   const char* dev_type()const	{return "vswitch";}
   char	    id_letter()const	{return 'S';}
 };
@@ -135,7 +132,6 @@ public:
 private: // override virtual
   int	    net_nodes()const	{return 2;}
   CARD*	    clone()const	{untested();return new DEV_CSWITCH(*this);}
-  void	    parse(CS& cmd)	{parse_sb(cmd,2);}
   void	    expand();
   const char* dev_type()const	{return "iswitch";}
   char	    id_letter()const	{return 'W';}

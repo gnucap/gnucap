@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968">
+<META name="GENERATOR" content="hevea 1.07">
+<TITLE>
+ALARM command
+</TITLE>
+</HEAD>
+<BODY >
+
+<H2><A NAME="htoc16">2.6</A>&nbsp;&nbsp;<TT>ALARM</TT> command</H2>
+<A NAME="@default54"></A>
+<A NAME="@default55"></A>
+<A NAME="@default56"></A>
+
+<H3>2.6.1&nbsp;&nbsp;Syntax</H3>
+
+<TT>ALArm</TT><BR>
+<TT>ALArm</TT> <I>mode points ...</I> ...<BR>
+<TT>ALArm</TT> <I>mode + points ...</I> ...<BR>
+<TT>ALArm</TT> <I>mode - points ...</I> ...<BR>
+<TT>ALArm</TT> <I>mode</I> CLEAR
+
+
+<H3>2.6.2&nbsp;&nbsp;Purpose</H3>
+Select points in the circuit to check against user defined limits.
+
+<H3>2.6.3&nbsp;&nbsp;Comments</H3>
+The `<TT>alarm</TT>' command selects points in the circuit to check
+against limits. There is no output unless the limits are exceeded.
+If the limits are exceeded a the value is printed.<BR>
+<BR>
+There are separate lists of probe points for each type of analysis.<BR>
+<BR>
+To list the points, use the bare command `<TT>alarm</TT>'.<BR>
+<BR>
+Syntax for each point is <I>parameter(node)(limits)</I>, <I>parameter(componentlabel)(limits)</I>, or <I>parameter(index)(limits)</I>. Some require a dummy index.<BR>
+<BR>
+For more information on the data available see the <TT>print</TT>
+command.<BR>
+<BR>
+You can add to or delete from an existing list by prefixing with
+<TT>+</TT> or <TT>-</TT>. <TT>alarm ac + v(3)</TT> adds v(3) to the existing
+set of AC probes. <TT>alarm ac - q(c5)</TT> removes q(c5) from the
+list. You can use the wildcard characters <TT>*</TT> and <TT>?</TT> when
+deleting.
+
+<H3>2.6.4&nbsp;&nbsp;Examples</H3>
+<DL COMPACT=compact><DT><B><TT>alarm ac vm(12)(0,5) vm(13)(-5,5)</TT></B><DD> Check magnitude of
+the voltage at node 12 against a range of 0 to 5, and node 13
+against a range of -5 to 5 for AC analysis. Print a warning when
+the limits are exceeded.<BR>
+<BR>
+<DT><B><TT>alarm op id(m*)(-100n,100n)</TT></B><DD> Check current in all mosfets.
+In op analysis, print a warning for any that are outside the range of
+-100 to +100 nanoamps. The range goes both positive and negative so
+it is valid for both N and P channel fets.<BR>
+<BR>
+<DT><B><TT>alarm tran v(r83)(0,5) p(r83)(0,1u)</TT></B><DD> Check the voltage
+and power of <TT>R83</TT> in the next transient analysis. The voltage
+range is 0 to 5. The power range is 0 to 1 microwatt. Print a
+warning when the range is exceeded.<BR>
+<BR>
+<DT><B><TT>alarm</TT></B><DD> List all the probes for all modes.<BR>
+<BR>
+<DT><B><TT>alarm dc</TT></B><DD> Display the DC alarm list.<BR>
+<BR>
+<DT><B><TT>alarm ac CLear</TT></B><DD> Clear the AC list.</DL>
+
+
+</BODY>
+</HTML>

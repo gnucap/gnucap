@@ -1,4 +1,4 @@
-/*$Id: bm_model.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_model.cc,v 24.21 2004/01/21 15:58:10 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -44,9 +44,11 @@ EVAL_BM_MODEL::EVAL_BM_MODEL(const EVAL_BM_MODEL& p)
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_MODEL::parse(CS& cmd)
 {
+  assert(!_func);
   assert(!has_model());
   parse_modelname(cmd);
   _arglist = cmd.ctos("", '(', ')');
+  assert(!_func);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_MODEL::print(OMSTREAM& where)const
@@ -61,19 +63,19 @@ void EVAL_BM_MODEL::print(OMSTREAM& where)const
 void EVAL_BM_MODEL::expand(const COMPONENT* d)
 {
   const MODEL_CARD* m = attach_model(d);
-  if (!m) {
-    unreachable();
-    error(bERROR, d->long_label() + ": can't find model: " + modelname());
-  }
+  assert(m);
   EVAL_BM_ACTION_BASE* c = dynamic_cast<EVAL_BM_ACTION_BASE*>(m->new_common());
   if (!c) {
+    untested();
     error(bERROR, d->long_label() + ": model type mismatch");
   }
   c->set_modelname(modelname());
   CS args(_arglist);
   c->parse(args);
   c->expand(d);
+  assert(!_func);
   attach_common(c, &_func);
+  assert(_func);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

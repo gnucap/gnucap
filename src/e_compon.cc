@@ -1,4 +1,4 @@
-/*$Id: e_compon.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: e_compon.cc,v 24.13 2003/12/16 06:51:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -71,8 +71,8 @@ const MODEL_CARD* COMMON_COMPONENT::attach_model(const COMPONENT* d)const
       untested();
       error(bERROR, d->long_label() +": " +modelname() +" is not a .model\n");
     }else if (!_model->is_valid(this)) {
-      untested();
-      error(bERROR,d->long_label()+": model type mismatch: "+modelname()+'\n');
+      error(bWARNING, d->long_label() + ", " + modelname() +
+	    "\nmodel and device parameters are incompatible\n");
     }}
     // must be a model, the right kind
   }else{
@@ -145,11 +145,11 @@ int COMPONENT::parse_nodes(CS& cmd, int max_nodes, int min_nodes, int start)
 	break;
       }
     }
-    for ( ; ii <= min_nodes && ii < max_nodes; ++ii) {
-      if (ii < min_nodes) {
-	cmd.warn(bDANGER, "need more nodes");
-      }
-      _n[ii].set_to_0();  // ii == min_nodes is bjt hack
+    if (ii < min_nodes) {
+      cmd.warn(bDANGER, "need " + to_string(min_nodes-ii) +" more nodes");
+    }
+    for ( ; ii < min_nodes && ii < max_nodes; ++ii) {
+      _n[ii].set_to_0();
     }
     paren -= cmd.skiprparen();
     if (paren != 0) {
@@ -248,7 +248,7 @@ void COMPONENT::set_value(double v, COMMON_COMPONENT* c)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-void attach_common(COMMON_COMPONENT *c, COMMON_COMPONENT** to)
+void attach_common(COMMON_COMPONENT* c, COMMON_COMPONENT** to)
 {
   assert(to);
   {if (c == *to) {
@@ -260,11 +260,13 @@ void attach_common(COMMON_COMPONENT *c, COMMON_COMPONENT** to)
     untested();    
   }else if (!*to) {
     // No old one, but have a new one.
-    *to = c->attach();
+    ++(c->_attach_count);
+    *to = c;
   }else if (*c != **to) {
     // They are different, usually by edit.
     detach_common(to);
-    *to = c->attach();
+    ++(c->_attach_count);
+    *to = c;
   }else if (c->_attach_count == 0) {
     // The new and old are identical.
     // Use the old one.
@@ -282,7 +284,9 @@ void detach_common(COMMON_COMPONENT** from)
 {
   assert(from);
   if (*from) {
-    if ((**from).detach() == 0) {
+    assert((**from)._attach_count > 0);
+    --((**from)._attach_count);
+    if ((**from)._attach_count == 0) {
       trace1("delete", (**from)._attachcount);
       delete *from;
     }else{

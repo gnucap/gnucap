@@ -1,4 +1,4 @@
-/* $Id: d_mos123.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos123.model,v 24.7 2003/06/12 04:59:26 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -38,7 +38,8 @@ SDP_MOS123::SDP_MOS123(const COMMON_COMPONENT* cc)
   assert(c);
   const MODEL_MOS123* m = prechecked_cast<const MODEL_MOS123*>(c->model());
   assert(m);
-  l_eff = l_eff - 2. * m->ld;
+  l_eff = l_eff * m->lmlt + m->xl - 2. * (m->ld + m->del);
+  w_eff = w_eff * m->wmlt + m->xw - 2. * m->wd;
   cgate = m->cox * w_eff * l_eff;
   phi = m->phi;
 }
@@ -58,7 +59,13 @@ MODEL_MOS123::MODEL_MOS123()
    nsub(NA),
    nss(0.0),
    xj(NA),
+   lmlt(1.0),
+   del(0.0),
    ld(0.0),
+   xl(0.0),
+   wmlt(1.0),
+   wd(0.0),
+   xw(0.0),
    uo((600.*CM2M2)),
    tpg(gtOPP),
    cox(NA),
@@ -77,20 +84,32 @@ bool MODEL_MOS123::parse_front(CS& cmd)
   return MODEL_MOS_BASE::parse_front(cmd);
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_MOS123::parse_params(CS& cmd)
+bool MODEL_MOS123::parse_params(CS& cmd)
 {
-  get(cmd, "VTO", &vto, mSCALE, (static_cast<double>(polarity)));
-  get(cmd, "GAmma", &gamma);
-  get(cmd, "PHI", &phi, mPOSITIVE);
-  get(cmd, "LAmbda", &lambda);
-  get(cmd, "TOX", &tox, mPOSITIVE);
-  get(cmd, "NSUb", &nsub, mSCALE, ICM2M3);
-  get(cmd, "NSS", &nss, mSCALE, ICM2M2);
-  get(cmd, "XJ", &xj, mPOSITIVE);
-  get(cmd, "LD", &ld);
-  get(cmd, "UO", &uo, mSCALE, CM2M2);
-  get(cmd, "TPG", &tpg);
-  MODEL_MOS_BASE::parse_params(cmd);
+  return ONE_OF
+    || get(cmd, "VTO", &vto, mSCALE, (static_cast<double>(polarity)))
+    || get(cmd, "GAmma", &gamma)
+    || get(cmd, "PHI", &phi, mPOSITIVE)
+    || get(cmd, "LAmbda", &lambda)
+    || get(cmd, "TOX", &tox, mPOSITIVE)
+    || get(cmd, "NSUb", &nsub, mSCALE, ICM2M3)
+    || get(cmd, "NSS", &nss, mSCALE, ICM2M2)
+    || get(cmd, "XJ", &xj, mPOSITIVE)
+    || get(cmd, "LMLT", &lmlt)
+    || get(cmd, "DEL", &del)
+    || get(cmd, "LD", &ld)
+    || get(cmd, "LADT", &ld)
+    || get(cmd, "XL", &xl)
+    || get(cmd, "LDEL", &xl)
+    || get(cmd, "WMLT", &wmlt)
+    || get(cmd, "WD", &wd)
+    || get(cmd, "XW", &xw)
+    || get(cmd, "WDEL", &xw)
+    || get(cmd, "UO", &uo, mSCALE, CM2M2)
+    || get(cmd, "U0", &uo, mSCALE, CM2M2)
+    || get(cmd, "TPG", &tpg)
+    || MODEL_MOS_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS123::parse_finish()
@@ -154,7 +173,19 @@ void MODEL_MOS123::print_params(OMSTREAM& o)const
     o << "  nss=" << nss/(ICM2M2);
   if (xj != NA)
     o << "  xj=" << xj;
+  if (lmlt!=1.0)
+    o << "  lmlt=" << lmlt;
+  if (del!=0.0)
+    o << "  del=" << del;
   o << "  ld=" << ld;
+  if (xl!=0.0)
+    o << "  xl=" << xl;
+  if (wmlt!=1.0)
+    o << "  wmlt=" << wmlt;
+  if (wd!=0.0)
+    o << "  wd=" << wd;
+  if (xw!=0.0)
+    o << "  xw=" << xw;
   o << "  uo=" << uo/(CM2M2);
   o << "  tpg=" << tpg;
 }
@@ -174,12 +205,7 @@ void MODEL_MOS123::print_calculated(OMSTREAM& o)const
 /*--------------------------------------------------------------------------*/
 bool MODEL_MOS123::is_valid(const COMMON_COMPONENT* cc)const
 {
-  const COMMON_MOS* c = dynamic_cast<const COMMON_MOS*>(cc);
-  {if (!c) {
-    return MODEL_MOS_BASE::is_valid(cc);
-  }else{
-    return MODEL_MOS_BASE::is_valid(cc);
-  }}
+  return MODEL_MOS_BASE::is_valid(cc);
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_MOS123::tr_eval(COMPONENT*)const

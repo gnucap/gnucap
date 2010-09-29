@@ -1,4 +1,4 @@
-/* $Id: s__init.cc,v 22.10 2002/07/25 06:26:00 al Exp $
+/* $Id: s__init.cc,v 24.6 2003/05/08 09:04:04 al Exp $
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -61,13 +61,15 @@ void SIM::command_base(CS& cmd)
       /*nothing*/
       break;
     }
-    lu.unallocate();
-    aa.unallocate();
     unalloc_vectors();
     env = stash;
     finish();
   }else{
     //}catch (...) {
+    ++STATUS::iter[iTOTAL];
+    lu.unallocate();
+    aa.unallocate();
+    unalloc_vectors();
     env = stash;
     finish();
     error(bERROR, "");
@@ -92,6 +94,7 @@ void SIM::command_base(CS& cmd)
     CARD_LIST::card_list.tr_alloc_matrix();
     CARD_LIST::card_list.ac_alloc_matrix();
     CARD_LIST::card_list.precalc();
+    last_time = 0;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -157,19 +160,20 @@ void SIM::alloc_hold_vectors()
 }
 /*--------------------------------------------------------------------------*/
 /* alloc_vectors:
- * allocate space for the right-side vector
- * (initially current sources, on solution becomes voltages) and copies
- * used for one-time-ago and convergence checking
  * these are new with every run and are discarded after the run.
  */
 void SIM::alloc_vectors()
 {
-  unalloc_vectors();	/* usually unnecessary. */
-  assert(!ac);		/* may be needed after exception */
+  assert(evalq1.empty());
+  assert(evalq2.empty());
+  assert(evalq != evalq_uc);
+
+  assert(!ac);
   assert(!i);
   assert(!v0);
   assert(!vt1);
   assert(!fw);
+
   ac = new COMPLEX[STATUS::total_nodes+1];
   i   = new double[STATUS::total_nodes+1];
   v0  = new double[STATUS::total_nodes+1];
@@ -184,6 +188,8 @@ void SIM::alloc_vectors()
 /*--------------------------------------------------------------------------*/
 /*static*/ void SIM::unalloc_vectors()
 {
+  evalq1.clear();
+  evalq2.clear();
   delete [] i;
   i = NULL;
   delete [] v0;

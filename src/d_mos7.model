@@ -1,4 +1,4 @@
-/* $Id: d_mos7.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos7.model,v 24.4 2003/04/06 10:36:01 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -149,8 +149,6 @@ model MOS7 {
       double Lw   "Length reduction parameter" name=LW default=0.0;
       double Lwn  "Length reduction parameter" name=LWN default=1.0;
       double Lwl  "Length reduction parameter" name=LWL default=0.0;
-      double Lmin "Minimum length for the model" name=LMIN default=0.0;
-      double Lmax "Maximum length for the model" name=LMAX default=1.0;
 
       double Wint "Width reduction parameter" name=WINT default=0.0;
       double Wl   "Width reduction parameter" name=WL default=0.0;
@@ -158,8 +156,6 @@ model MOS7 {
       double Ww   "Width reduction parameter" name=WW default=0.0;
       double Wwn  "Width reduction parameter" name=WWN default=1.0;
       double Wwl  "Width reduction parameter" name=WWL default=0.0;
-      double Wmin "Minimum width for the model" name=WMIN default=0.0;
-      double Wmax "Maximum width for the model" name=WMAX default=1.0;
 
       double dwc "Delta W for C-V model"
 	name=DWC default=NA final_default=Wint;
@@ -279,20 +275,20 @@ model MOS7 {
 	name=DSUB default=NA final_default="drout";
       double vth0 "Threshold voltage"
 	name=VTH0 default=NA final_default=NA;
-      double ua "Linear gate dependence of mobility m/v"
-	name=UA default=2.25e-9;
       double ua1 "Temperature coefficient of ua m/v"
 	name=UA1 default=4.31e-9;
-      double ub "Quadratic gate dependence of mobility (m/V)**2"
-	name=UB default=5.87e-19;
+      double ua "Linear gate dependence of mobility m/v"
+	name=UA default=2.25e-9;
       double ub1 "Temperature coefficient of ub (m/V)**2"
 	name=UB1 default=-7.61e-18;
-      double uc "Body-bias dependence of mobility"
-	name=UC default=NA 
-	final_default="((m->mobMod==3) ? -0.0465 : -0.0465e-9)";
+      double ub "Quadratic gate dependence of mobility (m/V)**2"
+	name=UB default=5.87e-19;
       double uc1 "Temperature coefficient of uc"
 	name=UC1 default=NA
 	final_default="((m->mobMod==3) ? -0.056 : -0.056e-9)";
+      double uc "Body-bias dependence of mobility"
+	name=UC default=NA 
+	final_default="((m->mobMod==3) ? -0.0465 : -0.0465e-9)";
       double u0 "Low-field mobility at Tnom"
 	name=U0 default=NA 
 	final_default="((m->polarity == pN) ? 0.067 : 0.025)";
@@ -322,7 +318,7 @@ model MOS7 {
       double pdibl2 "Drain-induced barrier lowering coefficient"
 	name=PDIBLC2 default=0.0086;
       double pdiblb "Body-effect on drain-induced barrier lowering 1/v" 
-	name=pdiblcb default=0.0;
+	name=PDIBLCB default=0.0;
       double pscbe1 "Substrate current body-effect coefficient"
 	name=PSCBE1 default=4.24e8;
       double pscbe2 "Substrate current body-effect coefficient"

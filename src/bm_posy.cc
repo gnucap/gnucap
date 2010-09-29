@@ -1,4 +1,4 @@
-/*$Id: bm_posy.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: bm_posy.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -52,34 +52,31 @@ EVAL_BM_POSY::EVAL_BM_POSY(const EVAL_BM_POSY& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_POSY::parse(CS& cmd)
+void EVAL_BM_POSY::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    for (;;){
-      double key  =NOT_VALID;
-      double value=NOT_VALID;
-      cmd >> value >> key;
-      if (cmd.stuck(&here)){
-	break;
-      }
-      std::pair<double,double> p(key,value);
-      _table.push_back(p);
+  for (;;){
+    double key  =NOT_VALID;
+    double value=NOT_VALID;
+    cmd >> value >> key;
+    if (cmd.stuck(&here)){
+      break;
     }
-    paren -= cmd.skiprparen();
-    if (paren != 0){
-      untested();
-      cmd.warn(bWARNING, "need )");
-    }
-    get(cmd, "MIn",  &_min);
-    get(cmd, "MAx",  &_max);
-    get(cmd, "Abs",  &_abs);
-    get(cmd, "Odd",  &_odd);
-    get(cmd, "Even", &_even);
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
-  parse_base_finish();
+    std::pair<double,double> p(key,value);
+    _table.push_back(p);
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_POSY::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "MIn",  &_min)
+    || get(cmd, "MAx",  &_max)
+    || get(cmd, "Abs",  &_abs)
+    || get(cmd, "Odd",  &_odd)
+    || get(cmd, "Even", &_even)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_POSY::print(OMSTREAM& where)const

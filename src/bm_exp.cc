@@ -1,4 +1,4 @@
-/*$Id: bm_exp.cc,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
+/*$Id: bm_exp.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -58,39 +58,41 @@ EVAL_BM_EXP::EVAL_BM_EXP(const EVAL_BM_EXP& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_EXP::parse(CS& cmd)
+void EVAL_BM_EXP::parse_numlist(CS& cmd)
 {
   int here = cmd.cursor();
-  do{
-    int paren = cmd.skiplparen();
-    double* i;
-    for (i = &_iv;  i < &_end;  ++i){
-      double value=NOT_VALID;
-      cmd >> value;
-      if (cmd.stuck(&here)){
-	break;
-      }
-      *i = value;
-    }
-    assert(i <= &_end);
-    paren -= cmd.skiprparen();
-    if (paren != 0){
+  for (double* i = &_iv;  i < &_end;  ++i){
+    double value=NOT_VALID;
+    cmd >> value;
+    {if (cmd.stuck(&here)){
+      break;
+    }else{
       untested();
-      cmd.warn(bWARNING, "need )");
-    }
-    get(cmd, "IV",	&_iv);
-    get(cmd, "PV",	&_pv);
-    get(cmd, "TD1",	&_td1);
-    get(cmd, "TAU1",	&_tau1);
-    get(cmd, "TD2",	&_td2);
-    get(cmd, "TAU2",	&_tau2);
-    get(cmd, "PEriod",	&_period);
-    parse_base(cmd);
-  }while (cmd.more() && !cmd.stuck(&here));
+    }}
+    *i = value;
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_EXP::parse_params(CS& cmd)
+{
+  return ONE_OF
+    || get(cmd, "IV",	 &_iv)
+    || get(cmd, "PV",	 &_pv)
+    || get(cmd, "TD1",	 &_td1)
+    || get(cmd, "TAU1",	 &_tau1)
+    || get(cmd, "TD2",	 &_td2)
+    || get(cmd, "TAU2",	 &_tau2)
+    || get(cmd, "PEriod",&_period)
+    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    ;
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_EXP::parse_finish()
+{
   if (_period == 0.) {
     _period = _default_period;
   }
-  parse_base_finish();
+  EVAL_BM_ACTION_BASE::parse_finish();
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_EXP::print(OMSTREAM& o)const
