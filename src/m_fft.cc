@@ -1,4 +1,4 @@
-/*$Id: m_fft.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: m_fft.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * fast fourier transform
  */
+//testing=script 2006.07.13
 #include "constant.h"
 #include "declare.h"	/* self */
 /*--------------------------------------------------------------------------*/
@@ -29,7 +30,7 @@ void fft(COMPLEX* x, int n, int inv)
   int s = (inv) ? 1 : -1;
   int nxp, nxp2;
   for (nxp=n;  (nxp2=nxp/2) > 0;  nxp=nxp2) {
-    double wpwr = kPIx2 / nxp;
+    double wpwr = M_TWO_PI / nxp;
     for (int m = 0;  m < nxp2;  ++m) {
       double argg = m * wpwr;
       COMPLEX w(cos(argg), s*sin(argg));
@@ -60,6 +61,8 @@ void fft(COMPLEX* x, int n, int inv)
     for (int i = 0;  i < n;  ++i) {
       x[i] /= n;
     }
+  }else{
+    untested();
   }
 }
 /*--------------------------------------------------------------------------*/

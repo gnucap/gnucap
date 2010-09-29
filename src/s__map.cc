@@ -1,4 +1,4 @@
-/*$Id: s__map.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s__map.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Allocates space for the admittance matrix.  Allocation below the
  * diagonal is by row, above the diagonal is by column, and stored backwards.
@@ -26,8 +26,8 @@
  * only those elements that are non-zero or are nearer to the diagonal than a
  * non-zero element are stored.
  */
-#include "e_card.h"
-#include "u_status.h"
+//testing=script 2006.07.14
+#include "e_cardlist.h"
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 //static void	 SIM::map_nodes();
@@ -41,16 +41,16 @@
  */
 /*static*/ void SIM::map_nodes()
 {
-  nm = new int[STATUS::total_nodes+1];
-  STATUS::order.reset().start();
+  nm = new int[::status.total_nodes+1];
+  ::status.order.reset().start();
   switch (OPT::order) {
-    default:
+    default: untested();
       error(bWARNING, "invalid order spec: %d\n", OPT::order);
-    case oAUTO:	   order_auto();    break;
-    case oREVERSE: order_reverse(); break;
-    case oFORWARD: order_forward(); break;
+    case oAUTO:		       order_auto();    break;
+    case oREVERSE: untested(); order_reverse(); break;
+    case oFORWARD: untested(); order_forward(); break;
   }
-  STATUS::order.stop();
+  ::status.order.stop();
   CARD_LIST::card_list.map_nodes();
 }
 /*--------------------------------------------------------------------------*/
@@ -58,10 +58,10 @@
  *  subcircuits at beginning, results on border at the bottom
  */
 /*static*/ void SIM::order_reverse()
-{
+{untested();
   nm[0] = 0;
-  for (int node = 1;  node <= STATUS::total_nodes;  ++node) {
-    nm[node] = STATUS::total_nodes - node + 1;
+  for (int node = 1;  node <= ::status.total_nodes;  ++node) {untested();
+    nm[node] = ::status.total_nodes - node + 1;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -69,9 +69,9 @@
  * results in border at the top (worst possible if lots of subcircuits)
  */
 /*static*/ void SIM::order_forward()
-{
+{untested();
   nm[0] = 0;
-  for (int node = 1;  node <= STATUS::total_nodes;  ++node) {
+  for (int node = 1;  node <= ::status.total_nodes;  ++node) {untested();
     nm[node] = node;
   }
 }
@@ -82,8 +82,8 @@
 /*static*/ void SIM::order_auto()
 {
   nm[0] = 0;
-  for (int node = 1;  node <= STATUS::total_nodes;  ++node) {
-    nm[node] = STATUS::total_nodes - node + 1;
+  for (int node = 1;  node <= ::status.total_nodes;  ++node) {
+    nm[node] = ::status.total_nodes - node + 1;
   }
 }
 /*--------------------------------------------------------------------------*/

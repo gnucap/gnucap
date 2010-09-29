@@ -1,4 +1,4 @@
-%$Id: functions.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: functions.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man behavior functions .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{Functions}
 
@@ -105,45 +105,57 @@ sense in some cases, but they are available anyway.
 
 \begin{description}
 
-\item[{\tt Bandwidth} = {\it x}] AC analysis bandwidth.
-(Default = infinity.)  The transfer function is frequency dependent,
-with a 3 DB point at this frequency.  There is frequency dependent
-phase shift ranging from 0 degrees at low frequencies to 90 degrees at
-high frequencies.  The phase shift is 45 degrees at the specified
-frequency.  AC ANALYSIS ONLY.
+\item[{\tt Bandwidth} = {\it x}]
+AC analysis bandwidth.  (Default = infinity.)  The transfer function
+is frequency dependent, with a 3 DB point at this frequency.  There is
+frequency dependent phase shift ranging from 0 degrees at low
+frequencies to 90 degrees at high frequencies.  The phase shift is 45
+degrees at the specified frequency.  AC ANALYSIS ONLY.
 
-\item[{\tt Delay} = {\it x}] AC analysis delay.  (Default = 0.) 
-The signal is delayed by x seconds, effectively by a frequency
-dependent phase shift.  AC ANALYSIS ONLY.
+\item[{\tt Delay} = {\it x}]
+AC analysis delay.  (Default = 0.) The signal is delayed by x seconds,
+effectively by a frequency dependent phase shift.  AC ANALYSIS ONLY.
 
-\item[{\tt Phase} = {\it x}] AC analysis phase.  (Default = 0.)
-A fixed phase shift is applied.  This is primarily intended for
-sources, but applies to all elements.  AC ANALYSIS ONLY.
+\item[{\tt Phase} = {\it x}]
+AC analysis phase.  (Default = 0.)  A fixed phase shift is applied.
+This is primarily intended for sources, but applies to all elements.
+AC ANALYSIS ONLY.
 
-\item[{\tt IOffset} = {\it x}] Input offset.  (Default = 0.)
-A DC offset is added to the ``input'' of the element, before
-evaluating the function.
+\item[{\tt IOffset} = {\it x}]
+Input offset.  (Default = 0.)  A DC offset is added to the ``input''
+of the element, before evaluating the function.
 
-\item[{\tt OOffset} = {\it x}] Output offset.  (Default = 0.)
-A DC offset is added to the ``output'' of the element, after
-evaluating the function.
+\item[{\tt OOffset} = {\it x}]
+Output offset.  (Default = 0.)  A DC offset is added to the ``output''
+of the element, after evaluating the function.
 
-\item[{\tt Scale} = {\it x}] Transfer function scale factor.  
-(Default = 1.)  The transfer function is multiplied by a constant.
+\item[{\tt Scale} = {\it x}]
+Transfer function scale factor.  (Default = 1.)  The transfer function
+is multiplied by a constant.
 
-\item[{\tt TNOM} = {\it x}] Nominal temperature.  (Default = .option TNOM)
-The nominal values apply at this temperature.
+\item[{\tt TNOM} = {\it x}]
+Nominal temperature.  (Default = .option TNOM) The nominal values
+apply at this temperature.
 
-\item[{\tt TC1} = {\it x}] First order temperature coefficient.
-(Default = 0.) 
+\item[{\tt TEMP} = {\it x}]
+Actual temperature.  (Default = current global simulation temperature)
+This is the actual device temperature.
 
-\item[{\tt TC2} = {\it x}] Second order temperature coefficient.
-(Default = 0.) 
+\item[{\tt DTEMP} = {\it x}]
+Temperature rise over ambient.  (Default = 0.)  The actual device
+temperature is the global simulation temperature plus {\tt dtemp}.
 
-\item[{\tt IC} = {\it x}] Initial condition.  An initial value, to
-force at time=0.  The actual parameter applied depends on the
-component.  (Capacitor voltage, inductor current.  All others ignore
-it.)  You must use the ``UIC'' option for it to be used.
+\item[{\tt TC1} = {\it x}]
+First order temperature coefficient.  (Default = 0.)
+
+\item[{\tt TC2} = {\it x}]
+Second order temperature coefficient.  (Default = 0.)
+
+\item[{\tt IC} = {\it x}]
+Initial condition.  An initial value, to force at time=0.  The actual
+parameter applied depends on the component.  (Capacitor voltage,
+inductor current.  All others ignore it.)  You must use the ``UIC''
+option for it to be used.
 
 \end{description}
 

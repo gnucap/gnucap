@@ -1,4 +1,4 @@
-/*$Id: d_vcr.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: d_vcr.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,14 +16,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * voltage controlled resistor.
  * y.x  = volts(control), ev = y.f0 = ohms,       y.f1 = ohms/volt
  * m.x  = volts(control),      m.c0 = 0,    acg = m.c1 = mhos
  * _loss0 == 1/R. (mhos)
  */
+//testing=script,complete 2006.07.17
 #include "d_vcr.h"
 /*--------------------------------------------------------------------------*/
 void DEV_VCR::precalc()
@@ -35,20 +36,21 @@ void DEV_VCR::precalc()
   _m0.c1 = 0.;
   _m0.c0 = 0.;
   _m1 = _m0;
-  assert(!constant());
+  assert(!is_constant());
   set_not_converged();
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_VCR::do_tr()
 {
-  _y0.x = tr_involts_limited();
+  _y0.x = tr_input_limited();
   tr_eval();
   trace3("vcr", _y0.x, _y0.f0, _y0.f1);
   assert(_y0.f0 != LINEAR);
-  if (_y0.f0 == 0.){
+  if (_y0.f0 == 0.) {
     error(bDEBUG, long_label() + ": short circuit\n");
     _y0.f0 = OPT::shortckt;
     set_converged(conv_check());
+  }else{
   }
   store_values();
   q_load();
@@ -72,7 +74,7 @@ void DEV_VCR::ac_begin()
 /*--------------------------------------------------------------------------*/
 void DEV_VCR::do_ac()
 {
-  {if (has_ac_eval()){
+  if (using_ac_eval()) {
     ac_eval();
     _acg = -_ev * _loss0 * _loss0 * _m0.x;
     trace4("vcr-do_ac(eval)", _y0.f0, _y0.f1, _m0.c0, _m0.c1);
@@ -85,7 +87,7 @@ void DEV_VCR::do_ac()
     trace1("", _loss0);
     assert(_ev == _y0.f0);
     assert(_acg == _m0.c1);
-  }}
+  }
   ac_load();
 }
 /*--------------------------------------------------------------------------*/

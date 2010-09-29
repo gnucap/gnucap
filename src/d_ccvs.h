@@ -1,4 +1,4 @@
-/*$Id: d_ccvs.h,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
+/*$Id: d_ccvs.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * current controlled voltage source
  */
+//testing=script 2006.07.17
 #ifndef D_CCVS_H
 #define D_CCVS_H
 #include "e_ccsrc.h"
@@ -31,7 +32,7 @@ private:
 public:
   explicit DEV_CCVS()		:CCSRC_BASE() {}
 private: // override virtual
-  char	   id_letter()const	{return 'H';}
+  char	   id_letter()const	{untested();return 'H';}
   const char* dev_type()const	{return "ccvs";}
   //int	   max_nodes()const	//CCSRC_BASE=4
   //int	   num_nodes()const	//CCSRC_BASE=4
@@ -39,17 +40,17 @@ private: // override virtual
   //int	   out_nodes()const	//CCSRC_BASE=2
   //int	   matrix_nodes()const	//CCSRC_BASE=4
   //int	   net_nodes()const	//CCSRC_BASE=2
-  CARD*	   clone()const		{untested(); return new DEV_CCVS(*this);}
-  //void   parse(CS&);		//ELEMENT
-  //void   print(OMSTREAM,int)const; //CCSRC_BASE
-  //void   expand();		//CCSRC_BASE
+  CARD*	   clone()const		{untested();return new DEV_CCVS(*this);}
+  //void   parse_spice(CS&);	//ELEMENT
+  //void   print_spice(OMSTREAM,int)const; //CCSRC_BASE
+  //void   elabo1();		//CCSRC_BASE
   //void   map_nodes();		//ELEMENT
   void	   precalc();
 
-  void	   tr_alloc_matrix()	{tr_alloc_matrix_extended();}
+  void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
   void	   dc_begin();
   void	   tr_begin()		{dc_begin();}
-  void	   tr_restore()		{dc_begin();}
+  void	   tr_restore()		{untested();dc_begin();}
   //void   dc_advance();	//CARD/nothing
   //void   tr_advance();	//CARD/nothing
   //bool   tr_needs_eval();	//CCSRC_BASE
@@ -60,11 +61,13 @@ private: // override virtual
   //void   tr_accept();		//CARD/nothing
   //void   tr_unload();		//CCSRC_BASE
   //double tr_involts()const;	//CCSRC_BASE
+  //double tr_input()const	//CCSRC_BASE
   //double tr_involts_limited()const;	//CCSRC_BASE
-  double   tr_amps()const	{untested(); return ELEMENT::tr_amps();}
+  //double tr_input_limited()const //CCSRC_BASE
+  //double tr_amps()const	//ELEMENT
   //double tr_probe_num(CS&)const;//ELEMENT
 
-  void	    ac_alloc_matrix()	{ac_alloc_matrix_extended();}
+  void	    ac_iwant_matrix()	{ac_iwant_matrix_extended();}
   void	    ac_begin()		{_loss1=_loss0=1./OPT::shortckt; _ev = _y0.f1;}
   void	    do_ac();
   void	    ac_load()		{unreachable(); incomplete(); /*fake*/}

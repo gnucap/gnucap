@@ -1,0 +1,53 @@
+#  SDB changed configure and Makefile operation in -*- Makefile -*-
+#  the following way:  The configure script now 
+#  copies the subdir Makefiles over to Makefile.original,
+#  and then uses sed to put the --prefix target into
+#  Makefile.
+#  Use the target "unconfig" to move Makefile.original
+#  back to Makefile.
+
+
+all: modelgen gnucap
+
+modelgen: nothing
+	(cd modelgen; ${MAKE} -k)
+
+gnucap: modelgen
+	(cd src; ${MAKE} -k)
+
+man: nothing
+	(cd man; ${MAKE} -k)
+
+debug:
+	(cd modelgen; make debug)
+	(cd src; make debug)
+
+clean:
+	(cd man; make clean)
+	(cd modelgen; make clean)
+	(cd src; make clean)
+	-rm *~ \#*\#
+
+#  This moves Makefile.original back to Makefile.
+unconfig:
+	(cd man; make unconfig)
+	(cd modelgen; make unconfig)
+	(cd src; make unconfig)
+
+#  This creates Makefile.original, and then assembles
+#  Makefile.
+install: nothing
+	(cd src; make install)
+
+#  This simply erases the executable from the directory
+#  specified in Makefile.
+uninstall: nothing
+	(cd src; make uninstall)
+
+manifest:
+	(cd man; make manifest)
+	(cd modelgen; make manifest)
+	(cd src; make manifest)
+
+nothing:
+

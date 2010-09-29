@@ -1,4 +1,4 @@
-/*$Id: bm_model.cc,v 24.21 2004/01/21 15:58:10 al Exp $ -*- C++ -*-
+/*$Id: bm_model.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,14 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * behavioral modeling ".model" stub
  * accepts an unknown name for later linking to a .model
  */
+//testing=script 2006.07.13
 #include "e_model.h"
-#include "ap.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
 EVAL_BM_MODEL::EVAL_BM_MODEL(int c)
@@ -38,8 +38,20 @@ EVAL_BM_MODEL::EVAL_BM_MODEL(const EVAL_BM_MODEL& p)
    _arglist(p._arglist),
    _func(0)
 {
-  untested();
   attach_common(p._func, &_func);
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_MODEL::operator==(const COMMON_COMPONENT& x)const
+{
+  const EVAL_BM_MODEL* p = dynamic_cast<const EVAL_BM_MODEL*>(&x);
+  bool rv = p
+    && _arglist == p->_arglist
+    && EVAL_BM_ACTION_BASE::operator==(x);
+  if (rv) {
+    incomplete();
+    untested();
+  }
+  return rv;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_MODEL::parse(CS& cmd)
@@ -47,33 +59,35 @@ void EVAL_BM_MODEL::parse(CS& cmd)
   assert(!_func);
   assert(!has_model());
   parse_modelname(cmd);
-  _arglist = cmd.ctos("", '(', ')');
+  _arglist = cmd.ctos("", "(", ")");
   assert(!_func);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_MODEL::print(OMSTREAM& where)const
 {
-  {if (_func) {
+  if (_func) {
     _func->print(where);
   }else{
-    where << "  " << modelname() << " (" << _arglist << ")";
-  }}
+    where << ' ' << modelname() << '(' << _arglist << ')';
+  }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_MODEL::expand(const COMPONENT* d)
+void EVAL_BM_MODEL::elabo3(const COMPONENT* d)
 {
-  const MODEL_CARD* m = attach_model(d);
-  assert(m);
-  EVAL_BM_ACTION_BASE* c = dynamic_cast<EVAL_BM_ACTION_BASE*>(m->new_common());
+  const MODEL_CARD* m = attach_model(d, bTRACE);
+
+  EVAL_BM_ACTION_BASE* c = (m)
+    ? dynamic_cast<EVAL_BM_ACTION_BASE*>(m->new_common())
+    : new EVAL_BM_VALUE;
+  
   if (!c) {
     untested();
-    error(bERROR, d->long_label() + ": model type mismatch");
+    error(bERROR, d->long_label() + ": model type mismatch\n");
   }
   c->set_modelname(modelname());
   CS args(_arglist);
   c->parse(args);
-  c->expand(d);
-  assert(!_func);
+  c->elabo3(d);
   attach_common(c, &_func);
   assert(_func);
 }

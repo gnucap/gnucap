@@ -1,4 +1,4 @@
-/*$Id: u_probe.cc,v 22.10 2002/07/26 03:15:27 al Exp $ -*- C++ -*-
+/*$Id: u_probe.cc,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * general probe object
  */
+//testing=script 2006.07.14
 #include "ap.h"
-#include "e_node.h"
+#include "s__.h"
 #include "u_probe.h"
 /*--------------------------------------------------------------------------*/
 //		PROBE::PROBE(const string&,int,double,double);
@@ -36,7 +37,8 @@
 //	double	PROBE::value(void)const;
 //	double	PROBE::probe_node(void)const;
 /*--------------------------------------------------------------------------*/
-extern NODE* nstat;
+class LOGIC_NODE;
+extern LOGIC_NODE* nstat;
 /*--------------------------------------------------------------------------*/
 PROBE::PROBE(const std::string& what, int node, double lo, double hi)
   :_what(what),
@@ -47,7 +49,7 @@ PROBE::PROBE(const std::string& what, int node, double lo, double hi)
 {
 }
 /*--------------------------------------------------------------------------*/
-PROBE::PROBE(const std::string& what, CKT_BASE *brh, double lo, double hi)
+PROBE::PROBE(const std::string& what,const CKT_BASE *brh,double lo,double hi)
   :_what(what),
    _node(0),
    _brh(brh),
@@ -65,8 +67,9 @@ PROBE::PROBE(const PROBE& p)
    _lo(p._lo),
    _hi(p._hi)
 {
-  if (_brh){
+  if (_brh) {
     _brh->inc_probes();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -74,34 +77,18 @@ PROBE::PROBE(const PROBE& p)
  * copy a probe
  */
 PROBE& PROBE::operator=(const PROBE& p)
-{
+{itested();
   detach();
   _what = p._what;
   _node = p._node;
   _brh  = p._brh;
   _lo   = p._lo;
   _hi   = p._hi;
-  if (_brh){
+  if (_brh) {itested();
     _brh->inc_probes();
+  }else{untested();
   }
   return *this;
-}
-/*--------------------------------------------------------------------------*/
-/* operator <
- * something to create an order relationship
- * to satisfy Microsoft's STL, which insists on generating code for
- * the whole SORTED vector class, even though it is not used.
- */
-bool PROBE::operator<(const PROBE& p)const
-{
-  unreachable();
-  return ((_brh<p._brh) || ((_brh==p._brh) && (_what<p._what)));
-}
-/*--------------------------------------------------------------------------*/
-bool PROBE::operator==(const PROBE& p)const
-{
-  unreachable();
-  return ((_brh==p._brh) && (_what==p._what));
 }
 /*--------------------------------------------------------------------------*/
 /* "detach" a probe from a device, node, etc.
@@ -111,8 +98,9 @@ bool PROBE::operator==(const PROBE& p)const
  */
 void PROBE::detach()
 {
-  if (_brh){
+  if (_brh) {
     _brh->dec_probes();
+  }else{
   }
   _what = "";
   _node = 0;
@@ -126,57 +114,47 @@ void PROBE::detach()
 const std::string PROBE::label(void)const
 {
   assert(!(_brh && _node));
-  {if (!_brh){
+  if (!_brh) {
     char s[BUFLEN+8];
     sprintf(s, "%s(%u)", _what.c_str(), _node);
     return std::string(s);
   }else{
     return _what + '(' + _brh->long_label() + ')';
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 double PROBE::value(void)const
 {
   assert(!(_brh && _node));
-  {if (!_brh){
-    {if (_node <= STATUS::total_nodes
-	 && _node > 0
-	 &&  nstat[NODE::to_internal(_node)].needs_analog()){
-      return nstat[NODE::to_internal(_node)].probe_num(_what);
-    }else{
-      return probe_node();
-    }}
+  if (!_brh) {
+    return probe_node();
   }else{
     return _brh->probe_num(_what);
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 double PROBE::probe_node(void)const
 {
   CS cmd(_what);
-  {if (cmd.pmatch("ITer")  &&  _node < iCOUNT){
+  if (cmd.pmatch("ITer")  &&  _node < iCOUNT) {
     assert(iPRINTSTEP - sCOUNT == 0);
     assert(iSTEP      - sCOUNT == 1);
     assert(iTOTAL     - sCOUNT == 2);
     assert(iCOUNT     - sCOUNT == 3);
-    return static_cast<double>(STATUS::iter[_node+sCOUNT]);
-  }else if (cmd.pmatch("Control")  &&  _node < cCOUNT){
-    return static_cast<double>(STATUS::control[_node]);
-  }else if (cmd.pmatch("DAMP")){
-    untested();
+    return static_cast<double>(::status.iter[_node+sCOUNT]);
+  }else if (cmd.pmatch("Control")  &&  _node < cCOUNT) {
+    return static_cast<double>(::status.control[_node]);
+  }else if (cmd.pmatch("DAMP")) {untested();
     return SIM::damp;
-  }else if (cmd.pmatch("GEnerator")){
-    untested();
+  }else if (cmd.pmatch("GEnerator")) {untested();
     return SIM::genout;
-  }else if (cmd.pmatch("TEmperature")){
-    untested();
-    return SIM::temp + ABS_ZERO;
-  }else if (cmd.pmatch("TIme")){
-    untested();
+  }else if (cmd.pmatch("TEmperature")) {untested();
+    return SIM::temp_c;
+  }else if (cmd.pmatch("TIme")) {untested();
     return SIM::time0;
-  }else{
+  }else{untested();
     return NOT_VALID;
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

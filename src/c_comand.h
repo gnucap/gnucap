@@ -1,4 +1,4 @@
-/*$Id: c_comand.h,v 22.7 2002/07/23 04:23:34 al Exp $ -*- C++ -*-
+/*$Id: c_comand.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * all of the commands
  */
+//testing=trivial 2006.07.17
 #ifndef C_COMAND_H
 #define C_COMAND_H
 #include "md.h"
@@ -33,7 +34,6 @@ public:
 private:
   static  void	ac(CS&);
   static  void	alarm(CS&);
-  static  void	alter(CS&);
   static  void	build(CS&);
   static  void	chdir(CS&);
   static  void	clear(CS&);
@@ -64,6 +64,7 @@ private:
   static  void	noise(CS&);
   static  void	op(CS&);
   static  void	options(CS&);
+  static  void	param(CS&);
   static  void	pause(CS&);
   static  void	plot(CS&);
   static  void	print(CS&);

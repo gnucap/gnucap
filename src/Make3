@@ -1,4 +1,4 @@
-#$Id: Make3,v 24.7 2003/05/30 08:08:17 al Exp $ -*- Makefile -*-
+#$Id: Make3,v 25.96 2006/08/28 05:45:51 al Exp $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
 #
@@ -16,8 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-# 02111-1307, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
 #------------------------------------------------------------------------
 # Part 3 of a Makefile
 #------------------------------------------------------------------------
@@ -27,27 +27,49 @@ tags: $(HDRS) $(SRCS)
 checkin:
 	date "+#define PATCHLEVEL \"%Y.%m.%d RCS `cat rcsversion`\"" \
 		>patchlev.h
-	-ci -u`cat rcsversion` -m. -t/dev/null $(ALL)
-	-ci -r`cat rcsversion` -m. -t/dev/null $(DELETED)
+	-ci -u`cat rcsversion` -m. -t/dev/null $(RAW)
+	-ci -r`cat rcsversion` -m. -t/dev/null $(DELETED) $(GENERATED)
+	touch patchlev.h
 #------------------------------------------------------------------------
 checkout:
-	co $(ALL)
+	co $(RAW)
 #------------------------------------------------------------------------
-unclean:
-	rm $(ALL)
+#unclean:
+#	rm $(ALL)
 #------------------------------------------------------------------------
 backup:
 	-mkdir BACKUP
-	cp $(ALL) BACKUP
+	cp $(RAW) BACKUP
 #------------------------------------------------------------------------
-clean:
-	-rm *.o
-#------------------------------------------------------------------------
-depend: $(SRCS) $(HDRS)
+depend: Make.depend
+Make.depend: $(SRCS) $(HDRS)
 	$(CCC) -MM $(CCFLAGS) $(SRCS) > Make.depend
 #-----------------------------------------------------------------------------
 date:
 	date "+#define PATCHLEVEL \"%Y.%m.%d RCS `cat rcsversion` +\"" \
 		>patchlev.h
+#-----------------------------------------------------------------------------
+manifest: MANIFEST
+MANIFEST: $(DISTFILES)
+	echo $(DISTFILES) | sed 's/ /\n/g' >MANIFEST
+#-----------------------------------------------------------------------------
+md5sums: MD5SUMS
+MD5SUMS: $(DISTFILES)
+	md5sum $(DISTFILES) | grep -v MD5SUMS >MD5SUMS
+#-----------------------------------------------------------------------------
+mostlyclean:
+	rm -rf $(MOSTLYCLEANFILES)
+	rm -f */*.o */*.obj */*.h */*.cc
+clean:
+	rm -rf $(CLEANFILES)
+	rm -f */*.o */*.obj */*.h */*.cc
+distclean:
+	rm -rf $(DISTCLEANFILES)
+	rm -f */*.o */*.obj */*.h */*.cc
+	rm -f *~ \#*\#
+maintainer-clean:
+	rm -rf $(MAINTAINERCLEANFILES)
+	rm -f */*.o */*.obj */*.h */*.cc
+	rm -f *~ \#*\#
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,15 +16,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Base class for elements of a circuit
  */
+//testing=script 2006.07.12
 #include "u_xprobe.h"
 #include "e_aux.h"
-#include "ap.h"
-#include "bm.h" // includes e_elemnt.h
+#include "bm.h"
+#include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
 ELEMENT::ELEMENT()
   :COMPONENT(),
@@ -74,41 +75,64 @@ bool ELEMENT::skip_dev_type(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void ELEMENT::parse_more_nodes(CS& cmd, int gotnodes)
 {
-  parse_nodes(cmd, max_nodes(), min_nodes(), gotnodes);
-  //		   max		min	     start
+  parse_nodes(cmd, max_nodes(), min_nodes(),
+	      0/*no required args*/, gotnodes/*start*/);
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::parse(CS& cmd)
+void ELEMENT::parse_spice(CS& cmd)
 {
   parse_Label(cmd);
-  int gotnodes = parse_nodes(cmd, max_nodes(), 0);
-  //				  max	       min for this pass
-  COMMON_COMPONENT* c = 0;
+  int gotnodes = parse_nodes(cmd, stop_nodes(), 0,  0,   0);
+  //				  max	        min tail already_got
 
-  // HSPICE compatibility kluge.
-  // The device type or function type could be stuck between the nodes.
+  COMMON_COMPONENT* c = NULL;
+
   if (gotnodes < min_nodes()) {
+    // HSPICE compatibility kluge.
+    // The device type or function type could be stuck between the nodes.
     skip_dev_type(cmd); // (redundant)
     c = EVAL_BM_ACTION_BASE::parse_func_type(cmd);
     parse_more_nodes(cmd, gotnodes);
+  }else{
+    // Normal mode.  nodes first, then data.
   }
 
-  // Normal mode.  nodes first, then data.
   if (!c) {
     skip_dev_type(cmd); // (redundant)
     c = new EVAL_BM_COND;	
   }
   assert(c);
 
-  c->parse(cmd);
+  // we have a blank common of the most general type
+  // (or HSPICE kluge)
+  // let it continue parsing
 
-  // At this point, there is ALWAYS a common attached, which may have more
+  int here = cmd.cursor();
+  c->parse(cmd);
+  if (cmd.stuck(&here)) {
+    cmd.warn(bDANGER, "needs a value");
+  }
+
+  // At this point, there is ALWAYS a common "c", which may have more
   // commons attached to it.  Try to reduce its complexity.
   // "c->deflate()" may return "c" or some simplification of "c".
-  COMMON_COMPONENT* dc = c->deflate(); // dc == deflated_common
+  
+  COMMON_COMPONENT* dc = c->deflate();
+  
+  // dc == deflated_common
+  // It might be just "c".
+  // It might be something else that is simpler but equivalent.
 
-  EVAL_BM_VALUE* dvc = dynamic_cast<EVAL_BM_VALUE*>(dc);  
-  {if (dvc && !dvc->has_ext_args()) {
+  // check for a simple value
+  EVAL_BM_VALUE* dvc = dynamic_cast<EVAL_BM_VALUE*>(dc);
+
+  // dvc == deflated value common
+  // It might be "dc", if "dc" is a value common.
+  // It might be nothing.
+
+  if (dvc && !dvc->has_ext_args()) {
+    // If it is a simple value, don't use a common.
+    // Just store the value directly.
     set_value(dvc->value());
     delete c;
   }else{
@@ -116,46 +140,46 @@ void ELEMENT::parse(CS& cmd)
     if (dc != c) {
       delete c;
     }
-  }}
-  
+  }
   cmd.check(bDANGER, "what's this?");
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::print(OMSTREAM& where, int /*detail*/)const
+void ELEMENT::print_spice(OMSTREAM& o, int /*detail*/)const
 {
   if (short_label()[0] != id_letter()) {
-    where << '.' << dev_type() << ' ';
+    untested();
+    o << '.' << dev_type() << ' ';
   }
-  where << short_label();
-  printnodes(where);
+  o << short_label();
+  printnodes(o);
   if (!has_common() || value() != 0) {
-    where << ' ' << value();
+    o << ' ' << value();
   }
   if (has_common()) {
-    common()->print(where);
+    common()->print(o);
   }
-  where << '\n';
+  o << '\n';
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::tr_alloc_matrix_passive()
+void ELEMENT::tr_iwant_matrix_passive()
 {
   assert(matrix_nodes() == 2);
   assert(is_device());
-  //assert(!subckt().exists()); ok for subckt to exist for logic
+  //assert(!subckt()); ok for subckt to exist for logic
+
   assert(_n[OUT1].m_() != INVALID_NODE);
   assert(_n[OUT2].m_() != INVALID_NODE);
+
   aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
   lu.iwant(_n[OUT1].m_(),_n[OUT2].m_());
-  extern NODE* nstat; // yuck
-  nstat[_n[OUT1].m_()].set_needs_analog();
-  nstat[_n[OUT2].m_()].set_needs_analog();
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::tr_alloc_matrix_active()
+void ELEMENT::tr_iwant_matrix_active()
 {
   assert(matrix_nodes() == 4);
   assert(is_device());
-  assert(!subckt().exists());
+  assert(!subckt());
+
   assert(_n[OUT1].m_() != INVALID_NODE);
   assert(_n[OUT2].m_() != INVALID_NODE);
   assert(_n[IN1].m_() != INVALID_NODE);
@@ -174,22 +198,14 @@ void ELEMENT::tr_alloc_matrix_active()
   lu.iwant(_n[OUT2].m_(),_n[IN1].m_());
   lu.iwant(_n[OUT2].m_(),_n[IN2].m_());
   //lu.iwant(_n[IN1].m_(),_n[IN2].m_());
-
-  extern NODE* nstat; // yuck
-  nstat[_n[OUT1].m_()].set_needs_analog();
-  nstat[_n[OUT2].m_()].set_needs_analog();
-  nstat[_n[IN1].m_()].set_needs_analog();
-  nstat[_n[IN2].m_()].set_needs_analog();
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::tr_alloc_matrix_extended()
+void ELEMENT::tr_iwant_matrix_extended()
 {
-  extern NODE* nstat; // yuck
-
   assert(is_device());
-  {if (subckt().exists()) {
+  if (subckt()) {
     unreachable();
-    subckt().tr_alloc_matrix();
+    subckt()->tr_iwant_matrix();
   }else{
     for (int ii = 0;  ii < matrix_nodes();  ++ii) {
       assert(_n[ii].m_() != INVALID_NODE);
@@ -198,18 +214,17 @@ void ELEMENT::tr_alloc_matrix_extended()
 	  aa.iwant(_n[ii].m_(),_n[jj].m_());
 	  lu.iwant(_n[ii].m_(),_n[jj].m_());
 	}
-	nstat[_n[ii].m_()].set_needs_analog();
       }
     }
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::ac_alloc_matrix_passive()
+void ELEMENT::ac_iwant_matrix_passive()
 {
   acx.iwant(_n[OUT1].m_(),_n[OUT2].m_());
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::ac_alloc_matrix_active()
+void ELEMENT::ac_iwant_matrix_active()
 {
   //acx.iwant(_n[OUT1].m_(),_n[OUT2].m_());
   acx.iwant(_n[OUT1].m_(),_n[IN1].m_());
@@ -219,12 +234,12 @@ void ELEMENT::ac_alloc_matrix_active()
   //acx.iwant(_n[IN1].m_(),_n[IN2].m_());
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::ac_alloc_matrix_extended()
+void ELEMENT::ac_iwant_matrix_extended()
 {
   assert(is_device());
-  {if (subckt().exists()) {
+  if (subckt()) {
     unreachable();
-    subckt().ac_alloc_matrix();
+    subckt()->ac_iwant_matrix();
   }else{
     for (int ii = 0;  ii < matrix_nodes();  ++ii) {
       assert(_n[ii].m_() != INVALID_NODE);
@@ -234,7 +249,7 @@ void ELEMENT::ac_alloc_matrix_extended()
 	}
       }
     }
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 double ELEMENT::tr_amps()const
@@ -245,7 +260,7 @@ double ELEMENT::tr_amps()const
 /*--------------------------------------------------------------------------*/
 double ELEMENT::tr_probe_num(CS& cmd)const
 {
-  {if (cmd.pmatch("Vout")) {
+  if (cmd.pmatch("Vout")) {
     return tr_outvolts();
   }else if (cmd.pmatch("VIn")) {
     return tr_involts();
@@ -278,6 +293,7 @@ double ELEMENT::tr_probe_num(CS& cmd)const
     untested();
     return _m0.x;
   }else if (cmd.pmatch("IOFfset")) {
+    untested();
     return _m0.c0;
   }else if (cmd.pmatch("IPassive")) {
     untested();
@@ -300,15 +316,26 @@ double ELEMENT::tr_probe_num(CS& cmd)const
 //  }else if (cmd.pmatch("TIMEO")) {
 //    return time1;
   }else if (cmd.pmatch("R")) {
-    return (_m0.c1!=0.) ? 1/_m0.c1 : DBL_MAX;
+    return (_m0.c1!=0.) ? 1/_m0.c1 : MAXDBL;
   }else if (cmd.pmatch("Z")) {
     return port_impedance(_n[OUT1], _n[OUT2], lu, (_m0.c1+_loss0));
   }else if (cmd.pmatch("ZRAW")) {
     return port_impedance(_n[OUT1], _n[OUT2], lu, 0.);
   }else{
+    untested();
     return COMPONENT::tr_probe_num(cmd);
-  }}
+  }
 }
+/*--------------------------------------------------------------------------*/
+#if 0
+void ELEMENT::tr_print_trace(OMSTREAM& o)const
+{
+  unreachable();
+  o << "y0:" << _y0.x << ' ' << _y0.f0 << ' ' << _y0.f1 << '\n';
+  o << "y1:" << _y1.x << ' ' << _y1.f0 << ' ' << _y1.f1 << '\n';
+  o << "y2:" << _y2.x << ' ' << _y2.f0 << ' ' << _y2.f1 << '\n';
+}
+#endif
 /*--------------------------------------------------------------------------*/
 COMPLEX ELEMENT::ac_amps()const
 {
@@ -320,7 +347,7 @@ XPROBE ELEMENT::ac_probe_ext(CS& cmd)const
 {
   COMPLEX admittance = (is_source()) ? _loss0 : _acg+_loss0;
 
-  {if (cmd.pmatch("Vout")) {			/* volts (out) */
+  if (cmd.pmatch("Vout")) {			/* volts (out) */
     return XPROBE(ac_outvolts());
   }else if (cmd.pmatch("VIN")) {		/* volts (in) */
     return XPROBE(ac_involts());
@@ -334,20 +361,23 @@ XPROBE ELEMENT::ac_probe_ext(CS& cmd)const
   }else if (cmd.pmatch("EV")) {			/* effective value */
     return XPROBE(_ev);
   }else if (cmd.pmatch("Y")) {			/* admittance */
+    untested();
     return XPROBE(admittance, mtREAL);
   }else if (cmd.pmatch("R")) {			/* complex "resistance" */
-    {if (admittance == 0.) {
-      return XPROBE(DBL_MAX);
+    if (admittance == 0.) {
+      untested();
+      return XPROBE(MAXDBL);
     }else{
+      untested();
       return XPROBE(1. / admittance);
-    }}
+    }
   }else if (cmd.pmatch("Z")) {			/* port impedance */
     return XPROBE(port_impedance(_n[OUT1], _n[OUT2], acx, admittance));
   }else if (cmd.pmatch("ZRAW")) {		/* port impedance, raw */
     return XPROBE(port_impedance(_n[OUT1], _n[OUT2], acx, COMPLEX(0.)));
   }else{ 					/* bad parameter */
     return COMPONENT::ac_probe_ext(cmd);
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: c_nodset.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: c_nodset.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * structures to keep track of nodesets and ICs
  */
+//testing=trivial 2006.07.17
 #ifndef NODESET_H
 #define NODESET_H
+#include "md.h"
 /*--------------------------------------------------------------------------*/
 class CS;
 /*--------------------------------------------------------------------------*/

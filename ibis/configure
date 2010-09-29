@@ -1,4 +1,0 @@
-#!/bin/sh
-mkdir O
-        cat Make1 Make2.g++ Make3 Make.depend >O/Makefile
-exit 0

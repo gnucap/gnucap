@@ -1,4 +1,4 @@
-/*$Id: u_opt2.cc,v 24.11 2003/11/21 03:29:03 al Exp $ -*- C++ -*-
+/*$Id: u_opt2.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,21 +16,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * command and functions to access OPT class
  */
+//testing=script,complete 2006.07.14
 #include "l_compar.h"
-#include "s__.h"
-#include "constant.h"
 #include "ap.h"
 #include "u_opt.h"
 /*--------------------------------------------------------------------------*/
 void OPT::command(CS& cmd)
 {
   bool changed = set_values(cmd);
-  if (!changed || opts){
+  if (!changed || opts) {
     print(IO::mstdout);
   }
 }
@@ -42,10 +41,10 @@ bool OPT::set_values(CS& cmd)
   bool changed = false;
   int here = cmd.cursor();
   do{
-    0
+    ONE_OF
       || get(cmd, "ACCT",	 &acct)
       || get(cmd, "LIST",	 &listing)
-      || get(cmd, "MOD",	 &nomod,	 mINVERT)
+      || get(cmd, "MOD",	 &mod)
       || get(cmd, "PAGE",	 &page)
       || get(cmd, "NODE",	 &node)
       || get(cmd, "OPTS",	 &opts)
@@ -58,14 +57,15 @@ bool OPT::set_values(CS& cmd)
       || get(cmd, "PIVTOL",	 &pivtol,	mPOSITIVE)
       || get(cmd, "PIVREL",	 &pivrel,	mPOSITIVE)
       || get(cmd, "NUMDGT",	 &numdgt)
-      || get(cmd, "TNOM",	 &tnom,		mOFFSET, -ABS_ZERO)
+      || get(cmd, "TNOM",	 &tnom_c)
       || get(cmd, "CPTIME",	 &cptime)
       || get(cmd, "LIMTIM",	 &limtim)
       || get(cmd, "LIMPTS",	 &limpts)
       || get(cmd, "LVLCOD",	 &lvlcod)
       || get(cmd, "LVLTIM",	 &lvltim)
       || (cmd.pmatch("METHOD") &&
-	  (   set(cmd, "Euler",	     &method,	meEULER)
+	  ((cmd.skip1b('='), false)
+	   || set(cmd, "Euler",	     &method,	meEULER)
 	   || set(cmd, "EULEROnly",  &method,	meEULERONLY)
 	   || set(cmd, "Trapezoidal",&method,	meTRAP)
 	   || set(cmd, "TRAPOnly",   &method,	meTRAPONLY)
@@ -82,22 +82,18 @@ bool OPT::set_values(CS& cmd)
       || get(cmd, "DEFW",	 &defw,		mPOSITIVE)
       || get(cmd, "DEFAD",	 &defad,	mPOSITIVE)
       || get(cmd, "DEFAS",	 &defas,	mPOSITIVE)
-      || get(cmd, "Seed",	 &seed)
       || get(cmd, "CLobber",	 &clobber)
-      || get(cmd, "NAMednodes",	 &named_nodes)
-      || get(cmd, "WCZero",	 &wczero,	mPOSITIVE)
-      || get(cmd, "FLOOR",	 &floor,	mPOSITIVE)
-      || get(cmd, "VFLOOR",	 &vfloor,	mPOSITIVE)
       || get(cmd, "DAMPMAX",	 &dampmax,	mPOSITIVE)
       || get(cmd, "DAMPMIN",	 &dampmin,	mPOSITIVE)
       || get(cmd, "DAMPStrategy",&dampstrategy, mOCTAL)
+      || get(cmd, "FLOOR",	 &floor,	mPOSITIVE)
+      || get(cmd, "VFLOOR",	 &vfloor,	mPOSITIVE)
       || get(cmd, "ROUndofftol", &roundofftol,	mPOSITIVE)
-      || get(cmd, "Tempamb",	 &tempamb,	mOFFSET, -ABS_ZERO)
+      || get(cmd, "Tempamb",	 &temp_c)
+      || get(cmd, "Temperature", &temp_c)
       || get(cmd, "Short",	 &shortckt,	mPOSITIVE)
-      || get(cmd, "TRansits",	 &transits)
       || get(cmd, "INwidth",	 &inwidth)
       || get(cmd, "OUTwidth",	 &outwidth)
-      || get(cmd, "XDivisions",	 &xdivisions,	mPOSITIVE)
       || get(cmd, "YDivisions",	 &ydivisions,	mPOSITIVE)
       || set(cmd, "NAG",	 &picky,	bNOERROR)
       || set(cmd, "NONAG",	 &picky,	bTRACE)
@@ -115,29 +111,31 @@ bool OPT::set_values(CS& cmd)
       || set(cmd, "NOERRor",	 &picky,	bDISASTER)
       || set(cmd, "DISASTER",	 &picky,	bDISASTER)
       || (cmd.pmatch("PHase") &&
-	  (   set(cmd, "Degrees", &phase,	pDEGREES)
+	  ((cmd.skip1b('='), false)
+	   || set(cmd, "Degrees", &phase,	pDEGREES)
 	   || set(cmd, "Radians", &phase,	pRADIANS)
 	   || cmd.warn(bWARNING, "need degrees or radians")))
       || (cmd.pmatch("ORder") &&
-	  (   set(cmd, "Reverse", &order,	oREVERSE)
+	  ((cmd.skip1b('='), false)
+	   || set(cmd, "Reverse", &order,	oREVERSE)
 	   || set(cmd, "Forward", &order,	oFORWARD)
 	   || set(cmd, "Auto",    &order,	oAUTO)
 	   || cmd.warn(bWARNING, "need reverse, forward, or auto")))
       || (cmd.pmatch("MODe") &&
-	  (   set(cmd, "Analog",  &mode,	moANALOG)
+	  ((cmd.skip1b('='), false)
+	   || set(cmd, "Analog",  &mode,	moANALOG)
 	   || set(cmd, "Digital", &mode,	moDIGITAL)
 	   || set(cmd, "Mixed",   &mode,	moMIXED)
 	   || cmd.warn(bWARNING, "need analog, digital, or mixed")))
+      || get(cmd, "TRansits",	 &transits)
       || get(cmd, "DUPcheck",	  &dupcheck)
-      || set(cmd, "BYPass",	  &bypass,	bYES)
-      || set(cmd, "NOBYPass",	  &bypass,	bNO)
-      || set(cmd, "VBYPass",	  &bypass,	bVOLT)
+      || get(cmd, "BYPass",	  &bypass)
       || get(cmd, "INCmode",	  &incmode)
+      || get(cmd, "LCBypasss",    &lcbypass)
       || get(cmd, "LUBypasss",    &lubypass)
       || get(cmd, "FBBypasss",    &fbbypass)
       || get(cmd, "TRACELoad",    &traceload)
       || get(cmd, "ITERMIN",	  &itermin)
-      || get(cmd, "LIMIT",	  &limit,	mPOSITIVE)
       || get(cmd, "VMAX",	  &vmax)
       || get(cmd, "VMIN",	  &vmin)
       || get(cmd, "MRT",	  &dtmin,	mPOSITIVE)
@@ -147,6 +145,7 @@ bool OPT::set_values(CS& cmd)
       || get(cmd, "CSTray",	  &cstray)
       || get(cmd, "Harmonics",    &harmonics)
       || get(cmd, "TRSTEPGrow",   &trstepgrow,  mPOSITIVE)
+      || get(cmd, "TRSTEPHold",   &trstephold,  mPOSITIVE)
       || get(cmd, "TRSTEPShrink", &trstepshrink,mPOSITIVE)
       || get(cmd, "TRReject",     &trreject,	mPOSITIVE)
       || get(cmd, "SHOWALL",	  &showall)
@@ -155,6 +154,7 @@ bool OPT::set_values(CS& cmd)
       || get(cmd, "MOSflags",     &mosflags,	mOCTAL)
       || get(cmd, "QUITCONVfail", &quitconvfail)
       || get(cmd, "EDIT",	  &edit)
+      || get(cmd, "RECURsion",	  &recursion)
       || get(cmd, "ITL1",	  &itl[1])
       || get(cmd, "ITL2",	  &itl[2])
       || get(cmd, "ITL3",	  &itl[3])
@@ -165,29 +165,21 @@ bool OPT::set_values(CS& cmd)
       || get(cmd, "ITL8",	  &itl[8])
 #ifdef KNEECHORD
       || (cmd.pmatch("STRategy") &&
-	  (   set( cmd, "Newton", &strategy, stNEWTON )
+	  ((cmd.skip1b('='), false)
+	   || set( cmd, "Newton", &strategy, stNEWTON )
 	   || set( cmd, "Kneechord", &strategy, stKNEECHORD )
 	   || cmd.warn( bWARNING,
 			"available strategies are `Newton' and `Kneechord'")))
 #endif
       || (cmd.check(bWARNING, "what's this?"), cmd.skiparg());
 
-#if 0
-    if (cmd.stuck(&here)){
-      cmd.check(bWARNING, "what's this?");
-      cmd.skiparg();
-    }else{
+    if (!cmd.stuck(&here)) {
       changed = true;
     }
-#else
-    if (!cmd.stuck(&here)){
-      changed = true;
-    }
-#endif
   }while (cmd.more() && changed);
 
-  if (changed){
-    SIM::uninit();
+  if (changed) {
+    //SIM::uninit();
     lowlim = 1 - reltol;
     uplim  = 1 + reltol;
     numdgt = to_range(3, numdgt, 20);
@@ -202,12 +194,12 @@ void OPT::print(OMSTREAM& where)
 {
   where.setfloatwidth(7);
   where << ".options";
-  where << ((acct) ?"  acct" :"  noacct");
-  where << ((listing)?"list" :"  nolist");
-  where << ((nomod)?"  nomod":"  mod");
-  where << ((page) ?"  page" :"  nopage");
-  where << ((node) ?"  node" :"  nonode");
-  where << ((opts) ?"  opts" :"  noopts");
+  where << ((acct)   ?"  acct" :"  noacct");
+  where << ((listing)?"  list" :"  nolist");
+  where << ((mod)    ?"  mod"  :"  nomod");
+  where << ((page)   ?"  page" :"  nopage");
+  where << ((node)   ?"  node" :"  nonode");
+  where << ((opts)   ?"  opts" :"  noopts");
   where << "  gmin="   << gmin;
   where << "  reltol=" << reltol;
   where << "  abstol=" << abstol;
@@ -217,7 +209,7 @@ void OPT::print(OMSTREAM& where)
   where << "  pivtol=" << pivtol;
   where << "  pivrel=" << pivrel;
   where << "  numdgt=" << numdgt;
-  where << "  tnom="   << tnom+ABS_ZERO;
+  where << "  tnom="   << tnom_c;
   where << "  cptime=" << cptime;
   where << "  limtim=" << limtim;
   where << "  limpts=" << limpts;
@@ -231,32 +223,30 @@ void OPT::print(OMSTREAM& where)
   where << "  defw="   << defw;
   where << "  defad="  << defad;
   where << "  defas="  << defas;
-  where << "  seed="   << seed;
   where << ((clobber) ? "  clobber" : "  noclobber");
-  where << ((named_nodes) ? "  namednodes" : "  nonamednodes");
-  where << "  wczero=" << wczero;
   where << "  dampmax="<< dampmax;
   where << "  dampmin="<< dampmin;
   where << "  dampstrategy="<< octal(dampstrategy);
+  where << "  floor="  << floor;
+  where << "  vfloor=" << vfloor;
   where << "  roundofftol=" << roundofftol;
-  where << "  tempamb="<< tempamb+ABS_ZERO;
+  where << "  temperature="<< temp_c;
   where << "  short="  << shortckt;
   where << "  in="     << inwidth;
   where << "  out="    << outwidth;
-  where << "  xdivisions=" << xdivisions;
   where << "  ydivisions=" << ydivisions;
   where << "  phase="  << phase;
   where << "  order="  << order;
   where << "  mode="   << mode;
   where << "  transits=" << transits;
-  where << ((dupcheck)?"  dupcheck":"  nodupcheck");
-  where << "  "        << bypass;
+  where << ((dupcheck) ?"  dupcheck" :"  nodupcheck");
+  where << ((bypass)   ?"  bypass"   :"  nobypass");
   where << ((incmode)  ?"  incmode"  :"  noincmode");    
+  where << ((lcbypass) ?"  lcbypass" :"  nolcbypass");    
   where << ((lubypass) ?"  lubypass" :"  nolubypass");    
   where << ((fbbypass) ?"  fbbypass" :"  nofbbypass");    
   where << ((traceload)?"  traceload":"  notraceload");    
   where << "  itermin="<< itermin;
-  where << "  limit="  << limit;
   where << "  vmax="   << vmax;
   where << "  vmin="   << vmin;
   where << "  dtmin="  << dtmin;
@@ -265,11 +255,18 @@ void OPT::print(OMSTREAM& where)
   where << ((cstray)?"  cstray":"  nocstray");
   where << "  harmonics="   << harmonics;
   where << "  trstepgrow="  << trstepgrow;
+  where << "  trstephold="  << trstephold;
   where << "  trstepshrink="<< trstepshrink;
   where << "  trreject="    << trreject;
-  where << "  diodeflags="  << octal(diodeflags);
-  where << "  mosflags="    << octal(mosflags);
-  where << ((quitconvfail)?"  quitconvfail":"  noquitconvfail");    
+  if (diodeflags) {
+    where << "  diodeflags="  << octal(diodeflags);
+  }
+  if (mosflags) {
+    where << "  mosflags="    << octal(mosflags);
+  }
+  where << ((quitconvfail)?"  quitconvfail":"  noquitconvfail");
+  where << ((edit)	?"  edit"    :"  noedit");
+  where << "  recursion="<< recursion;
   where << '\n';
 }
 /*--------------------------------------------------------------------------*/

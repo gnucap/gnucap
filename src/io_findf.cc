@@ -1,4 +1,4 @@
-/*$Id: io_findf.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: io_findf.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Modified by AD.  Sent to me by C-WARE
  * This file contains the routine to locate a file,
@@ -31,13 +31,14 @@
  *
  * PATHSEP, ENDDIR are system dependent, defined in md.h
  */
+//testing=script,sparse 2006.07.17
 #include "l_lib.h"
 /*--------------------------------------------------------------------------*/
 std::string findfile(const std::string& filename, const std::string& path,
 		     int mode)
 {
 #ifdef CHECK_LOCAL_FIRST
-  if (OS::access_ok(filename, mode)){
+  if (OS::access_ok(filename, mode)) {
     untested(); 
     return filename;
   }else{
@@ -46,22 +47,24 @@ std::string findfile(const std::string& filename, const std::string& path,
 #endif
 					// for each item in the path
   for (std::string::const_iterator
-	 p_ptr=path.begin(); p_ptr!=path.end(); ++p_ptr){
+	 p_ptr=path.begin(); p_ptr!=path.end(); ++p_ptr) {
     // p_ptr changed internally                  ^^^^^ skip sep
     std::string target = "";
-    while (*p_ptr != PATHSEP  &&  p_ptr != path.end()){ // copy 1 path item
+    while (*p_ptr != PATHSEP  &&  p_ptr != path.end()) { // copy 1 path item
       target += *p_ptr++;
     }
-    if (!target.empty() &&  !strchr(ENDDIR,p_ptr[-1])){
+    if (!target.empty() &&  !strchr(ENDDIR,p_ptr[-1])) {
       target += *ENDDIR;		// append '/' if needed
+    }else{untested();
     }
     
     target += filename;
-    {if (OS::access_ok(target, mode)){	// found it
+    if (OS::access_ok(target, mode)) {untested();	// found it
       return target;
-    }else if (p_ptr==path.end()){	// ran out of path, didn't find it
+    }else if (p_ptr==path.end()) {	// ran out of path, didn't find it
       return "";
-    }}					// else try again
+    }else{				// else try again
+    }
   }
   return ""; // path doesn't exist - didn't go thru loop at all
 }

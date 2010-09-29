@@ -1,0 +1,1061 @@
+Gnucap revision history
+ ------------------------------------------------------------------
+ ------------------------------------------------------------------
+Gnucap 0.34 release notes  (02/01/2004)
+
+This is a bug fix and compatibility release.
+
+1. Fix bug causing incorrect interpolation of backwards tables.
+            
+2. Fix tanh overflow bug.
+            
+3. Fix some parsing bugs.
+            
+4. Fix occasional "double load" bug.
+            
+5. Fix AC sweep with one point.
+            
+6. Transient start time really works.
+            
+7. Fix occasional assert fail after option short is changed.
+            
+8. Fix memory leak resulting from failure to delete unused common.
+
+9. Fix a Z probe bug that sometimes gave wrong answers.
+
+10. Fix a limiting bug that sometimes caused non-convergence.
+
+11. Configure handles isnan.
+
+12. Improvements to logic initialization.  It is still not correct.        
+ ------------------------------------------------------------------
+Gnucap 0.33 release notes  (01/12/2003)
+
+This is a bug fix and compatibility release.
+
+0.32 was not widely distributed due to password problems and a heavy
+work load, so the release notes are repeated after the current ones.
+
+New features:
+
+1. Add inductance probes, like capacitor.
+
+Bug fixes:
+
+1. Fix xprobe duplicate default arg bug - shows in g++3.2.
+
+2. Fix bug that sometimes caused a crash when changing a model after
+analysis.
+
+3. Fix bug that caused an assert to fail (debug build) after removing
+a probe from an element.
+
+4. Fix a dumb typo hack bug ddHAS_READLINE.  Now history and command
+line editing really works.  It was working, but somehow the hack
+slipped into the release code.
+ ------------------------------------------------------------------
+Gnucap 0.32 release notes  (09/30/2002)
+
+New features:
+
+1. Series resistance in the diode.  It took 5 minutes to do,
+so it is embarrasing that it wasn't done before.
+
+2. History and command line editing, using Gnu Readline.  Thanks to
+Simon Hoffe for sending me the patch.
+
+3. More parameters in the BJT model.  This gives it better
+compatibility with commercial simulators.  These parameters are beyond
+Spice 3f5.
+
+4. "M" parameter in diode, BJT and MOS devices.  M is the number of
+parallel devices.  Some commercial simulators have this.
+
+
+
+Changes that may or may not be improvements.
+
+1. The definition of the transient option "UIC" has changed.  It is
+now Spice compatible, which means to not attempt to do any solution or
+consistency check.  Just apply the values, assuming anything that
+isn't specified is 0.  The old behavior was to attempt a solution
+while holding the IC values.
+ 
+
+Bug fixes:
+
+1. voltage sync bug.  It still doesn't fix the MOS 2 convergence
+problem.
+
+2. Fix memory leak in POLY components.
+
+3. Fix bug in Fourier that sometimes causes overrun (crash) and time
+sync errors.
+
+4. Modelgen: fix bug in list parsing.
+
+5. Some changes to eliminate warnings when compiling with g++ 3.1.
+
+6. Use Euler differentiation on first step, because trap used a value
+that cannot be known then.  Usually, this doesn't make much
+difference, but there are a few cases where the error can get
+magnified and trigger trapezoidal ringing, leading to a totally bogus
+result.  It most cases, you could hide it with small enough steps.
+These cases should work with default settings now.
+
+7. Fix bug that sometimes caused incorrect handling of initial
+conditions (UIC),
+
+8. Fix bug that caused continuing a transient analysis to give
+incorrect results.
+
+
+
+Significant internal changes:
+
+1. The inductor uses all of the same support functions as the
+capacitor, including "integrate", which is now correctly called
+"differentiate".
+
+2. Most of the code is in place for named nodes.  It mostly works and
+can be turned on with the option "namednodes".  It is off by default
+because it is not complete.  Most likely, it will be finished in the
+next release.
+
+
+
+Some things that are still partially implemented:
+
+1. BSIM models, charge effects, "alpha0" parameter.  (computed then
+ignored)
+
+2. Configure still doesn't handle everything.
+
+3. The model compiler still requires too much raw coding.
+
+4. Named nodes.  If you set the option "namednodes", it will support
+named nodes, but some things don't work, so it is off by default.
+
+5. The preliminary IBIS code is now included.  For now, it is a
+standalone executable, that reads an IBIS file and generates a
+netlist.  The netlist requires some editing to use, and is not fully
+compatible anyway.  It is included in hopes of recruiting help in
+finishing the project.
+
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+2. An occasional bogus calculation in MOSFETS occurs when a device is
+reversed.  This sometimes causes nonconvergence.
+
+3. The "modify" command with multiple arguments seems to take only the
+first one.  It used to work, but is broken in this release.  I am not
+sure when it broke.
+ ------------------------------------------------------------------
+Gnucap 0.31 release notes  (03/25/2002)
+
+The most significant changes are the BJT model and "binning".
+
+
+New features:
+
+1. BJT model.
+
+2. "Binning" for all MOS models.
+
+3. Internal element: non-quasi-static poly-capacitor. (needed by BJT).
+
+4. Enhancements to the data structures and model compiler to support
+binning in general.
+
+5. A line prefixed by "*>" is not ignored, in spite of the fact that
+"*" usually begins a comment.  This is a deliberate incompatibility
+with Spice.  If you prefix a line by "*>" it will be interpreted as a
+non-comment in Gnucap, but a comment in Spice.
+
+6. Circuit line prefixes of ">" and command prefixes of "-->" are
+ignored.  This is so you can copy and paste whole lines, without
+having to manually remove the prompt string.
+
+
+Changes that may or may not be improvements.
+
+1. It is not the default to include stray resistance in device models.
+The option "norstray" will revert to the old behavior.  This is only a
+change to the default value of "rstray".
+
+
+Significant internal changes:
+
+1. The internal element non-quasi-static poly-capacitor actually
+works.  It is used by the BJT model, and will eventually be used by
+MOSFET models.
+
+2. There are now two poly_g devices: "CPOLY_G" and "FPOLY_G".  There
+are interface differences that impact modeling.  Previously, there was
+only one, which is equivalent to the "FPOLY_G".
+
+
+Some things that are still partially implemented:
+
+1. BSIM models, charge effects, "alpha0" parameter.  (computed then
+ignored)
+
+2. Configure still doesn't handle everything.
+
+3. The model compiler still requires too much raw coding.
+
+
+General comments:
+
+The new BJT model seems to pass the CircuitSim90 test cases as well as
+anything else, except where a missing feature prevented it from
+working.  A few files would not run because of named nodes.  One file
+(ring11) failed completely.  This file also has MOSFETs, with level 2
+models.  The MOS level 2 model is not as robust as the BJT.  I believe
+the problem is due to the voltage sync bug that still impacts the MOS
+model.
+
+Most of the models have has a reasonable amount of testing in DC, but
+inadequate testing in AC and transient.  The BJT model has had more
+testing than the others in AC and transient.  All differences
+(relative to other simulators) that were observed can be attributed to
+differences in transient step size control or tolerance checking.
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+ ------------------------------------------------------------------
+GNUCAP 0.30 release notes  (10/29/2001)
+
+The primary effort has been to finish the model compiler, to the point
+where it can handle most modeling issues.  The second change is to
+re-release as "gnucap", and add some configuration features to be more
+consistent with other GNU software.
+
+
+New features:
+
+1. More complete model compiler.
+
+2. "./configure" makes compiling more like other GNU software.
+
+
+Some things that are still partially implemented:
+
+1. Internal element: non-quasi-static poly-capacitor.
+
+2. BSIM models, charge effects, "alpha0" parameter.  (computed then ignored)
+
+3. Configure still doesn't handle everything.
+
+4. The model compiler still requires too much raw coding.
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+ ------------------------------------------------------------------
+ACS 0.29 release notes  (06/30/2001)
+
+The primary effort has been to implement IBIS, which is still not
+done.  The changes here are mostly infrastructure changes needed to
+support IBIS.
+
+
+New features:
+
+1. "Fit" function has choice of fit order and extrapolation.  You can
+have order 0, 1, 2, or 3.
+
+2. "Posy" has even and odd options, to determine what happens in the
+negative region.
+
+3. Modelgen improvements.  It now is useful for the whole device,
+sometimes.  It now handles probes and the device side of the model.
+The diode uses it completely.  There are still a few missing features
+needed for the MOSFET and BJT.
+
+4. Spice-3 compatible semiconductor resistor and capacitor.
+
+5. "Table" model statement.
+
+
+Improvements, bug fixes, etc.
+
+1. Option "numdgt" really works.
+
+2. Better error messages from modelgen.
+
+3. Code changes for optimization of commons.  This should reduce
+memory use, sometimes, by sharing commons.  Common sharing is still
+not fully implemented.
+
+4. Fix two bugs that sometimes caused problems after a "modify" or on
+a "fault".
+
+5. Better handling of "vmin" and "vmax".  It should be much less
+likely that limiting causes convergence to a nonsense result.
+
+
+Some things that are still partially implemented:
+
+1. Internal element: non-quasi-static poly-capacitor.
+
+2. BSIM models, charge effects, "alpha0" parameter.  (computed then ignored)
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+2. The makefile does not set up the proper link for the model
+compiler.  You need to do it manually.
+
+3. On some systems, you will get a warning from the linker that "the
+use of 'tmpnam' is dangerous".  You can ignore this warning.
+ ------------------------------------------------------------------
+ACS 0.28 release notes  (09/05/2000)
+
+New features:
+
+1. New probes: diode G, mos IBD, IBS, GBD, GBS.
+
+2. New options: "floor" and "vfloor".  (Floor was in the manual, but
+not in the simulator.)
+
+
+Improvements, bug fixes, etc.
+
+1. There is a change to the way behavioral modeling conditionals are
+handled.  It should now be 100% compatible with SPICE, considering the
+subset that duplicates SPICE.  There are still significant extensions
+beyond SPICE, particularly that you can have behavioral resistors,
+capacitors, inductors, etc.
+
+2. Parameter default calculations are now done in a manner consistent
+with Spice 3f5.  Previously, it was supposedly consistent with Spice
+2g6.
+
+3. A bug in calculation of threshold voltage of the level 6 model, for
+P channel devices, has been fixed.
+
+4. A bug in calculation of Meyer capacitances when the device is
+reversed has been fixed.  This bug sometimes caused a discontinuity at
+vds=0.
+
+5. I have added some smoothing to the Meyer mos capacitor models.
+This improves convergence.   The down side is that sometimes the
+answers are different.  It is probably a little better, when
+considering closeness to reality, but it is still Meyer's model.
+
+6. MOSFET parasitic diodes are now the same as those used in Spice.
+
+7. There are subtle changes in the diode model.  I think this usually
+improves convergence. 
+
+8. Charge calculation in Meyer capacitors and diode capacitiors is now
+supposedly Spice 3 compatible.
+
+9. An error in BSIM3 scaling has been fixed.
+
+
+Some things that are still partially implemented:
+
+1. Internal element: non-quasi-static poly-capacitor.
+
+2. BSIM models, charge effects.
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+2. The makefile does not set up the proper link for the model
+compiler.  You need to do it manually.
+
+3. A bad setting of "vmax" and "vmin" can lead to convergence to a
+nonsense result.  It is not as bad now as it used to be.
+ ------------------------------------------------------------------
+ACS 0.27 release notes  (06/03/2000)
+
+New features:
+
+1. BSIM3 model, DC.  
+They work for AC and transient analysis, but only the DC effects
+actually work.  The next release should have the charge effects.  For
+now, it fakes it with Meyer's model.
+
+2. A first cut at a model compiler, to aid in development of new
+models.  Models are described in a ".model" file, which is processed
+to automatically generate the ".h" and ".cc" files.  This version
+fully handles the ".model" statement part of it, but leaves the device
+and common sections the old way.  Eventually, the entire process will
+be automated.  The old way still works.
+
+3. "Fit" behavioral modeling function, which fits a curve to a set of
+data.  You can specify the order of the fit, which is piecewise
+polynomials.  For now, the order may be 1 (linear, like PWL) or 3
+(cubic splines).  You may also specify the boundary consitions.
+
+4. More probes.
+
+
+
+Some things that are partially implemented:
+
+1. Internal element: non-quasi-static poly-capacitor.  It is needed by 
+the BSIM3 and EKV models.  Eventually, it will be available as a
+netlist item, but not yet.
+
+
+
+Bug fixes:
+
+1. PWL could fail if there were duplicate points at the beginning.  It 
+still does, but gives a reasonable error message.
+
+2. Some "dot commands" were ignored if there were spaces before the
+dot.  This was particularly annoying if the line was supposed to be
+".end" which should make it exit.  It didn't, leaving it in
+interactive mode, a major annoyance in a script.
+
+
+
+Other improvements:
+
+1. There is a change to the way integration in capacitors is done.  It 
+is now strictly based on charge (i = dq/dt).  The old version was
+based on capacitance (i = C * dv/dt) which is strictly incorrect.  The 
+dC/dt term was missing (i = C * dv/dt + v * dC/dt).  This is a
+non-issue when C is constant.
+
+2. More documentation on internals.
+
+
+
+Changes that I think are improvements, but some may disagree:
+
+1. The command line is a little different.  In the old version, 
+"acs file" would run it, and whether it exited or not depended on
+whether there was an ".end" line.  Now, by default, it just loads the
+file in preparation for interactive use.  If you want batch mode, say
+"acs -b file".
+
+2. The regression suite is included in the standard distribution.
+
+
+
+Changes that are not really improvements:
+
+1. Due to the model compiler, the build process is a little more
+complicated.  To do a complete build, you must build the model
+compiler first, then the simulator.  If you are not making any new
+models, you can probably get away with just building the simulator.
+This will change in a future release.
+
+
+
+Bugs:
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+2. The makefile does not set up the proper link for the model
+compiler.  You need to do it manually.
+ ------------------------------------------------------------------
+ACS 0.26 release notes  (02/02/2000)
+
+New features:
+
+1. BSIM1, BSIM2 models -- DC only.
+They work for AC and transient analysis, but only the
+DC effects actually work.   The next release should
+have the charge effects.
+
+2. New elements:
+	trans-capacitor
+	voltage controlled capacitor
+	voltage controlled conductance
+	voltage controlled resistor
+This is a side effect of the BSIM work.
+
+3. Optional new syntax, with type first so component labels can start
+with any letter, and the choice of components is no longer limited by
+the 26 letters.  This was necessary for a clean syntax
+for #2.
+
+4. Some new parameters on existing devices, also a side 
+effect of the BSIM work.
+
+5. The manual in HTML form.  The manual source is still in LaTeX,
+which can be used to generate HTML, PDF, Postscript, or many other
+formats.
+
+
+Bug fixes:
+
+1. An error causing truncation error to be underestimated has been fixed.
+
+
+Other improvements:
+
+1. MOSFET model evaluation is a little faster, due to use of one of
+the new elements to replace several old ones.  I have seen 40%, but
+20% is more likely.  The improvement is most evident on busy circuits,
+where the ACS speed enhancements based on latency exploitation
+contribute more overhead than their value, that is .. the type of
+circuit that has run faster in Spice than ACS.
+
+2. More documentation on internals.
+
+
+Changes that I think are improvements, but some may disagree:
+
+1. Truncation error based step control is disabled when Euler's method
+is selected.  The justification for this is that the reason for
+selecting Euler's method is to avoid the artifacts of high order
+methods on "stiff" poles.  Without this change, a "stiff" pole would
+cause an unreasonably small step size.  This did not appear to be much 
+of a problem in the old release because the use of an incorrect
+formula for estimating truncation error.  A "stiff" pole is one that
+has a response so fast it can be thought of as instantaneous.
+
+2. The "help" command, with its 4 year old help file, has been
+removed.  The concept is really obsolete.  With the HTML form of the
+manual, a full online manual is a better replacement.
+ ------------------------------------------------------------------
+ACS 0.25 release notes  (11/04/99)
+
+New features:
+
+None!
+
+
+Bug fixes:
+
+1. A name conflict that caused compile to fail with gcc 2.95 has been
+fixed. 
+
+2. A problem that caused switches to lose state when a simulation is
+stopped and restarted when a switch is in transition has been fixed.
+
+3. Two unrelated problems with transmission lines have been fixed.
+(Short lines and lines in subcircuits.)
+
+
+Changes that may or may not be improvements:
+
+1. Several queues have been added, to manage model evaluation
+scheduling.  This is part of work on multi-rate and mixed-mode
+simulation, and it replaces the traditional bypass scheme.  In this
+release, probably the only noticeable difference will be that it runs
+a little faster.
+
+
+Known bugs:
+
+1. The help file has not been updated for 4 years.
+ ------------------------------------------------------------------
+ACS 0.24 release notes  (08/21/99)
+
+New features:
+
+1. Enhanced (now documented) behavioral modeling.
+
+2. Transmission line in transient analysis.
+
+3. More documentation of internals.
+
+4. Better batch mode error handling.
+
+
+Bug fixes:
+
+1. Control-C trap works.
+
+2. A bug that could cause a crash when a device had an improper number
+of nodes has been fixed.  It now issues a warning, and grounds the
+unspecified nodes.
+
+3. A bug that could cause a crash when a model or subcircuit is
+deleted then accessed has been fixed.
+
+4. A scoping bug that sometimes put subckt parts in the root circuit
+has been fixed.
+
+5. A bug in "fanout" that listed internal subckt nodes incorrectly has
+been fixed.
+
+
+Changes that may or may not be improvements:
+
+1. "Make2" files for some systems have been removed.  These have not
+been tested in years, and ACS and the compilers have both evolved
+significantly, so any portability patches that old are probably
+completely wrong now.
+
+
+Known bugs:
+
+1. The help file has not been updated for 4 years.
+ ------------------------------------------------------------------
+ACS 0.23 release notes  (06/15/99)
+
+New features:
+
+1. Level 6 mos model.
+
+2. HSpice style PWL and POLY(1).
+
+3. "Table" behavioral modeling function.
+
+4. Mixed-mode digital initialization.
+
+
+
+The bug fixes:
+
+1. The alarm range worked backwards, now fixed.
+
+2. Keep track of commons better.
+
+3. Improved mixed-mode simulation.  It still has not been tested as
+well as I would like, but is better.  Digital initialization works
+now.
+
+4. Another case of "zero time step" has been fixed.  This one was
+relatively benign, in that it only caused a single extra full
+evaluation, with immediate recovery to a normal step size.
+
+5. "Z" probe gave wrong results when probing a voltage source.
+
+
+
+Other improvements: (?)
+
+1. Some subtractions now de-noise the result, eliminating the tiny
+numbers that result from subtracting two nearly equal numbers.  The
+threshold can be set by the option "roundofftol".  It is best left set
+at 1e-13.  This improves speed slightly because 0 will prevent a
+matrix reload, but any non-zero number will not.  It improves
+convergence slightly because the tiny numbers (which result from
+numerical problems) tend to cause further numerical problems.  These
+tiny numbers are an artifact of the machine math, and vary depending
+on optimization and machine implementation details.
+
+2. MOS temperature effects are computed at run time, instead of at
+load time, so you can change the temperature after loading and get
+correct results.
+
+3. The options for integration method have changed, and are more
+flexible.  The default is still trapezoidal, but that may change in a
+future release.  You can specify the mode individually for capacitors
+and inductors.  The information is in the data structure for all
+components, but it isn't always parsed.  A future release will let you
+specify it by component or by model.  The names are Spectre
+compatible, not Spice compatible, because it is more flexible.  The
+Spice names are accepted, but may not act the same as they do in
+Spice.  Choices are: unknown, euler, euleronly, trap, traponly.
+Options accepted and coerced into something else are: gear2,
+gear2only, trapgear, trapeuler.  In general, gear is treated as euler,
+and each element will use either euler or trap.  The device choice
+wins over the option command choice, but "only" wins over non-only.
+
+4. Logic device syntax is changed.  There are two more nodes, so
+power, ground, and enable are passed in.  Power and enable are not
+used (except possibly in subckt models) but are required for
+consistency.
+
+5. In many (not all) cases, arbitrary limits, due to fixed size
+arrays, have been removed.
+
+6. More rigorous testing.  I actually have a regression suite now.  It
+is still not rigorous enough.
+
+7. More rigorous convergence criteria.  This should solve some of the
+false convergence problems.  ACS convergence criteria has always been
+more rigorous than Spice.
+
+
+
+The cosmetic changes:
+
+1. Convert most containers to STL.
+
+2. Complete migration to the "common" tree, and eliminating reference
+to the old C "x" structure extensions.
+
+3. Rearrangement of MOS model hierarchy, to make it easier to install
+other models.  (BSIM family is coming.)
+ ------------------------------------------------------------------
+ACS 0.22 release notes  (10/16/98)
+
+This release contains a few bug fixes, and a few cosmetic changes to the
+code.
+
+The bug fixes:
+
+1. Fixes convergence failures in circuits with linear inductors,
+linear mutual inductors, and linear current controlled sources.
+
+2. Fixes a bypass problem, which shows as transient analysis failure
+with the message "very backward time step".
+
+3. Failed assertion on switch.
+
+The cosmetic changes:
+
+1. The "OMSTREAM" class, as a step in migrating the i/o to C++ style.
+
+2. A cleaner event queue, using a generic heap class.
+
+That's really all.  I have not been actively working on ACS, mostly
+due to employment at a semiconductor company in their "corporate CAD"
+department.  This will change soon, because my new employer (a CAD
+tool vendor) says it is ok to work on ACS.
+ ------------------------------------------------------------------
+ACS 0.21 release notes  (03/30/96)
+
+There are several changes, most of which are only visible in subtle
+ways from the outside.
+
+1. The code is more conformant with the upcoming standard, particularly
+in the use of complex, templates, lifetime of temporaries, and for
+scope.  This should fix problems compiling with g++ 2.7.
+
+2. Element commons are freed properly.
+
+3. The manner in which elements are loaded into the matrix is
+different, and should be faster for large circuits with latency.
+Model bypass is more complete, because it is no longer necessary
+to do anything with a latent model.  It makes little difference
+for small circuits, and circuits that are mostly active.  Speed
+gains on small circuits are offset by #4.
+
+4. The bypass criteria are more strict.  It was possible to get
+incorrect results through interaction between model evaluation
+bypass and iteration damping.  This release will not bypass anything
+when damping is in effect.  There is a slight speed penalty.
+
+5. Logic devices work even when there is no analog model.  The bug
+causing a failure in this case has been fixed.  The "bug" (that
+could in a twisted sense be called a feature) that leads to random
+mapping on start-up is still there.  The logic model still needs
+work.
+
+6. The code is somewhat more object-oriented.  Some classes have
+been changed to be more general.
+ ------------------------------------------------------------------
+ACS 0.20 release notes  (11/22/95)
+
+This release adds the level-3 MOSFET model.  It is Spice compatible.
+
+Actually, it was there a long time ago but was removed because it
+didn't work correctly.  This one has been tested and seems to match
+Spice results, and have convergence characteristics a little better
+than Spice 2g6.  Like the level 1 and 2 models, only Meyer's
+capacitance model is implemented. (like Spice 3).
+ ------------------------------------------------------------------
+ACS 0.19 release notes  (10/31/95)
+
+This release offers "improved" convergence.
+
+Several new options have been added to control iteration damping.
+In some cases, the program will take a partial step in an attempt
+to tame the wild fluctuations that can occur during iteration with
+Newton's method.  This version appears to be considerably more
+robust than Spice 2g6.  Several test circuits that fail to converge
+on Spice do converge on ACS.  The cost of this is sometimes slower
+convergence.  It generally takes about 2 more iterations per step
+than the previous version.  This can be turned off, using the
+"dampstrategy" option at a slight cost in robustness.  See the
+manual on the options command for more information.
+ ------------------------------------------------------------------
+ACS 0.18 release notes  (05/12/95)
+
+This release offers improved memory management and exception
+handling, primarily aimed at MSDOS systems.
+
+Bug fixes:
+
+1. For all ... Out of memory exceptions are properly trapped.
+Version 0.17 would crash if it ran out of memory.  Now you get a
+reasonable message.  It was only a real problem on MSDOS systems.
+
+2. MSDOS floating point exceptions are trapped.  In 0.17, underflow
+exceptions and null floating point exceptions could sometimes cause
+an abort.  I don't know why, but the 80287 can generate a null
+exception when apparently nothing is wrong.
+
+3. MSDOS only: Evade underflow in exp().  A large negative argument
+to exp can give bogus results.  This was a known (to me) in Microsoft
+C 5.1.  Apparently Borland has the same behavior.  It may be a
+hardware problem.  The fix is to not call exp with an argument
+beyond -200, and return 0 instead.
+
+4. Don't use "-fast-math" with g++.  (Makefile change).  It doesn't
+make any difference in speed, and it sometimes causes problems,
+particularly the one in #3 above.
+
+Performance improvements:
+
+1. Most elements no longer store values from the past.  Only
+inductors and capacitors do.  This means that some probes are no
+longer available.  Some other data has been moved to improve memory
+usage.  This change increases the capacity of the MSDOS version by
+about 10 transistors.  Unix systems will swap less.
+
+Other visible changes:
+
+1. The method of attaching models to devices has been changed, to
+improve maintainability.  There are a few noticeable side effects.
+
+a. The default models -d-, -n- are no longer available.  These were
+not documented.
+
+b. Model names must now be unique.  If you have a diode model named
+"foo", you may not also have a mosfet model named "foo".
+
+c. A diode can reference a mosfet model.  The diode will be equivalent
+to the source-bulk diode in the mosfet.  This is a byproduct of
+using C++ derived classes.  The mosfet model is derived from the
+diode model.
+
+2. Exception handling in batch mode is different.  It is still not
+right.
+ ------------------------------------------------------------------
+ACS 0.17 release notes  (04/21/95)
+
+The primary difference in this release is reorganization and C++.
+A side benefit is that it is slightly faster, and uses slightly
+less memory.  (The program is bigger, but it stores data more
+efficiently, for a net improvement.)  It is a transitional release,
+with some of the code still in C.  I hope to have a full C++ version
+this summer.
+
+Bug fixes:
+
+1. Voltage source (vs, vcvs, ccvs) probes (current, power, etc.)
+now really work.
+
+2. Fixed bug that caused strange results with mutual inductance
+after other parts of the circuit are changed.
+
+3. Fixed memory leak in subcircuits and complex devices.
+
+4. Fixed bug that caused a crash when probed elements were deleted.
+ ------------------------------------------------------------------
+ACS 0.16 release notes  (12/10/94)
+
+New features:
+
+1. New components: current controlled switch, current controlled
+current source, current controlled voltage source.  Any simple two
+terminal element (not a diode) can be used as a probe, not just 
+a voltage source.
+
+2. Diode transit time parameter works.
+
+3. Mutual inductance.  The coupled coils must be linear.  Only
+pairs of coupled inductors are supported in this release.  A future
+release will probably support multiply coupled inductors.
+
+Bug fixes:
+
+1. Continuing a transient analysis now works as documented.
+ ------------------------------------------------------------------
+ACS 0.15 release notes  (07/31/94)
+
+Version 0.15 is supposed to be a minimal bug fix release to 0.14,
+but does have one new component.
+
+1. Some additional ports are supported, including VMS.  An HP port
+is supplied as a user contribution, but I have not tested it.
+
+2. New component: voltage controlled switch.  Spice-3 compatible.
+
+3. Fixed bug that caused unpredictable behavior (usually loss of
+a probe, sometimes a crash) after replacing a component.
+
+4. Fixed bug that caused incorrect evaluation and initialization
+of logic devices when there is no analog model.
+
+5. Fixed a bug in truncation error control that sometimes caused
+it to become a no-op.  It still seems to usually work the same as
+Spice, except that ACS will actually use at least the time steps
+you ask for.  Spice will pick all the steps and interpolate for
+the points you ask for.  This will usually cause ACS to use more
+time steps than Spice, hence often slower simulations.
+
+6. Fixed another bug in truncation error that sometimes caused a
+divide by zero.
+ ------------------------------------------------------------------
+ACS 0.14 release notes  (07/05/94)
+
+Version 0.14 was supposed to be a minimal bug fix release to 0.13.
+The same bugs are still there and there are a few small additions
+mostly aimed at coping with convergence problems.
+
+1. The truncation error formula was changed to use the third
+derivative of charge instead of the second derivative of current.
+These two numbers are theoretically equal, but in practice they
+are not.  The second derivative of current uses 3 terms to compute
+by divided differences.  The third derivative of charge uses 4
+terms.  Using the odd number of terms catches the error due to the
+oscillatory nature of the trapezoid rule.  An even number of terms
+tends to lose this error.  Also, using charge tends to mask it.
+So, I have changed it to a less accurate, more optimistic method,
+the same as Spice.  It now seems to work about the same as Spice,
+in the sense that it usually chooses about the same step sizes.
+Strictly, the old method is "better" but it tends to run away on
+stiff poles, trying for excess accuracy that doesn't matter.  Your
+comments on this matter are welcome.  If you know of any good papers
+on this, please let me know.
+
+2. The "stiff" option has been removed from the transient command.
+Instead, use the .options "trapezoid" or "gear".  For now, "gear"
+implies first order and is equivalent to the old "stiff".  (A
+cop-out.)  Actually, for stiff poles you want a first order method
+because the error is lower.
+
+3. You can specify the integration method individually on any
+capacitor or inductor.
+
+4. A bug causing the MSDOS version (2 byte integers) to mess up
+probes of other than nodes was fixed.
+
+5. A bug that sometimes caused it to perpetually repeat the same
+time step was fixed.  (SPICE would have reported "time step too
+small" and stopped.)
+
+6. A bug that messed up step control when a dormant model wakes up
+and finds out it has been sleeping too long has been fixed.
+
+7. "Mosflags" and "diodeflags" are different and there are more of
+them.  There are lots of them and they may be useful in taming
+convergence problems.  They control the heuristics that are applied
+when there appears to be a convergence problem.  I have yet to find
+a circuit that could not be made to converge by judicious application
+of the flags and options, but any one setting is no better than
+Spice, and many are worse.  One combination of flags gives Spice
+style limiting, which more often than not makes convergence worse.
+
+8. "vmax" and "vmin" options as part of convergence heuristics.
+The default value of "limit" now large enough to essentially remove
+it.  These limits sometimes help convergence, but more often hurt.
+
+9. The "damp" option actually works.
+
+10. The diode "off" flag works correctly.
+
+11. There is a new command "alarm" that prints a message when a
+value exceeds a range.  The syntax is the same as the "plot" command.
+ ------------------------------------------------------------------
+ACS 0.13 release notes  (03/11/94)
+
+Version 0.13 adds several new features and has several bug fixes
+and performance improvements.
+
+1. Fourier analysis really works.
+The "Fourier" command does a transient analysis but prints the
+results in the frequency domain.  It is similar to the Spice command
+of the same name but not exactly the same.  It is significantly
+more accurate than Spice because the transient time steps are chosen
+for the best match to the Fast Fourier Transform.  Considerably
+more flexibility is available than in Spice.
+
+2. Transient time step control by truncation error (finally).
+
+3. Several options have been added to display diagnostics.
+
+4. Fixed the default value for idsat, issat, ad, and as in the
+mos-diode.  In 0.12, the default area was 1 square meter, which
+gave mosfet capacitors in the 500 uf range.  This sometimes caused
+strange results.
+
+5. Added some node probes, mostly for diagnostic use.
+
+6. Fixed the "F" probe on linear elements.  (Capacitor charge,
+inductor flux, admittance current, resistor voltage)  It used to
+give an obviously bogus answer.
+
+
+Other changes:
+
+1. Some general changes in the interest of improving code quality
+in general.
+
+2. Function headers are in ANSI style, rather than K&R style.  This
+version will compile as either C or C++.  Future versions will
+require a C++ compiler.
+ ------------------------------------------------------------------
+ACS 0.12 release notes  (10/09/93)
+
+Version 0.12 is a maintenance release.  It adds no features (except Ultrix
+support) but fixes several bugs and changes some porting details.  It
+should be easier to port this version than previous versions.
+
+The bug fixes are significant enough that you should upgrade to 0.12 even
+if you are not having any problems.
+ ------------------------------------------------------------------
+ACS 0.11 release notes  (07/26/93)
+
+Version 0.11 fixes a few bugs in 0.10.  0.10 was supposed to be
+posted on alt.sources but due to a problem with the feed it never
+happened.
+
+New features:
+
+1. New MOSFET and diode probes.  All information available from
+the Spice 2 "op" analysis is now available as probes.  For MOSFET
+these include cbd, cbs, cgsovl, cgdovl, cgbovl, cgs, cgd, cgb,
+vdsat, vth.  Other (non-spice) new probes include cgst, cgdt, cgbt.
+(cgst = Cgs total = cgsovl + cgs.) These were available before by
+probing the value of the internal element but it was less convenient.
+Now it is simple and has the same name as in Spice.  These probes
+are also available in transient analysis, so you can see (for
+example) the dynamic variations in capacitance.
+
+Bugs fixed:
+
+1. Pass arguments to tr_volts and family by pointer instead of the
+whole structure.  This is less likely to tickle a bug in Microsoft
+C.  The MSDOS version of ACS 0.10 crashed frequently due to this
+bug.  (Strictly, this is a Microsoft-C bug, not an ACS bug but the
+effect is the same.)
+
+2. The AC "Z" probes work again.  They were broken in 0.10.
+
+3. The size of the buffer for text plots is increased allowing
+support for wider screens.  The old version would crash if you did
+plots with outwidth set to wider than 128.  The fix is to make it
+bigger, with a new constant MAXWIDTH, and trap the width setting
+bigger than MAXWIDTH.  The current max is 256 for MSDOS and 512
+for unix.  The plotting code should probably be redone.
+
+4. Width is narrower by 1 so setting width to 80 won't leave blank
+lines on an 80 column screen.
+
+5. MOSFET capacitance now matches Spice (Meyer model)
+
+6. Level 1 model linear region gds calculation was wrong, but close
+enough to often go unnoticed.  It is correct and matches Spice now.
+
+7. The value of an AC source now is compatible with Spice.  That
+is, plain value is the DC-tran value.  In old versions of ACS a
+plain value applied to all analyses including AC.  You needed to
+prefix the value with "DC" to make it not apply to AC.  Actually,
+it worked as documented.  Now it works like Spice, which makes more
+sense.  This was a major source of strange results in AC analysis.
+ ------------------------------------------------------------------
+ ------------------------------------------------------------------

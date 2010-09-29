@@ -1,4 +1,4 @@
-/*$Id: main.cc,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
+/*$Id: main.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * top level module
  * it all starts here
  */
+//testing=script 2006.07.14
 #include "patchlev.h"
 #include "c_comand.h"
 #include "declare.h"	/* lots */
@@ -41,29 +42,29 @@ int main(int argc, const char *argv[])
   {
     SET_RUN_MODE xx(rBATCH);
     sign_on();
-    if (!sigsetjmp(env.p, true)){
+    if (!sigsetjmp(env.p, true)) {
       //try {
       read_startup_files();
       setup_traps();
       process_cmd_line(argc,argv);
     }else{
-      //}catch (...){
+      //}catch (...) {
       finish();		/* error clean up (from longjmp())	*/
       exit(0);
     }
   }
-  for (;;){
+  for (;;) {itested();
     SET_RUN_MODE xx(rINTERACTIVE);
-    if (!sigsetjmp(env.p, true)){
+    if (!sigsetjmp(env.p, true)) {itested();
       //try {
       char cmdbuf[BUFLEN];
       CMD::count++;
       getcmd(I_PROMPT, cmdbuf, BUFLEN);
       CMD::cmdproc(cmdbuf);
-    }else{
-      //}catch (...){
+    }else{itested();
+      //}catch (...) {
       finish();		/* error clean up (from longjmp())	*/
-    }  
+    }
   }
   return 0;
 }
@@ -74,7 +75,7 @@ static void sign_on(void)
     "Gnucap "  PATCHLEVEL  "\n"
     "The Gnu Circuit Analysis Package\n"
     "Never trust any version less than 1.0\n"
-    "Copyright 1982-2002, Albert Davis\n"
+    "Copyright 1982-2006, Albert Davis\n"
     "Gnucap comes with ABSOLUTELY NO WARRANTY\n"
     "This is free software, and you are welcome\n"
     "to redistribute it under certain conditions\n"
@@ -85,13 +86,13 @@ static void sign_on(void)
 static void read_startup_files(void)
 {
   std::string name = findfile(SYSTEMSTARTFILE, SYSTEMSTARTPATH, R_OK);
-  if (!name.empty()){
+  if (!name.empty()) {untested();
     char cmdbuf[BUFLEN];
     sprintf(cmdbuf, "get %s", name.c_str());
     CMD::cmdproc(cmdbuf);
   }
   name = findfile(USERSTARTFILE, USERSTARTPATH, R_OK);
-  if (!name.empty()){
+  if (!name.empty()) {untested();
     char cmdbuf[BUFLEN];
     sprintf(cmdbuf, "get %s", name.c_str());
     CMD::cmdproc(cmdbuf);
@@ -102,17 +103,18 @@ static void read_startup_files(void)
 static void process_cmd_line(int argc, const char *argv[])
 {
   char cmdbuf[BUFLEN];
-  {if ((argc > 2) && (strcasecmp(argv[1], "-i") == 0)) {
+  if ((argc > 2) && (strcasecmp(argv[1], "-i") == 0)) {untested();
     sprintf(cmdbuf, "get %s", argv[2]);
     CMD::cmdproc(cmdbuf);
   }else if ((argc > 2) && (strcasecmp(argv[1], "-b") == 0)) {
     sprintf(cmdbuf, "< %s", argv[2]);
     CMD::cmdproc(cmdbuf);
     CMD::cmdproc("end");
-  }else if (argc > 1) {
+  }else if (argc > 1) {itested();
     sprintf(cmdbuf, "get %s", argv[1]);
     CMD::cmdproc(cmdbuf);
-  }}
+  }else{itested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* finish: clean up after a command

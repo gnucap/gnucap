@@ -1,4 +1,4 @@
-/*$Id: mg_out_common.cc,v 24.5 2003/04/27 01:04:58 al Exp $ -*- C++ -*-
+/*$Id: mg_out_common.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
 #include "mg_out.h"
 /*--------------------------------------------------------------------------*/
@@ -28,15 +28,15 @@ static void make_common_default_constructor(std::ofstream& out,const Device& d)
   make_construct_parameter_list(out, d.common().raw());
   out << ",\n   _sdp(0)";
   make_construct_parameter_list(out, d.common().calculated());
-  {for (Args_List::const_iterator
+  for (Args_List::const_iterator
 	  p = d.circuit().args_list().begin();
 	p != d.circuit().args_list().end();
 	++p) {
     out << ",\n   _" << (**p).name() << "(0)";
-  }}
+  }
   out << "\n{\n"
     "  ++_count;\n";
-  {for (Parameter_List::const_iterator
+  for (Parameter_List::const_iterator
 	 p = d.common().override().begin();
        p != d.common().override().end();
        ++p) {
@@ -46,7 +46,7 @@ static void make_common_default_constructor(std::ofstream& out,const Device& d)
     if (!((**p).default_val().empty())) {
       out << "  " << (**p).code_name() << " = " << (**p).default_val() <<";\n";
     }
-  }}
+  }
   out << "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
@@ -60,20 +60,20 @@ static void make_common_copy_constructor(std::ofstream& out, const Device& d)
   make_copy_construct_parameter_list(out, d.common().raw());
   out << ",\n   _sdp(0)";
   make_copy_construct_parameter_list(out, d.common().calculated());
-  {for (Args_List::const_iterator
+  for (Args_List::const_iterator
 	  p = d.circuit().args_list().begin();
 	p != d.circuit().args_list().end();
 	++p) {
     out << ",\n   _" << (**p).name() << "(0)";
-  }}
+  }
   out << "\n{\n"
     "  ++_count;\n";
-  {for (Parameter_List::const_iterator
+  for (Parameter_List::const_iterator
 	 p = d.common().override().begin();
        p != d.common().override().end();
        ++p) {
     out << ",\n   " << (**p).code_name() << "(p." << (**p).code_name() << ")";
-  }}
+  }
   out << "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
@@ -83,12 +83,12 @@ static void make_common_destructor(std::ofstream& out, const Device& d)
 {
   out << "COMMON_" << d.name() << "::~COMMON_" << d.name() << "()\n"
     "{\n";
-  {for (Args_List::const_iterator
+  for (Args_List::const_iterator
 	  p = d.circuit().args_list().begin();
 	p != d.circuit().args_list().end();
 	++p) {
     out << "  detach_common(&_" << (**p).name() << ");\n";
-  }}
+  }
   out << "  --_count;\n"
     "  delete _sdp;\n"
     "}\n"
@@ -104,14 +104,16 @@ static void make_common_operator_equal(std::ofstream& out, const Device& d)
     "  const COMMON_" << d.name() << "* p = dynamic_cast<const COMMON_" 
       << d.name() << "*>(&x);\n"
     "  return (p\n";
-  {for (Parameter_List::const_iterator
+  for (Parameter_List::const_iterator
 	  p = d.common().raw().begin();
 	p != d.common().raw().end();
 	++p) {
     out << "    && " << (**p).code_name() 
 	<< " == p->" << (**p).code_name() << '\n';
-  }}
-  out << "    && is_equal(x));\n"
+  }
+  out << 
+    "    && _sdp == p->_sdp\n"
+    "    && COMMON_COMPONENT::operator==(x));\n"
     "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
@@ -121,7 +123,6 @@ static void make_common_parse(std::ofstream& out, const Device& d)
 {
   out << "void COMMON_" << d.name() << "::parse(CS& cmd)\n"
     "{\n"
-    "  assert(!has_model());\n"
     "  parse_modelname(cmd);\n";
   if (!d.common().unnamed_value().is_empty()) {
     out << "  if (cmd.is_float()) {\n"
@@ -130,7 +131,7 @@ static void make_common_parse(std::ofstream& out, const Device& d)
   }
   out << "  int here = cmd.cursor();\n"
     "  do{\n"
-    "    0\n";
+    "    ONE_OF\n";
   make_get_param_list(out, d.common().raw());
   out << "    ;\n"
     "  }while (cmd.more() && !cmd.stuck(&here));\n"
@@ -156,35 +157,45 @@ void make_common_print(std::ofstream& out, const Device& d)
 /*--------------------------------------------------------------------------*/
 static void make_common_expand(std::ofstream& out, const Device& d)
 {
-  out << "void COMMON_" << d.name() << "::expand(const COMPONENT* d)\n"
+  out << "void COMMON_" << d.name() << "::elabo3(const COMPONENT* d)\n"
     "{\n"
-    "  const COMMON_" << d.name() << "* c = this;\n"
+    "  COMMON_" << d.name() << "* c = this;\n"
     "  const MODEL_" << d.model_type() << "* m = dynamic_cast<const MODEL_" 
       << d.model_type() << "*>(attach_model(d));\n"
     "  if (!m) {\n"
     "    error(bERROR, d->long_label() + \": model \" + modelname()\n"
     "          + \" is not a " << d.parse_name() << "\\n\");\n"
-    "  }\n"
+    "  }\n";
+
+  out << "\n"
+    "  assert(c);\n"
+    "  const CARD_LIST* par_scope = d->scope();\n"
+    "  assert(par_scope);\n";
+  make_final_adjust(out, d.common());
+
+  out << "\n"
+    "  // size dependent\n"
     "  delete _sdp;\n"
     "  _sdp = m->new_sdp(this);\n"
     "  assert(_sdp);\n"
     "  const SDP_" << d.model_type() << "* s = dynamic_cast<const SDP_" 
       << d.model_type() << "*>(_sdp);\n"
-    "  assert(s);\n";
-  {for (Args_List::const_iterator
+    "  assert(s);\n"
+    "\n"
+    "  // subcircuit commons, recursive\n";
+  for (Args_List::const_iterator
 	  p = d.circuit().args_list().begin();
 	p != d.circuit().args_list().end();
 	++p) {
-    out << "\n"
-      "  COMMON_" << (**p).type() << "* " << (**p).name() 
+    out << "  COMMON_" << (**p).type() << "* " << (**p).name() 
 	<< " = new COMMON_" << (**p).type() << ";\n";
-    {for (Arg_List::const_iterator a = (**p).begin(); a != (**p).end(); ++a) {
+    for (Arg_List::const_iterator a = (**p).begin(); a != (**p).end(); ++a) {
       out << "  " << (**p).name() << "->" << (**a).arg() << ";\n";
-    }}
+    }
     out << "  attach_common(" << (**p).name() << ", &_" << (**p).name()
-	<< ");\n";
-  }}
-  make_final_adjust(out, d.common());
+	<< ");\n\n";
+  }
+
   out << "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";

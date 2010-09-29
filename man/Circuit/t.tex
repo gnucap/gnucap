@@ -1,4 +1,4 @@
-%$Id: t.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: t.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit t .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,15 +17,15 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt T}: Transmission Line}
 %------------------------------------------------------------------------
 \subsection{Syntax}
 \begin{verse}
 {\tt T}{\it xxxxxxx n1+ n1-- n2+ n2--} \{{\it args}\}\\
-{\tt .TLIne} {\it xxxxxxx n1+ n1-- n2+ n2--} \{{\it args}\}
+{\tt .tline} {\it xxxxxxx n1+ n1-- n2+ n2--} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -41,21 +41,58 @@ The parameters {\tt TD}, {\tt Freq}, and {\tt NL} determine the length
 of the line.  Either {\tt TD} or {\tt Freq} and {\tt NL} must be
 specified.  If only {\tt Freq} is specified, {\tt NL} is assumed to be
 .25.  The other will be calculated based on the one you specify.  If
-you specify too much, {\tt Freq} and {\tt NL} dominate, and a warning
-is issued.
+you specify too many parameters, {\tt Freq} and {\tt NL} dominate, and
+a warning is issued.
 %------------------------------------------------------------------------
 \subsection{Element Parameters}
 
+Many parameters are offered.  You should not specify them all.
+
+\subsubsection{Parameters that always work.}
+
 \begin{description}
 
-\item[{\tt Z0} = {\it x}] Characteristic impedance.  (Default = 50.)
+\item[{\tt LEN} = {\it x}]
+Length multiplier.  (Default = 1) The effective length, regardless of
+its method of calculation is multiplied by this number.
 
-\item[{\tt TD} = {\it x}] Time delay.
+\end{description}
 
-\item[{\tt Freq} = {\it x}] Frequency for NL.
+
+\subsubsection{Direct specification of electrical characteristics.}
+
+\begin{description}
+
+\item[{\tt Z0} = {\it x}]
+Characteristic impedance.  If not specified, it is calculated by
+$\sqrt(L/C)$.  If neither {\tt Z0} nor {\tt L} and {\tt C} are
+specified, the default value is 50 Ohms.
+
+\item[{\tt TD} = {\it x}] Time delay.  If not specified, it will be calculated, either by $NL/FREQ$ or by $\sqrt(L C)$.
+
+\item[{\tt FREQ} = {\it x}] Frequency for NL.
 
 \item[{\tt NL} = {\it x}] Number of wavelengths at {\it Freq}.
 
 \end{description}
+
+\subsubsection{Physical parameters}
+
+\begin{description}
+
+\item[{\tt L} = {\it x}]
+Inductance per unit length.  This value is used only if {\tt Z0} and
+{\tt TD} are not specified.
+
+\item[{\tt C} = {\it x}]
+Capacitance per unit length.  This value is used only if {\tt Z0} and
+{\tt TD} are not specified.
+
+\end{description}
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+The standard probes for all basic elements are all available.  See the
+{\tt print} command for documentation.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

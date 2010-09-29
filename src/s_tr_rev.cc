@@ -1,4 +1,4 @@
-/*$Id: s_tr_rev.cc,v 24.20 2004/01/18 07:42:51 al Exp $ -*- C++ -*-
+/*$Id: s_tr_rev.cc,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,70 +16,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * review the solution after solution at a time point
  * Set up events, evaluate logic inputs, truncation error.
- * Recommend adjusted step size. (approxtime)
+ * Recommend adjusted step size. (time_suggested_by_review)
  * and say why (control)
  */
-#include "u_opt.h"
+//testing=script,complete 2006.06.14
 #include "e_cardlist.h"
 #include "u_status.h"
 #include "s_tr.h"
 /*--------------------------------------------------------------------------*/
 //	void	TRANSIENT::review(void);
 /*--------------------------------------------------------------------------*/
-void TRANSIENT::review(void)
+bool TRANSIENT::review(void)
 {
-  static double rtime;	/* next time by iteration count and smoothing */
- 
-  STATUS::review.start();
-  ++STATUS::iter[iTOTAL];
-  {if (phase == pINIT_DC){
-    rtime = dtmax/ 100.;	/* set (guess) initial internal step */
-    rtime = time0 + std::max(rtime, dtmin);
-    control = scITER_A;
-  }else{
-    double rdt = rtime - time1;/* review dt recommended by PREVIOUS review */
-    double adt = time0 - time1;/* actual dt most recently used */
-    if (adt > rdt + dtmin){
-      error(bDANGER,"internal error: step control (adt=%g,rdt=%g)\n",adt,rdt);
-      error(bERROR, "time0=%g  time1=%g  rtime=%g\n", time0, time1, rtime);
-    }
+  ::status.review.start();
+  count_iterations(iTOTAL);
 
-    {if (STATUS::iter[iSTEP] > OPT::itl[OPT::TRHIGH]){/* too many iterations */
-      rtime = time1 + adt / OPT::trstepshrink;  /* try again, smaller step */
-      control = scITER_R;
-    }else if (STATUS::iter[iSTEP] > OPT::itl[OPT::TRLOW]){
-      rtime = time0 + adt;			/* no growth */
-      control = scITER_A;
-    }else{					/* too few iterations */
-      rtime = time0 + dtmax;			/* ok to use bigger steps */
-      control = scSKIP;
-      if (rtime > time0 + adt*OPT::trstepgrow  &&  rtime > time0 + rdt){
-	{if (rdt > adt * OPT::trstepgrow){
-	  rtime = time0 + rdt;
-	}else{					/* limit to max(rdt,adt*2) */
-	  rtime = time0 + adt * OPT::trstepgrow;
-	}}
-	control = scADT;
-      }
-      if (rtime > time0 + rdt * OPT::trstepgrow){
-	rtime = time0 + rdt * OPT::trstepgrow;	/* limit to rdt*2 */
-	control = scRDT;
-      }
-    }}
-  }}
-  double tetime = CARD_LIST::card_list.tr_review();	/* trunc error, etc. */
-  {if (tetime < rtime){
-    control = scTE;
-    approxtime = tetime;
-  }else{
-    approxtime = rtime;
-  }}
-  STATUS::review.stop();
+  DPAIR times = CARD_LIST::card_list.tr_review();
+  time_by_error_estimate = times.first;
+  time_by_ambiguous_event = times.second;
+
+  time_suggested_by_review = std::min(times.first, times.second);
+  control = scTE;
+
+  ::status.review.stop();
+
+  return (time_suggested_by_review > time0);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

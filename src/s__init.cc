@@ -1,4 +1,4 @@
-/* $Id: s__init.cc,v 24.6 2003/05/08 09:04:04 al Exp $
+/* $Id: s__init.cc,v 25.96 2006/08/28 05:45:51 al Exp $
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,15 +16,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * initialization (allocation, node mapping, etc)
  */
-#include "e_card.h"
-#include "u_status.h"
+//testing=script 2006.07.14
+#include "u_nodemap.h"
+#include "e_node.h"
 #include "l_jmpbuf.h"
-#include "s__.h"
+//#include "s__.h"
 /*--------------------------------------------------------------------------*/
 //	 void	SIM::command_base(CS&);
 //static void	SIM::init()
@@ -36,27 +37,40 @@
 //static void	SIM::uninit();
 /*--------------------------------------------------------------------------*/
 extern JMP_BUF env;
-extern NODE* nstat;
+extern LOGIC_NODE* nstat;
 /*--------------------------------------------------------------------------*/
 void SIM::command_base(CS& cmd)
 {
   reset_timers();
+  reset_iteration_counter(mode);
+  reset_iteration_counter(iPRINTSTEP);
+  
   init();
   alloc_vectors();
-  aa.allocate().dezero(OPT::gmin).set_min_pivot(OPT::pivtol);
-  lu.allocate().dezero(OPT::gmin).set_min_pivot(OPT::pivtol);
+  
+  aa.reallocate();
+  aa.dezero(OPT::gmin);
+  aa.set_min_pivot(OPT::pivtol);
+  
+  lu.reallocate();
+  lu.dezero(OPT::gmin);
+  lu.set_min_pivot(OPT::pivtol);
+  
   JMP_BUF stash = env;
   if (!sigsetjmp(env.p, true)) {
     //try {
     setup(cmd);
-    STATUS::set_up.stop();
+    ::status.set_up.stop();
     switch (ENV::run_mode) {
-    case rINTERACTIVE:
-    case rSCRIPT:
     case rBATCH:
+      untested();
+    case rINTERACTIVE:
+      itested();
+    case rSCRIPT:
       sweep();
       break;
     case rIGNORE:
+      untested();
     case rPRESET:
       /*nothing*/
       break;
@@ -64,9 +78,9 @@ void SIM::command_base(CS& cmd)
     unalloc_vectors();
     env = stash;
     finish();
-  }else{
+  }else{itested();
     //}catch (...) {
-    ++STATUS::iter[iTOTAL];
+    count_iterations(iTOTAL);
     lu.unallocate();
     aa.unallocate();
     unalloc_vectors();
@@ -74,7 +88,7 @@ void SIM::command_base(CS& cmd)
     finish();
     error(bERROR, "");
   }
-  STATUS::total.stop();
+  ::status.total.stop();
 }
 /*--------------------------------------------------------------------------*/
 /* init: allocate, set up, etc ... for any type of simulation
@@ -85,14 +99,14 @@ void SIM::command_base(CS& cmd)
   if (!nstat) {
     uninit();
     count_nodes();
-    CARD_LIST::card_list.expand();
+    CARD_LIST::card_list.elabo2();
     map_nodes();
     alloc_hold_vectors();
-    aa.reinit(STATUS::total_nodes);
-    lu.reinit(STATUS::total_nodes);
-    acx.reinit(STATUS::total_nodes);
-    CARD_LIST::card_list.tr_alloc_matrix();
-    CARD_LIST::card_list.ac_alloc_matrix();
+    aa.reinit(::status.total_nodes);
+    lu.reinit(::status.total_nodes);
+    acx.reinit(::status.total_nodes);
+    CARD_LIST::card_list.tr_iwant_matrix();
+    CARD_LIST::card_list.ac_iwant_matrix();
     CARD_LIST::card_list.precalc();
     last_time = 0;
   }
@@ -100,42 +114,31 @@ void SIM::command_base(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void SIM::reset_timers()
 {
-  STATUS::advance.reset();
-  STATUS::evaluate.reset();
-  STATUS::load.reset();
-  STATUS::lud.reset();
-  STATUS::back.reset();
-  STATUS::review.reset();
-  STATUS::accept.reset();
-  STATUS::output.reset();
-  STATUS::aux1.reset();
-  STATUS::aux2.reset();
-  STATUS::aux3.reset();
-  STATUS::set_up.reset().start();
-  STATUS::total.reset().start();
-  STATUS::iter[mode] = 0;
-  STATUS::iter[iPRINTSTEP] = 0;
+  ::status.advance.reset();
+  ::status.queue.reset();
+  ::status.evaluate.reset();
+  ::status.load.reset();
+  ::status.lud.reset();
+  ::status.back.reset();
+  ::status.review.reset();
+  ::status.accept.reset();
+  ::status.output.reset();
+  ::status.aux1.reset();
+  ::status.aux2.reset();
+  ::status.aux3.reset();
+  ::status.set_up.reset().start();
+  ::status.total.reset().start();
 }
 /*--------------------------------------------------------------------------*/
 /* count_nodes: count nodes in main ckt (not subckts)
- * update the variables "STATUS::total_nodes" and "STATUS::user_nodes"
- * zeros "STATUS::subckt_nodes" and "STATUS::model_nodes"
+ * update the variables "::status.total_nodes" and "::status.user_nodes"
+ * zeros "::status.subckt_nodes" and "::status.model_nodes"
  */
 /*static*/ void SIM::count_nodes()
 {
-  STATUS::user_nodes = 0;
-  for (CARD_LIST::const_iterator ci = CARD_LIST::card_list.begin();
-       ci != CARD_LIST::card_list.end(); ++ci) {
-    if ((**ci).is_device()) {
-      for (int ii = 0;  ii < (**ci).out_nodes();  ++ii) {
-	if ((**ci)._n[ii].e_() > STATUS::user_nodes) {
-	  STATUS::user_nodes = (**ci)._n[ii].e_();
-	}
-      }
-    }
-  }
-  STATUS::total_nodes = STATUS::user_nodes;
-  STATUS::subckt_nodes = STATUS::model_nodes = 0;
+  ::status.total_nodes = ::status.user_nodes =
+    CARD_LIST::card_list.nodes()->how_many();
+  ::status.subckt_nodes = ::status.model_nodes = 0;
 }
 /*--------------------------------------------------------------------------*/
 /* alloc_hold_vectors:
@@ -149,14 +152,14 @@ void SIM::alloc_hold_vectors()
 {
   assert(!nstat);
   assert(!vdc);
-
-  nstat = new NODE[STATUS::total_nodes+1];
-  for (int ii=0;  ii <= STATUS::total_nodes;  ++ii) {
-    nstat[nm[ii]].set_number(ii);
+  
+  nstat = new LOGIC_NODE[::status.total_nodes+1];
+  for (int ii=0;  ii <= ::status.total_nodes;  ++ii) {
+    nstat[nm[ii]].set_user_number(ii);
   }
 
-  vdc = new double[STATUS::total_nodes+1];
-  std::fill_n(vdc, STATUS::total_nodes+1, 0);
+  vdc = new double[::status.total_nodes+1];
+  std::fill_n(vdc, ::status.total_nodes+1, 0);
 }
 /*--------------------------------------------------------------------------*/
 /* alloc_vectors:
@@ -174,16 +177,16 @@ void SIM::alloc_vectors()
   assert(!vt1);
   assert(!fw);
 
-  ac = new COMPLEX[STATUS::total_nodes+1];
-  i   = new double[STATUS::total_nodes+1];
-  v0  = new double[STATUS::total_nodes+1];
-  vt1 = new double[STATUS::total_nodes+1];
-  fw  = new double[STATUS::total_nodes+1];
-  std::fill_n(ac, STATUS::total_nodes+1, 0);
-  std::fill_n(i,  STATUS::total_nodes+1, 0);
-  std::fill_n(v0, STATUS::total_nodes+1, 0);
-  std::fill_n(vt1,STATUS::total_nodes+1, 0);
-  std::fill_n(fw, STATUS::total_nodes+1, 0);
+  ac = new COMPLEX[::status.total_nodes+1];
+  i   = new double[::status.total_nodes+1];
+  v0  = new double[::status.total_nodes+1];
+  vt1 = new double[::status.total_nodes+1];
+  fw  = new double[::status.total_nodes+1];
+  std::fill_n(ac, ::status.total_nodes+1, 0);
+  std::fill_n(i,  ::status.total_nodes+1, 0);
+  std::fill_n(v0, ::status.total_nodes+1, 0);
+  std::fill_n(vt1,::status.total_nodes+1, 0);
+  std::fill_n(fw, ::status.total_nodes+1, 0);
 }
 /*--------------------------------------------------------------------------*/
 /*static*/ void SIM::unalloc_vectors()
@@ -208,15 +211,15 @@ void SIM::alloc_vectors()
  */
 /*static*/ void SIM::uninit()
 {
-  delete [] nstat;
-  nstat = NULL;
-  aa.reinit(0);
-  lu.reinit(0);
   acx.reinit(0);
-  delete [] nm;
-  nm = NULL;
+  lu.reinit(0);
+  aa.reinit(0);
   delete [] vdc;
   vdc = NULL;
+  delete [] nstat;
+  nstat = NULL;
+  delete [] nm;
+  nm = NULL;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

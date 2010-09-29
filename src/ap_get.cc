@@ -1,4 +1,4 @@
-/*$Id: ap_get.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
+/*$Id: ap_get.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,48 +16,39 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * get value for matching keyword
  */
+//testing=script 2006.07.17
 #include "ap.h"
 /*--------------------------------------------------------------------------*/
-bool get(CS& cmd, const std::string& key, bool* val, AP_MOD m)
+/* special version of "get" for "bool"
+ * so "nofoo" works as an equivalent to foo=false
+ */
+bool get(CS& cmd, const std::string& key, bool* val)
 {
-  assert(m==mNONE || m==mINVERT);
-  std::string false_key("NO" + key);
-
-  {if (cmd.dmatch(key)){
-    0
-      || set(cmd, "1",     val, true)
-      || set(cmd, "0",     val, false)
-      || set(cmd, "True",  val, true)
-      || set(cmd, "False", val, false)
-      || set(cmd, "Yes",   val, true)
-      || set(cmd, "No",    val, false)
-      || set(cmd, "#True", val, true)
-      || set(cmd, "#False",val, false)
-      || (*val = true)
-      ;
-    cmd.reset(cmd.cursor()); // cheat: set "ok" flag to true
-    if (m==mINVERT){
-      untested();
-      *val = !*val;
+  if (cmd.dmatch(key)) {
+    if (cmd.skip1b('=')) {untested();
+      cmd >> *val;
+    }else{
+      *val = true;
     }
     return true;
-  }else if (cmd.dmatch(false_key)){
-    *val = (m==mINVERT);
+  }else if (cmd.dmatch("NO" + key)) {
+    *val = false;
     return true;
   }else{
     return false;
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 bool get(CS& cmd, const std::string& key, int* val, AP_MOD mod, int scale)
 {
-  {if (cmd.dmatch(key)){
-    switch(mod){
+  if (cmd.dmatch(key)) {
+    cmd.skip1b('=');
+    switch(mod) {
       case mNONE:		  *val = int(cmd.ctof());	break;
       case mSCALE:    untested(); *val = int(cmd.ctof())*scale;	break;
       case mOFFSET:   untested(); *val = int(cmd.ctof())+scale;	break;
@@ -69,26 +60,7 @@ bool get(CS& cmd, const std::string& key, int* val, AP_MOD mod, int scale)
     return true;
   }else{
     return false;
-  }}
+  }
 }
-/*--------------------------------------------------------------------------*/
-bool get(CS& cmd, const std::string& key,double* val,AP_MOD mod,double scale)
-{
-  {if (cmd.dmatch(key)){
-    cmd >> *val;
-    switch(mod){
-    case mNONE: 	/*nothing*/		break;
-    case mSCALE:	*val *= scale;		break;
-    case mOFFSET:	*val += scale;		break;
-    case mINVERT: untested(); *val = 1 / *val;	break;
-    case mPOSITIVE:	*val = std::abs(*val);	break;
-    case mOCTAL:	unreachable();		break;
-    case mHEX:  	unreachable();		break;
-    }
-    return true;
-  }else{
-    return false;
-  }}
-}    
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

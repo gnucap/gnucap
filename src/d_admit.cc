@@ -1,4 +1,4 @@
-/*$Id: d_admit.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: d_admit.cc,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * admittance devices:
  *	self-admittance (old Y device)
@@ -29,7 +29,7 @@
  *		m.x  = volts(control), m.c0 = 0,    acg = m.c1 = mhos
  *		_loss0 == 1/R. (mhos)
  */
-#include "l_stlextra.h"
+//testing=script 2006.07.17
 #include "d_admit.h"
 /*--------------------------------------------------------------------------*/
 void DEV_ADMITTANCE::precalc()
@@ -48,9 +48,10 @@ void DEV_ADMITTANCE::precalc()
 /*--------------------------------------------------------------------------*/
 bool DEV_ADMITTANCE::do_tr()
 {
-  {if (using_tr_eval()) {
-    _m0.x = tr_involts_limited();
-    _y0.x = _m0.x;
+  if (using_tr_eval()) {
+    _y0.x = _m0.x = tr_involts_limited();
+    // _y0.x = tr_input_limited();
+    //assert(_y0.x == _m0.x);
     _y0.f0 = _m0.c1 * _m0.x + _m0.c0;	/* BUG:  patch for diode */
     tr_eval();
     assert(_y0.f0 != LINEAR);
@@ -64,19 +65,19 @@ bool DEV_ADMITTANCE::do_tr()
     assert(_m0.c0 == 0.);
     assert(_y1 == _y0);
     assert(converged());
-  }}
+  }
   return converged();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_ADMITTANCE::do_ac()
 {
-  {if (has_ac_eval()) {
+  if (using_ac_eval()) {untested();
     ac_eval();
     _acg = _ev;
   }else{
     assert(_ev == _y0.f1);
-    assert(has_tr_eval() || _ev == value());
-  }}
+    assert(has_tr_eval() || _ev == double(value()));
+  }
   assert(_acg == _ev);
   ac_load(); 
 }
@@ -91,13 +92,13 @@ void DEV_VCG::precalc()
   _m0.c1 = 0.;
   _m0.c0 = 0.;
   _m1 = _m0;
-  assert(!constant());
+  assert(!is_constant());
   set_not_converged();
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_VCG::do_tr()
 {
-  _y0.x = tr_involts_limited();
+  _y0.x = tr_input_limited();
   tr_eval();
   assert(_y0.f0 != LINEAR);
 
@@ -113,14 +114,14 @@ bool DEV_VCG::do_tr()
 /*--------------------------------------------------------------------------*/
 void DEV_VCG::do_ac()
 {
-  {if (has_ac_eval()) {
+  if (using_ac_eval()) {
     ac_eval();
     _acg = _ev * _m0.x;
     _ev *= _y0.x;
   }else{
     assert(_ev == _y0.f0);
     assert(_acg == _m0.c1);
-  }}
+  }
   ac_load();
 }
 /*--------------------------------------------------------------------------*/
@@ -148,11 +149,11 @@ DEV_CPOLY_G::DEV_CPOLY_G()
 DEV_CPOLY_G::~DEV_CPOLY_G()
 {
   delete [] _old_values;
-  {if (net_nodes() > NODES_PER_BRANCH) {
+  if (net_nodes() > NODES_PER_BRANCH) {
     delete [] _n;
   }else{
     // it is part of a base class
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_CPOLY_G::do_tr_con_chk_and_q()
@@ -162,9 +163,9 @@ bool DEV_CPOLY_G::do_tr_con_chk_and_q()
   assert(_old_values);
   set_converged(conchk(_time, SIM::time0));
   _time = SIM::time0;
-  {for (int i=0; converged() && i<=_n_ports; ++i) {
+  for (int i=0; converged() && i<=_n_ports; ++i) {
     set_converged(conchk(_old_values[i], _values[i]));
-  }}
+  }
   return converged();
 }
 /*--------------------------------------------------------------------------*/
@@ -175,28 +176,30 @@ bool DEV_CPOLY_G::do_tr()
   return do_tr_con_chk_and_q();
 }
 /*--------------------------------------------------------------------------*/
+#if 0
 bool DEV_FPOLY_G::do_tr()
-{
+{untested();
   assert(_values);
   double c0 = _values[0];
-  {if (_inputs) {
+  if (_inputs) {untested();
     untested();
-    {for (int i=1; i<=_n_ports; ++i) {
+    for (int i=1; i<=_n_ports; ++i) {untested();
       c0 -= *(_inputs[i]) * _values[i];
       trace4("", i, *(_inputs[i]), _values[i], *(_inputs[i]) * _values[i]);
-    }}
-  }else{
-    {for (int i=1; i<=_n_ports; ++i) {
+    }
+  }else{untested();
+    for (int i=1; i<=_n_ports; ++i) {untested();
       c0 -= volts_limited(_n[2*i-2],_n[2*i-1]) * _values[i];
       trace4("", i, volts_limited(_n[2*i-2],_n[2*i-1]), _values[i],
 	     volts_limited(_n[2*i-2],_n[2*i-1]) * _values[i]);
-    }}
-  }}
+    }
+  }
   trace2("", _values[0], c0);
   _m0 = CPOLY1(0., c0, _values[1]);
 
   return do_tr_con_chk_and_q();
 }
+#endif
 /*--------------------------------------------------------------------------*/
 void DEV_CPOLY_G::tr_load()
 {
@@ -211,11 +214,12 @@ void DEV_CPOLY_G::tr_load()
 /*--------------------------------------------------------------------------*/
 void DEV_CPOLY_G::tr_unload()
 {
-  //untested();
+  
   std::fill_n(_values, _n_ports+1, 0.);
   _m0.c0 = _m0.c1 = 0.;
   if (SIM::inc_mode) {
     SIM::inc_mode = tsBAD;
+  }else{
   }
   tr_load();
 }
@@ -253,25 +257,25 @@ void DEV_CPOLY_G::set_parameters(const std::string& Label, CARD *Owner,
   set_value(Value);
   attach_common(Common);
 
-  {if (first_time) {
+  if (first_time) {
     _n_ports = n_nodes/2; // sets num_nodes() = _n_ports*2
     assert(_n_ports == n_states-1);
 
     assert(!_old_values);
     _old_values = new double[n_states];
 
-    {if (net_nodes() > NODES_PER_BRANCH) {
+    if (net_nodes() > NODES_PER_BRANCH) {
       // allocate a bigger node list
       _n = new node_t[net_nodes()];
     }else{
       // use the default node list, already set
-    }}      
-  }else{
+    }      
+  }else{itested();
     assert(_n_ports == n_states-1);
     assert(_old_values);
     assert(net_nodes() == n_nodes);
     // assert could fail if changing the number of nodes after a run
-  }}
+  }
 
   //_inputs = inputs;
   _inputs = 0;

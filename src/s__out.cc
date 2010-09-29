@@ -1,4 +1,4 @@
-/*$Id: s__out.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s__out.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,16 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * tr,dc analysis output functions (and some ac)
  */
-#include "u_opt.h"
-#include "constant.h"
+//testing=obsolete,script 2005.09.17
 #include "u_prblst.h"
 #include "declare.h"	/* plottr, plopen */
-#include "u_status.h"
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 //	PROBELIST& SIM::alarmlist()
@@ -33,7 +31,7 @@
 //	PROBELIST& SIM::printlist()
 //	PROBELIST& SIM::storelist()
 //	void	SIM::outdata(double);
-//	void	SIM::head(double,double,bool,const char*);
+//	void	SIM::head(double,double,const char*);
 //	void	SIM::print(double);
 //	void	SIM::alarm(void);
 //	void	SIM::store(void);
@@ -54,6 +52,7 @@ PROBELIST& SIM::printlist()
 }
 PROBELIST& SIM::storelist()
 {
+  untested();
   return PROBE_LISTS::store[mode];
 }
 /*--------------------------------------------------------------------------*/
@@ -61,32 +60,33 @@ PROBELIST& SIM::storelist()
  */
 void SIM::outdata(double x)
 {
-  STATUS::output.start();
+  ::status.output.start();
   plottr(x);
   print(x);
   alarm();
   store();
-  STATUS::iter[iPRINTSTEP] = 0;
-  STATUS::control[cSTEPS] = 0;
-  STATUS::output.stop();
+  reset_iteration_counter(iPRINTSTEP);
+  ::status.control[cSTEPS] = 0;
+  ::status.output.stop();
 }
 /*--------------------------------------------------------------------------*/
 /* SIM::head: print column headings and draw plot borders
  */
-void SIM::head(double start, double stop, bool linear, const char *col1)
+void SIM::head(double start, double stop, const char *col1)
 {
-  if (!plopen(mode,start,stop,linear)){
+  if (!plopen(start,stop)) {
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     int width = std::min(OPT::numdgt+5, BIGBUFLEN-10);
     char format[20];
     sprintf(format, "%%c%%-%u.%us", width, width);
-    if (col1  &&  *col1){      
+    if (col1  &&  *col1) {      
       out.form(format, '#', col1);
     }else{
-      untested();
+      unreachable();
+      incomplete();
     }
     for (PROBELIST::const_iterator
-	   p=printlist().begin();  p!=printlist().end();  ++p){
+	   p=printlist().begin();  p!=printlist().end();  ++p) {
       out.form(format, ' ', p->label().c_str());
     }
     out << '\n';
@@ -98,15 +98,16 @@ void SIM::head(double start, double stop, bool linear, const char *col1)
  */
 void SIM::print(double x)
 {
-  if (!IO::plotout.any()){
+  if (!IO::plotout.any()) {
     out.setfloatwidth(OPT::numdgt, OPT::numdgt+6);
-    if (x != NOT_VALID){
+    if (x != NOT_VALID) {
       out << x;
     }else{
-      untested();
+      unreachable();
+      incomplete();
     }
     for (PROBELIST::const_iterator
-	   p=printlist().begin();  p!=printlist().end();  ++p){
+	   p=printlist().begin();  p!=printlist().end();  ++p) {
       out << p->value();
     }
     out << '\n';
@@ -119,8 +120,8 @@ void SIM::alarm(void)
 {
   out.setfloatwidth(OPT::numdgt, OPT::numdgt+6);
   for (PROBELIST::const_iterator
-	 p=alarmlist().begin();  p!=alarmlist().end();  ++p){
-    if (!p->in_range()){
+	 p=alarmlist().begin();  p!=alarmlist().end();  ++p) {
+    if (!p->in_range()) {
       out << p->label() << '=' << p->value() << '\n';
     }
   }

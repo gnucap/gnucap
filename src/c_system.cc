@@ -1,4 +1,4 @@
-/*$Id: c_system.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: c_system.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * system calls: change directory, invoke another program, invoke editor, etc.
  */
+//testing=none 2006.07.17
 #include "io_.h"
 #include "ap.h"
 #include "c_comand.h"
@@ -36,30 +37,30 @@
 void CMD::edit(CS& cmd)
 {
   std::string editor(OS::getenv("EDITOR"));
-  {if (editor.empty()){
-    error(bERROR, "no editor defined\n");
+  if (editor.empty()) {
+    error(bERROR, "no editor defined\n"
+	  "You need to set the EDITOR environment variable.");
   }else{
-    {if (cmd.more()){
+    if (cmd.more()) {
       OS::system(editor + ' ' + cmd.tail());
     }else{
       //std::string temp_file(::tmpnam(0));
       std::string temp_file("/tmp/foo");
-      {if (temp_file.empty()){
-	untested();
+      if (temp_file.empty()) {
 	error(bERROR, "cannot create temp file\n");
       }else{
 	cmdproc("save " + temp_file + " quiet");
 	OS::system(editor + ' ' + temp_file);
 	cmdproc("get " + temp_file + " quiet");
 	OS::remove(temp_file);
-      }}
-    }}
-  }}
+      }
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 void CMD::system(CS& cmd)
 {
-  if (cmd.more()){
+  if (cmd.more()) {
     OS::system(cmd.tail());
   }else{
     OS::system(SHELL);
@@ -68,8 +69,9 @@ void CMD::system(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void CMD::chdir(CS& cmd)
 {
-  if (cmd.more()){
+  if (cmd.more()) {
     OS::chdir(cmd.ctos(""));
+  }else{
   }
   IO::mstdout << OS::getcwd() << '\n';
 }

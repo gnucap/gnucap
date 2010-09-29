@@ -1,4 +1,4 @@
-/* $Id: d_mos3.model,v 22.1 2002/04/28 05:19:52 al Exp $ -*- C++ -*-
+/* $Id: d_mos3.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * mos model equations: spice level 3 equivalent
  */
@@ -36,7 +36,7 @@ model MOS3 {
     override {
       double mjsw "" default=.33;
       double tox "" default=1e-7;
-      double cox "" final_default="E_OX/tox";
+      double cox "" final_default="P_EPS_OX/tox";
       double vto "" final_default=0.0;
       double gamma "" final_default=0.0;
       double phi "" final_default=0.6;
@@ -47,8 +47,8 @@ model MOS3 {
       double kp "transconductance parameter"
 	name=KP final_default=2e-5 
 	print_test="!calc_kp" calc_print_test="calc_kp";
-      double nfs "fast surface state density"
-	name=NFS default=0.0 scale=ICM2M2;
+      double nfs_cm "fast surface state density"
+	name=NFS default=0.0;
       double vmax "max drift velocity of carriers"
 	name=VMAx default=NA;
       double theta "mobility modulation"
@@ -61,24 +61,25 @@ model MOS3 {
 	name=DELta default=0.0;
     }
     calculated_parameters {
+      double nfs "" calculate="nfs_cm*ICM2M2";
       bool calc_kp "" default=false;
       double alpha "" calculate="((nsub != NA)
-	? (2. * E_SI) / (Q * nsub)
+	? (2. * P_EPS_SI) / (P_Q * nsub)
 	: 0.)";
       double xd "coeffDepLayWidth" calculate="sqrt(alpha)";
-      double cfsox "" calculate="Q * nfs / cox";
+      double cfsox "" calculate="P_Q * nfs / cox";
       double delta3 "narrow factor" 
-	calculate="delta * kPId2 * E_SI / cox";
+	calculate="delta * M_PI_2 * P_EPS_SI / cox";
     }
     code_pre {      
-      cox = E_OX / tox;
+      cox = P_EPS_OX / tox;
       if (kp == NA) {
 	kp = uo * cox;
 	calc_kp = true;
       }
       if (nsub != NA) {
 	if (phi == NA) {
-	  phi = (2.*KoQ) * _tnom * log(nsub/NI);
+	  phi = (2. * P_K_Q) * tnom_k * log(nsub/NI);
 	  if (phi < .1) {
 	    untested();
 	    error(bWARNING,
@@ -88,14 +89,14 @@ model MOS3 {
 	  calc_phi = true;
 	}
 	if (gamma == NA) {
-	  gamma = sqrt(2. * E_SI * Q * nsub) / cox;
+	  gamma = sqrt(2. * P_EPS_SI * P_Q * nsub) / cox;
 	  calc_gamma = true;
 	}
 	if (vto == NA) {
 	  double phi_ms = (tpg == gtMETAL)
 	    ? -.05 - (egap + polarity * phi) / 2.
 	    : -polarity * (tpg * egap + phi) / 2.;
-	  double vfb = phi_ms - Q * nss / cox;
+	  double vfb = phi_ms - P_Q * nss / cox;
 	  vto = vfb + polarity * (phi + gamma * sqrt(phi));
 	  calc_vto = true;
 	}
@@ -104,9 +105,9 @@ model MOS3 {
   }
   temperature_dependent {
     calculated_parameters {
-      double vt "" calculate="kt / Q";
+      double vt "" calculate="temp * P_K_Q";
       double phi "" 
-	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)))";
+	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+P_Q*(arg)))";
       double sqrt_phi "" calculate="sqrt(phi)";
       double beta "" calculate="m->kp * tempratio4 * s->w_eff / s->l_eff";
       double uo "" calculate="m->uo * tempratio4";
@@ -115,10 +116,10 @@ model MOS3 {
 	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi))";
     }
     code_pre {
-      double temp = SIM::temp;
-      double tempratio  = temp / m->_tnom; // ratio
+      double temp = SIM::temp_c + P_CELSIUS0;
+      double tempratio  = temp / m->tnom_k; // ratio
       double tempratio4 = tempratio * sqrt(tempratio);
-      double kt = temp * K;
+      double kt = temp * P_K;
       double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
       double arg = (m->egap*tempratio - egap) / (2*kt);
     }
@@ -137,7 +138,7 @@ model MOS3 {
     /* square root term */
     double sarg, v_phi_s, dsarg_dvbs;
     {
-      {if (d->vbs <= 0.) {
+      if (d->vbs <= 0.) {
 	v_phi_s = t->phi - d->vbs;
 	sarg = sqrt(v_phi_s);
 	dsarg_dvbs = -.5 / sarg;
@@ -150,22 +151,14 @@ model MOS3 {
 	dsarg_dvbs = -v_phi_s / (2 * t->phi*t->sqrt_phi);
 	d->sbfwd = true;
 	trace3("***sb-reversed***", sarg, v_phi_s, dsarg_dvbs);
-      }}
-    }
-    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-    {
-      {if (d->vbs - d->vds <= 0.) {
-	d->dbfwd = false;
-      }else{
-	d->dbfwd = true;
-      }}
+      }
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* short channel effect, body effect */
     double fbody, dfbody_dvbs, qbonco, dqbdvb;
     {
       double fshort, dfs_dvbs;
-      {if (short_channel) {
+      if (short_channel) {
 	static const double d[3] = {.0631353, .8013292, -.01110777};
 	double wp = m->xd * sarg;
 	double wp_xj = wp / m->xj;
@@ -187,7 +180,7 @@ model MOS3 {
 	fshort = 1.;
 	dfs_dvbs = 0.;
 	trace2("not-short-channel", fshort, dfs_dvbs);
-      }}
+      }
       
       double gamma_fs = m->gamma * fshort;
       double fbodys = gamma_fs * .5 / (2 * sarg);
@@ -218,7 +211,7 @@ model MOS3 {
     /* von */
     double xn, vtxn, dxn_dvbs, dvon_dvds, dvon_dvbs;
     {
-      {if (do_subthreshold) {
+      if (do_subthreshold) {
 	xn = 1. + m->cfsox + qbonco / (2 * v_phi_s);
 	vtxn = t->vt * xn;
 	dxn_dvbs  = dqbdvb / (2*v_phi_s) - qbonco*dsarg_dvbs / (v_phi_s*sarg);
@@ -250,7 +243,7 @@ model MOS3 {
 	  d->gmbf = d->gmbr = 0.;
 	  return;
 	}
-      }}
+      }
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* device is on */
@@ -283,7 +276,7 @@ model MOS3 {
       d->vdsat = vc * onfbdy;
       trace2("novm", d->vdsat, dvsdga);
       
-      {if (use_vmax) {
+      if (use_vmax) {
 	double vdsc = s->l_eff * m->vmax / us;
 	double argb = sqrt(d->vdsat * d->vdsat + vdsc * vdsc);
 	d->vdsat += vdsc - argb;
@@ -294,7 +287,7 @@ model MOS3 {
       }else{
 	dvdsat_dvgs = dvsdga;
 	onvdsc = NOT_VALID;
-      }}
+      }
       d->saturated = (d->vds > d->vdsat);
       vdsx =  (d->saturated) ? d->vdsat : d->vds;
       trace3("", d->vdsat, vdsx, onvdsc);
@@ -343,7 +336,7 @@ model MOS3 {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* velocity saturation factor */
     double fdrain, dfd_dvgs, dfd_dvds, dfd_dvbs;
-    {if (use_vmax) {
+    if (use_vmax) {
       assert(onvdsc != NOT_VALID);
       fdrain = 1. / (vdsx * onvdsc + 1.);
       double fd2 = fdrain * fdrain;
@@ -364,14 +357,14 @@ model MOS3 {
       dfd_dvgs = 0.;
       dfd_dvds = 0.;
       dfd_dvbs = 0.;
-    }}
+    }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* channel length modulation */
     double gds0;
-    {if (d->saturated) {
+    if (d->saturated) {
       double d_l, dl_dvd;
       double ddl_dvgs, ddl_dvds, ddl_dvbs;
-      {if (m->alpha == 0.) {
+      if (m->alpha == 0.) {
 	d_l = dl_dvd = ddl_dvgs = ddl_dvds = ddl_dvbs = 0.;
       }else if (use_vmax) {	/* use_vmax && m->alpha != 0 */
 	double gdsat = d->ids * (1. - fdrain) * onvdsc;
@@ -405,9 +398,9 @@ model MOS3 {
 	ddl_dvgs = 0.;
 	ddl_dvds = -dl_dvd;
 	ddl_dvbs = 0.;
-      }}
+      }
       
-      {if (d_l > s->l_eff * .5) {	/* punch through approximation */
+      if (d_l > s->l_eff * .5) {	/* punch through approximation */
 	d->punchthru = true;
 	d_l = s->l_eff - s->l_eff*s->l_eff / (d_l*4.);
 	double arga = (s->l_eff-d_l)*(s->l_eff-d_l) * 4./(s->l_eff*s->l_eff);
@@ -417,9 +410,9 @@ model MOS3 {
 	dl_dvd *= arga;
       }else{
 	d->punchthru = false;
-      }}
+      }
       
-      {if (m->alpha != 0) {
+      if (m->alpha != 0) {
 	double lfact = 1. / (1. - d_l / s->l_eff);
 	d->ids *= lfact;
 	double diddl = d->ids / (s->l_eff - d_l);
@@ -431,14 +424,14 @@ model MOS3 {
 	d->gds  = gds0 * dvdsat_dvds + diddl * dl_dvd;
       }else{
 	gds0 = 0;
-      }}
+      }
       trace2("", d_l, dl_dvd);
       trace3("", ddl_dvgs, ddl_dvds, ddl_dvbs);
       trace3("4", d->ids, gds0, d_l);
     }else{
       d->punchthru = false;
       gds0 = 0;				/* not saturated */
-    }}
+    }
     trace4("4", d->ids, d->gmf, d->gds, d->gmbf);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* weak inversion -- subthreshold region */
@@ -457,14 +450,14 @@ model MOS3 {
       d->gmbf += (gms - gmw) * dvon_dvbs - gmw * d->vgst * dxn_dvbs / xn;
       trace4("5", d->ids, d->gmf, d->gds, d->gmbf);
     }
-    {if (d->reversed){
+    if (d->reversed) {
       d->ids *= -1;
       d->gmr = d->gmf;
       d->gmbr = d->gmbf;
       d->gmf = d->gmbf = 0;
     }else{
       d->gmr = d->gmbr = 0.;
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

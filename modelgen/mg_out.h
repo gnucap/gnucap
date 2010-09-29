@@ -1,4 +1,4 @@
-/*$Id: mg_out.h,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
+/*$Id: mg_out.h,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
 #include <fstream>
 #include "mg_.h"
@@ -27,6 +27,8 @@ void make_h_file(const File&);
 void make_cc_file(const File&);
 /*--------------------------------------------------------------------------*/
 /* mg_out_lib.cc */
+void make_final_adjust_value(std::ofstream&, const Parameter&);
+void make_final_adjust_value_list(std::ofstream&, const Parameter_List&);
 void make_final_adjust_parameter(std::ofstream&, const Parameter&);
 void make_final_adjust_parameter_list(std::ofstream&, const Parameter_List&);
 void make_final_adjust(std::ofstream&, const Parameter_Block&);

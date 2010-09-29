@@ -1,4 +1,4 @@
-/*$Id: s_dc.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
+/*$Id: s_dc.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * DC and OP analysis
  */
+//testing=script,complete 2006.07.14
 #include "u_cardst.h"
 #include "s__.h"
 #ifndef S_DC_H
@@ -30,20 +31,46 @@ class CARD;
 /*--------------------------------------------------------------------------*/
 class DCOP : public SIM {
 public:				/* s_dc_set.cc */
-	void	finish();
+  void	finish();
 protected:
-	void	options(CS&);
+  void	options(CS&, int);
 private:
-	bool	by(CS&);
-	bool	decade(CS&);
-	bool	times(CS&);
+  bool	by(CS&, int);
+  bool	decade(CS&, int);
+  bool	times(CS&, int);
 private:			/* s_dc_swp.cc */
-	void	sweep();
-	void	first(int);
-	bool	next(int);
-
+  void	sweep();
+  void	sweep_recursive(int);
+  void	first(int);
+  bool	next(int);
+  explicit DCOP(const DCOP&): SIM() {unreachable(); incomplete();}
 protected:
-  enum {DCNEST = 1};
+  explicit DCOP():
+    SIM(),
+    n_sweeps(1),
+    loop(false),
+    reverse(false),
+    cont(false),
+    trace(tNONE)
+  {
+    for (int i = 0; i < DCNEST; ++i) {
+      start[i]=stop[i]=step[i]=0.;
+      linswp[i]=true;
+      sweepval[i]=&genout;
+      zap[i]=NULL; 
+    }
+
+    // BUG:: in SIM.  should be initialized there.
+    genout=0.;
+    temp_c=OPT::temp_c;
+    out=IO::mstdout;
+    uic=false;
+  }
+  ~DCOP() {}
+  
+protected:
+  enum {DCNEST = 4};
+  int n_sweeps;
   double start[DCNEST];
   double stop[DCNEST];
   double step[DCNEST];
@@ -60,16 +87,22 @@ private:
 /*--------------------------------------------------------------------------*/
 class DC : public DCOP {
 public:
-  	void	command(CS&);
+  explicit DC(): DCOP() {}
+  ~DC() {}
+  void	command(CS&);
 private:
-	void	setup(CS&);
+  void	setup(CS&);
+  explicit DC(const DC&): DCOP() {unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
 class OP : public DCOP {
 public:
-  	void	command(CS&);
+  explicit OP(): DCOP() {}
+  ~OP() {}
+  void	command(CS&);
 private:
-	void	setup(CS&);
+  void	setup(CS&);
+  explicit OP(const OP&): DCOP() {unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

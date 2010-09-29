@@ -1,4 +1,4 @@
-%$Id: tcap.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: tcap.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit tcap .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,27 +17,30 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{Trans-capacitor}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
-  {\tt .TCAPacitor} {\it label n+ n-- nc+ nc-- expression}\\
-  {\tt .TCAPacitor} {\it label n+ n-- nc+ nc-- value}
-        \{{\tt IV=}{\it initial-voltage}\}\\
-  {\tt .TCAPacitor} {\it label n+ n-- model} \{{\tt L=}{\it length}\}
-        \{{\tt W=}{\it width}\} \{{\tt IC=}{\it initial-voltage}\}
+{\tt .tcapacitor} {\it label n+ n-- nc+ nc-- value}\\
+{\tt .tcapacitor} {\it label n+ n-- nc+ nc-- expression}\\
+{\tt .tcapacitor} {\it label n+ n-- nc+ nc-- value}
+	\{{\tt IV=}{\it initial-voltage}\}\\
+{\tt .tcapacitor} {\it label n+ n-- model} \{{\tt L=}{\it length}\}
+	\{{\tt W=}{\it width}\} \{{\tt IC=}{\it initial-voltage}\}
+\end{verse}
+\subsubsection{Model (optional)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt C} \{{\it args}\}
+{\tt .model} {\it mname} {\tt TABLE} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
 
 Trans-capacitor, or charge transfer device.
-%------------------------------------------------------------------------
-\subsection{Probes}
-
-All probes that apply to ordinary capacitors also apply here.
 %------------------------------------------------------------------------
 \subsection{Comments}
 
@@ -55,5 +58,9 @@ All options, expressions, models, and probes that apply to ordinary
 capacitors can also be used here.
 
 It is used internally in some transistor models.
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+All probes that apply to ordinary capacitors also apply here.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

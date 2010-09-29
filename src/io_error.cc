@@ -1,4 +1,4 @@
-/*$Id: io_error.cc,v 22.13 2002/08/01 16:27:25 al Exp $ -*- C++ -*-
+/*$Id: io_error.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,17 +16,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Error handler.
  * Collection of functions to handle all types of errors
  * including user interrupts, system errors, overflow, etc.
  */
+//testing=script,sparse 2006.07.17
 #include "u_opt.h"
 #include "l_jmpbuf.h"
 #include "io_error.h"
-// testing=nonstrict
 /*--------------------------------------------------------------------------*/
 	void	error(int,const char*,...);
 	void	error(int,const std::string&);
@@ -47,18 +47,18 @@ void error(int badness, const char* fmt, ...)
     va_end(arg_ptr);
     IO::error << buffer;
   }
-  {if (badness >= bDISASTER){
+  if (badness >= bDISASTER) {untested();
     abort();
-  }else if (badness >= bEXIT){
+  }else if (badness >= bEXIT) {itested();
     exit(badness);
-  }else if (badness >= bERROR){
-    {if (ENV::run_mode == rBATCH){
+  }else if (badness >= bERROR) {itested();
+    if (ENV::run_mode == rBATCH) {untested();
       exit(badness);
-    }else{
+    }else{itested();
       siglongjmp(env.p,1);
       //throw badness;
-    }}
-  }}
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 void error(int badness, const std::string& message)
@@ -66,18 +66,18 @@ void error(int badness, const std::string& message)
   if (badness >= OPT::picky) {
     IO::error << message;
   }
-  {if (badness >= bDISASTER){
+  if (badness >= bDISASTER) {untested();
     abort();
-  }else if (badness >= bEXIT){
+  }else if (badness >= bEXIT) {untested();
     exit(badness);
-  }else if (badness >= bERROR){
-    {if (ENV::run_mode == rBATCH){
+  }else if (badness >= bERROR) {
+    if (ENV::run_mode == rBATCH) {untested();
       exit(badness);
     }else{
       siglongjmp(env.p,1);
       //throw badness;
-    }}
-  }}
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

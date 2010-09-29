@@ -1,4 +1,4 @@
-/*$Id: mg_in.cc,v 24.12 2003/12/14 01:58:28 al Exp $ -*- C++ -*-
+/*$Id: mg_in.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
-#include <fcntl.h>
-#include <stdio.h>
 #include "mg_.h"
 /*--------------------------------------------------------------------------*/
 static C_Comment   dummy_c_comment;
@@ -32,7 +30,7 @@ void List<T, BEGIN, END>::parse(CS& file)
 {
   int paren = file.skip1b(BEGIN);
   int here = file.cursor();
-  {for (;;) {
+  for (;;) {
     get(file, "/*$$", &dummy_c_comment);
     get(file, "//$$", &dummy_cxx_comment);
     if (file.stuck(&here)) {
@@ -49,7 +47,7 @@ void List<T, BEGIN, END>::parse(CS& file)
 	break;
       }}
     }
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -70,8 +68,8 @@ void Parameter::parse(CS& file)
 {
   file >> _type >> _code_name >> _comment;
   int here = file.cursor();
-  {for (;;) {
-    0 
+  for (;;) {
+    ONE_OF 
       || get(file, "NAME",	     &_user_name)
       || get(file, "ALT_name",	     &_alt_name)
       || get(file, "DEFAult",	     &_default_val)
@@ -97,15 +95,23 @@ void Parameter::parse(CS& file)
       file.warn(0, "need ;");
       break;
     }}
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 void Code_Block::parse(CS& file) 
 {
+  // skips the code block, delimited by {}
+  // sets _begin and _end, making that part of file the string
+  // does not copy it.
+  // also checks paren balance, so you can have {} inside the block
+
   int paren = file.skipbl().skip1("{");
+  if (paren == 0) {
+    file.warn(0, "need {");
+  }
   int here = file.cursor();
   _begin = file.tail();
-  {for (;;) {
+  for (;;) {
     paren -= file.skip1b("])");
     if (paren == 0) {
       file.warn(0, "unbalanced {}[]()");
@@ -124,18 +130,25 @@ void Code_Block::parse(CS& file)
       break;
     }
     paren += file.skip1b("{[(");
-    file.skip1b(";");
+    file.skip1b(";=");
     std::string foo;
     file >> foo;
-  }}
+  }
+}
+/*--------------------------------------------------------------------------*/
+static void fill_in_default_names(Parameter_List& pl)
+{
+  for (Parameter_List::const_iterator p = pl.begin(); p != pl.end(); ++p) {
+    (**p).fill_in_default_name();
+  }
 }
 /*--------------------------------------------------------------------------*/
 void Parameter_Block::parse(CS& file)
 { 
   int paren = file.skip1b("{");
   int here = file.cursor();
-  {for (;;) {
-    0
+  for (;;) {
+    ONE_OF
       || get(file, "UNNAmed",		&_unnamed_value)
       || get(file, "OVERride",		&_override)
       || get(file, "RAW_parameters",	&_raw)
@@ -156,7 +169,10 @@ void Parameter_Block::parse(CS& file)
       file.warn(0, "bad Parameter_Code_Block");
       break;
     }}
-  }}
+  }
+  fill_in_default_names(_calculated);
+  fill_in_default_names(_raw);
+  // but not _override
 }
 /*--------------------------------------------------------------------------*/
 void Eval::parse(CS& file)
@@ -167,7 +183,7 @@ void Eval::parse(CS& file)
 void Function::parse(CS& file)
 {
   file >> _name;
-  _name += '(' + file.ctos("{", '(', ')') + ')';
+  _name += '(' + file.ctos("{", "(", ")") + ')';
   file >> _code;
 }
 /*--------------------------------------------------------------------------*/
@@ -175,8 +191,8 @@ void Port::parse(CS& file)
 {
   file >> _name;
   int here = file.cursor();
-  {for (;;) {
-    0
+  for (;;) {
+    ONE_OF
       || get(file, "SHORT_TO",	&_short_to)
       || get(file, "SHORT_IF",	&_short_if)
       ;
@@ -188,15 +204,15 @@ void Port::parse(CS& file)
     }else if (file.stuck(&here)) {
       break;
     }}
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 void Element::parse(CS& file)
 {
   file >> _dev_type >> _name >> _port_list;
   int here = file.cursor();
-  {for (;;) {
-    0
+  for (;;) {
+    ONE_OF
       || get(file, "EVAL",	&_eval)
       || get(file, "VALue",	&_value)
       || get(file, "ARGS",	&_args)
@@ -215,7 +231,7 @@ void Element::parse(CS& file)
       file.warn(0, "need ;");
       break;
     }}
-  }}
+  }
   _class_name = "DEV_" + to_upper(_dev_type);
 }
 /*--------------------------------------------------------------------------*/
@@ -240,7 +256,7 @@ void Circuit::parse(CS& file)
   do {
     get(file, "ARGs", &_args_list);
   } while (file.more() && !file.stuck(&here));
-  {for (;;) {
+  for (;;) {
     paren -= file.skip1b("}");
     {if (paren == 0) {
       break;
@@ -248,7 +264,7 @@ void Circuit::parse(CS& file)
       file.warn(0, "premature EOF (Circuit)");
       break;
     }}
-    0
+    ONE_OF
       || get(file, "/*$$", &dummy_c_comment)
       || get(file, "//$$", &dummy_cxx_comment)
       || (file >> _element_list)
@@ -257,7 +273,7 @@ void Circuit::parse(CS& file)
       file.warn(0, "bad Circuit");
       break;
     }
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 void Model::parse(CS& file)
@@ -265,8 +281,8 @@ void Model::parse(CS& file)
   file >> _name;
   int paren = file.skip1b("{");
   int here = file.cursor();
-  {for (;;) {
-    0
+  for (;;) {
+    ONE_OF
       || get(file, "BASE",		&_is_base)
       || get(file, "LEVEl",		&_level)
       || get(file, "DEV_type",		&_dev_type)
@@ -290,7 +306,7 @@ void Model::parse(CS& file)
       file.warn(0, "bad Model");
       break;
     }}
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 void Device::parse(CS& file)
@@ -298,8 +314,8 @@ void Device::parse(CS& file)
   file >> _name;
   int paren = file.skip1b("{");
   int here = file.cursor();
-  {for (;;) {
-    0
+  for (;;) {
+    ONE_OF
       || get(file, "PARSe_name",&_parse_name)
       || get(file, "ID_letter",	&_id_letter)
       || get(file, "MODel_type",&_model_type)
@@ -323,13 +339,13 @@ void Device::parse(CS& file)
       file.warn(0, "bad Device");
       break;
     }}
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 void C_Comment::parse(CS& file)
 {
   int here = file.cursor();
-  {for (;;) {
+  for (;;) {
     file.skipto1('*');
     {if (file.pmatch("*/$$")) {
       break;  // done with comment
@@ -339,7 +355,7 @@ void C_Comment::parse(CS& file)
     }else{
       file.skip();
     }}
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 void Cxx_Comment::parse(CS& file)
@@ -355,7 +371,7 @@ void Head::parse(CS& file)
 {
   int here = file.cursor();
   _begin = file.fullstring();
-  {for (;;) {
+  for (;;) {
     file.skipto1('*');
     {if (file.pmatch("*/$$")) {
       _end = file.tail();
@@ -366,7 +382,7 @@ void Head::parse(CS& file)
     }else{
       file.skip();
     }}
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 File::File(const std::string& file_name)
@@ -375,8 +391,8 @@ File::File(const std::string& file_name)
 {
   get(_file, "/*$$",		&_head);
   int here = _file.cursor();
-  {for (;;) {
-    0
+  for (;;) {
+    ONE_OF
       || get(_file, "H_Headers", &_h_headers)
       || get(_file, "CC_Headers",&_cc_headers)
       || get(_file, "DEVice",	 &_device_list)
@@ -392,7 +408,7 @@ File::File(const std::string& file_name)
       _file.warn(0, "syntax error, need head or model");
       break;
     }}
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

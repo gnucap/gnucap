@@ -1,4 +1,4 @@
-/*$Id: globals.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: globals.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * kluges and remnants of old C code
  *
  * Copyright (C) 2001 Albert Davis
@@ -18,29 +18,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
-#include "e_node.h"
+//testing=trivial 2006.07.17
 #include "l_jmpbuf.h"
-#include "e_model.h"
 #include "d_logic.h"
+#include "u_status.h"
+/*--------------------------------------------------------------------------*/
+STATUS status;
 /*--------------------------------------------------------------------------*/
 /* nodes, hold between commands */
-NODE* nstat;			/* node status flags			*/
+LOGIC_NODE* nstat;		/* node status flags			*/
 /*--------------------------------------------------------------------------*/
 /* other (the ultimate in disorder) */
 std::string head;
 /*--------------------------------------------------------------------------*/
 /* here to make sure they get constructed and destructed in proper order */
-std::list<CARD*> root_model_list;
 CARD_LIST CARD_LIST::card_list;
-CARD_LIST::fat_iterator CARD_LIST::putbefore(&card_list, card_list.end());
 MODEL_LOGIC default_logic_family;
 /*--------------------------------------------------------------------------*/
 /* command interpreter, control stuff */
 JMP_BUF env;			/* environment for setjmp, longjmp	*/
-bool crtplot = false;		/* flag: is plotting on the crt		*/
 
 /* sweep command */
 const int swp_nest_max = 1;	/* no loop, "future" expansion		*/

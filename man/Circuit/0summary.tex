@@ -1,4 +1,4 @@
-%$Id: 0summary.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: 0summary.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit summary .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{Summary}
 
@@ -37,12 +37,24 @@ Example:  `{\tt R29 6 8 22k}' is a 22k resistor between nodes 6 and 8.
 \index{ground node}
 \index{common node}
 \index{voltage reference}
- Node 0 is used as a reference for all calculations and is assumed to have a
-voltage of zero.  (This is the ground, earth or common node.)  Nodes must be
-nonnegative integers, but need not be numbered sequentially.
+Node ``{\tt 0}'' is used as a reference for all calculations and is
+assumed to have a voltage of zero.  (This is the ground, earth or
+common node.)  Nodes names are alphanumeric strings.
+
+Values can be numbers, or names of parameters.  If a parameter name is
+used, there must be a {\tt .param} statement somewhere to set the
+value.  Later, another {\tt .param} statement can change the value.
+
+It is recommended, but not required, that the node list be enclosed in
+parentheses to improve readability.
+
+So ...  '{\tt R30 (bob gnd) tweek\_this}' is a resistor between node
+{\tt bob} and node {\tt gnd}, with a value of {\tt tweek\_this}.  Note
+that {\tt gnd} is not ground.  A {\tt param} statement sets the
+value...  ``{\tt .param tweek\_this = 10k}''.
 
 \index{open circuit error}
- There should be a DC path through the circuit to node 0 from every node
+There should be a DC path through the circuit to node 0 from every node
 that is actually used.  The circuit cannot contain a cutset of current
 sources and/or capacitors.  If either of these cases occurs, it will be
 discovered during analysis.  The program will attempt to correct the error,

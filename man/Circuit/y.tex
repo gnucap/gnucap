@@ -1,4 +1,4 @@
-%$Id: y.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: y.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit y .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,16 +17,21 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt Y}: Admittance}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
 {\tt Y}{\it xxxxxxx n+ n-- value}\\
 {\tt Y}{\it xxxxxxx n+ n-- expression}\\
-{\tt .ADMittance} {\it label n+ n-- expression}
+{\tt .admittance} {\it label n+ n-- expression}
+\end{verse}
+\subsubsection{Model (optional)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt TABLE} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -42,5 +47,28 @@ The resistor (type {\tt R}) differs from the admittance (type {\tt Y}) in
 that the resistor is a current controlled element, and the conductance is a
 voltage controlled element, in addition to the obvious use of conductance
 ($1/R$) instead of resistance.
+
+You may specify the {\it value} in one of three forms:
+
+\begin{enumerate}
+  
+\item
+A simple value.  This is the admittance in Mhos.
+  
+\item
+An expression, as described in the behavioral modeling chapter.  The
+expression can specify the current as a function of voltage, or the
+admittance as a function of time.
+
+\item
+A {\it model}, as described in the behavioral modeling chapter.  The
+{\tt table} model describes a table of current vs. voltage.
+
+\end{enumerate}
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+The standard probes for all basic elements are all available.  See the
+{\tt print} command for documentation.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

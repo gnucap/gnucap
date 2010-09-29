@@ -1,4 +1,4 @@
-/*$Id: u_opt.h,v 24.11 2003/11/21 03:29:03 al Exp $ -*- C++ -*-
+/*$Id: u_opt.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * all the options set by the .options card.
  */
+//testing=script,complete 2006.07.14
 #ifndef U_OPT_H
 #define U_OPT_H
 #include "mode.h"
@@ -38,26 +39,20 @@ enum method_t {meUNKNOWN=0,	// no method set
 	       meTRAPGEAR,	// alt trap & gear2
 	       meTRAPEULER,	// alt trap & euler
 	       meNUM_METHODS};	// number of methods (array dimension)
-inline OMSTREAM& operator<<(OMSTREAM& o, method_t t){
+inline OMSTREAM& operator<<(OMSTREAM& o, method_t t) {
   const char* s[] = {"unknown", "euler", "euleronly", "trap", "traponly",
 		     "gear2", "gear2only", "trapgear", "trapeuler"};
   return (o << s[t]);
 }
 /*--------------------------------------------------------------------------*/
-enum bypass_t {bNO=0, bYES, bVOLT};
-inline OMSTREAM& operator<<(OMSTREAM& o, bypass_t t){
-  const char* s[] = {"nobypass", "bypass", "vbypass"};
-  return (o << s[t]);
-}
-/*--------------------------------------------------------------------------*/
 enum order_t {oREVERSE=1, oFORWARD, oAUTO};
-inline OMSTREAM& operator<<(OMSTREAM& o, order_t t){
+inline OMSTREAM& operator<<(OMSTREAM& o, order_t t) {
   const char* s[] = {"", "reverse", "forward", "auto"};
   return (o << s[t]);
 }
 /*--------------------------------------------------------------------------*/
 enum phase_t {pDEGREES, pRADIANS};
-inline OMSTREAM& operator<<(OMSTREAM& o, phase_t t){
+inline OMSTREAM& operator<<(OMSTREAM& o, phase_t t) {
   const char* s[] = {"degrees", "radians"};
   return (o << s[t]);
 }
@@ -78,7 +73,7 @@ enum RUN_MODE {
  */
 #ifdef KNEECHORD
 enum strategy_t {stNEWTON, stKNEECHORD, stSECANT};
-inline OMSTREAM& operator<<(OMSTREAM& o, strategy_t t){
+inline OMSTREAM& operator<<(OMSTREAM& o, strategy_t t) {untested();
   const char* s[] = {"newton", "kneechord", "secant"};
   return (o << s[t]);
 }
@@ -87,18 +82,22 @@ inline OMSTREAM& operator<<(OMSTREAM& o, strategy_t t){
 enum {dsINIT=001, dsRANGE=002, dsDEVLIMIT=004, dsDEVREGION=010, dsREVERSE=020};
 /*--------------------------------------------------------------------------*/
 class OPT {
+private:
+  explicit OPT(const OPT&) {unreachable(); incomplete();}
 public:
+  explicit OPT() {}
+  ~OPT() {}
   void command(CS& cmd);
 private:
   bool set_values(CS& cmd);
   void print(OMSTREAM& where);
 public:
-  enum {DCBIAS=1, DCXFER=2, TRLOW=3, TRHIGH=4, TRTOTAL=5, SSTEP=6,
+  enum ITL {DCBIAS=1, DCXFER=2, TRLOW=3, TRHIGH=4, TRTOTAL=5, SSTEP=6,
 	WCASE=7, TRACE=8, ITL_COUNT=9};
 public:
   static bool acct;	    // flag: print accounting info
   static bool listing;	    // flag: print listing
-  static bool nomod;	    // flag: suppress model printout
+  static bool mod;	    // flag: print models
   static bool page;	    // flag: do page ejects
   static bool node;	    // flag: print node table
   static bool opts;	    // flag: print options
@@ -111,7 +110,7 @@ public:
   static double pivtol;	    // minimum acceptable pivot
   static double pivrel;	    // max to min ratio in a column?
   static int numdgt;	    // number of digits to display
-  static double tnom;	    // nominal temperature
+  static double tnom_c;	    // nominal temperature
   static int cptime;	    // max allowed cpu time (seconds)
   static int limtim;	    // amt of time to reserve for plots
   static int limpts;	    // max points to print
@@ -124,35 +123,32 @@ public:
   static double defad;	    // MOS default drain diffusion area
   static double defas;	    // MOS default source diffusion area
   
-  static int seed;	    // random number seed
   static bool clobber;	    // allow to overwrite files without question
-  static bool named_nodes;  // use alphanumeric node names (false=numbers only)
-  static double wczero;	    // worst case zero window
+  static bool keys_between_nodes; // allow keywords between nodes
   static double floor;	    // display as zero if less than this
   static double vfloor;	    // display voltages as zero if less than this  
   static double dampmax;    // Newton-Raphson damping coefficient max
   static double dampmin;    // Newton-Raphson damping coefficient min
   static int dampstrategy;  // bit flags, damping strategy options
   static double roundofftol;// rel tolerance for zeroing after subtraction
-  static double tempamb;    // ambient temperature
+  static double temp_c;    // ambient temperature
   static double shortckt;   // short resistance
   static int picky;	    // error picky-ness
   static int inwidth;	    // width of input devices
   static int outwidth;	    // width of output devices
-  static double xdivisions; // plot divisions, x axis
   static double ydivisions; // plot divisions, y axis
   static phase_t phase;	    // how to print phase (degrees or radians)
   static order_t order;	    // ordering method
   static smode_t mode;	    // mixed-mode mode preference
   static int transits;	    // number of good transitions for digital
   static bool dupcheck;	    // check for duplicates on read
-  static bypass_t bypass;   // bypass model evaluation, if appropriate
+  static bool bypass;	    // bypass model evaluation, if appropriate
   static bool incmode;	    // make incremental changes to the matrix
+  static bool lcbypass;	    // bypass L and C evaluation when appropriate
   static bool lubypass;	    // bypass parts of LU decomposition, if appropriate
   static bool fbbypass;	    // bypass fwd & back sub when last iter converged
   static bool traceload;    // load only elements that need it, using queue
   static int itermin;	    // forced min iteration count.
-  static double limit;	    // diff voltage limit for nonlinear calculations
   static double vmax;	    // + voltage limit for nonlinear calculations
   static double vmin;	    // - voltage limit for nonlinear calculations
   static double dtmin;	    // smallest internal step in transient analysis
@@ -161,14 +157,16 @@ public:
   static bool cstray;	    // include stray capacitors in models
   static int harmonics;	    // number of harmonics in fourier analysis
   static double trstepgrow; // limit of step size growth in transient analysis
+  static double trstephold; // hold step size growth, converges slowly
   static double trstepshrink;// amt to shrink step size on convergence failure
   static double trreject;   // how bad trunc error has to be to reject a step
   static bool showall;	    // flag: show development flags
   static int foooo;	    // a reusable value to aid development
   static int diodeflags;    // convergence heuristic flags for diode
-  static int mosflags;	    // convergence heuristic flags for mosfet
+  static int mosflags;      // convergence heuristic flags for mosfet
   static bool quitconvfail; // quit on convergence failure
   static bool edit;	    // use readline - command editing
+  static int recursion;	    // max recursion depth
   
   static double lowlim;	    // 1 - reltol
   static double uplim;	    // 1 + reltol

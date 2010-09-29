@@ -1,4 +1,4 @@
-/*$Id: c_fanout.cc,v 24.2 2003/02/23 09:18:00 al Exp $ -*- C++ -*-
+/*$Id: c_fanout.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,33 +16,34 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Prints out a list of all node connections.
  */
-#include "ap.h"
+//testing=none 2006.07.17
 #include "e_card.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 //	void	CMD::fanout(CS&);
-static	void	checklist(const CARD_LIST&, const node_t&, OMSTREAM);
+static	void	checklist(const CARD_LIST*, const node_t&, OMSTREAM);
 /*--------------------------------------------------------------------------*/
 void CMD::fanout(CS& cmd)
 {
+  error(bERROR, "doesn't work with named nodes\n");
   OMSTREAM out = IO::mstdout;
   int start = -1;
   int stop  = -1;
-  for (;;){
-    {if (cmd.is_digit()){
+  for (;;) {
+    {if (cmd.is_digit()) {
       int temp = cmd.ctoi();
-      {if (cmd.match1('-')){
+      {if (cmd.match1('-')) {
 	untested();
 	cmd.skip();
 	start = temp;
-      }else if (start < 0){
+      }else if (start < 0) {
 	start = temp;
-	{if (stop < 0){
+	{if (stop < 0) {
 	  stop = start;
 	}else{
 	  untested();
@@ -51,10 +52,10 @@ void CMD::fanout(CS& cmd)
 	untested();
 	stop = temp;
       }}
-    }else if (cmd.match1('-')){
+    }else if (cmd.match1('-')) {
       cmd.skip();
       cmd.skipbl();
-      {if (cmd.is_digit()){
+      {if (cmd.is_digit()) {
 	untested();
 	stop = cmd.ctoi();
       }else{
@@ -66,38 +67,46 @@ void CMD::fanout(CS& cmd)
       break;
     }}
   }
-  SIM::init();
+  //SIM::init();
 
-  if (start < 0){
+  if (start < 0) {
     start = 0;
   }
-  if (stop < 0  ||  stop > STATUS::total_nodes){
-    stop = STATUS::user_nodes;
+  if (stop < 0  ||  stop > ::status.total_nodes) {
+    stop = ::status.user_nodes;
   }
-  if (start>STATUS::total_nodes){
+  if (start>::status.total_nodes) {
     untested();
-    error(bERROR, "%u nodes\n", STATUS::total_nodes);
+    error(bERROR, "%u nodes\n", ::status.total_nodes);
   }
   
   out << "Node:  Branches\n";
-  for (int ii = start;  ii <= stop;  ++ii){
+  for (int ii = start;  ii <= stop;  ++ii) {
     out.form("%4u:",ii);
-    checklist(CARD_LIST::card_list, node_t(ii), out);
+    //checklist(&CARD_LIST::card_list, node_t(ii), out);
     out << '\n';
   }
 }
 /*--------------------------------------------------------------------------*/
 /* checklist: print a list of all elements connecting to a node
- *	recursive, for subckts
+ *	recursive for subckts
  */
-static void checklist(const CARD_LIST& cl, const node_t& node, OMSTREAM out)
+static void checklist(const CARD_LIST* cl, const node_t& node, OMSTREAM out)
 {
-  for (CARD_LIST::const_iterator ci = cl.begin(); ci != cl.end(); ++ci){
-    if ((**ci).is_device()){
-      if ((**ci).connects_to(node)){
-	out << ' ' << (**ci).long_label();
+  untested();
+  assert(cl);
+
+  for (CARD_LIST::const_iterator ii = cl->begin(); ii != cl->end(); ++ii) {
+    const CARD* brh = *ii;
+    assert(brh);
+
+    if (brh->is_device()) {
+      if (brh->connects_to(node)) {
+	out << ' ' << brh->long_label();
       }
-      checklist((**ci).subckt(), node, out);
+      if (brh->subckt()) {
+	checklist(brh->subckt(), node, out);
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-%$Id: q.tex,v 22.19 2002/09/30 00:06:15 al Exp $
+%$Id: q.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit q .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,15 +17,23 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt Q}: Bipolar Junction Transistor}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
-{\tt Q}{\it xxxxxxx nc nb ne ns mname} \{{\it area}\} \{{\it args}\}\\
-{\tt .BJT} {\it label nc nb ne ns mname} \{{\it area}\} \{{\it args}\}
+{\tt Q}{\it xxxxxxx nc nb ne ns mname}
+	\{{\it area}\} \{{\it args}\}\\
+{\tt .BJT} {\it label nc nb ne ns mname}
+	\{{\it area}\} \{{\it args}\}
+\end{verse}
+\subsubsection{Model (required)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt NPN} \{{\it args}\} \\
+{\tt .model} {\it mname} {\tt PNP} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -36,14 +44,14 @@ Bipolar junction transistor,
 
 {\it Nc}, {\it nb}, {\it ne}, and {\it ns} are the collector, base,
 emitter, and substrate nodes, respectively.  {\it Mname} is the model
-name.
+name.  The substrate node is optional.
 
 {\it Area} is a unit-less multiplier for the area.
 
-The options {\tt rstray} and {\tt norstray} determines whether or not
-series resistances are included. {\tt rstray} is the default.  {\tt
-Norstray} is the equivalent of setting the model parameters {\tt rc},
-{\tt re}, and {\tt rb} all to zero.
+The options ({\tt .options} command) {\tt rstray} determines whether or
+not series resistances are included. {\tt rstray} is the default.
+{\tt Norstray} is the equivalent of setting the model parameters {\tt
+rc}, {\tt re}, and {\tt rb} all to zero.
 
 Entering a parameter value of 0 is not the same as not specifying
 it.  This behavior is not compatible with SPICE.  In SPICE, a value
@@ -53,11 +61,7 @@ don't specify it.
 
 Another subtle difference from SPICE is that Gnucap may omit some
 unnecessary parts of the model, which may affect some reported
-values.  It should not affect any voltages or currents.  For example,
-if the gate and drain are tied, Cgs will be omitted from the model,
-so the printed value for Cgdovl and Cgd will be 0, which will
-disagree with SPICE.  It doesn't matter because a shorted capacitor
-can store no charge.
+values.  It should not affect any voltages or currents.
 %------------------------------------------------------------------------
 \subsection{Element Parameters}
 
@@ -65,7 +69,10 @@ can store no charge.
 
 \begin{description}
 
-\item[{\tt Area} = {\it x}]
+\item[{\tt M} = {\it x}]
+Device multiplier.  (Default = 1.)  Equivalent number of devices in parallel.
+
+\item[{\tt AREA} = {\it x}]
 Junction area.  (Default = {\tt 1}) This is a scaling parameter, with
 no relevant actual units.
 
@@ -305,15 +312,26 @@ Parameter measurement temperature, Celsius.  (Default = 27)
 %------------------------------------------------------------------------
 \subsection{Probes}
 
+This is not a complete list.  All ``calculated parameters'' can be
+probed.  See the source file {\tt d\_bjt.model} for a list.
+
+All parameters of the internal elements (Ice, Ipi, Imu, Cbx, Cbc, Ccs,
+Cbe, Rc, Re, Yb, Cbcp, Cbep, Cbs) are available.  To access them,
+concatenate the labels for the internal element with this device,
+separated by a dot.  Cbe.Q6 is the base to emitter capacitance of Q6.
+
+There are no probes available in AC analysis except for the internal
+elements.
+
 \begin{description}
 
-\item[{\tt VBEInt}] Base-emitter internal voltage.
+\item[{\tt VBEINT}] Base-emitter internal voltage.
 
-\item[{\tt VBCInt}] Base-collector internal voltage.
+\item[{\tt VBCINT}] Base-collector internal voltage.
 
-\item[{\tt VBXInt}] External base to internal base voltage.
+\item[{\tt VBXINT}] External base to internal base voltage.
 
-\item[{\tt VCSInt}] Collector-substrate internal voltage.
+\item[{\tt VCSINT}] Collector-substrate internal voltage.
 
 \item[{\tt VBS}] Base-substrate voltage.
 

@@ -1,4 +1,4 @@
-/*$Id: declare.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: declare.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,39 +16,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * global functions
  * A remnant of the old C code
  */
+//testing=trivial 2006.07.17
 #ifndef DECLARE_H
 #define DECLARE_H
 #include "md.h"
 /*--------------------------------------------------------------------------*/
-class CS;
-class CARD;
-class OMSTREAM;
-/*--------------------------------------------------------------------------*/
-		void	new_event(double);
-/* compiler */	void	  initialize_io();
-		void	  setup_traps();
-/* crtset   */	int	  testcrt();
-		struct graph *initcrt();
+/* md	    */	void	  setup_traps();
 /* fft      */	void	  fft(COMPLEX*,int,int);
 /* c_file   */	char	  *getcmd(const char*,char*,int);
 /* generat  */	double	  gen();
-/* line     */	void	  initgraph(struct graph*);
- 		void	  stext(int,int,const char*,int);
-		void	  setpixel(int,int,int);
-		void	  box(int,int,int,int,int);
-		void	  line(int,int,int,int,int);
-/* main     */	int	  main(int,const char*[]);
 /* plot     */	void	  plottr(double);
-		int	  plopen(int,double,double,bool);
+		int	  plopen(double,double);
 		void	  plclose();
 		void	  plclear();
-		void	  pllocate();
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

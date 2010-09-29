@@ -1,4 +1,4 @@
-/*$Id: ap_convert.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: ap_convert.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,17 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
- *------------------------------------------------------------------
- * get integer from string, in a variety of formats
- * update string pointer
- * return integer if got, else 0
- * pointer points to char following number just got
- * or first non-space
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
+//testing=script 2006.07.17
 #include "ap.h"
 /*--------------------------------------------------------------------------*/
+//	char	 CS::ctoc();
 //	void	 CS::ctostr(char* d, int l, const string& t);
 //	string	 CS::ctos(const string& term);
 //	int	 CS::ctoi();
@@ -34,6 +30,18 @@
 //	int	 CS::ctoo();
 //	int	 CS::ctox();
 //	double	 CS::ctof();
+/*--------------------------------------------------------------------------*/
+/* ctoc: character input to character
+ */
+char CS::ctoc()
+{
+  char c=_cmd[_cnt];
+  if(_cnt<=_length) {
+    ++_cnt;
+  }else{untested();
+  }
+  return c;
+}
 /*--------------------------------------------------------------------------*/
 /* ctostr: character input to string
  * scan (and eat) an input string (cmd) using index (cnt).
@@ -48,38 +56,51 @@ void CS::ctostr(char* des, int len, const std::string& term)
 {
   skipbl();
   int ii;
-  {for (ii = 0;  ii < len && !is_term(term);  ii++) {
+  for (ii = 0;  ii < len && !is_term(term);  ++ii) {
     des[ii] = ctoc();
-  }}
+  }
   des[ii] = '\0';
 
-  while (!is_term(term))
+  while (!is_term(term)) {untested();
     skip();
+  }
   skipcom();
 }
 /*--------------------------------------------------------------------------*/
-std::string CS::ctos(const std::string& term, char begin_quote, char end_quote)
+std::string CS::ctos(const std::string& term, 
+		     const std::string& begin_quote,
+		     const std::string& end_quote)
 {
+  assert(begin_quote.length() > 0);
+  assert(end_quote.length() > 0);
+  assert(begin_quote.length() == end_quote.length());
+
   std::string des;
   skipbl();
-  {if (skip1(begin_quote)) {
-    while (ns_more() && !skip1(end_quote)) {
-      {if (skip1('\\')) {
-	{if (skip1(end_quote)) {
-	  des += end_quote;
+  int here = cursor();
+  //if (skip1(begin_quote)) {
+  std::string::size_type which_quote = find1(begin_quote);
+  if (which_quote != std::string::npos) {
+    skip();
+    char the_end_quote = end_quote[which_quote];
+    while (ns_more() && !skip1(the_end_quote)) {
+      if (skip1('\\')) {
+	if (skip1(the_end_quote)) {
+	  des += the_end_quote;
 	}else{
 	  des += '\\';
-	}}
+	}
       }else{
 	des += ctoc();
-      }}
+      }
     }
   }else{
     while(ns_more() && !is_term(term)) {
       des += ctoc();
     }
-  }}  
+  }
   skipcom();
+  _ok = cursor() > here;
   return des;
 }
 /*--------------------------------------------------------------------------*/
@@ -90,6 +111,30 @@ std::string CS::get_to(const std::string& term)
     des += ctoc();
   }
   return des;
+}
+/*--------------------------------------------------------------------------*/
+/* ctob: character input to bool
+ * no match makes it true;
+ * Mismatch belongs to next token
+ */
+bool CS::ctob()
+{
+  skipbl();
+  int here = cursor();
+  bool val = true;
+  ONE_OF
+    || set(*this, "1",     &val, true)
+    || set(*this, "0",     &val, false)
+    || set(*this, "True",  &val, true)
+    || set(*this, "False", &val, false)
+    || set(*this, "Yes",   &val, true)
+    || set(*this, "No",    &val, false)
+    || set(*this, "#True", &val, true)
+    || set(*this, "#False",&val, false)
+    ;
+  skipcom();
+  _ok = cursor() > here;
+  return val;
 }
 /*--------------------------------------------------------------------------*/
 /* ctoi: character input to integer
@@ -104,38 +149,40 @@ int CS::ctoi()
 
   skipbl();
   int here = cursor();
-  if (skip1("-")) {
+  if (skip1("-")) {untested();
     sign = -1;
   }else{
     skip1("+");
   }
 
-  while (is_digit())
+  while (is_digit()) {
     val = 10 * val + (ctoc()-'0');
-
+  }
   skipcom();
   _ok = cursor() > here;
   return val * sign;
 }
 /*--------------------------------------------------------------------------*/
+#if 0
 /* ctou: character input to unsigned integer
  * Returns unsigned integer, or 0 if the string is not a number.
  * Input must be integer: no multipliers, no decimal point.
  * Dot or letter belongs to the next token.
  */
 unsigned CS::ctou()
-{
-  untested();
+{untested();
   int val = 0;
 
   skipbl();
   int here = cursor();
-  while (is_digit())
+  while (is_digit()) {untested();
     val = 10 * val + (ctoc()-'0');
+  }
   skipcom();
   _ok = cursor() > here;
   return val;
 }
+#endif
 /*--------------------------------------------------------------------------*/
 /* ctoo: character octal input to integer
  * Returns integer, or 0 if the string is not a number.
@@ -149,8 +196,9 @@ int CS::ctoo()
 
   skipbl();
   int here = cursor();
-  while (is_digit())
+  while (is_digit()) {
     val = 8 * val + (ctoc()-'0');
+  }
   skipcom();
   _ok = cursor() > here;
   return val;
@@ -162,16 +210,15 @@ int CS::ctoo()
  * Dot or letter belongs to the next token.
  */
 int CS::ctox()
-{
-  untested();
+{untested();
   int val = 0;
 
   skipbl();
   int here = cursor();
-  while (is_xdigit()) {
-    if (is_digit()) {
+  while (is_xdigit()) {untested();
+    if (is_digit()) {untested();
       val = 16 * val + (ctoc()-'0');
-    }else{
+    }else{untested();
       val = 16 * val + (tolower(ctoc())-'a'+10);
     }
   }
@@ -200,6 +247,7 @@ double CS::ctof()
     skipcom();
     _ok = false;
     return 0.;
+  }else{
   }
 
   if (skip1("-")) {			// sign
@@ -208,9 +256,9 @@ double CS::ctof()
     skip1("+");
   }
 
-  while (is_digit())			// up to dec pt
+  while (is_digit()) {			// up to dec pt
     val = 10.0 * val + (ctoc()-'0');
-
+  }
   skip1(".");				// dec pt
 
   while (is_digit()) {			// after dec pt
@@ -252,12 +300,13 @@ double CS::ctof()
     power *= 1e9;
   }else if (skip1("tT")) {
     power *= 1e12;
-  }else if (skip1("%")) {
+  }else if (skip1("%")) {untested();
     power *= 1e-2;
+  }else{
   }
-  while (is_alpha())			// skip letters
+  while (is_alpha()) {			// skip letters
     skip();
-
+  }
   skipcom();
   _ok = true;
   return (sign*val*power);

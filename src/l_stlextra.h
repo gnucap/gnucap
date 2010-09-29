@@ -1,4 +1,4 @@
-/*$Id: l_stlextra.h,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
+/*$Id: l_stlextra.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * extra functions in the STL style
  * Things that ought to be there, but are not
  */
+//testing=script,complete 2006.07.13
 #ifndef L_STLEXTRA_H
 #define L_STLEXTRA_H
 #include "md.h"
@@ -29,13 +30,11 @@
 namespace notstd {
 /*--------------------------------------------------------------------------*/
 template <class InputIter, class Size, class OutputIter>
-std::pair<InputIter, OutputIter> copy_n(InputIter first, Size count,
-				   OutputIter result)
+void copy_n(InputIter first, Size count, OutputIter result)
 {
   for ( ; count > 0; --count) {
     *result++ = *first++;
   }
-  return std::pair<InputIter, OutputIter>(first, result);
 }
 /*--------------------------------------------------------------------------*/
 /* find_ptr: like the stl find, except that the list contains pointers
@@ -43,8 +42,9 @@ std::pair<InputIter, OutputIter> copy_n(InputIter first, Size count,
 template <class InputIterator, class T>
 InputIterator find_ptr(InputIterator first,InputIterator last,const T& value)
 {
-  while (first != last && **first != value)
+  while (first != last && **first != value) {
     ++first;
+  }
   return first;
 }
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: e_model.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
+/*$Id: e_model.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,45 +16,53 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * base class for all models
  */
+//testing=script 2006.07.12
 #ifndef E_MODEL_H
 #define E_MODEL_H
 #include "e_card.h"
-/*--------------------------------------------------------------------------*/
-// this file
-class MODEL_CARD;
 /*--------------------------------------------------------------------------*/
 // external
 class COMPONENT;
 /*--------------------------------------------------------------------------*/
 class SDP_CARD {
+private:
+  explicit SDP_CARD() {unreachable();}
+  explicit SDP_CARD(const SDP_CARD&) {unreachable();}  
 public:
   explicit SDP_CARD(const COMMON_COMPONENT*) {}
   virtual ~SDP_CARD() {}
 };
 /*--------------------------------------------------------------------------*/
+#if 0
 class TDP_CARD {
+private:
+  explicit TDP_CARD() {untested();}
+  explicit TDP_CARD(const TDP_CARD&) {untested();}
+  virtual ~TDP_CARD() {untested();}
 public:
-  explicit TDP_CARD(const CARD*) {}
+  explicit TDP_CARD(const CARD*) {untested();}
 };
+#endif
 /*--------------------------------------------------------------------------*/
 class MODEL_CARD : public CARD{
 protected:
   explicit	MODEL_CARD(const MODEL_CARD& p)
-					:CARD(p),_tnom(p._tnom){unreachable();}
+				:CARD(p),_tnom_c(p._tnom_c) {unreachable();}
 public:
   explicit	MODEL_CARD();
 		~MODEL_CARD();
 
-protected: // override virtuals
-  char	id_letter()const	{return '\0';}
+public: // override virtuals
+  char	id_letter()const	{untested();return '\0';}
   CARD* clone()const		{unreachable(); return 0;}
-  void	parse(CS&);
-  void	print(OMSTREAM&,int)const;
+  void	parse_spice(CS&);
+  void	print_spice(OMSTREAM&,int)const;
+  void  elabo1();
   
 public:
   virtual void	tr_eval(COMPONENT*)const{unreachable();}
@@ -63,16 +71,15 @@ public:
   virtual SDP_CARD* new_sdp(const COMMON_COMPONENT*)const
 					{unreachable();return 0;};
   virtual bool parse_front(CS&) {unreachable(); return false;};
-  virtual bool parse_params(CS&) {unreachable(); return false;};
-  virtual void parse_finish() {unreachable();};
+  virtual bool parse_params(CS&);
+  virtual void parse_finish() {};
   virtual void print_front(OMSTREAM&)const {unreachable();};
-  virtual void print_params(OMSTREAM&)const {unreachable();};
+  virtual void print_params(OMSTREAM&)const;
   virtual void print_calculated(OMSTREAM&)const {unreachable();};
   virtual bool is_valid(const COMMON_COMPONENT*)const {return true;}
 public:
-  double _tnom;
+  PARAMETER<double> _tnom_c;
 };
-extern std::list<CARD*> root_model_list;
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

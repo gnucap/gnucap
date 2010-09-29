@@ -1,0 +1,2816 @@
+/* $Id: d_mos8.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+ * Copyright (C) 2001 Albert Davis
+ * Author: Albert Davis <aldavis@ieee.org>
+ *
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ *------------------------------------------------------------------
+ * Berkeley BSIM3v3.3 model
+ **********  derived from.........
+ * Copyright 2004 Regents of the University of California. All rights reserved.
+ * File: b3ld.c of BSIM3v3.3.0
+ * Author: 1991 JianHui Huang and Min-Chie Jeng.
+ * Modified by Mansun Chan (1995).
+ * Author: 1997-1999 Weidong Liu.
+ * Author: 2001 Xuemei Xi
+ * Modified by Xuemei Xi, 10/05, 12/21, 2001.
+ * Modified by Xuemei Xi, 07/29/2005.
+ **********
+ * Recoded for Gnucap model compiler, Al Davis, 2006
+ */
+h_headers {
+#include "d_mos_base.h"
+}
+cc_headers {
+#include "l_compar.h"
+#include "l_denoise.h"
+}
+/*--------------------------------------------------------------------------*/
+/*
+  from diode
+      no fc???
+      double bulkJctPotential 
+	"Source/drain junction built-in potential"
+	name=PB default=1.0;
+      double unitAreaJctCap 
+	"Source/drain bottom junction capacitance per unit area"
+	name=CJ default=5.0E-4;
+      double bulkJctBotGradingCoeff 
+	"Source/drain bottom junction capacitance grading coefficient"
+	name=MJ default=0.5;
+      double sidewallJctPotential
+	"Source/drain sw junction capacitance built in potential"
+	name=PBSW default=1.0;
+      double unitLengthSidewallJctCap 
+	"Source/drain sw junction capacitance per unit periphery"
+	name=CJSW default=5.0E-10;
+      double bulkJctSideGradingCoeff
+	"Source/drain sw junction capacitance grading coefficient"
+	name=MJSW default=0.33;
+      double kf "Flicker noise coefficient"
+	name=KF default=0.0;
+      double af "Flicker noise exponent"
+	name=AF default=1.0;
+
+  from mos_base
+      no is???
+      double jctSatCurDensity 
+	"Source/drain junction reverse saturation current density"
+	name=JS default=1.0E-4;
+      double sheetResistance "Source-drain sheet resistance" 
+	name=RSH default=0.0;
+      no rd???
+      no rs???
+      no cbd???
+      no cbs???
+      double cgso "Gate-source overlap capacitance per width"
+        "CGSO default=NA;
+      double cgdo "Gate-drain overlap capacitance per width"
+	name=CGDO default=NA;
+      double cgbo "Gate-bulk overlap capacitance per length"
+	name=CGBO default=NA;
+ */
+model MOS8 {
+  level 8
+  dev_type MOS;
+  inherit MOS_BASE;
+  independent {
+    override {
+      double mjsw "" final_default=.33;
+      double pb "" final_default=1.0 quiet_min=0.1;
+      double pbsw "" final_default=pb quiet_min=0.1;
+      double cjo "" default=5.0E-4;
+      double cgdo "" final_default="(((dlc != NA) && (dlc > 0.0))
+	  ? dlc * cox - cgdl.nom()
+	  : 0.6 * xj.nom() * cox)";
+      double cgso "" final_default="(((dlc != NA) && (dlc > 0.0))
+	  ? dlc * cox - cgsl.nom()
+	  : 0.6 * xj.nom() * cox)";
+      double cgbo "" final_default="((dwc != NA)
+	  ? 2.0 * dwc  * cox
+	  : 2.0 * Wint * cox)";
+      /* assumes cg?? final_default is BEFORE d?c final_default */
+      int cmodel "CMODEL" print_test="cmodel!=0"
+	calculate="((!cmodel)?0:cmodel)";
+      bool needs_isub "" calculate="(alpha0.nom()!=0.)";
+      int mos_level "back-annotate for diode" name=DIODElevel 
+	print_test="mos_level != LEVEL" default=LEVEL;
+    }
+    raw_parameters {
+      int capMod "Capacitance model selector (0, 1, 2, other?)"
+	name=CAPMOD default=3;
+      int nqsMod "Non-quasi-static model selector (0, !0)"
+	name=NQSMOD default=0;
+      int mobMod "Mobility model selector (1,2,3,other?)"
+	name=MOBMOD default=1;
+      int noiMod "Noise model selector (not used)"
+	name=NOIMOD default=1;
+      int paramChk "Model parameter checking selector (not used)"
+	name=PARAMCHK default=0;
+      int binUnit "Bin unit selector (1, !1)"
+	name=BINUNIT default=1;
+      double version "parameter for model version (not used)"
+	name=VERSION default=3.3;
+      double tox "Gate oxide thickness in meters"
+	name=TOX default=150.0e-10;
+       
+      double xpart "Channel charge partitioning"
+	name=XPART default=0.0;
+
+      double jctSidewallSatCurDensity 
+	"Sidewall junction reverse saturation current density"
+	name=JSW default=0.0;
+      double mjswg 
+	"Source/drain (gate side) sw junction capacitance grading coefficient"
+	name=MJSWG default=NA final_default=mjsw;
+      double pbswg
+	"Source/drain (gate side) sw junction capacitance built in potential" 
+	name=PBSWG default=NA final_default=pbsw quiet_min=0.1;
+      double unitLengthGateSidewallJctCap
+	"Source/drain (gate side) sidewall junction capacitance per unit width"
+	name=CJSWG default=NA final_default=cjsw;
+      double jctEmissionCoeff 
+	"Source/drain junction emission coefficient"
+	name=NJ default=1.0;
+      double jctTempExponent 
+	"Junction current temperature exponent"
+	name=XTI default=3.0;
+
+      double Lint "Length reduction parameter" name=LINT default=0.0;
+      double Ll   "Length reduction parameter" name=LL default=0.0;
+      double Lln  "Length reduction parameter" name=LLN default=1.0;
+      double Lw   "Length reduction parameter" name=LW default=0.0;
+      double Lwn  "Length reduction parameter" name=LWN default=1.0;
+      double Lwl  "Length reduction parameter" name=LWL default=0.0;
+
+      double Wint "Width reduction parameter" name=WINT default=0.0;
+      double Wl   "Width reduction parameter" name=WL default=0.0;
+      double Wln  "Width reduction parameter" name=WLN default=1.0;
+      double Ww   "Width reduction parameter" name=WW default=0.0;
+      double Wwn  "Width reduction parameter" name=WWN default=1.0;
+      double Wwl  "Width reduction parameter" name=WWL default=0.0;
+
+      double dwc "Delta W for C-V model"
+	name=DWC default=NA final_default=Wint;
+      double dlc "Delta L for C-V model"
+	name=DLC default=NA final_default=Lint;
+
+      double noia "Flicker noise parameter, oxide trap density A"
+	name=NOIA default=NA final_default="(polarity==pN) ? 1e20 : 9.9e18";
+      double noib "Flicker noise parameter, oxide trap density B"
+	name=NOIB default=NA final_default="(polarity==pN) ? 5e4 : 2.4e3";
+      double noic "Flicker noise parameter, oxide trap density C"
+	name=NOIC default=NA final_default="(polarity==pN) ?-1.4e-12 :1.4e-12";
+      double em "Flicker noise parameter V/m"
+	name=EM default=4.1e7;
+      double ef "Flicker noise frequency exponent"
+	name=EF default=1.0;
+
+      // version 3.3
+      int acnqsMod "AC NQS model selector"
+	name=ACNQSMOD default=0 quiet_max=1;
+      double toxm "Gate oxide thickness used in extraction"
+	name=TOXM default=tox;
+      double lintnoi "lint offset for noise calculation"
+	name=LINTNOI default=0.0;
+  
+      double ijth "Diode limiting current" name=IJTH default=0.1;
+      double tpb "Temperature coefficient of pb" name=TPB default=0.0;
+      double tcj "Temperature coefficient of cj" name=TCJ default=0.0;
+      double tpbsw "Temperature coefficient of pbsw" name=TPBSW default=0.0;
+      double tcjsw "Temperature coefficient of cjsw" name=TCJSW default=0.0;
+      double tpbswg "Temperature coefficient of pbswg" name=TPBSWG default=0.0;
+      double tcjswg "Temperature coefficient of cjswg" name=TCJSWG default=0.0;
+
+      double Llc "Length reduction parameter for CV" name=LLC default=Ll;
+      double Lwc "Length reduction parameter for CV" name=LWC default=Lw;
+      double Lwlc "Length reduction parameter for CV" name=LWLC default=Lwl;
+      double Wlc "Width reduction parameter for CV" name=WLC default=Wl;
+      double Wwc "Width reduction parameter for CV" name=WWC default=Ww;
+      double Wwlc "Width reduction parameter for CV" name=WWLC default=Wwl;
+
+      // level 49 parameters, probably dummy for now
+      int acm "area calculation method, ignored" name=ACM default=10;
+    }
+    calculated_parameters {
+      double cox;
+      double factor1 "" calculate="sqrt(tox * P_EPS_SI / P_EPS_OX)";
+      double vt_at_tnom "" calculate="tnom_k * P_K_Q";
+      double ni "" calculate="(1.45e10 * (tnom_k / 300.15)
+	 * sqrt(tnom_k / 300.15)
+	 * exp(21.5565981 - egap / (2.0 * vt_at_tnom)))";
+    }
+    code_pre {
+      //tox = std::max(tox, 1e-20);
+      cox = 3.453133e-11 / tox;
+    }
+    code_post {
+      if (npeak.nom() > 1.0e20) {
+	npeak.set_nom(npeak.nom() * 1.0e-6);
+      }
+      if (ngate.nom() > 1.0e23) {
+	ngate.set_nom(ngate.nom() * 1.0e-6);
+      }
+    }
+  }
+  size_dependent {
+    raw_parameters {
+      double cdsc "Drain/Source and channel coupling capacitance Q/V/m^2" 
+	name=CDSC default=2.4e-4;
+      double cdscb "Body-bias dependence of cdsc Q/V/m^2"
+	name=CDSCB default=0.0;
+      double cdscd "Drain-bias dependence of cdsc Q/V/m^2"
+	name=CDSCD default=0.0;
+      double cit "Interface state capacitance Q/V/m^2"
+	name=CIT default=0.0;
+      double nfactor "Subthreshold swing Coefficient"
+	name=NFACTOR default=1;
+      double xj "Junction depth in meters"
+	name=XJ default=.15e-6;
+      double vsat "Saturation velocity at tnom m/s"
+	name=VSAT default=8.0e4;
+      double at "Temperature coefficient of vsat m/s"
+	name=AT default=3.3e4;
+      double a0 "Non-uniform depletion width effect coefficient."
+	name=A0 default=1.0;
+      double ags "Gate bias  coefficient of Abulk."
+	name=AGS default=0.0;
+      double a1 "Non-saturation effect coefficient"
+	name=A1 default=0.0;
+      double a2 "Non-saturation effect coefficient"
+	name=A2 default=1.0;
+      double keta 
+	"Body-bias coefficient of non-uniform depletion width effect. 1/v"
+	name=KETA default=-0.047;
+      double nsub "Substrate doping concentration 1/cm3"
+	name=NSUB default=6.0e16;
+      double npeak "Channel doping concentration 1/cm3"
+	name=NCH default=NA;
+      double ngate "Poly-gate doping concentration 1/cm3"
+	name=NGATE default=0.0;
+      double gamma1 "Vth body coefficient"
+	name=GAMMA1 default=NA;
+      double gamma2 "Vth body coefficient"
+	name=GAMMA2 default=NA;
+      double vbx "Vth transition body Voltage"
+	name=VBX default=NA;
+      double vbm "Maximum body voltage"
+	name=VBM default=-3.0;
+
+      double xt "Doping depth"
+	name=XT default=1.55e-7;
+      double k1 "Bulk effect coefficient 1"
+	name=K1 default=NA;
+      double kt1 "Temperature coefficient of Vth"
+	name=KT1 default=-0.11;
+      double kt1l "Temperature coefficient of Vth"
+	name=KT1L default=0.0;
+      double kt2 "Body-coefficient of kt1"
+	name=KT2 default=0.022;
+      double k2 "Bulk effect coefficient 2"
+	name=K2 default=NA;
+      double k3 "Narrow width effect coefficient"
+	name=K3 default=80.0;
+      double k3b "Body effect coefficient of k3"
+	name=K3B default=0.0;
+      double w0 "Narrow width effect parameter"
+	name=W0 default=2.5e-6;
+      double nlx "Lateral non-uniform doping effect"
+	name=NLX default=1.74e-7;
+      double dvt0 "Short channel effect coeff. 0"
+	name=DVT0 default=2.2;
+      double dvt1 "Short channel effect coeff. 1"
+	name=DVT1 default=0.53;
+      double dvt2 "Short channel effect coeff. 2 1/v"
+	name=DVT2 default=-0.032;
+      double dvt0w "Narrow Width coeff. 0"
+	name=DVT0W default=0.0;
+      double dvt1w "Narrow Width effect coeff. 1"
+	name=DVT1W default=5.3e6;
+      double dvt2w "Narrow Width effect coeff. 2"
+	name=DVT2W default=-0.032;
+      double drout "DIBL coefficient of output resistance"
+	name=DROUT default=0.56;
+      double dsub "DIBL coefficient in the subthreshold region"
+	name=DSUB default=NA final_default="drout";
+      double vth0 "Threshold voltage"
+	name=VTH0 default=NA final_default=NA;
+      double ua1 "Temperature coefficient of ua m/v"
+	name=UA1 default=4.31e-9;
+      double ua "Linear gate dependence of mobility m/v"
+	name=UA default=2.25e-9;
+      double ub1 "Temperature coefficient of ub (m/V)**2"
+	name=UB1 default=-7.61e-18;
+      double ub "Quadratic gate dependence of mobility (m/V)**2"
+	name=UB default=5.87e-19;
+      double uc1 "Temperature coefficient of uc"
+	name=UC1 default=NA
+	final_default="((m->mobMod==3) ? -0.056 : -0.056e-9)";
+      double uc "Body-bias dependence of mobility"
+	name=UC default=NA 
+	final_default="((m->mobMod==3) ? -0.0465 : -0.0465e-9)";
+      double u0 "Low-field mobility at Tnom"
+	name=U0 default=NA 
+	final_default="((m->polarity == pN) ? 0.067 : 0.025)";
+      double ute "Temperature coefficient of mobility"
+	name=UTE default=-1.5;
+      double voff "Threshold voltage offset"
+	name=VOFF default=-0.08;
+
+      double delta "Effective Vds parameter"
+	name=DELTA default=0.01;
+      double rdsw  "Source-drain resistance per width"
+	name=RDSW default=0.0;
+      double prwg "Gate-bias effect on parasitic resistance"
+	name=PRWG default=0.0;
+      double prwb "Body-effect on parasitic resistance"
+	name=PRWB default=0.0;
+      double prt "Temperature coefficient of parasitic resistance"
+	name=PRT default=0.0;
+      double eta0 "Subthreshold region DIBL coefficient"
+	name=ETA0 default=0.08;
+      double etab "Subthreshold region DIBL coefficient 1/v"
+	name=ETAB default=-0.07;
+      double pclm "Channel length modulation Coefficient"
+	name=PCLM default=1.3;
+      double pdibl1 "Drain-induced barrier lowering coefficient"
+	name=PDIBLC1 default=.39;
+      double pdibl2 "Drain-induced barrier lowering coefficient"
+	name=PDIBLC2 default=0.0086;
+      double pdiblb "Body-effect on drain-induced barrier lowering 1/v" 
+	name=PDIBLCB default=0.0;
+      double pscbe1 "Substrate current body-effect coefficient"
+	name=PSCBE1 default=4.24e8;
+      double pscbe2 "Substrate current body-effect coefficient"
+	name=PSCBE2 default=1.0e-5;
+      double pvag "Gate dependence of output resistance parameter" 
+	name=PVAG default=0.0;
+
+      double wr "Width dependence of rds"
+	name=WR default=1.0;
+      double dwg "Width reduction parameter"
+	name=DWG default=0.0;
+      double dwb "Width reduction parameter"
+	name=DWB default=0.0;
+      double b0 "Abulk narrow width parameter"
+	name=B0 default=0.0;
+      double b1 "Abulk narrow width parameter"
+	name=B1 default=0.0;
+
+      double alpha0 "substrate current model parameter"
+	name=ALPHA0 default=0.0;
+      double beta0 "substrate current model parameter"
+	name=BETA0 default=30.0;
+
+      /* CV model */
+      double elm "Non-quasi-static Elmore Constant Parameter"
+	name=ELM default=5.0;
+      double vfbcv "Flat Band Voltage parameter for capmod=0 only"
+	name=VFBCV default=-1.0;
+      double cgsl "New C-V model parameter"
+	name=CGSL default=0.0;
+      double cgdl "New C-V model parameter"
+	name=CGDL default=0.0;
+      double ckappa "New C-V model parameter"
+	name=CKAPPA default=0.6;
+      double cf "Fringe capacitance parameter"
+	name=CF default=NA 
+	final_default="2.0 * P_EPS_OX / M_PI * log(1.0 + 0.4e-6 / m->tox)";
+      double clc "Vdsat parameter for C-V model"
+	name=CLC default=0.1e-6;
+      double cle "Vdsat parameter for C-V model"
+	name=CLE default=0.6;
+
+      // version 3.3
+      double vfb "Flat Band Voltage"
+	name=VFB default=NA;
+      double acde 
+	"Exponential coefficient for finite charge thickness, capmod=3"
+	name=ACDE default=1.0 quiet_min=0.4 quiet_max=1.6;
+      double moin 
+	"Coefficient for gate-bias dependent surface potential, capmod=3"
+	name=MOIN default=15.0 quiet_min=5.0 quiet_max=25.0;
+      double noff "C-V turn-on/off parameter, capmod=1,2,3"
+	name=NOFF default=1.0 quiet_min=0.1 quiet_max=4.0;
+      double voffcv "C-V lateral-shift parameter, capmod=1,2,3"
+	name=VOFFCV default=0.0 quiet_min=-0.5 quiet_max=0.5;
+      double alpha1 "substrate current model parameter"
+	name=ALPHA1 default=0.0;
+    }
+    calculated_parameters {
+      double dl;
+      double dlc;
+      double dw;
+      double dwc;
+
+      double leff; /* BUG:: why not reuse from super */
+      double weff;
+      double leffCV;
+      double weffCV;
+      
+      double abulkCVfactor "" calculate="1.0 + pow((clc / leff), cle)";
+
+      double litl "" calculate="sqrt(3.0 * xj * m->tox)";
+
+      // version 3.3
+      double ldeb;
+    }
+    code_pre {
+      {
+	double T0 = pow(c->l_in, m->Lln);
+	double T1 = pow(c->w_in, m->Lwn);
+	double tmp1 = m->Ll / T0 + m->Lw / T1 + m->Lwl / (T0 * T1);
+	dl = m->Lint + tmp1;
+	dlc = m->dlc + tmp1;
+      }
+      {
+	double T2 = pow(c->l_in, m->Wln);
+	double T3 = pow(c->w_in, m->Wwn);
+	double tmp2 = m->Wl / T2 + m->Ww / T3 + m->Wwl / (T2 * T3);
+	dw = m->Wint + tmp2;
+	dwc = m->dwc + tmp2;
+      }
+
+      leff = c->l_in - 2.0 * dl;
+      weff = c->w_in - 2.0 * dw;
+      leffCV = c->l_in - 2.0 * dlc;
+      weffCV = c->w_in - 2.0 * dwc;
+      cgate = m->cox * w_eff * l_eff; /* BUG:: not adjusted values?? */
+      double L = leff;
+      double W = weff;
+      if (m->binUnit == 1) {
+	L /= MICRON2METER;
+	W /= MICRON2METER;
+      }
+    }
+    code_post {
+      cgso = (m->cgso + cf) * weffCV;
+      cgdo = (m->cgdo + cf) * weffCV;
+      cgbo = m->cgbo * leffCV;
+
+      if (u0 > 1.0) {
+	u0 /= 1.0e4;
+      }
+      if (m->npeak.nom() == NA) {
+	if (m->gamma1.nom() != NA) {
+	  double T0 = gamma1 * m->cox;
+	  npeak = 3.021E22 * T0 * T0;
+	}else{
+	  npeak = 1.7e17;
+	}
+      }
+      if (m->k1.nom() != NA && m->k2.nom() != NA) {
+	if (m->k1.nom() == NA) {
+	  k1 = 0.53;
+	}
+	if (m->k2.nom() == NA) {
+	  k2 = -0.0186;
+	}
+      }else{
+	vbm = -std::abs(vbm);
+	if (m->gamma1.nom() == NA) {
+	  gamma1 = 5.753e-12 * sqrt(npeak) / m->cox;
+	}
+	if (m->gamma2.nom() == NA) {
+	  gamma2 = 5.753e-12 * sqrt(nsub) / m->cox;
+	}
+      }
+
+      // version 3.3
+      acde *= pow((npeak / 2.0e16), -0.25);
+      ldeb = sqrt(P_EPS_SI * m->vt_at_tnom / (P_Q * npeak * 1.0e6)) / 3.0;
+    }
+  }
+  temperature_dependent {
+    calculated_parameters {
+      double temp;
+      double tempratio "" calculate="temp / m->tnom_k";
+      double tempratio_1 "" calculate="tempratio - 1";
+      double vtm "vtm" calculate="temp * P_K_Q";
+      double ua;
+      double ub;
+      double uc;
+      double u0temp;
+      double vsattemp;
+      double rds0;
+      double phi;
+      double sqrtPhi;
+      double phis3;
+      double Xdep0;
+      double vbi;
+      double cdep0;
+      double k1;
+      double k2;
+      double vbsc;
+      double vth0;
+      double vfb;
+      double theta0vb0;
+      double thetaRout;
+      // version 3.3
+      double k1ox;
+      double k2ox;
+      double vfbzb;
+    }
+    code_pre {
+      temp = SIM::temp_c + P_CELSIUS0;
+      double egap = 1.16 - 7.02e-4 * temp * temp / (temp + 1108.0);
+    }
+    code_post {
+      const double EXP_THRESHOLD = 34.0;
+      const double MIN_EXP = 1.713908431e-15;
+
+      double jctTempSatCurDensity;
+      double jctSidewallTempSatCurDensity;
+      if (temp != m->tnom_k) {
+	double T0 = m->egap / m->vt_at_tnom - egap / vtm + m->jctTempExponent
+	  * log(temp / m->tnom_k);
+	double T1 = exp(T0 / m->jctEmissionCoeff);
+	jctTempSatCurDensity = m->js * T1;
+	jctSidewallTempSatCurDensity = m->jctSidewallSatCurDensity * T1;
+      }else{
+	jctTempSatCurDensity = m->js;
+	jctSidewallTempSatCurDensity = m->jctSidewallSatCurDensity;
+      }
+      if (jctTempSatCurDensity < 0.0) {
+	jctTempSatCurDensity = 0.0;
+      }
+      if (jctSidewallTempSatCurDensity < 0.0) {
+	jctSidewallTempSatCurDensity = 0.0;
+      }
+      {
+	double T0 = (tempratio - 1.0);
+	ua = s->ua + s->ua1 * T0;
+	ub = s->ub + s->ub1 * T0;
+	uc = s->uc + s->uc1 * T0;
+	u0temp = s->u0 * pow(tempratio, s->ute); 
+	vsattemp = s->vsat - s->at * T0;
+	rds0 = (s->rdsw + s->prt * T0) / pow(s->weff * 1E6, s->wr);
+	rds0 = std::max(rds0,0.0);
+      }
+      phi = 2.0 * m->vt_at_tnom * log(s->npeak / m->ni);
+      sqrtPhi = sqrt(phi);
+      phis3 = sqrtPhi * phi;
+      Xdep0 = sqrt(2.0 * P_EPS_SI / (P_Q * s->npeak * 1.0e6)) * sqrtPhi;
+      vbi = m->vt_at_tnom * log(1.0e20 * s->npeak / (m->ni * m->ni));
+      cdep0 = sqrt(P_Q * P_EPS_SI * s->npeak * 1.0e6 / 2.0 / phi);
+
+      if (m->k1.nom() != NA && m->k2.nom() != NA) {
+	k2 = s->k2;
+	k1 = s->k1;
+      }else{
+	double vbx = (m->vbx.nom() == NA)
+	  ? -std::abs(phi - 7.7348e-4 * s->npeak * s->xt * s->xt)
+	  : -std::abs(s->vbx);
+	double T0 = s->gamma1 - s->gamma2;
+	double T1 = sqrt(phi - vbx) - sqrtPhi;
+	double T2 = sqrt(phi * (phi - s->vbm)) - phi;
+	k2 = T0 * T1 / (2.0 * T2 + s->vbm);
+	k1 = s->gamma2 - 2.0 * k2 * sqrt(phi - s->vbm);
+      }
+      k1ox = k1 * m->tox / m->toxm;
+      k2ox = k2 * m->tox / m->toxm;
+
+      if (k2 < 0.) {
+	double T0 = 0.5 * k1 / k2;
+	vbsc = to_range(-30.0, (0.9 * (phi - T0 * T0)), -3.0);
+      }else{
+	vbsc = -30.0;
+      }
+      vbsc = std::min(vbsc, s->vbm);
+      if (s->vfb == NA) {
+	if (s->vth0 == NA) {
+	  vfb = -1.0;
+	}else{
+	  vfb = m->polarity * s->vth0 - phi - k1 * sqrtPhi;
+	}
+      }else{
+	vfb = s->vfb;
+	trace1("", s->vfb);
+      }
+      if (s->vth0 == NA) {
+	vth0 = m->polarity * (vfb + phi + k1 * sqrtPhi);
+      }else{
+	vth0 = s->vth0;
+      }
+      trace3("", s->vth0, vth0, vfb);
+      {
+	double T1 = sqrt(P_EPS_SI / P_EPS_OX * m->tox * Xdep0);
+	double T0 = exp(-0.5 * s->dsub * s->leff / T1);
+	theta0vb0 = (T0 + 2.0 * T0 * T0);
+
+	T0 = exp(-0.5 * s->drout * s->leff / T1);
+	double T2 = (T0 + 2.0 * T0 * T0);
+	thetaRout = s->pdibl1 * T2 + s->pdibl2;
+      }
+
+      { // vfbzb
+	double tmp1 = vbi - phi;
+	double tmp2 = m->factor1 * sqrt(Xdep0);
+	
+	double T2;
+	{
+	  double T0 = -0.5 * s->dvt1w * s->weff * s->leff / tmp2;
+	  double T1 = (T0 > -EXP_THRESHOLD) ? exp(T0) : MIN_EXP;
+	  T2 = T1 * (1.0 + 2.0 * T1);
+	  T0 = s->dvt0w * T2;
+	  T2 = T0 * tmp1;
+	}
+	double T3;
+	{
+	  double T0 = -0.5 * s->dvt1 * s->leff / tmp2;
+	  double T1 = (T0 > -EXP_THRESHOLD) ? exp(T0) : MIN_EXP;
+	  double T2 = T1 * (1.0 + 2.0 * T1);
+	  T3 = s->dvt0 * T2 * tmp1;
+	}
+	double T4 = m->tox * phi / (s->weff + s->w0);
+	double T5;
+	{
+	  double T0 = sqrt(1.0 + s->nlx / s->leff);
+	  T5 = k1ox * (T0 - 1.0) * sqrtPhi
+	    + (s->kt1 + s->kt1l / s->leff) * (tempratio - 1.0);
+	}
+	{
+	  double tmp3 = m->polarity * vth0 - T2 - T3 + s->k3 * T4 + T5;
+	  vfbzb = tmp3 - phi - k1 * sqrtPhi;
+	}
+      }
+    }
+  }
+  /*-----------------------------------------------------------------------*/
+  tr_eval {
+    #line 658
+    trace3("", d->vds, d->vgs, d->vbs);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    const double EXP_THRESHOLD = 34.0;
+    const double MIN_EXP = 1.713908431e-15;
+    const double MAX_EXP = 5.834617425e14;
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    d->reverse_if_needed();
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    double Vbseff, dVbseff_dVb;
+    {
+      double T0 = d->vbs - t->vbsc - 0.001;
+      double T1 = sqrt(T0 * T0 - 0.004 * t->vbsc);
+      trace3("", t->vbsc, T0, T1);
+      Vbseff = t->vbsc + 0.5 * (T0 + T1);
+      dVbseff_dVb = 0.5 * (1.0 + T0 / T1);
+      trace2("raw", Vbseff, dVbseff_dVb);
+
+      fixzero(&Vbseff, t->vbsc);
+      if (Vbseff < d->vbs) {	// From Spice, to fix numeric problems
+	//untested();		// inadequately.  Above fixzero should do a 
+	Vbseff = d->vbs;	// better job, but I left this in case.
+      }
+    }
+    trace2("fixed", Vbseff, dVbseff_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    double Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb;
+    if (Vbseff > 0.0) {
+	//untested();
+      d->sbfwd = true;
+      double T0 = t->phi / (t->phi + Vbseff);
+      Phis = t->phi * T0;
+      dPhis_dVb = -T0 * T0;
+      sqrtPhis = t->phis3 / (t->phi + 0.5 * Vbseff);
+      dsqrtPhis_dVb = -0.5 * sqrtPhis * sqrtPhis / t->phis3;
+      trace0("bs-fwd-bias");
+    }else{
+      d->sbfwd = false;
+      Phis = t->phi - Vbseff;
+      dPhis_dVb = -1.0;
+      sqrtPhis = sqrt(Phis);
+      dsqrtPhis_dVb = -0.5 / sqrtPhis;
+      trace0("bs-normal");
+    }
+    trace4("", Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    double Xdep = t->Xdep0 * sqrtPhis / t->sqrtPhi;
+    double dXdep_dVb = (t->Xdep0 / t->sqrtPhi) * dsqrtPhis_dVb;
+    trace2("", Xdep, dXdep_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    double Theta0, dTheta0_dVb;
+    {
+      double lt1, dlt1_dVb;
+      {
+	double T3 = sqrt(Xdep);
+	double T0 = s->dvt2 * Vbseff;
+	double T1, T2;
+	if (T0 >= - 0.5) {
+	  T1 = 1.0 + T0;
+	  T2 = s->dvt2;
+	  trace4("", T0, T1, T2, T3);
+	}else{
+	  untested();
+	  /* Added to avoid any discontinuity problems caused by dvt2 */ 
+	  double T4 = 1.0 / (3.0 + 8.0 * T0);
+	  T1 = (1.0 + 3.0 * T0) * T4; 
+	  T2 = s->dvt2 * T4 * T4;
+	  trace4("dvd2 fix", T0, T1, T2, T3);
+	}
+	lt1 = m->factor1 * T3 * T1;
+	dlt1_dVb = m->factor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * T2);
+      }
+      trace2("", lt1, dlt1_dVb);
+
+      double T0 = -0.5 * s->dvt1 * s->leff / lt1;
+      if (T0 > -EXP_THRESHOLD) {
+	double T1 = exp(T0);
+	Theta0 = T1 * (1.0 + 2.0 * T1);
+	double dT1_dVb = -T0 / lt1 * T1 * dlt1_dVb;
+	dTheta0_dVb = (1.0 + 4.0 * T1) * dT1_dVb;
+	trace2("T0 > -ET", Theta0, dTheta0_dVb);
+      }else{
+	double T1 = MIN_EXP;
+	Theta0 = T1 * (1.0 + 2.0 * T1);
+	dTheta0_dVb = 0.0;
+	trace2("T0 < -ET", Theta0, dTheta0_dVb);
+      }
+    }
+    trace2("", Theta0, dTheta0_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    double dVth_dVb, dVth_dVd; // d->von
+    {
+      double V0 = t->vbi - t->phi;
+      double T2, dT2_dVb;
+      {
+	double ltw, dltw_dVb;
+	{
+	  double T3 = sqrt(Xdep);
+	  double T0 = s->dvt2w * Vbseff;
+	  double T1, T2;
+	  if (T0 >= - 0.5) {
+	    T1 = 1.0 + T0;
+	    T2 = s->dvt2w;
+	  }else{
+	    untested();
+	    /* Added to avoid any discontinuity problems caused by dvt2w */ 
+	    double T4 = 1.0 / (3.0 + 8.0 * T0);
+	    T1 = (1.0 + 3.0 * T0) * T4; 
+	    T2 = s->dvt2w * T4 * T4;
+	  }
+	  trace4("", T0, T1, T2, T3);
+	  ltw = m->factor1 * T3 * T1;
+	  dltw_dVb = m->factor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * T2);
+	}
+	trace2("", ltw, dltw_dVb);
+	double T0 = -0.5 * s->dvt1w * s->weff * s->leff / ltw;
+	if (T0 > -EXP_THRESHOLD) {
+	  double T1 = exp(T0);
+	  T2 = T1 * (1.0 + 2.0 * T1);
+	  double dT1_dVb = -T0 / ltw * T1 * dltw_dVb;
+	  dT2_dVb = (1.0 + 4.0 * T1) * dT1_dVb;
+	}else{
+	  double T1 = MIN_EXP;
+	  T2 = T1 * (1.0 + 2.0 * T1);
+	  dT2_dVb = 0.0;
+	}
+	T0 = s->dvt0w * T2;
+	T2 = T0 * V0;
+	dT2_dVb = s->dvt0w * dT2_dVb * V0;
+      }
+      trace3("", V0, T2, dT2_dVb);
+      double T0 = sqrt(1.0 + s->nlx / s->leff);
+      double T1 = t->k1ox * (T0 - 1.0) * t->sqrtPhi
+	+ (s->kt1 + s->kt1l / s->leff + s->kt2 * Vbseff) * t->tempratio_1;
+      double tmp2 = m->tox * t->phi / (s->weff + s->w0);
+      
+      double T3 = s->eta0 + s->etab * Vbseff;
+      trace4("", T0, T1, tmp2, T3);
+      double T4;
+      if (T3 < 1.0e-4) {
+	untested();
+	/* avoid  discontinuity problems caused by etab */ 
+	double T9 = 1.0 / (3.0 - 2.0e4 * T3);
+	T3 = (2.0e-4 - T3) * T9;
+	T4 = T9 * T9;
+	trace3("", T9, T3, T4);
+      }else{
+	T4 = 1.0;
+	trace1("", T4);
+      }
+      double thetavth = s->dvt0 * Theta0;
+      double Delt_vth = thetavth * V0;
+      double dDelt_vth_dVb = s->dvt0 * dTheta0_dVb * V0;
+      trace4("", thetavth, t->theta0vb0, Delt_vth, dDelt_vth_dVb);
+      double dDIBL_Sft_dVd = T3 * t->theta0vb0;
+      double DIBL_Sft = dDIBL_Sft_dVd * d->vds;
+      trace2("", dDIBL_Sft_dVd, DIBL_Sft);
+      
+      trace4("", t->vth0, t->k1, sqrtPhis, t->sqrtPhi);
+      trace4("", t->k2, Vbseff, Delt_vth, T2);
+      trace4("", s->k3, s->k3b, Vbseff, tmp2);
+      trace2("", T1, DIBL_Sft);
+      double Vth = m->polarity * t->vth0 + t->k1ox * sqrtPhis 
+	- t->k1 *  t->sqrtPhi - t->k2ox * Vbseff - Delt_vth - T2
+	+ (s->k3 + s->k3b * Vbseff) * tmp2 + T1 - DIBL_Sft;
+      d->von = Vth;
+      
+      dVth_dVb = t->k1ox * dsqrtPhis_dVb - t->k2ox  - dDelt_vth_dVb - dT2_dVb
+	+ s->k3b * tmp2 - s->etab * d->vds * t->theta0vb0 * T4
+	+ s->kt2 * t->tempratio_1;
+      dVth_dVd = -dDIBL_Sft_dVd; 
+    }
+    trace3("", d->von, dVth_dVb, dVth_dVd);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Calculate n */
+    double n, dn_dVb, dn_dVd;
+    {
+      double tmp2 = s->nfactor * P_EPS_SI / Xdep;
+      double tmp3 = s->cdsc + s->cdscb * Vbseff + s->cdscd * d->vds;
+      double tmp4 = (tmp2 + tmp3 * Theta0 + s->cit) / m->cox;
+      trace3("", tmp2, tmp3, tmp4);
+      if (tmp4 >= -0.5) {
+	n = 1.0 + tmp4;
+	dn_dVb = (-tmp2 / Xdep * dXdep_dVb + tmp3 * dTheta0_dVb 
+		  + s->cdscb * Theta0) / m->cox;
+	dn_dVd = s->cdscd * Theta0 / m->cox;
+	trace3("n", n, dn_dVb, dn_dVd);
+      }else{
+	/* avoid  discontinuity problems caused by tmp4 */ 
+	double T0 = 1.0 / (3.0 + 8.0 * tmp4);
+	n = (1.0 + 3.0 * tmp4) * T0;
+	T0 *= T0;
+	dn_dVb = (-tmp2 / Xdep * dXdep_dVb + tmp3 * dTheta0_dVb
+		  + s->cdscb * Theta0) / m->cox * T0;
+	dn_dVd = s->cdscd * Theta0 / m->cox * T0;
+	trace3("n disc", n, dn_dVb, dn_dVd);
+      }
+    }
+    trace3("", n, dn_dVb, dn_dVd);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Poly Gate Si Depletion Effect */
+    double Vgs_eff, dVgs_eff_dVg;
+    {
+      double T0 = t->vfb + t->phi;
+      trace2("Poly", t->vfb, t->phi);
+      trace3("", s->ngate, d->vgs, T0);
+      if ((s->ngate > 1.e18) && (s->ngate < 1.e25) && (d->vgs > T0)) {
+	/* added to avoid the problem caused by ngate */
+	double T1 = 1.0e6 * P_Q * P_EPS_SI * s->ngate / (m->cox * m->cox);
+	double T4 = sqrt(1.0 + 2.0 * (d->vgs - T0) / T1);
+	double T2 = T1 * (T4 - 1.0);
+	double T3 = 0.5 * T2 * T2 / T1; /* T3 = Vpoly */
+	double T7 = 1.12 - T3 - 0.05;
+	double T6 = sqrt(T7 * T7 + 0.224);
+	double T5 = 1.12 - 0.5 * (T7 + T6);
+	Vgs_eff = d->vgs - T5;
+	dVgs_eff_dVg = 1.0 - (0.5 - 0.5 / T4) * (1.0 + T7 / T6);
+	trace2("><", Vgs_eff, dVgs_eff_dVg);
+      }else{
+	Vgs_eff = d->vgs;
+	dVgs_eff_dVg = 1.0;
+	trace2("const", Vgs_eff, dVgs_eff_dVg);
+      }
+    }
+    trace2("", Vgs_eff, dVgs_eff_dVg);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Effective Vgst (Vgsteff) Calculation */
+    double /*Vgsteff,*/ dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb, Vgst2Vtm;
+    // d->vgst
+    {
+      double Vgst = Vgs_eff - d->von;
+      double T10 = 2.0 * n * t->vtm;
+      double VgstNVt = Vgst / T10;
+      double ExpArg = (2.0 * s->voff - Vgst) / T10;
+      trace4("", Vgst, T10, VgstNVt, ExpArg);
+
+      /* MCJ: Very small Vgst */
+      if (VgstNVt > EXP_THRESHOLD) {
+	d->vgst = Vgst;
+	dVgsteff_dVg = dVgs_eff_dVg;
+	dVgsteff_dVd = -dVth_dVd;
+	dVgsteff_dVb = -dVth_dVb;
+	trace4(">>", d->vgst, dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb);
+      }else if (ExpArg > EXP_THRESHOLD) {
+	double T0 = (Vgst - s->voff) / (n * t->vtm);
+	double ExpVgst = exp(T0);
+	d->vgst = t->vtm * t->cdep0 / m->cox * ExpVgst;
+	dVgsteff_dVg = d->vgst / (n * t->vtm);
+	dVgsteff_dVd = -dVgsteff_dVg * (dVth_dVd + T0 * t->vtm * dn_dVd);
+	dVgsteff_dVb = -dVgsteff_dVg * (dVth_dVb + T0 * t->vtm * dn_dVb);
+	dVgsteff_dVg *= dVgs_eff_dVg;
+	trace4(">", d->vgst, dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb);
+      }else{
+	double ExpVgst = exp(VgstNVt);
+	double T1 = T10 * log(1.0 + ExpVgst);
+	double dT1_dVg = ExpVgst / (1.0 + ExpVgst);
+	double dT1_dVb = -dT1_dVg * (dVth_dVb + Vgst / n * dn_dVb)
+		      + T1 / n * dn_dVb; 
+	double dT1_dVd = -dT1_dVg * (dVth_dVd + Vgst / n * dn_dVd)
+		      + T1 / n * dn_dVd;
+
+	double dT2_dVg = -m->cox / (t->vtm * t->cdep0)
+		      * exp(ExpArg);
+	double T2 = 1.0 - T10 * dT2_dVg;
+	double dT2_dVd = -dT2_dVg * (dVth_dVd - 2.0 * t->vtm * ExpArg * dn_dVd)
+		      + (T2 - 1.0) / n * dn_dVd;
+	double dT2_dVb = -dT2_dVg * (dVth_dVb - 2.0 * t->vtm * ExpArg * dn_dVb)
+		      + (T2 - 1.0) / n * dn_dVb;
+
+	d->vgst = T1 / T2;
+	double T3 = T2 * T2;
+	dVgsteff_dVg = (T2 * dT1_dVg - T1 * dT2_dVg) / T3 * dVgs_eff_dVg;
+	dVgsteff_dVd = (T2 * dT1_dVd - T1 * dT2_dVd) / T3;
+	dVgsteff_dVb = (T2 * dT1_dVb - T1 * dT2_dVb) / T3;
+	trace4("<", d->vgst, dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb);
+      }
+      Vgst2Vtm = d->vgst + 2.0 * t->vtm;
+      trace3("", d->vgst, t->vtm, Vgst2Vtm);
+    }
+    trace1("", d->vgst);
+    trace4("", dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb, Vgst2Vtm);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Calculate Effective Channel Geometry */
+    double Weff, dWeff_dVg, dWeff_dVb;
+    {
+      double T9 = sqrtPhis - t->sqrtPhi;
+      Weff = s->weff - 2.0 * (s->dwg * d->vgst + s->dwb * T9); 
+      dWeff_dVg = -2.0 * s->dwg;
+      dWeff_dVb = -2.0 * s->dwb * dsqrtPhis_dVb;
+
+      if (Weff < 2.0e-8) {
+	/* to avoid the discontinuity problem due to Weff*/
+	double T0 = 1.0 / (6.0e-8 - 2.0 * Weff);
+	Weff = 2.0e-8 * (4.0e-8 - Weff) * T0;
+	T0 *= T0 * 4.0e-16;
+	dWeff_dVg *= T0;
+	dWeff_dVb *= T0;
+	trace3("Weff fix", Weff, dWeff_dVg, dWeff_dVb);
+      }
+    }
+    trace3("", Weff, dWeff_dVg, dWeff_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    double Rds, dRds_dVg, dRds_dVb;
+    {
+      double T9 = sqrtPhis - t->sqrtPhi;
+      double T0 = s->prwg * d->vgst + s->prwb * T9;
+      if (T0 >= -0.9) {
+	Rds = t->rds0 * (1.0 + T0);
+	dRds_dVg = t->rds0 * s->prwg;
+	dRds_dVb = t->rds0 * s->prwb * dsqrtPhis_dVb;
+      }else{
+	/* to avoid the discontinuity problem due to prwg and prwb*/
+	double T1 = 1.0 / (17.0 + 20.0 * T0);
+	Rds = t->rds0 * (0.8 + T0) * T1;
+	T1 *= T1;
+	dRds_dVg = t->rds0 * s->prwg * T1;
+	dRds_dVb = t->rds0 * s->prwb * dsqrtPhis_dVb * T1;
+	trace3("Rds fix", T9, T0, T1);
+	trace3("Rds fix", Rds, dRds_dVg, dRds_dVb);
+      }
+      ////////// d->rds = Rds /* Noise Bugfix */
+    }
+    trace3("", Rds, dRds_dVg, dRds_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Calculate Abulk */
+    double Abulk0, dAbulk0_dVb, dAbulk_dVg, Abulk, dAbulk_dVb;
+    {
+      double T1 = 0.5 * t->k1ox / sqrtPhis;
+      double dT1_dVb = -T1 / sqrtPhis * dsqrtPhis_dVb;
+
+      double T9 = sqrt(s->xj * Xdep);
+      double tmp1 = s->leff + 2.0 * T9;
+      double T5 = s->leff / tmp1; 
+      double tmp2 = s->a0 * T5;
+      double tmp3 = s->weff + s->b1; 
+      double tmp4 = s->b0 / tmp3;
+      double T2 = tmp2 + tmp4;
+      double dT2_dVb = -T9 / tmp1 / Xdep * dXdep_dVb;
+      double T6 = T5 * T5;
+      double T7 = T5 * T6;
+
+      Abulk0 = 1.0 + T1 * T2; 
+      dAbulk0_dVb = T1 * tmp2 * dT2_dVb + T2 * dT1_dVb;
+
+      double T8 = s->ags * s->a0 * T7;
+      dAbulk_dVg = -T1 * T8;
+      Abulk = Abulk0 + dAbulk_dVg * d->vgst; 
+      dAbulk_dVb = dAbulk0_dVb - T8 * d->vgst * (dT1_dVb + 3.0 * T1 * dT2_dVb);
+
+      trace2("1", Abulk0, dAbulk0_dVb);
+      trace3("1", dAbulk_dVg, Abulk, dAbulk_dVb);
+
+      if (Abulk0 < 0.1) {
+	/* added to avoid the problems caused by Abulk0 */
+	double T9 = 1.0 / (3.0 - 20.0 * Abulk0);
+	Abulk0 = (0.2 - Abulk0) * T9;
+	dAbulk0_dVb *= T9 * T9;
+	trace2("2", Abulk0, dAbulk0_dVb);
+      }
+      if (Abulk < 0.1) {
+	/* added to avoid the problems caused by Abulk */
+	double T9 = 1.0 / (3.0 - 20.0 * Abulk);
+	Abulk = (0.2 - Abulk) * T9;
+	double T10 = T9 * T9;
+	dAbulk_dVb *= T10;
+	dAbulk_dVg *= T10;
+	trace3("2", dAbulk_dVg, Abulk, dAbulk_dVb);
+      }
+      ////////// d->Abulk = Abulk
+
+      double T0, dT0_dVb;
+      {
+	double T2 = s->keta * Vbseff;
+	if (T2 >= -0.9) {
+	  T0 = 1.0 / (1.0 + T2);
+	  dT0_dVb = -s->keta * T0 * T0;
+	  trace3("", T2, T0, dT0_dVb);
+	}else{
+	  /* added to avoid the problems caused by Keta */
+	  double T1 = 1.0 / (0.8 + T2);
+	  T0 = (17.0 + 20.0 * T2) * T1;
+	  dT0_dVb = -s->keta * T1 * T1;
+	  trace3("keta fix", T2, T0, dT0_dVb);
+	}
+      }
+      dAbulk_dVg *= T0;
+      dAbulk_dVb = dAbulk_dVb * T0 + Abulk * dT0_dVb;
+      dAbulk0_dVb = dAbulk0_dVb * T0 + Abulk0 * dT0_dVb;
+      Abulk *= T0;
+      Abulk0 *= T0;
+      ////////// d->AbovVgst2Vtm = Abulk / Vgst2Vtm
+    }
+    trace2("", Abulk0, dAbulk0_dVb);
+    trace3("", dAbulk_dVg, Abulk, dAbulk_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Mobility calculation */
+    double ueff, dueff_dVg, dueff_dVd, dueff_dVb;
+    {
+      double Denomi, dDenomi_dVg, dDenomi_dVd, dDenomi_dVb;
+      {
+	double T5;
+	if (m->mobMod == 1) {
+	  double T0 = d->vgst + d->von + d->von;
+	  double T2 = t->ua + t->uc * Vbseff;
+	  double T3 = T0 / m->tox;
+	  T5 = T3 * (T2 + t->ub * T3);
+	  dDenomi_dVg = (T2 + 2.0 * t->ub * T3) / m->tox;
+	  dDenomi_dVd = dDenomi_dVg * 2.0 * dVth_dVd;
+	  dDenomi_dVb = dDenomi_dVg * 2.0 * dVth_dVb + t->uc * T3;
+	}else if (m->mobMod == 2) {
+	  T5 = d->vgst / m->tox 
+	    * (t->ua + t->uc * Vbseff + t->ub * d->vgst / m->tox);
+	  dDenomi_dVg = (t->ua + t->uc * Vbseff + 2.0 * t->ub * d->vgst / m->tox)
+	    / m->tox;
+	  dDenomi_dVd = 0.0;
+	  dDenomi_dVb = d->vgst * t->uc / m->tox; 
+	}else{
+	  double T0 = d->vgst + d->von + d->von;
+	  double T2 = 1.0 + t->uc * Vbseff;
+	  double T3 = T0 / m->tox;
+	  double T4 = T3 * (t->ua + t->ub * T3);
+	  T5 = T4 * T2;
+	  dDenomi_dVg = (t->ua + 2.0 * t->ub * T3) * T2 / m->tox;
+	  dDenomi_dVd = dDenomi_dVg * 2.0 * dVth_dVd;
+	  dDenomi_dVb = dDenomi_dVg * 2.0 * dVth_dVb + t->uc * T4;
+	}
+	if (T5 >= -0.8) {
+	  Denomi = 1.0 + T5;
+	}else{
+	  /* Added to avoid the discontinuity problem caused by ua and ub*/ 
+	  double T9 = 1.0 / (7.0 + 10.0 * T5);
+	  Denomi = (0.6 + T5) * T9;
+	  T9 *= T9;
+	  dDenomi_dVg *= T9;
+	  dDenomi_dVd *= T9;
+	  dDenomi_dVb *= T9;
+	}
+      }
+      ueff = t->u0temp / Denomi;
+      double T9 = -ueff / Denomi;
+      dueff_dVg = T9 * dDenomi_dVg;
+      dueff_dVd = T9 * dDenomi_dVd;
+      dueff_dVb = T9 * dDenomi_dVb;
+    }
+    trace4("", ueff, dueff_dVg, dueff_dVd, dueff_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    double Esat, EsatL, dEsatL_dVg, dEsatL_dVd, dEsatL_dVb;
+    {
+      Esat = 2.0 * t->vsattemp / ueff;
+      EsatL = Esat * s->leff;
+      double T0 = -EsatL /ueff;
+      dEsatL_dVg = T0 * dueff_dVg;
+      dEsatL_dVd = T0 * dueff_dVd;
+      dEsatL_dVb = T0 * dueff_dVb;
+    }
+    trace2("", Esat, EsatL);
+    trace3("", dEsatL_dVg, dEsatL_dVd, dEsatL_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Saturation Drain Voltage Vdsat */
+    double Vdsat, dVdsat_dVg, dVdsat_dVd, dVdsat_dVb; // d->vdsat
+    double Vasat, dVasat_dVg, dVasat_dVb, dVasat_dVd;
+    {
+      double WVCoxRds;
+      {
+	double WVCox = Weff * t->vsattemp * m->cox;
+	WVCoxRds = WVCox * Rds;
+      }
+      trace1("", WVCoxRds);
+
+      double Lambda, dLambda_dVg;
+      {
+	if (s->a1 == 0.0) {
+	  Lambda = s->a2;
+	  dLambda_dVg = 0.0;
+	}else if (s->a1 > 0.0) {
+	  /* avoid discontinuity problem caused by s->a1 and s->a2 (Lambda) */
+	  double T0 = 1.0 - s->a2;
+	  double T1 = T0 - s->a1 * d->vgst - 0.0001;
+	  double T2 = sqrt(T1 * T1 + 0.0004 * T0);
+	  Lambda = s->a2 + T0 - 0.5 * (T1 + T2);
+	  dLambda_dVg = 0.5 * s->a1 * (1.0 + T1 / T2);
+	}else{
+	  double T1 = s->a2 + s->a1 * d->vgst - 0.0001;
+	  double T2 = sqrt(T1 * T1 + 0.0004 * s->a2);
+	  Lambda = 0.5 * (T1 + T2);
+	  dLambda_dVg = 0.5 * s->a1 * (1.0 + T1 / T2);
+	}
+      }
+      trace2("", Lambda, dLambda_dVg);
+
+      double tmp2, tmp3;
+      if (Rds > 0) {
+	tmp2 = dRds_dVg / Rds + dWeff_dVg / Weff;
+	tmp3 = dRds_dVb / Rds + dWeff_dVb / Weff;
+      }else{
+	tmp2 = dWeff_dVg / Weff;
+	tmp3 = dWeff_dVb / Weff;
+      }
+      trace2("", tmp2, tmp3);
+
+      //double Vdsat, dVdsat_dVg, dVdsat_dVd, dVdsat_dVb; // d->vdsat
+      double tmp1;
+      {
+	if ((Rds == 0.0) && (Lambda == 1.0)) {
+	  double T0 = 1.0 / (Abulk * EsatL + Vgst2Vtm);
+	  tmp1 = 0.0;
+	  double T1 = T0 * T0;
+	  double T2 = Vgst2Vtm * T0;
+	  double T3 = EsatL * Vgst2Vtm;
+	  Vdsat = T3 * T0;
+	  double dT0_dVg = -(Abulk * dEsatL_dVg + EsatL * dAbulk_dVg + 1.0)*T1;
+	  double dT0_dVd = -(Abulk * dEsatL_dVd) * T1; 
+	  double dT0_dVb = -(Abulk * dEsatL_dVb + dAbulk_dVb * EsatL) * T1;   
+	  dVdsat_dVg = T3 * dT0_dVg + T2 * dEsatL_dVg + EsatL * T0;
+	  dVdsat_dVd = T3 * dT0_dVd + T2 * dEsatL_dVd;
+	  dVdsat_dVb = T3 * dT0_dVb + T2 * dEsatL_dVb;   
+	}else{
+	  tmp1 = dLambda_dVg / (Lambda * Lambda);
+	  double T9 = Abulk * WVCoxRds;
+	  double T8 = Abulk * T9;
+	  double T7 = Vgst2Vtm * T9;
+	  double T6 = Vgst2Vtm * WVCoxRds;
+	  double T0 = 2.0 * Abulk * (T9 - 1.0 + 1.0 / Lambda); 
+	  double dT0_dVg = 2.0 * (T8 * tmp2 - Abulk * tmp1
+			+ (2.0 * T9 + 1.0 / Lambda - 1.0) * dAbulk_dVg);
+	  double dT0_dVb = 2.0 * (T8 * (2.0 / Abulk * dAbulk_dVb + tmp3)
+				  + (1.0 / Lambda - 1.0) * dAbulk_dVb);
+	  //double dT0_dVd = 0.0;
+	  
+	  double T1 = Vgst2Vtm * (2.0 / Lambda - 1.0) + Abulk * EsatL + 3.0*T7;
+	  double dT1_dVg = (2.0 / Lambda - 1.0) - 2.0 * Vgst2Vtm * tmp1
+	    + Abulk * dEsatL_dVg + EsatL * dAbulk_dVg 
+	    + 3.0 * (T9 + T7 * tmp2 + T6 * dAbulk_dVg);
+	  double dT1_dVb = Abulk * dEsatL_dVb + EsatL * dAbulk_dVb
+	    + 3.0 * (T6 * dAbulk_dVb + T7 * tmp3);
+	  double dT1_dVd = Abulk * dEsatL_dVd;
+	  
+	  double T2 = Vgst2Vtm * (EsatL + 2.0 * T6);
+	  double dT2_dVg = EsatL + Vgst2Vtm * dEsatL_dVg
+	    + T6 * (4.0 + 2.0 * Vgst2Vtm * tmp2);
+	  double dT2_dVb = Vgst2Vtm * (dEsatL_dVb + 2.0 * T6 * tmp3);
+	  double dT2_dVd = Vgst2Vtm * dEsatL_dVd;
+	  
+	  double T3 = sqrt(T1 * T1 - 2.0 * T0 * T2);
+	  Vdsat = (T1 - T3) / T0;
+	  dVdsat_dVg = (dT1_dVg - (T1 * dT1_dVg - dT0_dVg * T2
+				- T0 * dT2_dVg) / T3 - Vdsat * dT0_dVg) / T0;
+	  dVdsat_dVb = (dT1_dVb - (T1 * dT1_dVb - dT0_dVb * T2
+				- T0 * dT2_dVb) / T3 - Vdsat * dT0_dVb) / T0;
+	  dVdsat_dVd = (dT1_dVd - (T1 * dT1_dVd - T0 * dT2_dVd) / T3) / T0;
+	}
+	d->vdsat = Vdsat;
+	d->saturated = (d->vds >= d->vdsat);
+      }
+      trace1("", tmp1);
+      trace4("d->vdsat", Vdsat, dVdsat_dVg, dVdsat_dVd, dVdsat_dVb);
+
+      /* Calculate VAsat */
+      // double Vasat, dVasat_dVg, dVasat_dVb, dVasat_dVd;
+      {
+	double tmp4 = 1.0 - 0.5 * Abulk * Vdsat / Vgst2Vtm;
+	double T9 = WVCoxRds * d->vgst;
+	double T8 = T9 / Vgst2Vtm;
+	double T0 = EsatL + Vdsat + 2.0 * T9 * tmp4;
+	double T7 = 2.0 * WVCoxRds * tmp4;
+	double dT0_dVg = dEsatL_dVg + dVdsat_dVg + T7 * (1.0 + tmp2 * d->vgst)
+	  - T8 * (Abulk * dVdsat_dVg - Abulk * Vdsat / Vgst2Vtm
+		  + Vdsat * dAbulk_dVg);   
+	double dT0_dVb = dEsatL_dVb + dVdsat_dVb + T7 * tmp3 * d->vgst
+	  - T8 * (dAbulk_dVb * Vdsat + Abulk * dVdsat_dVb);
+	double dT0_dVd = dEsatL_dVd + dVdsat_dVd - T8 * Abulk * dVdsat_dVd;
+	T9 = WVCoxRds * Abulk; 
+	double T1 = 2.0 / Lambda - 1.0 + T9; 
+	double dT1_dVg = -2.0 * tmp1 +  WVCoxRds * (Abulk * tmp2 + dAbulk_dVg);
+	double dT1_dVb = dAbulk_dVb * WVCoxRds + T9 * tmp3;
+	Vasat = T0 / T1;
+	dVasat_dVg = (dT0_dVg - Vasat * dT1_dVg) / T1;
+	dVasat_dVb = (dT0_dVb - Vasat * dT1_dVb) / T1;
+	dVasat_dVd = dT0_dVd / T1;
+      }
+      trace4("", Vasat, dVasat_dVg, dVasat_dVb, dVasat_dVd);
+    }
+    trace1("", d->vdsat);
+    trace4("", Vdsat, dVdsat_dVg, dVdsat_dVd, dVdsat_dVb);
+    trace4("", Vasat, dVasat_dVg, dVasat_dVb, dVasat_dVd);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Effective Vds (Vdseff) Calculation */
+    double Vdseff, diffVds, dVdseff_dVg, dVdseff_dVd, dVdseff_dVb;
+    {
+      double T1 = Vdsat - d->vds - s->delta;
+      double dT1_dVg = dVdsat_dVg;
+      double dT1_dVd = dVdsat_dVd - 1.0;
+      double dT1_dVb = dVdsat_dVb;
+      trace4("", T1, dT1_dVg, dT1_dVd, dT1_dVb);
+      
+      double T2 = sqrt(T1 * T1 + 4.0 * s->delta * Vdsat);
+      double T0 = T1 / T2;
+      double T3 = 2.0 * s->delta / T2;
+      trace3("", T2, T0, T3);
+      double dT2_dVg = T0 * dT1_dVg + T3 * dVdsat_dVg;
+      double dT2_dVd = T0 * dT1_dVd + T3 * dVdsat_dVd;
+      double dT2_dVb = T0 * dT1_dVb + T3 * dVdsat_dVb;
+      trace3("", dT2_dVg, dT2_dVd, dT2_dVb);
+      
+      Vdseff      = Vdsat - 0.5 * (T1 + T2);
+      dVdseff_dVg = dVdsat_dVg - 0.5 * (dT1_dVg + dT2_dVg); 
+      dVdseff_dVd = dVdsat_dVd - 0.5 * (dT1_dVd + dT2_dVd); 
+      dVdseff_dVb = dVdsat_dVb - 0.5 * (dT1_dVb + dT2_dVb); 
+      trace4("raw", Vdseff, dVdseff_dVg, dVdseff_dVd, dVdseff_dVb);
+
+      fixzero(&Vdseff,      Vdsat);
+      fixzero(&dVdseff_dVg, dVdsat_dVg);
+      fixzero(&dVdseff_dVd, dVdsat_dVd);
+      fixzero(&dVdseff_dVb, dVdsat_dVb);
+      /* Added to eliminate non-zero Vdseff at Vds=0.0 */
+      if (d->vds == 0.0) {
+	assert(Vdseff == 0.0);
+	assert(dVdseff_dVg == 0.0);
+	assert(dVdseff_dVb == 0.0);
+      }
+      if (Vdseff > d->vds) {	// From Spice, to fix numeric problems.
+	trace2("numeric problems", Vdseff, d->vds);
+	Vdseff = d->vds;
+      }
+      trace4("fixed", Vdseff, dVdseff_dVg, dVdseff_dVd, dVdseff_dVb);
+
+      diffVds = d->vds - Vdseff;
+      trace2("", Vdseff, diffVds);
+      ////////// d->Vdseff = Vdseff;
+    }
+    trace2("", Vdseff, diffVds);
+    trace3("", dVdseff_dVg, dVdseff_dVd, dVdseff_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Calculate Ids */
+    double Idsa, dIdsa_dVg, dIdsa_dVd, dIdsa_dVb;
+    {
+      double Va, dVa_dVg, dVa_dVd, dVa_dVb;
+      {
+	/* Calculate VACLM */
+	double VACLM, dVACLM_dVg, dVACLM_dVb, dVACLM_dVd;
+	if ((s->pclm > 0.0) && (diffVds > 1.0e-10)) {
+	  double T0 = 1.0 / (s->pclm * Abulk * s->litl);
+	  double dT0_dVb = -T0 / Abulk * dAbulk_dVb;
+	  double dT0_dVg = -T0 / Abulk * dAbulk_dVg; 
+	  double T2 = d->vgst / EsatL;
+	  double T1 = s->leff * (Abulk + T2); 
+	  double dT1_dVg = s->leff * ((1.0-T2*dEsatL_dVg)/EsatL + dAbulk_dVg);
+	  double dT1_dVb = s->leff * (dAbulk_dVb - T2 * dEsatL_dVb / EsatL);
+	  double dT1_dVd = -T2 * dEsatL_dVd / Esat;
+	  double T9 = T0 * T1;
+	  VACLM = T9 * diffVds;
+	  dVACLM_dVg = T0 * dT1_dVg * diffVds - T9 * dVdseff_dVg
+	    + T1 * diffVds * dT0_dVg;
+	  dVACLM_dVb = (dT0_dVb*T1 + T0*dT1_dVb) * diffVds - T9 * dVdseff_dVb;
+	  dVACLM_dVd = T0 * dT1_dVd * diffVds + T9 * (1.0 - dVdseff_dVd);
+	}else{
+	  VACLM = MAX_EXP;
+	  dVACLM_dVd = dVACLM_dVg = dVACLM_dVb = 0.0;
+	}
+	trace4("", VACLM, dVACLM_dVg, dVACLM_dVb, dVACLM_dVd);
+
+	/* Calculate VADIBL */
+	double VADIBL, dVADIBL_dVg, dVADIBL_dVb, dVADIBL_dVd;
+	if (t->thetaRout > 0.0) {
+	  double T8 = Abulk * Vdsat;
+	  double T0 = Vgst2Vtm * T8;
+	  double dT0_dVg = Vgst2Vtm * Abulk * dVdsat_dVg + T8
+	    + Vgst2Vtm * Vdsat * dAbulk_dVg;
+	  double dT0_dVb = Vgst2Vtm * (dAbulk_dVb*Vdsat + Abulk*dVdsat_dVb);
+	  double dT0_dVd = Vgst2Vtm * Abulk * dVdsat_dVd;
+	  double T1 = Vgst2Vtm + T8;
+	  double dT1_dVg = 1.0 + Abulk * dVdsat_dVg + Vdsat * dAbulk_dVg;
+	  double dT1_dVb = Abulk * dVdsat_dVb + dAbulk_dVb * Vdsat;
+	  double dT1_dVd = Abulk * dVdsat_dVd;
+	  double T9 = T1 * T1;
+	  double T2 = t->thetaRout;
+	  VADIBL = (Vgst2Vtm - T0 / T1) / T2;
+	  dVADIBL_dVg = (1.0 - dT0_dVg / T1 + T0 * dT1_dVg / T9) / T2;
+	  dVADIBL_dVb = (-dT0_dVb / T1 + T0 * dT1_dVb / T9) / T2;
+	  dVADIBL_dVd = (-dT0_dVd / T1 + T0 * dT1_dVd / T9) / T2;
+	  
+	  double T7 = s->pdiblb * Vbseff;
+	  if (T7 >= -0.9) {
+	    double T3 = 1.0 / (1.0 + T7);
+	    VADIBL *= T3;
+	    dVADIBL_dVg *= T3;
+	    dVADIBL_dVb = (dVADIBL_dVb - VADIBL * s->pdiblb) * T3;
+	    dVADIBL_dVd *= T3;
+	  }else{
+	    /* Added to avoid the discontinuity problem caused by pdiblcb */
+	    double T4 = 1.0 / (0.8 + T7);
+	    double T3 = (17.0 + 20.0 * T7) * T4;
+	    dVADIBL_dVg *= T3;
+	    dVADIBL_dVb = dVADIBL_dVb * T3 - VADIBL * s->pdiblb * T4 * T4;
+	    dVADIBL_dVd *= T3;
+	    VADIBL *= T3;
+	  }
+	}else{
+	  VADIBL = MAX_EXP;
+	  dVADIBL_dVd = dVADIBL_dVg = dVADIBL_dVb = 0.0;
+	}
+	trace4("", VADIBL, dVADIBL_dVg, dVADIBL_dVb, dVADIBL_dVd);
+
+	/* Calculate VA */
+	double T8 = s->pvag / EsatL;
+	double T9 = T8 * d->vgst;
+	double T0, dT0_dVg, dT0_dVb, dT0_dVd;
+	if (T9 > -0.9) {
+	  T0 = 1.0 + T9;
+	  dT0_dVg = T8 * (1.0 - d->vgst * dEsatL_dVg / EsatL);
+	  dT0_dVb = -T9 * dEsatL_dVb / EsatL;
+	  dT0_dVd = -T9 * dEsatL_dVd / EsatL;
+	}else{
+	  /* Added to avoid the discontinuity problems caused by pvag */
+	  double T1 = 1.0 / (17.0 + 20.0 * T9);
+	  T0 = (0.8 + T9) * T1;
+	  T1 *= T1;
+	  dT0_dVg = T8 * (1.0 - d->vgst * dEsatL_dVg / EsatL) * T1;
+	  T9 *= T1 / EsatL;
+	  dT0_dVb = -T9 * dEsatL_dVb;
+	  dT0_dVd = -T9 * dEsatL_dVd;
+	}
+	double tmp1 = VACLM * VACLM;
+	double tmp2 = VADIBL * VADIBL;
+	double tmp3 = VACLM + VADIBL;
+	
+	double T1 = VACLM * VADIBL / tmp3;
+	tmp3 *= tmp3;
+	double dT1_dVg = (tmp1 * dVADIBL_dVg + tmp2 * dVACLM_dVg) / tmp3;
+	double dT1_dVd = (tmp1 * dVADIBL_dVd + tmp2 * dVACLM_dVd) / tmp3;
+	double dT1_dVb = (tmp1 * dVADIBL_dVb + tmp2 * dVACLM_dVb) / tmp3;
+	
+	Va = Vasat + T0 * T1;
+	dVa_dVg = dVasat_dVg + T1 * dT0_dVg + T0 * dT1_dVg;
+	dVa_dVd = dVasat_dVd + T1 * dT0_dVd + T0 * dT1_dVd;
+	dVa_dVb = dVasat_dVb + T1 * dT0_dVb + T0 * dT1_dVb;
+      }
+      trace4("", Va, dVa_dVg, dVa_dVd, dVa_dVb);
+
+      double Idl, dIdl_dVg, dIdl_dVd, dIdl_dVb;
+      {
+	double gche, dgche_dVg, dgche_dVd, dgche_dVb;
+	{
+	  double beta, dbeta_dVg, dbeta_dVd, dbeta_dVb;
+	  {
+	    double CoxWovL = m->cox * Weff / s->leff;
+	    beta = ueff * CoxWovL;
+	    dbeta_dVg = CoxWovL * dueff_dVg + beta * dWeff_dVg / Weff;
+	    dbeta_dVd = CoxWovL * dueff_dVd;
+	    dbeta_dVb = CoxWovL * dueff_dVb + beta * dWeff_dVb / Weff;
+	  }
+	  trace4("", beta, dbeta_dVg, dbeta_dVd, dbeta_dVb);
+
+	  double fgche1, dfgche1_dVg, dfgche1_dVd, dfgche1_dVb;
+	  {
+	    double T0 = 1.0 - 0.5 * Abulk * Vdseff / Vgst2Vtm;
+	    double dT0_dVg = -0.5 * (Abulk * dVdseff_dVg 
+		- Abulk * Vdseff / Vgst2Vtm + Vdseff * dAbulk_dVg) / Vgst2Vtm;
+	    double dT0_dVd = -0.5 * Abulk * dVdseff_dVd / Vgst2Vtm;
+	    double dT0_dVb = -0.5 * (Abulk*dVdseff_dVb + dAbulk_dVb*Vdseff) 
+	      / Vgst2Vtm;
+	    fgche1 = d->vgst * T0;
+	    dfgche1_dVg = d->vgst * dT0_dVg + T0; 
+	    dfgche1_dVd = d->vgst * dT0_dVd; 
+	    dfgche1_dVb = d->vgst * dT0_dVb; 
+	  }
+	  trace4("", fgche1, dfgche1_dVg, dfgche1_dVd, dfgche1_dVb);
+
+	  double fgche2, dfgche2_dVg, dfgche2_dVd, dfgche2_dVb;
+	  {
+	    double T9 = Vdseff / EsatL;
+	    fgche2 = 1.0 + T9;
+	    dfgche2_dVg = (dVdseff_dVg - T9 * dEsatL_dVg) / EsatL;
+	    dfgche2_dVd = (dVdseff_dVd - T9 * dEsatL_dVd) / EsatL;
+	    dfgche2_dVb = (dVdseff_dVb - T9 * dEsatL_dVb) / EsatL;
+	  }
+	  trace4("", fgche2, dfgche2_dVg, dfgche2_dVd, dfgche2_dVb);
+
+	  gche = beta * fgche1 / fgche2;
+	  dgche_dVg = (beta * dfgche1_dVg + fgche1 * dbeta_dVg
+		       - gche * dfgche2_dVg) / fgche2;
+	  dgche_dVd = (beta * dfgche1_dVd + fgche1 * dbeta_dVd
+		       - gche * dfgche2_dVd) / fgche2;
+	  dgche_dVb = (beta * dfgche1_dVb + fgche1 * dbeta_dVb
+		       - gche * dfgche2_dVb) / fgche2;
+	}
+	trace4("", gche, dgche_dVg, dgche_dVd, dgche_dVb);
+
+	double T0 = 1.0 + gche * Rds;
+	double T9 = Vdseff / T0;
+	Idl = gche * T9;
+	dIdl_dVg = (gche * dVdseff_dVg + T9 * dgche_dVg) / T0
+	  - Idl * gche / T0 * dRds_dVg; 
+	dIdl_dVd = (gche * dVdseff_dVd + T9 * dgche_dVd) / T0; 
+	dIdl_dVb = (gche*dVdseff_dVb + T9*dgche_dVb - Idl*dRds_dVb*gche) / T0; 
+      }
+      trace4("", Idl, dIdl_dVg, dIdl_dVd, dIdl_dVb);
+
+      double T9 =  diffVds / Va;
+      double T0 =  1.0 + T9;
+      Idsa = Idl * T0;
+      dIdsa_dVg = T0 * dIdl_dVg - Idl * (dVdseff_dVg + T9 * dVa_dVg) / Va;
+      dIdsa_dVd = T0 * dIdl_dVd + Idl * (1.0 - dVdseff_dVd - T9*dVa_dVd) / Va;
+      dIdsa_dVb = T0 * dIdl_dVb - Idl * (dVdseff_dVb + T9 * dVa_dVb) / Va;
+    }
+    trace4("", Idsa, dIdsa_dVg, dIdsa_dVd, dIdsa_dVb);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // d->ids, d->gds, d->gmf, d->gmbf
+    {
+      double VASCBE, dVASCBE_dVg, dVASCBE_dVd, dVASCBE_dVb;
+      if (s->pscbe2 > 0.0) {
+	if (diffVds > s->pscbe1 * s->litl / EXP_THRESHOLD) {
+	  double T0 =  s->pscbe1 * s->litl / diffVds;
+	  VASCBE = s->leff * exp(T0) / s->pscbe2;
+	  double T1 = T0 * VASCBE / diffVds;
+	  dVASCBE_dVg = T1 * dVdseff_dVg;
+	  dVASCBE_dVd = -T1 * (1.0 - dVdseff_dVd);
+	  dVASCBE_dVb = T1 * dVdseff_dVb;
+	}else{
+	  VASCBE = MAX_EXP * s->leff/s->pscbe2;
+	  dVASCBE_dVg = dVASCBE_dVd = dVASCBE_dVb = 0.0;
+	}
+      }else{
+	VASCBE = MAX_EXP;
+	dVASCBE_dVg = dVASCBE_dVd = dVASCBE_dVb = 0.0;
+      }
+      double T9 = diffVds / VASCBE;
+      double T0 = 1.0 + T9;
+      double Ids = Idsa * T0;
+      double Gm = T0*dIdsa_dVg - Idsa*(dVdseff_dVg + T9*dVASCBE_dVg) / VASCBE;
+      double Gds = T0 * dIdsa_dVd 
+	+ Idsa * (1.0 - dVdseff_dVd - T9 * dVASCBE_dVd) / VASCBE;
+      double Gmb = T0 * dIdsa_dVb
+	- Idsa * (dVdseff_dVb + T9 * dVASCBE_dVb) / VASCBE;
+      trace3("", T0, dIdsa_dVb, (T0 * dIdsa_dVb));
+      trace4("", dVdseff_dVb, T9, dVASCBE_dVb, (dVdseff_dVb + T9*dVASCBE_dVb));
+      trace3("", Idsa, VASCBE, (Idsa*(dVdseff_dVb+T9*dVASCBE_dVb)/VASCBE));
+
+      Gds += Gm * dVgsteff_dVd;
+      Gmb += Gm * dVgsteff_dVb;
+      Gm *= dVgsteff_dVg;
+      Gmb *= dVbseff_dVb;
+      trace4("", Ids, Gm, Gds, Gmb);
+      trace0("=========================");
+
+      d->gds = Gds;
+      if (d->reversed) {
+	d->ids  = -Ids;
+	d->gmr  = Gm;
+	d->gmbr = Gmb;
+	d->gmf = d->gmbf = 0;
+      }else{
+	d->ids  = Ids;
+	d->gmf  = Gm;
+	d->gmbf = Gmb;
+	d->gmr = d->gmbr = 0.;
+      }
+    }
+    trace4("", d->ids, d->gds, d->gmf, d->gmbf);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // d->isub, d->gbbs, d->gbgs, d->gbds
+    {
+      /* calculate substrate current Isub */
+      double Isub, Gbd, Gbb, Gbg;
+      double tmp = s->alpha0 + s->alpha1 * s->leff;
+      if ((tmp <= 0.0) || (s->beta0 <= 0.0)) {
+	Isub = Gbd = Gbb = Gbg = 0.0;
+	trace4("no-isub", Isub, Gbd, Gbb, Gbg);
+      }else{
+	double T2 = tmp / s->leff;
+	double T1, dT1_dVg, dT1_dVd, dT1_dVb;
+	if (diffVds > s->beta0 / EXP_THRESHOLD) {
+	  double T0 = -s->beta0 / diffVds;
+	  T1 = T2 * diffVds * exp(T0);
+	  double T3 = T1 / diffVds * (T0 - 1.0);
+	  trace3("", T0, T2, T3);
+	  dT1_dVg = T3 * dVdseff_dVg;
+	  dT1_dVd = T3 * (dVdseff_dVd - 1.0);
+	  dT1_dVb = T3 * dVdseff_dVb;
+	  trace4("vds > ?", T1, dT1_dVg, dT1_dVd, dT1_dVb);
+	}else{
+	  double T3 = T2 * MIN_EXP;
+	  trace2("", T2, T3);
+	  T1 = T3 * diffVds;
+	  dT1_dVg = -T3 * dVdseff_dVg;
+	  dT1_dVd = T3 * (1.0 - dVdseff_dVd);
+	  dT1_dVb = -T3 * dVdseff_dVb;
+	  trace4("vds < ?", T1, dT1_dVg, dT1_dVd, dT1_dVb);
+	}
+	Isub = T1 * Idsa;
+	Gbg = T1 * dIdsa_dVg + Idsa * dT1_dVg;
+	Gbd = T1 * dIdsa_dVd + Idsa * dT1_dVd;
+	Gbb = T1 * dIdsa_dVb + Idsa * dT1_dVb;
+	trace4("raw", Isub, Gbd, Gbb, Gbg);
+	
+	Gbd += Gbg * dVgsteff_dVd;
+	Gbb += Gbg * dVgsteff_dVb;
+	Gbg *= dVgsteff_dVg;
+	Gbb *= dVbseff_dVb; /* bug fixing */
+      }
+      trace4("", Isub, Gbd, Gbb, Gbg);
+      if (!(d->reversed)) {
+	d->idb   = Isub;
+	d->gdbds = Gbd;
+	d->gdbgs = Gbg;
+	d->gdbbs = Gbb;
+	d->isb = d->gsbsd = d->gsbgd = d->gsbbd = 0.;
+      }else{
+	d->idb = d->gdbds = d->gdbgs = d->gdbbs = 0.;
+	d->isb   = Isub;
+	d->gsbsd = Gbd;
+	d->gsbgd = Gbg;
+	d->gsbbd = Gbb;
+      }
+      //double d__csub = Isub - (Gbb * Vbseff + Gbd * d->vds + Gbg * d->vgs);
+    }
+    trace4("", d->isub, d->gbbs, d->gbgs, d->gbds);
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /* Calculate Qinv for Noise analysis */
+    {
+      // from 3.1
+      //double T1 = d->vgst * (1.0 - 0.5 * Abulk * Vdseff / Vgst2Vtm);
+      //double d__qinv = -m->cox * Weff * s->leff * T1;
+
+      // from 3.3
+      // /* BSIM3 thermal noise Qinv calculated from all capMod 
+      // 0, 1, 2 & 3 stored in here->BSIM3qinv 1/1998 */
+    }
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // ends line 2020 (finished)
+    // d->qgate, d->qdrn, d->qbulk
+    // d->cggb, d->cgsb, d->cgdb
+    // d->cdgb, d->cdsb, d->cddb
+    // d->cbgb, d->cbsb, d->cbdb
+    assert(d->qbulk == d->qbulk);
+    assert(d->qdrn == d->qdrn);
+    assert(d->qgate == d->qgate);
+    {
+      const bool ChargeComputationNeeded = true;
+      trace2("", m->xpart, m->capMod);
+      if ((m->xpart < 0) || (!ChargeComputationNeeded)) {
+	d->qgate = d->qdrn = d->qbulk = 0.0;
+	d->cggb = d->cgsb = d->cgdb = 0.0;
+	d->cdgb = d->cdsb = d->cddb = 0.0;
+	d->cbgb = d->cbsb = d->cbdb = 0.0;
+        ////////// d->cqdb = d->cqsb = d->cqgb = d->cqbb = 0.0;
+        ////////// d->gtau = 0.0;
+	trace0("xpart < 0 || no charge computation");
+	untested();
+	assert(d->qbulk == d->qbulk);
+	assert(d->qdrn == d->qdrn);
+	assert(d->qgate == d->qgate);
+	untested();
+      }else if (m->capMod == 0) {
+	untested();
+	// block ends 1876 this 1599
+	trace0("begin capMod == 0 (mos8)");
+	if (Vbseff < 0.0) {  // redefinition
+	  Vbseff = d->vbs;
+	  dVbseff_dVb = 1.0;
+	}else{
+	  Vbseff = t->phi - Phis;
+	  dVbseff_dVb = -dPhis_dVb;
+	}
+	trace1("old value replaced", dVth_dVb);
+	double Vfb = s->vfbcv; // possible improper redefinition later
+	double Vth = Vfb + t->phi + t->k1ox * sqrtPhis; 
+	dVth_dVb = t->k1ox * dsqrtPhis_dVb; // redefinition
+	double Vgst = Vgs_eff - Vth;
+	//double dVgst_dVb = -dVth_dVb;
+	//double dVgst_dVg = dVgs_eff_dVg; 
+	double CoxWL = m->cox * s->weffCV * s->leffCV;
+	double Arg1 = Vgs_eff - Vbseff - Vfb;
+	trace3("", Vfb, Vth, dVth_dVb);
+	trace3("", Vgst, CoxWL, Arg1);
+
+	// ends 1618 this 1328
+	if (Arg1 <= 0.0) {
+	  trace0("Arg1 <= 0.0");
+	  
+	  d->qgate = CoxWL * Arg1;
+	  d->cggb = CoxWL * dVgs_eff_dVg;
+	  d->cgdb = 0.0;
+	  d->cgsb = CoxWL * (dVbseff_dVb - dVgs_eff_dVg);
+	  
+	  d->qbulk = -d->qgate;
+	  d->cbgb = -CoxWL * dVgs_eff_dVg;
+	  d->cbdb = 0.0;
+	  d->cbsb = -d->cgsb;
+	  
+	  d->qdrn = 0.0;
+	  d->cdgb = 0.0;
+	  d->cddb = 0.0;
+	  d->cdsb = 0.0;
+	  
+	  ////////// d->qinv = 0.0;
+	}else if (Vgst <= 0.0) {
+	  trace0("Vgst <= 0.0");
+	  double T1 = 0.5 * t->k1ox;
+	  double T2 = sqrt(T1 * T1 + Arg1);
+	  double T0 = CoxWL * T1 / T2;
+
+	  d->qgate = CoxWL * t->k1 * (T2 - T1);
+	  d->cggb = T0 * dVgs_eff_dVg;
+	  d->cgdb = 0.0;
+	  d->cgsb = T0 * (dVbseff_dVb - dVgs_eff_dVg);
+	  
+	  d->qbulk = -d->qgate;
+	  d->cbgb = -d->cggb;
+	  d->cbdb = 0.0;
+	  d->cbsb = -d->cgsb;
+   
+	  d->qdrn = 0.0;
+	  d->cdgb = 0.0;
+	  d->cddb = 0.0;
+	  d->cdsb = 0.0;
+	}else{
+	  trace0("!(Arg1 <= 0.0 || Vgst <= 0.0)");
+	  double One_Third_CoxWL = CoxWL / 3.0;
+	  double Two_Third_CoxWL = 2.0 * One_Third_CoxWL;
+	  // redefine Vdsat, dVdsat_dVg, dVdsat_dVb
+	  {
+	    double AbulkCV = Abulk0 * s->abulkCVfactor;
+	    double dAbulkCV_dVb = s->abulkCVfactor * dAbulk0_dVb;
+	    Vdsat = Vgst / AbulkCV;
+	    dVdsat_dVg = dVgs_eff_dVg / AbulkCV;
+	    dVdsat_dVb = - (Vdsat * dAbulkCV_dVb + dVth_dVb)/ AbulkCV; 
+	  }
+	  if (m->xpart > 0.5) {
+	    /* 0/100 Charge partition model */
+	    if (d->vds >= Vdsat) {
+	      /* saturation region */
+	      double T1 = Vdsat / 3.0;
+	      double T2 = -One_Third_CoxWL * dVdsat_dVb;
+	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - T1);
+	      d->cggb = One_Third_CoxWL * (3.0 - dVdsat_dVg) * dVgs_eff_dVg;
+	      d->cgsb = -(d->cggb + T2);
+	      d->cgdb = 0.0;
+	      
+	      double T2a = -Two_Third_CoxWL * Vgst;
+	      double T3 = -(T2 + Two_Third_CoxWL * dVth_dVb);
+	      d->qbulk = -(d->qgate + T2a);
+	      d->cbgb = -(d->cggb - Two_Third_CoxWL * dVgs_eff_dVg);
+	      d->cbsb = -(d->cbgb + T3);
+	      d->cbdb = 0.0;
+
+	      d->qdrn = 0.0;
+	      d->cdgb = 0.0;
+	      d->cddb = 0.0;
+	      d->cdsb = 0.0;
+	      ////////// d->qinv =  -(d->qgate + d->qbulk);
+	    }else{
+	      /* linear region */
+	      double Alphaz = Vgst / Vdsat;
+	      double T1 = 2.0 * Vdsat - d->vds;
+	      double T2 = d->vds / (3.0 * T1);
+	      double T3 = T2 * d->vds;
+	      double T9 = 0.25 * CoxWL;
+	      double T4 = T9 * Alphaz;
+	      double T7 = 2.0 * d->vds - T1 - 3.0 * T3;
+	      double T8 = T3 - T1 - 2.0 * d->vds;
+	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - 0.5 * (d->vds-T3));
+	      double T10 = T4 * T8;
+	      d->qdrn = T4 * T7;
+	      d->qbulk = -(d->qgate + d->qdrn + T10);
+	      ////////// d->qinv =  -(d->qgate + d->qbulk);
+	      
+	      double T5 = T3 / T1;
+	      d->cggb = CoxWL * (1.0 - T5 * dVdsat_dVg) * dVgs_eff_dVg;
+	      double T11 = -CoxWL * T5 * dVdsat_dVb;
+	      d->cgdb = CoxWL * (T2 - 0.5 + 0.5 * T5);
+	      d->cgsb = -(d->cggb + T11 + d->cgdb);
+
+	      double T6 = 1.0 / Vdsat;
+	      double dAlphaz_dVg = T6 * (1.0 - Alphaz * dVdsat_dVg);
+	      double dAlphaz_dVb = -T6 * (dVth_dVb + Alphaz * dVdsat_dVb);
+	      T7 = T9 * T7;
+	      T8 = T9 * T8;
+	      T9 = 2.0 * T4 * (1.0 - 3.0 * T5);
+	      d->cdgb = (T7 * dAlphaz_dVg - T9 * dVdsat_dVg) * dVgs_eff_dVg;
+	      double T12 = T7 * dAlphaz_dVb - T9 * dVdsat_dVb;
+	      d->cddb = T4 * (3.0 - 6.0 * T2 - 3.0 * T5);
+	      d->cdsb = -(d->cdgb + T12 + d->cddb);
+
+	      T9 = 2.0 * T4 * (1.0 + T5);
+	      T10 = (T8 * dAlphaz_dVg - T9 * dVdsat_dVg) * dVgs_eff_dVg;
+	      T11 = T8 * dAlphaz_dVb - T9 * dVdsat_dVb;
+	      T12 = T4 * (2.0 * T2 + T5 - 1.0); 
+	      double T0 = -(T10 + T11 + T12);
+	      d->cbgb = -(d->cggb + d->cdgb + T10);
+	      d->cbdb = -(d->cgdb + d->cddb + T12);
+	      d->cbsb = -(d->cgsb + d->cdsb + T0);
+	    }
+	  }else if (m->xpart < 0.5) {
+	    /* 40/60 Charge partition model */
+	    if (d->vds >= Vdsat) {
+	      /* saturation region */
+	      double T1 = Vdsat / 3.0;
+	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - T1);
+	      double T2 = -Two_Third_CoxWL * Vgst;
+	      d->qbulk = -(d->qgate + T2);
+	      d->qdrn = 0.4 * T2;
+	      ////////// d->qinv =  -(d->qgate + d->qbulk);
+
+	      d->cggb = One_Third_CoxWL * (3.0 - dVdsat_dVg) * dVgs_eff_dVg;
+	      T2 = -One_Third_CoxWL * dVdsat_dVb;
+	      d->cgsb = -(d->cggb + T2);
+	      d->cgdb = 0.0;
+       
+	      double T3 = 0.4 * Two_Third_CoxWL;
+	      d->cdgb = -T3 * dVgs_eff_dVg;
+	      d->cddb = 0.0;
+	      double T4 = T3 * dVth_dVb;
+	      d->cdsb = -(T4 + d->cdgb);
+	      
+	      d->cbgb = -(d->cggb - Two_Third_CoxWL * dVgs_eff_dVg);
+	      T3 = -(T2 + Two_Third_CoxWL * dVth_dVb);
+	      d->cbsb = -(d->cbgb + T3);
+	      d->cbdb = 0.0;
+	    }else{
+	      /* linear region  */
+	      double T1 = 2.0 * Vdsat - d->vds;
+	      double T2 = d->vds / (3.0 * T1);
+	      double T3 = T2 * d->vds;
+	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - 0.5 * (d->vds - T3));
+	      double T5 = T3 / T1;
+	      d->cggb = CoxWL * (1.0 - T5 * dVdsat_dVg) * dVgs_eff_dVg;
+	      double tmp = -CoxWL * T5 * dVdsat_dVb;
+	      d->cgdb = CoxWL * (T2 - 0.5 + 0.5 * T5);
+	      d->cgsb = -(d->cggb + d->cgdb + tmp);
+
+	      double T6 = 1.0 / Vdsat;
+	      double Alphaz      =  T6 * Vgst;
+	      double dAlphaz_dVg =  T6 * (1.0 - Alphaz * dVdsat_dVg);
+	      double dAlphaz_dVb = -T6 * (dVth_dVb + Alphaz * dVdsat_dVb);
+	      T6 = 8.0 * Vdsat * Vdsat - 6.0 * Vdsat * d->vds 
+		+ 1.2 * d->vds * d->vds;
+	      double T8 = T2 / T1;
+	      double T7 = d->vds - T1 - T8 * T6;
+	      double T9 = 0.25 * CoxWL;
+	      double T4 = T9 * Alphaz;
+	      d->qdrn = T4 * T7;
+	      T7 *= T9;
+	      tmp = T8 / T1;
+	      double tmp1 = T4 * (2.0 - 4.0 * tmp * T6
+			   + T8 * (16.0 * Vdsat - 6.0 * d->vds));
+	      d->cdgb = (T7 * dAlphaz_dVg - tmp1 * dVdsat_dVg) * dVgs_eff_dVg;
+	      double T10 = T7 * dAlphaz_dVb - tmp1 * dVdsat_dVb;
+	      d->cddb = T4 * (2.0 - (1.0 / (3.0 * T1 * T1) + 2.0 * tmp) * T6 
+			      + T8 * (6.0 * Vdsat - 2.4 * d->vds));
+	      d->cdsb = -(d->cdgb + T10 + d->cddb);
+
+	      T7 = 2.0 * (T1 + T3);
+	      d->qbulk = -(d->qgate - T4 * T7);
+	      T7 *= T9;
+	      double T0 = 4.0 * T4 * (1.0 - T5);
+	      double T12 = (-T7 * dAlphaz_dVg - d->cdgb - T0 * dVdsat_dVg)
+		* dVgs_eff_dVg;
+	      double T11 = -T7 * dAlphaz_dVb - T10 - T0 * dVdsat_dVb;
+	      T10 = -4.0 * T4 * (T2 - 0.5 + 0.5 * T5) - d->cddb;
+	      tmp = -(T10 + T11 + T12);
+	      d->cbgb = -(d->cggb + d->cdgb + T12);
+	      d->cbdb = -(d->cgdb + d->cddb + T10); /* bug fix 3.3 */
+	      d->cbsb = -(d->cgsb + d->cdsb + tmp);
+	      trace3("0,40/60,lin", T10, T11, T12);
+	      trace3("0,40/60,lin", d->cbgb, d->cbdb, d->cbsb); 
+	      ////////// d->qinv =  -(d->qgate + d->qbulk);
+	    }
+	  }else{
+	    /* 50/50 partitioning */
+	    if (d->vds >= Vdsat) {
+	      /* saturation region */
+	      double T1 = Vdsat / 3.0;
+	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - T1);
+	      double T2 = -Two_Third_CoxWL * Vgst;
+	      d->qbulk = -(d->qgate + T2);
+	      ////////// d->qinv =  -(d->qgate + d->qbulk);
+	      d->qdrn = 0.5 * T2;
+	      
+	      T2 = -One_Third_CoxWL * dVdsat_dVb;
+	      d->cggb = One_Third_CoxWL * (3.0 - dVdsat_dVg) * dVgs_eff_dVg;
+	      d->cgsb = -(d->cggb + T2);
+	      d->cgdb = 0.0;
+	      
+	      double T4 = One_Third_CoxWL * dVth_dVb;
+	      d->cdgb = -One_Third_CoxWL * dVgs_eff_dVg;
+	      d->cddb = 0.0;
+	      d->cdsb = -(T4 + d->cdgb);
+	      
+	      double T3 = -(T2 + Two_Third_CoxWL * dVth_dVb);
+	      d->cbgb = -(d->cggb - Two_Third_CoxWL * dVgs_eff_dVg);
+	      d->cbsb = -(d->cbgb + T3);
+	      d->cbdb = 0.0;
+	    }else{
+	      /* linear region */
+	      double T1 = 2.0 * Vdsat - d->vds;
+	      double T2 = d->vds / (3.0 * T1);
+	      double T3 = T2 * d->vds;
+	      double T5 = T3 / T1;
+	      double tmp = -CoxWL * T5 * dVdsat_dVb;
+	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - 0.5 * (d->vds-T3));
+	      d->cggb = CoxWL * (1.0 - T5 * dVdsat_dVg) * dVgs_eff_dVg;
+	      d->cgdb = CoxWL * (T2 - 0.5 + 0.5 * T5);
+	      d->cgsb = -(d->cggb + d->cgdb + tmp);
+	      
+	      double T6 = 1.0 / Vdsat;
+	      double Alphaz =       T6 * Vgst;
+	      double dAlphaz_dVg =  T6 * (1.0 - Alphaz * dVdsat_dVg);
+	      double dAlphaz_dVb = -T6 * (dVth_dVb + Alphaz * dVdsat_dVb);
+	      
+	      double T9 = 0.25 * CoxWL;
+	      double T4 = T9 * Alphaz;
+	      double T7 = T1 + T3;
+	      d->qdrn = -T4 * T7;
+	      d->qbulk = - (d->qgate + d->qdrn + d->qdrn);
+	      ////////// d->qinv =  -(d->qgate + d->qbulk);
+
+	      T7 *= T9;
+	      double T0 = T4 * (2.0 * T5 - 2.0);	      
+	      double T12 = T0 * dVdsat_dVb - T7 * dAlphaz_dVb;
+	      d->cdgb = (T0 * dVdsat_dVg - T7 * dAlphaz_dVg) * dVgs_eff_dVg;
+	      d->cddb = T4 * (1.0 - 2.0 * T2 - T5);
+	      d->cdsb = -(d->cdgb + T12 + d->cddb);
+	      
+	      d->cbgb = -(d->cggb + 2.0 * d->cdgb);
+	      d->cbdb = -(d->cgdb + 2.0 * d->cddb);
+	      d->cbsb = -(d->cgsb + 2.0 * d->cdsb);
+	    }
+	  }
+	} // begins 1328 this 1618
+	trace0("end capMod == 0");
+	// end of else if (m->capMod == 0) line 1598 this 1875
+	untested();
+	assert(d->qbulk == d->qbulk);
+	assert(d->qdrn == d->qdrn);
+	assert(d->qgate == d->qgate);
+	untested();
+      }else{
+	trace0("begin capMod != 0 (mos8)");	
+	assert(m->capMod != 0);
+	double qsrc;
+	double VbseffCV, dVbseffCV_dVb;
+	if (Vbseff < 0.0) {
+	  VbseffCV = Vbseff;
+	  dVbseffCV_dVb = 1.0;
+	}else{
+	  VbseffCV = t->phi - Phis;
+	  dVbseffCV_dVb = -dPhis_dVb;
+	}
+	trace2("", VbseffCV, dVbseffCV_dVb);
+
+	//////////-----------moved???
+	//double Vth = d->von; // possibly wrong value -- scope problem
+	//double Vfb = Vth - t->phi - t->k1 * sqrtPhis;
+	//double dVfb_dVb = dVth_dVb - t->k1 * dsqrtPhis_dVb;
+	//double dVfb_dVd = dVth_dVd;
+	//////////-------------end moved?
+
+	double Vgsteff;
+	{
+	  /* Seperate VgsteffCV with noff and voffcv */
+	  double noff = n * s->noff;
+	  double dnoff_dVd = s->noff * dn_dVd;
+	  double dnoff_dVb = s->noff * dn_dVb;
+
+	  double T0 = t->vtm * noff;
+	  double Vgst = Vgs_eff - d->von;
+	  double VgstNVt = (Vgst - s->voffcv) / (2*T0);
+	  
+	  trace3("", d->vgst, Vgst, VgstNVt);
+	  trace2("", n, t->vtm);
+	  
+	  if (VgstNVt > EXP_THRESHOLD) {
+	    trace0("VgstNVt above");
+	    Vgsteff = Vgst - s->voffcv;
+	    dVgsteff_dVg = dVgs_eff_dVg;
+	    dVgsteff_dVd = -dVth_dVd;
+	    dVgsteff_dVb = -dVth_dVb;
+	  }else if (VgstNVt < -EXP_THRESHOLD) {
+	    trace0("VgstNVt below");
+	    Vgsteff = T0 * log(1.0 + MIN_EXP);
+	    dVgsteff_dVg = 0.0;
+	    dVgsteff_dVd = Vgsteff / noff;
+	    dVgsteff_dVb = dVgsteff_dVd * dnoff_dVb;
+	    dVgsteff_dVd *= dnoff_dVd;
+	  }else{
+	    trace0("VgstNVt in range");
+	    double ExpVgst = exp(VgstNVt);
+	    trace1("", ExpVgst);
+	    Vgsteff = T0 * log(1.0 + ExpVgst);
+	    dVgsteff_dVg = ExpVgst / (1.0 + ExpVgst);
+	    dVgsteff_dVd = -dVgsteff_dVg
+	      * (dVth_dVd + (Vgst - s->voffcv) / noff * dnoff_dVd)
+	      + Vgsteff / noff * dnoff_dVd;
+	    dVgsteff_dVb = -dVgsteff_dVg
+	      * (dVth_dVb + (Vgst - s->voffcv) / noff * dnoff_dVb)
+	      + Vgsteff / noff * dnoff_dVb;
+	    dVgsteff_dVg *= dVgs_eff_dVg;
+	  } /* End of VgsteffCV */
+	}
+	trace4("", Vgsteff, dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb);
+	  
+	/* old code
+	if ((VgstNVt > -EXP_THRESHOLD) && (VgstNVt < EXP_THRESHOLD)) {
+	  assert(ExpVgst != NOT_VALID);
+	  ExpVgst *= ExpVgst;
+	  Vgsteff = n * t->vtm * log(1.0 + ExpVgst);
+	  dVgsteff_dVg = ExpVgst / (1.0 + ExpVgst);
+	  dVgsteff_dVd = -dVgsteff_dVg * (dVth_dVd + (Vgs_eff-Vth)/n * dn_dVd)
+	    + Vgsteff/n * dn_dVd;
+	  dVgsteff_dVb = -dVgsteff_dVg * (dVth_dVb + (Vgs_eff-Vth)/n * dn_dVb)
+	    + Vgsteff/n * dn_dVb;
+	  dVgsteff_dVg *= dVgs_eff_dVg;
+	}else{
+	  Vgsteff = d->vgst;
+	}
+	*/
+
+	double CoxWL = m->cox * s->weffCV * s->leffCV;
+	// redundant??
+
+	if (m->capMod == 1) {
+	  untested();
+	  double Cgg, Cgd, Cgb;
+	  {
+	    double Vfb = t->vfbzb;
+	    double Arg1 = Vgs_eff - VbseffCV - Vfb - Vgsteff;
+	    if (Arg1 <= 0.0) {
+	      d->qgate = CoxWL * Arg1;
+	      Cgg = CoxWL * (dVgs_eff_dVg - dVgsteff_dVg);
+	      //Cgd = -CoxWL * (dVfb_dVd + dVgsteff_dVd);
+	      //Cgb = -CoxWL * (dVfb_dVb + dVbseffCV_dVb + dVgsteff_dVb);
+	      Cgd = -CoxWL * dVgsteff_dVd;
+	      Cgb = -CoxWL * (dVbseffCV_dVb + dVgsteff_dVb);
+	    }else{
+	      double T0 = 0.5 * t->k1ox;
+	      double T1 = sqrt(T0 * T0 + Arg1);
+	      double T2 = CoxWL * T0 / T1;
+	      d->qgate = CoxWL * t->k1ox * (T1 - T0);
+	      Cgg = T2 * (dVgs_eff_dVg - dVgsteff_dVg);
+	      //Cgd = -T2 * (dVfb_dVd + dVgsteff_dVd);
+	      //Cgb = -T2 * (dVfb_dVb + dVbseffCV_dVb + dVgsteff_dVb);
+	      Cgd = -T2 * dVgsteff_dVd;
+	      Cgb = -T2 * (dVbseffCV_dVb + dVgsteff_dVb);
+	    }
+	  }
+	  d->qbulk = -d->qgate;
+	  double Cbg = -Cgg;
+	  double Cbd = -Cgd;
+	  double Cbb = -Cgb;
+	  
+	  double AbulkCV = Abulk0 * s->abulkCVfactor;
+	  double dAbulkCV_dVb = s->abulkCVfactor * dAbulk0_dVb;
+
+	  double Csg, Csb, Csd;
+	  {
+	    double VdsatCV = Vgsteff / AbulkCV;
+	    if (VdsatCV < d->vds) {
+	      double One_Third_CoxWL = CoxWL / 3.0;
+	      double Two_Third_CoxWL = 2.0 * One_Third_CoxWL;
+	      double dVdsatCV_dVg = 1.0 / AbulkCV;
+	      double dVdsatCV_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
+	      {
+		double T0 = Vgsteff - VdsatCV / 3.0;
+		double dT0_dVg = 1.0 - dVdsatCV_dVg / 3.0;
+		double dT0_dVb = -dVdsatCV_dVb / 3.0;
+		d->qgate += CoxWL * T0;
+		double Cgg1 = CoxWL * dT0_dVg; 
+		double Cgb1 = CoxWL * dT0_dVb + Cgg1 * dVgsteff_dVb;
+		double Cgd1 = Cgg1 * dVgsteff_dVd;
+		Cgg1 *= dVgsteff_dVg;
+		Cgg += Cgg1;
+		Cgb += Cgb1;
+		Cgd += Cgd1;
+	      }
+	      {
+		double T0 = VdsatCV - Vgsteff;
+		double dT0_dVg = dVdsatCV_dVg - 1.0;
+		double dT0_dVb = dVdsatCV_dVb;
+		d->qbulk += One_Third_CoxWL * T0;
+		double Cbg1 = One_Third_CoxWL * dT0_dVg;
+		double Cbb1 = One_Third_CoxWL * dT0_dVb + Cbg1 * dVgsteff_dVb;
+		double Cbd1 = Cbg1 * dVgsteff_dVd;
+		Cbg1 *= dVgsteff_dVg;
+		Cbg += Cbg1;
+		Cbb += Cbb1;
+		Cbd += Cbd1;
+	      }
+	      double T0;
+	      if (m->xpart > 0.5) {
+		T0 = -Two_Third_CoxWL;
+	      }else if (m->xpart < 0.5) {
+		T0 = -0.4 * CoxWL;
+	      }else{
+		T0 = -One_Third_CoxWL;
+	      }
+	      qsrc = T0 * Vgsteff;
+	      Csg = T0 * dVgsteff_dVg;
+	      Csb = T0 * dVgsteff_dVb;
+	      Csd = T0 * dVgsteff_dVd;
+	      Cgb *= dVbseff_dVb;
+	      Cbb *= dVbseff_dVb;
+	      Csb *= dVbseff_dVb;
+	    }else{
+	      double T0 = AbulkCV * d->vds;
+	      double T1 = 12.0 * (Vgsteff - 0.5 * T0 + 1.e-20);
+	      double Cgg1, Cgb1, Cgd1, Cbg1, Cbb1, Cbd1;
+	      {
+		double T2 = d->vds / T1;
+		double T3 = T0 * T2;
+		double dT3_dVg = -12.0 * T2 * T2 * AbulkCV;
+		double dT3_dVd = 6.0 * T0 * (4.0*Vgsteff - T0) / T1 / T1 - 0.5;
+		double dT3_dVb = 12.0 * T2 * T2 * dAbulkCV_dVb * Vgsteff;
+		
+		d->qgate += CoxWL * (Vgsteff - 0.5 * d->vds + T3);
+		Cgg1 = CoxWL * (1.0 + dT3_dVg);
+		Cgb1 = CoxWL * dT3_dVb + Cgg1 * dVgsteff_dVb;
+		Cgd1 = CoxWL * dT3_dVd + Cgg1 * dVgsteff_dVd;
+		Cgg1 *= dVgsteff_dVg;
+		Cgg += Cgg1;
+		Cgb += Cgb1;
+		Cgd += Cgd1;
+		
+		d->qbulk += CoxWL * (1.0 - AbulkCV) * (0.5 * d->vds - T3);
+		Cbg1 = -CoxWL * ((1.0 - AbulkCV) * dT3_dVg);
+		Cbb1 = -CoxWL * ((1.0 - AbulkCV) * dT3_dVb
+				 + (0.5 * d->vds - T3) * dAbulkCV_dVb)
+		  + Cbg1 * dVgsteff_dVb;
+		Cbd1 = -CoxWL * (1.0 - AbulkCV) * dT3_dVd
+		  + Cbg1 * dVgsteff_dVd;
+		Cbg1 *= dVgsteff_dVg;
+		Cbg += Cbg1;
+		Cbb += Cbb1;
+		Cbd += Cbd1;
+	      }
+	      if (m->xpart > 0.5) {
+		/* 0/100 Charge petition model */
+		T1 = T1 + T1;
+		qsrc = -CoxWL * (0.5 * Vgsteff + 0.25 * T0 - T0 * T0 / T1);
+		Csg = -CoxWL * (0.5 + 24.0 * T0 * d->vds / T1 / T1 * AbulkCV);
+		Csb = -CoxWL * (0.25 * d->vds * dAbulkCV_dVb
+			  - 12.0 * T0 * d->vds / T1 / T1 * (4.0 * Vgsteff - T0)
+				* dAbulkCV_dVb) + Csg * dVgsteff_dVb;
+		Csd = -CoxWL * (0.25 * AbulkCV - 12.0 * AbulkCV * T0
+				/ T1 / T1 * (4.0 * Vgsteff - T0))
+		  + Csg * dVgsteff_dVd;
+		Csg *= dVgsteff_dVg;
+	      }else if (m->xpart < 0.5) {
+		/* 40/60 Charge petition model */
+		T1 = T1 / 12.0;
+		double T2 = 0.5 * CoxWL / (T1 * T1);
+		double T3 = Vgsteff * (2.0 * T0 * T0 / 3.0 
+				       + Vgsteff * (Vgsteff - 4.0 * T0 / 3.0))
+		  - 2.0 * T0 * T0 * T0 / 15.0;
+		qsrc = -T2 * T3;
+		double T4 = 4.0 / 3.0 * Vgsteff * (Vgsteff-T0) + 0.4 * T0 * T0;
+		Csg = -2.0 * qsrc / T1 
+		  - T2 * (Vgsteff * (3.0 * Vgsteff - 8.0 * T0 / 3.0)
+			  + 2.0 * T0 * T0 / 3.0);
+		Csb = (qsrc / T1 * d->vds + T2 * T4 * d->vds) * dAbulkCV_dVb
+		  + Csg * dVgsteff_dVb;
+		Csd = (qsrc / T1 + T2 * T4) * AbulkCV + Csg * dVgsteff_dVd;
+		Csg *= dVgsteff_dVg;
+	      }else{
+		/* 50/50 Charge petition model */
+		qsrc = -0.5 * (d->qgate + d->qbulk);
+		Csg = -0.5 * (Cgg1 + Cbg1);
+		Csb = -0.5 * (Cgb1 + Cbb1); 
+		Csd = -0.5 * (Cgd1 + Cbd1); 
+	      }
+	      Cgb *= dVbseff_dVb;
+	      Cbb *= dVbseff_dVb;
+	      Csb *= dVbseff_dVb;
+	    }
+	  }
+	  d->qdrn = -(d->qgate + d->qbulk + qsrc);
+	  d->cggb = Cgg;
+	  d->cgsb = -(Cgg + Cgd + Cgb);
+	  d->cgdb = Cgd;
+	  d->cdgb = -(Cgg + Cbg + Csg);
+	  d->cdsb = (Cgg + Cgd + Cgb + Cbg + Cbd + Cbb + Csg + Csd + Csb);
+	  d->cddb = -(Cgd + Cbd + Csd);
+	  d->cbgb = Cbg;
+	  d->cbsb = -(Cbg + Cbd + Cbb);
+	  d->cbdb = Cbd;
+
+	  ////////// d->qinv =  -(d->qgate + d->qbulk);
+	  trace0("end capMod == 1");
+	  untested();
+	  assert(d->qbulk == d->qbulk);
+	  assert(d->qdrn == d->qdrn);
+	  assert(d->qgate == d->qgate);
+	  untested();
+	}else if (m->capMod == 2) {
+	  trace0("begin capMod == 2");
+	  double Qac0, dQac0_dVg, dQac0_dVb;
+	  double Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb;
+	  {
+	    double Vfb = t->vfbzb;
+	    double Vfbeff, dVfbeff_dVg, dVfbeff_dVb;
+	    {
+	      const double DELTA_3 = 0.02;
+	      double V3 = Vfb - Vgs_eff + VbseffCV - DELTA_3;
+	      double T0; //, T2;
+	      if (Vfb <= 0.0) {
+		T0 = sqrt(V3 * V3 - 4.0 * DELTA_3 * Vfb);
+		//T2 = -DELTA_3 / T0;
+	      }else{
+		T0 = sqrt(V3 * V3 + 4.0 * DELTA_3 * Vfb);
+		//T2 = DELTA_3 / T0;
+	      }
+	      double T1 = 0.5 * (1.0 + V3 / T0);
+	      Vfbeff = Vfb - 0.5 * (V3 + T0);
+	      //dVfbeff_dVd = (1.0 - T1 - T2) * dVfb_dVd;
+	      dVfbeff_dVg = T1 * dVgs_eff_dVg;
+	      //dVfbeff_dVb = (1.0 - T1 - T2) * dVfb_dVb - T1 * dVbseffCV_dVb;
+	      dVfbeff_dVb = -T1 * dVbseffCV_dVb;
+	    }
+	    trace3("", Vfbeff, dVfbeff_dVg, dVfbeff_dVb);
+
+	    //double Qac0, dQac0_dVg, dQac0_dVd, dQac0_dVb;
+	    {
+	      Qac0 = CoxWL * (Vfbeff - Vfb);
+	      dQac0_dVg = CoxWL * dVfbeff_dVg;
+	      //dQac0_dVd = CoxWL * (dVfbeff_dVd - dVfb_dVd);
+	      //dQac0_dVb = CoxWL * (dVfbeff_dVb - dVfb_dVb);
+	      dQac0_dVb = CoxWL * dVfbeff_dVb;
+	    }
+
+	    //double Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb;
+	    {
+	      double T0 = 0.5 * t->k1ox;
+	      double T3 = Vgs_eff - Vfbeff - VbseffCV - Vgsteff;
+	      double T1, T2;
+	      if (t->k1ox == 0.0) {
+		T1 = 0.0;
+		T2 = 0.0;
+	      }else if (T3 < 0.0) {
+		T1 = T0 + T3 / t->k1ox;
+		T2 = CoxWL;
+	      }else{
+		T1 = sqrt(T0 * T0 + T3);
+		T2 = CoxWL * T0 / T1;
+	      }
+	      Qsub0 = CoxWL * t->k1ox * (T1 - T0);
+	      dQsub0_dVg = T2 * (dVgs_eff_dVg - dVfbeff_dVg - dVgsteff_dVg);
+	      //dQsub0_dVd = -T2 * (dVfbeff_dVd + dVgsteff_dVd);
+	      dQsub0_dVd = -T2 * dVgsteff_dVd;
+	      dQsub0_dVb = -T2 * (dVfbeff_dVb +dVbseffCV_dVb +dVgsteff_dVb);
+	    }
+	  }
+	  trace3("", Qac0, dQac0_dVg, dQac0_dVb);
+	  trace4("", Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb);
+
+	  double AbulkCV = Abulk0 * s->abulkCVfactor;
+	  double dAbulkCV_dVb = s->abulkCVfactor * dAbulk0_dVb;
+	  trace2("", AbulkCV, dAbulkCV_dVb);
+
+	  double VdseffCV, dVdseffCV_dVg, dVdseffCV_dVd, dVdseffCV_dVb;
+	  {
+	    const double DELTA_4 = 0.02;
+	    double VdsatCV = Vgsteff / AbulkCV;
+	    double V4 = VdsatCV - d->vds - DELTA_4;
+	    double T0 = sqrt(V4 * V4 + 4.0 * DELTA_4 * VdsatCV);
+	    VdseffCV = VdsatCV - 0.5 * (V4 + T0);
+	    double T1 = 0.5 * (1.0 + V4 / T0);
+	    double T2 = DELTA_4 / T0;
+	    double T3 = (1.0 - T1 - T2) / AbulkCV;
+	    dVdseffCV_dVg = T3;
+	    dVdseffCV_dVd = T1;
+	    dVdseffCV_dVb = -T3 * VdsatCV * dAbulkCV_dVb;
+	    /* Added to eliminate non-zero VdseffCV at Vds=0.0 */
+	    if (d->vds == 0.0) {
+	      //////VdseffCV = 0.0;
+	      //////dVdseffCV_dVg = 0.0;
+	      //////dVdseffCV_dVb = 0.0;
+	    }
+	  }
+	  trace4("", VdseffCV, dVdseffCV_dVg, dVdseffCV_dVd, dVdseffCV_dVb);
+
+	  double T0 = AbulkCV * VdseffCV;
+	  double T1 = 12.0 * (Vgsteff - 0.5 * T0 + 1e-20);
+	  trace2("", T0, T1);
+	  
+	  double Cgg1, Cgd1, Cgb1, Cbg1, Cbd1, Cbb1;
+	  // also 1st estimate of d->qgate, d->qbulk
+	  {
+	    double T2 = VdseffCV / T1;
+	    double T3 = T0 * T2;
+	    double T4 = (1.0 - 12.0 * T2 * T2 * AbulkCV);
+	    double T5 = (6.0 * T0 * (4.0 * Vgsteff - T0) / (T1 * T1) - 0.5);
+	    double T6 = 12.0 * T2 * T2 * Vgsteff;
+
+	    ////////// double qinoi = -CoxWL * (Vgsteff - 0.5 * T0 + AbulkCV * T3);
+	    ////////// d->qinv = qinoi;
+	    d->qgate = CoxWL * (Vgsteff - 0.5 * VdseffCV + T3);
+	    Cgg1 = CoxWL * (T4 + T5 * dVdseffCV_dVg);
+	    Cgd1 = CoxWL * T5 * dVdseffCV_dVd + Cgg1 * dVgsteff_dVd;
+	    Cgb1 = CoxWL * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb) 
+	      + Cgg1 * dVgsteff_dVb;
+	    Cgg1 *= dVgsteff_dVg;
+	    
+	    double T7 = 1.0 - AbulkCV;
+	    d->qbulk = CoxWL * T7 * (0.5 * VdseffCV - T3);
+	    T4 = -T7 * (T4 - 1.0);
+	    T5 = -T7 * T5;
+	    T6 = -(T7 * T6 + (0.5 * VdseffCV - T3));
+	    Cbg1 = CoxWL * (T4 + T5 * dVdseffCV_dVg);
+	    Cbd1 = CoxWL * T5 * dVdseffCV_dVd + Cbg1 * dVgsteff_dVd;
+	    Cbb1 = CoxWL * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb)
+	      + Cbg1 * dVgsteff_dVb;
+	    Cbg1 *= dVgsteff_dVg;
+	  }
+	  trace3("", Cgg1, Cgd1, Cgb1);
+	  trace3("", Cbg1, Cbd1, Cbb1);
+	  trace2("2-1", d->qgate, d->qbulk);
+	  
+	  double Csg, Csd, Csb;
+	  trace1("", m->xpart);
+	  if (m->xpart > 0.5) {
+	    trace0("0/100 Charge petition model");
+	    T1 = T1 + T1;
+	    qsrc = -CoxWL * (0.5 * Vgsteff + 0.25 * T0 - T0 * T0 / T1);
+	    double T7 = (4.0 * Vgsteff - T0) / (T1 * T1);
+	    double T4 = -(0.5 + 24.0 * T0 * T0 / (T1 * T1));
+	    double T5 = -(0.25 * AbulkCV - 12.0 * AbulkCV * T0 * T7);
+	    double T6 = -(0.25 * VdseffCV - 12.0 * T0 * VdseffCV * T7);
+	    Csg = CoxWL * (T4 + T5 * dVdseffCV_dVg);
+	    Csd = CoxWL * T5 * dVdseffCV_dVd + Csg * dVgsteff_dVd;
+	    Csb = CoxWL * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb) 
+	      + Csg * dVgsteff_dVb;
+	    Csg *= dVgsteff_dVg;
+	  }else if (m->xpart < 0.5) {
+	    trace0("40/60 Charge petition model");
+	    T1 = T1 / 12.0;
+	    double T2 = 0.5 * CoxWL / (T1 * T1);
+	    double T3 = Vgsteff * (2.0 * T0 * T0 / 3.0 + Vgsteff
+				   * (Vgsteff - 4.0 * T0 / 3.0))
+	      - 2.0 * T0 * T0 * T0 / 15.0;
+	    qsrc = -T2 * T3;
+	    double T7 = 4.0 / 3.0 * Vgsteff * (Vgsteff - T0) + 0.4 * T0 * T0;
+	    double T4 = -2.0 * qsrc / T1 
+	      - T2 * (Vgsteff * (3.0 * Vgsteff - 8.0 * T0 / 3.0)
+		      + 2.0 * T0 * T0 / 3.0);
+	    double T5 = (qsrc / T1 + T2 * T7) * AbulkCV;
+	    double T6 = (qsrc / T1 * VdseffCV + T2 * T7 * VdseffCV);
+	    Csg = (T4 + T5 * dVdseffCV_dVg);
+	    Csd = T5 * dVdseffCV_dVd + Csg * dVgsteff_dVd;
+	    Csb = (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb) 
+	      + Csg * dVgsteff_dVb;
+	    Csg *= dVgsteff_dVg;
+	  }else{
+	    trace0("50/50 Charge petition model");
+	    qsrc = -0.5 * (d->qgate + d->qbulk);
+	    Csg = -0.5 * (Cgg1 + Cbg1);
+	    Csb = -0.5 * (Cgb1 + Cbb1); 
+	    Csd = -0.5 * (Cgd1 + Cbd1); 
+	  }
+	  trace4("", Csg, Csd, Csb, qsrc);
+
+	  d->qgate += Qac0 + Qsub0;
+	  d->qbulk -= (Qac0 + Qsub0);
+	  d->qdrn = -(d->qgate + d->qbulk + qsrc);
+	  trace3("2-2", d->qgate, d->qbulk, d->qdrn);
+	  
+	  double Cgg = dQac0_dVg + dQsub0_dVg + Cgg1;
+	  //double Cgd = dQac0_dVd + dQsub0_dVd + Cgd1;
+	  double Cgd = dQsub0_dVd + Cgd1;
+	  double Cgb = dQac0_dVb + dQsub0_dVb + Cgb1;
+	  trace3("", Cgg, Cgd, Cgb);
+	  
+	  double Cbg = Cbg1 - dQac0_dVg - dQsub0_dVg;
+	  //double Cbd = Cbd1 - dQac0_dVd - dQsub0_dVd;
+	  double Cbd = Cbd1 - dQsub0_dVd;
+	  double Cbb = Cbb1 - dQac0_dVb - dQsub0_dVb;
+	  trace3("", Cbg, Cbd, Cbb);
+
+	  Cgb *= dVbseff_dVb;
+	  Cbb *= dVbseff_dVb;
+	  Csb *= dVbseff_dVb;
+	  trace3("adjusted", Cgb, Cbb, Csb);
+	  
+	  d->cggb = Cgg;
+	  d->cgsb = -(Cgg + Cgd + Cgb);
+	  d->cgdb = Cgd;
+	  d->cdgb = -(Cgg + Cbg + Csg);
+	  d->cdsb = (Cgg + Cgd + Cgb + Cbg + Cbd + Cbb + Csg + Csd + Csb);
+	  d->cddb = -(Cgd + Cbd + Csd);
+	  d->cbgb = Cbg;
+	  d->cbsb = -(Cbg + Cbd + Cbb);
+	  d->cbdb = Cbd;
+	  trace0("end capMod == 2");
+	  assert(d->qbulk == d->qbulk);
+	  assert(d->qdrn == d->qdrn);
+	  assert(d->qgate == d->qgate);
+	}else if (m->capMod == 3) {
+	  trace0("begin capMod == 3");
+	  double Vfbeff, dVfbeff_dVg, dVfbeff_dVb;
+	  {
+	    const double DELTA_3 = 0.02;
+	    double V3 = t->vfbzb - Vgs_eff + VbseffCV - DELTA_3;
+	    double T0;
+	    if (t->vfbzb <= 0.0) {
+	      T0 = sqrt(V3 * V3 - 4.0 * DELTA_3 * t->vfbzb);
+	      //T2 = -DELTA_3 / T0;
+	    }else{
+	      T0 = sqrt(V3 * V3 + 4.0 * DELTA_3 * t->vfbzb);
+	      //T2 = DELTA_3 / T0;
+	    }
+	    double T1 = 0.5 * (1.0 + V3 / T0);
+	    Vfbeff = t->vfbzb - 0.5 * (V3 + T0);
+	    dVfbeff_dVg = T1 * dVgs_eff_dVg;
+	    dVfbeff_dVb = -T1 * dVbseffCV_dVb;
+	  }
+	  double Cox = m->cox;
+	  double Tox = 1.0e8 * m->tox;
+	  trace2("", Cox, Tox);
+
+	  double Qac0, dQac0_dVg, dQac0_dVb;
+	  double Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb;
+	  {
+	    double Coxeff, dCoxeff_dVg, dCoxeff_dVb, CoxWLcen;
+	    {
+	      double Tcen, dTcen_dVg, dTcen_dVb;
+	      {
+		double T0 = (Vgs_eff - VbseffCV - t->vfbzb) / Tox;
+		double tmp = T0 * s->acde;
+		trace2("", T0, tmp);
+		if ((-EXP_THRESHOLD < tmp) && (tmp < EXP_THRESHOLD)) {
+		  double dT0_dVg = dVgs_eff_dVg / Tox;
+		  double dT0_dVb = -dVbseffCV_dVb / Tox;
+		  trace4("", dT0_dVg, dT0_dVb, s->ldeb, exp(tmp));
+		  Tcen = s->ldeb * exp(tmp);
+		  dTcen_dVg = s->acde * Tcen;
+		  dTcen_dVb = dTcen_dVg * dT0_dVb;
+		  dTcen_dVg *= dT0_dVg;
+		}else if (tmp <= -EXP_THRESHOLD) {
+		  Tcen = s->ldeb * MIN_EXP;
+		  dTcen_dVg = dTcen_dVb = 0.0;
+		}else{
+		  Tcen = s->ldeb * MAX_EXP;
+		  dTcen_dVg = dTcen_dVb = 0.0;
+		}
+		trace3("1", Tcen, dTcen_dVg, dTcen_dVb);
+		double LINK = 1.0e-3 * m->tox;
+		double V3 = s->ldeb - Tcen - LINK;
+		double V4 = sqrt(V3 * V3 + 4.0 * LINK * s->ldeb);
+		double T1 = 0.5 * (1.0 + V3 / V4);
+		trace4("", LINK, V3, V4, T1);
+		Tcen = s->ldeb - 0.5 * (V3 + V4);
+		dTcen_dVg *= T1;
+		dTcen_dVb *= T1;
+	      }
+	      trace3("2", Tcen, dTcen_dVg, dTcen_dVb);
+	      {
+		double Ccen = P_EPS_SI / Tcen;
+		double T2 = Cox / (Cox + Ccen);
+		double T3 = -Ccen / Tcen;
+		trace3("Coxeff", Ccen, T2, T3);
+		Coxeff = T2 * Ccen;
+		dCoxeff_dVg = T2 * T2 * T3;
+		dCoxeff_dVb = dCoxeff_dVg * dTcen_dVb;
+		dCoxeff_dVg *= dTcen_dVg;
+		CoxWLcen = CoxWL * Coxeff / Cox;
+	      }
+	    }
+	    trace4("", Coxeff, dCoxeff_dVg, dCoxeff_dVb, CoxWLcen);
+	    //double Qac0, dQac0_dVg, dQac0_dVb;
+	    {
+	      trace4("Qac0", CoxWLcen, Vfbeff, t->vfbzb, Coxeff);
+	      Qac0 = CoxWLcen * (Vfbeff - t->vfbzb);
+	      double QovCox = Qac0 / Coxeff;
+	      dQac0_dVg = CoxWLcen * dVfbeff_dVg + QovCox * dCoxeff_dVg;
+	      dQac0_dVb = CoxWLcen * dVfbeff_dVb + QovCox * dCoxeff_dVb;
+	    }
+	    trace3("", Qac0, dQac0_dVg, dQac0_dVb);
+	    
+	    //double Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb;
+	    {
+	      double T0 = 0.5 * t->k1ox;
+	      double T3 = Vgs_eff - Vfbeff - VbseffCV - Vgsteff;
+	      double T1, T2;
+	      if (t->k1ox == 0.0) {
+		T1 = 0.0;
+		T2 = 0.0;
+	      }else if (T3 < 0.0) {
+		T1 = T0 + T3 / t->k1ox;
+		T2 = CoxWLcen;
+	      }else{
+		T1 = sqrt(T0 * T0 + T3);
+		T2 = CoxWLcen * T0 / T1;
+	      }
+	      
+	      Qsub0 = CoxWLcen * t->k1ox * (T1 - T0);
+	      double QovCox = Qsub0 / Coxeff;
+	      dQsub0_dVg = T2 * (dVgs_eff_dVg - dVfbeff_dVg - dVgsteff_dVg)
+		+ QovCox * dCoxeff_dVg;
+	      dQsub0_dVd = -T2 * dVgsteff_dVd;
+	      dQsub0_dVb = -T2 * (dVfbeff_dVb + dVbseffCV_dVb + dVgsteff_dVb)
+		+ QovCox * dCoxeff_dVb;
+	    }
+	    trace4("", Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb);
+	  } // end scope Coxeff, CoxWLcen
+	  assert(Qac0 == Qac0);
+	  assert(Qsub0 == Qsub0);
+	  
+	  double VgDP, dVgDP_dVg;
+	  {
+	    double DeltaPhi, dDeltaPhi_dVg;
+	    { /* Gate-bias dependent delta Phis begins */
+	      double Denomi, T0;
+	      if (t->k1ox <= 0.0) {
+		Denomi = 0.25 * s->moin * t->vtm;
+		T0 = 0.5 * t->sqrtPhi;
+	      }else{
+		Denomi = s->moin * t->vtm * t->k1ox * t->k1ox;
+		T0 = t->k1ox * t->sqrtPhi;
+	      }
+	      double T1 = 2.0 * T0 + Vgsteff;
+	      DeltaPhi = t->vtm * log(1.0 + T1 * Vgsteff / Denomi);
+	      dDeltaPhi_dVg = 2.0 * t->vtm * (T1-T0) / (Denomi + T1 * Vgsteff);
+	    }
+	    
+	    /* VgDP = Vgsteff - DeltaPhi */
+	    double T0 = Vgsteff - DeltaPhi - 0.001;
+	    double dT0_dVg = 1.0 - dDeltaPhi_dVg;
+	    double T1 = sqrt(T0 * T0 + Vgsteff * 0.004);
+	    VgDP = 0.5 * (T0 + T1);
+	    dVgDP_dVg = 0.5 * (dT0_dVg + (T0 * dT0_dVg + 0.002) / T1);
+	  }
+
+	  double Coxeff, dCoxeff_dVg, dCoxeff_dVd, dCoxeff_dVb;
+	  {
+	    double Tcen, dTcen_dVg, dTcen_dVd, dTcen_dVb;
+	    {
+	      double T3 = 4.0 * (d->von - t->vfbzb - t->phi);
+	      Tox += Tox;
+	      double T0, dT0_dVd, dT0_dVb;
+	      if (T3 >= 0.0) {
+		T0 = (Vgsteff + T3) / Tox;
+		dT0_dVd = (dVgsteff_dVd + 4.0 * dVth_dVd) / Tox;
+		dT0_dVb = (dVgsteff_dVb + 4.0 * dVth_dVb) / Tox;
+	      }else{
+		T0 = (Vgsteff + 1.0e-20) / Tox;
+		dT0_dVd = dVgsteff_dVd / Tox;
+		dT0_dVb = dVgsteff_dVb / Tox;
+	      }
+	      double tmp = exp(0.7 * log(T0));
+	      double T1 = 1.0 + tmp;
+	      double T2 = 0.7 * tmp / (T0 * Tox);
+	      Tcen = 1.9e-9 / T1;
+	      dTcen_dVg = -1.9e-9 * T2 / T1 /T1;
+	      dTcen_dVd = Tox * dTcen_dVg;
+	      dTcen_dVb = dTcen_dVd * dT0_dVb;
+	      dTcen_dVd *= dT0_dVd;
+	      dTcen_dVg *= dVgsteff_dVg;
+	    }
+	    double Ccen = P_EPS_SI / Tcen;
+	    double T0 = Cox / (Cox + Ccen);
+	    Coxeff = T0 * Ccen;
+	    double T1 = -Ccen / Tcen;
+	    dCoxeff_dVg = T0 * T0 * T1;
+	    dCoxeff_dVd = dCoxeff_dVg * dTcen_dVd;
+	    dCoxeff_dVb = dCoxeff_dVg * dTcen_dVb;
+	    dCoxeff_dVg *= dTcen_dVg;
+	  }
+	  double CoxWLcen = CoxWL * Coxeff / Cox;
+	  double AbulkCV = Abulk0 * s->abulkCVfactor;
+	  double dAbulkCV_dVb = s->abulkCVfactor * dAbulk0_dVb;
+
+	  double VdseffCV, dVdseffCV_dVg, dVdseffCV_dVd, dVdseffCV_dVb;
+	  {
+	    const double DELTA_4 = 0.02;
+	    double VdsatCV =  VgDP / AbulkCV;
+	    double T0 = VdsatCV - d->vds - DELTA_4;
+	    double dT0_dVg = dVgDP_dVg / AbulkCV;
+	    double dT0_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
+	    double T1 = sqrt(T0 * T0 + 4.0 * DELTA_4 * VdsatCV);
+	    double dT1_dVg = (T0 + DELTA_4 + DELTA_4) / T1;
+	    double dT1_dVd = -T0 / T1;
+	    double dT1_dVb = dT1_dVg * dT0_dVb;
+	    dT1_dVg *= dT0_dVg;
+	    if (T0 >= 0.0) {
+	      VdseffCV = VdsatCV - 0.5 * (T0 + T1);
+	      dVdseffCV_dVg = 0.5 * (dT0_dVg - dT1_dVg);
+	      dVdseffCV_dVd = 0.5 * (1.0 - dT1_dVd);
+	      dVdseffCV_dVb = 0.5 * (dT0_dVb - dT1_dVb);
+	    }else{
+	      double T3 = (DELTA_4 + DELTA_4) / (T1 - T0);
+	      double T4 = 1.0 - T3;
+	      double T5 = VdsatCV * T3 / (T1 - T0);
+	      VdseffCV = VdsatCV * T4;
+	      dVdseffCV_dVg = dT0_dVg * T4 + T5 * (dT1_dVg - dT0_dVg);
+	      dVdseffCV_dVd = T5 * (dT1_dVd + 1.0);
+	      dVdseffCV_dVb = dT0_dVb * (1.0 - T5) + T5 * dT1_dVb;
+	    }
+	    /* Added to eliminate non-zero VdseffCV at Vds=0.0 */
+	    if (d->vds == 0.0) {
+	      VdseffCV = 0.0;
+	      dVdseffCV_dVg = 0.0;
+	      dVdseffCV_dVb = 0.0;
+	    }
+	  }
+	  
+	  double T0 = AbulkCV * VdseffCV;
+	  double T1 = VgDP;
+	  double T2 = 12.0 * (T1 - 0.5 * T0 + 1.0e-20);
+	  double T3 = T0 / T2;
+	  double T4 = 1.0 - 12.0 * T3 * T3;
+	  double T5 = AbulkCV * (6.0 * T0 * (4.0 * T1 - T0) / (T2*T2) - 0.5);
+	  double T6 = T5 * VdseffCV / AbulkCV;
+	  d->qgate = CoxWLcen * (T1 - T0 * (0.5 - T3));
+	  //////////double qinoi = qgate;
+	  
+	  double Cgg1, Cgd1, Cgb1;
+	  {
+	    double QovCox = d->qgate / Coxeff;
+	    Cgg1 = CoxWLcen * (T4 * dVgDP_dVg + T5 * dVdseffCV_dVg);
+	    Cgd1 = CoxWLcen * T5 * dVdseffCV_dVd + Cgg1 
+	      * dVgsteff_dVd + QovCox * dCoxeff_dVd;
+	    Cgb1 = CoxWLcen * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb) 
+	      + Cgg1 * dVgsteff_dVb + QovCox * dCoxeff_dVb;
+	    Cgg1 = Cgg1 * dVgsteff_dVg + QovCox * dCoxeff_dVg;
+	  }
+	  
+	  double T7 = 1.0 - AbulkCV;
+	  double T8 = T2 * T2;
+	  double T9 = 12.0 * T7 * T0 * T0 / (T8 * AbulkCV);
+	  double T10 = T9 * dVgDP_dVg;
+	  double T11 = -T7 * T5 / AbulkCV;
+	  double T12 = -(T9 * T1 / AbulkCV + VdseffCV * (0.5 - T0 / T2));
+	  d->qbulk = CoxWLcen * T7 * (0.5 * VdseffCV - T0 * VdseffCV / T2);
+
+	  assert(d->qbulk == d->qbulk);
+	  assert(d->qdrn == d->qdrn);
+	  assert(d->qgate == d->qgate);
+	  
+	  double Cbg1, Cbd1, Cbb1;
+	  {
+	    double QovCox = d->qbulk / Coxeff;
+	    Cbg1 = CoxWLcen * (T10 + T11 * dVdseffCV_dVg);
+	    Cbd1 = CoxWLcen * T11 * dVdseffCV_dVd + Cbg1
+	      * dVgsteff_dVd + QovCox * dCoxeff_dVd; 
+	    Cbb1 = CoxWLcen * (T11 * dVdseffCV_dVb + T12 * dAbulkCV_dVb)
+	      + Cbg1 * dVgsteff_dVb + QovCox * dCoxeff_dVb;
+	    Cbg1 = Cbg1 * dVgsteff_dVg + QovCox * dCoxeff_dVg;
+	  }
+	  //////////qsrc -- scope too wide??
+	  double Csg, Csd, Csb;
+	  if (m->xpart > 0.5) {
+	    /* 0/100 partition */
+	    qsrc = -CoxWLcen * (T1 / 2.0 + T0 / 4.0 - 0.5 * T0 * T0 / T2);
+	    double QovCox = qsrc / Coxeff;
+	    T2 += T2;
+	    T3 = T2 * T2;
+	    T7 = -(0.25 - 12.0 * T0 * (4.0 * T1 - T0) / T3);
+	    T4 = -(0.5 + 24.0 * T0 * T0 / T3) * dVgDP_dVg;
+	    T5 = T7 * AbulkCV;
+	    T6 = T7 * VdseffCV;
+	    
+	    Csg = CoxWLcen * (T4 + T5 * dVdseffCV_dVg);
+	    Csd = CoxWLcen * T5 * dVdseffCV_dVd + Csg * dVgsteff_dVd
+	      + QovCox * dCoxeff_dVd;
+	    Csb = CoxWLcen * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb)
+	      + Csg * dVgsteff_dVb + QovCox * dCoxeff_dVb;
+	    Csg = Csg * dVgsteff_dVg + QovCox * dCoxeff_dVg;
+	  }else if (m->xpart < 0.5) {
+	    /* 40/60 partition */
+	    T2 = T2 / 12.0;
+	    T3 = 0.5 * CoxWLcen / (T2 * T2);
+	    T4 = T1 * (2.0 * T0 * T0 / 3.0 + T1 * (T1 - 4.0 * T0 / 3.0))
+	      - 2.0 * T0 * T0 * T0 / 15.0;
+	    qsrc = -T3 * T4;
+	    double QovCox = qsrc / Coxeff;
+	    T8 = 4.0 / 3.0 * T1 * (T1 - T0) + 0.4 * T0 * T0;
+	    T5 = -2.0 * qsrc / T2 
+	      - T3 * (T1 * (3.0 * T1 - 8.0 * T0 / 3.0) + 2.0 * T0 * T0 / 3.0);
+	    T6 = AbulkCV * (qsrc / T2 + T3 * T8);
+	    T7 = T6 * VdseffCV / AbulkCV; 
+	    
+	    Csg = T5 * dVgDP_dVg + T6 * dVdseffCV_dVg; 
+	    Csd = Csg * dVgsteff_dVd + T6 * dVdseffCV_dVd 
+	      + QovCox * dCoxeff_dVd;
+	    Csb = Csg * dVgsteff_dVb + T6 * dVdseffCV_dVb 
+	      + T7 * dAbulkCV_dVb + QovCox * dCoxeff_dVb; 
+	    Csg = Csg * dVgsteff_dVg + QovCox * dCoxeff_dVg;
+	  }else{
+	    /* 50/50 partition */
+	    qsrc = -0.5 * d->qgate;
+	    Csg = -0.5 * Cgg1;
+	    Csd = -0.5 * Cgd1; 
+	    Csb = -0.5 * Cgb1; 
+	  }
+	  //////////
+	  assert(Qsub0 == Qsub0);
+	  assert(Qac0 == Qac0);
+
+	  d->qgate += Qac0 + Qsub0 - d->qbulk;
+	  d->qbulk -= (Qac0 + Qsub0);
+	  d->qdrn = -(d->qgate + d->qbulk + qsrc);
+
+	  assert(d->qbulk == d->qbulk);
+	  assert(d->qdrn == d->qdrn);
+	  assert(d->qgate == d->qgate);
+	  
+	  {
+	    double Cbg = Cbg1 - dQac0_dVg - dQsub0_dVg;
+	    double Cbd = Cbd1 - dQsub0_dVd;
+	    double Cbb = Cbb1 - dQac0_dVb - dQsub0_dVb;
+	    
+	    double Cgg = Cgg1 - Cbg;
+	    double Cgd = Cgd1 - Cbd;
+	    double Cgb = Cgb1 - Cbb;
+	    
+	    Cgb *= dVbseff_dVb;
+	    Cbb *= dVbseff_dVb;
+	    Csb *= dVbseff_dVb;
+	    
+	    d->cggb = Cgg;
+	    d->cgsb = -(Cgg + Cgd + Cgb);
+	    d->cgdb = Cgd;
+
+	    d->cdgb = -(Cgg + Cbg + Csg);
+	    d->cdsb = (Cgg + Cgd + Cgb + Cbg + Cbd + Cbb + Csg + Csd + Csb);
+	    d->cddb = -(Cgd + Cbd + Csd);
+
+	    d->cbgb = Cbg;
+	    d->cbsb = -(Cbg + Cbd + Cbb);
+	    d->cbdb = Cbd;
+	  }
+	  ////////// d->qinv = -qinoi;
+	  assert(d->qbulk == d->qbulk);
+	  assert(d->qdrn == d->qdrn);
+	  assert(d->qgate == d->qgate);
+	}else{
+	  error(bDANGER, "illegal capmod = %d\n", int(m->capMod));
+	  d->qgate = d->qdrn = d->qbulk = 0.0;
+	  d->cggb = d->cgsb = d->cgdb = 0.0;
+	  d->cdgb = d->cdsb = d->cddb = 0.0;
+	  d->cbgb = d->cbsb = d->cbdb = 0.0;
+	  ////////// d->cqdb = d->cqsb = d->cqgb = d->cqbb = 0.0;
+	  ////////// d->gtau = 0.0;
+	  trace0("xpart < 0 || no charge computation");
+	  untested();
+	  assert(d->qbulk == d->qbulk);
+	  assert(d->qdrn == d->qdrn);
+	  assert(d->qgate == d->qgate);
+	  untested();
+	}
+	assert(d->qbulk == d->qbulk);
+	assert(d->qdrn == d->qdrn);
+	assert(d->qgate == d->qgate);
+
+	/* Non-quasi-static Model */
+	double tconst;
+	if (m->nqsMod) {
+	  //  d->gtau
+	  double qcheq = -d->qbulk - d->qgate;
+	  double T0 = s->leffCV * s->leffCV;
+	  tconst = t->u0temp * s->elm / CoxWL / T0;
+	  if (qcheq == 0.0) {
+	    tconst = 0.0;
+	  }else if (qcheq < 0.0) {
+	    tconst = -tconst;
+	  }else{
+	  }
+	  double gtau_drift = std::abs(tconst * qcheq);
+	  double gtau_diff = 16.0 * t->u0temp * t->vtm / T0;
+	  d->gtau =  gtau_drift + gtau_diff;
+	  d->cqgb = -(d->cggb + d->cbgb);
+	  d->cqdb = -(d->cgdb + d->cbdb);
+	  d->cqsb = -(d->cgsb + d->cbsb);
+	  d->cqbb = d->cggb +d->cgdb +d->cgsb +d->cbgb +d->cbdb +d->cbsb;
+	  
+	  d->qbulk = d->qgate = d->qdrn = qsrc = 0.0;
+	  d->cggb = d->cgsb = d->cgdb = 0.0;
+	  d->cdgb = d->cdsb = d->cddb = 0.0;
+	  d->cbgb = d->cbsb = d->cbdb = 0.0;
+#if 0
+	  *(ckt->CKTstate0 + d->qcheq) = qcheq;
+	  if (ckt->CKTmode & MODEINITTRAN)
+	    *(ckt->CKTstate1 + d->qcheq) = *(ckt->CKTstate0 + d->qcheq);
+	  error = NIintegrate(ckt, &geq, &ceq, 0.0, d->qcheq);
+	  if (error) return (error);
+#endif
+	}else{
+	  d->gtau = 0.0;
+	  d->cqgb = d->cqdb = d->cqsb = d->cqbb = 0.0;
+	}
+      }
+    }
+    if (d->reversed) {
+      d->qdrn = -d->qdrn;
+      d->cdgb = -d->cdgb;
+      double t = d->cdsb;
+      d->cdsb = -d->cddb;
+      d->cddb = -t;
+
+      d->qgd   = d->qgate;
+      d->cgdgb = d->cggb;
+      d->cgdsb = d->cgsb;
+      d->cgddb = d->cgdb;
+      d->qgs   = 0.;
+      d->cgsgb = 0.;
+      d->cgssb = 0.;
+      d->cgsdb = 0.;
+
+      d->qbd   = d->qbulk;
+      d->cbdgb = d->cbgb;
+      d->cbdsb = d->cbsb;
+      d->cbddb = d->cbdb;
+      d->qbs   = 0.;
+      d->cbsgb = 0.;
+      d->cbssb = 0.;
+      d->cbsdb = 0.;
+    }else{
+      d->qgs   = d->qgate;
+      d->cgsgb = d->cggb;
+      d->cgssb = d->cgsb;
+      d->cgsdb = d->cgdb;
+      d->qgd   = 0.;
+      d->cgdgb = 0.;
+      d->cgdsb = 0.;
+      d->cgddb = 0.;
+
+      d->qbs   = d->qbulk;
+      d->cbsgb = d->cbgb;
+      d->cbssb = d->cbsb;
+      d->cbsdb = d->cbdb;
+      d->qbd   = 0.;
+      d->cbdgb = 0.;
+      d->cbdsb = 0.;
+      d->cbddb = 0.;
+    }
+    
+    assert(d->qbulk == d->qbulk);
+    assert(d->qdrn == d->qdrn);
+    assert(d->qgate == d->qgate);
+    
+    trace0("mos8");
+    trace4("", d->qgate, d->cggb, d->cgsb, d->cgdb);
+    trace4("", d->qdrn,  d->cdgb, d->cdsb, d->cddb);
+    trace4("", d->qbulk, d->cbgb, d->cbsb, d->cbdb);
+
+    trace2("", d->ids, d->gds);
+    trace4("", d->gmf, d->gmr, d->gmbf, d->gmbr);
+    trace4("", d->isub, d->gbbs, d->gbgs, d->gbds);
+    trace4("", d->qgate, d->cggb, d->cgsb, d->cgdb);
+    trace4("", d->qdrn, d->cdgb, d->cdsb, d->cddb);
+    trace4("", d->qbulk, d->cbgb, d->cbsb, d->cbdb);
+    trace1("", d->gtau);
+    trace4("", d->cqgb, d->cqsb, d->cqdb, d->cqbb);
+    //trace1("", d->tconst);
+    //trace2("", d->cgb, d->qgb);
+    //trace2("", d->qgd, d->cgd);
+    trace2("", d->qgs, d->cgs);
+    trace3("", d->vgs, d->vds, d->vbs);
+    trace3("", d->vdsat, d->vgst, d->von);
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/

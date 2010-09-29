@@ -1,4 +1,4 @@
-/*$Id: ap_error.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: ap_error.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Error handler.
  */
-#include "ap.h"
+//testing=script 2006.07.17
 #include "u_opt.h"
+#include "ap.h"
 /*--------------------------------------------------------------------------*/
 //	CS &	CS::check(int i, const string& s);
 //	CS &	CS::warn(int i, int c, const string& s);
@@ -36,9 +37,9 @@
 CS & CS::check(int badness, const std::string& message)
 {
   skipbl();
-  switch (peek()){
-    case '\'':	_ok = true;  skip();	   break;
-    case '\0':	_ok = true;		   break;
+  switch (peek()) {
+    case '\'':	untested(); _ok = true;  skip();     break;
+    case '\0':		    _ok = true;		     break;
     default:	_ok = false; warn(badness, message); break;
   }
   return *this;
@@ -49,15 +50,16 @@ CS & CS::check(int badness, const std::string& message)
  */
 CS & CS::warn(int badness, int spot, const std::string& message)
 {
-  if (badness >= OPT::picky){
-    {if (spot < 40){
+  if (badness >= OPT::picky) {
+    if (spot < 40) {
       IO::error.form("%.60s\n", _cmd);
       IO::error.tab(spot);
     }else{
       IO::error.form("... %.56s\n", &_cmd[spot-36]);
       IO::error.tab(40);
-    }}
+    }
     error(badness, "^ ? " + message + '\n');
+  }else{untested();
   }
   return *this;
 }

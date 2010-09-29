@@ -1,4 +1,4 @@
-/*$Id: s_fo.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_fo.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,14 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * tran and fourier commands -- top
  * performs transient analysis, silently, then fft.
  * outputs results of fft
  */
-#include "u_opt.h"
+//testing=script 2006.07.17
 #include "u_status.h"
 #include "s_fo.h"
 /*--------------------------------------------------------------------------*/
@@ -33,22 +33,34 @@ void FOURIER::command(CS& cmd)
 {
   mode = sFOURIER;
   reset_timers();
-  STATUS::four.reset().start();
+  ::status.four.reset().start();
+
   init();
   alloc_vectors();
-  aa.allocate().dezero(OPT::gmin).set_min_pivot(OPT::pivtol);
-  lu.allocate().dezero(OPT::gmin).set_min_pivot(OPT::pivtol);
+      
+  aa.reallocate();
+  aa.dezero(OPT::gmin);
+  aa.set_min_pivot(OPT::pivtol);
+  
+  lu.reallocate();
+  lu.dezero(OPT::gmin);
+  lu.set_min_pivot(OPT::pivtol);
+
   setup(cmd);
   fftallocate();
-  STATUS::set_up.stop();
-  switch (ENV::run_mode){
+
+  ::status.set_up.stop();
+  switch (ENV::run_mode) {
   case rINTERACTIVE:
-  case rSCRIPT:
+    untested();
   case rBATCH:
+    untested();
+  case rSCRIPT:
     sweep();
     foout();
     break;
   case rIGNORE:
+    untested();
   case rPRESET:
     untested();
     /*nothing*/
@@ -59,8 +71,8 @@ void FOURIER::command(CS& cmd)
   lu.unallocate();
   aa.unallocate();
   
-  STATUS::four.stop();
-  STATUS::total.stop();
+  ::status.four.stop();
+  ::status.total.stop();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

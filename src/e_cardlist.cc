@@ -1,4 +1,4 @@
-/*$Id: e_cardlist.cc,v 22.21 2002/10/06 07:21:50 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,25 +16,80 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Base class for "cards" in the circuit description file
  * This file contains functions that process a list of cards
- *
- * also contains CARD::find_in_scope, which really belongs elsewhere
  */
-#include "l_stlextra.h"
-#include "e_card.h" // includes e_cardlist.h
+//testing=script 2006.07.10
+#include "e_node.h"
+#include "u_nodemap.h"
+#include "e_model.h"
+/*--------------------------------------------------------------------------*/
+CARD_LIST::CARD_LIST()
+  :_parent(NULL),
+   _nm(new NODE_MAP),
+   _params(NULL)
+{
+}
+/*--------------------------------------------------------------------------*/
+CARD_LIST::~CARD_LIST()
+{
+  erase_all();
+  delete _nm;
+  if (!_parent) {
+    delete _params;
+  }
+}
+/*--------------------------------------------------------------------------*/
+PARAM_LIST* CARD_LIST::params()
+{
+  if (!_params) {
+    assert(!_parent);
+    _params = new PARAM_LIST;
+  }
+  return _params;
+}
+/*--------------------------------------------------------------------------*/
+const PARAM_LIST* CARD_LIST::params()const
+{
+  if (_params) {
+    return _params;
+  }else{itested();
+    static const PARAM_LIST empty_params;
+    return &empty_params;
+  }
+}
 /*--------------------------------------------------------------------------*/
 CARD_LIST::iterator CARD_LIST::find(const std::string& short_name)
 {
   return notstd::find_ptr(begin(), end(), short_name);
 }
 /*--------------------------------------------------------------------------*/
+CARD* CARD_LIST::operator[](const std::string& short_name)
+{
+  iterator i = find(short_name);
+  if (i != end()) {
+    return *i;
+  }else{
+    return NULL;
+  }
+}
+/*--------------------------------------------------------------------------*/
 CARD_LIST::const_iterator CARD_LIST::find(const std::string& short_name)const
 {
   return notstd::find_ptr(begin(), end(), short_name);
+}
+/*--------------------------------------------------------------------------*/
+const CARD* CARD_LIST::operator[](const std::string& short_name)const
+{
+  const_iterator i = find(short_name);
+  if (i != end()) {
+    return *i;
+  }else{
+    return NULL;
+  }
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::erase(iterator ci)
@@ -46,9 +101,29 @@ CARD_LIST& CARD_LIST::erase(iterator ci)
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::erase(CARD* c)
-{
+{untested();
   delete c;
   _cl.remove(c);
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+/* erase_all: empty the list, destroy contents
+ * Beware: something else may be pointing to them, leaving dangling ptr.
+ */
+CARD_LIST& CARD_LIST::erase_all()
+{
+  while (!_cl.empty()) {
+    delete _cl.back();
+    _cl.pop_back();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+CARD_LIST& CARD_LIST::set_owner(CARD* owner)
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    (**ci).set_owner(owner);
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -67,10 +142,12 @@ CARD_LIST& CARD_LIST::set_slave()
  * Scan component list.  Expand each subckt: create actual elements
  * for flat representation to use for simulation.
  */
-CARD_LIST& CARD_LIST::expand()
+CARD_LIST& CARD_LIST::elabo2()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
-    (**ci).expand();
+    if (!dynamic_cast<MODEL_CARD*>(*ci)) {
+      (**ci).elabo1();
+    }
   }
   return *this;
 }
@@ -97,13 +174,13 @@ CARD_LIST& CARD_LIST::precalc()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-/* tr_alloc_matrix: allocate solution matrix
+/* tr_iwant_matrix: allocate solution matrix
  * also sets some flags for mixed-mode
  */
-CARD_LIST& CARD_LIST::tr_alloc_matrix()
+CARD_LIST& CARD_LIST::tr_iwant_matrix()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
-    (**ci).tr_alloc_matrix();
+    (**ci).tr_iwant_matrix();
   }
   return *this;
 }
@@ -160,13 +237,16 @@ CARD_LIST& CARD_LIST::tr_advance()
 /*--------------------------------------------------------------------------*/
 /* tr_needs_eval: determine if anything needs to be evaluated
  */
-bool CARD_LIST::tr_needs_eval()
+bool CARD_LIST::tr_needs_eval()const
 {
-  bool needs = false;
-  for (iterator ci=begin(); ci!=end(); ++ci) {
-    needs |= (**ci).tr_needs_eval();
+  for (const_iterator ci=begin(); ci!=end(); ++ci) {
+    if ((**ci).tr_needs_eval()) {
+      return true;
+    }else{untested();
+    }
   }
-  return needs;
+  untested();
+  return false;
 }
 /*--------------------------------------------------------------------------*/
 /* tr_queue_eval: build evaluator queue
@@ -188,7 +268,7 @@ CARD_LIST& CARD_LIST::tr_queue_eval()
 bool CARD_LIST::do_tr()
 {
   bool isconverged = true;
-  {if (OPT::bypass) {
+  if (OPT::bypass) {
     for (iterator ci=begin(); ci!=end(); ++ci) {
       if ((**ci).tr_needs_eval()) {
 	isconverged &= (**ci).do_tr();
@@ -198,34 +278,48 @@ bool CARD_LIST::do_tr()
     for (iterator ci=begin(); ci!=end(); ++ci) {
       isconverged &= (**ci).do_tr();
     }
-  }}
+  }
   return isconverged;
 }
 /*--------------------------------------------------------------------------*/
 /* tr_load: load list of models to the matrix
  * recursively called to load subcircuits
+ * Called only when either !OPT::traceload or !SIM::inc_mode
  */
 CARD_LIST& CARD_LIST::tr_load()
 {
-  for (iterator ci=begin(); ci!=end(); ++ci) {
-    CARD* brh = *ci;
-    if (!brh->constant() || !SIM::inc_mode) {
+  if (SIM::inc_mode) {untested();
+    assert(!OPT::traceload);
+    for (iterator ci=begin(); ci!=end(); ++ci) {
+      CARD* brh = *ci;
+      if (!brh->is_constant()) {itested();
+	brh->tr_load();
+      }else{itested();
+      }
+    }
+  }else{
+    for (iterator ci=begin(); ci!=end(); ++ci) {
+      CARD* brh = *ci;
       brh->tr_load();
     }
   }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-double CARD_LIST::tr_review()
+DPAIR CARD_LIST::tr_review()
 {
-  double worsttime = BIGBIG;
+  double time_by_error_estimate = BIGBIG;
+  double time_by_predicted_event = BIGBIG;
   for (iterator ci=begin(); ci!=end(); ++ci) {
-    double thistime = (**ci).tr_review();
-    if (thistime < worsttime) {
-      worsttime = thistime;
+    DPAIR thistime = (**ci).tr_review();
+    if (thistime.first < time_by_error_estimate) {
+      time_by_error_estimate = thistime.first;
+    }
+    if (thistime.second < time_by_predicted_event) {
+      time_by_predicted_event = thistime.second;
     }
   }
-  return worsttime;
+  return DPAIR(time_by_error_estimate, time_by_predicted_event);
 }
 /*--------------------------------------------------------------------------*/
 /* tr_accept: final acceptance of a time step, before moving on
@@ -249,12 +343,12 @@ CARD_LIST& CARD_LIST::tr_unload()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-/* ac_alloc_matrix: allocate solution matrix
+/* ac_iwant_matrix: allocate solution matrix
  */
-CARD_LIST& CARD_LIST::ac_alloc_matrix()
+CARD_LIST& CARD_LIST::ac_iwant_matrix()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
-    (**ci).ac_alloc_matrix();
+    (**ci).ac_iwant_matrix();
   }
   return *this;
 }
@@ -272,8 +366,9 @@ CARD_LIST& CARD_LIST::ac_begin()
 CARD_LIST& CARD_LIST::do_ac()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
-    if (!(**ci).evaluated())
+    if (!(**ci).evaluated()) {
       (**ci).do_ac();
+    }
   }
   return *this;
 }
@@ -283,41 +378,84 @@ CARD_LIST& CARD_LIST::do_ac()
  */
 CARD_LIST& CARD_LIST::ac_load()
 {
+  unreachable();
   for (iterator ci=begin(); ci!=end(); ++ci) {
     (**ci).ac_load();
   }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-/* destroy: empty the list, destroy contents
- * contrast to detach_all
- * Beware: something else may be pointing to them, leaving dangling ptr.
- */
-CARD_LIST& CARD_LIST::destroy()
+void CARD_LIST::attach_params(PARAM_LIST* p, const CARD_LIST* scope)
 {
-  while (!_cl.empty()) {
-    delete _cl.back();
-    _cl.pop_back();
+  //_params = p;
+  if (!_params) {
+    _params = new PARAM_LIST;
+  }else{untested();
   }
-  return *this;
+  _params->eval_copy(*p, scope);
 }
 /*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-CARD* CARD::find_in_scope(const std::string& name)
+void CARD_LIST::shallow_copy(const CARD_LIST* p)
 {
-  CARD_LIST& cl = (owner()) ? owner()->subckt() : CARD_LIST::card_list;
-  CARD_LIST::iterator ci = cl.find(name);
-  if (ci == cl.end()) {
-    error(bERROR, "can't find: " + name + '\n');
-    return NULL;
-  }else{
-    return *ci;
+  assert(p);
+  _parent = p;
+  for (const_iterator ci = p->begin(); ci != p->end(); ++ci) {
+    if ((**ci).is_device()) {
+      CARD* copy = (**ci).clone();
+      push_back(copy);
+    }
   }
+}
+/*--------------------------------------------------------------------------*/
+// set up the map of external to expanded node numbers
+//#define DO_TRACE
+//#include "io_trace.h"
+void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
+{
+  assert(owner->subckt() == this);
+  trace0(model->long_label().c_str());
+  trace0(owner->long_label().c_str());
+
+  int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
+  int* map = new int[num_nodes_in_subckt+1];
+  {
+    map[0] = 0;
+    // self test: verify that port node numbering is correct
+    for (int port = 0; port < model->net_nodes(); ++port) {
+      assert(model->_n[port].e_() <= num_nodes_in_subckt);
+      //assert(model->_n[port].e_() == port+1);
+      trace3("ports", port, model->_n[port].e_(), owner->_n[port].t_());
+    }
+    {
+      // take care of the "port" nodes (external connections)
+      // map them to what the calling circuit wants
+      int i=0;
+      for (i=1; i <= model->net_nodes(); ++i) {
+	map[i] = owner->_n[i-1].t_();
+	trace3("ports", i, map[i], owner->_n[i-1].t_());
+      }
+    
+      // get new node numbers, and assign them to the remaining
+      for (assert(i==model->net_nodes() + 1); i <= num_nodes_in_subckt; ++i) {
+	// for each remaining node in card_list
+	map[i] = ::status.newnode_subckt();
+	trace2("internal", i, map[i]);
+      }
+    }
+  }
+  // "map" now contains a translation list,
+  // from subckt local numbers to matrix index numbers
+
+  // scan the list, map the nodes
+  for (CARD_LIST::iterator ci = begin(); ci != end(); ++ci) {
+    // for each card in card_list
+    assert((**ci).is_device());
+    for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
+      // for each connection node in card
+      (**ci)._n[ii].map_subckt_node(map);
+    }
+  }
+  delete [] map;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: mg_error.cc,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
+/*$Id: mg_error.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Error handler.
  */
@@ -49,9 +49,9 @@ CS & CS::check(int badness, const std::string& message)
 /*--------------------------------------------------------------------------*/
 static void tab(int n)
 {
-  {for (int i=0; i<n; ++i) {
+  for (int i=0; i<n; ++i) {
     std::cout << ' ';
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* syntax_msg: print syntax error message
@@ -63,7 +63,7 @@ CS & CS::warn(int badness, int spot, const std::string& message)
     ++errorcount;
     int linestart = spot;
     assert(linestart >= 0);
-    {for (;;) {
+    for (;;) {
       {if (linestart == 0) {
 	break;
       }else if (_cmd[linestart] == '\n') {
@@ -72,25 +72,25 @@ CS & CS::warn(int badness, int spot, const std::string& message)
       }else{
 	--linestart;
       }}
-    }}
+    }
     int lineno = 1;
-    {for (int i=0; i<linestart; ++i) {
+    for (int i=0; i<linestart; ++i) {
       if (_cmd[i] == '\n') {
 	++lineno;
       }
-    }}
+    }
     std::cout << _name << ':' << lineno << ":\n";
     {if (spot-linestart < 20) {
-      {for (int i=linestart; _cmd[i] && _cmd[i]!='\n'; ++i) {
+      for (int i=linestart; _cmd[i] && _cmd[i]!='\n'; ++i) {
 	std::cout << _cmd[i];
-      }}
+      }
       std::cout << '\n';
       tab(spot-linestart);
     }else{
       std::cout << "..";
-      {for (int i=spot-15; _cmd[i] && _cmd[i]!='\n'; ++i) {
+      for (int i=spot-15; _cmd[i] && _cmd[i]!='\n'; ++i) {
 	std::cout << _cmd[i];
-      }}
+      }
       std::cout << '\n';
       tab(17);
     }}

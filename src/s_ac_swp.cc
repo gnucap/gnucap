@@ -1,4 +1,4 @@
-/*$Id: s_ac_swp.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_ac_swp.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * ac sweep control
  */
-#include "l_compar.h"
-#include "constant.h"
+//testing=script,complete 2006.07.14
 #include "e_cardlist.h"
 #include "s_ac.h"
 /*--------------------------------------------------------------------------*/
@@ -32,11 +31,11 @@
 /*--------------------------------------------------------------------------*/
 void AC::sweep()
 {
-  head(start, stop, linswp, "Freq");
+  head(start, stop, "Freq");
   first();
   CARD_LIST::card_list.ac_begin();
   do {
-    jomega = COMPLEX(0., freq * kPIx2);
+    jomega = COMPLEX(0., freq * M_TWO_PI);
     solve();
     outdata(freq);
   } while (next());
@@ -52,14 +51,14 @@ bool AC::next()
   double realstop = (linswp)
     ? stop - step/100.
     : stop / pow(step,.01);
-  if (!in_order(start, freq, realstop)){
+  if (!in_order(start, freq, realstop)) {
     return false;
   }
 
   freq = (linswp)
     ? freq + step
     : freq * step;
-  if (in_order(freq, start, stop)){
+  if (in_order(freq, start, stop)) {
     return false;
   }else{
     return true;

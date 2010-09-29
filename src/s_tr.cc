@@ -1,4 +1,4 @@
-/*$Id: s_tr.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_tr.cc,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * tran and fourier commands -- top
  */
+//testing=script,complete 2005.09.17
 #include "u_status.h"
 #include "s_tr.h"
 /*--------------------------------------------------------------------------*/
@@ -31,9 +32,9 @@ int TRANSIENT::steps_total_;
 void TRANSIENT::command(CS& cmd)
 {
   mode = sTRAN;
-  STATUS::tran.reset().start();
+  ::status.tran.reset().start();
   command_base(cmd);
-  STATUS::tran.stop();
+  ::status.tran.stop();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: d_vs.cc,v 24.21 2004/01/21 15:58:10 al Exp $ -*- C++ -*-
+/*$Id: d_vs.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * functions for fixed voltage sources
  * temporary kluge: it has resistance
  */
+//testing=script 2006.07.17
 #include "d_vs.h"
 /*--------------------------------------------------------------------------*/
 void DEV_VS::precalc()
@@ -42,16 +43,14 @@ void DEV_VS::precalc()
 void DEV_VS::dc_begin()
 {
   _loss1 = _loss0 = 1./OPT::shortckt;
-  if (!using_tr_eval()){
-    {if (_n[OUT2].m_() == 0) {
+  if (!using_tr_eval()) {
+    if (_n[OUT2].m_() == 0) {
       set_limit(value());
-    }else if (_n[OUT1].m_() == 0) {
-      untested();
+    }else if (_n[OUT1].m_() == 0) {untested();
       set_limit(-value());
-    }else{
+    }else{untested();
       // BUG: don't set limit
-      untested();
-    }}
+    }
     assert(_y0.x == 0.);
     assert(_y0.f0 == 0.);
     assert(_y0.f1 == value());
@@ -59,27 +58,28 @@ void DEV_VS::dc_begin()
     assert(_m0.x == 0.);
     assert(_m0.c1 == 0.);
     _m0.c0 = -_loss0 * _y0.f1;
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_VS::do_tr()
 {
   assert(_m0.x == 0.);
-  {if (using_tr_eval()){
+  if (using_tr_eval()) {
     _y0.x = SIM::time0;
     tr_eval();
-    {if (_n[OUT2].m_() == 0) {
+    if (_n[OUT2].m_() == 0) {
       set_limit(_y0.f1);
     }else if (_n[OUT1].m_() == 0) {
       set_limit(-_y0.f1);
     }else{
       // BUG: don't set limit
-    }}
+    }
     store_values();
     q_load();
     _m0.c0 = -_loss0 * _y0.f1;
     assert(_m0.c1 == 0.);
-  }else{
+  }else{untested();
     assert(conchk(_loss0, 1./OPT::shortckt));
     assert(_y0.x == 0.);
     assert(_y0.f0 == 0.);
@@ -89,19 +89,18 @@ bool DEV_VS::do_tr()
     assert(_m0.c1 == 0.);
     assert(_y1 == _y0);
     assert(converged());
-  }}
+  }
   return converged();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_VS::do_ac()
 {
-  {if (has_ac_eval()){
+  if (using_ac_eval()) {
     ac_eval();
     _acg = -_loss0 * _ev;
-  }else{
-    untested();
+  }else{untested();
     assert(_acg == 0.);
-  }}
+  }
   ac_load();
 }
 /*--------------------------------------------------------------------------*/

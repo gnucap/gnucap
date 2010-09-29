@@ -1,4 +1,4 @@
-/*$Id: s__.cc,v 22.5 2002/07/07 07:26:31 al Exp $ -*- C++ -*-
+/*$Id: s__.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * base class for simulation methods
  */
+//testing=trivial 2006.07.17
 #include "s__.h"
 
 double	SIM::freq = 0.;
@@ -28,7 +29,7 @@ COMPLEX	SIM::jomega = 0.;
 double	SIM::time0 = 0.;
 double	SIM::time1 = 0.;
 double	SIM::dtmin = 0.;
-double	SIM::temp = 0.;
+double	SIM::temp_c = 0.;
 double	SIM::last_time = 0.;
 double	SIM::damp = 1.0;
 bool	SIM::uic = false;
@@ -36,7 +37,7 @@ bool	SIM::bypass_ok = false;
 TRI_STATE SIM::inc_mode = tsNO;
 bool	SIM::fulldamp = false;
 bool	SIM::limiting = false;
-int	SIM::mode = sNONE;
+SIM_MODE SIM::mode = sNONE;
 SIM::PHASE SIM::phase = pNONE;
 bool	SIM::freezetime = false;
 int*	SIM::nm = NULL;
@@ -47,6 +48,7 @@ double*	SIM::fw = NULL;
 double*	SIM::vdc = NULL;
 COMPLEX*SIM::ac = NULL;
 double	SIM::genout = 0.;
+std::priority_queue<double, std::vector<double> > SIM::eq;
 std::deque<CARD*> SIM::evalq1;
 std::deque<CARD*> SIM::evalq2;
 std::vector<CARD*> SIM::loadq;

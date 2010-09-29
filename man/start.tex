@@ -1,4 +1,4 @@
-%$Id: start.tex,v 24.14 2004/01/09 05:27:01 al Exp $
+%$Id: start.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man start .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \chapter{Introduction}
 %HEVEA\cutdef[0]{section}
@@ -63,10 +63,10 @@ thrust or base for their research.
 \section{Starting}
 \index{starting}
 
-To run this program, type and enter the command: {\tt gnucap}, from
-the command shell.
+To run this program interactively, type and enter the command: {\tt
+gnucap}, from the command shell.
 
-The prompt {\tt -->} shows that the program is in the command mode.  You
+The prompt {\tt gnucap>} shows that the program is in the command mode.  You
 should enter a command.  Normally, the first command will be to {\tt build} a
 circuit, or to {\tt get} one from the disk.  First time users should turn to
 the tutorial section for further assistance. 
@@ -192,10 +192,11 @@ results, disk reads, activity indicators.
 \index{basic option}
 \index{scientific notation}
 \item[{\tt Basic}] Format the output for compatibility with other software
-with primitive input parsers, such as C's {\em scanf} and Basic's {\em input}
-statements.  It forces exponential notation, instead of our standard
-abbreviated notation.  Any numbers that would ordinarily be printed without
-an exponent are not changed.
+with primitive input parsers, such as C's {\em scanf} and Basic's {\em
+input} statements.  It forces exponential notation, instead of our
+standard abbreviated notation.  Any numbers that would ordinarily be
+printed without an exponent are not changed.  It is the default when
+the output of a command is directed to a file.
 
 \index{pack option}
 \item[{\tt Pack}] Remove extra spaces from the output to save space at the 
@@ -215,7 +216,9 @@ file already exists, it will ask permission to delete the old one and
 replace it with a new one with the same name.
 
 \item[{\tt >>}] Direct the output to a file.  If the file already exists,
-the new data is appended to it.  
+the new data is appended to it.
+
+\item[{\tt |}] Pipe the output to a program.
 
 \end{description}
 %------------------------------------------------------------------------
@@ -236,20 +239,20 @@ but not strictly part of it.
 There are four mailing lists of interest to Gnucap users.
 \begin{description}
 
-\item[bug-gnucap]
+\item[bug-gnucap@gnu.org]
 This list is for bug reports and discussion about bugs in gnucap.
 
-\item[help-gnucap]
+\item[help-gnucap@gnu.org]
 This is a general user discussion list for gnucap. Discussions about
 the use of gnucap, and sharing of ideas, models, and libraries, are
 all welcome here.  Technical discussions should be light weight and
 user oriented.
 
-\item[info-gnucap]
+\item[info-gnucap@gnu.org]
 This list is for announcements about gnucap. It is a moderated
 list. All postings come from the administrator.
 
-\item[gnucap-devel]
+\item[gnucap-devel@gnu.org]
 This list is for technical discussions relating to the development of
 gnucap.  Technical discussions about simulator algorithms, modeling,
 and interfacing are all welcome here.

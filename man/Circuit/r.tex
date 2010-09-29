@@ -1,4 +1,4 @@
-%$Id: r.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: r.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit r .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,18 +17,24 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt R}: Resistor}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
-  {\tt R}{\it xxxxxxx n+ n-- value}\\
-  {\tt R}{\it xxxxxxx n+ n-- expression}\\
-  {\tt R}{\it xxxxxxx n+ n-- model} \{{\tt L=}{\it length}\}
+{\tt R}{\it xxxxxxx n+ n-- value}\\
+{\tt R}{\it xxxxxxx n+ n-- expression}\\
+{\tt R}{\it xxxxxxx n+ n-- model} \{{\tt L=}{\it length}\}
         \{{\tt W=}{\it width}\} \{{\tt TEMP=}{\it temperature}\} \\
-  {\tt .RESistor} {\it label n+ n-- expression}
+{\tt .resistor} {\it label n+ n-- expression}
+\end{verse}
+\subsubsection{Model (optional)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt R} \{{\it args}\} \\
+{\tt .model} {\it mname} {\tt TABLE} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -49,20 +55,26 @@ You may specify the {\it value} in one of three forms:
 
 \begin{enumerate}
   
-\item A simple value.  This is the resistance in Ohms.
+\item
+A simple value.  This is the resistance in Ohms.
   
-\item An expression, as described in the behavioral modeling chapter.
-  The expression can specify the voltage as a function of current, or
-  the resistance as a function of time.
+\item
+An expression, as described in the behavioral modeling chapter.  The
+expression can specify the voltage as a function of current, or the
+resistance as a function of time.
+
+\item
+A {\it model}, as described in the behavioral modeling chapter.  The
+{\tt table} model describes a table of voltage vs. current.
   
-\item A {\it model}, which calculates the resistance as a function of
-  length and width, referencing a {\tt .model} statement of type {\tt
-    R}.  This is compatible with the Spice-3 ``semiconductor
-  resistor''.
+\item
+A {\it model}, which calculates the resistance as a function of length
+and width, referencing a {\tt .model} statement of type {\tt R}.  This
+is compatible with the Spice-3 ``semiconductor resistor''.
 
 \end{enumerate}
 %------------------------------------------------------------------------
-\subsection{Model statement}
+\subsection{R Model statement}
 
 A model statement may be used,, with model type {\tt R} or {\tt Res}.
 The parameters are:
@@ -102,5 +114,10 @@ by the formula:
 \begin{verbatim}
 value *= (1 + TC1 * (T-T0) + TC2 * (T-T0)^2)
 \end{verbatim}
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+The standard probes for all basic elements are all available.  See the
+{\tt print} command for documentation.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

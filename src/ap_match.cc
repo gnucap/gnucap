@@ -1,4 +1,4 @@
-/*$Id: ap_match.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: ap_match.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * string compare
  */
+//testing=script 2006.07.17
 #include "ap.h"
 /*--------------------------------------------------------------------------*/
 CS::MATCH_STYLE CS::_ms(msPARTIAL);
@@ -44,7 +45,7 @@ CS& CS::pmatch(const std::string& s)
     ++str2;
   }
   // something didn't match -- let's see what and why
-  {if (strcmp(str2,"$$")==0) { // stop marker in reference -- accept
+  if (strcmp(str2,"$$")==0) { // stop marker in reference -- accept
     skipcom();
     _ok = true;
   }else if (cursor() == tokenstart// didn't move
@@ -60,7 +61,7 @@ CS& CS::pmatch(const std::string& s)
     _end_match = cursor();
     skipcom();
     _ok = true;
-  }}
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -78,7 +79,7 @@ CS& CS::icmatch(const std::string& s)
     skip();
     ++str2;
   }
-  {if (*str2 == '\0') {
+  if (*str2 == '\0') {
     _begin_match = begin_match;
     _end_match = cursor();
     skipcom();
@@ -86,7 +87,7 @@ CS& CS::icmatch(const std::string& s)
   }else{
     reset(start);
     _ok = false;
-  }}
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -104,7 +105,7 @@ CS& CS::ematch(const std::string& s)
     skip();
     ++str2;
   }
-  {if (*str2 == '\0') {
+  if (*str2 == '\0') {
     _begin_match = begin_match;
     _end_match = cursor();
     skipcom();
@@ -112,7 +113,7 @@ CS& CS::ematch(const std::string& s)
   }else{
     reset(start);
     _ok = false;
-  }}
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -123,8 +124,8 @@ CS& CS::dmatch(const std::string& s)
 {
   switch (_ms) {
   case msPARTIAL:     return pmatch(s);
-  case msIGNORE_CASE: return icmatch(s);
-  case msEXACT:       return ematch(s);
+  case msIGNORE_CASE: untested();return icmatch(s);
+  case msEXACT:       untested();return ematch(s);
   }
   unreachable();
   return *this;
@@ -134,7 +135,7 @@ CS& CS::pscan(const std::string& s)
 {
   int start = cursor();
   for (;;) {
-    {if (pmatch(s)) {	// found it
+    if (pmatch(s)) {	// found it
       _ok = true;
       break;
     }else if (!more()) {// ran out
@@ -143,52 +144,56 @@ CS& CS::pscan(const std::string& s)
       break;
     }else{		// skip and try again
       skiparg();
-    }}
+    }
   }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+#if 0
 CS& CS::icscan(const std::string& s)
-{
+{untested();
   int start = cursor();
-  for (;;) {
-    {if (icmatch(s)) {	// found it
+  for (;;) {untested();
+    if (icmatch(s)) {untested();	// found it
       _ok = true;
       break;
-    }else if (!more()) {// ran out
+    }else if (!more()) {untested();// ran out
       reset(start);
       _ok = false;
       break;
-    }else{		// skip and try again
+    }else{untested();		// skip and try again
       skiparg();
-    }}
+    }
   }
   return *this;
 }
+#endif
 /*--------------------------------------------------------------------------*/
+#if 0
 CS& CS::escan(const std::string& s)
-{
+{untested();
   int start = cursor();
-  for (;;) {
-    {if (ematch(s)) {	// found it
+  for (;;) {untested();
+    if (ematch(s)) {untested();	// found it
       _ok = true;
       break;
-    }else if (!more()) {// ran out
+    }else if (!more()) {untested();// ran out
       reset(start);
       _ok = false;
       break;
-    }else{		// skip and try again
+    }else{untested();		// skip and try again
       skiparg();
-    }}
+    }
   }
   return *this;
 }
+#endif
 /*--------------------------------------------------------------------------*/
 CS& CS::dscan(const std::string& s)
 {
   int start = cursor();
   for (;;) {
-    {if (dmatch(s)) {	// found it
+    if (dmatch(s)) {	// found it
       _ok = true;
       break;
     }else if (!more()) {// ran out
@@ -197,14 +202,16 @@ CS& CS::dscan(const std::string& s)
       break;
     }else{		// skip and try again
       skiparg();
-    }}
+    }
   }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+#if 0
 std::string CS::last_match()const
-{
+{untested();
   return std::string(&(_cmd[_begin_match]), &(_cmd[_end_match]));
 }
+#endif
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

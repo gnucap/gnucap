@@ -1,4 +1,4 @@
-/*$Id: m_spline.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: m_spline.cc,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,16 +16,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * piecewise polynomial interpolation
  */
+//testing=script 2006.04.18
 #include "l_denoise.h"
-#include "constant.h"
 #include "m_spline.h"
 /*--------------------------------------------------------------------------*/
-SPLINE::SPLINE(const std::vector<std::pair<double,double> >& table,
+SPLINE::SPLINE(const std::vector<DPAIR>& table,
 	       double d0, double dn, int order)
   :_n(table.size()-1),
    _x( new double[_n+1]),
@@ -35,20 +35,24 @@ SPLINE::SPLINE(const std::vector<std::pair<double,double> >& table,
    _f3(0),
    _order(order)
 {
-  {for (int i=0; i<=_n; ++i) {
+  untested();
+  for (int i=0; i<=_n; ++i) {
+    untested();
     _x[i]  = table[i].first;
     _f0[i] = table[i].second;
-  }}
+  }
 
   // set up h --------------------------------------------------
   double* h = new double[_n+1];
-  {for (int i=0; i<_n; ++i) {
+  for (int i=0; i<_n; ++i) {
     h[i] = _x[i+1] - _x[i];
     if (h[i] == 0.) {
       untested();
       error(bERROR, "duplicate points in spline: %g, %g\n", _x[i], _x[i+1]);
+    }else{
+      untested();
     }
-  }}
+  }
   h[_n] = NOT_VALID;
 
   switch (_order) {
@@ -57,6 +61,45 @@ SPLINE::SPLINE(const std::vector<std::pair<double,double> >& table,
   case 1: construct_order_1(h, d0, dn); break;
   case 0: untested(); /* nothing to do */   break;
   default:
+    untested();
+    error(bDANGER, "illegal spline order (%d), must be 0, 1, 2, 3\n", _order);
+    break;
+  }
+}
+/*--------------------------------------------------------------------------*/
+SPLINE::SPLINE(const std::vector<std::pair<PARAMETER<double>,
+	       PARAMETER<double> > >& table, double d0, double dn, int order)
+  :_n(table.size()-1),
+   _x( new double[_n+1]),
+   _f0(new double[_n+1]),
+   _f1(0),
+   _f2(0),
+   _f3(0),
+   _order(order)
+{
+  for (int i=0; i<=_n; ++i) {
+    _x[i]  = table[i].first;
+    _f0[i] = table[i].second;
+  }
+
+  // set up h --------------------------------------------------
+  double* h = new double[_n+1];
+  for (int i=0; i<_n; ++i) {
+    h[i] = _x[i+1] - _x[i];
+    if (h[i] == 0.) {
+      untested();
+      error(bERROR, "duplicate points in spline: %g, %g\n", _x[i], _x[i+1]);
+    }
+  }
+  h[_n] = NOT_VALID;
+
+  switch (_order) {
+  case 3: construct_order_3(h, d0, dn); break;
+  case 2: construct_order_2(h, d0, dn); break;
+  case 1: construct_order_1(h, d0, dn); break;
+  case 0: untested(); /* nothing to do */   break;
+  default:
+    untested();
     error(bDANGER, "illegal spline order (%d), must be 0, 1, 2, 3\n", _order);
     break;
   }
@@ -65,9 +108,9 @@ SPLINE::SPLINE(const std::vector<std::pair<double,double> >& table,
 void SPLINE::construct_order_1(double* h, double d0, double dn)
 {
   _f1 = h; // reuse storage
-  {for (int i=0; i<_n; ++i) {
+  for (int i=0; i<_n; ++i) {
     _f1[i] = (_f0[i+1] - _f0[i]) / h[i];
-  }}
+  }
   //h = 0;
 
   {if (d0 == NOT_INPUT) {
@@ -89,9 +132,9 @@ void SPLINE::construct_order_2(double* h, double d0, double dn)
   _f1 = new double[_n+1];
   {if (d0 != NOT_INPUT && dn == NOT_INPUT) {
     _d0 = _f1[0] = d0;
-    {for (int i=0; i<_n; ++i) {
+    for (int i=0; i<_n; ++i) {
       _f1[i+1] = 2*(_f0[i+1]-_f0[i])/h[i] - _f1[i];
-    }}
+    }
   }else{
     {if (dn == NOT_INPUT) {
       // neither bc .. must guess
@@ -99,9 +142,9 @@ void SPLINE::construct_order_2(double* h, double d0, double dn)
     }else{
       _f1[_n] = dn;
     }}
-    {for (int i=_n-1; i>=0; --i) {
+    for (int i=_n-1; i>=0; --i) {
       _f1[i] = 2*(_f0[i+1]-_f0[i])/h[i] - _f1[i+1];
-    }}
+    }
     {if (d0 == NOT_INPUT) {
       _d0 = _f1[0];
     }else{
@@ -112,9 +155,9 @@ void SPLINE::construct_order_2(double* h, double d0, double dn)
 
   // second derivative -- piecewise constant
   _f2 = h; // reuse storage
-  {for (int i=0; i<_n; ++i) {
+  for (int i=0; i<_n; ++i) {
     _f2[i] = .5 * (_f1[i+1] - _f1[i]) / h[i];
-  }}
+  }
   _f2[_n] = 0.;
   //h = 0;
 }
@@ -123,11 +166,11 @@ void SPLINE::construct_order_3(double* h, double d0, double dn)
 {
   // set up right side -----------------------------------------
   double* b = new double[_n+1]; // b as in Ax=b
-  {for (int i=1; i<_n; ++i) {
+  for (int i=1; i<_n; ++i) {
     double num = _f0[i+1]*h[i-1] -_f0[i]*(h[i]+h[i-1]) +_f0[i-1]*h[i];
     double den = h[i-1] * h[i];
     b[i] = 3 * num / den;
-  }}
+  }
   // boundary conditions
   {if (d0 == NOT_INPUT) {
     b[0] = 0.;
@@ -150,11 +193,11 @@ void SPLINE::construct_order_3(double* h, double d0, double dn)
     u[0] = .5;	// h[0] / (2*h[0])
     z[0] = b[0] / (2*h[0]);
   }}
-  {for (int i=1; i<_n; ++i) {
+  for (int i=1; i<_n; ++i) {
     double p = 2*(h[i]+h[i-1]) - h[i-1]*u[i-1]; // pivot
     u[i] = h[i] / p;
     z[i] = (b[i] - z[i-1]*h[i-1]) / p;
-  }}
+  }
   {if (dn == NOT_INPUT) { // natural
     z[_n] = 0;
   }else{ // clamped
@@ -170,12 +213,12 @@ void SPLINE::construct_order_3(double* h, double d0, double dn)
   _f3 = h;
   _f2[_n] = z[_n];
   _f3[_n] = 0.;
-  {for (int i=_n-1; i>=0; --i) {
+  for (int i=_n-1; i>=0; --i) {
     _f2[i] = z[i] - u[i]*_f2[i+1];
     _f1[i] = (_f0[i+1]-_f0[i])/h[i] - h[i]*(_f2[i+1]+2*_f2[i])/3;
     _f3[i] = (_f2[i+1]-_f2[i])/(3*h[i]);
     trace4("", i, _f1[i], _f2[i], _f3[i]);
-  }}
+  }
 
   _d0 = fixzero(_f1[0], _f1[1]);  //_f1[0];
   assert(d0 == NOT_INPUT  ||  _d0 == d0);
@@ -236,9 +279,11 @@ FPOLY1 SPLINE::at(double x)const
       untested();
       return FPOLY1(x, _f0[i], 0.);
     default:
+      untested();
       assert(!"spline problem");
       return FPOLY1();
     }
+      untested();
     //trace4("", x, _x[i], dx, i);
     //trace4("", _f0[i],   _f1[i],   _f2[i],   _f3[i]);
     //trace4("", _f0[i+1], _f1[i+1], _f2[i+1], _f3[i+1]);

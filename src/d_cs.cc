@@ -1,4 +1,4 @@
-/*$Id: d_cs.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: d_cs.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * functions for fixed current source
  * x = 0, y.f0 = nothing, ev = y.f1 = amps.
  */
+//testing=script 2006.07.17
 #include "d_cs.h"
 /*--------------------------------------------------------------------------*/
 void DEV_CS::precalc()
@@ -42,7 +43,7 @@ void DEV_CS::precalc()
 /*--------------------------------------------------------------------------*/
 void DEV_CS::dc_begin()
 {
-  if (!using_tr_eval()){
+  if (!using_tr_eval()) {untested();
     assert(_loss0 == 0.);
     assert(_loss1 == 0.);
     assert(_y0.x  == 0.);
@@ -52,21 +53,21 @@ void DEV_CS::dc_begin()
     assert(_m0.c0 == _y0.f1);
     assert(_m0.c1 == 0.);
     assert(_m1 == _m0);
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_CS::do_tr()
 {
   assert(_m0.x == 0.);
-  {if (using_tr_eval()){
+  if (using_tr_eval()) {
     _y0.x = SIM::time0;
     tr_eval();
     store_values();
     q_load();
     _m0.c0 = _y0.f1;
     assert(_m0.c1 == 0.);
-  }else{
-    untested();
+  }else{untested();
     assert(_y0.x  == 0.);
     assert(_y0.f0 == 0.);
     assert(_y0.f1 == value());
@@ -75,18 +76,18 @@ bool DEV_CS::do_tr()
     assert(_m0.c1 == 0.);
     assert(_y1 == _y0);
     assert(converged());
-  }}
+  }
   return converged();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CS::do_ac()
 {
-  {if (has_ac_eval()){
+  if (using_ac_eval()) {
     ac_eval();
     _acg = _ev;
-  }else{
+  }else{untested();
     assert(_acg == 0.);
-  }}
+  }
   ac_load();
 }
 /*--------------------------------------------------------------------------*/

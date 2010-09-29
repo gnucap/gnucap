@@ -1,4 +1,4 @@
-%$Id: sweep.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: sweep.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man commands sweep .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt SWEEP} command}
 \index{sweep command}
@@ -27,7 +27,7 @@
 %------------------------------------------------------------------------
 \subsection{Syntax}
 \begin{verse}
-{\tt SWeep} \{{\it stepcount}\}  {\it partlabel=range} ...
+{\tt sweep} \{{\it stepcount}\}  {\it partlabel=range} ...
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -41,7 +41,7 @@ This command begins a loop which will sweep a component or group of
 components.
 
 When this command is given, the only apparent actions will be a change in the
-prompt from `{\tt -->}' to `{\tt >>>}', and some disk action.
+prompt from `{\tt gnucap>}' to `{\tt >>>}', and some disk action.
 
 The different prompt means that commands are not executed immediately, but
 are stored in a temporary file.
@@ -68,7 +68,7 @@ ordinary and linear during the sweep.
 \subsection{Example}
 
 \begin{verbatim}
--->sweep  5   R14=1,100k   R15=100k,1
+gnucap> sweep  5   R14=1,100k   R15=100k,1
 >>>list
 >>>ac 500 2k oct
 >>>go

@@ -1,4 +1,4 @@
-/*$Id: findbr.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: findbr.cc,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,19 +16,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * find a branch with matching label
  * returns the branch pointer
  */
-#include "ap.h"
+//testing=script,sparse 2006.07.17
 #include "e_card.h"
 /*--------------------------------------------------------------------------*/
 /* findbranch: find a matching label, by (ugh) linear search
- * 	start searching at "start", stop at "stop"
- *	label to look for is in command line: &cmd[*cnt]
- * return pointer to match if exists (and eat input)
+ *	label to look for is in command line (cmd).
+ *	start "here".  Look only after "here".
+ * return pointer to next match if exists (and eat input)
  *	  pointer to a non-existent branch if no match (don't eat input)
  * caution: caller must check return value before using
  */
@@ -42,41 +42,63 @@ CARD_LIST::fat_iterator findbranch(CS& cmd, CARD_LIST::fat_iterator here)
   if (!labelwanted[0]) {		// nothing to look for
     cmd.reset(save);
     return here.end();
+  }else{
   }
   
   char* local_part;	    // part before last dot, the thing inside
   char* last_part;	    // part after last dot, top level
-  char* dot = strrchr(labelwanted,'.');	// used as a flag
-  if (dot) {		    // split the string into 2 parts at the last dot
-    *dot = '\0';	    // before is the new "local_part", shortened
-    last_part = dot + 1;    // after is the "last_part".
-    local_part = labelwanted;
-  }else{
-    last_part = labelwanted;
-    local_part = NULL;
+  {
+    char* dot = strrchr(labelwanted,'.');
+    if (dot) {itested();		    // split the string into 2 parts at the last dot
+      *dot = '\0';	    // before is the new "local_part", shortened
+      last_part = dot + 1;  // after is the "last_part".
+      local_part = labelwanted;
+    }else{
+      last_part = labelwanted;
+      local_part = NULL;
+    }
   }
 
   for (;;) {
-    if (here.isend()) {	// done -- fails
+    if (here.is_end()) {
+      // at the end of the list - done, fails.
       cmd.reset(save);
       return here;
-    }
-    if (wmatch((**here).short_label(), last_part)) { // label matches
-      {if (!local_part) {		    // found it .. done.
+    }else if (wmatch((**here).short_label(), last_part)) { 
+      // last_part matches
+      if (!local_part) {
+	// requested a simple name, found it .. done.
 	return here;
-      }else if((**here).subckt().exists()) {// this one has a subckt .. try it
-	CS want(local_part);
-	CARD_LIST::fat_iterator subbrh = findbranch(want, &(**here).subckt());
-	if (!subbrh.isend()) { // found it in a subckt
-	  return subbrh;
-	}
-      }else{ 
-	// there's a dot in the name (which matches), no subckt
-	// .. not it .. try again
+      }else{untested();
+	// there are dots, so look inside subckt
 	untested();
-      }}
+	if ((**here).subckt()) {untested();
+	  untested();
+	  // has a subckt, and its name matches, doing fine
+	  CS want(local_part);
+	  CARD_LIST::fat_iterator subbrh=findbranch(want,(**here).subckt());
+	  if (!subbrh.is_end()) {untested();
+	    // found it in a subckt
+	    return subbrh;
+	  }else{untested();
+	    // didn't find anything in this subckt
+	    // keep looking for another with the same name
+	    // why?
+	    ++here;
+	  }
+	}else{untested(); 
+	  // no subckt
+	  // keep looking for something with this name that has a subckt
+	  // why?
+	  untested();
+	  ++here;
+	}
+      }
+    }else{
+      // label doesn't match
+      // keep looking for one that does.  (linear search)
+      ++here;
     }
-    ++here;
   }
 }
 /*--------------------------------------------------------------------------*/

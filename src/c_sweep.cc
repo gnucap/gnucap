@@ -1,4 +1,4 @@
-/*$Id: c_sweep.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: c_sweep.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Step a parameter and repeat a group of commands
  */
+//testing=none 2006.07.17
 #include "io_.h"
 #include "declare.h"	/* getcmd */
 #include "c_comand.h"
@@ -31,7 +32,6 @@ static	void	buildfile(CS&);
 static	void	doit();
 static	void	setup(CS&);
 /*--------------------------------------------------------------------------*/
-extern CONST bool crtplot;
 extern int swp_count[], swp_steps[];
 extern int swp_type[];
 extern int swp_nest;
@@ -39,11 +39,11 @@ static char tempfile[] = STEPFILE;
 /*--------------------------------------------------------------------------*/
 void CMD::sweep(CS& cmd)
 {
-  {if (cmd.more()) {
+  if (cmd.more()) {
     buildfile(cmd);
   }else{
-    untested();
-  }}
+    
+  }
   doit();
   unfault(cmd);
 }
@@ -54,13 +54,13 @@ static void buildfile(CS& cmd)
   
   setup(cmd);
   if (fptr) {
-    untested();
     fclose(fptr);
+  }else{
   }
   fptr = fopen(tempfile, "w");
   if (!fptr) {
-    untested();
     error(bERROR, "can't open temporary file\n" );
+  }else{
   }
   fprintf(fptr, "%s\n", cmd.fullstring() );
   
@@ -69,6 +69,7 @@ static void buildfile(CS& cmd)
     getcmd(">>>", buffer, BUFLEN);
     if (pmatch(buffer,"GO")) {
       break;
+    }else{
     }
     fprintf(fptr, "%s\n", buffer);
   }
@@ -84,35 +85,38 @@ static void doit()
        ++swp_count[swp_nest]) {
     if (fptr) {
       fclose(fptr);
+    }else{
     }
     fptr = fopen(tempfile, "r");
     if (!fptr) {
-      untested();
       error(bERROR, "can't open %s\n", tempfile);
+    }else{
     }
     char buffer[BUFLEN];
     fgets(buffer,BUFLEN,fptr);
     CS cmd(buffer);
-    {if (cmd.pmatch("SWeep")) {
+    if (cmd.pmatch("SWeep")) {
       setup(cmd);
     }else{
-      untested();
       error(bERROR, "bad file format: %s\n", tempfile);
-    }}
+    }
     int ind = cmd.cursor();
     strncpy(buffer, "fault                              ", ind);
     buffer[ind-1] = ' ';		/* make sure there is a delimiter   */
-    					/* in case the words run together   */
+					/* in case the words run together   */
     for (;;) {				/* may wipe out one letter of fault */
       CMD::cmdproc(buffer);
       if (!fgets(buffer,BUFLEN,fptr)) {
 	break;
-      }
-      {if (!crtplot) {
-	IO::mstdout << swp_count[swp_nest]+1 << "> " << buffer;
       }else{
-	untested();
-      }}
+      }
+      CS cmd(buffer);
+      if (cmd.pmatch("SWeep")) {
+	cmd.warn(bDANGER, "command not allowed in sweep");
+	buffer[0] = '\'';
+      }else{
+      }
+      IO::mstdout << swp_count[swp_nest]+1 << "> " << buffer;
     }
   }
   fclose(fptr);
@@ -123,19 +127,18 @@ static void doit()
 static void setup(CS& cmd)
 {
   for (;;) {
-    {if (cmd.is_digit()) {
+    if (cmd.is_digit()) {
       swp_steps[swp_nest] = cmd.ctoi() ;
       swp_steps[swp_nest] = (swp_steps[swp_nest]) 
 	? swp_steps[swp_nest]-1
 	: 0;
     }else if (cmd.pmatch("LInear")) {
-      untested();
       swp_type[swp_nest] = 0;
     }else if (cmd.pmatch("LOg")) {
       swp_type[swp_nest] = 'L';
     }else{
       break;
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

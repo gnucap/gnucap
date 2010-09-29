@@ -1,4 +1,4 @@
-/*$Id: s_tr.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_tr.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Transient analysis
  */
+//testing=script,complete 2006.07.14
 #ifndef S_TR_H
 #define S_TR_H
 #include "s__.h"
@@ -35,9 +36,9 @@ private:
     scITER_R    = 4,	/* iter count exceeds itl4 (reducing)		*/
     scITER_A    = 5,	/* iter count exceeds itl3 (holding)		*/
     scTE	= 6,	/* truncation error, or device stuff		*/
-    scRDT	= 7,	/* by iter count limited by 2*rdt		*/
+    scAMBEVENT	= 7,	/* ambiguous event				*/
     scADT	= 8,	/* by iter count limited by max(rdt, 2*adt)	*/
-    scHALF      = 9,	/* limited by half time to exact time		*/
+    scINITIAL	= 9,	/* initial guess				*/
     scREJECT    = 10,	/* rejected previous time step			*/
     scZERO      = 20,	/* fixed zero time step				*/
     scSMALL     = 30,	/* time step too small				*/
@@ -45,10 +46,34 @@ private:
   };
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 public:
+  explicit TRANSIENT():
+    SIM(),
+    tstart(0.),
+    tstop(0.),
+    tstep(0.),
+    dtmax(0.),
+    dtratio(0.),
+    skip(0),
+    cold(false),
+    cont(false),
+    echo(false),
+    trace(tNONE),
+    time_suggested_by_review(0.),
+    control(scINITIAL),
+    time_by_iteration_count(0.),
+    time_by_user_request(0.),
+    time_by_error_estimate(0.),
+    time_by_ambiguous_event(0.),
+    converged(false),
+    accepted(false)
+  {
+  }
+  ~TRANSIENT() {}
+public:
   void	command(CS&);
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:		// s_tr_rev.cc
-  void	review();
+  bool	review();
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:		// s_tr_set.cc
   void	setup(CS&);
@@ -68,6 +93,7 @@ public:
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
   bool	is_step_rejected()const {return (step_cause() > scREJECT);}
+  explicit TRANSIENT(const TRANSIENT&): SIM() {unreachable(); incomplete();}
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:
   double tstart;	// sweep start time
@@ -80,11 +106,15 @@ protected:
   bool cont;		// flag: continue from previous run
 private:
   bool echo;		// flag: echo the input when using input data file
-  int field;		// which field to use in input file
   TRACE trace;		// enum: show extended diagnostics
-  double approxtime;	// guess at best time for next step
+  double time_suggested_by_review;	// guess at best time for next step
   STEP_CAUSE control;	// why this time (enum)
-  bool printnow;	// flag: print this step
+  double time_by_iteration_count;
+  double time_by_user_request;
+  double time_by_error_estimate;
+  double time_by_ambiguous_event;
+  bool converged;
+  bool accepted;
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 private:
   static int steps_accepted_;
@@ -93,7 +123,7 @@ private:
 public:
   static int steps_accepted() {return steps_accepted_;}
   static int steps_rejected() {return steps_rejected_;}
-  static int steps_total() {return steps_total_;}
+  static int steps_total()    {return steps_total_;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

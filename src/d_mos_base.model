@@ -1,4 +1,4 @@
-/* $Id: d_mos_base.model,v 24.7 2003/05/30 08:08:17 al Exp $ -*- C++ -*-
+/* $Id: d_mos_base.model,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * MOS model - base for levels 1,2,3,6
  */ 
@@ -42,8 +42,7 @@ model MOS_BASE {
   }
   independent {
     override {
-      double _tnom "" name=TNOM default=OPT::tnom
-	quiet_min=1.0 offset=-ABS_ZERO;
+      double _tnom_c "" name=TNOM default=OPT::tnom_c;
       double fc "coef for fwd bis depl cap formula" name=FC;
       double pb "junction potential" name=PB positive;
       double cjo "zero-bias jct capacitance (per area)"	name=CJ;
@@ -77,19 +76,35 @@ model MOS_BASE {
       double cgbo "GB overlap capacitance" name=CGBo default=0.0;
       int cmodel "which capacitor model to use (2 or 3)"
 	name=CMODEL default=0 print_test="false";
+      double xl "length bias accounts for masking and etching effects"
+	name=XL alt_name=DL alt_name=LDEL default=0.0 print_test="xl!=0.0";
+      double xw "width bias accounts for masking and etching effects"
+	name=XW alt_name=DW alt_name=WDEL default=0.0 print_test="xw!=0.0";
+      double lmlt "length shrink factor"
+	name=LMLT default=1.0 print_test="lmlt!=1.0";
+      double wmlt "width shrink factor"
+	name=WMLT default=1.0 print_test="wmlt!=1.0";
+      double del "channel length reduction each side"
+	name=DEL default=0.0 print_test="del!=0.0";
+      double ld "lateral length diffusion"
+	name=LD alt_name=DLAT alt_name=LADT default=0.0;
+      double wd "width diffusion"
+	name=WD default=0.0 print_test="wd!=0.0";
     }
     calculated_parameters {
       polarity_t polarity "" default=pN;
+      double tnom_k "nominal temperature, kelvin" 
+	calculate="_tnom_c + P_CELSIUS0";
       double egap "energy gap at tnom"
-	calculate="1.16 - (7.02e-4*_tnom*_tnom) / (_tnom+1108.)";
+	calculate="1.16 - (7.02e-4*tnom_k*tnom_k) / (tnom_k+1108.)";
       bool needs_isub "" default=false;
     }
     code_post {
-      {if ((rs == NA)  &&  (rd != NA)){
+      {if ((rs == NA)  &&  (rd != NA)) {
 	error(bWARNING,
 	      long_label() + ": rd input, but not rs. setting rs = 0.\n");
 	rs = 0.;
-      }else if ((rd == NA)  &&  (rs != NA)){
+      }else if ((rd == NA)  &&  (rs != NA)) {
 	untested();
 	error(bWARNING, 
 	      long_label() + ": rs input, but not rd. setting rd = 0.\n");
@@ -98,18 +113,18 @@ model MOS_BASE {
 	/* rd, rs are ok, either have both or neither */
       }}
       
-      {if ((rsh != NA)  &&  (rd != NA)){
+      {if ((rsh != NA)  &&  (rd != NA)) {
 	error(bWARNING, long_label() + ": rsh - rs - rd conflict: using "
 	      + (((rd <= 0.)  &&  (rs <= 0.)) ? "rsh" : "rs,rd") + '\n');
-      }else if ((rsh == NA)  &&  (rd == NA)){
+      }else if ((rsh == NA)  &&  (rd == NA)) {
 	rsh = 0.;
       }else{
 	/* rsh, rd are ok, have one or other */
       }}
       
-      {if (is == NA  &&  js == NA){
+      {if (is == NA  &&  js == NA) {
 	is = mDEFAULT_is;
-      }else if (is != NA  &&  js != NA){
+      }else if (is != NA  &&  js != NA) {
 	error(bWARNING, long_label() + ": is - js conflict\n");
       }else{
 	/* is, js are ok, have one or other */
@@ -117,13 +132,15 @@ model MOS_BASE {
     }
   }
   size_dependent {
-    override {
-    }
     calculated_parameters {
       double l_eff "-23-c- actual (electrical) channel length"
-	calculate="(c->l_in != NA) ? c->l_in : OPT::defl";
+	calculate="(c->l_in != NA) 
+		? c->l_in * m->lmlt + m->xl - 2. * (m->ld + m->del)
+		: OPT::defl";
       double w_eff "--3-c- actual (electrical) channel width"
-	calculate="(c->w_in != NA) ? c->w_in : OPT::defw";
+	calculate="(c->w_in != NA) 
+		? c->w_in * m->wmlt + m->xw - 2. * m->wd
+		: OPT::defw";
       double ad "----c- drain area, actual"
 	calculate="(c->ad_in != NA) ? c->ad_in : OPT::defad";
       double as "----c- source area, actual"
@@ -135,17 +152,22 @@ model MOS_BASE {
       double rd "-----b ohmic drain resistance";
       double rs "-----b ohmic source resistance";
       double phi "surface potential at strong inversion" calculate=NA;
+
+      double cgso "" calculate="m->cgso * w_eff";
+      double cgdo "" calculate="m->cgdo * w_eff";
+      double cgbo "" calculate="m->cgbo * l_eff";
+
     }
     code_post {
-      {if (m->rsh != NA  &&  m->rd <= 0.  &&  m->rs <= 0.){
+      {if (m->rsh != NA  &&  m->rd <= 0.  &&  m->rs <= 0.) {
 	rd = m->rsh * c->nrd;
 	rs = m->rsh * c->nrs;
       }else{
 	rd = (m->rd != NA) ? m->rd : 0.;
 	rs = (m->rs != NA) ? m->rs : 0.;
       }}
-      {if (m->js == NA  ||  ad == 0.  ||  as == 0.){
-	{if (m->is == NA){
+      {if (m->js == NA  ||  ad == 0.  ||  as == 0.) {
+	{if (m->is == NA) {
 	  untested();
 	  idsat = issat = mDEFAULT_is;
 	  //error(bWARNING, "ignoring js, using default is\n");

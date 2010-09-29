@@ -1,4 +1,4 @@
-/*$Id: io_error.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: io_error.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * data for error and exception handling
  *
  * Copyright (C) 2001 Albert Davis
@@ -18,10 +18,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
+//testing=trivial 2006.07.17
 #ifndef bERROR
+#include "md.h"
 /*--------------------------------------------------------------------------*/
 /* arg to error() (badness) to decide severity of exception */
 #define	bNOERROR	0

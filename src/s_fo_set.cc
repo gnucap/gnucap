@@ -1,4 +1,4 @@
-/*$Id: s_fo_set.cc,v 22.5 2002/07/07 07:26:31 al Exp $ -*- C++ -*-
+/*$Id: s_fo_set.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * set up  fourier analysis
  */
+//testing=script,sparse 2006.07.16
 #include "u_prblst.h"
-#include "u_opt.h"
 #include "ap.h"
 #include "s_fo.h"
 /*--------------------------------------------------------------------------*/
@@ -37,21 +37,23 @@ static	int	to_pow_of_2(double);
 void FOURIER::setup(CS& cmd)
 {
   cont = true;
-  {if (cmd.is_pfloat()) {
+  if (cmd.is_pfloat()) {
     double arg1 = cmd.ctopf();
     double arg2 = cmd.ctopf();
     double arg3 = cmd.ctopf();
-    {if (arg3 != 0.) {			    /* 3 args: all */
+    if (arg3 != 0.) {			    /* 3 args: all */
       fstart = arg1;
       fstop  = arg2;
       fstep  = arg3;
     }else if (arg2 != 0.) {		    /* 2 args: start = 0 */
       untested();
       if (arg1 >= arg2) {		    /* 2 args: stop, step */
+	untested();
 	fstart = 0.;		    	    /* 	(stop > step) */
 	fstop  = arg1;
 	fstep  = arg2;
       }else{ /* arg1 < arg2 */		    /* 2 args: step, stop */
+	untested();
 	fstart = 0.;
 	fstop  = arg2;
 	fstep  = arg1;
@@ -66,10 +68,10 @@ void FOURIER::setup(CS& cmd)
       fstart = 0.;
       fstop  = OPT::harmonics * arg1;
       fstep  = arg1;
-    }}
+    }
   }else{
     untested();
-  }}
+  }
   /* else (no args) : no change */
   
   if (fstep == 0.) {
@@ -83,14 +85,14 @@ void FOURIER::setup(CS& cmd)
   options(cmd);
   
   timesteps = to_pow_of_2(fstop*2 / fstep) + 1;
-  {if (cold) {
+  if (cold) {
     untested();
     cont = false;
     tstart = 0.;
   }else{
     cont = true;
     tstart = last_time;
-  }}
+  }
   tstop = tstart + 1. / fstep;
   tstep = 1. / fstep / (timesteps-1);
   time1 = time0 = tstart;
@@ -125,10 +127,11 @@ void FOURIER::fftunallocate()
  */
 static int to_pow_of_2(double z)
 {
-  long x,y;
-  x = static_cast<long>(floor(z));
-  for (y = 1; x > 0; x >>= 1)
+  long x = static_cast<long>(floor(z));
+  long y;
+  for (y = 1; x > 0; x >>= 1) {
     y <<= 1;
+  }
   return y;
 }   
 /*--------------------------------------------------------------------------*/

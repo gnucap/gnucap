@@ -1,4 +1,4 @@
-/*$Id: bm_fit.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
+/*$Id: bm_fit.cc,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * cubic spline bm function
  */
-#include "ap.h"
-#include "m_interp.h"
+//testing=script 2006.04.18
+#include "e_elemnt.h"
 #include "m_spline.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
@@ -49,8 +49,8 @@ EVAL_BM_FIT::EVAL_BM_FIT(const EVAL_BM_FIT& p)
    _order(p._order),
    _below(p._below),
    _above(p._above),
-   _delta(_default_delta),
-   _smooth(_default_smooth),
+   _delta(p._delta),
+   _smooth(p._smooth),
    _table(p._table),
    _spline(0)
 {
@@ -61,25 +61,106 @@ EVAL_BM_FIT::~EVAL_BM_FIT()
   delete _spline;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_FIT::parse_front()
+bool EVAL_BM_FIT::operator==(const COMMON_COMPONENT& x)const
 {
-  delete _spline;
-  _spline = 0;
+  const EVAL_BM_FIT* p = dynamic_cast<const EVAL_BM_FIT*>(&x);
+  bool rv = p
+    && _order == p->_order
+    && _below == p->_below
+    && _above == p->_above
+    && _delta == p->_delta
+    && _smooth == p->_smooth
+    && _table == p->_table
+    && EVAL_BM_ACTION_BASE::operator==(x);
+  if (rv) {
+    untested();
+  }
+  return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_FIT::parse_numlist(CS& cmd)
+void EVAL_BM_FIT::print(OMSTREAM& o)const
 {
-  int here = cmd.cursor();
-  for (;;){
-    double key  =NOT_VALID;
-    double value=NOT_VALID;
-    cmd >> key >> value;
-    if (cmd.stuck(&here)){
-      break;
-    }
-    std::pair<double,double> p(key,value);
-    _table.push_back(p);
+  o << ' ' << name() << '(';
+  for (std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > >::
+	 const_iterator p = _table.begin();  p != _table.end();  ++p) {
+    o << p->first << ',' << p->second << ' ';
   }
+  o << ')';
+  o << " order=" << _order;
+  if (_below.has_value())  {o << " below=" << _below;}
+  if (_above.has_value())  {o << " above=" << _above;}
+  if (_delta.has_value())  {o << " delta=" << _delta;  untested();}
+  if (_smooth.has_value()) {o << " smooth="<< _smooth; untested();}
+  EVAL_BM_ACTION_BASE::print(o);
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_FIT::elabo3(const COMPONENT* c)
+{
+  assert(c);
+  const CARD_LIST* par_scope = c->scope();
+  assert(par_scope);
+  EVAL_BM_ACTION_BASE::elabo3(c);
+  _order.e_val(_default_order, par_scope);
+  _below.e_val(_default_below, par_scope);
+  _above.e_val(_default_above, par_scope);
+  _delta.e_val(_default_delta, par_scope);
+  _smooth.e_val(_default_smooth, par_scope);
+  {
+    double last = -BIGBIG;
+    for (std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > >::
+	   iterator p = _table.begin();  p != _table.end();  ++p) {
+      p->first.e_val(0, par_scope);
+      p->second.e_val(0, par_scope);
+      if (last > p->first) {
+	untested();
+	error(bWARNING, "%s: FIT table is out of order: (%g, %g)\n",
+	      c->long_label().c_str(), last, double(p->first));
+      }else{
+	//std::pair<double,double> x(p->first, p->second);
+	//_num_table.push_back(x);
+      }
+      last = p->first;
+    }
+  }
+  delete _spline;
+  int order = _order;
+  _spline = new SPLINE(_table, _below, _above, order);
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_FIT::tr_eval(ELEMENT* d)const
+{
+  d->_y0 = _spline->at(d->_y0.x);
+  tr_final_adjust(&(d->_y0), d->f_is_value());
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_FIT::parse_numlist(CS& cmd)
+{
+  int start = cmd.cursor();
+  int here = cmd.cursor();
+  for (;;) {
+    int start_of_pair = here;
+    std::pair<PARAMETER<double>, PARAMETER<double> > p;
+    cmd >> p.first; // key
+    if (cmd.stuck(&here)) {
+      // no more, graceful finish
+      break;
+    }else{
+      cmd >> p.second; // value
+      if (cmd.stuck(&here)) {
+	// ran out, but already have half of the pair
+	// back up one, hoping somebody else knows what to do with it
+	cmd.reset(start_of_pair);
+	break;
+      }else{
+	_table.push_back(p);
+      }
+    }
+  }
+  if (cmd.gotit(start)) {
+  }else{
+    untested();
+  }
+  return cmd.gotit(start);
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_FIT::parse_params(CS& cmd)
@@ -92,34 +173,6 @@ bool EVAL_BM_FIT::parse_params(CS& cmd)
     || get(cmd, "SMooth",&_smooth)
     || EVAL_BM_ACTION_BASE::parse_params(cmd)
     ;
-}
-/*--------------------------------------------------------------------------*/
-void EVAL_BM_FIT::parse_finish()
-{
-  EVAL_BM_ACTION_BASE::parse_finish();
-  _spline = new SPLINE(_table, _below, _above, _order);
-}
-/*--------------------------------------------------------------------------*/
-void EVAL_BM_FIT::print(OMSTREAM& where)const
-{
-  where << "  " << name() << '(';
-  for (std::vector<std::pair<double,double> >::const_iterator
-	 p = _table.begin();  p != _table.end();  ++p){
-    where << "  " << p->first << ',' << p->second;
-  }
-  where << ')';
-  print_base(where);
-  where << "  order=" << _order;
-  if (_below != NOT_INPUT)	  {where << "  below=" << _below;}
-  if (_above != NOT_INPUT)	  {where << "  above=" << _above;}
-  if (_delta  != _default_delta)  {where << "  delta=" << _delta;  untested();}
-  if (_smooth != _default_smooth) {where << "  smooth="<< _smooth; untested();}
-}
-/*--------------------------------------------------------------------------*/
-void EVAL_BM_FIT::tr_eval(ELEMENT* d)const
-{
-  d->_y0 = _spline->at(d->_y0.x);
-  tr_final_adjust(&(d->_y0), d->f_is_value());
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

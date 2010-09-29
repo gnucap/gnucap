@@ -1,4 +1,4 @@
-/*$Id: s_ac_slv.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_ac_slv.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * ac solution
  */
+//testing=script,complete 2006.07.14
 #include "e_cardlist.h"
 #include "u_status.h"
 #include "s_ac.h"
@@ -31,18 +32,25 @@
 void AC::solve(void)
 {
   clear();
-  STATUS::load.start();
-  ++STATUS::iter[iTOTAL];
+
+  ::status.load.start();
+  count_iterations(iTOTAL);
   CARD_LIST::card_list.do_ac();
-  STATUS::load.stop();
+  ::status.load.stop();
+
+  ::status.lud.start();
   acx.lu_decomp();
+  ::status.lud.stop();
+
+  ::status.back.start();
   acx.fbsub(ac);
+  ::status.back.stop();
 }
 /*--------------------------------------------------------------------------*/
 void AC::clear(void)
 {
   acx.zero();
-  for (int ii=0;  ii <= STATUS::total_nodes;  ++ii){
+  for (int ii=0;  ii <= ::status.total_nodes;  ++ii) {
     ac[ii] = 0.;
   }
 }

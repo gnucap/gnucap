@@ -1,4 +1,4 @@
-%$Id: fourier.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: fourier.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man commands fourier .
 %------------------------------------------------------------------------
 \section{{\tt FOURIER} command}
@@ -9,7 +9,7 @@
 %------------------------------------------------------------------------
 \subsection{Syntax}
 \begin{verse}
-{\tt Fourier} {\it start stop stepsize} \{{\it options} ...\}
+{\tt fourier} {\it start stop stepsize} \{{\it options} ...\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -71,9 +71,11 @@ See also: {\tt Transient} command.
 
 %%%\item[{\tt <} {\it file}] Get circuit input from {\it %%% file}.
 
-\item[{\tt >} {\it file}] Send results of analysis to {\it file}.
+\item[{\tt >} {\it file}]
+Send results of analysis to {\it file}.
 
-\item[{\tt >>} {\it file}] Append results to {\it file}.
+\item[{\tt >>} {\it file}]
+Append results to {\it file}.
 
 %%%\item[{\tt ACMAx}] Use worst case max values, per last
 %%%{\tt AC} analysis.
@@ -81,13 +83,27 @@ See also: {\tt Transient} command.
 %%%\item[{\tt ACMIn}] Use worst case min values, per last
 %%%{\tt AC} analysis.
 
-\item[{\tt Cold}] Zero initial conditions.  Cold start from power-up.
+\item[{\tt cold}]
+Zero initial conditions.  Cold start from power-up.
 
 %%%\item[{\tt DCMAx}] Use worst case max values, per last
 %%%{\tt DC} or {\tt OP} analysis.
 
 %%%\item[{\tt DCMIn}] Use worst case min values, per last
 %%%{\tt DC} or {\tt OP} analysis.
+
+\item[{\tt dtemp} {\it degrees}]
+Temperature offset, degrees C.  Add this number to the temperature
+from the {\tt options} command.
+
+\item[{\tt dtmin} {\it time}]
+The minimum internal time step, as a time.  (Default = {\tt option
+dtmin} Time cannot be resolved closer than this.
+
+\item[{\tt dtratio} {\it number}]
+The minimum internal time step, as a ratio.  (Default = {\tt option
+dtratio} This is the maximum number of internal time steps for every
+requested step.
 
 %%%\item[{\tt Echo}] Echo disk reads to console, when input
 %%%is from a file.
@@ -98,27 +114,26 @@ See also: {\tt Transient} command.
 %%%\item[{\tt LEad}] Use worst case values, for leading
 %%% phase, per {\tt AC} analysis.
 
-\item[{\tt Quiet}] Suppress console output.
+\item[{\tt quiet}]
+Suppress console output.
 
-\item[{\tt SKip} {\it count}] Force at least {\it count} internal
-transient time steps for each one used.
+\item[{\tt skip} {\it count}]
+Force at least {\it count} internal transient time steps for each one
+used.
 
-\item[{\tt STiff}] Use a different integration method,
-that will suppress overshoot when the step size is too
-small.
+\item[{\tt temperature} {\it degrees}]
+Temperature, degrees C.
 
-\item[{\tt TEmperature} {\it degrees}] Temperature,
-degrees C.
-
-\item[{\tt TRACe} {\it n}] Show extended information during solution.
+\item[{\tt trace} {\it n}]
+Show extended information during solution.
 Must be followed by one of the following:
 \begin{description}
-\item[{\tt Off}] No extended trace information (default, override .opt)
-\item[{\tt Warnings}] Show extended warnings
-\item[{\tt Alltime}] Show all accepted internal time steps.
-\item[{\tt Rejected}] Show all internal time steps including rejected steps.
-\item[{\tt Iterations}] Show every iteration.
-\item[{\tt Verbose}] Show extended diagnostics.
+\item[{\tt off}] No extended trace information (default, override .opt)
+\item[{\tt warnings}] Show extended warnings
+\item[{\tt alltime}] Show all accepted internal time steps.
+\item[{\tt rejected}] Show all internal time steps including rejected steps.
+\item[{\tt iterations}] Show every iteration.
+\item[{\tt verbose}] Show extended diagnostics.
 \end{description}
 
 \end{description}

@@ -1,4 +1,4 @@
-%$Id: m.tex,v 21.14 2002/03/26 08:47:00 al Exp $
+%$Id: m.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit m .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,19 +17,25 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt M}: MOSFET}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
 {\tt M}{\it xxxxxxx nd ng ns nb mname} \{{\it args}\}\\
 {\tt M}{\it xxxxxxx nd ng ns nb mname}
 	\{{\it width}{\tt /}{\it length}\} \{{\it args}\}\\
-{\tt .MOSfet} {\it label nd ng ns nb mname} \{{\it args}\}\\
-{\tt .MOSfet} {\it label nd ng ns nb mname}
+{\tt .mosfet} {\it label nd ng ns nb mname} \{{\it args}\}\\
+{\tt .mosfet} {\it label nd ng ns nb mname}
 	\{{\it width}{\tt /}{\it length}\} \{{\it args}\}
+\end{verse}
+\subsubsection{Model (required)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt NMOS} \{{\it args}\}
+{\tt .model} {\it mname} {\tt PMOS} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -38,22 +44,23 @@ MOSFET.
 %------------------------------------------------------------------------
 \subsection{Comments}
 
-{\it Nd}, {\it ng}, {\it ns}, and {\it nb} are the drain, gate, source, and
-bulk (substrate) nodes, respectively.  {\it Mname} is the model name.
+{\it Nd}, {\it ng}, {\it ns}, and {\it nb} are the drain, gate,
+source, and bulk (substrate) nodes, respectively.  {\it Mname} is the
+model name.
 
 {\it Length} and {\it width} are the drawn channel length and width, in
 microns.  Note that the notation W/L has units of microns, but the same
 parameters, in the argument list ({\tt W} and {\tt L}) have units of meters.
 All other dimensions are in meters.
 
-The options {\tt rstray} and {\tt norstray} determines whether or not
-series resistances are included.  {\tt rstray} is the default.
-Experience has shown that the effect of series resistance is often not
-significant, it can significantly degrade the simulation time, and it
-often increases roundoff errors.  {\tt rstray} is the default for
-Spice compatibility, and because it usually is significant for the BJT
-model.  {\tt Norstray} is the equivalent of setting the model
-parameters {\tt rd}, {\tt rs}, and {\tt rsh} all to zero.
+The option ({\tt .options} command) {\tt rstray} determines whether or
+not series resistances are included.  {\tt rstray} (on) is the
+default.  Experience has shown that the effect of series resistance is
+often not significant, it can significantly degrade the simulation
+time, and it often increases roundoff errors.  {\tt rstray} is the
+default for Spice compatibility, and because it usually is significant
+for the BJT model.  {\tt Norstray} (off) is the equivalent of setting
+the model parameters {\tt rd}, {\tt rs}, and {\tt rsh} all to zero.
 
 Entering a parameter value of 0 is not the same as not specifying
 it.  This behavior is not compatible with SPICE.  In SPICE, a value
@@ -69,13 +76,16 @@ so the printed value for Cgdovl and Cgd will be 0, which will
 disagree with SPICE.  It doesn't matter because a shorted capacitor
 can store no charge.
 
-Levels 1, 2, 3, 4, 5, 6, 7 are implemented.
+Levels 1, 2, 3, 4, 5, 6, 7, 8, 49 are implemented.
 %------------------------------------------------------------------------
 \subsection{Element Parameters}
 
 \subsubsection{Basic Spice compatible parameters}
 
 \begin{description}
+
+\item[{\tt M} = {\it x}]
+Device multiplier.  (Default = 1.)  Equivalent number of devices in parallel.
 
 \item[{\tt L} = {\it x}]
 Drawn channel length.  (Default = {\tt DEFL} parameter from {\tt
@@ -114,7 +124,7 @@ Number of squares of source diffusion.  (Default = 1.)
 
 \item[{\tt LEVEL} = {\it x}]
 Model index. (Default = 1) Selects which of several models to use.
-The choices supported are 1-7, corresponding to Spice 3f5.
+The choices supported are 1-8, corresponding to Spice 3f5.
 
 \end{description}
 \subsubsection{Extended control (not in Spice) -- all models}
@@ -249,6 +259,46 @@ Gate-drain overlap capacitance, per channel width. (Default = 0.)
 Gate-bulk overlap capacitance, per channel length. (Default = 0.)
 
 \end{description}
+\subsubsection{Length and width adjustment-- all models}
+
+These parameters adjust the effective dimensions of the device.  They
+are calculated as follows:
+
+\begin{verse}
+L\_eff = L\_drawn * LMLT + XL - 2 * (LD + DEL) \\
+W\_eff = W\_drawn * WMLT + XW - 2 * WD
+\end{verse}
+
+\begin{description}
+
+\item[{\tt XL} = {\it x}]
+Length bias accounts for masking and etching effects.
+Alternate names: {\tt DL}, {\tt LDEL}.
+(Default = 0.)
+
+\item[{\tt XW} = {\it x}]
+Width bias accounts for masking and etching effects.
+Alternate names: {\tt DW}, {\tt WDEL}.
+(Default = 0.)
+
+\item[{\tt LMLT} = {\it x}]
+Length shrink factor. (Default = 1.0)
+
+\item[{\tt WMLT} = {\it x}]
+Width shrink factor. (Default = 1.0)
+
+\item[{\tt DEL} = {\it x}]
+Channel length reduction each side. (Default = 0.)
+
+\item[{\tt LD} = {\it x}]
+Lateral length diffusion.
+Alternate names: {\tt DLAT}, {\tt LADT}.
+(Default = 0.)
+
+\item[{\tt WD} = {\it x}]
+Width diffusion.  (Default = 0.)
+
+\end{description}
 \subsubsection{Accepted and ignored -- all models}
 \begin{description}
 
@@ -302,10 +352,6 @@ Surface state density.  (atoms / cm$^2$) (Default = 0.) Used, with
 Metallurgical junction depth. (meters) Used to calculate short channel
 effects.  If not input, do not model short channel effects,
 effectively defaults to 0.
-
-\item[{\tt LD} = {\it x}]
-Lateral diffusion. (Default = 0.)  Effective channel length is reduced
-by 2 * {\tt LD}.
 
 \item[{\tt UO} = {\it x}]
 Surface mobility. (cm$^2$/V-s) (Default = 600.)
@@ -421,8 +467,8 @@ Volts * micron.  The units of PVFB are Volts * micron * micron.  The
 real parameter is calculated by $P = P_0 + P_L / L + P_W / W + P_P /
 (L*W)$, where L and W are the effective length and width in microns.
 
-The parameter s are not listed here, but they are the same as Spice
-3f5, with the same defaults.
+The parameters are not listed here, but they comply with the industry
+standard, with the same defaults.
 
 The ``levels'' are the same as Spice.
 
@@ -430,16 +476,31 @@ The ``levels'' are the same as Spice.
 \item[{\tt 4}] BSIM 1.
 \item[{\tt 5}] BSIM 2.
 \item[{\tt 7}] BSIM 3v3.1.
+\item[{\tt 8}] BSIM 3v3.3.
+\item[{\tt 49}] BSIM 3v3.3.
 \end{description}
 
 The following are reserved for future use:
 \begin{description}
-\item[{\tt 8}] BSIM 3v3.2.
 \item[{\tt 9}] BSIM-SOI.
 \item[{\tt 10}] BSIM 4.
 \end{description}
 %------------------------------------------------------------------------
 \subsection{Probes}
+
+These probes are available for all MOSFETs, but some are not
+meaningful with all models.
+
+This is not a complete list.  All ``calculated parameters'' can be
+probed.  See the source file {\tt d\_mos.model} for a list.
+
+All parameters of the internal elements (Ids, Gmr, Gmf, Yds, Gmbr,
+Gmbf, Cgb, Cgd, Cgs, Dsb, Ddb, Rd, Rs) are available.  To access them,
+concatenate the labels for the internal element with this device,
+separated by a dot.  Cgd.M6 is the gate to drain capacitance of M6.
+
+There are no probes available in AC analysis except for the internal
+elements.
  
 \begin{description}
 
@@ -449,11 +510,11 @@ The following are reserved for future use:
 
 \item[{\tt VBS}] Bulk-source voltage.
 
-\item[{\tt VDSInt}] Drain-source internal voltage.
+\item[{\tt VDSINT}] Drain-source internal voltage.
 
-\item[{\tt VGSInt}] Gate-source internal voltage.
+\item[{\tt VGSINT}] Gate-source internal voltage.
 
-\item[{\tt VBSInt}] Bulk-source internal voltage.
+\item[{\tt VBSINT}] Bulk-source internal voltage.
 
 \item[{\tt VGD}] Gate-drain voltage.
 
@@ -489,7 +550,7 @@ The following are reserved for future use:
 
 \item[{\tt VS}] Source-ground voltage.
 
-\item[{\tt Id}] Drain current.
+\item[{\tt ID}] Drain current.
 
 \item[{\tt IS}] Source current.
 
@@ -503,11 +564,11 @@ The following are reserved for future use:
 
 \item[{\tt CGBO}] Gate-bulk overlap capacitance.
 
-\item[{\tt CGSm}] Gate-source Meyer capacitance.
+\item[{\tt CGSM}] Gate-source Meyer capacitance.
 
-\item[{\tt CGDm}] Gate-drain Meyer capacitance.
+\item[{\tt CGDM}] Gate-drain Meyer capacitance.
 
-\item[{\tt CGBm}] Gate-bulk Meyer capacitance.
+\item[{\tt CGBM}] Gate-bulk Meyer capacitance.
 
 \item[{\tt CGST}] Gate-source total capacitance.
 
@@ -531,11 +592,11 @@ The following are reserved for future use:
 
 \item[{\tt VTH}] Threshold voltage.
 
+\item[{\tt VGST}] VGS - VTH.
+
 \item[{\tt IDS}] Drain-source current, not including strays.
 
 \item[{\tt IDSTray}] Drain current due to strays.
-
-\item[{\tt IError}] Estimated drain current error bound.
 
 \item[{\tt P}] Power.
 
@@ -549,7 +610,7 @@ Power sourced.  The power sourced by the part.  It is always positive
 and does not consider its own dissipation.  It should be 0 because the
 mosfet cannot generate energy.
 
-\item[{\tt REgion}]
+\item[{\tt REGION}]
 Region code.  A numeric code that represents the region it is
 operating in.  The number is the sum of several factors.  A negative
 code indicates the source and drain are reversed.
@@ -570,14 +631,31 @@ code indicates the source and drain are reversed.
 
 \end{description}
 
+\item[{\tt SUBTHRESHOLD}]
+1 if the device is in subthreshold region, else 0.  Subthreshold means
+Vgs is below the threshold.  Some models calculate a small amount of
+subthreshold current, so the current may not be zero.
+
+\item[{\tt CUTOFF}]
+1 if the device is cut off, else 0.  Cutoff means the current is zero.
+Cutoff implies subthreshold, but subthreshold does not imply cutoff.
+
+\item[{\tt SATURATED}]
+1 if the device is in saturation region, else 0.
+
+\item[{\tt TRIODE}]
+1 if the device is in triode region, else 0. 
+
+\item[{\tt SBFWD}]
+1 if the SB junction is forward biased, else 0.
+
+\item[{\tt DBFWD}]
+1 if the DB junction is forward biased, else 0.
+
+\item[{\tt REVERSED}]
+1 if the device is reversed (drain and source effectively
+interchanged), else 0.
+
 \end{description}
-
-All parameters of the internal elements (Ids, Gmr, Gmf, Yds, Gmbr,
-Gmbf, Cgb, Cgd, Cgs, Dsb, Ddb, Rd, Rs) are available.  To access them,
-concatenate the labels for the internal element with this device,
-separated by a dot.  Cgd.M6 is the gate to drain capacitance of M6.
-
-In this release, there are no probes available in AC analysis except
-for the internal elements.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

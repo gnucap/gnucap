@@ -1,4 +1,4 @@
-/*$Id: e_model.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: e_model.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,54 +16,73 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * base class for all models
  */
-#include "ap.h"
+//testing=script 2006.07.12
 #include "e_model.h"
 /*--------------------------------------------------------------------------*/
 MODEL_CARD::MODEL_CARD()
   :CARD(),
-   _tnom(NOT_INPUT)
+   _tnom_c(NOT_INPUT)
 {
-  root_model_list.push_back(this);
 }
 /*--------------------------------------------------------------------------*/
 MODEL_CARD::~MODEL_CARD()
 {
-  root_model_list.erase(
-	remove(root_model_list.begin(), root_model_list.end(), this),
-	root_model_list.end());
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_CARD::parse(CS& cmd)
+void MODEL_CARD::parse_spice(CS& cmd)
 {
   cmd.reset();
   cmd.skiparg();	/* skip known ".model" */
   parse_label(cmd);
   parse_front(cmd);
-  cmd.skiplparen();
+  cmd.skip1b('(');
   int here = cmd.cursor();
   do{
     parse_params(cmd);
   }while (cmd.more() && !cmd.stuck(&here));
-  cmd.skiprparen();
+  cmd.skip1b(')');
   cmd.check(bWARNING, "what's this?");
   parse_finish();
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_CARD::print(OMSTREAM& where, int)const
+void MODEL_CARD::print_spice(OMSTREAM& o, int)const
 {
-  where.setfloatwidth(7);
-  where << ".model  " << short_label();
-  print_front(where);
-  where << "  (";
-  print_params(where);
-  where << ")\n*+(";
-  print_calculated(where);
-  where << ")\n";
+  o.setfloatwidth(7);
+  o << ".model  " << short_label();
+  print_front(o);
+  o << "  (";
+  print_params(o);
+  o << ")\n*+(";
+  print_calculated(o);
+  o << ")\n";
+}
+/*--------------------------------------------------------------------------*/
+bool MODEL_CARD::parse_params(CS& cmd)
+{
+  untested();
+  return ONE_OF
+    || get(cmd, "TNOM", &_tnom_c);
+    ;
+}
+/*--------------------------------------------------------------------------*/
+void MODEL_CARD::print_params(OMSTREAM& o)const
+{
+  o << " tnom="  << _tnom_c;
+}
+/*--------------------------------------------------------------------------*/
+void MODEL_CARD::elabo1()
+{
+  if (1 || !evaluated()) {
+    CARD::elabo1();
+    _tnom_c.e_val(OPT::tnom_c, scope());
+  }else{
+    unreachable();
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

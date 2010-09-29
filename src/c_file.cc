@@ -1,4 +1,4 @@
-/*$Id: c_file.cc,v 23.2 2003/01/23 03:53:56 al Exp $ -*- C++ -*-
+/*$Id: c_file.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,21 +16,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * log and > commands
  * log == commands log to a file
  * >   == all output to a file (redirect stdout)
  * bare command closes the file
  */
+//testing=none 2006.07.16
 #include "u_opt.h"
-#include "io_.h"
-#include "declare.h"	/* pllocate */
 #include "ap.h"
 #include "c_comand.h"
 
-#if defined(HAS_READLINE)
+#if defined(HAVE_LIBREADLINE)
   #include <readline/readline.h>
   #include <readline/history.h>
 #endif
@@ -53,7 +52,7 @@ void CMD::logger(CS& cmd)
 {
   static std::list<FILE*> filestack;
 
-  {if (cmd.more()) {			/* a file name .. open it */
+  if (cmd.more()) {			/* a file name .. open it */
       const char *access = "w";
       while (cmd.match1('>')) {
 	access = "a";
@@ -64,17 +63,18 @@ void CMD::logger(CS& cmd)
       if (newfile) {
         filestack.push_back(newfile);
 	mlog.attach(newfile);
+      }else{
       }
   }else{				/* empty command -- close a file */
-    {if (filestack.empty()) {
+    if (filestack.empty()) {
       error(bWARNING, "no files open\n");
     }else{
       FILE* oldfile = filestack.back();
       filestack.pop_back();
       mlog.detach(oldfile);
       fclose(oldfile);
-    }}
-  }}
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* cmd_file: ">" command processing
@@ -88,7 +88,7 @@ void CMD::file(CS& cmd)
 {
   static std::list<FILE*> filestack;
   
-  {if (cmd.more()) {			/* a file name .. open it */
+  if (cmd.more()) {			/* a file name .. open it */
     const char* access = "w";
     while (cmd.match1('>')) {
       access = "a";
@@ -100,9 +100,10 @@ void CMD::file(CS& cmd)
       filestack.push_back(newfile);
       mout.attach(newfile);
       IO::mstdout.attach(newfile);
+    }else{
     }
   }else{				/* empty command -- close a file */
-    {if (filestack.empty()) {
+    if (filestack.empty()) {
       error(bWARNING, "no files open\n");
     }else{
       FILE* oldfile = filestack.back();
@@ -110,8 +111,8 @@ void CMD::file(CS& cmd)
       mout.detach(oldfile);
       IO::mstdout.detach(oldfile);
       fclose(oldfile);
-    }}
-  }}
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* getcmd: get a command.
@@ -122,24 +123,25 @@ char *getcmd(const char *prompt, char *buffer, int buflen)
 {
   assert(prompt);
   assert(buffer);
-  pllocate();
-#if defined(HAS_READLINE)
+#if defined(HAVE_LIBREADLINE)
   if (OPT::edit) {
     char* line_read = readline(prompt);
     if (!line_read) {
       error(bEXIT, "EOF on stdin\n");
+    }else{
     }
     // readline gets a new buffer every time, so copy it to where we want it
     char* end_of_line = (char*)memccpy(buffer, line_read, 0, buflen-1);
-    {if (!end_of_line) {
+    if (!end_of_line) {
       buffer[buflen-1] = '\0';
     }else{
       *end_of_line = '\0';
-    }}
+    }
     free(line_read);
     
     if (*buffer) {
       add_history(buffer);
+    }else{
     }
   }else
 #endif
@@ -147,6 +149,7 @@ char *getcmd(const char *prompt, char *buffer, int buflen)
       IO::mstdout << prompt;	/* prompt & flush buffer */
       if (!fgets(buffer, buflen, stdin)) {	/* read line */
 	error(bEXIT, "EOF on stdin\n");
+      }else{
       }
     }
   all_except(IO::mstdout, mout) << '\n';	/* reset col counter */

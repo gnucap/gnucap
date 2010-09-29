@@ -1,4 +1,4 @@
-#$Id: Make1,v 24.12 2003/12/14 01:58:28 al Exp $
+#$Id: Make1,v 25.96 2006/08/28 05:45:36 al Exp $ -*- Makefile -*-
 #
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
@@ -17,24 +17,52 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-# 02111-1307, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
 #------------------------------------------------------------------------
 TARGET = gnucap-modelgen
 #------------------------------------------------------------------------
-SRCS = mg_main.cc mg_out_h.cc mg_error.cc mg_in.cc \
+DELETED =
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+RAW_SRCS = mg_main.cc mg_out_h.cc mg_error.cc mg_in.cc \
 mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc
 #------------------------------------------------------------------------
-OBJS = mg_main.o mg_out_h.o mg_error.o mg_in.o \
-mg_out_common.o mg_out_dev.o mg_out_lib.o mg_out_model.o mg_out_root.o \
-ap_construct.o ap_convert.o ap_get.o ap_match.o ap_skip.o 
+RAW_HDRS = mg_.h mg_out.h
 #------------------------------------------------------------------------
-HDRS = mg_.h mg_out.h
+RAW_OTHER = \
+configure.old Make1 \
+Makefile.am
 #------------------------------------------------------------------------
-OTHER = Make1 Make.aux Make.depend TAGS configure
+RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
-ALL = $(HDRS) $(SRCS) $(MODELS) $(OTHER)
 #------------------------------------------------------------------------
-DELETED =
+IMPORTED_SRCS = ap_construct.cc ap_convert.cc ap_get.cc ap_match.cc ap_skip.cc
+IMPORTED_HDRS = ap.h io_.h io_error.h io_trace.h l_lib.h md.h patchlev.h
+IMPORTED_OTHER = Makefile.in \
+Make2.g++ Make2.Debug Make2.mingw32 Make3 Makefile.template
+IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+GENERATED_SRCS =
+GENERATED_HDRS =
+GENERATED_OTHER = TAGS Make.aux
+GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+GENERATED_DIST = Make.depend
+IMPORTED_DIST = $(IMPORTED)
+DISTFILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
+HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
+OBJS = ${SRCS:.cc=.o}
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
+CLEANFILES = $(MOSTLYCLEANFILES)
+DISTCLEANFILES = $(CLEANFILES)
+MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------

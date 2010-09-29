@@ -1,4 +1,4 @@
-/*$Id: e_aux.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: e_aux.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,26 +16,43 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * helper functions, etc., that sort of belong to circuit elements
  */
+//testing=script 2006.07.12
 #ifndef E_AUX_H
 #define E_AUX_H
 #include "e_node.h"
 #include "m_matrix.h"
 /*--------------------------------------------------------------------------*/
-class node_t;
-/*--------------------------------------------------------------------------*/
-#if defined(COMPILE_TEMPLATES)
-  #error untested
-  #include "e_aux.cc"
-#else
-  template <class T>
-  T port_impedance(const node_t& n1, const node_t& n2,
-		   BSMATRIX<T>& mat, const T& parallel);
-#endif
+template <class T>
+T port_impedance(const node_t& n1, const node_t& n2,
+		 BSMATRIX<T>& mat, const T& parallel)
+{
+  T* zapit = new T[mat.size()+2];
+
+  for (int ii = 0;  ii < mat.size()+2;  ++ii) {
+    zapit[ii] = 0.;
+  }
+  if (n1.m_() != 0) {
+    zapit[n1.m_()] =  1.;
+  }else{
+    untested();
+  }
+  if (n2.m_() != 0) {
+    zapit[n2.m_()] = -1.;
+    untested();
+  }
+
+  mat.fbsub(zapit);
+  T raw_z = zapit[n1.m_()] - zapit[n2.m_()];
+  delete [] zapit;
+  return (parallel != 0.) 
+    ? 1. / ((1./raw_z)-parallel)
+    : raw_z;
+}
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

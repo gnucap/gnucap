@@ -1,4 +1,4 @@
-/*$Id: mg_.h,v 24.12 2003/12/14 01:58:28 al Exp $ -*- C++ -*-
+/*$Id: mg_.h,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
 #include <stdexcept>
 #include "md.h"
@@ -40,23 +40,22 @@ class CS;
 /*--------------------------------------------------------------------------*/
 inline std::string to_lower(std::string s)
 {
-  {for (std::string::iterator i = s.begin(); i != s.end(); ++i) {
+  for (std::string::iterator i = s.begin(); i != s.end(); ++i) {
     *i = tolower(*i);
-  }}
+  }
   return s;
 }
 /*--------------------------------------------------------------------------*/
 inline std::string to_upper(std::string s)
 {
-  {for (std::string::iterator i = s.begin(); i != s.end(); ++i) {
+  for (std::string::iterator i = s.begin(); i != s.end(); ++i) {
     *i = toupper(*i);
-  }}
+  }
   return s;
 }
 /*--------------------------------------------------------------------------*/
 inline void error(const std::string& message)
 {
-  untested();
   std::cerr << message << '\n';
   exit(1);
 }
@@ -83,8 +82,8 @@ class List_Base
   :public Base
 {
 protected:
-  std::list<T*> _list;
-  virtual void parse(CS& f) = 0;
+  typedef typename std::list<T*> _Std_List_T;
+  _Std_List_T _list;
   virtual ~List_Base() {
     for (typename std::list<T*>::iterator
 	   i = _list.begin(); i != _list.end(); ++i) {
@@ -92,6 +91,7 @@ protected:
     }
   }
 public:
+  virtual void parse(CS& f) = 0;
   typedef typename std::list<T*>::const_iterator const_iterator;
   const_iterator begin()const	 {return _list.begin();}
   const_iterator end()const	 {return _list.end();}
@@ -103,12 +103,14 @@ template <class T, char BEGIN, char END>
 class List
   :public List_Base<T>
 {
+  using List_Base<T>::_list;
+public:
   void parse(CS& file) {
     C_Comment   dummy_c_comment;
     Cxx_Comment dummy_cxx_comment;
     int paren = file.skip1b(BEGIN);
     int here = file.cursor();
-    {for (;;) {
+    for (;;) {
       get(file, "/*$$", &dummy_c_comment);
       get(file, "//$$", &dummy_cxx_comment);
       if (file.stuck(&here)) {
@@ -125,7 +127,7 @@ class List
 	  break;
 	}}
       }
-    }}
+    }
   }
 };
 /*--------------------------------------------------------------------------*/
@@ -133,6 +135,8 @@ template <class T>
 class Collection
   :public List_Base<T>
 {
+  using List_Base<T>::_list;
+public:
   void parse(CS& file) {
     int here = file.cursor();
     T* m = new T(file);
@@ -148,12 +152,14 @@ class Collection
 class C_Comment
   :public Base
 {
+public:
   void parse(CS& f);
 };
 /*--------------------------------------------------------------------------*/
 class Cxx_Comment
   :public Base
 {
+public:
   void parse(CS& f);
 };
 /*--------------------------------------------------------------------------*/
@@ -162,8 +168,8 @@ class Key
   std::string _name;
   std::string _var;
   std::string _value;
-  void parse(CS& f) {f >> _name >> _var >> _value; f.skip1b(";");}
 public:
+  void parse(CS& f) {f >> _name >> _var >> '=' >> _value >> ';';}
   Key(CS& f) {parse(f);}
   const std::string& name()const	{return _name;}
   const std::string& var()const 	{return _var;}
@@ -175,9 +181,9 @@ class String_Arg
   :public Base
 {
   std::string	_s;
-  void parse(CS& f)		{f >> _s; f.skip1b(";");}
-  void print(std::ostream& f)const	{f << _s;}
 public:
+  void parse(CS& f)		{f >> _s >> ';';}
+  void print(std::ostream& f)const	{f << _s;}
   void operator=(const std::string& s)	{_s = s;}
   void operator+=(const std::string& s)	{_s += s;}
   bool operator!=(const std::string& s)const {return _s != s;}
@@ -190,9 +196,9 @@ class Bool_Arg
   :public Base
 {
   bool _s;
+public:
   void parse(CS& f)	{_s = true; f.skip1b(";");}
   void print(std::ostream& f)const {f << _s;}
-public:
   Bool_Arg() :_s(false) {}
   operator bool()const {return _s;}
 };
@@ -215,8 +221,8 @@ class Parameter
   std::string _final_default;
   bool	      _positive;
   bool	      _octal;
-  void parse(CS& f);
 public:
+  void parse(CS& f);
   Parameter(CS& f) :_positive(false), _octal(false) {parse(f);}
   const std::string& type()const		{return _type;}
   const std::string& code_name()const		{return _code_name;}
@@ -234,6 +240,12 @@ public:
   const std::string& final_default()const	{return _final_default;}
   bool		positive()const			{return _positive;}
   bool		octal()const			{return _octal;}
+
+  void fill_in_default_name() {
+    if (_user_name.empty()) {
+      _user_name = to_upper(_code_name);
+    }
+  }
 };
 typedef List<Parameter, '{', '}'> Parameter_List;
 /*--------------------------------------------------------------------------*/
@@ -242,10 +254,10 @@ class Code_Block
 {
   const char* _begin;
   const char* _end;
+public:
   void parse(CS& f);
   void print(std::ostream& f)const
 			{if (!is_empty()) f.write(_begin, _end-_begin);}
-public:
   Code_Block() :_begin(0), _end(0) {}
   bool is_empty()const {return _end - _begin < 2;}
 };
@@ -260,8 +272,8 @@ class Parameter_Block
   Code_Block	 _code_pre;
   Code_Block	 _code_mid;
   Code_Block     _code_post;
-  void parse(CS& f);
 public:
+  void parse(CS& f);
   const String_Arg&	unnamed_value()const	{return _unnamed_value;}
   const Parameter_List& override()const		{return _override;}
   const Parameter_List& raw()const		{return _raw;}
@@ -275,6 +287,7 @@ public:
 				&& override().is_empty()
 				&& raw().is_empty()
 				&& code_pre().is_empty());}
+  void fill_in_default_values();
 };
 /*--------------------------------------------------------------------------*/
 class Eval
@@ -283,9 +296,9 @@ class Eval
 protected:
   String_Arg _name;
   Code_Block _code;
-  void parse(CS& f);
   Eval() :_name(), _code() {}
 public:
+  void parse(CS& f);
   Eval(CS& f) :_name(), _code() {parse(f);}
   const String_Arg&	name()const	{return _name;}
   const Code_Block&	code()const	{return _code;}
@@ -295,8 +308,8 @@ typedef Collection<Eval> Eval_List;
 class Function
   :public Eval
 {
-  void parse(CS& f);
 public:
+  void parse(CS& f);
   Function(CS& f) :Eval() {parse(f);}
 };
 typedef Collection<Function> Function_List;
@@ -307,8 +320,8 @@ class Port
   std::string _name;
   std::string _short_to;
   std::string _short_if;
-  void parse(CS& f);
 public:
+  void parse(CS& f);
   Port() {}
   Port(CS& f) {parse(f);}
   const std::string& name()const	{return _name;}
@@ -330,8 +343,8 @@ class Element
   std::string _omit;
   std::string _reverse;
   std::string _state;
-  void parse(CS&);
 public:
+  void parse(CS&);
   Element() {}
   Element(CS& f) {parse(f);}
   const std::string& dev_type()const	{return _dev_type;}
@@ -352,8 +365,8 @@ class Arg
   :public Base
 {
   std::string _arg;
-  void parse(CS& f);
 public:
+  void parse(CS& f);
   Arg(CS& f) {parse(f);}
   const std::string& arg()const {return _arg;}
 };
@@ -365,8 +378,8 @@ class Args
   String_Arg _name;
   String_Arg _type;
   Arg_List   _arg_list;
-  void parse(CS& f) {f >> _name >> _type >> _arg_list;}
 public:
+  void parse(CS& f) {f >> _name >> _type >> _arg_list;}
   Args(CS& f) {parse(f);}
   const String_Arg& name()const {return _name;}
   const String_Arg& type()const {return _type;}
@@ -385,8 +398,8 @@ class Circuit
   Port_List	_local_nodes;
   Element_List	_element_list;
   Args_List	_args_list;
-  void parse(CS&);
 public:
+  void parse(CS&);
   Circuit() : _sync(false) {}
   bool		      sync()const	 {return _sync;}
   const Port_List&    req_nodes()const	 {return _required_nodes;}
@@ -404,8 +417,8 @@ class Probe
 {
   std::string _name;
   std::string _expression;
-  void parse(CS& f) {f >> _name >> _expression; f.skip1b(";");}
 public:
+  void parse(CS& f) {f >> _name >> '=' >> _expression >> ';';}
   Probe() {}
   Probe(CS& f) {parse(f);}
   const std::string& name()const	{return _name;}
@@ -427,8 +440,8 @@ class Model
   Code_Block		_tr_eval;
   Code_Block		_validate;
   Bool_Arg		_is_base;
-  void parse(CS& f);
 public:
+  void parse(CS& f);
   Model(CS& f) {parse(f);}
   bool			 is_base()const		{return _is_base;}
   const String_Arg&	 name()const		{return _name;}
@@ -457,8 +470,8 @@ class Device
   Code_Block		_tr_eval;
   Eval_List		_eval_list;
   Function_List		_function_list;
-  void parse(CS& f);
 public:
+  void parse(CS& f);
   Device(CS& f) {parse(f);}
   const String_Arg&	 name()const		{return _name;}
   const String_Arg&	 parse_name()const	{return _parse_name;}
@@ -482,10 +495,10 @@ class Head
 {
   const char* _begin;
   const char* _end;
+public:
   void parse(CS& f);
   void print(std::ostream& f)const
 			{if (_begin!=_end) f.write(_begin, _end-_begin);}
-public:
   Head() :_begin(0), _end(0) {}
 };
 /*--------------------------------------------------------------------------*/

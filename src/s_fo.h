@@ -1,4 +1,4 @@
-/*$Id: s_fo.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_fo.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Fourier analysis
  */
+//testing=script,complete 2006.07.14
 #include "s_tr.h"
 #ifndef S_FO_H
 #define S_FO_H
@@ -29,16 +30,26 @@ class PROBE;
 /*--------------------------------------------------------------------------*/
 class FOURIER : private TRANSIENT {
 public:
-	FOURIER(){fdata=NULL;}
-  	void	command(CS&);
+  void	command(CS&);
+  explicit FOURIER():
+    TRANSIENT(),
+    fstart(0.),
+    fstop(0.),
+    fstep(0.),
+    timesteps(0),
+    fdata(NULL)
+  {
+  }
+  ~FOURIER() {}
 private:
-  	void	setup(CS&);	/* s_fo_set.cc */
-	void	fftallocate();
-	void	fftunallocate();
-	void	foout();	/* s_fo_out.cc */
-	void	fohead(const PROBE&);
-	void	foprint(COMPLEX*);
-	void	store();
+  explicit FOURIER(const FOURIER&): TRANSIENT() {unreachable(); incomplete();}
+  void	setup(CS&);	/* s_fo_set.cc */
+  void	fftallocate();
+  void	fftunallocate();
+  void	foout();	/* s_fo_out.cc */
+  void	fohead(const PROBE&);
+  void	foprint(COMPLEX*);
+  void	store();
 private:
   double fstart;	/* user start frequency */
   double fstop;		/* user stop frequency */

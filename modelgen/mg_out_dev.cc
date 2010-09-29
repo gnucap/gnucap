@@ -1,4 +1,4 @@
-/*$Id: mg_out_dev.cc,v 24.13 2003/12/16 06:51:46 al Exp $ -*- C++ -*-
+/*$Id: mg_out_dev.cc,v 25.94 2006/08/08 03:17:09 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
 #include "mg_out.h"
 /*--------------------------------------------------------------------------*/
@@ -51,31 +51,37 @@ static void make_dev_eval(std::ofstream& out, const Eval& e,
 /*--------------------------------------------------------------------------*/
 static void make_dev_evals(std::ofstream& out, const Device& d)
 {
-  {for (Eval_List::const_iterator
+  for (Eval_List::const_iterator
 	 e = d.eval_list().begin(); e != d.eval_list().end(); ++e) {
     make_dev_eval(out, **e, d.name(), d.model_type());
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 void make_dev_default_constructor(std::ofstream& out,const Device& d)
 {
   out << "DEV_" << d.name() << "::DEV_" << d.name() << "()\n"
     "  :BASE_SUBCKT()";
-  if (d.max_nodes() != d.min_nodes()) {
-    out << ",\n   _net_nodes(0)";
-  }
+
+  out << ",\n   // input parameters";
   make_construct_parameter_list(out, d.device().raw());
+
+  out << ",\n   // calculated parameters";
   make_construct_parameter_list(out, d.device().calculated());
-  {for (Element_List::const_iterator
+
+  out << ",\n   // netlist";
+  for (Element_List::const_iterator
 	 p = d.circuit().elements().begin();
        p != d.circuit().elements().end(); ++p) {
     out << ",\n   _" << (**p).name() << "(0)";
-  }}
+  }
+
   out << "\n{\n"
     "  _n = _nodes + int_nodes();\n"
     "  attach_common(&Default_" << d.name() << ");\n"
     "  ++_count;\n";
-  {for (Parameter_List::const_iterator
+
+  out << "  // overrides\n";
+  for (Parameter_List::const_iterator
 	 p = d.device().override().begin();
        p != d.device().override().end();
        ++p) {
@@ -85,7 +91,7 @@ void make_dev_default_constructor(std::ofstream& out,const Device& d)
     if (!((**p).default_val().empty())) {
       out << "  " << (**p).code_name() << " = " << (**p).default_val() <<";\n";
     }
-  }}
+  }
   out << "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
@@ -96,68 +102,35 @@ void make_dev_copy_constructor(std::ofstream& out, const Device& d)
   out << "DEV_" << d.name() << "::DEV_" << d.name()
       << "(const DEV_" << d.name() << "& p)\n"
     "  :BASE_SUBCKT(p)";
-  if (d.max_nodes() != d.min_nodes()) {
-    out << ",\n   _net_nodes(p._net_nodes)";
-  }
+
+  out << ",\n   // input parameters";
   make_copy_construct_parameter_list(out, d.device().raw());
+
+  out << ",\n   // calculated parameters";
   make_copy_construct_parameter_list(out, d.device().calculated());
-  {for (Element_List::const_iterator
+
+  out << ",\n   // netlist";
+  for (Element_List::const_iterator
 	 p = d.circuit().elements().begin();
        p != d.circuit().elements().end(); ++p) {
     out << ",\n   _" << (**p).name() << "(0)";
-  }}
+  }
+
   out << "\n{\n"
     "  _n = _nodes + int_nodes();\n"
     "  for (int ii = -int_nodes(); ii < max_nodes(); ++ii) {\n"
     "    _n[ii] = p._n[ii];\n"
     "  }\n"
     "  ++_count;\n";
-  {for (Parameter_List::const_iterator
+
+  out << "  // overrides\n";
+  for (Parameter_List::const_iterator
 	 p = d.device().override().begin();
        p != d.device().override().end();
        ++p) {
     out << ",\n   " << (**p).code_name() << "(p." << (**p).code_name() << ")";
-  }}
-  out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
-}
-/*--------------------------------------------------------------------------*/
-static void make_dev_parse(std::ofstream& out, const Device& d)
-{
-  out << "void DEV_" << d.name() << "::parse(CS& cmd)\n"
-    "{\n"
-    "  assert(has_common());\n"
-    "  COMMON_" << d.name() << "* c = prechecked_cast<COMMON_"
-      << d.name() << "*>(common()->clone());\n"
-    "  assert(c);\n"
-    "\n"
-    "  parse_Label(cmd);\n";
-  if (d.max_nodes() != d.min_nodes()) {
-    out << "  _net_nodes = parse_nodes(cmd, max_nodes(), min_nodes());\n"
-      "  _net_nodes = std::max(_net_nodes, min_nodes());\n";
-  }else{
-    out << "  parse_nodes(cmd, max_nodes(), min_nodes());\n";
   }
-  out << "  c->parse(cmd);\n"
-    "  attach_common(c);\n"
-    "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
-}
-/*--------------------------------------------------------------------------*/
-static void make_dev_print(std::ofstream& out, const Device& d)
-{
-  out << "void DEV_" << d.name() << "::print(OMSTREAM& o, int)const\n"
-    "{\n"
-    "  const COMMON_" << d.name() << "* c = prechecked_cast<const COMMON_"
-      << d.name() << "*>(common());\n"
-    "  assert(c);\n"
-    "\n"
-    "  o << short_label();\n"
-    "  printnodes(o);\n"
-    "  c->print(o);\n"
-    "}\n"
+  out << "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
 }
@@ -188,7 +161,8 @@ static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
     out <<
       "  {if (" << e.omit() << ") {\n"
       "    if (_" << e.name() << ") {\n"
-      "      subckt().erase(_" << e.name() << ");\n"
+      "      untested();\n"
+      "      subckt()->erase(_" << e.name() << ");\n"
       "      _" << e.name() << " = NULL;\n"
       "    }\n"
       "  }else{\n";
@@ -199,7 +173,7 @@ static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
   out <<
     "    if (!_" << e.name() << ") {\n"
     "      _" << e.name() << " = new " << e.class_name() << ";\n"
-    "      subckt().push_front(_" << e.name() << ");\n"
+    "      subckt()->push_front(_" << e.name() << ");\n"
     "    }\n";
   
   {if (!(e.reverse().empty())) {
@@ -264,36 +238,40 @@ static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
 /*--------------------------------------------------------------------------*/
 static void make_dev_expand(std::ofstream& out, const Device& d)
 {
-  out << "void DEV_" << d.name() << "::expand()\n"
+  out << "void DEV_" << d.name() << "::elabo1()\n"
     "{\n"
-    "  COMMON_" << d.name() << "* c = prechecked_cast<COMMON_"
-      << d.name() << "*>(mutable_common());\n"
+    "  BASE_SUBCKT::elabo1();\n"
+    "  const COMMON_" << d.name() << "* c = prechecked_cast<const COMMON_"
+      << d.name() << "*>(common());\n"
     "  assert(c);\n"
-    "  c->expand(this);\n"
     "  const MODEL_" << d.model_type() << "* m = prechecked_cast<const MODEL_"
       << d.model_type() << "*>(c->model());\n"
     "  assert(m);\n"
     "  const SDP_" << d.model_type() << "* s = prechecked_cast<const SDP_"
       << d.model_type() << "*>(c->sdp());\n"
     "  assert(s);\n"
-    "\n";
-  {for (Port_List::const_iterator
+    "  if (!subckt()) {\n"
+    "    new_subckt();\n"
+    "  }\n"
+    "\n"
+    "  // local nodes\n";
+  for (Port_List::const_iterator
 	 p = d.circuit().local_nodes().begin();
        p != d.circuit().local_nodes().end(); ++p) {
     make_dev_allocate_local_nodes(out, **p);
-  }}
-  out << "\n";
-  {for (Element_List::const_iterator
+  }
+  out << "\n"
+    "  // clone subckt elements\n";
+  for (Element_List::const_iterator
 	 e = d.circuit().elements().begin();
        e != d.circuit().elements().end(); ++e) {
     make_dev_expand_one_element(out, **e);
-  }}
+  }
   out <<
-    "  assert(subckt().exists());\n"
-    "  subckt().expand();\n"
-    "  assert(!constant());\n";
+    "  subckt()->elabo2();\n"
+    "  assert(!is_constant());\n";
   if (d.circuit().sync()) {
-    out << "  subckt().set_slave();\n";
+    out << "  subckt()->set_slave();\n";
   }
   out << "}\n"
     "/*--------------------------------------"
@@ -302,56 +280,52 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
 /*--------------------------------------------------------------------------*/
 static std::string fix_expression(const std::string& in)
 {
-  //std::string out;
-  char out[BIGBUFLEN];
+  std::string out;
   out[0] = '\0';
   
   CS x(in);
-  {for (;;) {
+  for (;;) {
     {if (x.peek() == '@') {
       x.skip1('@');
-      //std::string object(x.ctos("[,"));
-      char object[BIGBUFLEN];
-      strcpy(object, x.ctos("[,").c_str());
+      std::string object(x.ctos("[,"));
       x.skip1('[');
-      //std::string attrib(x.ctos("]"));
-      char attrib[BIGBUFLEN];
-      strcpy(attrib, x.ctos("]").c_str());
+      std::string attrib(x.ctos("]"));
       x.skip1(']');
       {if (object[0] == 'n') {
-	//out += " _n[" + object + "]";
-	strcat(out, " _n[");
-	strcat(out, object);
-	strcat(out, "]");
-	//if (attrib != "") {
-	if (*attrib) {
-	  //out += ".v0()";
-	  strcat(out, ".v0()");
+	out += " _n[" + object + "]";
+	if (attrib != "") {
+	  out += ".v0()";
 	}
       }else{
-	//out += " CARD::probe(_" + object + ",\"" + attrib + "\")";
-	strcat(out, " CARD::probe(_");
-	strcat(out, object);
-	strcat(out, ",\"");
-	strcat(out, attrib);
-	strcat(out, "\")");
+	out += " CARD::probe(_" + object + ",\"" + attrib + "\")";
       }}
     }else if (x.more()) {
-      //out += ' ' + x.ctos("@");
-      strcat(out, " ");
-      strcat(out, x.ctos("@").c_str());
+      out += ' ' + x.ctos("@");
     }else{
       break;
     }}
-  }}
-
+  }
   return out;
 }
-
-// BUG:: sometimes crashes here with g++-3.0.1 (but not any other
-// version) when using string class.  I don't know why.  Perhaps bug
-// in 3.0.1 string class. (Mandrake 8.1)
-// Use old style C functions instead.
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+static void make_probe_parameter(std::ofstream& out, const Parameter& p)
+{
+  out << "if (cmd.pmatch(\"";
+  if (!(p.alt_name().empty())) {
+    out << p.alt_name() << "\" || \"";
+  }
+  out << p.user_name() << "\")) {\n"
+    "    return " << p.code_name() << ";\n"
+    "  }else ";
+}
+/*--------------------------------------------------------------------------*/
+void make_probe_parameter_list(std::ofstream& out,const Parameter_List& pl)
+{
+  for (Parameter_List::const_iterator p = pl.begin(); p != pl.end(); ++p) {
+    make_probe_parameter(out, **p);
+  }
+}
 /*--------------------------------------------------------------------------*/
 static void make_dev_probe(std::ofstream& out, const Device& d)
 {
@@ -368,13 +342,14 @@ static void make_dev_probe(std::ofstream& out, const Device& d)
     "  assert(s);\n"
     "\n"
     "  {";
-  {for (Probe_List::const_iterator
+  for (Probe_List::const_iterator
 	  p = d.probes().begin(); p != d.probes().end(); ++p) {
     assert(*p);
     out << "if (cmd.pmatch(\"" << (**p).name() << "\")) {\n"
       "    return " << fix_expression((**p).expression()) << ";\n"
       "  }else ";
-  }}
+  }
+  make_probe_parameter_list(out, d.device().calculated());
   out << "{\n"
     "    return BASE_SUBCKT::tr_probe_num(cmd);\n"
     "  }}\n"
@@ -385,7 +360,7 @@ static void make_dev_probe(std::ofstream& out, const Device& d)
 /*--------------------------------------------------------------------------*/
 static void make_dev_aux(std::ofstream& out, const Device& d)
 {
-  {for (Function_List::const_iterator
+  for (Function_List::const_iterator
 	  p = d.function_list().begin();
 	p != d.function_list().end(); ++p) {
     out << "void DEV_" << d.name() << "::" << (**p).name() << "\n"
@@ -394,7 +369,7 @@ static void make_dev_aux(std::ofstream& out, const Device& d)
       "}\n"
       "/*--------------------------------------"
       "------------------------------------*/\n";
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 void make_cc_dev(std::ofstream& out, const Device& d)
@@ -402,8 +377,6 @@ void make_cc_dev(std::ofstream& out, const Device& d)
   make_dev_evals(out, d);
   make_dev_default_constructor(out, d);
   make_dev_copy_constructor(out, d);
-  make_dev_parse(out, d);
-  make_dev_print(out, d);
   make_dev_expand(out, d);
   make_dev_probe(out, d);
   make_dev_aux(out, d);

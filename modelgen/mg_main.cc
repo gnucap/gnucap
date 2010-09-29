@@ -1,4 +1,4 @@
-/*$Id: mg_main.cc,v 24.7 2003/05/30 08:09:52 al Exp $ -*- C++ -*-
+/*$Id: mg_main.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
 #include "mg_out.h"
 #include "patchlev.h"
@@ -26,15 +26,15 @@
 int main(int argc, char** argv)
 {
   {if (argc > 2 && strcmp(argv[1],"-h")==0) {
-    {for (int i=2; i<argc; ++i) {
+    for (int i=2; i<argc; ++i) {
       File f(argv[i]);
       make_h_file(f);
-    }}
+    }
   }else if (argc > 2 && strcmp(argv[1],"-cc")==0) {
-    {for (int i=2; i<argc; ++i) {
+    for (int i=2; i<argc; ++i) {
       File f(argv[i]);
       make_cc_file(f);
-    }}
+    }
   }else if (argc > 2 && strcmp(argv[1],"-v")==0) {
     std::cerr <<
       "Gnucap model compiler "  PATCHLEVEL  "\n"
@@ -48,11 +48,11 @@ int main(int argc, char** argv)
       "according to the GNU General Public License.\n"
       "See the file \"COPYING\" for details.\n";
   }else if (argc > 1) {
-    {for (int i=1; i<argc; ++i) {
+    for (int i=1; i<argc; ++i) {
       File f(argv[i]);
       make_h_file(f);
       make_cc_file(f);
-    }}
+    }
   }else{
     error("no input files");
   }}

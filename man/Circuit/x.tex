@@ -1,4 +1,4 @@
-%$Id: x.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: x.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit x .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,14 +17,22 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt X}: Subcircuit Call}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
-{\tt X}{\it xxxxxxx n1} \{{\it n2 n3 ...}\} {\it subname}
+{\tt X}{\it xxxxxxx n1} \{{\it n2 n3 ...}\} 
+	{\it subname} \{{\it parameters}\}
+\end{verse}
+\subsubsection{Subcircuit definition (optional)}
+\begin{verse}
+{\tt .subckt} {\it subname} {\it nodes}\\
+{\it subcircuit description}\\
+{\tt .ends}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -33,28 +41,32 @@ Subcircuit call
 %------------------------------------------------------------------------
 \subsection{Comments}
 
-Subcircuits are used by specifying pseudo-elements beginning with {\tt X},
-followed by the connection nodes.
+Subcircuits are used by specifying pseudo-elements beginning with {\tt
+X}, followed by the connection nodes.  A list of parameters may
+follow as name=value pairs.
 %------------------------------------------------------------------------
 \subsection{Probes}
 
 \begin{description}
 
-\item[{\tt V}{\it x}]  Port (terminal node) voltage.  {\it x} is
-which port to probe.  1 is the first node in the "X" statement, 2
-is the second, and so on.
+\item[{\tt V}{\it x}]
+Port (terminal node) voltage.  {\it x} is which port to probe.  1 is
+the first node in the "X" statement, 2 is the second, and so on.
 
-\item[{\tt P}] Power.  The sum of the power probes for all the internal elements.
+\item[{\tt P}]
+Power.  The sum of the power probes for all the internal elements.
 
-\item[{\tt PD}] Power dissipated.  The total power dissipated as heat.
+\item[{\tt PD}]
+Power dissipated.  The total power dissipated as heat.
 
-\item[{\tt PS}] Power sourced.  The total power generated.
+\item[{\tt PS}]
+Power sourced.  The total power generated.
 
 \end{description}
 
-In this release, there are no probes available in AC analysis except for the
-internal elements.  More parameters will be added.  Internal elements can be
-probed by concatenating the internal part label with the subcircuit label.
+In this release, there are no probes available in AC analysis except
+for the internal elements.  Internal elements can be probed by
+concatenating the internal part label with the subcircuit label.
 R5.X7 is R5 inside X7.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

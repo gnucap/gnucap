@@ -1,4 +1,4 @@
-/* $Id: d_mos1.model,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
+/* $Id: d_mos1.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * mos model equations: spice level 1 equivalent
  */
@@ -51,14 +51,14 @@ model MOS1 {
     }
     code_pre {
       if (tox != NA) {
-	cox = E_OX / tox;
+	cox = P_EPS_OX / tox;
 	if (kp == NA) {
 	  kp = uo * cox;
 	  calc_kp = true;
 	}
-	{if (nsub != NA) {
+	if (nsub != NA) {
 	  if (phi == NA) {
-	    phi = (2.*KoQ) * _tnom * log(nsub/NI);
+	    phi = (2. * P_K_Q) * tnom_k * log(nsub/NI);
 	    if (phi < .1) {
 	      untested();
 	      error(bWARNING,
@@ -68,36 +68,36 @@ model MOS1 {
 	    calc_phi = true;
 	  }
 	  if (gamma == NA) {
-	    gamma = sqrt(2. * E_SI * Q * nsub) / cox;
+	    gamma = sqrt(2. * P_EPS_SI * P_Q * nsub) / cox;
 	    calc_gamma = true;
 	  }
 	  if (vto == NA) {
 	    double phi_ms = (tpg == gtMETAL)
 	      ? -.05 - (egap + polarity * phi) / 2.
 	      : -polarity * (tpg * egap + phi) / 2.;
-	    double vfb = phi_ms - Q * nss / cox;
+	    double vfb = phi_ms - P_Q * nss / cox;
 	    vto = vfb + polarity * (phi + gamma * sqrt(phi));
 	    calc_vto = true;
 	  }
 	}else{
 	  // tox is input, nsub isn't
-	}}
+	}
       }
     }
   }
   temperature_dependent {
     calculated_parameters {
       double phi "" 
-	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)))";
+	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+P_Q*(arg)))";
       double beta "" calculate="m->kp * tempratio4 * s->w_eff / s->l_eff";
       double sqrt_phi "" calculate="sqrt(phi)";
     }
     code_pre {
-      double temp = SIM::temp;
-      double tempratio  = temp / m->_tnom;
+      double temp = SIM::temp_c + P_CELSIUS0;
+      double tempratio  = temp / m->tnom_k;
       double tempratio4 = tempratio * sqrt(tempratio);
-      double kt = temp * K;
-      double vt = kt / Q;
+      double kt = temp * P_K;
+      double vt = temp * P_K_Q;
       double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
       double arg = (m->egap*tempratio - egap) / (2*kt);
     }
@@ -112,7 +112,7 @@ model MOS1 {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     double sarg, dsarg_dvbs;
     {
-      {if (d->vbs <= 0.) {
+      if (d->vbs <= 0.) {
 	sarg = sqrt(t->phi - d->vbs);
 	dsarg_dvbs = -.5 / sarg;
 	d->sbfwd = false;
@@ -123,15 +123,7 @@ model MOS1 {
 	dsarg_dvbs = -.5 * sarg * sarg / t->phi*t->sqrt_phi; /* is wrong!! */
 	d->sbfwd = true;
 	trace2("***sb-reversed***", sarg, dsarg_dvbs);
-      }}
-    }
-    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-    {
-      {if (d->vbs - d->vds <= 0.) {
-	d->dbfwd = false;
-      }else{
-	d->dbfwd = true;
-      }}
+      }
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     d->von = m->vto + m->gamma * (sarg - t->sqrt_phi);
@@ -144,7 +136,7 @@ model MOS1 {
     trace3("", d->von, d->vgst, d->vdsat);
     double Lambda = (m->lambda != NA) ? m->lambda : 0.;
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-    {if (d->cutoff) {
+    if (d->cutoff) {
       d->gds = d->gmf = d->ids = d->gmbf = 0.;
       trace4("cut", d->ids, d->gmf, d->gds, d->gmbf);
     }else if (d->saturated) {
@@ -160,15 +152,15 @@ model MOS1 {
 			 + Lambda * d->vds * (2.*d->vgst - 1.5*d->vds));
       d->gmbf = -d->gmf * m->gamma * dsarg_dvbs;
       trace4("lin", d->ids, d->gmf, d->gds, d->gmbf);
-    }}
-    {if (d->reversed){
+    }
+    if (d->reversed) {
       d->ids *= -1;
       d->gmr = d->gmf;
       d->gmbr = d->gmbf;
       d->gmf = d->gmbf = 0;
     }else{
       d->gmr = d->gmbr = 0.;
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

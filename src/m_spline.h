@@ -1,4 +1,4 @@
-/*$Id: m_spline.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: m_spline.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * piecewise polynomial interpolation
  * Constructor args:
@@ -32,8 +32,10 @@
  * derivative being determined by the data.
  * See any numerical analysis text for explanation.
  */
+//testing=trivial 2006.07.17
 #ifndef M_SPLINE_H
 #define M_SPLINE_H
+#include "u_parameter.h"
 #include "m_cpoly.h"
 /*--------------------------------------------------------------------------*/
 class SPLINE {
@@ -51,8 +53,10 @@ private:
   void construct_order_2(double* h, double d0, double dn);
   void construct_order_1(double* h, double d0, double dn);
 public:
-  SPLINE(const std::vector<std::pair<double,double> >& table,
+  SPLINE(const std::vector<DPAIR>& table,
 	 double d0, double dn, int order);
+  SPLINE(const std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > >&
+	 table, double d0, double dn, int order);
   ~SPLINE();
   FPOLY1 at(double x)const;
 };

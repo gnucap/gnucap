@@ -1,4 +1,4 @@
-/* $Id: d_mos5.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos5.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Spice BSIM2 model
  * derived from Spice3f4,Copyright 1990 Regents of the University of California
@@ -25,7 +25,6 @@
  * Recoded for Gnucap model compiler, Al Davis, 2000
  */
 h_headers {
-#include "u_sdp.h"
 #include "d_mos_base.h"
 }
 cc_headers {
@@ -47,12 +46,12 @@ model MOS5 {
 	print_test="mos_level != LEVEL" default=LEVEL;
     }
     raw_parameters {
-      double dl "Channel length reduction"
-	name=DL default=0. scale=MICRON2METER;
-      double dw "Channel width reduction"
-	name=DW default=0. scale=MICRON2METER;
-      double tox "Gate oxide thickness"
-	name=TOX default=0. scale=MICRON2METER quiet_min=1e-20;
+      double dl_u "Channel length reduction"
+	name=DL default=0.;
+      double dw_u "Channel width reduction"
+	name=DW default=0.;
+      double tox_u "Gate oxide thickness"
+	name=TOX default=0. quiet_min=1e-20;
       double vdd "Max Vds"
 	name=VDD default=0.;
       double vgg "Max Vgs"
@@ -63,17 +62,20 @@ model MOS5 {
 	name=WDF default=0.;
       double dell "Length reduction of source drain diff (ignored)"
 	name=DELL default=0.;
-      double temp "temperature"
-	name=TEMP default=300.15 offset=-ABS_ZERO;
+      double temp_c "temperature"
+	name=TEMP default=27;
       double xpart "Flag for channel charge partitioning"
 	name=XPART default=0.;
     }
     calculated_parameters {
+      double dl "" calculate="dl_u*MICRON2METER";
+      double dw "" calculate="dw_u*MICRON2METER";
+      double tox "" calculate="tox_u*MICRON2METER";
       double cox "" calculate="3.453e-11 /*E_OX*/ / tox";
       double vdd2 "" calculate="2 * vdd";
       double vgg2 "" calculate="2 * vgg";
       double vbb2 "" calculate="2 * vbb";
-      double Vtm "" calculate="8.625e-5 /*K/Q*/ * (temp -.15)";
+      double Vtm "" calculate="8.625e-5 /*K/Q*/ * (temp_c + P_CELSIUS0 -.15)";
     }
   }
   size_dependent {
@@ -212,7 +214,7 @@ model MOS5 {
     
     /* Threshold Voltage. */
     double Phisb, dPhisb_dVb, T1s, dT1s_dVb;
-    {if (Vbs <= 0.0) {
+    if (Vbs <= 0.0) {
       d->sbfwd = false;
       Phisb = s->phi - Vbs;
       dPhisb_dVb = -1.0;
@@ -227,7 +229,7 @@ model MOS5 {
       T1s = s->Phis3 / (s->phi + 0.5 * Vbs);
       dT1s_dVb = -0.5 * T1s * T1s / s->Phis3;
       trace4("+", Phisb, dPhisb_dVb, T1s, dT1s_dVb);
-    }}
+    }
     
     double Eta = s->eta0 + s->etaB * Vbs;
     double Ua = s->ua0 + s->uaB * Vbs;
@@ -258,7 +260,7 @@ model MOS5 {
     trace3("", s->vghigh, s->vglow, d->vgst);
     
     double Exp0, Exp1, n, Vgeff, dVgeff_dVg, dVgeff_dVd, dVgeff_dVb;
-    {if ((d->vgst >= s->vghigh) || (s->n0 == 0.0)) {
+    if ((d->vgst >= s->vghigh) || (s->n0 == 0.0)) {
       Exp0 = NOT_VALID;
       Exp1 = NOT_VALID;
       n = NOT_VALID;
@@ -282,7 +284,7 @@ model MOS5 {
       trace4("", ExpArg1, Exp1, tmp1, tmp2);
       
       // exports Exp0, Vgeff, dVgeff_dVg, dVgeff_dVd, dVgeff_dVb
-      {if (d->vgst <= s->vglow) {
+      if (d->vgst <= s->vglow) {
 	double ExpArg = d->vgst * tmp;
 	ExpArg = std::max(ExpArg, -30.0);
 	Exp0 = exp(0.5 * Vof + ExpArg);
@@ -351,13 +353,13 @@ model MOS5 {
 		+ d->vgst * (dCoeffb_dVb + d->vgst
 			     * (dCoeffc_dVb + d->vgst * dCoeffd_dVb))) * delta;
 	trace0("else");
-      }}
-    }}
+      }
+    }
     trace3("", Exp0, Exp1, n);
     trace4("", Vgeff, dVgeff_dVg, dVgeff_dVd, dVgeff_dVb);
     
     double dVdsat_dVd, dVdsat_dVg, dVdsat_dVb;
-    {if (Vgeff > 0.0) {	// normal operation
+    if (Vgeff > 0.0) {	// normal operation
       d->cutoff = false;
       double Uvert = 1.0 + Vgeff * (Ua + Vgeff * Ub);
       Uvert = std::max(Uvert, 0.2);
@@ -447,9 +449,9 @@ model MOS5 {
 	trace4("", Beta, dBeta_dVd, dBeta_dVg, dBeta_dVb);
       }
       
-      {if (d->vgst > s->vglow) {	// not subthreshold
+      if (d->vgst > s->vglow) {	// not subthreshold
 	d->subthreshold = false;
-	{if (Vds <= d->vdsat) {		// triode region
+	if (Vds <= d->vdsat) {		// triode region
 	  d->saturated = false;
 	  double T3 = Vds / d->vdsat;
 	  double T4 = T3 - 1.0;
@@ -488,7 +490,7 @@ model MOS5 {
 	  double T1 = Betaeff * Vgeff * Inv_Aa * Inv_Kk;
 	  double T2 = d->ids * Inv_Kk * dKk_dVc;
 	  
-	  {if (s->ai0 != 0.0) {
+	  if (s->ai0 != 0.0) {
 	    double Ai = s->ai0 + s->aiB * Vbs;
 	    double Bi = s->bi0 + s->biB * Vbs;
 	    double T5 = Bi / (Vds - d->vdsat);
@@ -517,8 +519,8 @@ model MOS5 {
 	      + T1 * dVgeff_dVg - T2 * dVc_dVg;
 	    d->gmbf = T0 * (dBeta_dVb - Betaeff * dUvert_dVb)
 	      + T1 * dVgeff_dVb - T2 * dVc_dVb - d->ids * Inv_Aa * dAa_dVb;
-	  }}
-	}}
+	  }
+	}
       }else{	// subthreshold
 	d->subthreshold = true;
 	assert(Exp0 != NOT_VALID);
@@ -533,7 +535,7 @@ model MOS5 {
 	double T3 = d->ids / T4;
 	trace4("", d->ids, T2, T4, T3);
 	double FR, dFR_dVd, dFR_dVg, dFR_dVb;
-	{if ((Vds > d->vdsat) && s->ai0 != 0.0) {
+	if ((Vds > d->vdsat) && s->ai0 != 0.0) {
 	  d->saturated = true;
 	  double Ai = s->ai0 + s->aiB * Vbs;
 	  double Bi = s->bi0 + s->biB * Vbs;
@@ -556,7 +558,7 @@ model MOS5 {
 	  dFR_dVg = 0.0;
 	  dFR_dVb = 0.0;
 	  trace4("ai0==0", FR, dFR_dVd, dFR_dVg, dFR_dVb);
-	}}
+	}
 	
 	d->gds = (T2 * dBeta_dVd 
 		  + T3 * (s->vofD * T4 - dVth_dVd - s->nD * d->vgst / n)
@@ -565,7 +567,7 @@ model MOS5 {
 	d->gmbf = (T2 * dBeta_dVb + T3 * (s->vofB * T4 - dVth_dVb + s->nB
 		* d->vgst / (n * T1s * T1s) * dT1s_dVb)) * FR + d->ids*dFR_dVb;
 	d->ids *= FR;
-      }}
+      }
     }else{	// cutoff???
       d->cutoff = true;
       // reachable only if vghigh and vgst both negative
@@ -575,7 +577,7 @@ model MOS5 {
       d->gmf  = 0.0;
       d->gds = 0.0;
       d->gmbf = 0.0;
-    }}
+    }
     trace4("", d->vdsat, dVdsat_dVd, dVdsat_dVg, dVdsat_dVb);
     trace4("", d->ids, d->gmf, d->gds, d->gmbf);
     
@@ -584,13 +586,13 @@ model MOS5 {
     d->ids = std::max(d->ids, 1.0e-50);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     double Vbseff, dVbseff_dVb;
-    {if (Vbs < 0.0) {
+    if (Vbs < 0.0) {
       Vbseff = Vbs;
       dVbseff_dVb = 1.0;
     }else{
       Vbseff = s->phi - Phisb;
       dVbseff_dVb = -dPhisb_dVb;
-    }}
+    }
     trace3("", Vbs, Vbseff, dVbseff_dVb);
     
     double Arg1 = Vgs - Vbseff - s->vfb;
@@ -600,7 +602,7 @@ model MOS5 {
     double dQbulk_dVb = s->One_Third_CoxWL * (dVth_dVb - dVbseff_dVb);
     double dQbulk_dVd = s->One_Third_CoxWL * dVth_dVd;
     trace3("", Qbulk, dQbulk_dVb, dQbulk_dVd);
-    {if (Arg1 <= 0.0) { // accumulation region
+    if (Arg1 <= 0.0) { // accumulation region
       d->qgate = s->cgate * Arg1;
       d->qbulk = -(d->qgate);
       d->qdrn = 0.0;
@@ -645,7 +647,7 @@ model MOS5 {
       trace4("sub", d->qdrn, d->cdgb, d->cddb, d->cdsb);
     }else{
       double Vdsat; // changes dVdsat_dVd, dVdsat_dVg, dVdsat_dVb;
-      {if (d->vgst < s->vghigh) {
+      if (d->vgst < s->vghigh) {
 	double Uvert = 1.0 + d->vgst * (Ua + d->vgst * Ub);
 	Uvert = std::max(Uvert, 0.2);
 	double Inv_Uvert = 1.0 / Uvert;
@@ -686,8 +688,8 @@ model MOS5 {
 	trace2("keep", d->vdsat, Vdsat);
 	trace3("", dVdsat_dVd, dVdsat_dVg, dVdsat_dVb);
 	// keep dVdsat_dVd, dVdsat_dVg, dVdsat_dVb;
-      }}
-      {if (Vds >= Vdsat) {       /* saturation region */
+      }
+      if (Vds >= Vdsat) {       /* saturation region */
 	d->cggb = s->Two_Third_CoxWL;
 	d->cgdb = -d->cggb * dVth_dVd + dQbulk_dVd;
 	double tmp = -d->cggb * dVth_dVb + dQbulk_dVb;
@@ -757,16 +759,16 @@ model MOS5 {
 	trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
 	trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
 	trace4("lin", d->qdrn, d->cdgb, d->cddb, d->cdsb);
-      }}
-    }}
-    {if (d->reversed){
+      }
+    }
+    if (d->reversed) {
       d->ids *= -1;
       d->gmr = d->gmf;
       d->gmbr = d->gmbf;
       d->gmf = d->gmbf = 0;
     }else{
       d->gmr = d->gmbr = 0.;
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: io_xopen.cc,v 22.17 2002/08/26 04:30:28 al Exp $ -*- C++ -*-
+/*$Id: io_xopen.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,19 +16,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * scan a string for a file name
  * fill in extension, if necessary
  * open file
  */
+//testing=script,sparse 2006.07.17
 #include "u_opt.h"
-#include "io_.h"
 #include "constant.h"
 #include "declare.h"	/* getcmd */
 #include "ap.h"
-// testing=nonstrict
 /*--------------------------------------------------------------------------*/
 	void	xclose(FILE**);
 	FILE*	xopen(CS&,const char*,const char*);
@@ -52,7 +51,8 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
   char fname[BIGBUFLEN];
   
   cmd.skipbl();
-  if (cmd.end()) {
+  if (cmd.is_end()) {
+    untested();
     cmd = getcmd("file name?  ",fname, BIGBUFLEN);
   }
 					/* copy the name		    */
@@ -65,27 +65,28 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
       if (!c || isspace(c)) {
 	break;
       }
-      {if (c == '$') {
+      if (c == '$') {
 	untested(); 
 	sprintf(&(fname[i]), "%ld", static_cast<long>(time(0)));
 	i = strlen(fname);
       }else{				/* we want to add the extension	    */
 	fname[i++] = c;			/* if it doesn't already have one,  */
-	{if (c == '.') {		/* as determined by a '.'	    */
+	if (c == '.') {		/* as determined by a '.'	    */
 	  defalt = false;		/* not before the directory	    */
 	}else if (strchr(ENDDIR,c)) {	/* separator-terminator character   */
+	  untested();
 	  defalt = true;		/* '\' or '/' for msdos,	    */
-	}}
-      }}  				/* ']' or '/' for vms,		    */
+	}
+      }  				/* ']' or '/' for vms,		    */
     }					/* '/' for unix  (in ENDDIR)	    */
     cmd.skip(-1);
-    {if (defalt && ext && *ext && i+strlen(ext)+2 < BIGBUFLEN) {
+    if (defalt && ext && *ext && i+strlen(ext)+2 < BIGBUFLEN) {
       untested(); 
       fname[i++] = '.';			/* add the extension (maybe)	    */
       strcpy(&fname[i],ext);
     }else{
       fname[i] = '\0';
-    }}
+    }
   }
   
   trim(fname);
@@ -96,18 +97,21 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
   cmd.skipcom();
   
   FILE *code = NULL;	/* a file pointer for the file we found */
-  {if (!OPT::clobber && (*how == 'w') && (access(fname,F_OK) == FILE_OK)) {
+  if (!OPT::clobber && (*how == 'w') && (access(fname,F_OK) == FILE_OK)) {
+    untested();
     char buffer[BUFLEN];
     std::string msg = std::string(fname) + " exists.  replace? ";
     getcmd(msg.c_str(), buffer, BUFLEN);
-    {if (pmatch(buffer,"Yes")) {	/* should be new file, but	    */
+    if (pmatch(buffer,"Yes")) { 	/* should be new file, but	    */
+      untested();
       code = fopen(fname,how);		/* file already exists,  ask	    */
     }else{
+      untested();
       return NULL;
-    }}
+    }
   }else{
     code = fopen(fname,how);
-  }}
+  }
   
   if (code && fileno(code)>MAXHANDLE) {
     untested(); 
@@ -115,11 +119,12 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
     fclose(code);
     code = NULL;
   }
-  {if (code) {
+  if (code) {
     IO::stream[static_cast<int>(fileno(code))] = code;
   }else{
+    untested();
     error(bWARNING, "can't open %s, %s\n", fname, strerror(errno));
-  }}
+  }
   return code;
 }
 /*--------------------------------------------------------------------------*/

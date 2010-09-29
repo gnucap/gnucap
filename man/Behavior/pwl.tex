@@ -1,4 +1,4 @@
-%$Id: pwl.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: pwl.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man behavior pwl .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt PWL}: Piecewise linear function}
 %------------------------------------------------------------------------
@@ -36,12 +36,29 @@ Defines a piecewise linear transfer function or time dependent value.
 This is similar to, but not exactly the same as, the Berkeley SPICE
 PWL for fixed sources.
 
-For capacitors, this function defines {\em charge} as a function of
-voltage.  For inductors, it defines {\em flux} as a function of
-current.
-
 For fixed sources, it defines voltage or current as a function of
 time.
+
+The meaning of the {\tt x} and {\tt y} values depends on the component type:
+
+\begin{tabular}{|c|c|c|}
+\hline 
+component	&X		&Y		\\\hline\hline 
+C (capacitor)	&voltage	&charge 	\\\hline 
+E (VCVS)	&voltage	&voltage	\\\hline
+F (CCCS)	&current	&current	\\\hline 
+G (VCCS)	&voltage	&current	\\\hline 
+H (CCVS)	&current	&voltage	\\\hline 
+I (current source) &time	&current	\\\hline
+L (inductor)	&current	&flux		\\\hline
+R (resistor)	&current	&voltage	\\\hline
+V (voltage source) &time	&voltage	\\\hline
+Y (admittance)	&voltage	&current	\\\hline
+VCCAP		&voltage	&capacitance	\\\hline 
+VCG		&voltage	&conductance	\\\hline 
+VCR		&voltage	&resistance	\\\hline 
+trans-capacitor	&voltage	&charge		\\\hline 
+\end{tabular}
 
 The values of {\it x} must be in increasing order.
 
@@ -60,13 +77,13 @@ There are no additional parameters, beyond those that apply to all.
 
 \begin{description}
 
-\item[{\tt C1 2 0 pwl -5,-5u 0,0 1,1u 4,2u 5,2u}] This ``capacitor''
-stores 5 microcoulombs at -5 volts (negative, corresponding to the
-negative voltage, as expected.  The charge varies linearly to 0 at 0
-volts, acting like a 1 microfarad capacitor.  (C = dq/dv).  This
-continues to 1 volt.  The 0,0 point could have been left out.  The
-charge increases only to 2 microcoulombs at 4 volts, for an
-incremental capacitance of 1u/3 or .3333 microfarads.  The same charge 
+\item[{\tt C1 (2 0) pwl (-5,-5u 0,0 1,1u 4,2u 5,2u)}]
+This ``capacitor'' stores 5 microcoulombs at -5 volts (negative,
+corresponding to the negative voltage, as expected.  The charge varies
+linearly to 0 at 0 volts, acting like a 1 microfarad capacitor.  (C =
+dq/dv).  This continues to 1 volt.  The 0,0 point could have been left
+out.  The charge increases only to 2 microcoulombs at 4 volts, for an
+incremental capacitance of 1u/3 or .3333 microfarads.  The same charge
 at 5 volts indicates that it saturates at 2 microcoulombs.  For
 negative voltages, the slope continues.
 

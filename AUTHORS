@@ -1,0 +1,19 @@
+Gnucap is primarily the work of Albert Davis (aldavis@gnu.org).	
+
+Here is a list of some of the contributors who have contributed more
+than a bug report:
+
+    Dan McMahill - "autoconf" interface, NetBSD package
+    Stuart Brorson - configuration mods
+    Telford Tendys - documentation and convergence
+    Simon Hoffe - Command line editing and history
+
+These people have contributed by making packages, or enhancing other
+systems to include or work with gnucap.  Their work isn't in this
+file, but it is just as important.  These are the ones I know about.
+There are many more.
+
+    Dan McMahill - NetBSD package.
+    Werner Hoch - RPM (Fedora) package
+    Hamish Moffatt - Debian package
+    Dmitry Nadezhin - "electric" interface

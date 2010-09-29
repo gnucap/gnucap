@@ -1,4 +1,4 @@
-/* $Id: d_mos6.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos6.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * mos model equations: spice level 6 equivalent
  */
@@ -70,14 +70,14 @@ model MOS6 {
     }
     code_pre {
       if (tox != NA) {
-	cox = E_OX / tox;
+	cox = P_EPS_OX / tox;
 	if (kc == NA) {
 	  kc = .5 * uo * cox;
 	  calc_kc = true;
 	}
 	if (nsub != NA) {
 	  if (phi == NA) {
-	    phi = (2.*KoQ) * _tnom * log(nsub/NI);
+	    phi = (2. * P_K_Q) * tnom_k * log(nsub/NI);
 	    if (phi < .1) {
 	      untested();
 	      error(bWARNING,
@@ -87,14 +87,14 @@ model MOS6 {
 	    calc_phi = true;
 	  }
 	  if (gamma == NA) {
-	    gamma = sqrt(2. * E_SI * Q * nsub) / cox;
+	    gamma = sqrt(2. * P_EPS_SI * P_Q * nsub) / cox;
 	    calc_gamma = true;
 	  }
 	  if (vto == NA) {
 	    double phi_ms = (tpg == gtMETAL)
 	      ? -.05 - (egap + polarity * phi) / 2.
 	      : -polarity * (tpg * egap + phi) / 2.;
-	    double vfb = phi_ms - Q * nss / cox;
+	    double vfb = phi_ms - P_Q * nss / cox;
 	    vto = vfb + polarity * (phi + gamma * sqrt(phi));
 	    calc_vto = true;
 	  }
@@ -105,18 +105,18 @@ model MOS6 {
   temperature_dependent {
     calculated_parameters {
       double phi "" 
-	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)))";
+	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+P_Q*(arg)))";
       double beta "" calculate="m->kc * tempratio4 * s->w_eff / s->l_eff";
       double vbi "" calculate="(fixzero(
 	(m->vto - m->polarity * m->gamma * sqrt(m->phi)
 	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi))";
     }
     code_pre {
-      double temp = SIM::temp;
-      double tempratio  = temp / m->_tnom;
+      double temp = SIM::temp_c + P_CELSIUS0;
+      double tempratio  = temp / m->tnom_k;
       double tempratio4 = tempratio * sqrt(tempratio);
-      double kt = temp * K;
-      double vt = kt / Q;
+      double kt = temp * P_K;
+      double vt = temp * P_K_Q;
       double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
       double arg = (m->egap*tempratio - egap) / (2*kt);
     }
@@ -130,18 +130,20 @@ model MOS6 {
     d->reverse_if_needed();
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     double sarg;
-    {if (d->vbs <= 0.){
+    if (d->vbs <= 0.) {
+      d->sbfwd = false;
       sarg = sqrt(t->phi - d->vbs);
     }else{
+      d->sbfwd = true;
       sarg = sqrt(t->phi);
       sarg = sarg - d->vbs / (sarg+sarg);
-      {if (sarg < 0.){
+      if (sarg < 0.) {
 	untested();
 	sarg = 0.;
       }else{
 	untested();
-      }}
-    }}
+      }
+    }
     trace3("", t->phi, d->vbs, sarg);
     assert(sarg >= 0.);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -152,18 +154,18 @@ model MOS6 {
     trace3("", d->vds, d->von, d->vgst);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     d->cutoff = (d->vgst <= 0.);
-    {if (d->cutoff){
+    if (d->cutoff) {
       d->vdsat = 0.;
       d->ids = d->gmf = d->gds = d->gmbf = 0.;
       trace4("cut", d->ids, d->gmf, d->gds, d->gmbf);
     }else{
       double vonbm;
-      {if (d->vbs <= 0.){
+      if (d->vbs <= 0.) {
 	vonbm = m->gamma1 + m->gamma / (sarg + sarg);
       }else{
 	vonbm = m->gamma1 + m->gamma * .5 / sqrt(t->phi);
 	untested();
-      }}
+      }
       trace3("", m->nc, m->lambda0, m->lambda1);
       double logvgon = log(d->vgst);
       double idsat = t->beta * exp(logvgon * m->nc);
@@ -179,7 +181,7 @@ model MOS6 {
       trace4("sat", d->ids, d->gmf, d->gds, d->gmbf);
       
       d->saturated = (d->vdsat <= d->vds);
-      if (!d->saturated){
+      if (!d->saturated) {
 	double vdst   = d->vds / d->vdsat;
 	double vdst2  = (2 - vdst) * vdst;
 	double vdstg  = - vdst * m->nv / d->vgst;
@@ -190,15 +192,15 @@ model MOS6 {
 	d->gmbf = d->gmbf * vdst2 + ivdst1 * vdstg * vonbm;
 	trace4("lin", d->ids, d->gmf, d->gds, d->gmbf);
       }
-    }}
-    {if (d->reversed){
+    }
+    if (d->reversed) {
       d->ids *= -1;
       d->gmr = d->gmf;
       d->gmbr = d->gmbf;
       d->gmf = d->gmbf = 0;
     }else{
       d->gmr = d->gmbr = 0.;
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

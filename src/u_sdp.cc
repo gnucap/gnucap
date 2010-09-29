@@ -1,4 +1,4 @@
-/*$Id: u_sdp.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
+/*$Id: u_sdp.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,18 +16,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * A class for Size Dependent Parameters, like those used in Spice BSIM models
  */
-#include "io_.h"
+//testing=script 2006.07.14
 #include "u_sdp.h"
 /*--------------------------------------------------------------------------*/
-bool get(CS& cmd, const std::string& key, SDP* value, AP_MOD mod, double scale)
+bool get(CS& cmd, const std::string& key, SDP* value)
 {
   return ONE_OF
-    || get(cmd, key,       &value->_nom, mod, scale)
+    || get(cmd, key,       &value->_nom)
     || get(cmd, "W" + key, &value->_wd)
     || get(cmd, "L" + key, &value->_ld)
     || get(cmd, "P" + key, &value->_pd)
@@ -37,13 +37,13 @@ bool get(CS& cmd, const std::string& key, SDP* value, AP_MOD mod, double scale)
 void SDP::print(OMSTREAM& o, const std::string& name)const
 {
   o << ("  " + name + '=') << _nom;
-  if (_wd != 0){
+  if (_wd != 0) {untested();
     o << (" w" + name + '=') << _wd;
   }
-  if (_ld != 0){
+  if (_ld != 0) {untested();
     o << (" l" + name + '=') << _ld;
   }
-  if (_pd != 0){
+  if (_pd != 0) {untested();
     o << (" p" + name + '=') << _pd;
   }
 }

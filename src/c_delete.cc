@@ -1,4 +1,4 @@
-/*$Id: c_delete.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: c_delete.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,19 +16,22 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * delete and clear commands
  */
+//testing=script,complete 2006.07.16
+//BUG:: If someone deletes an element inside an instance of a subckt
+// (like ".delete r1.x1", there is no error message, and the deleted
+// element will reappear next time an elaboration occurs, which is 
+// usually before anything else.
 #include "e_card.h"
 #include "s__.h"
-#include "ap.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 //	void	CMD::clear(CS&);
 //	void	CMD::del(CS&);
-static	void	bylabel(CS&);
 /*--------------------------------------------------------------------------*/
 /* cmd_clear: clear the whole circuit, including faults, etc
  *   equivalent to unfault; unkeep; delete all; title = (blank)
@@ -46,47 +49,78 @@ void CMD::clear(CS&)
   {CS q("'");       title(q);}
 }
 /*--------------------------------------------------------------------------*/
+static bool delete_one_name(const std::string& name, CARD_LIST* scope)
+{
+  assert(scope);
+
+  std::string::size_type dotplace = name.find_last_of(".");
+  if (dotplace != std::string::npos) {
+    // has a dot, look deeper
+    // Split the name into two parts:
+    // "container" -- where to look (all following the dot)
+    // "dev_name" -- what to look for (all before the dot)
+    std::string container = name.substr(dotplace+1, std::string::npos);
+    std::string dev_name = name.substr(0, dotplace);
+    // container name must be exact match
+    CARD* card = (*scope)[container];
+    if (!card) {
+      // can't find "container" (probably .subckt) - no match
+      return false;
+    }else if (!card->subckt()) {
+      // found a match, but it isn't a container (subckt)
+      return false;
+    }else{
+      // found the container, look inside
+      return delete_one_name(dev_name, card->subckt());
+    }
+    unreachable();
+  }else{
+    // no dots, look here
+    if (name.find_first_of("*?") != std::string::npos) {
+      // there's a wild card.  do linear search for all matches
+      bool didit = false;
+      {
+	CARD_LIST::iterator i = scope->begin();
+	while (i != scope->end()) {
+	  CARD_LIST::iterator old_i = i++;
+	  // ^^^^^^^^^^^^ move i past the item being deleted
+	  if (wmatch((**old_i).short_label(), name)) {
+	    scope->erase(old_i);
+	    didit = true;
+	  }
+	}
+      }
+      return didit;
+    }else{
+      // no wild card.  fast search for one exact match
+      CARD_LIST::iterator i = scope->find(name);
+      if (i != scope->end()) {
+	scope->erase(i);
+	return true;
+      }else{
+	return false;
+      }
+    }
+    unreachable();
+  }
+  unreachable();
+}
+/*--------------------------------------------------------------------------*/
 /* cmd_delete:  delete command
  */
 void CMD::del(CS& cmd)
 {
   SIM::uninit();
-  {if (cmd.pmatch("ALL")){
-    CARD_LIST::card_list.destroy();
+  if (cmd.pmatch("ALL")) {
+    CARD_LIST::card_list.erase_all();
   }else{
-    while (cmd.more()){
-      bylabel(cmd);
+    while (cmd.more()) {
+      int mark = cmd.cursor();
+      bool didit = delete_one_name(cmd.ctos(), &CARD_LIST::card_list);
+      if (!didit) {
+	cmd.warn(bWARNING, mark, "no match");
+      }
     }
-  }}
-}
-/*--------------------------------------------------------------------------*/
-/* bylabel: delete circuit element by label
- * 	all lines with matching label (with wild cards * and ?) deleted.
- *	although it looks like a loop, it matches one label
- *	syntax warning if no match
- */
-static void bylabel(CS& cmd)
-{
-  int mark = cmd.cursor(); // where we started parsing
-  int cmax = cmd.cursor(); // where we got after being successful
-  
-  CARD_LIST::fat_iterator ci(&(CARD_LIST::card_list));
-  for (;;){
-    cmd.reset(mark);
-    ci = findbranch(cmd, ci);
-    cmax = std::max(cmax, cmd.cursor());
-    {if (!ci.isend()){ // found something
-      CARD_LIST::iterator here(ci.iter());
-      ++ci;
-      ci.list()->erase(here);
-    }else{ // no more matches
-      break;
-    }}
-  }
-  cmd.reset(cmax);
-  if (mark == cmax){ // didn't do anything
-    cmd.check(bWARNING, "no match");
-    cmd.skiparg();
   }
 }
 /*--------------------------------------------------------------------------*/

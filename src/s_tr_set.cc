@@ -1,4 +1,4 @@
-/*$Id: s_tr_set.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
+/*$Id: s_tr_set.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,17 +16,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * set up transient and fourier analysis
  */
+//testing=script 2006.07.14
 #include "u_prblst.h"
-#include "l_denoise.h"
-#include "constant.h"
 #include "ap.h"
 #include "s_tr.h"
-// testing=implicit
 /*--------------------------------------------------------------------------*/
 //	void	TRANSIENT::setup(CS&);
 //	void	TRANSIENT::options(CS&);
@@ -38,23 +36,23 @@ void TRANSIENT::setup(CS& cmd)
 {
   double oldrange = tstop - tstart;
   cont = true;
-  {if (cmd.is_pfloat()) {
+  if (cmd.is_pfloat()) {
     double arg1 = cmd.ctopf();
     double arg2 = cmd.ctopf();
     double arg3 = cmd.ctopf();
-    {if (arg3 != 0.) {			    /* 3 args: all */
-      {if (arg1 == 0.  ||  arg1 > arg3) {   /* eca (logical) order: */
+    if (arg3 != 0.) {			    /* 3 args: all */
+      if (arg1 == 0.  ||  arg1 > arg3) {   /* eca (logical) order: */
 	tstart = arg1;			    /* tstart tstop step */
 	tstop  = arg2;				
 	tstep  = arg3;
       }else{ 				    /* spice (illogical) order */
-	untested();
+	itested();
 	tstart = arg3;		    	    /* tstep tstop tstart */
 	tstop  = arg2;
 	tstep  = arg1;
-      }}
+      }
     }else if (arg2 != 0.) {		    /* 2 args */
-      {if (arg1 == 0.) {		    /* 2 args: tstart, tstop */
+      if (arg1 == 0.) { 		    /* 2 args: tstart, tstop */
 	untested();
 	tstart = arg1;
 	tstop  = arg2;
@@ -67,14 +65,14 @@ void TRANSIENT::setup(CS& cmd)
 	tstart = arg3; /* 0 */	   	    /* spice order */
 	tstop  = arg2;
 	tstep  = arg1;
-      }}
+      }
     }else if (arg1 > last_time) {	    /* 1 arg: tstop */
       untested();
       tstart = last_time;
       tstop  = arg1;
       /* tstep unchanged */
     }else if (arg1 == 0.) {		    /* 1 arg: tstart */
-      //untested();
+      itested();
       tstart = 0.;
       tstop  = oldrange;
       /* tstep unchanged */
@@ -83,12 +81,12 @@ void TRANSIENT::setup(CS& cmd)
       tstart = last_time;
       tstop  = last_time + oldrange;
       tstep  = arg1;
-    }}
+    }
   }else{ /* no args */
     tstart = last_time;
     tstop  = last_time + oldrange;
     /* tstep unchanged */
-  }}
+  }
   if (cmd.is_pfloat()) {
     dtmax = std::abs(cmd.ctof());
     skip = static_cast<int>(tstep / dtmax + .5);
@@ -97,14 +95,15 @@ void TRANSIENT::setup(CS& cmd)
   
   dtmax = tstep / static_cast<double>(skip);
   dtmin = std::max(dtmin,dtmax/dtratio);
-  {if  (tstart < last_time  ||  last_time <= 0.) {
+  if  (tstart < last_time  ||  last_time <= 0.) {
     cont = false;
     time1 = time0 = 0.;
   }else{
     cont = true;
     time1 = time0 = last_time;
-  }}
+  }
   if (tstep==0.) {
+    untested();
     error(bERROR, "time step = 0\n");
   }
 }
@@ -115,7 +114,7 @@ void TRANSIENT::options(CS& cmd)
 {
   out = IO::mstdout;
   out.reset(); /* BUG: don't know why this is needed */
-  temp = OPT::tempamb;
+  temp_c = OPT::temp_c;
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
   uic = echo = cold = false;
   trace = tNONE;
@@ -123,19 +122,18 @@ void TRANSIENT::options(CS& cmd)
   dtratio = OPT::dtratio;
   int here = cmd.cursor();
   do{
-    0
-      || get(cmd, "Ambient",	&temp,   mOFFSET, OPT::tempamb)
+    ONE_OF
       || get(cmd, "Cold",	&cold)
-      || get(cmd, "DTMIn",	&dtmin,  mPOSITIVE)
-      || get(cmd, "DTRatio",	&dtratio,mPOSITIVE)
+      || get(cmd, "DTEmp",	&temp_c,  mOFFSET, OPT::temp_c)
+      || get(cmd, "DTMIn",	&dtmin,   mPOSITIVE)
+      || get(cmd, "DTRatio",	&dtratio, mPOSITIVE)
       || get(cmd, "Echo",	&echo)
       || get(cmd, "PLot",	&ploton)
-      || get(cmd, "Reftemp",	&temp,   mOFFSET, OPT::tnom)
       || get(cmd, "SKip",	&skip)
-      || get(cmd, "Temperature",&temp,   mOFFSET, -ABS_ZERO)
+      || get(cmd, "TEmperature",&temp_c)
       || get(cmd, "UIC",	&uic)
       || (cmd.pmatch("TRace") &&
-	  (0
+	  (ONE_OF
 	   || set(cmd, "None",	    &trace, tNONE)
 	   || set(cmd, "Off",	    &trace, tNONE)
 	   || set(cmd, "Warnings",  &trace, tUNDER)

@@ -1,4 +1,4 @@
-/*$Id: c_nodset.cc,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
+/*$Id: c_nodset.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * nodeset and ic commands
  */
+//testing=none 2006.07.17
 #include "io_.h"
 #include "ap.h"
 #include "c_comand.h"
@@ -51,7 +52,7 @@ void CMD::nodeset(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void NODESET::command(CS& cmd)
 {
-  if (cmd.end()) {
+  if (cmd.is_end()) {
     list_all();
   }else if (cmd.pmatch("CLEAR")) {
     rm_all();
@@ -66,16 +67,15 @@ void NODESET::add_list(CS& cmd)
 {
   while (cmd.pmatch("V")) {
     int here = cmd.cursor();
-    bool got_opening_paren = cmd.skiplparen();
+    bool got_opening_paren = cmd.skip1b('(');
     int node = cmd.ctoi();
-    {if (got_opening_paren && !cmd.skiprparen()) {
-      untested();
+    if (got_opening_paren && !cmd.skip1b(')')) {
       cmd.warn(bWARNING, "need )");
-    }else if (!got_opening_paren && cmd.skiprparen()) {
-      untested();
+    }else if (!got_opening_paren && cmd.skip1b(')')) {
       cmd.warn(bWARNING, here, "need (");
-    }}
-    cmd.skipequal();
+    }else{
+    }
+    cmd.skip1b('=');
     int mark = cmd.cursor();
     double voltage = cmd.ctof();
     if (mark == cmd.cursor()) {		/* no voltage value = unset */

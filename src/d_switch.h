@@ -1,4 +1,4 @@
-/*$Id: d_switch.h,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
+/*$Id: d_switch.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,18 +16,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * data structures for voltage (and current) controlled switch
  */
+//testing=script 2006.06.14
 #ifndef D_SWITCH_H
 #define D_SWITCH_H
 #include "e_model.h"
 #include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
 class MODEL_SWITCH : public MODEL_CARD {
-friend class SWITCH_BASE;
 private:
   explicit	MODEL_SWITCH(const MODEL_SWITCH& p) 
 				:MODEL_CARD(p) {unreachable();}
@@ -35,15 +35,23 @@ public:
   explicit	MODEL_SWITCH();
 private: // override virtual
   CARD*		clone()const	{untested(); return new MODEL_SWITCH(*this);}
-  void		parse(CS&);
-  void		print(OMSTREAM&,int)const;
-private:
-  double    vt;		/* threshold voltage */
-  double    vh;		/* hysteresis voltage */
-  double    ron;	/* on resistance */
-  double    roff;	/* off resistance */
+  void		parse_spice(CS&);
+  void		elabo1();
+  void		print_spice(OMSTREAM&,int)const;
+public:
+  PARAMETER<double> vt;		/* threshold voltage */
+  PARAMETER<double> vh;		/* hysteresis voltage */
+  PARAMETER<double> ron;	/* on resistance */
+  PARAMETER<double> roff;	/* off resistance */
+  PARAMETER<double> von;
+  PARAMETER<double> voff;
   enum control_t {VOLTAGE, CURRENT};
   control_t type;	/* current or voltage controlled */
+private:
+  static double const _default_vt;
+  static double const _default_vh;
+  static double const _default_ron;
+  static double const _default_roff;
 };
 /*--------------------------------------------------------------------------*/
 class COMMON_SWITCH : public COMMON_COMPONENT {
@@ -53,8 +61,8 @@ private:
 public:
   explicit COMMON_SWITCH(int c=0)	:COMMON_COMPONENT(c) {}
   bool operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const	{return new COMMON_SWITCH(*this);}
-  const char* name()const		{untested(); return "switch";}
+  COMMON_COMPONENT* clone()const {return new COMMON_SWITCH(*this);}
+  const char* name()const	 {untested(); return "switch";}
 };
 /*--------------------------------------------------------------------------*/
 class SWITCH_BASE : public ELEMENT {
@@ -63,78 +71,87 @@ protected:
   explicit	SWITCH_BASE(const SWITCH_BASE& p);
 protected: // override virtual
   const char* dev_type()const	= 0;
-  int	   max_nodes()const	{unreachable(); return 4;}
-  int	   min_nodes()const	{unreachable(); return 4;}
-  int	   out_nodes()const	{return 2;}
+  int	   max_nodes()const	= 0;
+  int	   min_nodes()const	= 0;
+  int	   out_nodes()const	{untested(); return 2;}
   int	   matrix_nodes()const	{return 2;}
   int	   net_nodes()const	= 0;
-  bool	   is_1port()const	{return true;}
+  bool	   is_1port()const	{untested(); return true;}
   CARD*	   clone()const		= 0;
-  void	   parse(CS&);
-  void     print(OMSTREAM&,int)const;
-  void     expand();
+  void	   parse_spice(CS&);
+  void     print_spice(OMSTREAM&,int)const;
+  void     elabo1();
   //void   map_nodes();		//ELEMENT
   void     precalc();
 
-  void	   tr_alloc_matrix()	{tr_alloc_matrix_passive();}
-  void	   dc_begin();
-  void	   tr_begin()		{dc_begin();}
+  void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
+  void	   dc_begin()		{tr_begin();}
+  void	   tr_begin();
   //void   tr_restore();	//CARD/nothing
-  void     dc_advance()		{_previous_state = _current_state;}
-  void     tr_advance()		{_previous_state = _current_state;}
-  bool	   tr_needs_eval()	{return true;}
-  //void   tr_queue_eval()	//ELEMENT
+  void     dc_advance();
+  void     tr_advance();
+  bool	   tr_needs_eval()const	{return (SIM::phase != SIM::pTRAN);}
+  //void   tr_queue_eval();	//ELEMENT
   bool	   do_tr();
   void	   tr_load()		{tr_load_passive();}
-  //double tr_review();		//CARD/nothing
+  DPAIR    tr_review();
   //void   tr_accept();		//CARD/nothing
-  void	   tr_unload()		{tr_unload_passive();}
-  double   tr_involts()const	{return tr_outvolts();}
+  void	   tr_unload()		{untested(); tr_unload_passive();}
+  double   tr_involts()const	{untested(); return tr_outvolts();}
+  //double tr_input()const	//ELEMENT
   double   tr_involts_limited()const
 				{unreachable(); return tr_outvolts_limited();}
+  //double tr_input_limited()const //ELEMENT
   //double tr_amps()const	//ELEMENT
-  //double tr_probe_num(CS&)const;//ELEMENT
+  double   tr_probe_num(CS&)const;
 
-  void	   ac_alloc_matrix()	{ac_alloc_matrix_passive();}
+  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
   void	   ac_begin()		{_ev = _y0.f1; _acg = _m0.c1;}
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
-  COMPLEX  ac_involts()const	{return ac_outvolts();}
+  COMPLEX  ac_involts()const	{untested(); return ac_outvolts();}
   //COMPLEX ac_amps()const;	//ELEMENT
   //XPROBE ac_probe_ext(CS&)const;//ELEMENT
 protected:
-  std::string	_input_label;		/*this is here instead of in Cswitch*/
-  ELEMENT*	_input;		        /* due to bad design and lazyness */
+  std::string	 _input_label;	/*this is here instead of in Cswitch*/
+  const ELEMENT* _input;	/* due to bad design and lazyness */
 private:
   enum state_t {_UNKNOWN, _ON, _OFF};
   state_t	_ic;		/* initial state, belongs in common */
-  state_t	_current_state;	/* state 1 iter ago (may be bad) */
-  state_t	_previous_state;/* state 1 time or step ago (known good) */
+  double	_time_future;
+  enum {_keep_time_steps = 2};
+  double	_time[_keep_time_steps];
+  double	_in[_keep_time_steps];
+  state_t	_state[_keep_time_steps];
 };
 /*--------------------------------------------------------------------------*/
 class DEV_VSWITCH : public SWITCH_BASE {
 private:
-  explicit  DEV_VSWITCH(const DEV_VSWITCH& p):SWITCH_BASE(p){untested();}
+  explicit  DEV_VSWITCH(const DEV_VSWITCH& p) :SWITCH_BASE(p) {untested();}
 public:
-  explicit  DEV_VSWITCH()	:SWITCH_BASE(){}
+  explicit  DEV_VSWITCH()	:SWITCH_BASE() {}
 private: // override virtual
+  int	    max_nodes()const	{return 4;}
+  int	    min_nodes()const	{return 4;}
   int	    net_nodes()const	{return 4;}
-  CARD*	    clone()const	{untested();return new DEV_VSWITCH(*this);}
-  const char* dev_type()const	{return "vswitch";}
-  char	    id_letter()const	{return 'S';}
+  CARD*	    clone()const	{untested(); return new DEV_VSWITCH(*this);}
+  const char* dev_type()const	{untested(); return "vswitch";}
+  char	    id_letter()const	{untested(); return 'S';}
 };
 /*--------------------------------------------------------------------------*/
 class DEV_CSWITCH : public SWITCH_BASE {
 private:
-  explicit  DEV_CSWITCH(const DEV_CSWITCH& p) :SWITCH_BASE(p){untested();}
+  explicit  DEV_CSWITCH(const DEV_CSWITCH& p) :SWITCH_BASE(p) {untested();}
 public:
-  explicit  DEV_CSWITCH()	:SWITCH_BASE(){}
+  explicit  DEV_CSWITCH()	:SWITCH_BASE() {}
 private: // override virtual
+  int	    max_nodes()const	{return 2;}
+  int	    min_nodes()const	{return 2;}
   int	    net_nodes()const	{return 2;}
-  CARD*	    clone()const	{untested();return new DEV_CSWITCH(*this);}
-  void	    expand();
-  const char* dev_type()const	{return "iswitch";}
-  char	    id_letter()const	{return 'W';}
+  CARD*	    clone()const	{untested(); return new DEV_CSWITCH(*this);}
+  void	    elabo1();
+  const char* dev_type()const	{untested(); return "iswitch";}
+  char	    id_letter()const	{untested(); return 'W';}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: mode.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: mode.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,17 +16,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * several enumerated types to identify various modes
  */
+//testing=script,complete 2006.07.14
 #ifndef MODE_H
 #define MODE_H
 #include "io_.h"
 /*--------------------------------------------------------------------------*/
 enum smode_t   {moUNKNOWN=0, moANALOG=1, moDIGITAL, moMIXED};
-inline OMSTREAM& operator<<(OMSTREAM& o, smode_t t){
+inline OMSTREAM& operator<<(OMSTREAM& o, smode_t t) {
   const char* s[] = {"unknown", "analog", "digital", "mixed"};
   assert(t >= int(moUNKNOWN));
   assert(t <= int(moMIXED));
@@ -43,7 +44,7 @@ enum SIM_MODE { // simulation types
 };
 const int sSTART = sNONE;
 const int sCOUNT = sFOURIER + 1;
-inline OMSTREAM& operator<<(OMSTREAM& o, SIM_MODE t){
+inline OMSTREAM& operator<<(OMSTREAM& o, SIM_MODE t) {
   const char* s[] = {"ALL", "AC", "OP", "DC", "TRAN", "FOURIER"};
   assert(t >= int(sNONE));
   assert(t <= int(sFOURIER));

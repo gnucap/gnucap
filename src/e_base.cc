@@ -1,4 +1,4 @@
-/*$Id: e_base.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: e_base.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,26 +16,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Base class for "cards" in the circuit description file
  */
+//testing=script 2006.07.12
 #include "ap.h"
 #include "s__.h"
-#include "u_opt.h"
 #include "u_prblst.h"
 #include "u_xprobe.h"
-#include "constant.h"
 #include "e_base.h"
 /*--------------------------------------------------------------------------*/
 double CKT_BASE::tr_probe_num(CS&)const {return NOT_VALID;}
-XPROBE CKT_BASE::ac_probe_ext(CS&)const {return XPROBE(NOT_VALID);}
+XPROBE CKT_BASE::ac_probe_ext(CS&)const {return XPROBE(NOT_VALID, mtNONE);}
 /*--------------------------------------------------------------------------*/
 BSMATRIX<double>  CKT_BASE::aa;
 BSMATRIX<double>  CKT_BASE::lu;
 BSMATRIX<COMPLEX> CKT_BASE::acx;
-int	CKT_BASE::_devcount = 0;
 double	CKT_BASE::_vmax =  .5;
 double	CKT_BASE::_vmin = -.5;
 /*--------------------------------------------------------------------------*/
@@ -45,7 +43,11 @@ CKT_BASE::~CKT_BASE()
   PROBE_LISTS::purge(this);
   trace1("", _probes);
   assert(_probes==0);
-  --_devcount;
+}
+/*--------------------------------------------------------------------------*/
+void CKT_BASE::parse_label(CS& cmd)
+{
+  set_label(cmd.ctos(TOKENTERM));
 }
 /*--------------------------------------------------------------------------*/
 void CKT_BASE::set_Label(const std::string& s)
@@ -54,15 +56,30 @@ void CKT_BASE::set_Label(const std::string& s)
   _label[0] = toupper(_label[0]);
 }
 /*--------------------------------------------------------------------------*/
+void CKT_BASE::parse_Label(CS& cmd)
+{
+  set_Label(cmd.ctos(TOKENTERM));
+}
+/*--------------------------------------------------------------------------*/
+const std::string CKT_BASE::long_label()const
+{
+  //incomplete();
+  std::string buffer(short_label());
+  //for (const CKT_BASE* brh = owner(); exists(brh); brh = brh->owner()) {
+  //  buffer += '.' + brh->short_label();
+  //}
+  return buffer;
+}
+/*--------------------------------------------------------------------------*/
 double CKT_BASE::probe_num(const std::string& what)const
 {
   double x;
-  if (SIM::mode == sAC){
+  if (SIM::mode == sAC) {
     x = ac_probe_num(what);
   }else{
     x = tr_probe_num_str(what);
   }
-  return (std::abs(x)>=1) ? x : rint(x/OPT::floor) * OPT::floor;
+  return (std::abs(x)>=1) ? x : floor(x/OPT::floor + .5) * OPT::floor;
 }
 /*--------------------------------------------------------------------------*/
 double CKT_BASE::tr_probe_num_str(const std::string& what)const
@@ -79,26 +96,36 @@ double CKT_BASE::ac_probe_num(const std::string& what)const
   char parameter[BUFLEN+1];
   strcpy(parameter, what.c_str());
 
-  if (length > 2  &&  pmatch(&parameter[length-2], "DB")){
+  if (length > 2  &&  pmatch(&parameter[length-2], "DB")) {
     want_db = true;
     length -= 2;
   }
-  if (length > 1){ // selects modifier based on last letter of parameter
-    switch (tolower(parameter[length-1])){
+  if (length > 1) { // selects modifier based on last letter of parameter
+    switch (tolower(parameter[length-1])) {
       case 'm': modifier = mtMAG;   length--;	break;
       case 'p': modifier = mtPHASE; length--;	break;
-      case 'r': modifier = mtREAL;  length--;	break;
-      case 'i': modifier = mtIMAG;  length--;	break;
+      case 'r': untested();modifier = mtREAL;  length--;	break;
+      case 'i': untested();modifier = mtIMAG;  length--;	break;
       default:  modifier = mtNONE;		break;
     }
   }
   parameter[length] = '\0'; // chop
   
   CS p(parameter);
-  XPROBE xp = ac_probe_ext(p); // chopped form
-  if (!xp.OK()){
+  // "p" is "what" with the modifier chopped off.
+  // Try that first.
+  XPROBE xp = ac_probe_ext(p);
+
+  // If we don't find it, try again with the full string.
+  if (!xp.OK()) {
     CS w(what);
-    xp = ac_probe_ext(w); // full form
+    xp = ac_probe_ext(w);
+    if (!xp.OK()) {
+      // Still didn't find anything.  Print "??".
+    }else{
+      untested();
+      // The second attempt worked.
+    }
   }
   return xp(modifier, want_db);
 }

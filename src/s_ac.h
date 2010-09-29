@@ -1,4 +1,4 @@
-/*$Id: s_ac.h,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
+/*$Id: s_ac.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,38 +16,47 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * AC analysis
  */
+//testing=script,complete 2006.07.14
 #ifndef S_AC_H
 #define S_AC_H
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 class AC : private SIM {
 public:
-	void	command(CS&);
+  void	command(CS&);
+
+  explicit AC():
+    SIM(),
+    start(0.),
+    stop(0.),
+    step(0.),
+    linswp(false)
+  {}
+
+  ~AC() {}
 private:
-	void	sweep();
-	void	first();
-	bool	next();
-	void	solve();
-	void	clear();
-	void	setup(CS&);
-	bool	by(CS&);
-	bool	decade(CS&);
-	bool	lin(CS&);
-	bool	octave(CS&);
-	bool	times(CS&);
+  explicit AC(const AC&):SIM() {unreachable(); incomplete();}
+  void	sweep();
+  void	first();
+  bool	next();
+  void	solve();
+  void	clear();
+  void	setup(CS&);
+  bool	by(CS&);
+  bool	decade(CS&);
+  bool	lin(CS&);
+  bool	octave(CS&);
+  bool	times(CS&);
 private:
   double start;		// sweep start time
   double stop;		// sweep stop time
   double step;		// printed step size
   bool linswp;		// flag: use linear sweep (vs log sweep)
-  bool echo;		// flag: echo the input when using input data file
-  bool cold;		// flag: power off.  all DC voltages are 0
-  bool cont;		// flag: continue.  don't do op first
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

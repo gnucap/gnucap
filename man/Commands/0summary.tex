@@ -1,4 +1,4 @@
-%$Id: 0summary.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: 0summary.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man commands summary .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{Command Summary}
 \index{command descriptions}
@@ -63,8 +63,8 @@ characteristics.  Sweeps DC input or component values.
 
 \item[{\tt EXIT}] Exits the program.  (Same as quit.)
 
-\item[{\tt FANOUT}] List by node number, the branches that connect to each
-node.
+%\item[{\tt FANOUT}] List by node number, the branches that connect to each
+%node.
 
 \item[{\tt FAULT}] Temporarily change a component.
 
@@ -81,8 +81,6 @@ generator.
 
 \item[{\tt INCLUDE}] Include a file from disk.  Add it the what is
 already in memory.
-
-\item[{\tt INSERT}] Insert a node number.  (Make a gap.)
 
 \item[{\tt LIST}] List the circuit on the console.
 
@@ -106,6 +104,8 @@ operating conditions.  Sweeps temperature.
 
 \item[{\tt OPTIONS}] View and set system options.  (Same as set.)
 
+\item[{\tt PARAMETER}] Set or view parameters.
+
 \item[{\tt PAUSE}] Wait for key hit, while in batch mode.
 
 \item[{\tt PLOT}] Select points in circuit (and their range) to plot.
@@ -122,7 +122,7 @@ operating conditions.  Sweeps temperature.
 
 \item[{\tt SWEEP}] Sweep a component.  (Loop function.)
 
-\item[{\tt TEMP}] SPICE command not implemented.
+\item[{\tt TEMP}] Set or view temperature.
 
 \item[{\tt TF}] SPICE command not implemented.
 

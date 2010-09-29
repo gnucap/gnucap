@@ -1,4 +1,4 @@
-/* $Id: d_mos2.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos2.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * mos model equations: spice level 2 equivalent
  */
@@ -37,7 +37,7 @@ model MOS2 {
     override {
       double mjsw "" default=.33;
       double tox "" default=1e-7;
-      double cox "" final_default="E_OX/tox";
+      double cox "" final_default="P_EPS_OX/tox";
       double vto "" final_default=0.0;
       double gamma "" final_default=0.0;
       double phi "" final_default=0.6;
@@ -48,16 +48,16 @@ model MOS2 {
       double kp "transconductance parameter"
 	name=KP final_default=2e-5 
 	print_test="!calc_kp" calc_print_test="calc_kp";
-      double nfs "fast surface state density" 
-	name=NFS default=0.0 scale=ICM2M2;
+      double nfs_cm "fast surface state density" 
+	name=NFS default=0.0;
       double vmax "max drift velocity of carriers"
 	name=VMAx default=NA;
       double neff "total channel charge coefficient"
 	name=NEFf default=1.0 positive 
 	print_test="neff != 1.0 || lambda == NA";
-      double ucrit "critical field mobility degradation"
-	name=UCRit default=1e4*ICM2M scale=ICM2M
-	print_test="ucrit != 1e4*ICM2M || uexp != NA";
+      double ucrit_cm "critical field mobility degradation"
+	name=UCRit default=1e4
+	print_test="ucrit_cm != 1e4 || uexp != NA";
       double uexp "critical field exponent in mob.deg."
 	name=UEXp default=NA;
       double utra "transverse field coefficient (not used)"
@@ -66,26 +66,28 @@ model MOS2 {
 	name=DELta default=0.0;
     }
     calculated_parameters {
+      double nfs "" calculate="nfs_cm*ICM2M2";
+      double ucrit "" calculate="ucrit_cm*ICM2M";
       bool calc_kp "" default=false;
       double alpha "" calculate="((nsub != NA)
-	? (2. * E_SI) / (Q * nsub)
+	? (2. * P_EPS_SI) / (P_Q * nsub)
 	: 0.)";
       double xd "coeffDepLayWidth" calculate="sqrt(alpha)";
       double xwb "" calculate="((nsub != NA)
 	? xd * sqrt(pb)
 	: .25e-6)";
-      double vbp "" calculate="ucrit * E_SI / cox";
-      double cfsox "" calculate="Q * nfs / cox";
+      double vbp "" calculate="ucrit * P_EPS_SI / cox";
+      double cfsox "" calculate="P_Q * nfs / cox";
     }
     code_pre {      
-      cox = E_OX / tox;
+      cox = P_EPS_OX / tox;
       if (kp == NA) {
 	kp = uo * cox;
 	calc_kp = true;
       }
       if (nsub != NA) {
 	if (phi == NA) {
-	  phi = (2.*KoQ) * _tnom * log(nsub/NI);
+	  phi = (2. * P_K_Q) * tnom_k * log(nsub/NI);
 	  if (phi < .1) {
 	    untested();
 	    error(bWARNING,
@@ -95,14 +97,14 @@ model MOS2 {
 	  calc_phi = true;
 	}
 	if (gamma == NA) {
-	  gamma = sqrt(2. * E_SI * Q * nsub) / cox;
+	  gamma = sqrt(2. * P_EPS_SI * P_Q * nsub) / cox;
 	  calc_gamma = true;
 	}
 	if (vto == NA) {
 	  double phi_ms = (tpg == gtMETAL)
 	    ? -.05 - (egap + polarity * phi) / 2.
 	    : -polarity * (tpg * egap + phi) / 2.;
-	  double vfb = phi_ms - Q * nss / cox;
+	  double vfb = phi_ms - P_Q * nss / cox;
 	  vto = vfb + polarity * (phi + gamma * sqrt(phi));
 	  calc_vto = true;
 	}
@@ -115,7 +117,7 @@ model MOS2 {
 	       ? .5 * m->xj / l_eff
 	       : NA)";
       double eta_1 "" calculate="((cgate != 0)
-	       ? (kPI/4.) * E_SI * m->delta / cgate * l_eff
+	       ? M_PI_4 * P_EPS_SI * m->delta / cgate * l_eff
 	       : 0.)";
       double eta "" calculate="eta_1 + 1.";
       double eta_2 "" calculate="eta / 2.";
@@ -123,9 +125,9 @@ model MOS2 {
   }
   temperature_dependent {
     calculated_parameters {
-      double vt "" calculate="kt / Q";
+      double vt "" calculate="temp * P_K_Q";
       double phi "" 
-	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)))";
+	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+P_Q*(arg)))";
       double sqrt_phi "" calculate="sqrt(phi)";
       double phi_sqrt_phi "" calculate="phi * sqrt_phi";
       double beta "" calculate="m->kp * tempratio4 * s->w_eff / s->l_eff";
@@ -135,10 +137,10 @@ model MOS2 {
 	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi))";
     }
     code_pre {
-      double temp = SIM::temp;
-      double tempratio  = temp / m->_tnom; // ratio
+      double temp = SIM::temp_c + P_CELSIUS0;
+      double tempratio  = temp / m->tnom_k; // ratio
       double tempratio4 = tempratio * sqrt(tempratio);
-      double kt = temp * K;
+      double kt = temp * P_K;
       double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
       double arg = (m->egap*tempratio - egap) / (2*kt);
     }
@@ -150,21 +152,21 @@ model MOS2 {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     trace1(d->long_label().c_str(), d->evaliter());
     trace3("", d->vds, d->vgs, d->vbs);
-    assert(m->_tnom > 0);
+    assert(m->tnom_k > 0);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     d->reverse_if_needed();
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     double v_phi_s = t->phi - d->vbs;
     double sarg, dsarg_dvbs, d2sdb2, sarg3;
     {
-      {if (d->vbs <= 0.) {
+      if (d->vbs <= 0.) {
 	sarg = sqrt(v_phi_s);
 	dsarg_dvbs = -.5 / sarg;
 	d2sdb2 = .5 * dsarg_dvbs / v_phi_s;
 	d->sbfwd = false;
 	trace3("sb-ok", sarg, v_phi_s, dsarg_dvbs);
       }else{
-	{if (OPT::mosflags & 01000) {
+	if (OPT::mosflags & 01000) {
 	  sarg = t->sqrt_phi / (1. + .5 * d->vbs / t->phi);
 	  dsarg_dvbs = -.5 * sarg * sarg / t->phi_sqrt_phi;
 	  d2sdb2 = -dsarg_dvbs * sarg / t->phi_sqrt_phi;
@@ -181,9 +183,9 @@ model MOS2 {
 	    * (2. * d->vbs * dsarg_dvbs + sarg);
 	  untested();
 	  trace3("***sb-reversed(00000)***", sarg, v_phi_s, dsarg_dvbs);
-	}}
+	}
 	d->sbfwd = true;
-      }}
+      }
       sarg3 = sarg*sarg*sarg;
       assert(sarg > 0.);
       assert(dsarg_dvbs < 0.);
@@ -195,14 +197,14 @@ model MOS2 {
     {
       double vbd = d->vbs - d->vds;
       double v_phi_d = t->phi - vbd;
-      {if (vbd <= 0.) {
+      if (vbd <= 0.) {
 	barg = sqrt(v_phi_d);
 	dbarg_dvbs = -.5 / barg;
 	d2bdb2 = .5 * dbarg_dvbs / v_phi_d;
-	d->dbfwd = false;
+	//d->dbfwd = false;
 	trace4("db-ok", barg, v_phi_d, dbarg_dvbs, d2bdb2);
       }else{
-	{if (OPT::mosflags & 01000) {
+	if (OPT::mosflags & 01000) {
 	  barg = t->sqrt_phi / (1. + .5 * vbd / t->phi);
 	  dbarg_dvbs = -.5 * barg * barg / t->phi_sqrt_phi;
 	  d2bdb2 = -dbarg_dvbs * barg / t->phi_sqrt_phi;
@@ -218,9 +220,9 @@ model MOS2 {
 	    - (.75 * barg / (t->phi_sqrt_phi * t->phi)) 
 	    * (2. * vbd * dbarg_dvbs + barg);
 	  trace4("***db-reversed(00000)***",barg, v_phi_d, dbarg_dvbs, d2bdb2);
-	}}
-	d->dbfwd = true;
-      }}
+	}
+	//d->dbfwd = true;
+      }
       assert(barg > 0.);
       assert(dbarg_dvbs < 0.);
       assert(up_order(-1/t->phi, d2bdb2, 1/t->phi));
@@ -228,7 +230,7 @@ model MOS2 {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     double gamma_s, dgamma_s_dvds, dgamma_s_dvbs, dgddb2;
     {
-      {if (short_channel) {
+      if (short_channel) {
 	double argxd = 1. + 2. * barg * m->xd / m->xj;
 	assert(argxd > 0);
 	double argd = sqrt(argxd);
@@ -270,7 +272,7 @@ model MOS2 {
 	dgamma_s_dvds = dgamma_s_dvbs = 0.;
 	dgddb2 = 0.;
 	trace4("short channel", gamma_s, dgamma_s_dvds, dgamma_s_dvds, dgddb2);
-      }}
+      }
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* von, subthreshold, cutoff, vgst */
@@ -282,7 +284,7 @@ model MOS2 {
       dvon_dvbs = -s->eta_1 + dgamma_s_dvbs * sarg + gamma_s * dsarg_dvbs;
       trace3("guess", vbin, d->von, dvon_dvbs);
       
-      {if (do_subthreshold) {
+      if (do_subthreshold) {
 	double cdonco = -(gamma_s*dsarg_dvbs + dgamma_s_dvbs*sarg) + s->eta_1;
 	xn = 1. + m->cfsox + cdonco;
 	vtxn = t->vt * xn;
@@ -313,7 +315,7 @@ model MOS2 {
 	  d->gmbf = d->gmbr = 0.;
 	  return;
 	}
-      }}
+      }
       double vgsx = (d->subthreshold) ? d->von : d->vgs;
       vc = vgsx - vbin;
       vc_eta = vc / s->eta;
@@ -322,7 +324,7 @@ model MOS2 {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     double ufact, duf_dvgs, duf_dvds, duf_dvbs, ueff;
     {
-      {if (m->uexp != NOT_INPUT  &&  d->vgst > m->vbp) {
+      if (m->uexp != NOT_INPUT  &&  d->vgst > m->vbp) {
 	ufact = pow(m->vbp/d->vgst, m->uexp);
 	duf_dvgs = -ufact * m->uexp / d->vgst;
 	duf_dvds = 0.;	/* wrong, but as per spice2 */
@@ -332,14 +334,14 @@ model MOS2 {
 	ufact = 1.;
 	duf_dvgs = duf_dvds = duf_dvbs = 0.;
 	trace4("def ufact", ufact, duf_dvgs, duf_dvds, duf_dvbs);
-      }}
+      }
       ueff = t->uo * ufact;	/* ???? */
       trace2("", ufact, ueff);
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* vdsat  according to Baum's Theory of scattering velocity saturation  */
     int use_vmax = m->vmax != NOT_INPUT;
-    {if (use_vmax) {
+    if (use_vmax) {
       double gammad = gamma_s / s->eta;
       double v1 = vc_eta + v_phi_s;
       double v2 = v_phi_s;
@@ -357,7 +359,7 @@ model MOS2 {
       double s2 = s*s;
       double p = s2 / 4. + r3 / 27.;			/* r */
       double y3;
-      {if (p < 0.) {					/* p */
+      if (p < 0.) {					/* p */
 	double ro = pow((-r3 / 27), (1./6.));		/* s2, r3 */
 	double fi = atan(-2. * sqrt(-p) / s);
 	y3 = 2. * ro * cos(fi/3.) - a / 3.;
@@ -367,11 +369,11 @@ model MOS2 {
 	double p4 = pow((fabs(-s/2.-p2)), (1./3.));	/* s */
 	y3 = p3 + p4 - a / 3.;				/* a */
 	untested();
-      }}
+      }
       
       double x4[8];
       int iknt = 0;
-      {if (a1*a1 / 4. - b1 + y3  < 0.  &&  y3*y3 / 4. - d1  < 0.) {
+      if (a1*a1 / 4. - b1 + y3  < 0.  &&  y3*y3 / 4. - d1  < 0.) {
 	untested();
 	error(bWARNING,
 	      "%s: internal error: a3,b4, a1=%g, b1=%g, y3=%g, d1=%g\n",
@@ -391,7 +393,7 @@ model MOS2 {
 	    x4[iknt++] = - a4 / 2. - sd4;		/* i */
 	  }
 	}
-      }}
+      }
       
       double xvalid = 0.;
       int root_count = 0;
@@ -407,15 +409,15 @@ model MOS2 {
 	    if (root_count <= 1) {		/* xvalid = min(x4[j]) */
 	      xvalid=x4[j];
 	    }
-	    {if (x4[j] <= xvalid) {
+	    if (x4[j] <= xvalid) {
 	      xvalid=x4[j];				/* x4[], j */
 	    }else{
 	      untested();
-	    }}
+	    }
 	  }
 	}
       }
-      {if (root_count <= 0) {				/* root_count */
+      if (root_count <= 0) {				/* root_count */
 	if (OPT::picky <= bTRACE || !IO::suppresserrors) {
 	  untested();
 	  error(bWARNING, d->long_label() + ": Baum's theory rejected\n");
@@ -426,19 +428,19 @@ model MOS2 {
       }else{
 	d->vdsat = xvalid*xvalid - v_phi_s;
 	trace1("use_vmax", d->vdsat);
-      }}
+      }
     }else{
       d->vdsat = 0.;
       trace1("!use_vmax", d->vdsat);
-    }}
+    }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* vdsat     according to Grove-Frohman equation  */
     double dvdsat_dvgs = NOT_VALID;
     double dvdsat_dvbs = NOT_VALID;
-    {if (!use_vmax) {
-      {if (gamma_s > 0.) {
+    if (!use_vmax) {
+      if (gamma_s > 0.) {
 	double argv = vc_eta + v_phi_s;
-	{if (argv > 0.) {
+	if (argv > 0.) {
 	  double gammad = gamma_s / s->eta;
 	  double gammd2 = gammad * gammad;
 	  double arg1 = sqrt(1. + 4. * argv / gammd2);
@@ -459,17 +461,17 @@ model MOS2 {
 	  untested();
 	  trace2("argv<0", argv, vc);
 	  trace3("!use_vmax,gamma>0,argv<=0",d->vdsat,dvdsat_dvgs,dvdsat_dvbs);
-	}}
+	}
       }else{
 	d->vdsat = vc_eta;
 	dvdsat_dvgs = 1.;
 	dvdsat_dvbs = 0.;
 	trace3("!use_vmax, gamma<=0", d->vdsat, dvdsat_dvgs, dvdsat_dvbs);
-      }}
+      }
     }else{
       /* dvdsat_dvgs, dvdsat_dvbs   deferred */
       trace3("use_vmax", d->vdsat, dvdsat_dvgs, dvdsat_dvbs);
-    }}
+    }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     if (d->vdsat < 0.) {
       error(bWARNING, "%s: calculated vdsat (%g) < 0.  using vdsat = 0.\n",
@@ -480,7 +482,7 @@ model MOS2 {
     double bsarg, dbsarg_dvbs;
     {
       double vbdsat = d->vbs - d->vdsat;
-      {if (vbdsat <= 0.) {
+      if (vbdsat <= 0.) {
 	double v_phi_ds = t->phi - vbdsat;
 	bsarg = sqrt(v_phi_ds);
 	dbsarg_dvbs = -.5 / bsarg;
@@ -490,12 +492,12 @@ model MOS2 {
 	dbsarg_dvbs = -.5 * bsarg * bsarg / t->phi_sqrt_phi;
 	untested();
 	trace3("vbdsat > 0", vbdsat, bsarg, dbsarg_dvbs);
-      }}
+      }
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     /* local   dvdsat_dvgs, dvdsat_dvbs   maybe */
     {
-      {if (use_vmax) {
+      if (use_vmax) {
 	double bodys = bsarg*bsarg*bsarg - sarg3;
 	double gdbdvs =
 	  2. * gamma_s * (bsarg*bsarg*dbsarg_dvbs - sarg*sarg*dsarg_dvbs);
@@ -513,17 +515,17 @@ model MOS2 {
       }else{
 	/* dvdsat_dvgs, dvdsat_dvbs   already set */
 	trace2("!use_vmax", dvdsat_dvgs, dvdsat_dvbs);
-      }}
+      }
       assert(dvdsat_dvgs != NOT_VALID);
       assert(dvdsat_dvbs != NOT_VALID);
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     double  dl_dvgs, dl_dvds, dl_dvbs, clfact;
     {
-      {if (d->vds > 0.) {
-	{if (m->lambda == NOT_INPUT) {
+      if (d->vds > 0.) {
+	if (m->lambda == NOT_INPUT) {
 	  double dldsat;
-	  {if (use_vmax) {
+	  if (use_vmax) {
 	    double xdv = m->xd / sqrt(m->neff);
 	    double xlv = m->vmax * xdv / (2. * ueff);
 	    double argv = d->vds - d->vdsat;
@@ -538,7 +540,7 @@ model MOS2 {
 	  }else{
 	    double argv = (d->vds - d->vdsat) / 4.;
 	    double sargv = sqrt(1. + argv*argv);
-	    {if (argv + sargv >= 0.) {
+	    if (argv + sargv >= 0.) {
 	      double dl = m->xd * sqrt(argv + sargv);
 	      /* lambda = dl / (s->l_eff * d->vds); */
 	      clfact = (1. - dl / s->l_eff);
@@ -551,8 +553,8 @@ model MOS2 {
 	      untested();
 	      error(bWARNING, "%s: internal error: vds(%g) < vdsat(%g)\n",
 		    d->long_label().c_str(), d->vds,   d->vdsat);
-	    }}
-	  }}
+	    }
+	  }
 	  dl_dvgs =  dvdsat_dvgs * dldsat;
 	  dl_dvds =              - dldsat;
 	  dl_dvbs =  dvdsat_dvbs * dldsat;
@@ -561,7 +563,7 @@ model MOS2 {
 	  clfact = (1. - m->lambda * d->vds);
 	  dl_dvgs = dl_dvbs = 0.;
 	  dl_dvds = -m->lambda;
-	}}
+	}
 	
 	/* clfact = (1. - lambda * d->vds); */
 	if (clfact < m->xwb/s->l_eff) {
@@ -577,7 +579,7 @@ model MOS2 {
 	clfact = 1.;
 	dl_dvgs = dl_dvds = dl_dvbs = 0.;
 	trace1("*** vds < 0 ***", d->vds);
-      }}
+      }
       trace4("", dl_dvgs, dl_dvds, dl_dvbs, clfact);
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
@@ -641,14 +643,14 @@ model MOS2 {
       }
       trace4("", d->ids, d->gmf, d->gds, d->gmbf);
     }
-    {if (d->reversed){
+    if (d->reversed) {
       d->ids *= -1;
       d->gmr = d->gmf;
       d->gmbr = d->gmbf;
       d->gmf = d->gmbf = 0;
     }else{
       d->gmr = d->gmbr = 0.;
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

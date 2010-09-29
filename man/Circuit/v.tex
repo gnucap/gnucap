@@ -1,4 +1,4 @@
-%$Id: v.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: v.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit v .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,16 +17,22 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt V}: Independent Voltage Source}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
 {\tt V}{\it xxxxxxx n+ n-- value}\\
 {\tt V}{\it xxxxxxx n+ n-- expression}\\
-{\tt .VSOurce} {\it label n+ n-- expression}
+{\tt V}{\it xxxxxxx n+ n--} {\tt GENERATOR} {\it scale}\\
+{\tt .vsource} {\it label n+ n-- expression}
+\end{verse}
+\subsubsection{Model (optional)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt TABLE} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -42,5 +48,33 @@ All of the SPICE time dependent functions ({\tt pulse}, {\tt sin}, {\tt
 exp}, {\tt pwl}, and {\tt sffm} are supported.  An additional
 function {\tt generator} emulates a laboratory type function generator, for
 a more convenient signal input to the circuit.
+See the chapter ``Behavioral modeling'' for more information.
+
+You may specify the {\it value} in any of these forms:
+
+\begin{enumerate}
+  
+\item
+A simple value.  This is the DC voltage.
+  
+\item
+An expression, as described in the behavioral modeling chapter.  The
+expression can specify the voltage as a function of time.
+
+\item
+A {\it model}, as described in the behavioral modeling chapter.  The
+{\tt table} model describes a table of voltage vs. time.
+
+\item
+The keyword {\tt generator} which specifies a time dependent waveform
+set by the {\tt generator} command for transient analysis, or a swept
+voltage for AC analysis.
+
+\end{enumerate}
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+The standard probes for all basic elements are all available.  See the
+{\tt print} command for documentation.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

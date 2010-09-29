@@ -1,4 +1,4 @@
-/*$Id: s_ac_set.cc,v 24.19 2004/01/11 23:02:30 al Exp $ -*- C++ -*-
+/*$Id: s_ac_set.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,14 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * ac analysis setup
  */
+//testing=script 2006.07.14
 #include "u_prblst.h"
-#include "u_opt.h"
-#include "constant.h"
 #include "ap.h"
 #include "s_ac.h"
 /*--------------------------------------------------------------------------*/
@@ -40,16 +39,15 @@ void AC::setup(CS& cmd)
 {
   out = IO::mstdout;
   out.reset(); /* BUG: don't know why this is needed */
-  temp = OPT::tempamb;
+  temp_c = OPT::temp_c;
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
-  cold = cont = echo = false;
 
-       if (cmd.pmatch("*$$"))    times(cmd);
-  else if (cmd.pmatch("By"))     by(cmd);
-  else if (cmd.pmatch("Decade")) decade(cmd);
-  else if (cmd.pmatch("TImes"))  times(cmd);
-  else if (cmd.pmatch("LIn"))	 lin(cmd);
-  else if (cmd.pmatch("Octave")) octave(cmd);
+       if (cmd.pmatch("*$$"))    {untested();	times(cmd);}
+  else if (cmd.pmatch("By"))     {untested();	by(cmd);}
+  else if (cmd.pmatch("Decade")) {		decade(cmd);}
+  else if (cmd.pmatch("TImes"))  {untested();	times(cmd);}
+  else if (cmd.pmatch("LIn"))    {untested();	lin(cmd);}
+  else if (cmd.pmatch("Octave")) {		octave(cmd);}
   
   if (cmd.is_float()) {
     start = cmd.ctof();
@@ -64,7 +62,7 @@ void AC::setup(CS& cmd)
 
   int here = cmd.cursor();
   do{
-    0
+    ONE_OF
       || (cmd.pmatch("*$$")	&& times(cmd))
       || (cmd.pmatch("+$$")	&& by(cmd))
       || (cmd.pmatch("By")	&& by(cmd))
@@ -72,13 +70,9 @@ void AC::setup(CS& cmd)
       || (cmd.pmatch("TImes")	&& times(cmd))
       || (cmd.pmatch("LIn")	&& lin(cmd))
       || (cmd.pmatch("Octave")	&& octave(cmd))
-      || get(cmd, "Ambient",	&temp,   mOFFSET, OPT::tempamb)
-      || get(cmd, "Cold",	&cold)
-      || get(cmd, "CONTinue",	&cont)
-      || get(cmd, "Echo",	&echo)
+      || get(cmd, "DTemp",	&temp_c,  mOFFSET, OPT::temp_c)
       || get(cmd, "PLot",	&ploton)
-      || get(cmd, "Reftemp",	&temp,   mOFFSET, OPT::tnom)
-      || get(cmd, "Temperature",&temp,mOFFSET, -ABS_ZERO)
+      || get(cmd, "TEmperature",&temp_c)
       || outset(cmd,&out)
       ;
   }while (cmd.more() && !cmd.stuck(&here));
@@ -86,7 +80,7 @@ void AC::setup(CS& cmd)
 
   IO::plotout = (ploton) ? IO::mstdout : OMSTREAM();
   initio(out);
-  if (needslinfix) {			// LIN option is # of points.
+  if (needslinfix) {untested();		// LIN option is # of points.
     assert(step >= 2);			// Must compute step after 
     step=(stop-start)/(step-1.);	// reading start and stop,
     needslinfix = false;		// but step must be read first
@@ -118,10 +112,11 @@ bool AC::decade(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 bool AC::lin(CS& cmd)
-{
+{untested();
   step = cmd.ctopf();		// need to fix step, later
-  if (step <= 2.) {		// do it at the end of setup
+  if (step <= 2.) {untested();		// do it at the end of setup
     step = 2.;			// a kluge, but this is a patch
+  }else{untested();
   }
   needslinfix = true;		// and I am too lazy to do it
   linswp = true;		// right.
@@ -131,9 +126,8 @@ bool AC::lin(CS& cmd)
 bool AC::octave(CS& cmd)
 {
   step = cmd.ctopf();
-  if (step == 0.) {
+  if (step == 0.) {untested();
     step = 1.;
-    untested();
   }
   step = pow(2.00000001, 1./step);
   needslinfix = false;
@@ -142,13 +136,12 @@ bool AC::octave(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 bool AC::times(CS& cmd)
-{
+{untested();
   step = cmd.ctopf();
-  if (step == 0.  &&  start != 0.) {
+  if (step == 0.  &&  start != 0.) {untested();
     step = stop / start;
     untested();
-  }else{
-    //untested();
+  }else{untested();
   }
   needslinfix = false;
   linswp = false;

@@ -1,4 +1,4 @@
-%$Id: log.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: log.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man commands log .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt LOG} command}
 \index{log command}
@@ -32,9 +32,9 @@
 %------------------------------------------------------------------------
 \subsection{Syntax}
 \begin{verse}
-{\tt LOg} {\it file}\\
-{\tt LOg >>} {\it file}\\
-{\tt LOg}
+{\tt log} {\it file}\\
+{\tt log >>} {\it file}\\
+{\tt log}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -49,10 +49,10 @@ creates one.
 Files can be nested.  If you open one while another is already open, both
 will contain all the information.
 
-A bare {\tt LOg} closes the file.  Because of this, the last line of this
-file is always {\tt LOg}.  Ordinarily, this will not be of any consequence,
+A bare {\tt log} closes the file.  Because of this, the last line of this
+file is always {\tt log}.  Ordinarily, this will not be of any consequence,
 but if a log file is open when you use this file as command input, this will
-close it.  If more than one {\tt LOg} file is open, they will be closed in
+close it.  If more than one {\tt log} file is open, they will be closed in
 the reverse of the order in which they were opened, maintaining nesting.
 
 See also: `{\tt >}' and `{\tt <}' commands.

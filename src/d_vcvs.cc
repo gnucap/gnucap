@@ -1,4 +1,4 @@
-/*$Id: d_vcvs.cc,v 24.9 2003/08/24 03:04:33 al Exp $ -*- C++ -*-
+/*$Id: d_vcvs.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * functions for vcvs
  * temporary kluge: it has resistance
  */
+//testing=script,complete 2006.07.17
 #include "d_vcvs.h"
 /*--------------------------------------------------------------------------*/
 void DEV_VCVS::precalc()
@@ -40,20 +41,22 @@ void DEV_VCVS::precalc()
 void DEV_VCVS::dc_begin()
 {
   _loss1 = _loss0 = 1./OPT::shortckt;
-  if (!using_tr_eval()){
+  if (!using_tr_eval()) {
     assert(_y0.f0 == LINEAR);
     assert(_y0.f1 == value());
     assert(_m1 == _m0);
     assert(_m0.c0 == 0.);
     _m0.c1 = -_loss0 * _y0.f1;
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_VCVS::do_tr()
 {
-  {if (using_tr_eval()){
-    _m0.x = tr_involts_limited();
-    _y0.x = _m0.x;
+  if (using_tr_eval()) {
+    _y0.x = _m0.x = tr_involts_limited();
+    //_y0.x = tr_input_limited();
+    //assert(_y0.x == _m0.x);
     tr_eval();
     assert(_y0.f0 != LINEAR);
     store_values();
@@ -68,7 +71,7 @@ bool DEV_VCVS::do_tr()
     assert(_m0.c0 == 0.);
     assert(_y1 == _y0);
     assert(converged());
-  }}
+  }
   return converged();
 }
 /*--------------------------------------------------------------------------*/
@@ -81,13 +84,13 @@ void DEV_VCVS::ac_begin()
 /*--------------------------------------------------------------------------*/
 void DEV_VCVS::do_ac()
 {
-  {if (has_ac_eval()){
+  if (using_ac_eval()) {
     ac_eval();
     _acg = -_loss0 * _ev;
   }else{
     assert(_ev == _y0.f1);
-    assert(has_tr_eval() || _ev == value());
-  }}
+    assert(has_tr_eval() || _ev == double(value()));
+  }
   ac_load(); 
 }
 /*--------------------------------------------------------------------------*/

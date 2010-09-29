@@ -1,4 +1,4 @@
-/*$Id: mg_out_root.cc,v 21.14 2002/03/26 09:20:13 al Exp $ -*- C++ -*-
+/*$Id: mg_out_root.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,9 +16,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
+
+#include "md.h"
 #include "mg_out.h"
 /*--------------------------------------------------------------------------*/
 static void make_header(std::ofstream& out, const File& in,
@@ -50,7 +52,7 @@ static void make_tail(std::ofstream& out, const File& in)
 void make_cc_file(const File& in)
 {
   std::string dump_name = in.name();
-  {
+  { // chop suffix .model
     std::string::size_type loc = dump_name.rfind(".model");
     if (loc != std::string::npos) {
       dump_name.erase(loc);
@@ -58,24 +60,29 @@ void make_cc_file(const File& in)
       untested();
     }
   }
+  { // chop prefix path
+    std::string::size_type loc = dump_name.find_last_of(ENDDIR);
+    if (loc != std::string::npos) {
+      dump_name.erase(0, loc+1);
+    }else{
+      untested();
+    }
+  }
+
+  // open file
   std::ofstream out((dump_name+".cc").c_str());
   if (!out) {
     untested();
     os_error(dump_name);
   }
-  {
-    std::string::size_type loc = dump_name.find("../");
-    if (loc != std::string::npos) {
-      dump_name.erase(loc,3);
-    }
-  }
+
   make_header(out, in, dump_name);
 
-  {for (Model_List::const_iterator
+  for (Model_List::const_iterator
 	 m = in.models().begin();  m != in.models().end();  ++m) {
     make_cc_model(out, **m);
-  }}
-  {for (Device_List::const_iterator
+  }
+  for (Device_List::const_iterator
 	 m = in.devices().begin();  m != in.devices().end();  ++m) {
     out << "int DEV_" << (**m).name() << "::_count = 0;\n"
       "int COMMON_" << (**m).name() << "::_count = -1;\n"
@@ -85,7 +92,7 @@ void make_cc_file(const File& in)
       "------------------------------------*/\n";
     make_cc_common(out, **m);
     make_cc_dev(out, **m);
-  }}
+  }
   make_tail(out, in);
 }
 /*--------------------------------------------------------------------------*/

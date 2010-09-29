@@ -1,4 +1,4 @@
-/*$Id: md.cc,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
+/*$Id: md.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,19 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Non-portable functions.  Do all portability patches here.
  */
+//testing=script,sparse 2006.07.16
 #include "md.h"
-#include <errno.h>
-#include <signal.h>
-#if defined(WIN32)
-#include <dos.h>
-#include <process.h>
-#include <time.h>
-#endif
 /*--------------------------------------------------------------------------*/
 	void    setup_traps(void);
 static	void	new_ex_handler();
@@ -37,31 +31,27 @@ extern "C" {
   static void	sig_int(SIGNALARGS);
   static void	sig_fpe(SIGNALARGS);
 }
-	int	getrusage(int,struct rusage*);
 /*--------------------------------------------------------------------------*/
 void setup_traps(void)
 {
   signal(SIGFPE,sig_fpe);
   signal(SIGINT,sig_int);
   signal(SIGABRT,sig_abrt);
-#if !defined(NEW_IS_BROKEN)
   std::set_new_handler(new_ex_handler);
-#endif
 }
 /*--------------------------------------------------------------------------*/
-#if !defined(NEW_IS_BROKEN)
 static void new_ex_handler()
 {
   untested();
   error(bERROR, "out of memory\n");
 }
-#endif
 /*--------------------------------------------------------------------------*/
 /* sig_abrt: trap asserts
  */
 extern "C" {
   static void sig_abrt(SIGNALARGS)
   {
+    itested();
     signal(SIGINT,sig_abrt);
     error(bERROR, "\n");
   }
@@ -74,6 +64,7 @@ extern "C" {
 extern "C" {
   static void sig_int(SIGNALARGS)
   {
+    itested();
     signal(SIGINT,sig_int);
     error(bERROR, "\n");
   }
@@ -87,17 +78,5 @@ extern "C" {
     error(bDANGER, "floating point error\n");
   }
 }
-/*--------------------------------------------------------------------------*/
-#if defined(NEEDS_GETRUSAGE)
-int getrusage(int /*who*/, struct rusage *rusage)
-{
-  double ticks = (double)clock();
-  rusage->ru_stime.tv_sec = rusage->ru_stime.tv_usec = 0;
-  rusage->ru_utime.tv_usec =
-    static_cast<long>(fmod(ticks, (double)CLK_TCK)*(1000000./(double)CLK_TCK));
-  rusage->ru_utime.tv_sec = static_cast<long>(ticks/(double)CLK_TCK);
-  return 0;
-}
-#endif
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

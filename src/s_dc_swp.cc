@@ -1,4 +1,4 @@
-/*$Id: s_dc_swp.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: s_dc_swp.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,61 +16,77 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * dc analysis sweep
  */
+//testing=script 2006.07.14
 #include "l_denoise.h"
-#include "l_compar.h"
-#include "e_card.h"
-#include "constant.h"
 #include "s_dc.h"
 /*--------------------------------------------------------------------------*/
 //	void	DCOP::sweep(void);
+//	void	DCOP::sweep_recursive(int);
 //	void	DCOP::first(int);
 //	bool	DCOP::next(int);
 /*--------------------------------------------------------------------------*/
 void DCOP::sweep(void)
 {
-  int converged;
-  int itl = OPT::itl[OPT::DCBIAS];
-  
-  head(start[0], stop[0], linswp[0], " ");
+  head(start[0], stop[0], " ");
   bypass_ok = false;
   inc_mode = tsBAD;
-  if (cont) {
-    untested();
+  if (cont) {untested();
     restore();
-  }
+   }
   
-  first(0);
   clear_limit();
   CARD_LIST::card_list.dc_begin();
+  sweep_recursive(n_sweeps);
+}
+/*--------------------------------------------------------------------------*/
+void DCOP::sweep_recursive(int ii)
+{
+  --ii;
+  assert(ii >= 0);
+  assert(ii < DCNEST);
+
+  OPT::ITL itl = OPT::DCBIAS;
+  
+  first(ii);
   do {
-    IO::suppresserrors = trace < tVERBOSE;
-    converged = solve(itl,trace);
-    if (!converged) {
-      error(bWARNING, "did not converge\n");
+    if (ii == 0) {
+      IO::suppresserrors = trace < tVERBOSE;
+      int converged = solve(itl,trace);
+      if (!converged) {itested();
+	error(bWARNING, "did not converge\n");
+      }
+      ::status.accept.start();
+      set_limit();
+      CARD_LIST::card_list.tr_accept();
+      ::status.accept.stop();
+      keep();
+      outdata(*sweepval[ii]);
+      itl = OPT::DCXFER;
+    }else{
+      sweep_recursive(ii);
     }
-    STATUS::accept.start();
-    set_limit();
-    CARD_LIST::card_list.tr_accept();
-    STATUS::accept.stop();
-    keep();
-    outdata(*sweepval[0]);
-    itl = OPT::itl[OPT::DCXFER];
-  } while (next(0));
+  } while (next(ii));
 }
 /*--------------------------------------------------------------------------*/
 void DCOP::first(int ii)
 {
+  assert(ii >= 0);
+  assert(ii < DCNEST);
+  assert(start);
+  assert(sweepval);
+  assert(sweepval[ii]);
+
   *sweepval[ii] = start[ii];
-  if (reverse) {
-    untested();
+  if (reverse) {untested();
     reverse = false;
-    while (next(ii))
+    while (next(ii)) {untested();
       /* nothing */;
+    }
     reverse = true;
     next(ii);
   }
@@ -80,9 +96,9 @@ void DCOP::first(int ii)
 bool DCOP::next(int ii)
 {
   bool ok = false;
-  {if (linswp[ii]) {
+  if (linswp[ii]) {
     double fudge = step[ii] / 10.;
-    {if (step[ii] == 0.) {
+    if (step[ii] == 0.) {
       ok = false;
     }else{
       if (!reverse) {
@@ -98,30 +114,25 @@ bool DCOP::next(int ii)
 	fixzero(sweepval[ii], step[ii]);
 	ok=in_order(start[ii]-fudge,*(sweepval[ii]),stop[ii]+fudge);
       }
-    }}
+    }
   }else{
     double fudge = pow(step[ii], .1);
-    {if (step[ii] == 1.) {
-      untested();
+    if (step[ii] == 1.) {untested();
       ok = false;
     }else{
-      {if (!reverse) {
+      if (!reverse) {
 	*(sweepval[ii]) *= step[ii];
 	ok=in_order(start[ii]/fudge,*(sweepval[ii]),stop[ii]*fudge);
-	if (!ok  &&  loop) {
-	  untested();
+	if (!ok  &&  loop) {untested();
 	  reverse = true;
 	}     
-      }else{
-	untested();
-      }}
-      if (reverse) {
-	untested();
+      }
+      if (reverse) {untested();
 	*(sweepval[ii]) /= step[ii];
 	ok=in_order(start[ii]/fudge,*(sweepval[ii]),stop[ii]*fudge);
       }
-    }}
-  }}
+    }
+  }
   phase = pDC_SWEEP;
   return ok;
 }

@@ -1,1 +1,66 @@
-../src/ap_get.cc
+/*$Id: ap_get.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+ * Copyright (C) 2001 Albert Davis
+ * Author: Albert Davis <aldavis@ieee.org>
+ *
+ * This file is part of "Gnucap", the Gnu Circuit Analysis Package
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ *------------------------------------------------------------------
+ * get value for matching keyword
+ */
+//testing=script 2006.07.17
+#include "ap.h"
+/*--------------------------------------------------------------------------*/
+/* special version of "get" for "bool"
+ * so "nofoo" works as an equivalent to foo=false
+ */
+bool get(CS& cmd, const std::string& key, bool* val)
+{
+  if (cmd.dmatch(key)) {
+    if (cmd.skip1b('=')) {untested();
+      cmd >> *val;
+    }else{
+      *val = true;
+    }
+    return true;
+  }else if (cmd.dmatch("NO" + key)) {
+    *val = false;
+    return true;
+  }else{
+    return false;
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool get(CS& cmd, const std::string& key, int* val, AP_MOD mod, int scale)
+{
+  if (cmd.dmatch(key)) {
+    cmd.skip1b('=');
+    switch(mod) {
+      case mNONE:		  *val = int(cmd.ctof());	break;
+      case mSCALE:    untested(); *val = int(cmd.ctof())*scale;	break;
+      case mOFFSET:   untested(); *val = int(cmd.ctof())+scale;	break;
+      case mINVERT:   untested(); *val = 1 / int(cmd.ctof());	break;
+      case mPOSITIVE: untested(); *val = std::abs(int(cmd.ctof())); break;
+      case mOCTAL:		  *val = cmd.ctoo();		break;
+      case mHEX:      untested(); *val = cmd.ctox();		break;
+    }
+    return true;
+  }else{
+    return false;
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/

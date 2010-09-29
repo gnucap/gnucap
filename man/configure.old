@@ -1,0 +1,4 @@
+#!/bin/sh
+rm -f Makefile
+cp Makefile.template Makefile
+exit 0

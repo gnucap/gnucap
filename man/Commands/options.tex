@@ -1,4 +1,4 @@
-%$Id: options.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: options.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man commands options .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt OPTIONS} command}
 \index{options command}
@@ -29,8 +29,8 @@
 %------------------------------------------------------------------------
 \subsection{Syntax}
 \begin{verse}
-{\tt OPTions}\\
-{\tt OPTions} {\it option-name value} ...
+{\tt options}\\
+{\tt options} {\it option-name value} ...
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -42,7 +42,7 @@ Sets options, iteration parameters, global data.
 Typical usage is the name of the item to set followed by the
 value.
 
-The bare command `{\tt OPTions}' displays the values.
+The bare command `{\tt options}' displays the values.
 
 These options control the simulation by specifying how to
 handle marginal circumstances, how long to wait for
@@ -55,49 +55,49 @@ Most of the SPICE options are supported, more have been added.
 \begin{description}
 
 \index{accounting}
-\item[{\tt ACCT}] Turns on accounting.  When enabled, print the
+\item[{\tt acct}] Turns on accounting.  When enabled, print the
 CPU time used after each command, and a summary on exit in batch
 more.  This does not affect accounting done by the {\tt status}
 command.
 
-\item[{\tt NOACCT}] Turns off accounting.  (Not in SPICE.)
+\item[{\tt noacct}] Turns off accounting.  (Not in SPICE.)
 
 \index{echo file input}
-\item[{\tt LIST}] Turns on echo of files read by {\tt get} and
+\item[{\tt list}] Turns on echo of files read by {\tt get} and
 {\tt merge} commands, and in batch mode.  (SPICE option accepted
 but not implemented.)
 
-\item[{\tt NOLIST}] Turns off list option.  (Not in SPICE.)
+\item[{\tt nolist}] Turns off list option.  (Not in SPICE.)
 
-\item[{\tt MOD}] Enable printout of model parameters.  (Accepted,
-but not implemented, to complement {\tt NOMOD}.)
+\item[{\tt mod}] Enable printout of model parameters.  (Accepted,
+but not implemented, to complement {\tt nomod}.)
 
-\item[{\tt NOMOD}] Suppress printout of model parameters.  (SPICE
+\item[{\tt nomod}] Suppress printout of model parameters.  (SPICE
 option accepted but not implemented.)
 
-\item[{\tt PAGE}] Enable page ejects at the beginning of
+\item[{\tt page}] Enable page ejects at the beginning of
 simulation runs.  (Accepted, but not implemented, to complement
-{\tt NOPAGE}.)
+{\tt nopage}.)
 
-\item[{\tt NOPAGE}] Turn off page ejects.  (SPICE option accepted
+\item[{\tt nopage}] Turn off page ejects.  (SPICE option accepted
 but not implemented.)
 
-\item[{\tt NODE}] Enable printing of the node table.  (SPICE
+\item[{\tt node}] Enable printing of the node table.  (SPICE
 option accepted but not implemented.)
 
-\item[{\tt NONODE}] Disable printing of the node table.
+\item[{\tt nonode}] Disable printing of the node table.
 (Accepted, but not implemented, to complement {\tt NODE}.)
 
-\item[{\tt OPTS}] Enable printing of option values on every options
+\item[{\tt opts}] Enable printing of option values on every options
 command.
 
-\item[{\tt NOOPTS}] Disable automatic printing of option values.
+\item[{\tt noopts}] Disable automatic printing of option values.
 Option values are only printed on a null options command.
 
 \index{gmin option}
 \index{minimum conductance}
 \index{open circuit error}
-\item[{\tt GMIN} = {\it x}] Minimum conductance allowed by the program.
+\item[{\tt gmin} = {\it x}] Minimum conductance allowed by the program.
 (Default = 1e-12 or 1 picomho.)  Every node must have a net
 minimum conductance of {\tt GMIN} to ground.  If effective open
 circuits are found during the solution process (leading to a
@@ -107,7 +107,7 @@ ground, after printing an "open circuit" error message.
 \index{reltol option}
 \index{relative tolerance}
 \index{convergence criteria}
-\item[{\tt RELTOL} = {\it x}] Relative error tolerance allowed.
+\item[{\tt reltol} = {\it x}] Relative error tolerance allowed.
 (Default =.001 or .1\%.)
 If the ratio of successive values in iteration are within {\tt
 RELTOL} of one, this value is considered to have converged.
@@ -115,7 +115,7 @@ RELTOL} of one, this value is considered to have converged.
 \index{abstol option}
 \index{absolute tolerance}
 \index{convergence criteria}
-\item[{\tt ABSTOL} = {\it x}] Absolute error tolerance
+\item[{\tt abstol} = {\it x}] Absolute error tolerance
 allowed.  (Default = 1e-12)
 If successive values in iteration are within {\tt ABSTOL} of
 each other, this value is considered to have converged.
@@ -123,7 +123,7 @@ each other, this value is considered to have converged.
 \index{vntol option}
 \index{voltage tolerance}
 \index{model evaluation bypass}
-\item[{\tt VNTOL} = {\it x}] Absolute voltage error required to
+\item[{\tt vntol} = {\it x}] Absolute voltage error required to
 force model re-evaluation.  (Default = 1e-12 or 1 microvolt.)
 If the voltage at the terminals of a model is within {\tt
 VNTOL} of the previous iteration, the model is not
@@ -131,26 +131,26 @@ re-evaluated.  The old values are used directly.
 
 \index{trtol option}
 \index{transient error tolerance}
-\item[{\tt TRTOL} = {\it x}] Transient error ``tolerance''.
+\item[{\tt trtol} = {\it x}] Transient error ``tolerance''.
 (Default = 7.)  This parameter is an estimate of the factor by
 which the program overestimates the actual truncation error.
 
 \index{chgtol option}
 \index{charge error tolerance}
-\item[{\tt CHGTOL} = {\it x}] Charge tolerance.  (Default =
+\item[{\tt chgtol} = {\it x}] Charge tolerance.  (Default =
 1e-14) It is used in step size control in transient analysis.
 
 \index{pivtol option}
 \index{pivot tolerance}
-\item[{\tt PIVTOL} = {\it x}] Pivot tolerance.  (Default =
+\item[{\tt pivtol} = {\it x}] Pivot tolerance.  (Default =
 1e-13) SPICE option accepted but not implemented.
 
 \index{pivrel option}
-\item[{\tt PIVREL} = {\it x}] Pivot ratio.  (Default = 1e-3)
+\item[{\tt pivrel} = {\it x}] Pivot ratio.  (Default = 1e-3)
 SPICE option accepted but not implemented.
 
 \index{numdgt option}
-\item[{\tt NUMDGT} = {\it x}] Number of significant digits to print
+\item[{\tt numdgt} = {\it x}] Number of significant digits to print
 for analysis results.  (Default = 5.)  It is silently limited to 3
 to 20.
 
@@ -158,44 +158,44 @@ to 20.
 \index{temperature}
 \index{nominal temperature}
 \index{reference temperature}
-\item[{\tt TNOM} = {\it x}] Nominal temperature.  (Default =
-27$^{\circ}$ C.)
-All components have their nominal value at this temperature.
+\item[{\tt tnom} = {\it x}]
+Nominal temperature.  (Default = 27$^{\circ}$ C.)  All components have
+their nominal value at this temperature.
 
 \index{iteration count}
 \index{itl? options}
-\item[{\tt ITL1} = {\it x}] DC iteration limit.  (Default = 100.)
+\item[{\tt itl1} = {\it x}] DC iteration limit.  (Default = 100.)
 Sets the maximum number of iterations in a DC, OP, or initial
 transient analysis allowed before stopping and reporting that it
 did not converge.
 
-\item[{\tt ITL2} = {\it x}] DC transfer curve iteration limit.
+\item[{\tt itl2} = {\it x}] DC transfer curve iteration limit.
 (Default = 50.)  SPICE option accepted but not implemented.
-Use ITL1 instead.
+Use {\tt itl1} instead.
 
-\item[{\tt ITL3} = {\it x}] Lower transient iteration limit.
-(Default = 4.)  If the number of iterations is more than {\tt ITL3}
-the step size will not increase beyond its present size.  Otherwise,
-it can grow by trstepgrow.
+\item[{\tt itl3} = {\it x}] Lower transient iteration limit.
+(Default = 6.)  If the number of iterations is more than {\tt itl3}
+the step size is limited by {\tt trstephold}.  Otherwise,
+it can grow by {\tt trstepgrow}.
 
-\item[{\tt ITL4} = {\it x}] Upper transient iteration limit.
-(Default = 10.)  Sets the maximum number of iterations on a step
+\item[{\tt itl4} = {\it x}] Upper transient iteration limit.
+(Default = 20.)  Sets the maximum number of iterations on a step
 in transient analysis.  If the circuit fails to converge in this
 many iterations the step size is reduced (by option trstepshrink),
 time is backed up, and the calculation is repeated.
 
-\item[{\tt ITL5} = {\it x}] Transient analysis total iteration
+\item[{\tt itl5} = {\it x}] Transient analysis total iteration
 limit.  (Default = 5000.)  SPICE option accepted but not
-implemented.  Actual behavior is the same as {\tt ITL5} = 0, in
+implemented.  Actual behavior is the same as {\tt itl5} = 0, in
 SPICE, which omits this test.
 
-\item[{\tt ITL6} = {\it x}] Source stepping iteration limit.
+\item[{\tt itl6} = {\it x}] Source stepping iteration limit.
 (Default = 0.)  SPICE option accepted but not implemented.
 Source stepping is not available.
 
 \index{worst case iterations}
 \index{iterations: worst case analysis}
-\item[{\tt ITL7} = {\it x}] Worst case analysis iteration
+\item[{\tt itl7} = {\it x}] Worst case analysis iteration
 limit.  (Default = 1.)
 Sets the maximum number of iterations for the individual
 element trials in a DC or bias worst case analysis.  If more
@@ -204,107 +204,107 @@ on to the next step, as if nothing was wrong, which is usually
 the case.
 
 \index{convergence diagnostics}
-\item[{\tt ITL8} = {\it x}] Convergence diagnostic iteration threshold.
-(Default = 100.)  If the iteration count on a step exceeds {\tt ITL8}
+\item[{\tt itl8} = {\it x}] Convergence diagnostic iteration threshold.
+(Default = 100.)  If the iteration count on a step exceeds {\tt itl8}
 diagnostic messages are printed in an attempt to aid the user in solving the
 convergence problem.
 
 \index{cptime option}
 \index{cpu time limit}
-\item[{\tt CPTIME} = {\it x}] Total CPU job time limit.
+\item[{\tt cptime} = {\it x}] Total CPU job time limit.
 (Default = 30000.)  SPICE option accepted but not implemented.
 There is no limit imposed.
 
 \index{limtim option}
-\item[{\tt LIMTIM} = {\it x}] CPU time reserved for plotting.
+\item[{\tt limtim} = {\it x}] CPU time reserved for plotting.
 (Default = 2.)  SPICE option accepted but not implemented.
 
 \index{limpts option}
-\item[{\tt LIMPTS} = {\it x}] Max number of points printed.
+\item[{\tt limpts} = {\it x}] Max number of points printed.
 (Default = 201.)  SPICE option accepted but not implemented.
 
 \index{lvlcod option}
-\item[{\tt LVLCOD} = {\it x}] Matrix solution and allocation
+\item[{\tt lvlcod} = {\it x}] Matrix solution and allocation
 method.  (Default = 2, generate machine language.)  SPICE
 option not implemented.
 
 \index{lvltim option}
 \index{time step control}
-\item[{\tt LVLTIM} = {\it x}] Time step control method.
+\item[{\tt lvltim} = {\it x}] Time step control method.
 (Default = 2, truncation error.)  SPICE option not implemented.
 
 \index{method option}
 \index{integration method}
-\item[{\tt METHOD} = {\it x}] Integration method.  (Default =
-{\tt TRAPezoidal}.)  Possible values are:
+\item[{\tt method} = {\it x}]
+Differentiation method.  (Default = {\tt TRAPezoidal}.)  (Incorrectly
+called ``integration'' method in SPICE.) Possible values are:
 \begin{description}
-\item[{\tt EULER}] backward Euler, unless forced to other
-\item[{\tt EULERONLY}] backward Euler only
-\item[{\tt TRAP}] usually trap, but Euler where better
-\item[{\tt TRAPONLY}] always trapezoid
-%%%\item[{\tt GEAR2}] usually gear2, but euler where better
-%%%\item[{\tt GEAR2ONLY}] always gear2 (except breakpoints)
-%%%\item[{\tt TRAPGEAR}] alternate trap and gear2
-%%%\item[{\tt TRAPEULER}] alternate trap and euler
+\item[{\tt euler}] backward Euler, unless forced to other
+\item[{\tt euleronly}] backward Euler only
+\item[{\tt trap}] usually trap, but Euler where better
+\item[{\tt traponly}] always trapezoid
+%%%\item[{\tt gear2}] usually gear2, but euler where better
+%%%\item[{\tt gear2only}] always gear2 (except breakpoints)
+%%%\item[{\tt trapgear}] alternate trap and gear2
+%%%\item[{\tt trapeuler}] alternate trap and euler
 \end{description}
 
 \index{defl option}
 \index{mosfet defaults}
-\item[{\tt DEFL} = {\it x}] MOSFET default channel length in 
+\item[{\tt defl} = {\it x}] MOSFET default channel length in 
 meters.  (Default = 100u.)
 
 \index{defw option}
-\item[{\tt DEFW} = {\it x}]  MOSFET default channel width in 
+\item[{\tt defw} = {\it x}]  MOSFET default channel width in 
 meters.  (Default = 100u.)
 
 \index{defad option}
-\item[{\tt DEFAD} = {\it x}] MOSFET default drain diffusion area
+\item[{\tt defad} = {\it x}] MOSFET default drain diffusion area
 in square meters.  (Default = 0.)
 
 \index{defas option}
-\item[{\tt DEFAS} = {\it x}]  MOSFET default source diffusion area
+\item[{\tt defas} = {\it x}]  MOSFET default source diffusion area
 in square meters.  (Default = 0.)
 
-\index{seed option}
-\index{random number seed}
-\item[{\tt SEED} = {\it x}] Seed used by the random number
-generator.  (Default = 1.)  (ECA-2 equivalent = {\tt Random}.)
-(Not available in SPICE.)  The same random numbers will be used
-every time, determined by this seed number.  Setting this to
-zero is a special case, causing each run to start from a random
-point.
+%%%\index{seed option}
+%%%\index{random number seed}
+%%%\item[{\tt SEED} = {\it x}]
+%%%Seed used by the random number generator.  (Default = 1.)  (Not
+%%%available in SPICE.)  The same random numbers will be used every time,
+%%%determined by this seed number.  Setting this to zero is a special
+%%%case, causing each run to start from a random point.
 
-\index{wczero option}
-\index{zero: worst case}
-\item[{\tt WCZERO} = {\it x}] Worst case zero window.  (Default
-= 1e-9) (Not available in SPICE.)  Sets a window for the
-difference in a DC or bias worst case analysis.  Differences
-less than this are assumed to be zero, for purposes of setting
-direction flags.  This prevents cluttering up the screen with
-very small numbers that are essentially zero.
+%%%\index{wczero option}
+%%%\index{zero: worst case}
+%%%\item[{\tt WCZERO} = {\it x}]
+%%%Worst case zero window.  (Default = 1e-9) (Not available in SPICE.)
+%%%Sets a window for the difference in a DC or bias worst case analysis.
+%%%Differences less than this are assumed to be zero, for purposes of
+%%%setting direction flags.  This prevents cluttering up the screen with
+%%%very small numbers that are essentially zero.
         
 \index{damp option}
 \index{damped Newton's method}
-\item[{\tt DAMPMAX} = {\it x}] Normal Newton damping factor.
+\item[{\tt dampmax} = {\it x}] Normal Newton damping factor.
 (Default = 1.)  Sets the damping factor for iteration by damped
 Newton's method, used when all is well.  It must be between 0 and 1,
 as close to 1 as possible and still achieve convergence.  The useful
-range is from .9 to 1.  Setting {\tt DAMPMAX} too low will probably cause
+range is from .9 to 1.  Setting {\tt dampmax} too low will probably cause
 convergence to a nonsense result.
 
-\item[{\tt DAMPMIN} = {\it x}] Newton damping factor in problem
+\item[{\tt dampmin} = {\it x}] Newton damping factor in problem
 cases.  (Default = .5)  Sets the damping factor for iteration by
 damped Newton's method, used when there are problems.  It must be
-between 0 and 1, and is usually set somewhat less than {\tt DAMPMAX}.
+between 0 and 1, and is usually set somewhat less than {\tt dampmax}.
 The useful range is from .5 to .9.  Setting it lower than .5 may
 cause convergence to a nonsense result.  Aside from that, a lower
-value (but less than {\tt DAMPMAX}) tends to improve robustness at
+value (but less than {\tt dampmax}) tends to improve robustness at
 the expense of convergence speed.
 
-\item[{\tt DAMPSTrategy} = {\it x}] Damping strategy.  (Default =
+\item[{\tt dampstrategy} = {\it x}] Damping strategy.  (Default =
 0)  The actual damping factor to use is determined by heuristics.
-Normally the damping factor is {\tt DAMPMAX}.  It is reduced to
-{\tt DAMPMIN} when certain conditions occur, then it drifts back
+Normally the damping factor is {\tt dampmax}.  It is reduced to
+{\tt dampmin} when certain conditions occur, then it drifts back
 up on subsequent iterations.  This parameter turns the various
 heuristics on or off.  The number to use is the sum of the following
 flags.
@@ -315,7 +315,7 @@ flags.
 helps robustness, but always increases iteration count.)
 
 \item{2} if the voltage at any nonlinear node exceeds the range
-determined by {\tt VMIN}, {\tt VMAX}, and {\tt LIMIT}.  (usually
+determined by {\tt vmin}, {\tt vmax}, and {\tt limit}.  (usually
 not desirable.)
 
 \item{4} if any device limiting algorithm is activated.  (usually
@@ -331,17 +331,23 @@ sometimes increases iteration count.)
         
 \index{floor option}
 \index{suppressing numerical noise}
-\item[{\tt FLOOR} = {\it x}] Effective zero value.  (Default =
-1e-21) Results values less than {\tt FLOOR} are shown as zero.  Other
-small numbers are rounded to the nearest {\tt FLOOR}.
+\item[{\tt floor} = {\it x}] Effective zero value.  (Default =
+1e-21) Results values less than {\tt floor} are shown as zero.  Other
+small numbers are rounded to the nearest {\tt floor}.
         
-\item[{\tt VFLOOR} = {\it x}] Effective zero value for voltage probes.
-(Default = 1e-15) Results values less than {\tt VFLOOR} are shown as
-zero.  Other small numbers are rounded to the nearest {\tt VFLOOR}.
+\item[{\tt vfloor} = {\it x}] Effective zero value for voltage probes.
+(Default = 1e-15) Results values less than {\tt vfloor} are shown as
+zero.  Other small numbers are rounded to the nearest {\tt vfloor}.
         
-\index{tempamb option}
+\item[{\tt roundofftol} = {\it x}]
+Numeric rounding tolerance. (Default = 1e-13) Some internal
+calculations can result in cancellations, with a result near zero even
+though the operands are large.  The number is converted to zero if it
+is less than {\tt roundofftol}*theoperand.
+
+\index{temperature option}
 \index{ambient temperature}
-\item[{\tt TEMPAMB} = {\it x}] Simulation temperature.
+\item[{\tt temperature} = {\it x}] Simulation temperature.
 (Default = 27$^{\circ}$ C.)  Sets the ambient temperature, in
 degrees Celsius.  This is the temperature at which the
 simulation takes place, unless changed by some other command.
@@ -350,23 +356,17 @@ simulation takes place, unless changed by some other command.
 \index{short circuit resistance}
 \index{voltage source resistance}
 \index{resistance of short}
-\item[{\tt Short} = {\it x}] Resistance of voltage source or
+\item[{\tt short} = {\it x}] Resistance of voltage source or
 short.  (Default = 1e-7 or 10 $\mu\Omega$.)  Sets the default
 resistance of voltage sources.  In some cases, inductors are
 replaced by resistors, if so, this is the value.  It is also
 the resistance used to replace short circuits anywhere they are
 not allowed and the program finds one.
 
-\index{transits option}
-\index{mixed mode control}
-\item[{\tt TRansits} = {\it x}] Mixed mode transition count. (Default = 2)
-Sets the number of ``good'' transitions for a supposedly digital signal
-to be accepted as digital.
-
 \index{in option}
 \index{input width option}
 \index{width command}
-\item[{\tt IN} = {\it x}] Input width.  (Default = 80.)
+\item[{\tt in} = {\it x}] Input width.  (Default = 80.)
 Sets the last column read from each line of input.  Columns
 past this are ignored.  This option is present only for SPICE
 compatibility, through the {\tt width} command, which is an
@@ -374,119 +374,149 @@ alias for {\tt options}.
 
 \index{out option}
 \index{output width option}
-\item[{\tt OUT} = {\it x}] Output width.  (Default = 80.)
+\item[{\tt out} = {\it x}] Output width.  (Default = 80.)
 Sets the output print width, for tables and character graphics.
-
-\index{xdivisions option}
-\index{plot control}
-\item[{\tt XDivisions} = {\it x}]  X axis divisions. (Default = 4)
-Sets the number of divisions on the X axis for plotting.
 
 \index{ydivisions option}
 \index{plot control}
-\item[{\tt YDivisions} = {\it x}]  Y axis divisions. (Default = 4)
+\item[{\tt ydivisions} = {\it x}]  Y axis divisions. (Default = 4)
 Sets the number of divisions on the Y axis for plotting.
 
-\item[{\tt ORder} = {\it x}] Equation ordering.  (Default = auto.)
-Determines how external node numbers are mapped to internal numbers.  The
-values are {\tt FORward}, {\tt REVerse}, and {\tt AUTo}.
+\item[{\tt phase} = {\it x}]
+Phase units. (Default = {\tt degrees}) Valid values are {\tt degrees}
+and {\tt radians}.  Selects which units are used for printing phase in
+AC analysis.
 
-\item[{\tt MODe} = {\it x}] Simulation mode selection.  (Default = mixed.)
-Values are {\tt ANAlog}, {\tt DIGital}, and {\tt MIXed}.  In analog mode,
+\item[{\tt order} = {\it x}] Equation ordering.  (Default = auto.)
+Determines how external node numbers are mapped to internal numbers.  The
+values are {\tt forward}, {\tt reverse}, and {\tt auto}.
+
+\item[{\tt mode} = {\it x}] Simulation mode selection.  (Default = mixed.)
+Values are {\tt analog}, {\tt digital}, and {\tt mixed}.  In analog mode,
 logic elements (type U) are replaced by their subcircuits as if they were
 type X.  In digital mode, logic elements are simulated as digital regardless
 of whether the signals are proper or not, as in traditional mixed-mode
 simulation.  In mixed mode, logic elements may be simulated as analog or
 digital depending on the signals present.
 
+\index{transits option}
+\index{mixed mode control}
+\item[{\tt transits} = {\it x}] Mixed mode transition count. (Default = 2)
+Sets the number of ``good'' transitions for a supposedly digital signal
+to be accepted as digital.
+
 \index{bypass option}
-\item[{\tt BYPass}] Bypass model evaluation if appropriate.  If the last two
-iterations indicate that an element is converged or dormant, do not evaluate
-it but use its old values directly.  (Default)
+\item[{\tt bypass}] 
+Bypass model evaluation if appropriate.  If the last two iterations
+indicate that an element is converged or dormant, do not evaluate it
+but use its old values directly.  (Default)
 
-\index{vbypass option}
-\item[{\tt VBYpass}] Check only voltage to bypass model evaluation.  This
-produces a faster but possibly less accurate simulation.
+\item[{\tt nobypass}]
+Do not bypass model evaluation.
 
-\item[{\tt NOBYpass}] Do not bypass model evaluation.
+\index{incmode option}
+\item[{\tt incmode}]
+Incrementally update the matrix.  Instead of rebuilding the matrix on
+every iteration, keep as much of the old matrix as possible and make
+incremental changes.  (Default)
+
+\item[{\tt noincmode}]
+Do not incrementally update the matrix.  This eliminates a possible
+cause of roundoff error at the expense of a slower simulation.
+
+\index{lcbypass option}
+\item[{\tt lcbypass}]
+Bypass evaluation of linear inductors and capacitors when possible.
+When set, they are evaluated only on the first iteration of a time
+step. (Default)
+
+\item[{\tt nolcbypass}]
+Do not bypass linear capacitor and inductors.  Evaluate on every
+iteration.
 
 \index{lubypass option}
-\item[{\tt LUBypass}] Bypass parts of LU decomposition if appropriate.  If
+\item[{\tt lubypass}] Bypass parts of LU decomposition if appropriate.  If
 only a few elements of the matrix were changed solve only those parts
 of the LU matrix that depend on them.  (Default)
 
-\item[{\tt NOLUbypass}] Do not bypass parts of LU decomposition.  Solve
-the entire LU matrix whenever a matrix solution is called for regardless
-of whether it is actually needed.  
+\item[{\tt nolubypass}]
+Do not bypass parts of LU decomposition.  Solve the entire LU matrix
+whenever a matrix solution is called for regardless of whether it is
+actually needed.
 
-\index{incmode option}
-\item[{\tt INCmode}] Incrementally update the matrix.  Instead of 
-rebuilding the matrix on every iteration, keep as much of the old 
-matrix as possible and make incremental changes.  (Default)
+\index{fbbypass option}
+\item[{\tt fbbypass}]
+Skip matrix solution the last iteration.  In theory, it reduces
+accuracy slightly, but specified tolerances will still be met.  Time
+saving can be significant.  (Default)
 
-\item[{\tt NOIncmode}] Do not incrementally update the matrix.  This
-eliminates a possible cause of roundoff error at the expense of a slower
-simulation.
+\item[{\tt nofbbypass}]
+Do not skip the matrix solution on the last iteration.
 
-\item[{\tt TRACELoad}] Use a queue to only load changed elements
+\item[{\tt traceload}] Use a queue to only load changed elements
 to the matrix.  This results in faster loading and has no known
 drawbacks.  (Default)
 
-\item[{\tt NOTRACELoad}] Do not use a queue to only load changed
+\item[{\tt notraceload}] Do not use a queue to only load changed
 elements to the matrix.  Instead, load all elements, even if they
 are unchanged or zero.  This is always slower, and is forced if
 "noincmode".
 
-\index{limit option}
-\index{voltage limiting}
-\item[{\tt LIMIT} = {\it x}] Internal differential branch voltage
-limit.  (Default = 1e10, essentially disabled.)  All circuit branch
-voltages may be limited to $\pm x$ to aid in convergence.  This is
-intended as a convergence aid only.  It may or may not help.
+\item[{\tt itermin} = {\it x}] 
+Number of extra iterations after convergence. (Default = 1) After
+convergence tolerances are met, do {\tt itermin} extra iterations to
+be sure.  This provides protection against false indication of
+convergence.  Setting {\tt itermin} = 0 is equivalent to SPICE, with
+improved simulation speed.
 
-\item[{\tt VMIN} = {\it x}] Negative node voltage limit.  (Default
-= -30)  All node voltages may be limited to $-x$ to aid in convergence
-and prevent numeric overflow.  This is intended as a convergence
-aid only.  It may or may not help.
+\item[{\tt vmin} = {\it x}]
+Initial negative node voltage limit.  (Default = -5) All node voltages
+may be limited to $-x$ to aid in convergence and prevent numeric
+overflow.  This is intended as a convergence aid only.  It may or may
+not help.  This number is used as a starting point.  It is adjusted as
+the simulation progresses.
 
-\item[{\tt VMAX} = {\it x}] Positive node voltage limit.  (Default
-= 30)  All node voltages may be limited to $+x$ to aid in convergence
-and prevent numeric overflow.  This is intended as a convergence
-aid only.  It may or may not help.
+\item[{\tt vmax} = {\it x}]
+Initial positive node voltage limit.  (Default = 5) All node voltages
+may be limited to $+x$ to aid in convergence and prevent numeric
+overflow.  This is intended as a convergence aid only.  It may or may
+not help.  This number is used as a starting point.  It is adjusted as
+the simulation progresses.
 
 \index{dtmin option}
 \index{minimum resolvable time}
 \index{minimum time step}
-\item[{\tt DTMIn} = {\it x}] Minimum time step.  (Default = 1e-12.)
+\item[{\tt dtmin} = {\it x}] Minimum time step.  (Default = 1e-12.)
 The smallest internal time step in transient analysis.  The {\tt
 transient} command {\tt dtmin} option and the {\tt dtratio} option
 override it if it is bigger.
 
-\item[{\tt DTRatio} = {\it x}] The ratio between minimum and maximum
+\item[{\tt dtratio} = {\it x}] The ratio between minimum and maximum
 time step.  (Default = 1e9).
 
 \index{rstray option}
 \index{mosfet series resistance}
-\item[{\tt RSTray}] Include series resistance in device models.  This 
-creates internal nodes and results in a significant speed and memory 
-penalty.  It also makes convergence characteristics worse.
+\item[{\tt rstray}] Include series resistance in device models.  This 
+creates internal nodes and results in a significant speed and memory
+penalty.  It also makes convergence characteristics worse. (Default =
+true)
 
-\item[{\tt NORSTray}] Do not include series resistance in device
+\item[{\tt norstray}] Do not include series resistance in device
 models.  This results in faster simulations and better numerical
 accuracy at the expense of model accuracy.  Differences between
 {\tt rstray} and {\tt norstray} have been observed to be insignificant
 most of the time.  Some popular commercial versions of SPICE do
 not implement series resistance at all, so {\tt norstray} may be
-more consistent with other simulators.(Default)
+more consistent with other simulators.
 
 \index{cstray option}
 \index{mosfet capacitance}
 \index{diode capacitance}
-\item[{\tt CSTray}] Include capacitance in device models.  This may
+\item[{\tt cstray}] Include capacitance in device models.  This may
 create internal nodes and result in a significant speed and memory 
 penalty.  It also may make convergence characteristics worse.  (Default)
 
-\item[{\tt NOCSTray}] Do not include capacitance in device models.
+\item[{\tt nocstray}] Do not include capacitance in device models.
 This results in faster simulations and better numerical accuracy
 at the expense of model accuracy.  Differences between {\tt cstray}
 and {\tt nocstray} are usually significant, since often the strays
@@ -494,22 +524,46 @@ are the dominant reactive elements.
 
 \index{harmonics option}
 \index{fourier: harmonics}
-\item[{\tt Harmonics} = {\it x}] Harmonics in Fourier analysis.
+\item[{\tt harmonics} = {\it x}] Harmonics in Fourier analysis.
 (Default = 9) The number of harmonics to display in a Fourier
 analysis, unless specified otherwise.
 
-\item[{\tt TRSTEPGrow} = {\it x}] The maximum internal step size
-growth in transient analysis.  (Default = 2.)
+\item[{\tt trstepgrow} = {\it x}]
+The maximum internal step size growth in transient analysis.  Default
+= 1e99, which allows arbitrary changes in step size.
 
-\item[{\tt TRSTEPShrink} = {\it x}] The amount to decrease the
-transient step size by when convergence fails.  (Default = 8.)
+\item[{\tt trstephold} = {\it x}]
+The maximum internal step size growth in transient analysis, when the
+iteration count exceeds {\tt itl3} but still converges.  (Default =
+1e99)
 
-\item[{\tt TRReject} = {\it x}] Transient error rejection threshold.
+\item[{\tt trstepshrink} = {\it x}]
+The amount to decrease the transient step size by when convergence
+fails.  (Default = 2.)
+
+\item[{\tt trreject} = {\it x}] Transient error rejection threshold.
 (Default = .5)  Controls how bad the truncation error must be to
 reject a time step.  A value of .5 means that if the step reqested
 is smaller than .5 times the step size used, the current step will
 be rejected.  If the new step is .8 times the old step size it will
 be adjusted but the step just calculated will not be rejected.
+
+\item[{\tt quitconvfail}]
+Quit on convergence failure in transient analysis.  Do not adjust time
+step, just stop.  (Default = false)
+
+\item[{\tt noquitconvfail}]
+Do not quit on convergence failure in transient analysis.  Instead,
+try to adjust time step and try again.  If even the smallest time step
+still fails, conntinue simulating and accept the bad step.  (Default)
+
+\item[{\tt recursion} = {\it x}]
+Limit recursion in expresion evaluation to x levels.  (Default = 20)
+The purpose is to trap infinite recursion in user expressions.
+
+\item[{\tt edit}] Enable command line editing. (Default)
+
+\item[{\tt noedit}] Disable command line editing.
 
 \end{description}
 %------------------------------------------------------------------------

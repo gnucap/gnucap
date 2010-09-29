@@ -1,4 +1,4 @@
-/*$Id: d_res.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: d_res.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,19 +16,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * functions for resistor.
  * y.x = amps,  y.f0 = volts, ev = y.f1 = ohms
  * m.x = volts, m.c0 = amps, acg = m.c1 = mhos.
  */
+//testing=script,complete 2006.07.17
 #include "d_res.h"
 /*--------------------------------------------------------------------------*/
 void DEV_RESISTANCE::precalc()
 {
-  if (value() == 0. && !has_common()){
+  if (value() == 0. && !has_common()) {
     error(bPICKY, long_label() + ": short circuit\n");
+  }else{
   }
   _y0.f0 = LINEAR;
   _y0.f1 = (value() != 0.) ? value() : OPT::shortckt;
@@ -44,7 +46,7 @@ void DEV_RESISTANCE::precalc()
 /*--------------------------------------------------------------------------*/
 void DEV_RESISTANCE::dc_begin()
 {
-  if (!using_tr_eval()){
+  if (!using_tr_eval()) {
     assert(_y0.f0 == LINEAR);
     assert(_y0.f1 == value() || _y0.f1 == OPT::shortckt);
     assert(conchk(_m0.c1, 1./_y0.f1));
@@ -52,20 +54,22 @@ void DEV_RESISTANCE::dc_begin()
     assert(_m1 == _m0);
     assert(_loss0 == 0.);
     assert(_loss1 == 0.);
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_RESISTANCE::do_tr()
 {
-  {if (using_tr_eval()){
+  if (using_tr_eval()) {
     _m0.x = tr_involts_limited();
-    _y0.x = _m0.c0 + _m0.c1 * _m0.x;
+    _y0.x = tr_input_limited();;
     tr_eval();
     assert(_y0.f0 != LINEAR);
-    if (_y0.f1 == 0.){
+    if (_y0.f1 == 0.) {
       error(bPICKY, long_label() + ": short circuit\n");
       _y0.f1 = OPT::shortckt;
       set_converged(conv_check());
+    }else{
     }
     store_values();
     q_load();
@@ -78,23 +82,24 @@ bool DEV_RESISTANCE::do_tr()
     assert(_m0.c0 == 0.);
     assert(_y1 == _y0);
     assert(converged());
-  }}
+  }
   return converged();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_RESISTANCE::do_ac()
 {
-  {if (has_ac_eval()){
+  if (using_ac_eval()) {
     ac_eval();
-    if (_ev == 0.){
+    if (_ev == 0.) {
       error(bPICKY, long_label() + ": short circuit\n");
       _ev = OPT::shortckt;
+    }else{
     }
     _acg = 1. / _ev;
   }else{
     assert(_ev == _y0.f1);
-    assert(has_tr_eval() || _ev == value() || _ev == OPT::shortckt);
-  }}
+    assert(has_tr_eval() || _ev == double(value()) || _ev == OPT::shortckt);
+  }
   ac_load();
 }
 /*--------------------------------------------------------------------------*/

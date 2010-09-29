@@ -1,4 +1,4 @@
-/*$Id: c_prbcmd.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
+/*$Id: c_prbcmd.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * probe and plot commands
  * set up print and plot (select points, maintain probe lists)
  * command line operations
  */
+//testing=script,sparse 2006.07.17
 #include "ap.h"
 #include "s__.h"
 #include "c_comand.h"
@@ -60,70 +61,74 @@ static void do_probe(CS& cmd, PROBELIST *probes)
   enum {aADD, aDELETE, aNEW} action;
   SIM_MODE simtype = sNONE;
 
-  {if (cmd.match1('-')){	/* handle .probe - ac ...... */
+  if (cmd.match1('-')) {untested();	/* handle .probe - ac ...... */
     action = aDELETE;		/* etc. 		     */
     cmd.skip();
-  }else if (cmd.match1('+')){
+  }else if (cmd.match1('+')) {untested();
     action = aADD;
     cmd.skip();
   }else{			/* no -/+ means clear, but wait for */
     action = aNEW;		/* .probe ac + ..... 		    */
-  }}				/* which will not clear first	    */
+  }				/* which will not clear first	    */
 
-  0
-    || set(cmd, "TRan",	   &simtype,	sTRAN)
-    || set(cmd, "AC",	   &simtype,	sAC)
-    || set(cmd, "DC",	   &simtype,	sDC)
-    || set(cmd, "OP",	   &simtype,	sOP)
-    || set(cmd, "FOurier", &simtype,	sFOURIER)
+  ONE_OF
+    || set(cmd, "TRansient", &simtype,	sTRAN)
+    || set(cmd, "AC",	     &simtype,	sAC)
+    || set(cmd, "DC",	     &simtype,	sDC)
+    || set(cmd, "OP",	     &simtype,	sOP)
+    || set(cmd, "FOurier",   &simtype,	sFOURIER)
     ;
   
-  if (!simtype){			/* must be all simtypes */
-    {if (cmd.end()){				/* list all */
+  if (!simtype) {			/* must be all simtypes */
+    if (cmd.is_end()) {			/* list all */
       probes[sTRAN].listing("tran");
       probes[sAC].listing("ac");
       probes[sDC].listing("dc");
       probes[sOP].listing("op");
       probes[sFOURIER].listing("fourier");
-    }else if (cmd.pmatch("CLEAR")){		/* clear all */
-      for (int ii = sSTART;  ii < sCOUNT;  ++ii)
+    }else if (cmd.pmatch("CLEAR")) {		/* clear all */
+      for (int ii = sSTART;  ii < sCOUNT;  ++ii) {
 	probes[ii].clear();
-    }else{					/* error */
+      }
+    }else{untested();					/* error */
       cmd.warn(bERROR, "what's this?");
-    }}
+    }
   }else{
-    {if (cmd.end()){			/* list */
+    if (cmd.is_end()) {untested();		/* list */
       probes[simtype].listing("");
-    }else if (cmd.pmatch("CLEAR")){	/* clear */
+    }else if (cmd.pmatch("CLEAR")) {untested();	/* clear */
       probes[simtype].clear();
     }else{				/* add/remove */
       SIM::init();
-      {if (cmd.match1('-')){			/* setup cases like: */
+      if (cmd.match1('-')) {untested();			/* setup cases like: */
 	action = aDELETE;			/* .probe ac + ....  */
 	cmd.skip();
-      }else if (cmd.match1('+')){
+      }else if (cmd.match1('+')) {
 	action = aADD;
 	cmd.skip();
-      }}
-      if (action == aNEW){			/* no +/- here or at beg. */
+      }else{
+      }
+      if (action == aNEW) {			/* no +/- here or at beg. */
 	probes[simtype].clear();		/* means clear first	  */
 	action = aADD;
+      }else{
       }
-      while (cmd.more()){			/* do-it */
-	{if (cmd.match1('-')){			/* handle cases like:	    */
+      while (cmd.more()) {			/* do-it */
+	if (cmd.match1('-')) {untested();			/* handle cases like:	    */
 	  action = aDELETE;			/* .pr ac +v(7) -e(6) +r(8) */
 	  cmd.skip();
-	}else if (cmd.match1('+')){
+	}else if (cmd.match1('+')) {untested();
 	  action = aADD;
 	  cmd.skip();
-	}}
-	{if (action == aDELETE){
-	  probes[simtype] -= cmd;
 	}else{
-	  probes[simtype] += cmd;
-	}}
+	}
+	if (action == aDELETE) {untested();
+	  probes[simtype].remove_list(cmd);
+	}else{
+	  probes[simtype].add_list(cmd);
+	}
       }
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: c_comand.cc,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
+/*$Id: c_comand.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,28 +16,27 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * simple commands and stubs for the missing commands
  */
+//testing=script,sparse 2006.07.16
+#include "constant.h"
 #include "declare.h"	/* plclear */
 #include "u_status.h"
 #include "u_opt.h"
 #include "ap.h"
 #include "c_comand.h"
-// testing=nonstrict
 /*--------------------------------------------------------------------------*/
-void CMD::alter(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::disto(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::model(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::noise(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::sens(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::subckt(CS&cmd){untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::tf(CS&cmd)	{untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::disto(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::model(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::noise(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::sens(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::subckt(CS&cmd) {untested(); cmd.warn(bWARNING,"bad command");}
+void CMD::tf(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
 /*--------------------------------------------------------------------------*/
 void CMD::options(CS&cmd)	{static OPT o;    o.command(cmd);}
-void CMD::status(CS&cmd)	{static STATUS s; s.command(cmd);}
 /*--------------------------------------------------------------------------*/
 int CMD::count = 0;
 extern std::string head;
@@ -49,7 +48,8 @@ static int oldcount = 0;     /* so we can check for consecutive comments */
  */
 void CMD::comment(CS& cmd)
 {
-  if (count == oldcount+1){
+  if (count == oldcount+1) {
+    itested();
     plclear();
   }
   oldcount = count;
@@ -58,24 +58,31 @@ void CMD::comment(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void CMD::end(CS& cmd)
 {
-  switch (ENV::run_mode){
+  switch (ENV::run_mode) {
   case rIGNORE:
     unreachable();
     break;
   case rPRESET:
+    untested();
     // BUG: this should close the file
     break;
   case rINTERACTIVE:
+    untested();
     {CS nil(""); quit(nil);}
     break;
   case rSCRIPT:
-    if (OPT::acct){
+    untested();
+    if (OPT::acct) {
+      untested();
       status(cmd);
+    }else{
+      untested();
     }
     error(bERROR, "");
     break;
   case rBATCH:
-    if (OPT::acct){
+    if (OPT::acct) {
+      untested();
       status(cmd);
     }
     {CS nil(""); quit(nil);}
@@ -90,15 +97,20 @@ void CMD::pause(CS&)
   IO::error << "Continue? ";
   int ch = getchar();
   if (ch=='n' || ch=='N' || ch=='C'-'@' || ch=='['-'@') {
+    untested();
     error(bERROR, "\r");
+  }else{
+    untested();
   }
 }
 /*--------------------------------------------------------------------------*/
 void CMD::quit(CS&)
 {
-  switch (ENV::run_mode){
-  case rINTERACTIVE:
+  switch (ENV::run_mode) {
   case rSCRIPT:
+    untested();
+  case rINTERACTIVE:
+    itested();
   case rBATCH:
     {CS nil(""); clear(nil);}
     exit(0);
@@ -114,24 +126,27 @@ void CMD::quit(CS&)
 /*--------------------------------------------------------------------------*/
 void CMD::temp(CS& cmd)
 {
+  untested();
   double t = NOT_INPUT;
   int here = cmd.cursor();
-  cmd >> t;
-  {if (!cmd.stuck(&here)) {
-    OPT::tempamb = t - ABS_ZERO;
+  cmd >> '=' >> t;
+  if (!cmd.stuck(&here)) {
+    untested();
+    OPT::temp_c = t;
   }else{
-    IO::mstdout << ".temp = " << OPT::tempamb + ABS_ZERO << '\n';
-  }}
+    untested();
+    IO::mstdout << ".temp = " << OPT::temp_c << '\n';
+  }
 }
 /*--------------------------------------------------------------------------*/
 void CMD::title(CS& cmd)
 {
-  {if (cmd.more()){
+  if (cmd.more()) {
     head = cmd.tail();
   }else{
     untested(); 
     IO::mstdout << head << '\n';
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

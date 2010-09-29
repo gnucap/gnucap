@@ -1,4 +1,4 @@
-%$Id: d.tex,v 22.19 2002/09/30 00:06:15 al Exp $
+%$Id: d.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit d .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,16 +17,21 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt D}: Diode}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
-  {\tt D}{\it xxxxxxx n+ n-- mname} \{{\it area}\} \{{\it args}\}\\
-  {\tt .DIOde} {\it xxxxxxx n+ n-- mname} \{{\it area}\} 
-        \{{\it args}\}
+{\tt D}{\it xxxxxxx n+ n-- mname} \{{\it area}\} \{{\it args}\}\\
+{\tt .diode} {\it xxxxxxx n+ n-- mname} \{{\it area}\}
+	\{{\it args}\}
+\end{verse}
+\subsubsection{Model (required)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt D} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -53,12 +58,12 @@ entered.
 
 \begin{description}
   
-\item[{\tt Area} = {\it x}] Area factor.  (Default = 1.0) If optional
+\item[{\tt AREA} = {\it x}] Area factor.  (Default = 1.0) If optional
   parameters {\tt IS}, {\tt RS}, and {\tt CJO} are not specified, the
   {\tt .model} value is multiplied by {\tt area} to get the actual
   value.
   
-\item[{\tt Perim} = {\it x}] Perimeter factor.  (Default = 1.0) If
+\item[{\tt PERIM} = {\it x}] Perimeter factor.  (Default = 1.0) If
   optional parameter {\tt CJSW} is not specified, the {\tt .model}
   value is multiplied by {\tt perim} to get the actual value.
   
@@ -86,7 +91,7 @@ entered.
   {\tt perim}.  Default: use {\tt CJSW} from {\tt .model} * {\tt
     perim}.
   
-\item[{\tt GParallel} = {\it x}] Parallel conductance.  This overrides
+\item[{\tt GPARALLEL} = {\it x}] Parallel conductance.  This overrides
   {\tt GParallel} in the {\tt .model}, and is not affected by {\tt
     area}.  Default: use {\tt GParallel} from {\tt .model} * {\tt
     area}.
@@ -118,22 +123,22 @@ entered.
   computation of capacitance.  For compatibility with older versions
   of SPICE, {\tt PB} is accepted as an alias for {\tt VJ}.
 
-\item[{\tt CJo} = {\it x}] Normalized zero-bias depletion capacitance.
+\item[{\tt CJO} = {\it x}] Normalized zero-bias depletion capacitance.
   (Default = 0.)  {\tt CJo} is multiplied by the {\it area} in the
   element statement to get the actual zero-bias capacitance.  It may
   be overridden by specifying {\tt CJ} in the element statement.
   
-\item[{\tt Mj} = {\it x}] Grading coefficient.  (Default = 0.5)
+\item[{\tt MJ} = {\it x}] Grading coefficient.  (Default = 0.5)
   
-\item[{\tt PBSw} = {\it x}] Sidewall junction potential.  (Default =
+\item[{\tt PBSW} = {\it x}] Sidewall junction potential.  (Default =
   PB)
   
-\item[{\tt CJSw} = {\it x}] Normalized zero-bias sidewall capacitance.
+\item[{\tt CJSW} = {\it x}] Normalized zero-bias sidewall capacitance.
   (Default = 0.)  {\tt CJSw} is multiplied by the {\it perimeter} in
   the element statement to get the actual zero-bias capacitance.  It
   may be overridden by specifying {\tt CJSW} in the element statement.
   
-\item[{\tt MJSw} = {\it x}] Sidewall grading coefficient.  (Default =
+\item[{\tt MJSW} = {\it x}] Sidewall grading coefficient.  (Default =
   0.33)
   
 \item[{\tt EG} = {\it x}] Activation energy. (electron Volts) (Default
@@ -164,7 +169,7 @@ entered.
 \item[{\tt IBV} = {\it x}] Current at breakdown voltage. (Default = 1
   ma.)  SPICE parameter accepted but not implemented.
   
-\item[{\tt GParallel} = {\it x}] Parallel conductance. (Default = 0.)
+\item[{\tt GPARALLEL} = {\it x}] Parallel conductance. (Default = 0.)
 
 \end{description}
 %------------------------------------------------------------------------
@@ -172,9 +177,9 @@ entered.
 
 \begin{description}
   
-\item[{\tt Vd}] Voltage.  The first node (anode) is assumed positive.
+\item[{\tt VD}] Voltage.  The first node (anode) is assumed positive.
   
-\item[{\tt Id}] Total current.  It flows into the first node (anode),
+\item[{\tt ID}] Total current.  It flows into the first node (anode),
   out of the second (cathode).  I(Dxxxx) is the same as IJ(Dxxxx) +
   IC(Dxxxx).
   
@@ -205,11 +210,16 @@ entered.
 \item[{\tt PC}] Capacitor power.  PC(Dxxxx) is the same as
   P(Cj.Dxxxx).
   
-\item[{\tt Capacitance}] Effective capacitance.  C(Dxxxx) is the same
+\item[{\tt CAPACITANCE}] Effective capacitance.  C(Dxxxx) is the same
   as Capacitance(Cj.Dxxxx).
   
-\item[{\tt Req}] Effective resistance.  R(Dxxxx) is the same as
+\item[{\tt CHARGE}] Charge stored in the diode's capacitance.
+  It is the same as charge(Cj.Dxxxx).
+
+\item[{\tt REQ}] Effective resistance.  R(Dxxxx) is the same as
   R(Yj.Dxxxx).
+
+\item[{\tt GEQ}] Effective conductance.  1/{\tt req}.
   
 \item[{\tt Z}] Impedance at a port.  The port impedance seen looking
   into the circuit across the branch.  It does not include the part
@@ -220,7 +230,7 @@ entered.
 \item[{\tt ZRAW}] Impedance at a port, raw.  This is the same as ``Z''
   except that it includes the part itself. (DC only)
   
-\item[{\tt REgion}] Region code.  A numeric code that represents the
+\item[{\tt REGION}] Region code.  A numeric code that represents the
   region it is operating in.  +1 = forward, -1 = reversed, 0 =
   unknown, -2 = assumed off.
 
@@ -234,6 +244,7 @@ the diode D6.
 In this release, there are no probes available in AC analysis except
 for the internal elements.
 
-The general element probes do not apply to diodes.
+The general element probes do not apply to diodes, but do apply to the
+internal elements.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

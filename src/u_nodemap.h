@@ -1,4 +1,4 @@
-/*$Id: u_nodemap.h,v 22.19 2002/09/26 04:54:38 al Exp $ -*- C++ -*-
+/*$Id: u_nodemap.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2002 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,71 +16,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * node name to number mapping -- for named nodes
  */
+//testing=script,complete 2006.07.14
 #ifndef U_NODEMAP_H
 #define U_NODEMAP_H
 #include "md.h"
 /*--------------------------------------------------------------------------*/
+class NODE;
 /*--------------------------------------------------------------------------*/
 class NODE_MAP {
 private:
-  int count;
-  std::map<const std::string, int> string_to_int;
-  std::vector<std::string> int_to_string;
+  std::map<const std::string, NODE*> _node_map;
+  explicit  NODE_MAP(const NODE_MAP&);
+
 public:
-  NODE_MAP() : count(0), string_to_int(), int_to_string() {}
-  const std::string& operator[](int)const;
-  int operator[](const std::string&);
-  int new_node(const std::string&);
+  explicit  NODE_MAP();
+	   ~NODE_MAP();
+  NODE*     operator[](const std::string&);
+  NODE*     new_node(const std::string&);
+
+  typedef std::map<const std::string, NODE*>::iterator iterator;
+  typedef std::map<const std::string, NODE*>::const_iterator const_iterator;
+
+  const_iterator begin()const		{return _node_map.begin();}
+  const_iterator end()const		{return _node_map.end();}
+  int		 how_many()const	{return _node_map.size()-1;}
 };
-/*--------------------------------------------------------------------------*/
-inline const std::string& NODE_MAP::operator[](int n)const
-{
-  {if (n == 0) {
-    static std::string zero("0");
-    return zero;
-  }else{
-    assert(n > 0);
-    assert(n <= count);
-    return int_to_string[n-1];
-  }}
-}
-/*--------------------------------------------------------------------------*/
-inline int NODE_MAP::operator[](const std::string& s)
-{
-  {if (s == "0") {
-    untested();
-    return 0;
-  }else{
-    int n = string_to_int[s];
-    if (!n) {
-      untested();
-      error(bDANGER, "no such node: " + s + "\n");
-    }else{
-      untested();
-    }
-    return n;
-  }}
-}
-/*--------------------------------------------------------------------------*/
-inline int NODE_MAP::new_node(const std::string& s)
-{
-  {if (s == "0") {
-    return 0;
-  }else{
-    int n = string_to_int[s];
-    if (!n) {
-      n = ++count;
-      string_to_int[s] = n;
-      int_to_string.push_back(s);
-    }
-    return n;
-  }}
-}
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

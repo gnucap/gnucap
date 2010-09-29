@@ -1,4 +1,4 @@
-/*$Id: bm_complex.cc,v 24.16 2004/01/11 02:47:28 al Exp $ -*- C++ -*-
+/*$Id: bm_complex.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * behavioral modeling complex value
  * used with tc, etc, and conditionals
  */
-#include "ap.h"
+//testing=script 2006.07.13
+#include "e_elemnt.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
 EVAL_BM_COMPLEX::EVAL_BM_COMPLEX(int c)
@@ -37,24 +38,23 @@ EVAL_BM_COMPLEX::EVAL_BM_COMPLEX(const EVAL_BM_COMPLEX& p)
 {
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COMPLEX::parse_numlist(CS& cmd)
+bool EVAL_BM_COMPLEX::operator==(const COMMON_COMPONENT& x)const
 {
-  int here = cmd.cursor();
-  double real = NOT_VALID;
-  double imag = 0.;
-  cmd >> real >> imag;
-  {if (cmd.gotit(here)){
-    _value = COMPLEX(real,imag);
-  }else{
+  const EVAL_BM_COMPLEX* p = dynamic_cast<const EVAL_BM_COMPLEX*>(&x);
+  bool rv = p
+    && _value == p->_value
+    && EVAL_BM_ACTION_BASE::operator==(x);
+  if (rv) {
     untested();
-  }}
+  }
+  return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COMPLEX::print(OMSTREAM& where)const
+void EVAL_BM_COMPLEX::print(OMSTREAM& o)const
 {
-  where << "  " << name() << '(' 
-	<< _value.real() << ',' << _value.imag() << ')';
-  print_base(where);
+  o << ' ' << name() << '(' 
+    << _value.real() << ',' << _value.imag() << ')';
+  EVAL_BM_ACTION_BASE::print(o);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_COMPLEX::tr_eval(ELEMENT* d)const
@@ -66,6 +66,21 @@ void EVAL_BM_COMPLEX::ac_eval(ELEMENT* d)const
 {
   d->_ev = _value;
   ac_final_adjust_with_temp(&(d->_ev));
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_COMPLEX::parse_numlist(CS& cmd)
+{
+  int here = cmd.cursor();
+  double real = NOT_VALID;
+  double imag = 0.;
+  cmd >> real >> imag;
+  if (cmd.gotit(here)) {
+    _value = COMPLEX(real,imag);
+    return true;
+  }else{
+    untested();
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

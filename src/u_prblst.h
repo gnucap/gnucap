@@ -1,4 +1,4 @@
-/*$Id: u_prblst.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: u_prblst.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,38 +16,42 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * list of probes
  */
+//testing=script,complete 2006.07.14
 #ifndef U_PRBLST_H
 #define U_PRBLST_H
 #include "mode.h"
 #include "u_probe.h"
 /*--------------------------------------------------------------------------*/
-class CS;
-class CKT_BASE;
+class CARD_LIST;
 /*--------------------------------------------------------------------------*/
 class PROBELIST {
 private:
   typedef std::vector<PROBE> container;
   container bag;
+
+  explicit PROBELIST(const PROBELIST&) {unreachable();incomplete();}
 public:
+  explicit PROBELIST() {}
+  ~PROBELIST() {}
+
   typedef container::iterator	    iterator;
   typedef container::const_iterator const_iterator;
   void	   listing(const std::string&)const;
   void     clear();
-  void	   operator-=(CS&);
-  void     operator-=(CKT_BASE*);
-  void     operator+=(CS&);
-  int	   size()const	{return bag.size();}
-  iterator begin()	{return bag.begin();}
-  iterator end()	{return bag.end();}
+  void	   remove_list(CS&);
+  void     remove_one(CKT_BASE*);
+  void     add_list(CS&);
+  int	   size()const		{return bag.size();}
+  const_iterator begin()const	{return bag.begin();}
+  const_iterator end()const	{return bag.end();}
 private:
-  void     add_node_list(CS&,const std::string&);
-  void     add_branches(CS&,const std::string&);
-  void     add_all_nodes(const std::string&);
+  bool    add_branches(const std::string&,const std::string&,const CARD_LIST*);
+  void    add_all_nodes(const std::string&);
 };
 /*--------------------------------------------------------------------------*/
 class PROBE_LISTS {

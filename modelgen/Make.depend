@@ -11,5 +11,10 @@ mg_out_lib.o: mg_out_lib.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
   ap.h
 mg_out_model.o: mg_out_model.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
   ap.h
-mg_out_root.o: mg_out_root.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
+mg_out_root.o: mg_out_root.cc md.h io_error.h io_trace.h mg_out.h mg_.h \
   ap.h
+ap_construct.o: ap_construct.cc ap.h md.h io_error.h io_trace.h
+ap_convert.o: ap_convert.cc ap.h md.h io_error.h io_trace.h
+ap_get.o: ap_get.cc ap.h md.h io_error.h io_trace.h
+ap_match.o: ap_match.cc ap.h md.h io_error.h io_trace.h
+ap_skip.o: ap_skip.cc ap.h md.h io_error.h io_trace.h

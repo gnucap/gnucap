@@ -1,4 +1,4 @@
-%$Id: w.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: w.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit w .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,15 +17,20 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt W}: Current Controlled Switch}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
 {\tt W}{\it xxxxxxx n+ n-- ce mname} \{{\it ic}\}\\
-{\tt .ISWitch} {\it label n+ n-- ce mname} \{{\it ic}\}
+{\tt .iswitch} {\it label n+ n-- ce mname} \{{\it ic}\}
+\end{verse}
+\subsubsection{Model (required)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt CSW} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -67,6 +72,31 @@ Unlike SPICE, it does not need to be a voltage source.
 \item[{\tt RON} = {\it x}] On resistance.  (Default = 1.)
 
 \item[{\tt ROFF} = {\it x}] Off resistance.  (Default = 1e12)
+
+\end{description}
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+The standard probes for all basic elements are all available.  See the
+{\tt print} command for documentation.
+
+\begin{description}
+  
+\item[{\tt DT}]
+Time step.  The internal time step used for this device.  It is not
+necessarily the same as the global time step.
+  
+\item[{\tt TIME}]
+Time.  The time of the most recent calculation of this device.  It is
+not necessarily the same as the global time.
+  
+\item[{\tt TIMEOLD}] 
+The time of the previous calculation of this device.  It is not
+necessarily the same as the global time.
+  
+\item[{\tt TIMEFUTURE}]
+The latest recommended time for the next sample, as determined by this
+device.  This is usually an estimate of the time the device will switch.
 
 \end{description}
 %------------------------------------------------------------------------

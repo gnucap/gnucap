@@ -1,4 +1,4 @@
-/*$Id: u_cardst.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: u_cardst.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * a structure to stash a "card" for fault. sweep, etc.
  */
+//testing=script,complete 2006.07.14
 #ifndef U_CARDST_H
 #define U_CARDST_H
 #include "e_compon.h"
@@ -34,9 +35,10 @@ public:
   explicit CARDSTASH()		:_brh(0), _value(0.), _c(0) {}
   explicit CARDSTASH(CARD* b);
 	   CARDSTASH(const CARDSTASH& p);
-	   ~CARDSTASH()		{detach_common(&_c);}
+	   ~CARDSTASH()		{COMMON_COMPONENT::detach_common(&_c);}
   void	   operator=(CARD* b);
   void	   restore()		{assert(_brh); _brh->set_value(_value, _c);}
+#if 0
   bool operator==(const CARDSTASH&)const
 	{incomplete();unreachable();return false;}
   bool operator!=(const CARDSTASH&)const
@@ -46,6 +48,7 @@ public:
   bool operator>(const CARDSTASH&)const
 	{incomplete();unreachable();return false;}
   // comparisons here because MS list requires them, even though not used here.
+#endif
 };
 /*--------------------------------------------------------------------------*/
 inline void CARDSTASH::operator=(CARD* b)
@@ -54,8 +57,8 @@ inline void CARDSTASH::operator=(CARD* b)
   _brh = prechecked_cast<COMPONENT*>(b);
   assert(_brh);
   _value = _brh->value();
-  detach_common(&_c);
-  attach_common(_brh->mutable_common(), &_c);
+  COMMON_COMPONENT::detach_common(&_c);
+  COMMON_COMPONENT::attach_common(_brh->mutable_common(), &_c);
 }
 /*--------------------------------------------------------------------------*/
 inline CARDSTASH::CARDSTASH(CARD* b)
@@ -71,7 +74,7 @@ inline CARDSTASH::CARDSTASH(const CARDSTASH& p)
    _value(p._value),
    _c(0)
 {
-  attach_common(p._c, &_c);
+  COMMON_COMPONENT::attach_common(p._c, &_c);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,3 +1,0 @@
-CCFLAGS = \
--DHAS_READLINE \
--DUNIX -O2 -DNDEBUG -I.. -I. -fno-exceptions -W

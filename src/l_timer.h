@@ -1,4 +1,4 @@
-/*$Id: l_timer.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: l_timer.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * CPU time accounting
  */
+//testing=script 2006.07.13
 #ifndef U_TIMER_H
 #define U_TIMER_H
 #include "io_.h"
@@ -28,24 +29,23 @@
 class TIMER {
 private:
   enum {_T_NAME_LEN = 8};
-  double _ref_user;	// time the clock was started
-  double _ref_system;
-  double _last_user;	// time of timed operation
-  double _last_system;
-  double _total_user;	// time since program start
-  double _total_system;
+  double _ref;		// time the clock was started
+  double _last;		// time of timed operation
+  double _total;	// time since program start
   bool	 _running;
   char	 _name[_T_NAME_LEN+1];
 public:
   explicit	TIMER();
   explicit	TIMER(const char*);
+		~TIMER() {}
   TIMER&	fullreset();
   TIMER&	reset();
-  TIMER&	zstart();
   TIMER&	start();
   TIMER&	stop();
   TIMER&	check();
-  double	elapsed()const	{return _last_user+_last_system;}
+  double	elapsed()const		{untested();return _last;}
+  bool		is_running()const	{return _running;}
+
   TIMER&	print(OMSTREAM& s = IO::mstdout);
   TIMER& 	operator=(const TIMER&);
   friend TIMER	operator-(const TIMER&,const TIMER&);

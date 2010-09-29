@@ -1,4 +1,4 @@
-%$Id: install.tex,v 24.14 2004/01/09 05:27:01 al Exp $
+%$Id: install.tex,v 25.95 2006/08/26 01:26:53 al Exp $
 % man install .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \chapter{Installation}
 
@@ -33,14 +33,20 @@ the GNU style.
 For the GNU style build, just type "./configure" then "make" from the
 project's root directory.  This will configure both the model compiler
 and the simulator, and then build the model compiler first, then use
-it to build the simulator.  That should be all that is needed.  You do
-not to read any further.
+it to build the simulator.  Then you can use ``make install'' (as
+root) to install it.  That should be all that is needed.  You do not
+to read any further.
+
+\section{The old easy way}
+
+Instead of ``./configure'', you can do ``./configure.old''.  This is a
+script that is a subset of the usual ``./configure'', but builds the
+development makefiles.  Try ``./configure.old'', then ``make''.
 
 \section{If that doesn't work}
 
 This version requires a two-step build.  First you build the model
-compiler, then you build the simulator.  You can usually get away with
-only building the simulator.
+compiler, then you build the simulator.
 
 So ..
 cd to modelgen, type make (as below)
@@ -61,7 +67,7 @@ To make a "debug" version (slow, with additional error checking), type
 "make debug".  If you have a recent g++ compiler, this should build it
 in the O-DEBUG subdirectory.
 
-If your compiler is not g=++, but called by "CC", try "make CC".  This
+If your compiler is not g++, but called by "CC", try "make CC".  This
 is believed to work with some compilers.  Some of them do not
 implement the full language, so they cannot be used.  Try it.  There
 is a special one "sun4-CC" for a Sun running Solaris with the most
@@ -80,9 +86,9 @@ If it doesn't work, edit only a "Make2.*" file, and possibly {\tt md.h} or
 {\tt md.cc}.  All nonportabilities are confined to these files.
 
 It does require a recent and proper C++ compiler with a proper
-library, including STL.  Gnu compilers older than 2.8 will probably
-not work.  Anything else that old will also probably not work.  Any
-high quality C++ compiler available today should work.
+library, including STL.  Gnu compilers as old as 3.3 are suppported.
+Version 2.95 may work.  Anything older than that will probably not
+work.  Any high quality C++ compiler available today should work.
 
 To install ....
 
@@ -159,106 +165,9 @@ serious.
 Since C++ is an evolving language, there are some known portability
 problems.  All of them are due to compilers that do not implement the
 standard correctly.  Since the problems will go away in time, I have
-chosen either not to burden the code with them, except where a few
+chosen not to burden the code with them, except where a few
 mainstream systems fail.  All dependencies should be confined to the
 two files {\tt md.h} and {\tt md.cc}, if possible.
-
-Here are some possible problems that are no longer supported:
-
-\begin{description}
-
-\item[bool] The C++ language includes a type {\tt bool}, which is not
-implemented in older compilers.  Older compilers just use {\tt int},
-and fake it with a {\tt typedef} or {\tt \#define}, neither of which
-work correctly.
-
-\end{description}
-
-Here are some problems that you will need to deal with creatively:
-
-\begin{description}
-
-\item[missing files or functions] Another cause of a port to fail
-is missing header files or missing function prototypes.  Sometimes
-missing functions can be a problem.  The solution to these problems is
-to supply what is missing.  The {\tt md\_*} files exist for this
-purpose.  You should make a copy of the appropriate Make2.\_\_\_ file,
-patch it to define something to identify the system, then patch the
-{\tt md.h} and {\tt md.cc} as appropriate.  You should not use any
-{\tt \#ifdef}'s except in these file.
-
-\item[bad header files] In some cases, the header files that come
-with the system or compiler are defective and generate warnings
-without anything wrong with the program being compiled.  This slips
-by in the distribution because most developers compile with warnings
-off.  Usually, these can be ignored.
-
-\end{description}
-
-Here are some problems that have work-arounds:
-
-\begin{description}
-
-\item[const] C++ uses an abstract notion of constant, meaning that
-the external appearance of an object declared const must not change,
-but there can be internal changes like reference counters.  The
-keyword {\tt mutable} means that a member variable can change even if it
-is declared const.  As a work around, we use CONST, which is either
-defined to nothing or const.  For any good compiler, the line {\tt
-\#define CONST const} will give correct behavior.  For a bad compiler,
-the line {\tt \#define CONST} will turn it off.  There is no harm in
-treating all compilers as ``bad'' except for the loss of compile
-diagnostics.
-
-\item[complex] The evolving standard shows complex to be a template
-class, so instead of having a type {\tt complex}, there is {\tt
-complex<double>}, {\tt complex<float>}, and so on.  Older compilers
-have only {\tt complex}.  The line {\tt typedef std::complex<double>
-COMPLEX;} in {\tt md.h} works for a correct compiler.  You may need to
-change it of an older one.
-
-\item[template instantiation] There are three common ways to
-instantiate templates in common use.  Unfortunately, they are
-incompatible and none of the methods are available in all compilers.
-Gnucap requires templates, so will not work with many older compilers.
-
-\begin{description}
-
-\item[Link time] The entire program is compiled and linked without
-templates, resulting in some unresolved externals.  The files
-defining the templates are compiled again to fill the need.  This
-is the preferred way, if you have it.  It is supported by CFRONT
-derivatives such as the Sun CC compiler.  Define {\tt LINK\_TEMPLATES} to
-force it. 
-
-\item[Compile time] All parts of templates must be compiled as if
-in-line, requiring all code to be in the .h file, or included by the
-.h file.  Header files must include .cc files.  The duplicates are
-supposed to be thrown away by the linker.  This is the only style
-supported by Borland 3.1 or 4.0.  It is supported inefficiently by the
-GNU compiler starting at version 2.6.  Since no mainstream compiler requires this, and it is inefficient, it is no longer supported.
-
-\item[manual] Templates must be instantiated manually.  This is
-the preferred way for the GNU and Microsoft compilers.  It is a
-nuisance, but it generates the best code.  Define {\tt MANUAL\_TEMPLATES} to
-force it.
-
-\end{description}
-
-\item[template resolution] The second inconsistency with templates
-is how the type matching is resolved.  Some compilers require an exact
-match.  Some will make trivial conversions, such as int to const int.
-The language definition allows for templates to be ``specialized'' by
-providing a specific implementation for a specific type, resorting to
-the template for others.  Some compilers (Sun) do not support this.
-Since this is common, there are work arounds in the code for it in the
-simulator but not the model compiler.  If you want to compile the
-model compiler, you will need to get a better C++ compiler.
-
-\end{description}
-
-The files starting with {\tt plot} contain plotting drivers are
-generally bogus.
 
 There should be NO non-portable code anywhere but the {\tt md\_*}
 files.  If a fix is absolutely necessary elsewhere, {\tt \#define} some

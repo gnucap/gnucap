@@ -1,4 +1,4 @@
-#$Id: Make2.g++,v 24.22 2004/02/01 07:12:36 al Exp $ -*- Makefile -*-
+#$Id: Make2.g++,v 25.96 2006/08/28 05:45:51 al Exp $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@ieee.org>
 #
@@ -16,8 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-# 02111-1307, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
 #------------------------------------------------------------------------
 VPATH = .:..
 
@@ -26,8 +26,8 @@ VPATH = .:..
 CCC = g++
 
 CCFLAGS = \
--DHAS_READLINE \
--DUNIX -O2 -DNDEBUG -I.. -I. -fno-exceptions -W
+-DHAVE_LIBREADLINE \
+-DUNIX -O2 -DNDEBUG -I.. -I. -W
 
 LIBS = \
 -lreadline -ltermcap \
@@ -35,7 +35,8 @@ LIBS = \
 
 LDFLAGS =
 
-.SUFFIXES : .o .cc
+.SUFFIXES:
+.SUFFIXES: .o .cc
 .cc.o:; $(CCC) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
 $(TARGET): $(OBJS)

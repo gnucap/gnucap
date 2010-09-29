@@ -1,4 +1,4 @@
-%$Id: conditional.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: conditional.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man behavior conditional .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{Conditionals}
 Gnucap behavioral modeling conditionals are an extension of the ``AC''
@@ -54,8 +54,10 @@ ALL}.  For SPICE compatibility, use only {\tt DC}, {\tt AC}, or nothing.
 
 They are interpreted like a ``switch'' statement.  In case of a
 conflict, the last one applies.  A set of precedence rules applies
-when some keys are missing.  It is SPICE compatible, to the extent the
+when some keys are missing.  It is SPICE compatible to the extent the
 features overlap.
+
+The following table describes the precedence rules:
 
 \begin{description}
 
@@ -72,10 +74,10 @@ features overlap.
 
 \begin{description}
 
-\item[{\tt V12 1 0 AC 1 DC 3}] This voltage source has a value of 1
+\item[{\tt V12 (1 0) AC 1 DC 3}] This voltage source has a value of 1
 for AC analysis, 3 for DC.  OP, Transient, and Fourier inherit the DC value.
 
-\item[{\tt R44 2 3 OP 1 ELSE 1g}] This resistor has a value of 1 ohm
+\item[{\tt R44 (2 3) OP 1 ELSE 1g}] This resistor has a value of 1 ohm
 for the ``OP'' analysis, 1 gig-ohm for anything else.  This might be
 useful as the feedback resistor on an op-amp.  Set it to 1 ohm to set
 the operating point, then 1 gig to measure its open loop

@@ -1,4 +1,4 @@
-/*$Id: e_storag.cc,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
+/*$Id: e_storag.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,14 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Base class for storage elements of a circuit
  */
-#include "ap.h"
-#include "m_divdiff.h"
+//testing=script 2006.06.14
 #include "e_storag.h"
+#include "m_divdiff.h"
 /*--------------------------------------------------------------------------*/
 /* table for selecting local integraton method
  * Determines which one wins in a conflict.
@@ -61,7 +61,7 @@ void STORAGE::precalc()
   assert(_loss0 == 0.);
   assert(_loss1 == 0.);
   set_converged();
-  assert(!constant()); /* because of integration */
+  assert(!is_constant()); /* because of integration */
   /* m0 and acg are frequency/time dependent and cannot be set here.
    * If this is a coupled inductor, there is a subckt, which is expanded
    * by the mutual pseudo-element.
@@ -72,32 +72,34 @@ void STORAGE::precalc()
 void STORAGE::dc_begin()
 {
   _method_a = method_select[OPT::method][_method_u];
-  assert(_keep_time_steps == 4);
-  _time[0] = _time[1] = _time[2] = _time[3] = 0.;
+  assert(_keep_time_steps == 3);
+  _time[0] = _time[1] = _time[2] = 0.;
   _c_mult = NOT_VALID;
   _dt = NOT_VALID;
-  _i0 = _q[0] = _q[1] = _q[2] = _q[3] = FPOLY1(0., 0., 0.);
+  _i0 = _q[0] = _q[1] = _q[2] = FPOLY1(0., 0., 0.);
   _it1_f0 = 0.;
   _m1 = _m0 = CPOLY1(0., 0., 0.);
   assert(_loss0 == 0.);
   assert(_loss1 == 0.);
-  if (!using_tr_eval()){
+  if (!using_tr_eval()) {
     //assert(_y0.f0 == LINEAR); f0 == f1 * x
     assert(_y0.f1 == value());
     assert(converged());
-    assert(!constant());
+    assert(!is_constant());
   }
 }
 /*--------------------------------------------------------------------------*/
 void STORAGE::tr_restore()
 {
-  assert(_keep_time_steps == 4);
+  assert(_keep_time_steps == 3);
   trace2("tr_restore", SIM::time0, SIM::time1);
-  trace4("before", _time[0], _time[1], _time[2], _time[3]);
+  trace3("before", _time[0], _time[1], _time[2]);
 
   _method_a = method_select[OPT::method][_method_u];
   if (_time[0] > SIM::time0) {
+    untested();
     for (int i=0  ; i<_keep_time_steps-1; ++i) {
+      untested();
       _time[i] = _time[i+1];
       _q[i] = _q[i+1];
     }
@@ -105,46 +107,60 @@ void STORAGE::tr_restore()
     _q[_keep_time_steps-1]    = FPOLY1(0., 0., 0.);
   }
 
-  trace4("after", _time[0], _time[1], _time[2], _time[3]);
+  assert(_keep_time_steps == 3);
+  trace3("after", _time[0], _time[1], _time[2]);
   assert(_time[0] == SIM::time0);
   assert(_time[1] < _time[0] || _time[0] == 0.);
   assert(_time[2] < _time[1] || _time[1] == 0.);
-  assert(_time[3] < _time[2] || _time[2] == 0.);
 }
 /*--------------------------------------------------------------------------*/
 void STORAGE::dc_advance()
 {
   _it1_f0 = _i0.f0;
   assert(SIM::time0 == 0.);
-  assert(_keep_time_steps == 4);
-  _time[0] = _time[1] = _time[2] = _time[3] = 0.;
+  assert(_keep_time_steps == 3);
+  _time[0] = _time[1] = _time[2] = 0.;
   _dt = NOT_VALID;
   _c_mult = NOT_VALID;
 }
 /*--------------------------------------------------------------------------*/
 void STORAGE::tr_advance()
 {
-  assert(_keep_time_steps == 4);
-  
-  {if (_time[0] < SIM::time0){		// forward
-    assert(_time[3] <= _time[2] || _time[3] == 0.);
-    assert(_time[2] <= _time[1] || _time[2] == 0.);
-    assert(_time[1] <= _time[0] || _time[1] == 0.);
+  if (_time[0] < SIM::time0) {		// forward
+    assert(_keep_time_steps == 3);
+    assert(_time[2] < _time[1] || _time[2] == 0.);
+    assert(_time[1] < _time[0] || _time[1] == 0.);
     _it1_f0 = _i0.f0;
-    for (int i=_keep_time_steps-1; i>0; --i){
+    for (int i=_keep_time_steps-1; i>0; --i) {
       _time[i] = _time[i-1];
       _q[i] = _q[i-1];
     }
   }else{				// else backward, don't save
     assert(_time[1] <= SIM::time0);
     assert(_time[0] >= SIM::time0);
-    assert(_time[3] < _time[2] || _time[3] == 0.);
+    assert(_keep_time_steps == 3);
     assert(_time[2] < _time[1] || _time[2] == 0.);
-    assert(_time[1] <= _time[0] || _time[1] == 0.);
-  }}
+    assert(_time[1] < _time[0] || _time[1] == 0.);
+  }
   _time[0] = SIM::time0;
   _dt = _time[0] - _time[1];
   _c_mult = c_mult_num() / _dt;
+}
+/*--------------------------------------------------------------------------*/
+/* tr_needs_eval: check to see if this device needs to be evaluated
+ * this works, and saves significant time
+ * but possible errors.
+ * Errors do not seem significant, but I can't tell without more data.
+ * To disable:  option nolcbypass
+ */
+bool STORAGE::tr_needs_eval()const
+{
+  //assert(!is_q_for_eval());
+  return (!OPT::lcbypass
+	  || !converged() 
+	  || is_advance_or_first_iteration()
+	  || !conchk(_y0.x, tr_input(), OPT::abstol)
+	  || SIM::uic_now());
 }
 /*--------------------------------------------------------------------------*/
 /* differentiate: this is what Spice calls "integrate".
@@ -154,18 +170,18 @@ void STORAGE::tr_advance()
  */
 double STORAGE::differentiate()
 {
-  {if (SIM::mode == sDC  ||  SIM::mode == sOP) {
+  if (SIM::mode == sDC  ||  SIM::mode == sOP) {
     return 0.;
   }else{
     assert(SIM::mode == sTRAN || SIM::mode == sFOURIER);
-    {if (SIM::phase == SIM::pINIT_DC) {
-      {if (_time[0] == 0.) {
+    if (SIM::phase == SIM::pINIT_DC) {
+      if (_time[0] == 0.) {
 	return 0.;
       }else{
 	assert(_time[0] > 0);
 	/* leave it alone to restart from a previous solution */
 	return _i0.f0;
-      }}
+      }
     }else if (_time[1] == 0) {
       // Bogus current in previous step.  Force Euler.
       //return (_q[0].f0 - _q[1].f0) * c_mult();
@@ -183,100 +199,116 @@ double STORAGE::differentiate()
       }
       unreachable();
       return NOT_VALID;
-    }}
-  }}
+    }
+    unreachable();
+  }
+  unreachable();
 }
 /*--------------------------------------------------------------------------*/
 double STORAGE::tr_c_to_g(double c, double g)const
 {
-  {if (SIM::mode == sDC  ||  SIM::mode == sOP) {
+  if (SIM::mode == sDC  ||  SIM::mode == sOP) {
     return 0.;
   }else{
-    {if (SIM::phase == SIM::pINIT_DC) {
-      {if (_time[0] == 0.) {
+    if (SIM::phase == SIM::pINIT_DC) {
+      if (_time[0] == 0.) {
 	return 0.;
       }else{
 	return g;
 	// no change, fake
-      }}
+      }
     }else if (_time[1] == 0) {
       // always Euler.
       return c / _dt;
     }else{
       assert(SIM::phase == SIM::pTRAN);
       return c * c_mult();
-    }}
-  }}
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
-double STORAGE::const_tr_review()const
+DPAIR STORAGE::tr_review()
 {
-  assert(order() <= _max_order);
-  {if (_time[order()+1] <= 0. 
-       || _method_a == mEULER
-       || _time[3] >= _time[2]
-       || _time[2] >= _time[1]
-       || _time[1] >= _time[0]
-       ){
-    return NEVER;
+  if (_method_a == mEULER) {
+    // Backward Euler, no step control, take it as it comes
+    _time_future = NEVER;
+  }else if (_time[0] <= 0.) {
+    // DC, I know nothing
+    _time_future = NEVER;
+    assert(_time_future > 0.);
+  }else if (_time[order()-1] <= 0.) {
+    // first few steps, I still know nothing
+    // repeat whatever step was used the first time
+    assert(_dt > 0);
+    _time_future = _time[0] + _dt;
   }else{
-    double c[_keep_time_steps];
-    assert(_keep_time_steps == 4);
-    {for (int i=0; i<_keep_time_steps; ++i) {
-      c[i] = _q[i].f0;
-    }}
-    divided_differences(c, order()+2, _time);
-    // now c[i] is i'th derivative (up to order+1)
+    assert(_keep_time_steps == 3);
+    assert(_time[2] < _time[1]);
+    assert(_time[1] < _time[0]);
 
-    {if (c[order()+1] == 0){
-      return NEVER;
+    double c[_keep_time_steps];
+    for (int i=0; i<_keep_time_steps; ++i) {
+      c[i] = _q[i].f0;
+    }
+    assert(order()+1 <= _keep_time_steps);
+    derivatives(c, order()+1, _time);
+    // now c[i] is i'th derivative
+    
+    assert(_keep_time_steps == 3);
+    trace3("time", _time[0], _time[1], _time[2]);
+    trace3("charge", _q[0].f0, _q[1].f0, _q[2].f0);
+    trace3("deriv", c[0], c[1], c[2]);
+    
+    if (c[order()] == 0) {
+      _time_future = NEVER;
     }else{
-      double currenttol= OPT::abstol
-	+ OPT::reltol * std::max(std::abs(_i0.f0), std::abs(_it1_f0));
-      double chargetol = std::max(std::max(std::abs(_q[0].f0),
-					   std::abs(_q[1].f0)),
-			     OPT::chgtol) * OPT::reltol / _dt;
-      double tol = OPT::trtol * std::max(currenttol,chargetol);
-      double denom = error_factor() * std::abs(c[order()+1]);
-      double timestep;
-      {if (order() == 2) { // faster not to use pow.
-	timestep = sqrt(tol / denom);
-      }else if (order() == 1) {
+      double chargetol = std::max(OPT::chgtol,
+	OPT::reltol * std::max(std::abs(_q[0].f0), std::abs(_q[1].f0)));
+      double tol = OPT::trtol * chargetol;
+      double denom = error_factor() * std::abs(c[order()]);
+
+      // What we really want:
+      //double timestep = pow((tol / denom), 1./(order()));
+      // shortcut:
+      assert(order() == 2);
+      double timestep = sqrt(tol / denom);
+      trace4("", chargetol, tol, denom, timestep);
+
+      if (timestep <= SIM::dtmin) {
 	untested();
-	timestep = tol / denom;
-      }else{
-	untested();
-	timestep = pow((tol / denom), 1./order());
-      }}
-      
-      if (timestep <= SIM::dtmin){
-	untested();
-	trace4("", _time[0], _time[1], _time[2], _time[3]);
-	trace4("", _q[0].f0, _q[1].f0, _q[2].f0, _q[3].f0);
-	trace4("", c[0], c[1], c[2], c[3]);
-	trace4("", currenttol, chargetol, tol, denom);
-	error(bDANGER,"step control error:%s %g\n",
+	error(bDANGER,"LC step control error:%s %g\n",
 	      long_label().c_str(),timestep);
 	error(bDANGER, "q0=%g i0=%g dq0=%g\n", _q[0].f0, _i0.f0, c[1]);
-	error(bERROR, "it=%g qt=%g tol=%g\n", currenttol, chargetol, tol);
-	timestep = SIM::dtmin;
-      }
-      {if (timestep < _dt * OPT::trreject){
-	error(bTRACE, "step rejected:" + long_label() + '\n');
-	error(bTRACE, "new=%g  old=%g  rej=%g\n",
-	      timestep, _dt, _dt * OPT::trreject);
-	return _time[1] + timestep;
+	error(bDANGER, "qt=%g tol=%g\n", chargetol, tol);
+	error(bDANGER, "using Euler, disabling time step control\n");
+	_method_a = mEULER;
+	_time_future = NEVER;
+      }else if (timestep < _dt * OPT::trreject) {
+	if (_time[order()] == 0) {
+	  error(bWARNING, "initial step rejected:" + long_label() + '\n');
+	  error(bWARNING, "new=%g  old=%g  required=%g\n",
+		timestep, _dt, _dt * OPT::trreject);
+	}else{
+	  error(bTRACE, "step rejected:" + long_label() + '\n');
+	  error(bTRACE, "new=%g  old=%g  required=%g\n",
+		timestep, _dt, _dt * OPT::trreject);
+	}
+	_time_future = _time[1] + timestep;
+	trace3("reject", timestep, _dt, _time_future);
       }else{
-	return _time[0] + timestep;
-      }}
-    }}
-  }}
+	_time_future = _time[0] + timestep;
+	trace3("accept", timestep, _dt, _time_future);
+      }
+    }
+  }
+  assert(_time_future > 0.);
+  assert(_time_future > _time[1]);
+  return DPAIR(_time_future, NEVER);      
 }
 /*--------------------------------------------------------------------------*/
 double STORAGE::tr_probe_num(CS& cmd)const
 {
-  {if (cmd.pmatch("DT")) {
-    untested();
+  if (cmd.pmatch("DT")) {
     return _dt;
   }else if (cmd.pmatch("TIME")) {
     untested();
@@ -285,10 +317,14 @@ double STORAGE::tr_probe_num(CS& cmd)const
     untested();
     return _time[1];
   }else if (cmd.pmatch("TIMEFuture")) {
-    return const_tr_review();
+    return _time_future;
+  }else if (cmd.pmatch("DTRequired")) {
+    return ((_time_future - _time[0]) > 0)
+      ? _time_future - _time[0]
+      : _time_future - _time[1];
   }else{
     return ELEMENT::tr_probe_num(cmd);
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

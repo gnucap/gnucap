@@ -1,4 +1,4 @@
-/*$Id: c__cmd.cc,v 22.16 2002/08/04 22:42:30 al Exp $ -*- C++ -*-
+/*$Id: c__cmd.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,14 +16,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * command interpreter and dispatcher
  */
+//testing=script 2006.07.17
+#include "u_status.h"
 #include "declare.h"	/* plclose */
 #include "u_opt.h"
-#include "l_timer.h"
 #include "ap.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
@@ -34,6 +35,9 @@
  */
 void CMD::cmdproc(const std::string& cs)
 {
+  bool get_timer_was_running = ::status.get.is_running();
+  ::status.get.stop();
+
   CS cmd(cs);
   static TIMER timecheck;
   bool didsomething = true;
@@ -43,80 +47,82 @@ void CMD::cmdproc(const std::string& cs)
   timecheck.stop().reset().start();
 
   cmd.ematch(ANTI_COMMENT);
-  while (cmd.ematch(I_PROMPT)) {
+  while (cmd.ematch(I_PROMPT)) {itested();
     /* skip any number of these */
   }
 
-       if (cmd.pmatch("Ac"))	   ac(cmd);
-  else if (cmd.pmatch("ALArm"))    alarm(cmd);
-  else if (cmd.pmatch("ALTer"))    alter(cmd);
-  else if (cmd.pmatch("Build"))    build(cmd);
-  else if (cmd.pmatch("CHDir"))    chdir(cmd);
-  else if (cmd.pmatch("CDir"))	   chdir(cmd);
-  else if (cmd.pmatch("CLEAR"))    clear(cmd);
-  else if (cmd.pmatch("CRTSET"))   crtset(cmd);
-  else if (cmd.pmatch("DC"))	   dc(cmd);
-  else if (cmd.pmatch("DELete"))   del(cmd);
-  else if (cmd.pmatch("DIsto"))    disto(cmd);
-  else if (cmd.pmatch("Edit"))	   edit(cmd);
-  else if (cmd.pmatch("END"))	   end(cmd);
-  else if (cmd.pmatch("ENDS"))	   ends(cmd);
-  else if (cmd.pmatch("EOM"))	   ends(cmd);
-  else if (cmd.pmatch("EXIt"))	   quit(cmd);
-  else if (cmd.pmatch("FANout"))   fanout(cmd);
-  else if (cmd.pmatch("FAult"))    fault(cmd);
-  else if (cmd.pmatch("FOurier"))  fourier(cmd);
-  else if (cmd.pmatch("Generator"))generator(cmd);
-  else if (cmd.pmatch("GET"))	   get(cmd);
-  else if (cmd.pmatch("IC"))	   ic(cmd);
-  else if (cmd.pmatch("INClude"))  include(cmd);
-  else if (cmd.pmatch("List"))	   do_list(cmd);
-  else if (cmd.pmatch("LOg"))	   logger(cmd);
-  else if (cmd.pmatch("MACro"))	   subckt(cmd);
-  else if (cmd.pmatch("MArk"))	   mark(cmd);
-  else if (cmd.pmatch("MErge"))    merge(cmd);
-  else if (cmd.pmatch("MODEl"))    model(cmd);
-  else if (cmd.pmatch("Modify"))   modify(cmd);
-  else if (cmd.pmatch("NODeset"))  nodeset(cmd);
-  else if (cmd.pmatch("NOIse"))    noise(cmd);
-  else if (cmd.pmatch("OP"))	   op(cmd);
-  else if (cmd.pmatch("OPTions"))  options(cmd);
-  else if (cmd.pmatch("PAuse"))    pause(cmd);
-  else if (cmd.pmatch("PLot"))	   plot(cmd);
-  else if (cmd.pmatch("PRint"))    print(cmd);
-  else if (cmd.pmatch("PRobe"))    print(cmd);
-  else if (cmd.pmatch("Quit"))	   quit(cmd);
-  else if (cmd.pmatch("Restore"))  restore(cmd);
-  else if (cmd.pmatch("RM"))	   del(cmd);
-  else if (cmd.pmatch("SAve"))	   save(cmd);
-  else if (cmd.pmatch("SENs"))	   sens(cmd);
-  else if (cmd.pmatch("SEt"))	   options(cmd);
-  else if (cmd.pmatch("SPectrum")) fourier(cmd);
-  else if (cmd.pmatch("STatus"))   status(cmd);
-  else if (cmd.pmatch("SUbckt"))   subckt(cmd);
-  else if (cmd.pmatch("SWeep"))    sweep(cmd);
-  else if (cmd.pmatch("TEmperature")) temp(cmd);
-  else if (cmd.pmatch("TF"))	   tf(cmd);
-  else if (cmd.pmatch("TItle"))    title(cmd);
-  else if (cmd.pmatch("TRansient"))tr(cmd);
-  else if (cmd.pmatch("UNFault"))  unfault(cmd);
-  else if (cmd.pmatch("UNMark"))   unmark(cmd);
-  else if (cmd.pmatch("Width"))    options(cmd);
-  else if (cmd.pmatch("!$$"))	   system(cmd);
-  else if (cmd.pmatch("<$$"))	   run(cmd);
-  else if (cmd.pmatch(">$$"))	   file(cmd);
-  else{    /* comment or error */
+       if (cmd.pmatch("AC"))         {            ac(cmd);}
+  else if (cmd.pmatch("ALArm"))      {            alarm(cmd);}
+  else if (cmd.pmatch("ALTer"))      {untested(); modify(cmd);}
+  else if (cmd.pmatch("Build"))      {itested();  build(cmd);}
+  else if (cmd.pmatch("CHDir"))      {untested(); chdir(cmd);}
+  else if (cmd.pmatch("CDir"))       {untested(); chdir(cmd);}
+  else if (cmd.pmatch("CLEAR"))      {            clear(cmd);}
+  else if (cmd.pmatch("DC"))         {            dc(cmd);}
+  else if (cmd.pmatch("DELete"))     {            del(cmd);}
+  else if (cmd.pmatch("DIsto"))      {untested(); disto(cmd);}
+  else if (cmd.pmatch("EDit"))       {untested(); edit(cmd);}
+  else if (cmd.pmatch("END"))        {            end(cmd);}
+  else if (cmd.pmatch("EXIt"))       {untested(); quit(cmd);}
+  //else if (cmd.pmatch("FANout"))   {untested(); fanout(cmd);}
+  else if (cmd.pmatch("FAult"))      {            fault(cmd);}
+  else if (cmd.pmatch("FOurier"))    {            fourier(cmd);}
+  else if (cmd.pmatch("GENerator"))  {            generator(cmd);}
+  else if (cmd.pmatch("GET"))        {            get(cmd);}
+  else if (cmd.pmatch("IC"))         {untested(); ic(cmd);}
+  else if (cmd.pmatch("INClude"))    {untested(); include(cmd);}
+  else if (cmd.pmatch("LISt"))       {            do_list(cmd);}
+  else if (cmd.pmatch("LOg"))        {untested(); logger(cmd);}
+  else if (cmd.pmatch("MACro"))      {untested(); subckt(cmd);}
+  else if (cmd.pmatch("MARk"))       {untested(); mark(cmd);}
+  else if (cmd.pmatch("MErge"))      {untested(); merge(cmd);}
+  else if (cmd.pmatch("MODEL"))      {untested(); model(cmd);}
+  else if (cmd.pmatch("Modify"))     {            modify(cmd);}
+  else if (cmd.pmatch("NODeset"))    {untested(); nodeset(cmd);}
+  else if (cmd.pmatch("NOIse"))      {untested(); noise(cmd);}
+  else if (cmd.pmatch("OP"))         {            op(cmd);}
+  else if (cmd.pmatch("OPTions"))    {            options(cmd);}
+  else if (cmd.pmatch("PARameter"))  {            param(cmd);}
+  else if (cmd.pmatch("PAUse"))      {untested(); pause(cmd);}
+  else if (cmd.pmatch("PLot"))       {            plot(cmd);}
+  else if (cmd.pmatch("PRint"))      {            print(cmd);}
+  else if (cmd.pmatch("PRobe"))      {untested(); print(cmd);}
+  else if (cmd.pmatch("Quit"))       {itested();  quit(cmd);}
+  else if (cmd.pmatch("REstore"))    {untested(); restore(cmd);}
+  else if (cmd.pmatch("RM"))         {untested(); del(cmd);}
+  else if (cmd.pmatch("SAve"))       {untested(); save(cmd);}
+  else if (cmd.pmatch("SENs"))       {untested(); sens(cmd);}
+  else if (cmd.pmatch("SET"))        {untested(); options(cmd);}
+  else if (cmd.pmatch("SPectrum"))   {untested(); fourier(cmd);}
+  else if (cmd.pmatch("STatus"))     {            status(cmd);}
+  else if (cmd.pmatch("SUbckt"))     {untested(); subckt(cmd);}
+  else if (cmd.pmatch("SWeep"))      {untested(); sweep(cmd);}
+  else if (cmd.pmatch("TEmperature")){untested(); temp(cmd);}
+  else if (cmd.pmatch("TF"))         {untested(); tf(cmd);}
+  else if (cmd.pmatch("TItle"))      {untested(); title(cmd);}
+  else if (cmd.pmatch("TRansient"))  {            tr(cmd);}
+  else if (cmd.pmatch("UNFault"))    {            unfault(cmd);}
+  else if (cmd.pmatch("UNMark"))     {untested(); unmark(cmd);}
+  else if (cmd.pmatch("Width"))      {            options(cmd);}
+  else if (cmd.pmatch("!$$"))        {untested(); system(cmd);}
+  else if (cmd.pmatch("<$$"))        {            run(cmd);}
+  else if (cmd.pmatch(">$$"))        {untested(); file(cmd);}
+  else{ /* comment or error */
     comment(cmd);
     didsomething = false;
   }
-  if (OPT::acct  &&  didsomething){
-    //untested();
+  if (OPT::acct  &&  didsomething) {untested();
     IO::mstdout.form("time=%8.2f\n", timecheck.check().elapsed());
-    //untested();
+  }else{
   }
   plclose();
   IO::suppresserrors = false;
   outreset();
+
+  if (get_timer_was_running) {
+    ::status.get.start();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: io_trace.h,v 24.6 2003/05/08 09:04:04 al Exp $ -*- C++ -*-
+/*$Id: io_trace.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * trace macros for model debugging
  */
+//testing=trivial 2006.07.17
 /* allow multiple inclusions with different DO_TRACE */
-#include <stdio.h>
 #undef trace_line
 #undef trace0
 #undef trace1
@@ -36,7 +36,7 @@
 /*--------------------------------------------------------------------------*/
 #ifdef DO_TRACE
 #define trace_line() (printf("@@#\n@#@:%s:%u:%s\n", \
-			   __FILE__, __LINE__, __FUNCTION__))
+			   __FILE__, __LINE__, __func__))
 #define trace0(s) (printf("@#@%s\n", s))
 #define trace1(s,x) (printf("@#@%s  %s=%g\n", s, #x, (double)(x)))
 #define trace2(s,x,y) (printf("@#@%s  %s=%g  %s=%g\n",\
@@ -60,16 +60,23 @@
 #endif
 
 #define unreachable() (printf("@@#\n@@@unreachable:%s:%u:%s\n", \
-			   __FILE__, __LINE__, __FUNCTION__))
+			   __FILE__, __LINE__, __func__))
 
 #define incomplete() (printf("@@#\n@@@incomplete:%s:%u:%s\n", \
-			   __FILE__, __LINE__, __FUNCTION__))
+			   __FILE__, __LINE__, __func__))
 
 #ifdef TRACE_UNTESTED
 #define untested() (printf("@@#\n@@@:%s:%u:%s\n", \
-			   __FILE__, __LINE__, __FUNCTION__))
+			   __FILE__, __LINE__, __func__))
 #else
 #define untested()
+#endif
+
+#ifdef TRACE_ITESTED
+#define itested() (printf("@@#\n@@@:%s:%u:%s\n", \
+			   __FILE__, __LINE__, __func__))
+#else
+#define itested()
 #endif
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

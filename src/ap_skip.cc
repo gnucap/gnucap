@@ -1,4 +1,4 @@
-/*$Id: ap_skip.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: ap_skip.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * collection of functions to skip input
  * all except skip1 skip leading whitespace, skip whatever is being skipped,
  * then skip trailing whitespace.
  */
+//testing=script 2006.07.17
 #include "ap.h"
 /*--------------------------------------------------------------------------*/
 /* skipbl: skip whitespace.  (any non-graphic character is ws)
@@ -98,31 +99,37 @@ CS& CS::skiparg()
   if (!skipcom()) {
     if (peek()) {
       skip();
+    }else{
     }
     while (is_alpha() || is_pfloat() || is_argsym()) {
       skip();
     }
     skipcom();
+  }else{untested();
+    // empty field, just a comma
   }
   _ok = cursor() > here;
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+#if 0
 /* skipto: skip to a character (one of ...)
  * _ok = skipped something
  */
 CS& CS::skipto1(const std::string& t)
-{
+{untested();
   int here = cursor();
-  while (ns_more() && !match1(t)) {
+  while (ns_more() && !match1(t)) {untested();
     skip();
   }
   _ok = ns_more();
-  if (!_ok) {
+  if (!_ok) {untested();
     reset(here);
+  }else{untested();
   }
   return *this;
 }
+#endif
 /*--------------------------------------------------------------------------*/
 /* skipto: skip to a character (explicit)
  * _ok = skipped something
@@ -134,8 +141,9 @@ CS& CS::skipto1(char c)
     skip();
   }
   _ok = ns_more();
-  if (!_ok) {
+  if (!_ok) {untested();
     reset(here);
+  }else{
   }
   return *this;
 }

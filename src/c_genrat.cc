@@ -1,4 +1,4 @@
-/*$Id: c_genrat.cc,v 24.5 2003/04/27 01:05:05 al Exp $ -*- C++ -*-
+/*$Id: c_genrat.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,16 +16,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * set up generator for transient analysis
  */
-#include "constant.h"
+//testing=script,sparse 2006.07.16
 #include "s__.h"
 #include "ap.h"
 #include "c_comand.h"
-// testing=nonstrict
 /*--------------------------------------------------------------------------*/
 //	void	CMD::generator(CS&);
 	double	gen();
@@ -55,7 +54,7 @@ void CMD::generator(CS& cmd)
       || ::get(cmd, "MAx",	&maxv)
       || ::get(cmd, "MIn",	&minv)
       || ::get(cmd, "Offset",	&offset)
-      || ::get(cmd, "Init",	&init)
+      || ::get(cmd, "Initial",	&init)
       || ::get(cmd, "Rise",	&rise,	mPOSITIVE)
       || ::get(cmd, "Fall",	&fall,	mPOSITIVE)
       || ::get(cmd, "Delay",	&delay,	mPOSITIVE)
@@ -83,29 +82,33 @@ void CMD::generator(CS& cmd)
 /*--------------------------------------------------------------------------*/
 double gen()
 {
-  if (SIM::time0 <= delay){
+  if (SIM::time0 <= delay) {
     return init;
   }
   double loctime = SIM::time0 - delay;
-  if (period > 0.){
+  if (period > 0.) {
+    untested();
     loctime = fmod(loctime, period);
   }
 
   double level;
-  {if (SIM::time0 <= delay + rise){			/* initial rise */
+  if (SIM::time0 <= delay + rise) {			/* initial rise */
     level = (maxv - 0) * (loctime/rise) + 0;
-  }else if (loctime <= rise){                           /* rising       */
+  }else if (loctime <= rise) {				/* rising       */
+    untested();
     level = (maxv - minv) * (loctime/rise) + minv;
-  }else if (width==0.  ||  (loctime-=rise) <= width){	/* pulse on     */
+  }else if (width==0.  ||  (loctime-=rise) <= width) {	/* pulse on     */
     level = maxv;
-  }else if ((loctime-=width) <= fall){                  /* falling      */
+  }else if ((loctime-=width) <= fall) {			/* falling      */
+    untested();
     level = (minv - maxv) * (loctime/fall) + maxv;
-  }else{                                                /* pulse off    */
+  }else{						/* pulse off    */
+    untested();
     level = minv;
-  }}
+  }
   level *= (freq == 0.) 
     ? ampl
-    : ampl * sin(kPIx2*freq*(SIM::time0-delay) + phaz*DTOR);
+    : ampl * sin(M_TWO_PI * freq*(SIM::time0-delay) + phaz * DTOR);
   return (SIM::time0 <= delay + rise)
     ? level + (offset - init) * (loctime/rise) + init
     : level + offset;

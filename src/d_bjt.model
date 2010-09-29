@@ -1,4 +1,4 @@
-/* $Id: d_bjt.model,v 24.23 2004/02/01 21:12:55 al Exp $ -*- C++ -*-
+/* $Id: d_bjt.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2002 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Berkeley BJT model
  * Derived from Spice code, both from 2g6 and 3f4
@@ -42,6 +42,7 @@ h_headers {
   class DEV_FPOLY_CAP;
 }
 cc_headers {
+#include "u_limit.h"
 #include "d_admit.h"
 #include "d_cap.h"
 #include "d_res.h"
@@ -61,30 +62,28 @@ device BJT {
       iemit short_to=emit  short_if="!OPT::rstray || m->re == 0.";
     }
     // basics
-    cpoly_g Ice {icol,iemit  ibase,iemit} state=cce_cpoly; // cce, go, gm
-    cpoly_g Ipi {ibase iemit} state=cpi_cpoly; // cpi, gpi
-    cpoly_g Imu {ibase icol}  state=cmu_cpoly; // cmu, gmu
+    cpoly_g Ice {icol,iemit  ibase,iemit} state=ccexxx; // cce, go, gm
+    cpoly_g Ipi {ibase iemit} state=cpixxx; // cpi, gpi
+    cpoly_g Imu {ibase icol}  state=cmuxxx; // cmu, gmu
     // junction charge effects
     fpoly_cap Cbx {base icol} state=qbx; // qbx, cqbx
     fpoly_cap Cbc {ibase icol} state=qbc; // qbc, cqbc
     fpoly_cap Ccs {sub icol} state=qcs // qcs, cqcs
-	omit="_n[n_sub].is_unconnected()";
+	omit="!(_n[n_sub].n_())";
     fpoly_cap Cbe {ibase iemit ibase icol} state=qbe; // qbe, cqbe, geqbc
     // parasitics
     resistance Rc {col icol} value="m->rc / (c->area * c->m)"
 	omit="!OPT::rstray || m->rc == 0."; // gcpr
     resistance Re {emit iemit} value="m->re / (c->area * c->m)"
 	omit="!OPT::rstray || m->re == 0."; // gepr
-    cpoly_g Yb {base ibase} state=ix_cpoly // gx.  should be "eval"
+    cpoly_g Yb {base ibase} state=ixxxx // gx.  should be "eval"
 	omit="!OPT::rstray || (m->rb == 0. && m->rbm == 0.)";
     capacitance Cbcp {base col} value="m->cbcp * c->area * c->m"
 	omit="!OPT::cstray || m->cbcp == 0.";
-    capacitance Cbep {base col} value="m->cbep * c->area * c->m"
+    capacitance Cbep {base emit} value="m->cbep * c->area * c->m"
 	omit="!OPT::cstray || m->cbep == 0.";
-    capacitance Cbsp {base col} value="m->cbsp * c->area * c->m"
-	omit="!OPT::cstray || m->cbsp == 0.";
-    capacitance Ccsp {base col} value="m->ccsp * c->area * c->m"
-	omit="!OPT::cstray || m->ccsp == 0.";
+    capacitance Cbs {base sub} value="(m->cbsp + m->ccsp) * c->area * c->m"
+	omit="!OPT::cstray || ((m->cbsp + m->ccsp) == 0.)";
   }
   tr_probe {
     VBEInt = "vbe";
@@ -110,46 +109,31 @@ device BJT {
     VEI = "@n_iemit[V]";
 
     ICE = "cce";
-    ICEOffset = "cce_cpoly";
+    ICEOffset = "ccexxx";
     HOE = "go";
-    GO = "go";
     ROe = "(go != 0) ? 1/go : BIGBIG";
-    GM = "gm";
 
     IPI = "cpi";
-    IPIOffset = "cpi_cpoly";
-    GPI = "gpi";
+    IPIOffset = "cpixxx";
     RPI = "(gpi != 0) ? 1/gpi : BIGBIG";
     HIE = "(gpi != 0) ? 1/gpi : BIGBIG";
 
     IMU = "cmu";
-    IMUOffset = "cmu_cpoly";
-    GMU = "gmu";
+    IMUOffset = "cmuxxx";
     RMU = "(gmu != 0) ? 1/gmu : BIGBIG";
 
     IB = "cpi + cmu";
-    GX = "gx";
     RX = "(gx != NA) ? 1/gx : 0.";
 
-    IC = "cce + cmu";
+    IC = "cce - cmu";
     IE = "-cce -cpi";
 
-    QBX = "qbx";
-    CQBX = "cqbx";
     CBX = "cqbx";
-    QBC = "qbc";
-    CQBC = "cqbc";
     CBC = "cqbc";
     CMU = "cqbc";
-    QCS = "qcs";
-    CQCS = "cqcs";
     CCS = "cqcs";
-    QBE = "qbe";
-    CQBE = "cqbe";
     CBE = "cqbe";
     CPI = "cqbe";
-
-    GEQCB = "geqcb";
 
     P  = "@Ice[P] + @Ipi[P] + @Imu[P] + @Rc[P] + @Re[P] + @Yb[P]
        + @Cbx[P] + @Cbc[P] + @Ccs[P] + @Cbe[P]";
@@ -168,19 +152,19 @@ device BJT {
       double vcs "C-S voltage";
 
       double cce "collector-emitter current";
-      double cce_cpoly;
+      double ccexxx;
       double go "Small signal output conductance";
       double gm "Small signal transconductance";
 
       double cpi "emitter-base current";
-      double cpi_cpoly;
+      double cpixxx;
       double gpi "Small signal input conductance - pi";
 
       double cmu "collector-base current";
-      double cmu_cpoly;
+      double cmuxxx;
       double gmu "Small signal conductance - mu";
 
-      double ix_cpoly "Current offset at base node, constant" default=0;
+      double ixxxx "Current offset at base node, constant" default=0;
       double gx "dix/dvbb Conductance from base to internal base";
 
       double qbx "Charge storage B-X junction";
@@ -219,29 +203,13 @@ device BJT {
       double oikr "" calculate="m->invrolloffr / c->area";
     }
   }
-  function limit(double vnew, double *vold, double vt, double vcrit) {
-    /* Spice style limiting */
-    trace4("limit-in", vnew, *vold, vt, vcrit);
-    {if ((vnew > vcrit) && (std::abs(vnew - *vold) > (2 * vt))) {
-      {if (*vold > 0) {
-	double arg = 1 + (vnew - *vold) / vt;
-	*vold = (arg > 0) ? (*vold + vt * log(arg)) : vcrit;
-	trace3("limit-1", *vold, vt*log(arg), arg);
-      }else{
-	*vold = vt * log(vnew/vt);
-	trace3("limit-2", *vold, vt*log(vnew/vt), vnew/vt);
-      }}
-    }else{
-      *vold = vnew;
-      trace1("limit-3", *vold);
-    }}
-  }
   tr_eval {
     int foo=3;
   }
 }
 /*--------------------------------------------------------------------------*/
 model BJT {
+  level 1;
   dev_type BJT;
   base;
   inherit DIODE;
@@ -255,6 +223,7 @@ model BJT {
       double af "Flicker Noise Exponent" name=AF default=1;
     }
     raw_parameters {
+      int level "dummy" name=LEVEL default=1 print_test=false;
       // basic
       double bf "Ideal forward beta" name=BF alt_name=BFM default=100;
       double br "Ideal reverse beta" name=BR alt_name=BRM default=1;
@@ -365,6 +334,8 @@ model BJT {
       double eg "Energy gap for IS temp. dependency" name=EG default=1.11;
     }
     calculated_parameters {
+      double tnom_k "nominal temperature, kelvin"
+	calculate="_tnom_c + P_CELSIUS0";
       polarity_t polarity "" default=pN;
       double invearlyvoltf "Inverse early voltage:forward" name=INVEARLYVOLTF
 	calculate="(vaf != NA && vaf != 0.) ? 1./vaf : 0.";
@@ -405,20 +376,20 @@ model BJT {
       double BCcap "BJTtBCcap";
       double f4 "";
       double f5 "";
-      double Vcrit "" calculate="vt * log(vt / (kRT2 * m->ibe))";
+      double Vcrit "" calculate="vt * log(vt / (M_SQRT2 * m->ibe))";
     }
     code_pre {
       const double reftemp = 300.15;
-      double temp = (c->temp != NA) ? c->temp : SIM::temp;
-      double fact1 = m->_tnom / reftemp;
+      double temp = (c->temp != NA) ? c->temp : SIM::temp_c + P_CELSIUS0;
+      double fact1 = m->tnom_k / reftemp;
       double fact2 = temp / reftemp;
-      double tempratio  = temp / m->_tnom; // fact2/fact1
-      double kt = temp * K;
-      vt = kt / Q;
+      double tempratio  = temp / m->tnom_k; // fact2/fact1
+      double kt = temp * P_K;
+      vt = temp * P_K_Q;
       double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.); // egfet
       // double arg = (m->eg*tempratio - egap) / (2*kt);
-      double arg = -egap/(2 * kt) + 1.1150877 / (K * (reftemp+reftemp));
-      double pbfact = -2 * vt * (1.5 * log(fact2) + Q * arg);
+      double arg = -egap/(2 * kt) + 1.1150877 / (P_K * (reftemp+reftemp));
+      double pbfact = -2 * vt * (1.5 * log(fact2) + P_Q * arg);
       double ratlog = log(tempratio);
       double ratio1 = tempratio - 1;
       double factlog = ratio1 * m->eg / vt + m->xti * ratlog;
@@ -432,7 +403,7 @@ model BJT {
 	BEpot = fact2 * pbo + pbfact;
 	double gmaold = (m->vje - pbo) / pbo;
 	double gmanew = (BEpot - pbo) / pbo;
-	BEcap = (m->cje / (1 + m->mje * (4e-4*(m->_tnom-reftemp)-gmaold)))
+	BEcap = (m->cje / (1 + m->mje * (4e-4*(m->tnom_k-reftemp)-gmaold)))
 	  * (1 + m->mje * (4e-4*(temp-reftemp)-gmanew));
 	DepCap = m->fc * BEpot;
 	f1 = BEpot * (1 - exp((1 - m->mje) * m->xfc)) / (1 - m->mje);
@@ -442,7 +413,8 @@ model BJT {
 	BCpot = fact2 * pbo + pbfact;
 	double gmaold = (m->vjc - pbo) / pbo;
 	double gmanew = (BCpot - pbo) / pbo;
-	BCcap = (m->cjc / (1 + m->mjc * (4e-4*(m->_tnom-reftemp)-gmaold)))
+	BCcap = (m->cjc / (1 + m->mjc 
+			   * (4e-4*(m->tnom_k-reftemp)-gmaold)))
 	  * (1 + m->mjc * (4e-4*(temp-reftemp)-gmanew));
 	f4 = m->fc * BCpot;
 	f5 = BCpot * (1 - exp((1 - m->mjc) * m->xfc)) / (1 - m->mjc);
@@ -456,17 +428,17 @@ model BJT {
     trace4("", d->vbe, d->vbc, d->vbx, d->vcs);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     double cbe, gbe;
-    { // d->cpi, d->gpi, d->cpi_cpoly
+    { // d->cpi, d->gpi, d->cpixxx
       // uses: d->vbe
       double cben, gben;
       double vtn = t->vt * m->nf;
       double csat = t->ibe * c->area;
       double c2 = t->BEleakCur * c->area;
-      {if (d->vbe > -5 * vtn) {
+      if (d->vbe > -5 * vtn) {
 	double evbe = exp(d->vbe / vtn);
 	cbe = csat * (evbe-1) + OPT::gmin * d->vbe;
 	gbe = csat * evbe/vtn + OPT::gmin;
-	{if (c2 == 0) {
+	if (c2 == 0) {
 	  cben = 0;
 	  gben = 0;
 	}else{
@@ -474,7 +446,7 @@ model BJT {
 	  double evben = exp(d->vbe / vte);
 	  cben = c2 * (evben-1);
 	  gben = c2 * evben/vte;
-	}}
+	}
 	trace4("vbe on", cbe, gbe, cben, gben);
       }else{
 	gbe = -csat/d->vbe + OPT::gmin;
@@ -482,25 +454,25 @@ model BJT {
 	gben = -c2 / d->vbe;
 	cben = gben * d->vbe;
 	trace4("vbe off", cbe, gbe, cben, gben);
-      }}
+      }
       d->cpi = cbe / t->BetaF + cben;
       d->gpi = gbe / t->BetaF + gben;
-      d->cpi_cpoly = d->cpi - d->vbe * d->gpi;
+      d->cpixxx = d->cpi - d->vbe * d->gpi;
       trace3("", t->BetaF, d->cpi, d->gpi);
     }
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     double cbc, gbc, cbcn;
-    { // d->cmu, d->gmu, d->cmu_cpoly
+    { // d->cmu, d->gmu, d->cmuxxx
       // uses: d->vbc
       double gbcn;
       double vtn = t->vt * m->nr;
       double csat = t->ibc * c->area;
       double c4 = t->BCleakCur * c->area;
-      {if (d->vbc > -5 * vtn) {
+      if (d->vbc > -5 * vtn) {
 	double evbc = exp(d->vbc / vtn);
 	cbc = csat * (evbc-1) + OPT::gmin * d->vbc;
 	gbc = csat * evbc/vtn + OPT::gmin;
-	{if (c4 == 0) {
+	if (c4 == 0) {
 	  cbcn = 0;
 	  gbcn = 0;
 	}else{
@@ -508,7 +480,7 @@ model BJT {
 	  double evbcn = exp(d->vbc / vtc);
 	  cbcn = c4 * (evbcn-1);
 	  gbcn = c4 * evbcn/vtc;
-	}}
+	}
 	trace4("vbc on", cbc, gbc, cbcn, gbcn);
       }else{
 	gbc = -csat/d->vbc + OPT::gmin;
@@ -516,10 +488,10 @@ model BJT {
 	gbcn = -c4 / d->vbc;
 	cbcn = gbcn * d->vbc;
 	trace4("vbc off", cbc, gbc, cbcn, gbcn);
-      }}
+      }
       d->cmu = cbc / t->BetaR + cbcn;
       d->gmu = gbc / t->BetaR + gbcn;
-      d->cmu_cpoly = d->cmu - d->vbc * d->gmu;
+      d->cmuxxx = d->cmu - d->vbc * d->gmu;
       trace3("", t->BetaR, d->cmu, d->gmu);
     }
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -527,7 +499,7 @@ model BJT {
     double qb, dqbdve, dqbdvc;
     {
       double q1 = 1 / (1 - m->invearlyvoltf*d->vbc - m->invearlyvoltr*d->vbe);
-      {if(c->oik == 0 && c->oikr == 0) {
+      if(c->oik == 0 && c->oikr == 0) {
 	qb = q1;
 	dqbdve = q1 * qb * m->invearlyvoltr;
 	dqbdvc = q1 * qb * m->invearlyvoltf;
@@ -541,7 +513,7 @@ model BJT {
 	dqbdvc = q1 * (qb * m->invearlyvoltf + c->oikr * gbc / sqarg);
 	trace2("", c->oik, c->oikr);
 	trace4("oik", q1, qb, dqbdve, dqbdvc);
-      }}
+      }
     }
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // weil's approx. for excess phase applied with backward-euler integration
@@ -557,7 +529,7 @@ model BJT {
 	arg1 *= arg2;
 	double denom = 1 + arg1 + arg2;
 	double arg3 = arg1 / denom;
-	if (STATUS::iter[SIM::mode] <= 1) {
+	if (initial_step(SIM::mode)) {
 	  d->cexbc_2 = d->cexbc_1 = cbe / qb;
 	}
 	cc = (d->cexbc_1 * (1 + d->_dt_0/d->_dt_1 + arg2)
@@ -570,7 +542,7 @@ model BJT {
       d->cce = cc + (cex-cbc)/qb - cbc/t->BetaR - cbcn;
       d->go = (gbc + (cex-cbc)*dqbdvc / qb) / qb;
       d->gm = (gex - (cex-cbc)*dqbdve / qb) / qb - d->go;
-      d->cce_cpoly = d->cce - ((d->vbe - d->vbc) * d->go + d->vbe * d->gm);
+      d->ccexxx = d->cce - ((d->vbe - d->vbc) * d->go + d->vbe * d->gm);
       trace4("", d->cce, d->go, d->gm, d->cce/t->vt);
     }
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -578,14 +550,14 @@ model BJT {
     // should be moved to a private eval
     // may use d->cpi, d->cmu, qb
     {
-      {if (!OPT::rstray || (m->rb == 0. && m->rbm == 0.)) {
+      if (!OPT::rstray || (m->rb == 0. && m->rbm == 0.)) {
 	trace3("", m->rb, m->irb, d->gx);
 	assert(d->gx == NA);
       }else{
 	double rx = NA;
 	double rbpr = m->rbm / c->area;
 	double rbpi = m->rb / c->area - rbpr;
-	{if (m->irb != 0) { // base resistance lowering at high current
+	if (m->irb != 0) { // base resistance lowering at high current
 	  double cb = d->cpi + d->cmu;
 	  double xjrb = m->irb * c->area;
 	  double arg1 = std::max(cb/xjrb, 1e-9);
@@ -593,44 +565,43 @@ model BJT {
 	  arg1 = tan(arg2);
 	  rx = rbpr + 3 * rbpi * (arg1-arg2) / arg2 / arg1 / arg1;
 	}else{
-	  untested();
 	  rx = rbpr + rbpi / qb;
-	}}
+	}
 	trace3("", m->rb, m->irb, rx);
 	assert(rx != NA);
 	assert(rx != 0);
 	d->gx = 1 / rx;
 	trace1("", d->gx);
-      }}
+      }
     }
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     const bool charge_computation_needed = OPT::cstray;
     if (charge_computation_needed) {
-      {if (m->tf != 0 && d->vbe > 0) {
+      if (m->tf != 0 && d->vbe > 0) {
 	double argtf = NA;
 	double arg2  = NA;
 	double arg3  = NA;
-	{if (m->xtf != 0) {
-	  {if (m->transtimevbcfact != 0) {
+	if (m->xtf != 0) {
+	  if (m->transtimevbcfact != 0) {
 	    //untested();
 	    argtf = m->xtf * exp(d->vbc * m->transtimevbcfact);
 	  }else{
 	    untested();
 	    argtf = m->xtf;
-	  }}
+	  }
 	  arg2 = argtf;
-	  {if(m->itf != 0) {
+	  if(m->itf != 0) {
 	    //untested();
 	    double temp = cbe / (cbe + m->itf * c->area);
 	    argtf *= temp*temp;
 	    arg2  *= (3-temp-temp);
 	  }else{
 	    //untested();
-	  }}
+	  }
 	  arg3 = cbe * argtf * m->transtimevbcfact;
 	}else{
 	  arg3 = arg2 = argtf = 0;
-	}}
+	}
 	assert(argtf != NA);
 	assert(arg2  != NA);
 	assert(arg3  != NA);
@@ -639,11 +610,11 @@ model BJT {
 	d->geqcb=m->tf*(arg3-cbe*dqbdvc)/qb;
       }else{
 	d->geqcb=0;
-      }}
+      }
       { // d->qbe, d->cqbe
 	// uses: d->vbe, cbe, gbe
 	double czbe = t->BEcap * c->area;
-	{if (d->vbe < t->DepCap) {
+	if (d->vbe < t->DepCap) {
 	  double arg = 1 - d->vbe / t->BEpot;
 	  double sarg = pow(arg, -m->mje);
 	  d->qbe = m->tf * cbe + t->BEpot * czbe * (1-arg*sarg) / (1 - m->mje);
@@ -655,12 +626,12 @@ model BJT {
 			+ (m->mje / (2. * t->BEpot))
 			* (d->vbe * d->vbe - t->DepCap * t->DepCap));
 	  d->cqbe = m->tf * gbe + czbef2 * (m->f3 + m->mje*d->vbe / t->BEpot);
-	}}
+	}
       }
       { // d->qbc, d->cqbc
 	// uses: d->vbc, cbc, gbc
 	double czbc = t->BCcap * c->area * m->xcjc;
-	{if (d->vbc < t->f4) {
+	if (d->vbc < t->f4) {
 	  double arg = 1 - d->vbc / t->BCpot;
 	  double sarg = pow(arg, -m->mjc);
 	  d->qbc = m->tr *cbc + t->BCpot *czbc * (1 - arg*sarg) / (1 - m->mjc);
@@ -671,12 +642,12 @@ model BJT {
 	    + czbcf2 * (m->f7 * (d->vbc-t->f4) 
 		+ (m->mjc/(t->BCpot+t->BCpot)) * (d->vbc*d->vbc-t->f4*t->f4));
 	  d->cqbc = m->tr * gbc + czbcf2 * (m->f7 + m->mjc * d->vbc/t->BCpot);
-	}}
+	}
       }
       { // d->qbx, d->cqbx
 	// uses: d->vbx
 	double czbx = t->BCcap * c->area * (1 - m->xcjc);
-	{if (d->vbx < t->f4) {
+	if (d->vbx < t->f4) {
 	  double arg = 1 - d->vbx / t->BCpot;
 	  double sarg = pow(arg, -m->mjc);
 	  d->qbx = t->BCpot * czbx * (1 - arg*sarg) / (1 - m->mjc);
@@ -687,12 +658,12 @@ model BJT {
 	    * (m->f7 * (d->vbx-t->f4)
 	      + (m->mjc / (t->BCpot+t->BCpot)) * (d->vbx*d->vbx-t->f4*t->f4));
 	  d->cqbx = czbxf2 * (m->f7 + m->mjc * d->vbx / t->BCpot);
-	}}
+	}
       }
       { // d->qcs, d->cqcs
 	// uses: d->vcs
 	double czcs = m->cjs * c->area;
-	{if (d->vcs < 0) {
+	if (d->vcs < 0) {
 	  double arg = 1 - d->vcs / m->vjs;
 	  double sarg = pow(arg, -m->mjs);
 	  d->qcs = m->vjs * czcs * (1 - arg*sarg) / (1 - m->mjs);
@@ -700,7 +671,7 @@ model BJT {
 	}else{
 	  d->qcs = d->vcs * czcs * (1 + m->mjs * d->vcs / (2 * m->vjs));
 	  d->cqcs = czcs * (1 + m->mjs * d->vcs / m->vjs);
-	}}
+	}
       }
     }
   }
@@ -708,9 +679,9 @@ model BJT {
 /*--------------------------------------------------------------------------*/
 cc_direct {
 /*--------------------------------------------------------------------------*/
-bool DEV_BJT::tr_needs_eval()
+bool DEV_BJT::tr_needs_eval()const
 {
-  {if (is_q_for_eval()) {
+  if (is_q_for_eval()) {
     untested();
     return false;
   }else if (!converged()) {
@@ -727,7 +698,7 @@ bool DEV_BJT::tr_needs_eval()
 		       OPT::vntol)
 	     && conchk(vcs, polarity*(_n[n_icol].v0()-_n[n_sub].v0()),
 		       OPT::vntol));
-  }}
+  }
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_BJT::do_tr()
@@ -736,58 +707,55 @@ bool DEV_BJT::do_tr()
   assert(c);
   const MODEL_BJT* m = prechecked_cast<const MODEL_BJT*>(c->model());
   assert(m);
-  assert(subckt().exists());
   const TDP_BJT T(this);
   const TDP_BJT* t = &T;
 
-  {if(STATUS::iter[SIM::mode] <= 1) {	// initial guess
-    {if (c->off) {
+  if(initial_step(SIM::mode)) {	// initial guess
+    if (c->off) {
       vbe = 0;
     }else{
-      double vt = SIM::temp * K / Q;
-      vbe = vt * log(vt / (kRT2 * m->ibe));
-    }}
+      double vt = (SIM::temp_c + P_CELSIUS0) * P_K_Q;
+      vbe = vt * log(vt / (M_SQRT2 * m->ibe));
+    }
     vbc = 0;
     /* ERROR:  need to initialize VCS, VBX here */
     vcs = vbx = 0;
   }else{				// normal gather
-    // vbe = m->polarity * volts_limited(_n[n_ibase], _n[n_iemit]);
-    limit((m->polarity * volts_limited(_n[n_ibase], _n[n_iemit])),
-	  &vbe, t->vt, t->Vcrit);
-    // vbc = m->polarity * volts_limited(_n[n_ibase], _n[n_icol]);
-    limit((m->polarity * volts_limited(_n[n_ibase], _n[n_icol])),
-	  &vbc, t->vt, t->Vcrit);
+    vbe = pnj_limit((m->polarity * volts_limited(_n[n_ibase], _n[n_iemit])),
+		    vbe, t->vt, t->Vcrit);
+    vbc = pnj_limit((m->polarity * volts_limited(_n[n_ibase], _n[n_icol])),
+		    vbc, t->vt, t->Vcrit);
     vbx = m->polarity * volts_limited(_n[n_base], _n[n_icol]);
     vcs = m->polarity * volts_limited(_n[n_sub], _n[n_icol]);
-  }}
-
+  }
+ 
   if (SIM::uic_now()) {
     untested();
-    {if (c->icvbe != NA) {
+    if (c->icvbe != NA) {
       untested();
       vbe = m->polarity * c->icvbe;
     }else{
       untested();
-    }}
-    {if (c->icvce != NA) {
+    }
+    if (c->icvce != NA) {
       untested();
       vbc = vbe - m->polarity * c->icvce;
       vbx = vbc;
     }else{
       untested();
-    }}
+    }
   }
 
   m->tr_eval(this);
   switch (m->polarity) {
   case pP:
     cce = -cce;
-    cce_cpoly = -cce_cpoly;
+    ccexxx = -ccexxx;
     cpi = -cpi;
-    cpi_cpoly = -cpi_cpoly;
+    cpixxx = -cpixxx;
     cmu = -cmu;
-    cmu_cpoly = -cmu_cpoly;
-    assert(ix_cpoly == 0.);
+    cmuxxx = -cmuxxx;
+    assert(ixxxx == 0.);
     qbx = -qbx;
     qbc = -qbc;
     qcs = -qcs;
@@ -799,19 +767,19 @@ bool DEV_BJT::do_tr()
   }
   if (c->m != 1.) {
     cce *= c->m;
-    cce_cpoly *= c->m;
+    ccexxx *= c->m;
     go *= c->m;
     gm *= c->m;
     
     cpi *= c->m;
-    cpi_cpoly *= c->m;
+    cpixxx *= c->m;
     gpi *= c->m;
     
     cmu *= c->m;
-    cmu_cpoly *= c->m;
+    cmuxxx *= c->m;
     gmu *= c->m;
     
-    ix_cpoly *= c->m;
+    ixxxx *= c->m;
     gx  *= c->m;
     
     qbx *= c->m;
@@ -827,7 +795,9 @@ bool DEV_BJT::do_tr()
     cqbe *= c->m;
     geqcb *= c->m;
   }
-  set_converged(subckt().do_tr());
+  
+  assert(subckt());
+  set_converged(subckt()->do_tr());
   return converged();
 }
 }

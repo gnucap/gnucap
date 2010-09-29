@@ -1,4 +1,4 @@
-/*$Id: s_fo_out.cc,v 22.5 2002/07/07 07:26:31 al Exp $ -*- C++ -*-
+/*$Id: s_fo_out.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,15 +16,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * functions needed in addition to the transient analysis
  * to perform the fourier command.
  */
-#include "u_opt.h"
+//testing=script 2006.07.16
 #include "u_prblst.h"
-#include "constant.h"
 #include "declare.h"	/* plclose, plclear, fft */
 #include "s_fo.h"
 /*--------------------------------------------------------------------------*/
@@ -43,7 +42,7 @@ void FOURIER::store()
 {
   int ii = 0;
   for (PROBELIST::const_iterator
-	 p=printlist().begin();  p!=printlist().end();  ++p){
+	 p=printlist().begin();  p!=printlist().end();  ++p) {
     assert(stepno < timesteps);
     fdata[ii][stepno] = p->value();
     ++ii;
@@ -58,7 +57,7 @@ void FOURIER::foout()
   plclear();
   int ii = 0;
   for (PROBELIST::const_iterator
-	 p=printlist().begin();  p!=printlist().end();  ++p){
+	 p=printlist().begin();  p!=printlist().end();  ++p) {
     fohead(*p);
     fft(fdata[ii], timesteps-1,  0);
     foprint(fdata[ii]);
@@ -87,12 +86,12 @@ void FOURIER::foprint(COMPLEX *data)
   int stopstep  = stepnum(0., fstep, fstop );
   assert(stopstep < timesteps);
   COMPLEX maxvalue = find_max(data,std::max(1,startstep),stopstep);
-  if (maxvalue == 0.){
+  if (maxvalue == 0.) {
     untested();
     maxvalue = 1.;
   }
   data[0] /= 2;
-  for (int ii = startstep;  ii <= stopstep;  ++ii){
+  for (int ii = startstep;  ii <= stopstep;  ++ii) {
     double frequency = fstep * ii;
     assert(ii >= 0);
     assert(ii < timesteps);
@@ -101,10 +100,10 @@ void FOURIER::foprint(COMPLEX *data)
     unscaled *= 2;
     out.form("%s%s%7.2f %8.3f %s%7.2f %8.3f\n",
 	     ftos(frequency,    11,5,out.format()),
-        ftos(abs(unscaled),11,5,out.format()),
+        ftos(std::abs(unscaled),11,5,out.format()),
 	     db(unscaled),
 	     phaze(unscaled*COMPLEX(0.,1)),
-        ftos(abs(scaled),  11,5,out.format()),
+        ftos(std::abs(scaled),  11,5,out.format()),
 	     db(scaled),
 	     phaze(scaled) ) ;
   }
@@ -122,8 +121,8 @@ static int stepnum(double start, double step, double here)
 static COMPLEX find_max(COMPLEX *data, int start, int stop)
 {
   COMPLEX maxvalue = 0.;
-  for (int ii = start;  ii <= stop;  ++ii){
-    if (abs(data[ii]) > abs(maxvalue)){
+  for (int ii = start;  ii <= stop;  ++ii) {
+    if (std::abs(data[ii]) > std::abs(maxvalue)) {
       maxvalue = data[ii];
     }
   }

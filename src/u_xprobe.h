@@ -1,4 +1,4 @@
-/*$Id: u_xprobe.h,v 21.8 2002/03/07 08:30:28 al Exp $ -*- C++ -*-
+/*$Id: u_xprobe.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,29 +16,34 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * extended probe data
  * used for AC analysis
  */
+//testing=script 2006.07.14
 #ifndef U_XPROBE_H
 #define U_XPROBE_H
 #include "constant.h"
-#include "l_compar.h"
 /*--------------------------------------------------------------------------*/
-typedef enum {mtNONE, mtMAG, mtPHASE, mtREAL, mtIMAG} mod_t;
+enum mod_t {mtNONE, mtMAG, mtPHASE, mtREAL, mtIMAG};
 /*--------------------------------------------------------------------------*/
 class XPROBE{
 private:
   COMPLEX _value;
   mod_t   _modifier; // default
   double  _dbscale;  // 20 for voltage, 10 for power, etc.
-public:  
-  //explicit XPROBE():
-  //  _value(COMPLEX(NOT_VALID, NOT_VALID)),
-  //  _modifier(mtNONE),
-  //  _dbscale(20.) {}
+
+  explicit XPROBE():
+    _value(COMPLEX(NOT_VALID, NOT_VALID)),
+    _modifier(mtNONE),
+    _dbscale(20.) {untested();}
+public:
+  XPROBE(const XPROBE& p):
+    _value(p._value),
+    _modifier(p._modifier),
+    _dbscale(p._dbscale) {untested();}
   explicit XPROBE(COMPLEX v,mod_t m=mtMAG,double d=20.):
     _value(v),
     _modifier(m),
@@ -47,8 +52,11 @@ public:
     _value(v),
     _modifier(m),
     _dbscale(d) {}
+  ~XPROBE() {}
+
   bool OK()const {return _modifier != mtNONE;}
   double operator()(mod_t m=mtNONE, bool db = false)const;
+  XPROBE& operator=(const XPROBE& p);
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

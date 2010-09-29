@@ -1,4 +1,4 @@
-/*$Id: u_opt1.cc,v 24.18 2004/01/11 06:57:39 al Exp $ -*- C++ -*-
+/*$Id: u_opt1.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,18 +16,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * all the options set by the .options card.
  * initialization and declaration of statics
  */
-#include "constant.h"
+//testing=trivial 2006.07.17
 #include "u_opt.h"
 
 bool	OPT::acct = false;
 bool	OPT::listing = false;
-bool	OPT::nomod = false;
+bool	OPT::mod = true;
 bool	OPT::page = false;
 bool	OPT::node = false;
 bool	OPT::opts = false;
@@ -40,7 +40,7 @@ double	OPT::chgtol = 1e-14;
 double	OPT::pivtol = 1e-13;
 double	OPT::pivrel = 1e-3;
 int	OPT::numdgt = 5;
-double	OPT::tnom = 27.0-ABS_ZERO;
+double	OPT::tnom_c = 27.0;
 int	OPT::cptime = 30000;
 int	OPT::limtim = 2;
 int	OPT::limpts = 201;
@@ -53,35 +53,32 @@ double	OPT::defw = 100e-6;
 double	OPT::defad = 0.;
 double	OPT::defas = 0.;
 
-int	OPT::seed = 1;
 bool	OPT::clobber = true;
-bool	OPT::named_nodes = false;
-double	OPT::wczero = 1e-9;
-double	OPT::floor = 1e-21;
-double	OPT::vfloor = 1e-15;
+bool	OPT::keys_between_nodes = true;
 double	OPT::dampmax = 1.0;
 double	OPT::dampmin = 0.5;
 int	OPT::dampstrategy = 0; //dsINIT|dsDEVREGION|dsREVERSE;
+double	OPT::floor = 1e-21;
+double	OPT::vfloor = 1e-15;
 double	OPT::roundofftol = 1e-13;
-double	OPT::tempamb = 27.0-ABS_ZERO;
+double	OPT::temp_c = 27.0;
 double	OPT::shortckt = 10e-6;
 int	OPT::picky = bPICKY;
 int	OPT::inwidth = 80;
 int	OPT::outwidth = 9999;
-double	OPT::xdivisions = 4.;
 double	OPT::ydivisions = 4.;
 phase_t	OPT::phase = pDEGREES;
 order_t	OPT::order = oAUTO;
 smode_t	OPT::mode = moMIXED;
 int	OPT::transits = 2;
 bool	OPT::dupcheck = false;
-bypass_t OPT::bypass = bYES;
+bool	OPT::bypass = true;
 bool	OPT::incmode = true;
+bool	OPT::lcbypass = true;
 bool	OPT::lubypass = true;
 bool	OPT::fbbypass = true;
 bool	OPT::traceload = true;
 int	OPT::itermin = 1;
-double	OPT::limit = 1e20;
 double	OPT::vmax =  5;
 double	OPT::vmin = -5;
 double	OPT::dtmin = 1e-12;
@@ -89,7 +86,8 @@ double	OPT::dtratio = 1e9;
 bool	OPT::rstray = true;
 bool	OPT::cstray = true;
 int	OPT::harmonics = 9;
-double	OPT::trstepgrow = 2.;
+double	OPT::trstepgrow = 1e99;
+double	OPT::trstephold = 1e99;
 double	OPT::trstepshrink = 2.;		/* spice is fixed at 8 */
 double	OPT::trreject = .5;
 bool	OPT::showall = false;
@@ -98,6 +96,7 @@ int	OPT::diodeflags = 0;
 int	OPT::mosflags = 0;
 bool	OPT::quitconvfail = false;
 bool	OPT::edit = true;
+int	OPT::recursion = 20;
 
 double	OPT::lowlim = 1. - OPT::reltol;
 double	OPT::uplim = 1. + OPT::reltol;

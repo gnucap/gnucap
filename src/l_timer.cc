@@ -1,4 +1,4 @@
-/*$Id: l_timer.cc,v 21.14 2002/03/26 09:20:25 al Exp $	-*- C++ -*-
+/*$Id: l_timer.cc,v 25.94 2006/08/08 03:22:25 al Exp $	-*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,26 +16,29 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Time a command, or whatever
  */
-/*--------------------------------------------------------------------------*/
-#include <assert.h>
+//testing=script,sparse 2006.07.13
 #include "l_timer.h"
 /*--------------------------------------------------------------------------*/
 //		TIMER::TIMER();
 //		TIMER::TIMER(const char*);
 //	TIMER&	TIMER::fullreset();
 //	TIMER&	TIMER::reset();
-//	TIMER&	TIMER::zstart();
 //	TIMER&	TIMER::start();
 //	TIMER&	TIMER::stop();
 //	TIMER&	TIMER::check();
 //	TIMER&	TIMER::print();
 //	TIMER&	TIMER::operator=(const TIMER&);
 	TIMER	operator-(const TIMER&,const TIMER&);
+/*--------------------------------------------------------------------------*/
+inline double run_time()
+{
+  return static_cast<double>(clock()) / static_cast<double>(CLOCKS_PER_SEC);
+}
 /*--------------------------------------------------------------------------*/
 TIMER::TIMER()
 {
@@ -52,25 +55,16 @@ TIMER::TIMER(const char* label)
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::fullreset()
 {
-  _total_user   = 0.;
-  _total_system = 0.;
+  _total = 0.;
   return reset();
 }
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::reset()
 {
-  _last_user   = 0.;
-  _last_system = 0.;
-  _ref_user    = 0.;
-  _ref_system  = 0.;
-  _running     = false;
+  _last = 0.;
+  _ref  = 0.;
+  _running = false;
   return *this;
-}
-/*--------------------------------------------------------------------------*/
-TIMER& TIMER::zstart()
-{
-  untested();
-  return reset().start();
 }
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::start()
@@ -80,42 +74,18 @@ TIMER& TIMER::start()
     untested();
     stop();
   }
-  struct rusage x;
-  getrusage(RUSAGE_SELF,&x);
-  _ref_user =
-    static_cast<double>(x.ru_utime.tv_sec)
-    + static_cast<double>(x.ru_utime.tv_usec)*1e-6; 
-  _ref_system =
-    static_cast<double>(x.ru_stime.tv_sec)
-    + static_cast<double>(x.ru_stime.tv_usec)*1e-6; 
+  _ref = run_time();
   _running = true;
-
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::stop()
 {
   if (_running) {
-    struct rusage x;
-    getrusage(RUSAGE_SELF,&x);
-    {
-      double utime =
-	static_cast<double>(x.ru_utime.tv_sec)
-	+ static_cast<double>(x.ru_utime.tv_usec)*1e-6; 
-      double runtime = utime - _ref_user;
-      _ref_user	  =  0.;
-      _last_user  += runtime;
-      _total_user += runtime;
-    }
-    {
-      double stime =
-	static_cast<double>(x.ru_stime.tv_sec)
-	+ static_cast<double>(x.ru_stime.tv_usec)*1e-6; 
-      double runtime = stime - _ref_system;
-      _ref_system   =  0.;
-      _last_system  += runtime;
-      _total_system += runtime;
-    }
+    double runtime = run_time() - _ref;
+    _ref = 0.;
+    _last  += runtime;
+    _total += runtime;
     _running = false;
   }
   return *this;
@@ -123,30 +93,29 @@ TIMER& TIMER::stop()
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::check()
 {
+  untested();
   if (_running) {
+    untested();
     stop();
     start();
+  }else{
+    untested();
   }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::print(OMSTREAM& s)
 {
-  s.form("%10s %8.2f %8.2f %8.2f   %8.2f %8.2f %8.2f\n", _name,
-	  _last_user,  _last_system,  _last_user  + _last_system,
-	  _total_user, _total_system, _total_user + _total_system);
+  s.form("%10s %8.2f %8.2f\n", _name, _last, _total);
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::operator=(const TIMER& x)
 {
-  _last_user    = x._last_user;
-  _last_system  = x._last_system;
-  _ref_user     = x._ref_user;
-  _ref_system   = x._ref_system;
-  _total_user   = x._total_user;
-  _total_system = x._total_system;
-  _running      = x._running;
+  _last    = x._last;
+  _ref     = x._ref;
+  _total   = x._total;
+  _running = x._running;
   // but don't copy the name
   return *this;
 }
@@ -154,13 +123,10 @@ TIMER& TIMER::operator=(const TIMER& x)
 TIMER operator-(const TIMER& x, const TIMER& y)
 {
   TIMER z("temp");
-  z._last_user    = x._last_user    - y._last_user;
-  z._last_system  = x._last_system  - y._last_system;
-  z._ref_user     = 0.;	// when did the difference start running?
-  z._ref_system   = 0.;
-  z._total_user   = x._total_user   - y._total_user;
-  z._total_system = x._total_system - y._total_system;
-  z._running      = false;
+  z._last  = x._last - y._last;
+  z._ref   = 0.;	// when did the difference start running?
+  z._total = x._total - y._total;
+  z._running = false;
   // but don't copy the name
   return z;
 }

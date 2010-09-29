@@ -1,4 +1,4 @@
-/*$Id: io_out.cc,v 22.3 2002/05/22 06:24:36 al Exp $ -*- C++ -*-
+/*$Id: io_out.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * output text to files, devices, or whatever
  * m???? = multiple output to a bunch of io devices.
@@ -30,6 +30,7 @@
  * the number of bits in an integer (MAXHANDLE).
  * but I have yet to find a system that did not meet this form.
  */
+//testing=script,sparse 2006.07.17
 #include "u_opt.h"
 /*--------------------------------------------------------------------------*/
 	const char* octal(int x);
@@ -55,17 +56,17 @@ const char* octal(int x)
  */
 OMSTREAM & OMSTREAM::tab(int count)
 {
-  int ii;
-  int mm;
-  for (ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
+  for (int ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
     if (_mask & mm) {
       OMSTREAM this_file(_mask & mm);
       if (_cpos[ii] > count) {
 	this_file << '\n';
+      }else{
       }
       while (_cpos[ii]<count) {
 	this_file << ' ';
       }
+    }else{
     }
   }
   return *this;
@@ -98,32 +99,39 @@ OMSTREAM & OMSTREAM::form(const char *fmt, ...)
 OMSTREAM & OMSTREAM::operator<<(const char *str)
 {
   if (_mask & 1) {
-    untested(); 
+    unreachable(); 
     _mask &= ~1;
     error(bDANGER, "internal error: out to stdin\n");
+  }else{
   }
+
   bool newline = false;	/* true if any destination is at beginning of line */
   int sl = strlen(str);	/* length of output string */
   if (strchr("=@(", str[sl-1])) {
     sl += 12;		/* try not to break it here */
+  }else{
   }
-  int ii;		/* file counter */
-  int mm;		/* file counter mask */
-  for (ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
+
+  for (int ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
     if ((_mask & mm)
 	&& (sl+_cpos[ii]) >= OPT::outwidth
 	&& _cpos[ii] != 0) {
       OMSTREAM this_file(_mask & mm);
       this_file << '\n' << '+';
+    }else{
     }				/* see if it fits .... */
     if (_cpos[ii]==0) {		/* if not, next line   */
       newline = true;
+    }else{
     }
   }
+
   if (cipher() && newline) {
     untested(); 
     *this << '\t';
+  }else{
   }
+
   while (*str && (str[1] || *str != '@')) {
     *this << *str++;
   }
@@ -140,20 +148,23 @@ OMSTREAM & OMSTREAM::operator<<(const char *str)
 OMSTREAM & OMSTREAM::operator<<(char chr)
 {
   if (_mask & 1) {
-    untested(); 
+    unreachable(); 
     _mask &= ~1;
     error(bDANGER, "internal error: out to stdin\n");
+  }else{
   }
+
   static int old = '\0';
   static int cchr = 'w';		/* starting encryption seed	    */
 					/* arbitrary printable character    */
   bool count;
-  {if (chr=='\t') {
+  if (chr=='\t') {
+    untested();
     chr = ' ';
     count = false;
   }else{
     count = true;
-  }}
+  }
   
   bool suppress = (pack() && old==' ' && chr==' ');
   old = chr;
@@ -161,33 +172,47 @@ OMSTREAM & OMSTREAM::operator<<(char chr)
     untested(); 
     cchr += static_cast<int>(chr);
     while (!isascii(cchr)  ||  !isprint(cchr)) {
+      untested();
       cchr -= (0x7f-0x20);
     }
     chr = static_cast<char>(cchr);
+  }else{
   }
   
   for (int ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
     if (_mask & mm) {
-      {if (chr=='\b') {
+      assert(IO::stream[ii]);
+      if (chr=='\b') {
+	untested();
 	--_cpos[ii];
 	fflush(IO::stream[ii]);
       }else if (count) {
 	++_cpos[ii];
-      }}
-      {if (chr=='\n') {
+      }else{
+	untested();
+      }
+      
+      if (chr=='\n') {
 	_cpos[ii] = 0;
 	fflush(IO::stream[ii]);
       }else if (chr=='\r') {
-	{if (_cpos[ii] == 0) {
+	untested();
+	if (_cpos[ii] == 0) {
+	  untested();
 	  suppress = true;
 	}else{
+	  untested();
 	  _cpos[ii] = 0;
 	  fflush(IO::stream[ii]);
-	}}
-      }}
+	}
+      }else{
+      }
       if (!suppress) {
 	fputc(chr,IO::stream[ii]);
+      }else{
+	untested();
       }
+    }else{
     }
   }
   return *this;

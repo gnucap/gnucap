@@ -1,4 +1,4 @@
-/*$Id: c_modify.cc,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: c_modify.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,12 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
+//testing=script,sparse 2006.07.17
 #include "u_cardst.h" // includes e_compon.h
 #include "c_comand.h"
-#include "ap.h"
 enum WHATTODO {FAULT, MODIFY};
 /*--------------------------------------------------------------------------*/
 //	void	CMD::modify(CS&);
@@ -32,10 +32,9 @@ static	void	faultbranch(CARD*,double);
 //	void	CMD::restore(CS&);
 //	void	CMD::unfault(CS&);
 /*--------------------------------------------------------------------------*/
-extern CONST bool crtplot;
-extern CONST int swp_type[];
-extern CONST int swp_count[], swp_steps[];
-extern CONST int swp_nest;
+extern const int swp_type[];
+extern const int swp_count[], swp_steps[];
+extern const int swp_nest;
 static std::list<CARDSTASH> faultstack;
 /*--------------------------------------------------------------------------*/
 void CMD::modify(CS& cmd)
@@ -51,17 +50,18 @@ void CMD::fault(CS& cmd)
 static void modify_fault(CS& cmd, WHATTODO command)
 {
   SIM::uninit();
-  while (cmd.is_alpha()){    
+  while (cmd.is_alpha()) {
     int mark = cmd.cursor();
     int cmax = cmd.cursor();
     CARD_LIST::fat_iterator ci(&CARD_LIST::card_list);
-    for (;;){
+    for (;;) {
       cmd.reset(mark);
       ci = findbranch(cmd, ci);
       cmax = std::max(cmax, cmd.cursor());
-      if (ci.isend()){
+      if (ci.is_end()) {
 	break;
       }
+      cmd.skip1b('=');
       CARD* brh = *ci;
       switch (command) {
       case MODIFY:
@@ -71,10 +71,12 @@ static void modify_fault(CS& cmd, WHATTODO command)
 	faultbranch(brh, sweep_fix(cmd,brh));
 	break;
       }
+      cmax = std::max(cmax, cmd.cursor());
       ++ci;
     }
     cmd.reset(cmax);
-    if (mark == cmax){
+    if (mark == cmax) {
+      untested();
       cmd.check(bWARNING, "what's this?");
       cmd.skiparg();
     }
@@ -89,28 +91,28 @@ static double sweep_fix(CS& cmd, const CARD *brh)
 {
   double start = cmd.ctof();
   double value = start;
-  if (swp_steps[swp_nest] != 0   &&   cmd.is_float()){
+  if (swp_steps[swp_nest] != 0   &&   cmd.is_float()) {
+    untested();
     double last = cmd.ctof();
     double offset = static_cast<double>(swp_count[swp_nest]) 
       / static_cast<double>(swp_steps[swp_nest]);
-    {if (swp_type[swp_nest]=='L'){
-      {if (start == 0.){
+    if (swp_type[swp_nest]=='L') {
+      untested();
+      if (start == 0.) {
 	untested();
 	error(bERROR, "log sweep can't pass zero\n");
 	value = 0;
       }else{
+	untested();
 	value = start * pow( (last/start), offset );
-      }}
-    }else{
-      value = start + (last-start) * offset;
-    }}
-    {if (!crtplot){
-      IO::mstdout.setfloatwidth(7)
-	<< swp_count[swp_nest]+1 << "> sweep " << brh->long_label()
-	<< " =" << value << '\n';
+      }
     }else{
       untested();
-    }}
+      value = start + (last-start) * offset;
+    }
+    IO::mstdout.setfloatwidth(7)
+      << swp_count[swp_nest]+1 << "> sweep " << brh->long_label()
+      << " =" << value << '\n';
   }
   return value;
 }
@@ -120,10 +122,10 @@ static double sweep_fix(CS& cmd, const CARD *brh)
  */
 static void faultbranch(CARD* brh, double value)
 {
-  if (!brh->is_device()){
+  if (!brh->is_device()) {
     untested();
     error(bWARNING, brh->long_label() + ": not a device, can't fault:\n");
-  }else if (brh->subckt().exists()){
+  }else if (brh->subckt()) {
     untested();
     error(bWARNING, brh->long_label() + " has subckt, can't fault:\n");
   }else{
@@ -134,6 +136,7 @@ static void faultbranch(CARD* brh, double value)
 /*--------------------------------------------------------------------------*/
 void CMD::restore(CS& cmd)
 {
+  untested();
   unfault(cmd);
   unmark(cmd);
 }
@@ -142,7 +145,7 @@ void CMD::restore(CS& cmd)
  */
 void CMD::unfault(CS&)
 {
-  while (!faultstack.empty()){
+  while (!faultstack.empty()) {
     faultstack.back().restore();
     faultstack.pop_back();
   }

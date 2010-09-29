@@ -1,6 +1,0 @@
-This is directory contains the ACS manual in LaTeX.
-
-To generate a .dvi file, run "latex man" twice.  The first time you run
-it there will be no table of contents.
-
-

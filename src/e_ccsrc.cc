@@ -1,4 +1,4 @@
-/*$Id: e_ccsrc.cc,v 22.9 2002/07/23 20:09:02 al Exp $ -*- C++ -*-
+/*$Id: e_ccsrc.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,12 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * current controlled source base
  */
-#include "ap.h"
+//testing=script,complete 2006.07.12
 #include "e_ccsrc.h"
 /*--------------------------------------------------------------------------*/
 void CCSRC_BASE::parse_more_nodes(CS& cmd, int)
@@ -30,38 +30,43 @@ void CCSRC_BASE::parse_more_nodes(CS& cmd, int)
   _input_label[0] = toupper(_input_label[0]);
 }
 /*--------------------------------------------------------------------------*/
-void CCSRC_BASE::print(OMSTREAM& where, int /*detail*/)const
+void CCSRC_BASE::print_spice(OMSTREAM& o, int /*detail*/)const
 {
-  where << short_label();
-  printnodes(where);
-  where << "  ";
+  o << short_label();
+  printnodes(o);
+  o << "  ";
 
-  {if (_input){ // has been expanded
-    where << _input->short_label();
+  if (_input) { // has been expanded
+    o << _input->short_label();
   }else{ // not expanded
-    where << _input_label;	/* could always print as not expanded, */
-  }}				/* but this way provides error check   */
+    o << _input_label;	/* could always print as not expanded, */
+  }			/* but this way provides error check   */
   
-  if (!has_common() || value() != 0){
-    where << ' ' << value();
+  if (!has_common() || value() != 0) {
+    o << ' ' << value();
   }
-  if (has_common()){
-    common()->print(where);
+  if (has_common()) {
+    common()->print(o);
   }
-  where << '\n';
+  o << '\n';
 }
 /*--------------------------------------------------------------------------*/
-void CCSRC_BASE::expand()
+void CCSRC_BASE::elabo1()
 {
-  {if (!_input_label.empty()){
-    _input = dynamic_cast<ELEMENT*>(find_in_scope(_input_label));
+  ELEMENT::elabo1();
+
+  if (!_input_label.empty()) {
+    _input = 
+      dynamic_cast<const ELEMENT*>(find_in_my_scope(_input_label,bERROR));
   }else{
     // _input already set, an internal element.  example: mutual L.
-  }}
-  if (!_input || _input->is_2port() || _input->subckt().exists()){
+  }
+
+  if (!_input || _input->is_2port() || _input->subckt()) {
     error(bERROR, long_label() + ": " + _input_label
 	  + " cannot be used as current probe\n");
   }
+
   assert(_input->is_1port()  ||  _input->is_source());
   _n[IN1] = _input->_n[OUT1];
   _n[IN2] = _input->_n[OUT2];

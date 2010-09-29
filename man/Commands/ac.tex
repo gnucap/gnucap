@@ -1,4 +1,4 @@
-%$Id: ac.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: ac.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man commands ac .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,8 +17,8 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt AC} command}
 \index{ac command}
@@ -28,7 +28,7 @@
 %------------------------------------------------------------------------
 \subsection{Syntax}
 \begin{verse}
-{\tt AC} \{{\it options} ...\} {\it start stop stepsize} \{{\it options} ...\}
+{\tt ac} \{{\it options} ...\} {\it start stop stepsize} \{{\it options} ...\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -38,9 +38,10 @@ Performs a small signal, steady state, AC analysis.  Sweeps frequency.
 \subsection{Comments}
 
 \index{nonlinear AC analysis}
-The AC command does a linear analysis about an operating point.  {\em It is absolutely
-necessary to do an {\tt OP} analysis first on any nonlinear circuit.  Not
-doing this is the equivalent of testing it with the power off.}
+The AC command does a linear analysis about an operating point.  {\em
+It is absolutely necessary to do an {\tt OP} analysis first on any
+nonlinear circuit.  Not doing this is the equivalent of testing it
+with the power off.}
 
 Three parameters are normally needed for an AC analysis: start frequency,
 stop frequency and step size, in this order.  If all of these are omitted,
@@ -66,7 +67,7 @@ The nodes to look at must have been previously selected by the {\tt print} or
 \begin{description}
 
 \item[{\tt +} {\it stepsize}] Linear sweep.  Add {\it
-stepsize} to get the next step.  Same as {\tt By}.
+stepsize} to get the next step.  Same as {\tt by}.
 
 \item[{\tt *} {\it multiplier}] Log sweep.  Multiply by
 {\it multiplier} to get the next step.
@@ -83,7 +84,7 @@ stepsize} to get the next step.  Same as {\tt By}.
 %%%\item[{\tt ACMIn}] Use worst case min values, per last
 %%%{\tt AC} analysis.
 
-\item[{\tt By} {\it stepsize}] Linear sweep.  Add {\it
+\item[{\tt by} {\it stepsize}] Linear sweep.  Add {\it
 stepsize} to get the next step.  Same as {\tt +}.
 
 %%%\item[{\tt Compare} {\it file}] Compare simulation results 
@@ -95,8 +96,13 @@ stepsize} to get the next step.  Same as {\tt +}.
 %%%\item[{\tt DCMIn}] Use worst case min values, per last
 %%%{\tt DC} or {\tt OP} analysis.
 
-\item[{\tt Decade} {\it steps}] Log sweep.  Use {\it
+\item[{\tt decade} {\it steps}] Log sweep.  Use {\it
 steps} steps per decade.
+
+\item[{\tt dtemp} {\it degrees}] Temperature offset,
+degrees C.  Add this number to the temperature from the {\tt options}
+command.  This does not apply to nonlinear components, which will
+inherit the temperature from the operating point analysis.
 
 %%%\item[{\tt Echo}] Echo disk reads to console, when input
 %%%is from a file, or doing compare.
@@ -117,27 +123,26 @@ steps} steps per decade.
 %%% Simulate {\it trials} circuits; compile statistics.  Hide
 %%% individual trials.
 
-\item[{\tt NOPlot}] Suppress plotting.
+\item[{\tt noplot}] Suppress plotting.
 
-\item[{\tt Octave} {\it steps}] Log sweep.  Use {\it
+\item[{\tt octave} {\it steps}] Log sweep.  Use {\it
 steps} steps per octave.
 
-\item[{\tt PLot}] Graphic output, when plotting is
+\item[{\tt plot}] Graphic output, when plotting is
 normally off.
 
-\item[{\tt Print}] Send results to printer.
-
-\item[{\tt Quiet}] Suppress console output.
+\item[{\tt quiet}] Suppress console output.
 
 %%%\item[{\tt Random} {\it trials}] Simulate {\it trials}
 %%% circuits using random values.
 
 %%%\item[{\tt TAble}] Tabular output. Override default plot.
 
-\item[{\tt TEmperature} {\it degrees}] Temperature,
-degrees C.
+\item[{\tt temperature} {\it degrees}] Temperature,
+degrees C.  This does not apply to nonlinear components, which will
+inherit the temperature from the operating point analysis.
 
-\item[{\tt TImes} {\it multiplier}] Log sweep.  Multiply
+\item[{\tt times} {\it multiplier}] Log sweep.  Multiply
 by {\it multiplier} to get the next step.
 
 %%%\item[{\tt WOrstcase} {\it probe}] Worst case analysis, at

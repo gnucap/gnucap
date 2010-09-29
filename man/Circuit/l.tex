@@ -1,4 +1,4 @@
-%$Id: l.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: l.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit l .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,54 +17,111 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt L}: Inductor}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
 {\tt L}{\it xxxxxxx n+ n-- value}\\
 {\tt L}{\it xxxxxxx n+ n-- expression}\\
-{\tt L}{\it xxxxxxx n+ n-- value} \{{\tt II=}{\it initial-current}\}\\
-{\tt .INDuctor} {\it label n+ n-- expression}
+{\tt L}{\it xxxxxxx n+ n-- value}
+	\{{\tt IC=}{\it initial-current}\}\\
+{\tt .inductor} {\it label n+ n-- expression}
+\end{verse}
+\subsubsection{Model (optional)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt TABLE} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
 
 Inductor, or general flux storage element.
 %------------------------------------------------------------------------
-\subsection{Probes}
-
-The following probes are available in addition to those available for
-all basic elements. 
-
-\begin{description}
-
-\item[{\tt DT}] Time step.  The internal time step used for this
-device for numerical integration.  It is not necessarily the same as
-the global time step.
-
-\item[{\tt TIME}] Time.  The time of the most recent calculation of this
-device.   It is not necessarily the same as the global time.
-
-\item[{\tt TIMEOLD}] The time of the previous calculation of this
-device.  It is not necessarily the same as the global time.
-
-\end{description}
-%------------------------------------------------------------------------
 \subsection{Comments}
 
 {\it N+} and {\it n--} are the positive and negative element nodes,
 respectively.  {\it Value} is the inductance in Henries.
 
-%%%Specifying a {\tt METHOD} overrides the default method from the
-%%%{\tt options} command.  The valid methods are the same.
+The (optional) initial condition is the initial (time = 0) value of
+the inductor current (in Amperes).  Note that the initial conditions
+(if any) apply only if the {\tt UIC} option is specified on the {\tt
+transient} command.
 
-The (optional) initial condition is the initial (time = 0) value of the
-inductor current (in Amperes).  
-Note that the initial conditions (if any)
-apply only if the {\tt UIC} option is specified on the {\tt transient}
-command.
+You may specify the {\it value} in any of these forms:
+
+\begin{enumerate}
+  
+\item
+A simple value.  This is the inductance in Henrys.
+  
+\item
+An expression, as described in the behavioral modeling chapter.  The
+expression can specify the flux as a function of current, or the
+inductance as a function of time.
+
+\item
+A {\it model}, as described in the behavioral modeling chapter.  The
+{\tt table} model describes a table of flux linkages vs. current.
+
+\end{enumerate}
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+The following probes (Transient, DC, and OP analysis) are available in
+addition to those available for all basic elements.  See the {\tt
+print} command for documentation.
+
+\begin{description}
+
+\item[{\tt DT}]
+Time step.  The internal time step used for this device for numerical
+integration.  It is not necessarily the same as the global time step.
+  
+\item[{\tt TIME}]
+Time.  The time of the most recent calculation of this device.  It is
+not necessarily the same as the global time.
+  
+\item[{\tt TIMEOLD}] 
+The time of the previous calculation of this device.  It is not
+necessarily the same as the global time.
+  
+\item[{\tt TIMEFUTURE}]
+The latest recommended time for the next sample, as determined by this
+device.  The actual time will probably be sooner than this.
+
+\item[{\tt DTREQUIRED}]
+The required approximate maximum time step, usually based on
+truncation error estimation.
+  
+\item[{\tt FLUX}]
+The flux linkages stored in this inductor, in Weber-turns.
+  
+\item[{\tt INDUCTANCE}]
+The effective inductance of this device.  For a fixed inductor, it
+be its value.  For a nonlinear inductor, it is the effective
+inductance at this time, or $\partial \phi / \partial v$.
+  
+\item[{\tt DLDT}]
+The time derivative of inductance.  For a linear inductor it will be
+zero.
+  
+\item[{\tt DL}]
+The change in inductance compared to the previous sample.  Its
+primary use is in debugging models and numerical problems.  For a
+linear inductor it will be zero.
+  
+\item[{\tt DFDT}]
+The time derivative of flux.  Hopefully this is the same as voltage,
+but it is calculated a different way and can be used as an accuracy
+check.
+  
+\item[{\tt DFLUX}]
+The change in flux linkages compared to the previous sample.  Its
+primary use is in debugging models and numerical problems.
+
+\end{description}
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

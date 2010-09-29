@@ -1,4 +1,4 @@
-/*$Id: mg_out_model.cc,v 24.16 2004/01/11 02:46:32 al Exp $ -*- C++ -*-
+/*$Id: mg_out_model.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  */
 #include "mg_out.h"
 /*--------------------------------------------------------------------------*/
@@ -35,26 +35,40 @@ static void make_sdp_constructor(std::ofstream& out, const Model& m)
       "  const MODEL_" << m.name() 
 	<< "* m = prechecked_cast<const MODEL_" 
 	<< m.name() << "*>(c->model());\n"
-      "  assert(m);\n"
-	<< m.size_dependent().code_pre();
+      "  assert(m);\n";
+    if (!(m.size_dependent().raw().is_empty())) {
+      out << "  const CARD_LIST* par_scope = m->scope();\n"
+	"  assert(par_scope);\n";
+    }
+    out << m.size_dependent().code_pre();
 
+    out << "  // adjust: override\n";
     make_final_adjust_parameter_list(out, m.size_dependent().override());
-    {for (Parameter_List::const_iterator
+
+
+    out << "  // adjust: raw\n";
+    for (Parameter_List::const_iterator
 	   p = m.size_dependent().raw().begin();
 	 p != m.size_dependent().raw().end(); ++p) {
       {if (!((**p).final_default().empty())) {
-	out << "  " << (**p).code_name() 
-	    << " = ((m->" << (**p).code_name() << ".nom() == NA)\n"
-	  "    ? " << (**p).final_default() <<"\n"
-	  "    : m->" << (**p).code_name() << "(L, W));\n";
-      }else{
 	out << "  " << (**p).code_name() << " = m->" << (**p).code_name()
-	    << "(L, W);\n";
-	make_final_adjust_parameter(out, **p);
+	    << "(L, W, " << (**p).final_default() << ", par_scope);\n";
+      }else if (!((**p).default_val().empty())) {
+	out << "  " << (**p).code_name() << " = m->" << (**p).code_name()
+	    << "(L, W, " << (**p).default_val() << ", par_scope);\n";
+      }else{
+	untested();
+	out << "  " << (**p).code_name() << " = m->" << (**p).code_name()
+	    << "(L, W, 0., par_scope);\n";
       }}
-    }}
-    make_final_adjust_parameter_list(out, m.size_dependent().calculated());
-    out << m.size_dependent().code_post();
+      make_final_adjust_value(out, **p);
+    }
+
+    out << "  // adjust: calculated\n";
+    make_final_adjust_value_list(out, m.size_dependent().calculated());
+
+    out << "  // code_post\n"
+	<< m.size_dependent().code_post();
   }
   
   out << "}\n"
@@ -104,7 +118,7 @@ static void make_model_constructor(std::ofstream& out, const Model& m)
   make_construct_parameter_list(out, m.independent().calculated());
   out << "\n{\n"
     "  ++_count;\n";
-  {for (Parameter_List::const_iterator
+  for (Parameter_List::const_iterator
 	 p = m.independent().override().begin();
        p != m.independent().override().end();
        ++p) {
@@ -114,7 +128,7 @@ static void make_model_constructor(std::ofstream& out, const Model& m)
     if (!((**p).default_val().empty())) {
       out << "  " << (**p).code_name() << " = " << (**p).default_val() <<";\n";
     }
-  }}
+  }
   out << "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
@@ -127,12 +141,12 @@ static void make_model_parse_front(std::ofstream& out, const Model& m)
     out << " cmd)\n"
       "{\n"
       "  return ONE_OF\n";
-    {for (Key_List::const_iterator k = m.key_list().begin();
+    for (Key_List::const_iterator k = m.key_list().begin();
 	  k != m.key_list().end();
 	  ++k) {
       out << "    || set(cmd, \"" << (**k).name() << "\", &" 
 	  << (**k).var() << ", " << (**k).value() << ")\n";
-    }}
+    }
     if (!m.is_base()) {
       untested();
       out << "    || MODEL_" << m.inherit() << "::parse_front(cmd)\n";
@@ -174,12 +188,21 @@ static void make_model_parse_params(std::ofstream& out, const Model& m)
 /*--------------------------------------------------------------------------*/
 static void make_model_parse_finish(std::ofstream& out, const Model& m)
 {
-  out << "void MODEL_" << m.name() << "::parse_finish()\n{\n";
+  out <<
+    "void MODEL_" << m.name() << "::elabo1()\n"
+    "{\n"
+    "  if (1 || !evaluated()) {\n"
+    "    const CARD_LIST* par_scope = scope();\n"
+    "    assert(par_scope);\n";
   if (!m.is_base()) {
-    out << "  MODEL_" << m.inherit() << "::parse_finish();\n";
+    out << "    MODEL_" << m.inherit() << "::elabo1();\n";
   }
   make_final_adjust(out, m.independent());
-  out << "}\n"
+  out <<
+    "  }else{\n"
+    "    untested();\n"
+    "  }\n"
+    "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
 }
@@ -208,7 +231,7 @@ static void make_model_print_front(std::ofstream& out, const Model& m)
       "{\n"
       "  {";
     Key_List::const_iterator k = m.key_list().begin();
-    {for (;;) {
+    for (;;) {
       out << "if (" << (**k).var() << " == " << (**k).value() << ") {\n"
 	  << "    o << \"  " << to_lower((**k).name()) << "\";\n";
       ++k;
@@ -216,7 +239,7 @@ static void make_model_print_front(std::ofstream& out, const Model& m)
 	break;
       }
       out << "  }else ";
-    }}
+    }
     out << "  }else{\n";
     {if (!m.is_base()) {
       out << "    MODEL_" << m.inherit() << "::print_front(o);\n";
@@ -251,14 +274,14 @@ static void make_model_print_params(std::ofstream& out, const Model& m)
   }
   make_print_param_list(out, m.independent().override());
 
-  {for (Parameter_List::const_iterator
+  for (Parameter_List::const_iterator
 	 p = m.size_dependent().raw().begin();
        p != m.size_dependent().raw().end(); ++p) {
     if (!((**p).user_name().empty())) {
       out << "  " << (**p).code_name() << ".print(o, \"" 
 	  << to_lower((**p).user_name()) << "\");\n";
     }
-  }}
+  }
 
   make_print_param_list(out, m.independent().raw());
   out << "}\n"

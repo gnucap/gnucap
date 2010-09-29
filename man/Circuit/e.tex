@@ -1,4 +1,4 @@
-%$Id: e.tex,v 21.13 2002/03/25 05:37:03 al Exp $
+%$Id: e.tex,v 25.95 2006/08/26 01:26:53 al Exp $ -*- LaTeX -*-
 % man circuit e .
 % Copyright (C) 2001 Albert Davis
 % Author: Albert Davis <aldavis@ieee.org>
@@ -17,16 +17,21 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-% 02111-1307, USA.
+% Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+% 02110-1301, USA.
 %------------------------------------------------------------------------
 \section{{\tt E}: Voltage Controlled Voltage Source}
 %------------------------------------------------------------------------
 \subsection{Syntax}
+\subsubsection{Device}
 \begin{verse}
 {\tt E}{\it xxxxxxx n+ n-- nc+ nc--} {\it value}\\
 {\tt E}{\it xxxxxxx n+ n-- nc+ nc--} {\it expression}\\
 {\tt .VCVS} {\it label n+ n-- nc+ nc--} {\it expression}
+\end{verse}
+\subsubsection{Model (optional)}
+\begin{verse}
+{\tt .model} {\it mname} {\tt TABLE} \{{\it args}\}
 \end{verse}
 %------------------------------------------------------------------------
 \subsection{Purpose}
@@ -38,5 +43,29 @@ Voltage controlled voltage source, or voltage gain block.
 {\it N+} and {\it n--} are the positive and negative element (output) nodes,
 respectively.  {\it Nc+} and {\it nc--} are the positive and negative
 controlling nodes, respectively.  {\it Value} is the voltage gain.
+
+You may specify the {\it value} in any of these forms:
+
+\begin{enumerate}
+  
+\item
+A simple value.  This is the voltage gain.
+  
+\item
+An expression, as described in the behavioral modeling chapter.  The
+expression can specify the output voltage as a function of input
+voltage, or the voltage gain as a function of time.
+
+\item
+A {\it model}, as described in the behavioral modeling chapter.  The
+{\tt table} model describes a table of output voltage vs. input
+voltage.
+
+\end{enumerate}
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+The standard probes for all basic elements are all available.  See the
+{\tt print} command for documentation.
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------

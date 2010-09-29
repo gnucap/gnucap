@@ -1,4 +1,4 @@
-/* $Id: d_mos4.model,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/* $Id: d_mos4.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * MOS BSIM1 model.
  * derived from Spice3f4,Copyright 1990 Regents of the University of California
@@ -25,7 +25,6 @@
  * Recoded for Gnucap model compiler, Al Davis, 2000
  */
 h_headers {
-#include "u_sdp.h"
 #include "d_mos_base.h"
 }
 cc_headers {
@@ -47,12 +46,12 @@ model MOS4 {
 	print_test="mos_level != LEVEL" default=LEVEL;
     }
     raw_parameters {
-      double dl "Channel length reduction"
-	name=DL default=0. scale=MICRON2METER;
-      double dw "Channel width reduction"
-	name=DW default=0. scale=MICRON2METER;
-      double tox "Gate oxide thickness"
-	name=TOX default=0. scale=MICRON2METER quiet_min=1e-20;
+      double dl_u "Channel length reduction"
+	name=DL default=0.;
+      double dw_u "Channel width reduction"
+	name=DW default=0.;
+      double tox_u "Gate oxide thickness"
+	name=TOX default=0. quiet_min=1e-20;
       double vdd "Supply voltage to specify mus"
 	name=VDD default=0.;
       double wdf "Default width of source drain diffusion (ignored)"
@@ -65,6 +64,9 @@ model MOS4 {
 	name=XPART default=0.;
     }
     calculated_parameters {
+      double dl "" calculate="dl_u*MICRON2METER";
+      double dw "" calculate="dw_u*MICRON2METER";
+      double tox "" calculate="tox_u*MICRON2METER";
       double cox "" calculate="3.453e-11 /*E_OX*/ / tox";
     }
   }
@@ -145,19 +147,19 @@ model MOS4 {
     trace3("", s->ugs, s->ugsB, d->vbs);
     double Ugs = s->ugs + s->ugsB * d->vbs;
     double dUgsdVbs;
-    {if(Ugs <= 0) {
+    if(Ugs <= 0) {
       untested();
       Ugs = 0;
       dUgsdVbs = 0.0;
     }else{
       dUgsdVbs = s->ugsB;
-    }}
+    }
     trace2("", Ugs, dUgsdVbs);
     
     double Uds = s->uds + s->udsB * d->vbs + s->udsD * (d->vds - m->vdd);
     double dUdsdVbs;
     double dUdsdVds;
-    {if(Uds <= 0) {    
+    if(Uds <= 0) {    
       untested();
       Uds = 0.0;
       dUdsdVbs = dUdsdVds = 0.0;
@@ -166,17 +168,17 @@ model MOS4 {
       Uds  =  Uds / Leff;
       dUdsdVbs = s->udsB / Leff;
       dUdsdVds = s->udsD / Leff;
-    }}
+    }
     trace3("", Uds, dUdsdVbs, dUdsdVds);
     
     double Vpb;
-    {if(d->vbs <= 0) {
+    if(d->vbs <= 0) {
       Vpb = s->phi - d->vbs;
       d->sbfwd = false;
     }else{
       Vpb = s->phi;
       d->sbfwd = true;
-    }}
+    }
     double SqrtVpb = sqrt(Vpb);
     trace2("", Vpb, SqrtVpb);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -187,7 +189,7 @@ model MOS4 {
       double Eta = s->eta + s->etaB * d->vbs + s->etaD * (d->vds - m->vdd);
       double dEtadVds;
       double dEtadVbs;
-      {if(Eta <= 0) {   
+      if(Eta <= 0) {   
 	Eta  = 0; 
 	dEtadVds = dEtadVbs = 0.0 ;
       }else if (Eta > 1) {
@@ -198,7 +200,7 @@ model MOS4 {
 	untested();
 	dEtadVds = s->etaD;
 	dEtadVbs = s->etaB;
-      }}
+      }
       trace3("", Eta, dEtadVds, dEtadVbs);
       d->von = s->vfb + s->phi + s->k1 * SqrtVpb - s->k2 * Vpb - Eta * d->vds;
       dVthdVds = -Eta - dEtadVds * d->vds;
@@ -217,7 +219,7 @@ model MOS4 {
     trace2("", dGdVbs, dAdVbs);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     /* ids and derivatives calculation */
-    {if (d->vgst < 0) {
+    if (d->vgst < 0) {
       d->cutoff = true;
       /* cutoff */
       d->ids = 0;
@@ -238,7 +240,7 @@ model MOS4 {
 	double BetaVdd = (s->betaVdd + s->betaVddB * d->vbs);
 	double dBetaVdd_dVds = std::max(s->betaVddD, 0.0); /* Modified */
 	trace2("", BetaVdd, dBetaVdd_dVds);
-	{if(d->vds > m->vdd) {
+	if(d->vds > m->vdd) {
 	  Beta0      = BetaVdd + dBetaVdd_dVds * (d->vds - m->vdd);
 	  dBeta0dVds = dBetaVdd_dVds;
 	  dBeta0dVbs = s->betaVddB;
@@ -259,7 +261,7 @@ model MOS4 {
 	  dBeta0dVbs = dC1dVbs * d->vds * d->vds 
 	    + dC2dVbs * d->vds + dBeta_Vds_0_dVbs;
 	  trace3("vds<vdd", Beta0, dBeta0dVds, dBeta0dVbs);
-	}}
+	}
       }
       
       /*Beta  =  Beta0 / ( 1 + Ugs * d->vgst );*/
@@ -282,7 +284,7 @@ model MOS4 {
       d->vdsat = std::max(d->vgst / (A * sqrt(K)) , 0.0);
       trace4("", Vc, Term1, K, d->vdsat);
       
-      {if(d->vds < d->vdsat) {		/* Triode Region */
+      if(d->vds < d->vdsat) {		/* Triode Region */
 	d->saturated = false;
 	/*Argl1  =  1 + Uds * d->vds;*/
 	double Argl1 = std::max((1 + Uds * d->vds), 1.);
@@ -319,8 +321,8 @@ model MOS4 {
 	d->gmbf = 0.5 * dBetadVbs * Args3 - Beta * Args2 *dVthdVbs
 	  - d->ids * (dAdVbs / A + dKdVbs / K);
 	trace4("sat", d->ids, d->gmf, d->gds, d->gmbf);
-      }}
-    }}
+      }
+    }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     /* SubthresholdComputation */
     
@@ -333,7 +335,7 @@ model MOS4 {
      *  if( (N0 >=  200) || (d->vgst < Vcut ) || (d->vgst > (-0.5*Vcut)))   */
     
     //double Vcut  =  - 40. * s->n0 * t->vt ;
-    {if (s->n0 < 200) {
+    if (s->n0 < 200) {
       double N = s->n0 + s->nB*d->vbs + s->nD*d->vds; /* subthreshold slope */
       trace4("", s->n0, s->nB, s->nD, N);
       if (N < 0.5) {
@@ -341,7 +343,7 @@ model MOS4 {
 	N = 0.5;
       }
       const double temp = 300.15;
-      const double vt0 = (temp * K) / Q;
+      const double vt0 = temp * P_K_Q;
       const double Vtsquare = vt0 * vt0 ;
       const double nvt0 = N * vt0;
       double Warg1 = exp(-d->vds / vt0);
@@ -368,7 +370,7 @@ model MOS4 {
       trace4("sub", d->ids, d->gmf, d->gds, d->gmbf);
     }else{
       untested();
-    }}
+    }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     /* Some Limiting of DC Parameters */
     if(d->ids < 0.0) d->ids = 0.0;
@@ -399,7 +401,7 @@ model MOS4 {
     double Vgb_Vfb  = Vgb - s->vfb;
     trace3("", VdsPinchoff, Vgb, Vgb_Vfb);
     
-    {if(Vgb_Vfb < 0) {			/* Accumulation Region */
+    if(Vgb_Vfb < 0) {			/* Accumulation Region */
       untested();
       d->qgate = s->cgate * Vgb_Vfb;
       d->qbulk = -d->qgate;
@@ -436,12 +438,12 @@ model MOS4 {
       double Argl3 = Arg1 * d->vds;
       trace3("", Argl1, Argl2, Argl3);
       double Argl5;
-      {if (Ent > 1.0e-8) {
+      if (Ent > 1.0e-8) {
 	Argl5 = Arg1 / Ent;
       }else{   
 	untested();
 	Argl5 = 2.0;
-      }}
+      }
       double Argl7 = Argl5 / 1.2e1;
       double Argl8 = 6.0 * Ent;
       trace3("", Argl5, Argl7, Argl8);
@@ -462,7 +464,7 @@ model MOS4 {
       d->cbsb = -(d->cbgb + d->cbdb + cbbb);
       trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
       
-      {if (m->xpart >= 1) {
+      if (m->xpart >= 1) {
 	/*0/100 partitioning for drain/source chArges at saturation region*/
 	double Argl9 = 0.125 * Argl5 * Argl5; //t
 	d->qdrn = -s->cgate * (0.5*Vgs_Vth - 0.75*Arg1 + 0.125*Arg1*Argl5);
@@ -481,12 +483,12 @@ model MOS4 {
 	double Vcom = Vgs_Vth*Vgs_Vth/6.0-1.25e-1*Arg1*Vgs_Vth+2.5e-2*Arg5;
 	double Argl4 = Vcom/Ent/EntSquare;
 	double Argl6;
-	{if (Ent > 1.0e-8) {
+	if (Ent > 1.0e-8) {
 	  Argl6 = Vcom / EntSquare;
 	}else{   
 	  untested();
 	  Argl6 = 4.0 / 1.5e1;
-	}}
+	}
 	d->qdrn = -s->cgate * (0.5 * (Vgs_Vth-Arg1) + Arg1 * Argl6);
 	d->cdgb = -s->cgate
 	  * (0.5 + Arg1*(4.0*Vgs_Vth-1.5*Arg1)/Argl1 - 2.0*Arg1*Argl4);
@@ -499,7 +501,7 @@ model MOS4 {
 	d->cdsb = -(d->cdgb + d->cddb + cdbb);
 	trace4("", Vcom, Argl4, Argl6, cdbb);
 	trace4("lin 40/60", d->qdrn, d->cdgb, d->cddb, d->cdsb);
-      }}
+      }
     }else{				/* saturation region */
       assert(d->vds >= VdsPinchoff);
       double Args1 = 1.0 / (3.0 * A);
@@ -520,7 +522,7 @@ model MOS4 {
       d->cbsb = -(d->cbgb + d->cbdb + cbbb);
       trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
       
-      {if (m->xpart >= 1) {
+      if (m->xpart >= 1) {
 	/*0/100 partitioning for drain/source chArges at saturation region*/
 	d->qdrn = 0.0;
 	d->cdgb = 0.0;
@@ -536,16 +538,16 @@ model MOS4 {
 	double cdbb = co4v15 * s->cgate * dVthdVbs;
 	d->cdsb = -(d->cdgb + d->cddb + cdbb);
 	trace4("sat 40/60", d->qdrn, d->cdgb, d->cddb, d->cdsb);
-      }}
-    }}
-    {if (d->reversed){
+      }
+    }
+    if (d->reversed) {
       d->ids *= -1;
       d->gmr = d->gmf;
       d->gmbr = d->gmbf;
       d->gmf = d->gmbf = 0;
     }else{
       d->gmr = d->gmbr = 0.;
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

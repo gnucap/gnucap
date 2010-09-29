@@ -1,4 +1,4 @@
-/*$Id: e_subckt.h,v 21.14 2002/03/26 09:20:25 al Exp $ -*- C++ -*-
+/*$Id: e_subckt.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,46 +16,58 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * base class for elements made of subcircuits
  */
+//testing=script 2006.07.12
 #ifndef E_SUBCKT_H
 #define E_SUBCKT_H
 #include "e_compon.h"
 /*--------------------------------------------------------------------------*/
 class BASE_SUBCKT : public COMPONENT {
 protected:
-  explicit BASE_SUBCKT()		     :COMPONENT() {}
-  explicit BASE_SUBCKT(const BASE_SUBCKT& p) :COMPONENT(p){}
+  explicit BASE_SUBCKT()
+    :COMPONENT(), _net_nodes(0) {}
+  explicit BASE_SUBCKT(const BASE_SUBCKT& p)
+    :COMPONENT(p), _net_nodes(p._net_nodes) {}
+  ~BASE_SUBCKT() {}
 protected: // override virtual
   //char  id_letter()const		//CARD/null
   //const char* dev_type()const		//COMPONENT/null
   //int	  max_nodes()const		//COMPONENT/null
   //int	  num_nodes()const		//COMPONENT/null
   //int	  min_nodes()const		//COMPONENT/null
+  int     out_nodes()const		{untested();return _net_nodes;}
+  int     matrix_nodes()const		{return 0;}
+  int     net_nodes()const		{return _net_nodes;}
   //CARD* clone()const			//CARD/null
-  //void  parse(CS&)			//CARD/null
-  //void  print(OMSTREAM&,int)const	//CARD/null
-  void	  expand()	{subckt().expand();}
-  void	  map_nodes()	{COMPONENT::map_nodes(); subckt().map_nodes();}
-  void	  precalc()	{subckt().precalc();}
-  void	  dc_begin()	{subckt().dc_begin();}
-  void	  tr_begin()	{subckt().tr_begin();}
-  void	  tr_restore()	{subckt().tr_restore();}
-  void	  dc_advance()	{subckt().dc_advance();}
-  void	  tr_advance()	{subckt().tr_advance();}
-  bool	  tr_needs_eval(){return subckt().tr_needs_eval();}
-  void	  tr_queue_eval(){subckt().tr_queue_eval();}
-  bool	  do_tr()	{set_converged(subckt().do_tr()); return converged();}
-  void	  tr_load()	{subckt().tr_load();}
-  double  tr_review()	{return subckt().tr_review();}
-  void	  tr_accept()	{subckt().tr_accept();}
-  void	  tr_unload()	{subckt().tr_unload();}
-  void	  ac_begin()	{subckt().ac_begin();}
-  void	  do_ac()	{subckt().do_ac();}
-  void	  ac_load()	{unreachable(); subckt().ac_load();}
+  void  parse_spice(CS&);
+  void  print_spice(OMSTREAM&,int)const;
+  //void  elabo1()			//COMPONENT
+  void	  map_nodes()	
+	{COMPONENT::map_nodes(); assert(subckt()); subckt()->map_nodes();}
+  void	  precalc()	{assert(subckt()); subckt()->precalc();}
+  void	  dc_begin()	{assert(subckt()); subckt()->dc_begin();}
+  void	  tr_begin()	{assert(subckt()); subckt()->tr_begin();}
+  void	  tr_restore()	{assert(subckt()); subckt()->tr_restore();}
+  void	  dc_advance()	{assert(subckt()); subckt()->dc_advance();}
+  void	  tr_advance()	{assert(subckt()); subckt()->tr_advance();}
+  bool	  tr_needs_eval()const
+	{assert(subckt()); return subckt()->tr_needs_eval();}
+  void	  tr_queue_eval() {assert(subckt()); subckt()->tr_queue_eval();}
+  bool	  do_tr()
+	{assert(subckt());set_converged(subckt()->do_tr());return converged();}
+  void	  tr_load()	{assert(subckt()); subckt()->tr_load();}
+  DPAIR   tr_review()	{assert(subckt()); return subckt()->tr_review();}
+  void	  tr_accept()	{assert(subckt()); subckt()->tr_accept();}
+  void	  tr_unload()	{assert(subckt()); subckt()->tr_unload();}
+  void	  ac_begin()	{assert(subckt()); subckt()->ac_begin();}
+  void	  do_ac()	{assert(subckt()); subckt()->do_ac();}
+  void	  ac_load()	{unreachable();assert(subckt());subckt()->ac_load();}
+protected:
+  int _net_nodes;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

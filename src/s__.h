@@ -1,4 +1,4 @@
-/*$Id: s__.h,v 22.15 2002/08/03 06:54:40 al Exp $ -*- C++ -*-
+/*$Id: s__.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,16 +16,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * base class for simulation methods
  */
+//testing=script,complete 2006.07.14
 #ifndef S___H
 #define S___H
-#include "constant.h"
-#include "mode.h"
 #include "e_base.h"
+#include "constant.h"
 /*--------------------------------------------------------------------------*/
 class CARD;
 class CARD_LIST;
@@ -33,8 +33,6 @@ class CS;
 class PROBELIST;
 /*--------------------------------------------------------------------------*/
 class SIM : public CKT_BASE {
-  friend class NODE;
-  friend class node_t;
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 public:
   enum PHASE { // which of the many steps...
@@ -59,25 +57,26 @@ public:
   static double time0;		/* time now */
   static double time1;		/* time at previous time step */
   static double dtmin;		/* min internal step size */
-  static double temp;		/* ambient temperature */
+  static double temp_c;		/* ambient temperature */
   static double damp;		/* Newton-Raphson damping coefficient actual */
   static bool uic;		/* flag: use initial conditions (spice-like) */
   static bool bypass_ok;	/* flag: ok to bypass model evaluation */
   static TRI_STATE inc_mode;	/* flag: make incremental changes (3 state) */
   static bool fulldamp; 	/* flag: big iter. jump. use full (min) damp */
   static bool limiting;		/* flag: node limiting */
-  static int mode;		/* simulation type (AC, DC, ...) */
+  static SIM_MODE mode;		/* simulation type (AC, DC, ...) */
   static PHASE phase;		/* phase of simulation (iter, init-dc,) */
   static bool freezetime;	/* flag: don't advance stored time */
   static double genout;		/* tr dc input to circuit (generator) */
 
+  static std::priority_queue<double, std::vector<double> > eq; /*event queue*/
   static std::deque<CARD*> evalq1; /* evaluate queues -- alternate between */
   static std::deque<CARD*> evalq2; /* build one while other is processed */
   static std::vector<CARD*> loadq;
   static std::vector<CARD*> acceptq;
   static std::deque<CARD*>* evalq;   /* pointer to evalq to process */
   static std::deque<CARD*>* evalq_uc;/* pointer to evalq under construction */
-protected: 
+public: 
   static double last_time;	/* time at which "volts" is valid */
   static int	*nm;		/* node map (external to internal)	*/
   static double	*i;		/* dc-tran current (i) vector		*/
@@ -99,11 +98,16 @@ private:
   virtual void	sweep()		= 0;
   virtual void	finish()	{}
   virtual bool	is_step_rejected()const {return false;}
+
+  explicit SIM(const SIM&):CKT_BASE() {unreachable(); incomplete();}
+protected:
+  explicit SIM(): CKT_BASE() {}
 public:
 		~SIM()		{uninit();}
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 public:					/* inline here */
   static bool	uic_now()	{return uic && phase==pINIT_DC && time0==0.;}
+  static void	new_event(double etime)	{eq.push(etime);}
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 public:					/* s__init.cc */
   static void	init();
@@ -134,17 +138,16 @@ protected:
 	 PROBELIST& printlist();
 	 PROBELIST& storelist();
 	 void	outdata(double);
-	 void	head(double,double, bool,const char*);
+	 void	head(double,double,const char*);
 	 void	print(double);
 	 void	alarm();
   virtual void	store();
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:				/* s__solve.cc */
-	bool	solve(int,int);
+  bool	solve(OPT::ITL,TRACE);
 private:
 	void	finish_building_evalq();
 	void	advance_time();
-	void	count_iterations();
 	void	set_flags();
 	void	clear_arrays();
 	void	evaluate_models();

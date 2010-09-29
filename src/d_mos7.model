@@ -1,4 +1,4 @@
-/* $Id: d_mos7.model,v 24.4 2003/04/06 10:36:01 al Exp $ -*- C++ -*-
+/* $Id: d_mos7.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,8 +16,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * Berkeley BSIM3v3.1 model
  * Derived from Spice3f4,Copyright 1990 Regents of the University of California
@@ -25,7 +25,6 @@
  * Recoded for Gnucap model compiler, Al Davis, 2000
  */
 h_headers {
-#include "u_sdp.h"
 #include "d_mos_base.h"
 }
 cc_headers {
@@ -99,7 +98,7 @@ model MOS7 {
       /* assumes cg?? final_default is BEFORE d?c final_default */
       int cmodel "CMODEL" print_test="cmodel!=1"
 	calculate="((!cmodel)?1:cmodel)";
-      bool needs_isub "" calculate="((alpha0.nom()!=NA)&&(beta0.nom()!=NA))";
+      bool needs_isub "" calculate="(alpha0.nom()!=0.)";
       int mos_level "back-annotate for diode" name=DIODElevel 
 	print_test="mos_level != LEVEL" default=LEVEL;
     }
@@ -175,13 +174,14 @@ model MOS7 {
     }
     calculated_parameters {
       double cox;
-      double factor1 "" calculate="sqrt(tox * E_SI / E_OX)";
-      double vt_at_tnom "" calculate="_tnom * K/Q";
-      double ni "" calculate="(1.45e10 * (_tnom / 300.15) 
-	* sqrt(_tnom / 300.15) * exp(21.5565981 - egap / (2.0 * vt_at_tnom)))";
+      double factor1 "" calculate="sqrt(tox * P_EPS_SI / P_EPS_OX)";
+      double vt_at_tnom "" calculate="tnom_k * P_K_Q";
+      double ni "" calculate="(1.45e10 * (tnom_k / 300.15)
+	 * sqrt(tnom_k / 300.15)
+	 * exp(21.5565981 - egap / (2.0 * vt_at_tnom)))";
     }
     code_pre {
-      tox = std::max(tox, 1e-20);
+      //tox = std::max(tox, 1e-20);
       cox = 3.453133e-11 / tox;
     }
     code_post {
@@ -355,7 +355,7 @@ model MOS7 {
 	name=CKAPPA default=0.6;
       double cf "Fringe capacitance parameter"
 	name=CF default=NA 
-	final_default="2.0 * E_OX / kPI * log(1.0 + 0.4e-6 / m->tox)";
+	final_default="2.0 * P_EPS_OX / M_PI * log(1.0 + 0.4e-6 / m->tox)";
       double clc "Vdsat parameter for C-V model"
 	name=CLC default=0.1e-6;
       double cle "Vdsat parameter for C-V model"
@@ -413,14 +413,14 @@ model MOS7 {
 	u0 /= 1.0e4;
       }
       if (m->npeak.nom() == NA) {
-	{if (m->gamma1.nom() != NA) {
+	if (m->gamma1.nom() != NA) {
 	  double T0 = gamma1 * m->cox;
 	  npeak = 3.021E22 * T0 * T0;
 	}else{
 	  npeak = 1.7e17;
-	}}
+	}
       }
-      {if (m->k1.nom() != NA && m->k2.nom() != NA) {
+      if (m->k1.nom() != NA && m->k2.nom() != NA) {
 	if (m->k1.nom() == NA) {
 	  k1 = 0.53;
 	}
@@ -435,15 +435,15 @@ model MOS7 {
 	if (m->gamma2.nom() == NA) {
 	  gamma2 = 5.753e-12 * sqrt(nsub) / m->cox;
 	}
-      }}
+      }
     }
   }
   temperature_dependent {
     calculated_parameters {
       double temp;
-      double tempratio "" calculate="temp / m->_tnom";
+      double tempratio "" calculate="temp / m->tnom_k";
       double tempratio_1 "" calculate="tempratio - 1";
-      double vtm "vtm" calculate="kt / Q";
+      double vtm "vtm" calculate="temp * P_K_Q";
       double ua;
       double ub;
       double uc;
@@ -465,23 +465,22 @@ model MOS7 {
       double thetaRout;
     }
     code_pre {
-      temp = SIM::temp;
-      double kt = temp * K;
+      temp = SIM::temp_c + P_CELSIUS0;
       double egap = 1.16 - 7.02e-4 * temp * temp / (temp + 1108.0);
     }
     code_post {
       double jctTempSatCurDensity;
       double jctSidewallTempSatCurDensity;
-      {if (temp != m->_tnom) {
+      if (temp != m->tnom_k) {
 	double T0 = m->egap / m->vt_at_tnom - egap / vtm + m->jctTempExponent
-	  * log(temp / m->_tnom);
+	  * log(temp / m->tnom_k);
 	double T1 = exp(T0 / m->jctEmissionCoeff);
 	jctTempSatCurDensity = m->js * T1;
 	jctSidewallTempSatCurDensity = m->jctSidewallSatCurDensity * T1;
       }else{
 	jctTempSatCurDensity = m->js;
 	jctSidewallTempSatCurDensity = m->jctSidewallSatCurDensity;
-      }}
+      }
       if (jctTempSatCurDensity < 0.0) {
 	jctTempSatCurDensity = 0.0;
       }
@@ -500,11 +499,11 @@ model MOS7 {
       phi = 2.0 * m->vt_at_tnom * log(s->npeak / m->ni);
       sqrtPhi = sqrt(phi);
       phis3 = sqrtPhi * phi;
-      Xdep0 = sqrt(2.0 * E_SI / (Q * s->npeak * 1.0e6)) * sqrtPhi;
+      Xdep0 = sqrt(2.0 * P_EPS_SI / (P_Q * s->npeak * 1.0e6)) * sqrtPhi;
       vbi = m->vt_at_tnom * log(1.0e20 * s->npeak / (m->ni * m->ni));
-      cdep0 = sqrt(Q * E_SI * s->npeak * 1.0e6 / 2.0 / phi);
+      cdep0 = sqrt(P_Q * P_EPS_SI * s->npeak * 1.0e6 / 2.0 / phi);
 
-      {if (m->k1.nom() != NA && m->k2.nom() != NA) {
+      if (m->k1.nom() != NA && m->k2.nom() != NA) {
 	k2 = s->k2;
 	k1 = s->k1;
       }else{
@@ -516,23 +515,24 @@ model MOS7 {
 	double T2 = sqrt(phi * (phi - s->vbm)) - phi;
 	k2 = T0 * T1 / (2.0 * T2 + s->vbm);
 	k1 = s->gamma2 - 2.0 * k2 * sqrt(phi - s->vbm);
-      }}
-      {if (k2 < 0.) {
+      }
+      if (k2 < 0.) {
 	double T0 = 0.5 * k1 / k2;
 	vbsc = to_range(-30.0, (0.9 * (phi - T0 * T0)), -3.0);
       }else{
 	vbsc = -30.0;
-      }}
+      }
       vbsc = std::min(vbsc, s->vbm);
-      {if (s->vth0 == NA) {
+      if (s->vth0 == NA) {
 	vfb = -1.0;
 	vth0 = m->polarity * (vfb + phi + k1 * sqrtPhi);
       }else{
 	vth0 = s->vth0;
 	vfb = m->polarity * vth0 - phi - k1 * sqrtPhi;
-      }}
+      }
+      trace3("", s->vth0, vth0, vfb);
       {
-	double T1 = sqrt(E_SI / E_OX * m->tox * Xdep0);
+	double T1 = sqrt(P_EPS_SI / P_EPS_OX * m->tox * Xdep0);
 	double T0 = exp(-0.5 * s->dsub * s->leff / T1);
 	theta0vb0 = (T0 + 2.0 * T0 * T0);
 
@@ -570,7 +570,7 @@ model MOS7 {
     trace2("fixed", Vbseff, dVbseff_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     double Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb;
-    {if (Vbseff > 0.0) {
+    if (Vbseff > 0.0) {
       untested();
       d->sbfwd = true;
       double T0 = t->phi / (t->phi + Vbseff);
@@ -586,7 +586,7 @@ model MOS7 {
       sqrtPhis = sqrt(Phis);
       dsqrtPhis_dVb = -0.5 / sqrtPhis;
       trace0("bs-normal");
-    }}
+    }
     trace4("", Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     double Xdep = t->Xdep0 * sqrtPhis / t->sqrtPhi;
@@ -600,33 +600,36 @@ model MOS7 {
 	double T3 = sqrt(Xdep);
 	double T0 = s->dvt2 * Vbseff;
 	double T1, T2;
-	{if (T0 >= - 0.5) {
+	if (T0 >= - 0.5) {
 	  T1 = 1.0 + T0;
 	  T2 = s->dvt2;
+	  trace4("", T0, T1, T2, T3);
 	}else{
 	  untested();
 	  /* Added to avoid any discontinuity problems caused by dvt2 */ 
 	  double T4 = 1.0 / (3.0 + 8.0 * T0);
 	  T1 = (1.0 + 3.0 * T0) * T4; 
 	  T2 = s->dvt2 * T4 * T4;
-	}}
-	trace4("", T0, T1, T2, T3);
+	  trace4("dvd2 fix", T0, T1, T2, T3);
+	}
 	lt1 = m->factor1 * T3 * T1;
 	dlt1_dVb = m->factor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * T2);
       }
       trace2("", lt1, dlt1_dVb);
 
       double T0 = -0.5 * s->dvt1 * s->leff / lt1;
-      {if (T0 > -EXP_THRESHOLD) {
+      if (T0 > -EXP_THRESHOLD) {
 	double T1 = exp(T0);
 	Theta0 = T1 * (1.0 + 2.0 * T1);
 	double dT1_dVb = -T0 / lt1 * T1 * dlt1_dVb;
 	dTheta0_dVb = (1.0 + 4.0 * T1) * dT1_dVb;
+	trace2("T0 > -ET", Theta0, dTheta0_dVb);
       }else{
 	double T1 = MIN_EXP;
 	Theta0 = T1 * (1.0 + 2.0 * T1);
 	dTheta0_dVb = 0.0;
-      }}
+	trace2("T0 < -ET", Theta0, dTheta0_dVb);
+      }
     }
     trace2("", Theta0, dTheta0_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -640,7 +643,7 @@ model MOS7 {
 	  double T3 = sqrt(Xdep);
 	  double T0 = s->dvt2w * Vbseff;
 	  double T1, T2;
-	  {if (T0 >= - 0.5) {
+	  if (T0 >= - 0.5) {
 	    T1 = 1.0 + T0;
 	    T2 = s->dvt2w;
 	  }else{
@@ -649,14 +652,14 @@ model MOS7 {
 	    double T4 = 1.0 / (3.0 + 8.0 * T0);
 	    T1 = (1.0 + 3.0 * T0) * T4; 
 	    T2 = s->dvt2w * T4 * T4;
-	  }}
+	  }
 	  trace4("", T0, T1, T2, T3);
 	  ltw = m->factor1 * T3 * T1;
 	  dltw_dVb = m->factor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * T2);
 	}
 	trace2("", ltw, dltw_dVb);
 	double T0 = -0.5 * s->dvt1w * s->weff * s->leff / ltw;
-	{if (T0 > -EXP_THRESHOLD) {
+	if (T0 > -EXP_THRESHOLD) {
 	  double T1 = exp(T0);
 	  T2 = T1 * (1.0 + 2.0 * T1);
 	  double dT1_dVb = -T0 / ltw * T1 * dltw_dVb;
@@ -665,7 +668,7 @@ model MOS7 {
 	  double T1 = MIN_EXP;
 	  T2 = T1 * (1.0 + 2.0 * T1);
 	  dT2_dVb = 0.0;
-	}}
+	}
 	T0 = s->dvt0w * T2;
 	T2 = T0 * V0;
 	dT2_dVb = s->dvt0w * dT2_dVb * V0;
@@ -679,7 +682,7 @@ model MOS7 {
       double T3 = s->eta0 + s->etab * Vbseff;
       trace4("", T0, T1, tmp2, T3);
       double T4;
-      {if (T3 < 1.0e-4) {
+      if (T3 < 1.0e-4) {
 	untested();
 	/* avoid  discontinuity problems caused by etab */ 
 	double T9 = 1.0 / (3.0 - 2.0e4 * T3);
@@ -689,7 +692,7 @@ model MOS7 {
       }else{
 	T4 = 1.0;
 	trace1("", T4);
-      }}
+      }
       double thetavth = s->dvt0 * Theta0;
       double Delt_vth = thetavth * V0;
       double dDelt_vth_dVb = s->dvt0 * dTheta0_dVb * V0;
@@ -705,27 +708,28 @@ model MOS7 {
       double Vth = m->polarity * t->vth0 + t->k1 * (sqrtPhis - t->sqrtPhi) 
 	- t->k2 * Vbseff - Delt_vth - T2 + (s->k3 + s->k3b * Vbseff) * tmp2
 	+ T1 - DIBL_Sft;
-      d->von = Vth; 
+      d->von = Vth;
       
       dVth_dVb = t->k1 * dsqrtPhis_dVb - t->k2 - dDelt_vth_dVb - dT2_dVb
 	+ s->k3b * tmp2 - s->etab * d->vds * t->theta0vb0 * T4
 	+ s->kt2 * t->tempratio_1;
       dVth_dVd = -dDIBL_Sft_dVd; 
-      trace3("", Vth, dVth_dVb, dVth_dVd);
     }
-    // end trace
+    trace3("", d->von, dVth_dVb, dVth_dVd);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Calculate n */
     double n, dn_dVb, dn_dVd;
     {
-      double tmp2 = s->nfactor * E_SI / Xdep;
+      double tmp2 = s->nfactor * P_EPS_SI / Xdep;
       double tmp3 = s->cdsc + s->cdscb * Vbseff + s->cdscd * d->vds;
       double tmp4 = (tmp2 + tmp3 * Theta0 + s->cit) / m->cox;
-      {if (tmp4 >= -0.5) {
+      trace3("", tmp2, tmp3, tmp4);
+      if (tmp4 >= -0.5) {
 	n = 1.0 + tmp4;
 	dn_dVb = (-tmp2 / Xdep * dXdep_dVb + tmp3 * dTheta0_dVb 
 		  + s->cdscb * Theta0) / m->cox;
 	dn_dVd = s->cdscd * Theta0 / m->cox;
+	trace3("n", n, dn_dVb, dn_dVd);
       }else{
 	/* avoid  discontinuity problems caused by tmp4 */ 
 	double T0 = 1.0 / (3.0 + 8.0 * tmp4);
@@ -734,16 +738,20 @@ model MOS7 {
 	dn_dVb = (-tmp2 / Xdep * dXdep_dVb + tmp3 * dTheta0_dVb
 		  + s->cdscb * Theta0) / m->cox * T0;
 	dn_dVd = s->cdscd * Theta0 / m->cox * T0;
-      }}
+	trace3("n disc", n, dn_dVb, dn_dVd);
+      }
     }
+    trace3("", n, dn_dVb, dn_dVd);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Poly Gate Si Depletion Effect */
     double Vgs_eff, dVgs_eff_dVg;
     {
       double T0 = t->vfb + t->phi;
-      {if ((s->ngate > 1.e18) && (s->ngate < 1.e25) && (d->vgs > T0)) {
+      trace2("Poly", t->vfb, t->phi);
+      trace3("", s->ngate, d->vgs, T0);
+      if ((s->ngate > 1.e18) && (s->ngate < 1.e25) && (d->vgs > T0)) {
 	/* added to avoid the problem caused by ngate */
-	double T1 = 1.0e6 * Q * E_SI * s->ngate / (m->cox * m->cox);
+	double T1 = 1.0e6 * P_Q * P_EPS_SI * s->ngate / (m->cox * m->cox);
 	double T4 = sqrt(1.0 + 2.0 * (d->vgs - T0) / T1);
 	double T2 = T1 * (T4 - 1.0);
 	double T3 = 0.5 * T2 * T2 / T1; /* T3 = Vpoly */
@@ -751,12 +759,15 @@ model MOS7 {
 	double T6 = sqrt(T7 * T7 + 0.224);
 	double T5 = 1.12 - 0.5 * (T7 + T6);
 	Vgs_eff = d->vgs - T5;
-	dVgs_eff_dVg = 1.0 - (0.5 - 0.5 / T4) * (1.0 + T7 / T6); 
+	dVgs_eff_dVg = 1.0 - (0.5 - 0.5 / T4) * (1.0 + T7 / T6);
+	trace2("><", Vgs_eff, dVgs_eff_dVg);
       }else{
 	Vgs_eff = d->vgs;
 	dVgs_eff_dVg = 1.0;
-      }}
+	trace2("const", Vgs_eff, dVgs_eff_dVg);
+      }
     }
+    trace2("", Vgs_eff, dVgs_eff_dVg);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Effective Vgst (Vgsteff) Calculation */
     double /*Vgsteff,*/ dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb, Vgst2Vtm;
@@ -766,14 +777,16 @@ model MOS7 {
       double T10 = 2.0 * n * t->vtm;
       VgstNVt = Vgst / T10;
       double ExpArg = (2.0 * s->voff - Vgst) / T10;
+      trace4("", Vgst, T10, VgstNVt, ExpArg);
 
       /* MCJ: Very small Vgst */
-      {if (VgstNVt > EXP_THRESHOLD) {
+      if (VgstNVt > EXP_THRESHOLD) {
 	d->vgst = Vgst;
 	dVgsteff_dVg = dVgs_eff_dVg;
 	dVgsteff_dVd = -dVth_dVd;
 	dVgsteff_dVb = -dVth_dVb;
 	ExpVgst = NOT_VALID;
+	trace4(">>", d->vgst, dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb);
       }else if (ExpArg > EXP_THRESHOLD) {
 	double T0 = (Vgst - s->voff) / (n * t->vtm);
 	ExpVgst = exp(T0);
@@ -782,6 +795,7 @@ model MOS7 {
 	dVgsteff_dVd = -dVgsteff_dVg * (dVth_dVd + T0 * t->vtm * dn_dVd);
 	dVgsteff_dVb = -dVgsteff_dVg * (dVth_dVb + T0 * t->vtm * dn_dVb);
 	dVgsteff_dVg *= dVgs_eff_dVg;
+	trace4(">", d->vgst, dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb);
       }else{
 	ExpVgst = exp(VgstNVt);
 	double T1 = T10 * log(1.0 + ExpVgst);
@@ -804,9 +818,13 @@ model MOS7 {
 	dVgsteff_dVg = (T2 * dT1_dVg - T1 * dT2_dVg) / T3 * dVgs_eff_dVg;
 	dVgsteff_dVd = (T2 * dT1_dVd - T1 * dT2_dVd) / T3;
 	dVgsteff_dVb = (T2 * dT1_dVb - T1 * dT2_dVb) / T3;
-      }}
+	trace4("<", d->vgst, dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb);
+      }
       Vgst2Vtm = d->vgst + 2.0 * t->vtm;
+      trace3("", d->vgst, t->vtm, Vgst2Vtm);
     }
+    trace1("", d->vgst);
+    trace4("", dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb, Vgst2Vtm);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Calculate Effective Channel Geometry */
     double Weff, dWeff_dVg, dWeff_dVb;
@@ -823,14 +841,16 @@ model MOS7 {
 	T0 *= T0 * 4.0e-16;
 	dWeff_dVg *= T0;
 	dWeff_dVb *= T0;
+	trace3("Weff fix", Weff, dWeff_dVg, dWeff_dVb);
       }
     }
+    trace3("", Weff, dWeff_dVg, dWeff_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     double Rds, dRds_dVg, dRds_dVb;
     {
       double T9 = sqrtPhis - t->sqrtPhi;
       double T0 = s->prwg * d->vgst + s->prwb * T9;
-      {if (T0 >= -0.9) {
+      if (T0 >= -0.9) {
 	Rds = t->rds0 * (1.0 + T0);
 	dRds_dVg = t->rds0 * s->prwg;
 	dRds_dVb = t->rds0 * s->prwb * dsqrtPhis_dVb;
@@ -841,8 +861,11 @@ model MOS7 {
 	T1 *= T1;
 	dRds_dVg = t->rds0 * s->prwg * T1;
 	dRds_dVb = t->rds0 * s->prwb * dsqrtPhis_dVb * T1;
-      }}
+	trace3("Rds fix", T9, T0, T1);
+	trace3("Rds fix", Rds, dRds_dVg, dRds_dVb);
+      }
     }
+    trace3("", Rds, dRds_dVg, dRds_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Calculate Abulk */
     double Abulk0, dAbulk0_dVb, dAbulk_dVg, Abulk, dAbulk_dVb;
@@ -869,31 +892,38 @@ model MOS7 {
       Abulk = Abulk0 + dAbulk_dVg * d->vgst; 
       dAbulk_dVb = dAbulk0_dVb - T8 * d->vgst * (dT1_dVb + 3.0 * T1 * dT2_dVb);
 
+      trace2("1", Abulk0, dAbulk0_dVb);
+      trace3("1", dAbulk_dVg, Abulk, dAbulk_dVb);
+
       if (Abulk0 < 0.1) {
 	/* added to avoid the problems caused by Abulk0 */
 	double T9 = 1.0 / (3.0 - 20.0 * Abulk0);
 	Abulk0 = (0.2 - Abulk0) * T9;
 	dAbulk0_dVb *= T9 * T9;
+	trace2("2", Abulk0, dAbulk0_dVb);
       }
       if (Abulk < 0.1) {
 	/* added to avoid the problems caused by Abulk */
 	double T9 = 1.0 / (3.0 - 20.0 * Abulk);
 	Abulk = (0.2 - Abulk) * T9;
 	dAbulk_dVb *= T9 * T9;
+	trace3("2", dAbulk_dVg, Abulk, dAbulk_dVb);
       }
 
       double T0, dT0_dVb;
       {
 	double T2 = s->keta * Vbseff;
-	{if (T2 >= -0.9) {
+	if (T2 >= -0.9) {
 	  T0 = 1.0 / (1.0 + T2);
 	  dT0_dVb = -s->keta * T0 * T0;
+	  trace3("", T2, T0, dT0_dVb);
 	}else{
 	  /* added to avoid the problems caused by Keta */
 	  double T1 = 1.0 / (0.8 + T2);
 	  T0 = (17.0 + 20.0 * T2) * T1;
 	  dT0_dVb = -s->keta * T1 * T1;
-	}}
+	  trace3("keta fix", T2, T0, dT0_dVb);
+	}
       }
       dAbulk_dVg *= T0;
       dAbulk_dVb = dAbulk_dVb * T0 + Abulk * dT0_dVb;
@@ -901,6 +931,8 @@ model MOS7 {
       Abulk *= T0;
       Abulk0 *= T0;
     }
+    trace2("", Abulk0, dAbulk0_dVb);
+    trace3("", dAbulk_dVg, Abulk, dAbulk_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Mobility calculation */
     double ueff, dueff_dVg, dueff_dVd, dueff_dVb;
@@ -908,7 +940,7 @@ model MOS7 {
       double Denomi, dDenomi_dVg, dDenomi_dVd, dDenomi_dVb;
       {
 	double T5;
-	{if (m->mobMod == 1) {
+	if (m->mobMod == 1) {
 	  double T0 = d->vgst + d->von + d->von;
 	  double T2 = t->ua + t->uc * Vbseff;
 	  double T3 = T0 / m->tox;
@@ -932,8 +964,8 @@ model MOS7 {
 	  dDenomi_dVg = (t->ua + 2.0 * t->ub * T3) * T2 / m->tox;
 	  dDenomi_dVd = dDenomi_dVg * 2.0 * dVth_dVd;
 	  dDenomi_dVb = dDenomi_dVg * 2.0 * dVth_dVb + t->uc * T4;
-	}}
-	{if (T5 >= -0.8) {
+	}
+	if (T5 >= -0.8) {
 	  Denomi = 1.0 + T5;
 	}else{
 	  /* Added to avoid the discontinuity problem caused by ua and ub*/ 
@@ -943,7 +975,7 @@ model MOS7 {
 	  dDenomi_dVg *= T9;
 	  dDenomi_dVd *= T9;
 	  dDenomi_dVb *= T9;
-	}}
+	}
       }
       ueff = t->u0temp / Denomi;
       double T9 = -ueff / Denomi;
@@ -951,6 +983,7 @@ model MOS7 {
       dueff_dVd = T9 * dDenomi_dVd;
       dueff_dVb = T9 * dDenomi_dVb;
     }
+    trace4("", ueff, dueff_dVg, dueff_dVd, dueff_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     double Esat, EsatL, dEsatL_dVg, dEsatL_dVd, dEsatL_dVb;
     {
@@ -961,6 +994,8 @@ model MOS7 {
       dEsatL_dVd = T0 * dueff_dVd;
       dEsatL_dVb = T0 * dueff_dVb;
     }
+    trace2("", Esat, EsatL);
+    trace3("", dEsatL_dVg, dEsatL_dVd, dEsatL_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     double Vdsat, dVdsat_dVg, dVdsat_dVd, dVdsat_dVb; // d->vdsat
     double Vasat, dVasat_dVg, dVasat_dVb, dVasat_dVd;
@@ -970,9 +1005,11 @@ model MOS7 {
 	double WVCox = Weff * t->vsattemp * m->cox;
 	WVCoxRds = WVCox * Rds;
       }
+      trace1("", WVCoxRds);
+
       double Lambda, dLambda_dVg;
       {
-	{if (s->a1 == 0.0) {
+	if (s->a1 == 0.0) {
 	  Lambda = s->a2;
 	  dLambda_dVg = 0.0;
 	}else if (s->a1 > 0.0) {
@@ -987,19 +1024,24 @@ model MOS7 {
 	  double T2 = sqrt(T1 * T1 + 0.0004 * s->a2);
 	  Lambda = 0.5 * (T1 + T2);
 	  dLambda_dVg = 0.5 * s->a1 * (1.0 + T1 / T2);
-	}}
+	}
       }
+      trace2("", Lambda, dLambda_dVg);
+
       double tmp2, tmp3;
-      {if (Rds > 0) {
+      if (Rds > 0) {
 	tmp2 = dRds_dVg / Rds + dWeff_dVg / Weff;
 	tmp3 = dRds_dVb / Rds + dWeff_dVb / Weff;
       }else{
 	tmp2 = dWeff_dVg / Weff;
 	tmp3 = dWeff_dVb / Weff;
-      }}
+      }
+      trace2("", tmp2, tmp3);
+
+      //double Vdsat, dVdsat_dVg, dVdsat_dVd, dVdsat_dVb; // d->vdsat
       double tmp1;
       {
-	{if ((Rds == 0.0) && (Lambda == 1.0)) {
+	if ((Rds == 0.0) && (Lambda == 1.0)) {
 	  double T0 = 1.0 / (Abulk * EsatL + Vgst2Vtm);
 	  tmp1 = 0.0;
 	  double T1 = T0 * T0;
@@ -1046,10 +1088,14 @@ model MOS7 {
 	  dVdsat_dVb = (dT1_dVb - (T1 * dT1_dVb - dT0_dVb * T2
 				- T0 * dT2_dVb) / T3 - Vdsat * dT0_dVb) / T0;
 	  dVdsat_dVd = (dT1_dVd - (T1 * dT1_dVd - T0 * dT2_dVd) / T3) / T0;
-	}}
+	}
 	d->vdsat = Vdsat;
+	d->saturated = (d->vds >= d->vdsat);
       }
-      /* Calculate VAsat */
+      trace1("", tmp1);
+      trace4("d->vdsat", Vdsat, dVdsat_dVg, dVdsat_dVd, dVdsat_dVb);
+
+      // double Vasat, dVasat_dVg, dVasat_dVb, dVasat_dVd;
       {
 	double tmp4 = 1.0 - 0.5 * Abulk * Vdsat / Vgst2Vtm;
 	double T9 = WVCoxRds * d->vgst;
@@ -1071,7 +1117,11 @@ model MOS7 {
 	dVasat_dVb = (dT0_dVb - Vasat * dT1_dVb) / T1;
 	dVasat_dVd = dT0_dVd / T1;
       }
+      trace4("", Vasat, dVasat_dVg, dVasat_dVb, dVasat_dVd);
     }
+    trace1("", d->vdsat);
+    trace4("", Vdsat, dVdsat_dVg, dVdsat_dVd, dVdsat_dVb);
+    trace4("", Vasat, dVasat_dVg, dVasat_dVb, dVasat_dVd);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Effective Vds (Vdseff) Calculation */
     double Vdseff, diffVds, dVdseff_dVg, dVdseff_dVd, dVdseff_dVb;
@@ -1101,7 +1151,14 @@ model MOS7 {
       fixzero(&dVdseff_dVg, dVdsat_dVg);
       fixzero(&dVdseff_dVd, dVdsat_dVd);
       fixzero(&dVdseff_dVb, dVdsat_dVb);
+      /* Added to eliminate non-zero Vdseff at Vds=0.0 */
+      if (d->vds == 0.0) {
+	assert(Vdseff == 0.0);
+	assert(dVdseff_dVg == 0.0);
+	assert(dVdseff_dVb == 0.0);
+      }
       if (Vdseff > d->vds) {	// From Spice, to fix numeric problems.
+	trace2("numeric problems", Vdseff, d->vds);
 	Vdseff = d->vds;
       }
       trace4("fixed", Vdseff, dVdseff_dVg, dVdseff_dVd, dVdseff_dVb);
@@ -1109,6 +1166,8 @@ model MOS7 {
       diffVds = d->vds - Vdseff;
       trace2("", Vdseff, diffVds);
     }
+    trace2("", Vdseff, diffVds);
+    trace3("", dVdseff_dVg, dVdseff_dVd, dVdseff_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Calculate Ids */
     double Idsa, dIdsa_dVg, dIdsa_dVd, dIdsa_dVb;
@@ -1116,7 +1175,7 @@ model MOS7 {
       double Va, dVa_dVg, dVa_dVd, dVa_dVb;
       {
 	double VACLM, dVACLM_dVg, dVACLM_dVb, dVACLM_dVd;
-	{if ((s->pclm > 0.0) && (diffVds > 1.0e-10)) {
+	if ((s->pclm > 0.0) && (diffVds > 1.0e-10)) {
 	  double T0 = 1.0 / (s->pclm * Abulk * s->litl);
 	  double dT0_dVb = -T0 / Abulk * dAbulk_dVb;
 	  double dT0_dVg = -T0 / Abulk * dAbulk_dVg; 
@@ -1134,9 +1193,11 @@ model MOS7 {
 	}else{
 	  VACLM = MAX_EXP;
 	  dVACLM_dVd = dVACLM_dVg = dVACLM_dVb = 0.0;
-	}}
+	}
+	trace4("", VACLM, dVACLM_dVg, dVACLM_dVb, dVACLM_dVd);
+
 	double VADIBL, dVADIBL_dVg, dVADIBL_dVb, dVADIBL_dVd;
-	{if (t->thetaRout > 0.0) {
+	if (t->thetaRout > 0.0) {
 	  double T8 = Abulk * Vdsat;
 	  double T0 = Vgst2Vtm * T8;
 	  double dT0_dVg = Vgst2Vtm * Abulk * dVdsat_dVg + T8
@@ -1155,7 +1216,7 @@ model MOS7 {
 	  dVADIBL_dVd = (-dT0_dVd / T1 + T0 * dT1_dVd / T9) / T2;
 	  
 	  double T7 = s->pdiblb * Vbseff;
-	  {if (T7 >= -0.9) {
+	  if (T7 >= -0.9) {
 	    double T3 = 1.0 / (1.0 + T7);
 	    VADIBL *= T3;
 	    dVADIBL_dVg *= T3;
@@ -1169,15 +1230,17 @@ model MOS7 {
 	    dVADIBL_dVb = dVADIBL_dVb * T3 - VADIBL * s->pdiblb * T4 * T4;
 	    dVADIBL_dVd *= T3;
 	    VADIBL *= T3;
-	  }}
+	  }
 	}else{
 	  VADIBL = MAX_EXP;
 	  dVADIBL_dVd = dVADIBL_dVg = dVADIBL_dVb = 0.0;
-	}}
+	}
+	trace4("", VADIBL, dVADIBL_dVg, dVADIBL_dVb, dVADIBL_dVd);
+
 	double T8 = s->pvag / EsatL;
 	double T9 = T8 * d->vgst;
 	double T0, dT0_dVg, dT0_dVb, dT0_dVd;
-	{if (T9 > -0.9) {
+	if (T9 > -0.9) {
 	  T0 = 1.0 + T9;
 	  dT0_dVg = T8 * (1.0 - d->vgst * dEsatL_dVg / EsatL);
 	  dT0_dVb = -T9 * dEsatL_dVb / EsatL;
@@ -1191,7 +1254,7 @@ model MOS7 {
 	  T9 *= T1 / EsatL;
 	  dT0_dVb = -T9 * dEsatL_dVb;
 	  dT0_dVd = -T9 * dEsatL_dVd;
-	}}
+	}
 	double tmp1 = VACLM * VACLM;
 	double tmp2 = VADIBL * VADIBL;
 	double tmp3 = VACLM + VADIBL;
@@ -1207,6 +1270,8 @@ model MOS7 {
 	dVa_dVd = dVasat_dVd + T1 * dT0_dVd + T0 * dT1_dVd;
 	dVa_dVb = dVasat_dVb + T1 * dT0_dVb + T0 * dT1_dVb;
       }
+      trace4("", Va, dVa_dVg, dVa_dVd, dVa_dVb);
+
       double Idl, dIdl_dVg, dIdl_dVd, dIdl_dVb;
       {
 	double gche, dgche_dVg, dgche_dVd, dgche_dVb;
@@ -1219,6 +1284,8 @@ model MOS7 {
 	    dbeta_dVd = CoxWovL * dueff_dVd;
 	    dbeta_dVb = CoxWovL * dueff_dVb + beta * dWeff_dVb / Weff;
 	  }
+	  trace4("", beta, dbeta_dVg, dbeta_dVd, dbeta_dVb);
+
 	  double fgche1, dfgche1_dVg, dfgche1_dVd, dfgche1_dVb;
 	  {
 	    double T0 = 1.0 - 0.5 * Abulk * Vdseff / Vgst2Vtm;
@@ -1232,6 +1299,8 @@ model MOS7 {
 	    dfgche1_dVd = d->vgst * dT0_dVd; 
 	    dfgche1_dVb = d->vgst * dT0_dVb; 
 	  }
+	  trace4("", fgche1, dfgche1_dVg, dfgche1_dVd, dfgche1_dVb);
+
 	  double fgche2, dfgche2_dVg, dfgche2_dVd, dfgche2_dVb;
 	  {
 	    double T9 = Vdseff / EsatL;
@@ -1240,6 +1309,8 @@ model MOS7 {
 	    dfgche2_dVd = (dVdseff_dVd - T9 * dEsatL_dVd) / EsatL;
 	    dfgche2_dVb = (dVdseff_dVb - T9 * dEsatL_dVb) / EsatL;
 	  }
+	  trace4("", fgche2, dfgche2_dVg, dfgche2_dVd, dfgche2_dVb);
+
 	  gche = beta * fgche1 / fgche2;
 	  dgche_dVg = (beta * dfgche1_dVg + fgche1 * dbeta_dVg
 		       - gche * dfgche2_dVg) / fgche2;
@@ -1248,6 +1319,8 @@ model MOS7 {
 	  dgche_dVb = (beta * dfgche1_dVb + fgche1 * dbeta_dVb
 		       - gche * dfgche2_dVb) / fgche2;
 	}
+	trace4("", gche, dgche_dVg, dgche_dVd, dgche_dVb);
+
 	double T0 = 1.0 + gche * Rds;
 	double T9 = Vdseff / T0;
 	Idl = gche * T9;
@@ -1256,20 +1329,22 @@ model MOS7 {
 	dIdl_dVd = (gche * dVdseff_dVd + T9 * dgche_dVd) / T0; 
 	dIdl_dVb = (gche*dVdseff_dVb + T9*dgche_dVb - Idl*dRds_dVb*gche) / T0; 
       }
+      trace4("", Idl, dIdl_dVg, dIdl_dVd, dIdl_dVb);
+
       double T9 =  diffVds / Va;
       double T0 =  1.0 + T9;
       Idsa = Idl * T0;
       dIdsa_dVg = T0 * dIdl_dVg - Idl * (dVdseff_dVg + T9 * dVa_dVg) / Va;
       dIdsa_dVd = T0 * dIdl_dVd + Idl * (1.0 - dVdseff_dVd - T9*dVa_dVd) / Va;
       dIdsa_dVb = T0 * dIdl_dVb - Idl * (dVdseff_dVb + T9 * dVa_dVb) / Va;
-      trace4("", Idsa, dIdsa_dVg, dIdsa_dVd, dIdsa_dVb);
     }
+    trace4("", Idsa, dIdsa_dVg, dIdsa_dVd, dIdsa_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // d->ids, d->gds, d->gmf, d->gmbf
     {
       double VASCBE, dVASCBE_dVg, dVASCBE_dVd, dVASCBE_dVb;
-      {if (s->pscbe2 > 0.0) {
-	{if (diffVds > s->pscbe1 * s->litl / EXP_THRESHOLD) {
+      if (s->pscbe2 > 0.0) {
+	if (diffVds > s->pscbe1 * s->litl / EXP_THRESHOLD) {
 	  double T0 =  s->pscbe1 * s->litl / diffVds;
 	  VASCBE = s->leff * exp(T0) / s->pscbe2;
 	  double T1 = T0 * VASCBE / diffVds;
@@ -1279,11 +1354,11 @@ model MOS7 {
 	}else{
 	  VASCBE = MAX_EXP * s->leff/s->pscbe2;
 	  dVASCBE_dVg = dVASCBE_dVd = dVASCBE_dVb = 0.0;
-	}}
+	}
       }else{
 	VASCBE = MAX_EXP;
 	dVASCBE_dVg = dVASCBE_dVd = dVASCBE_dVb = 0.0;
-      }}
+      }
       double T9 = diffVds / VASCBE;
       double T0 = 1.0 + T9;
       double Ids = Idsa * T0;
@@ -1304,7 +1379,7 @@ model MOS7 {
       trace0("=========================");
 
       d->gds = Gds;
-      {if (d->reversed){
+      if (d->reversed) {
 	d->ids  = -Ids;
 	d->gmr  = Gm;
 	d->gmbr = Gmb;
@@ -1314,26 +1389,27 @@ model MOS7 {
 	d->gmf  = Gm;
 	d->gmbf = Gmb;
 	d->gmr = d->gmbr = 0.;
-      }}
+      }
     }
+    trace4("", d->ids, d->gds, d->gmf, d->gmbf);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // d->isub, d->gbbs, d->gbgs, d->gbds
     {
       /* calculate substrate current Isub */
       double Isub, Gbd, Gbb, Gbg;
-      {if ((s->alpha0 <= 0.0) || (s->beta0 <= 0.0)) {
+      if ((s->alpha0 <= 0.0) || (s->beta0 <= 0.0)) {
 	Isub = Gbd = Gbb = Gbg = 0.0;
 	trace4("no-isub", Isub, Gbd, Gbb, Gbg);
       }else{
 	double T2 = s->alpha0 / s->leff;
 	double T1, dT1_dVg, dT1_dVd, dT1_dVb;
-	{if (diffVds > s->beta0 / EXP_THRESHOLD) {
+	if (diffVds > s->beta0 / EXP_THRESHOLD) {
 	  double T0 = -s->beta0 / diffVds;
 	  T1 = T2 * diffVds * exp(T0);
 	  double T3 = T1 / diffVds * (T0 - 1.0);
 	  trace3("", T0, T2, T3);
 	  dT1_dVg = T3 * dVdseff_dVg;
-	  dT1_dVd = -T3 * (1.0 - dVdseff_dVd);
+	  dT1_dVd = T3 * (dVdseff_dVd - 1.0);
 	  dT1_dVb = T3 * dVdseff_dVb;
 	  trace4("vds > ?", T1, dT1_dVg, dT1_dVd, dT1_dVb);
 	}else{
@@ -1344,7 +1420,7 @@ model MOS7 {
 	  dT1_dVd = T3 * (1.0 - dVdseff_dVd);
 	  dT1_dVb = -T3 * dVdseff_dVb;
 	  trace4("vds < ?", T1, dT1_dVg, dT1_dVd, dT1_dVb);
-	}}
+	}
 	Isub = T1 * Idsa;
 	Gbg = T1 * dIdsa_dVg + Idsa * dT1_dVg;
 	Gbd = T1 * dIdsa_dVd + Idsa * dT1_dVd;
@@ -1355,14 +1431,24 @@ model MOS7 {
 	Gbb += Gbg * dVgsteff_dVb;
 	Gbg *= dVgsteff_dVg;
 	Gbb *= dVbseff_dVb; /* bug fixing */
-      }}
+      }
       trace4("", Isub, Gbd, Gbb, Gbg);
-      d->isub = Isub;
-      d->gbbs = Gbb;
-      d->gbgs = Gbg;
-      d->gbds = Gbd;
+      if (d->reversed) {
+	d->idb   = Isub;
+	d->gdbds = Gbd;
+	d->gdbgs = Gbg;
+	d->gdbbs = Gbb;
+	d->isb = d->gsbsd = d->gsbgd = d->gsbbd = 0.;
+      }else{
+	d->idb = d->gdbds = d->gdbgs = d->gdbbs = 0.;
+	d->isb   = Isub;
+	d->gsbsd = Gbd;
+	d->gsbgd = Gbg;
+	d->gsbbd = Gbb;
+      }
       //double d__csub = Isub - (Gbb * Vbseff + Gbd * d->vds + Gbg * d->vgs);
     }
+    trace4("", d->isub, d->gbbs, d->gbgs, d->gbds);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Calculate Qinv for Noise analysis */
     {
@@ -1371,23 +1457,30 @@ model MOS7 {
     }
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     // ends line 2020 (finished)
+    // d->qgate, d->qdrn, d->qbulk
+    // d->cggb, d->cgsb, d->cgdb
+    // d->cdgb, d->cdsb, d->cddb
+    // d->cbgb, d->cbsb, d->cbdb
     {
       const bool ChargeComputationNeeded = true;
-      {if ((m->xpart < 0) || (!ChargeComputationNeeded)) {
+      trace2("", m->xpart, m->capMod);
+      if ((m->xpart < 0) || (!ChargeComputationNeeded)) {
 	d->qgate = d->qdrn = d->qbulk = 0.0;
 	d->cggb = d->cgsb = d->cgdb = 0.0;
 	d->cdgb = d->cdsb = d->cddb = 0.0;
 	d->cbgb = d->cbsb = d->cbdb = 0.0;
-	//goto finished;
+	trace0("xpart < 0 || no charge computation");
       }else if (m->capMod == 0) {
-	// block ends 1621 this 1309
-	{if (Vbseff < 0.0) {  // redefinition
+	// block ends 1710 this 1454
+	trace0("begin capMod == 0 (mos7)");
+	if (Vbseff < 0.0) {  // redefinition
 	  Vbseff = d->vbs;
 	  dVbseff_dVb = 1.0;
 	}else{
 	  Vbseff = t->phi - Phis;
 	  dVbseff_dVb = -dPhis_dVb;
-	}}
+	}
+	trace1("old value replaced", dVth_dVb);
 	double Vfb = s->vfbcv; // possible improper redefinition later
 	double Vth = Vfb + t->phi + t->k1 * sqrtPhis; 
 	dVth_dVb = t->k1 * dsqrtPhis_dVb; // redefinition
@@ -1396,26 +1489,33 @@ model MOS7 {
 	//double dVgst_dVg = dVgs_eff_dVg; 
 	double CoxWL = m->cox * s->weffCV * s->leffCV;
 	double Arg1 = Vgs_eff - Vbseff - Vfb;
+	trace3("", Vfb, Vth, dVth_dVb);
+	trace3("", Vgst, CoxWL, Arg1);
+
 	// ends 1618 this 1328
-	{if (Arg1 <= 0.0) {
+	if (Arg1 <= 0.0) {
+	  trace0("Arg1 <= 0.0");
+	  
 	  d->qgate = CoxWL * Arg1;
 	  d->cggb = CoxWL * dVgs_eff_dVg;
 	  d->cgdb = 0.0;
 	  d->cgsb = CoxWL * (dVbseff_dVb - dVgs_eff_dVg);
 	  
 	  d->qbulk = -d->qgate;
-	  d->cdgb = 0.0;
-	  d->cddb = 0.0;
-	  d->cdsb = 0.0;
-	  
-	  d->qdrn = 0.0;
 	  d->cbgb = -CoxWL * dVgs_eff_dVg;
 	  d->cbdb = 0.0;
 	  d->cbsb = -d->cgsb;
+	  
+	  d->qdrn = 0.0;
+	  d->cdgb = 0.0;
+	  d->cddb = 0.0;
+	  d->cdsb = 0.0;
 	}else if (Vgst <= 0.0) {
+	  trace0("Vgst <= 0.0");
 	  double T1 = 0.5 * t->k1;
 	  double T2 = sqrt(T1 * T1 + Arg1);
 	  double T0 = CoxWL * T1 / T2;
+
 	  d->qgate = CoxWL * t->k1 * (T2 - T1);
 	  d->cggb = T0 * dVgs_eff_dVg;
 	  d->cgdb = 0.0;
@@ -1431,6 +1531,7 @@ model MOS7 {
 	  d->cddb = 0.0;
 	  d->cdsb = 0.0;
 	}else{
+	  trace0("!(Arg1 <= 0.0 || Vgst <= 0.0)");
 	  double One_Third_CoxWL = CoxWL / 3.0;
 	  double Two_Third_CoxWL = 2.0 * One_Third_CoxWL;
 	  // redefine Vdsat, dVdsat_dVg, dVdsat_dVb
@@ -1441,9 +1542,9 @@ model MOS7 {
 	    dVdsat_dVg = dVgs_eff_dVg / AbulkCV;
 	    dVdsat_dVb = - (Vdsat * dAbulkCV_dVb + dVth_dVb)/ AbulkCV; 
 	  }
-	  {if (m->xpart > 0.5) {
+	  if (m->xpart > 0.5) {
 	    /* 0/100 Charge petition model */
-	    {if (d->vds >= Vdsat) {
+	    if (d->vds >= Vdsat) {
 	      /* saturation region */
 	      double T1 = Vdsat / 3.0;
 	      double T2 = -One_Third_CoxWL * dVdsat_dVb;
@@ -1473,7 +1574,7 @@ model MOS7 {
 	      double T4 = T9 * Alphaz;
 	      double T7 = 2.0 * d->vds - T1 - 3.0 * T3;
 	      double T8 = T3 - T1 - 2.0 * d->vds;
-	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - 0.5 * (d->vds - T3));
+	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - 0.5 * (d->vds-T3));
 	      double T10 = T4 * T8;
 	      d->qdrn = T4 * T7;
 	      d->qbulk = -(d->qgate + d->qdrn + T10);
@@ -1503,10 +1604,10 @@ model MOS7 {
 	      d->cbgb = -(d->cggb + d->cdgb + T10);
 	      d->cbdb = -(d->cgdb + d->cddb + T12);
 	      d->cbsb = -(d->cgsb + d->cdsb + T0);
-	    }}
+	    }
 	  }else if (m->xpart < 0.5) {
 	    /* 40/60 Charge petition model */
-	    {if (d->vds >= Vdsat) {
+	    if (d->vds >= Vdsat) {
 	      /* saturation region */
 	      double T1 = Vdsat / 3.0;
 	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - T1);
@@ -1574,10 +1675,12 @@ model MOS7 {
 	      d->cbgb = -(d->cggb + d->cdgb + T12);
 	      d->cbdb = -(d->cgdb + d->cddb + T11);
 	      d->cbsb = -(d->cgsb + d->cdsb + tmp);
-	    }}
+	      trace3("0,40/60,lin", T10, T11, T12);
+	      trace3("0,40/60,lin", d->cbgb, d->cbdb, d->cbsb); 
+	    }
 	  }else{
 	    /* 50/50 partitioning */
-	    {if (d->vds >= Vdsat) {
+	    if (d->vds >= Vdsat) {
 	      /* saturation region */
 	      double T1 = Vdsat / 3.0;
 	      d->qgate = CoxWL * (Vgs_eff - Vfb - t->phi - T1);
@@ -1620,6 +1723,8 @@ model MOS7 {
 	      double T4 = T9 * Alphaz;
 	      double T7 = T1 + T3;
 	      d->qdrn = -T4 * T7;
+	      d->qbulk = - (d->qgate + d->qdrn + d->qdrn);
+
 	      T7 *= T9;
 	      double T0 = T4 * (2.0 * T5 - 2.0);	      
 	      double T12 = T0 * dVdsat_dVb - T7 * dAlphaz_dVb;
@@ -1627,50 +1732,69 @@ model MOS7 {
 	      d->cddb = T4 * (1.0 - 2.0 * T2 - T5);
 	      d->cdsb = -(d->cdgb + T12 + d->cddb);
 	      
-	      d->qbulk = - (d->qgate + d->qdrn + d->qdrn);
 	      d->cbgb = -(d->cggb + 2.0 * d->cdgb);
 	      d->cbdb = -(d->cgdb + 2.0 * d->cddb);
 	      d->cbsb = -(d->cgsb + 2.0 * d->cdsb);
-	    }}
-	  }}
-	}} // begins 1328 this 1618
-	// end of else if (m->capMod == 0) line 1309 this 1621
+	    }
+	  }
+	} // begins 1328 this 1618
+	trace0("end capMod == 0");
+	// end of else if (m->capMod == 0) line 1454 this 1709
       }else{
-	double qsrc;
+	trace0("begin capMod != 0 (mos7)");	
 	assert(m->capMod != 0);
+	double qsrc;
 	double VbseffCV, dVbseffCV_dVb;
-	{if (Vbseff < 0.0) {
+	if (Vbseff < 0.0) {
 	  VbseffCV = Vbseff;
 	  dVbseffCV_dVb = 1.0;
 	}else{
 	  VbseffCV = t->phi - Phis;
 	  dVbseffCV_dVb = -dPhis_dVb;
-	}}
-	double CoxWL = m->cox * s->weffCV * s->leffCV;
-	double Vth = d->von; // possibly wrong value -- scope problem
-	double Vfb = Vth - t->phi - t->k1 * sqrtPhis;
-	double dVfb_dVb = dVth_dVb - t->k1 * dsqrtPhis_dVb;
-	double dVfb_dVd = dVth_dVd;
+	}
+	trace2("", VbseffCV, dVbseffCV_dVb);
+
+	//double Vth = d->von; // possibly wrong value -- scope problem
+	double Vfb = d->von - t->phi - t->k1 * sqrtPhis;
+	double dVfb_dVb = 0.;//////dVth_dVb - t->k1 * dsqrtPhis_dVb;
+	double dVfb_dVd = 0.;//////dVth_dVd;
+
+	//double Vgst = Vgs_eff - d->von;
+
+	//trace3("", d->vgst, Vgst, VgstNVt);
+	trace2("", n, t->vtm);
 
 	double Vgsteff;
-	{if ((VgstNVt > -EXP_THRESHOLD) && (VgstNVt < EXP_THRESHOLD)) {
-	  assert(ExpVgst != NOT_VALID);
-	  ExpVgst *= ExpVgst;
-	  Vgsteff = n * t->vtm * log(1.0 + ExpVgst);
-	  dVgsteff_dVg = ExpVgst / (1.0 + ExpVgst);
-	  dVgsteff_dVd = -dVgsteff_dVg * (dVth_dVd + (Vgs_eff-Vth)/n * dn_dVd)
-	    + Vgsteff/n * dn_dVd;
-	  dVgsteff_dVb = -dVgsteff_dVg * (dVth_dVb + (Vgs_eff-Vth)/n * dn_dVb)
-	    + Vgsteff/n * dn_dVb;
-	  dVgsteff_dVg *= dVgs_eff_dVg;
-	}else{
-	  Vgsteff = d->vgst;
-	}}
-	{if (m->capMod == 1) {
+	{
+	  if ((VgstNVt > -EXP_THRESHOLD) && (VgstNVt < EXP_THRESHOLD)) {
+	    trace0("VgstNVt in range");
+	    assert(ExpVgst != NOT_VALID);
+	    ExpVgst *= ExpVgst;
+	    ExpVgst = exp(VgstNVt); ////// test
+	    trace1("", ExpVgst);
+	    Vgsteff = n * t->vtm * log(1.0 + ExpVgst);
+	    dVgsteff_dVg = ExpVgst / (1.0 + ExpVgst);
+	    dVgsteff_dVd = -dVgsteff_dVg 
+	      * (dVth_dVd + (Vgs_eff - d->von) / n * dn_dVd)
+	      + Vgsteff / n * dn_dVd;
+	    dVgsteff_dVb = -dVgsteff_dVg 
+	      * (dVth_dVb + (Vgs_eff - d->von) / n * dn_dVb)
+	      + Vgsteff / n * dn_dVb;
+	    dVgsteff_dVg *= dVgs_eff_dVg;
+	  }else{
+	    Vgsteff = d->vgst;
+	  }
+	}
+	trace4("", Vgsteff, dVgsteff_dVg, dVgsteff_dVd, dVgsteff_dVb);
+
+	double CoxWL = m->cox * s->weffCV * s->leffCV;
+	// redundant??
+
+	if (m->capMod == 1) {
 	  double Cgg, Cgd, Cgb;
 	  {
 	    double Arg1 = Vgs_eff - VbseffCV - Vfb - Vgsteff;
-	    {if (Arg1 <= 0.0) {
+	    if (Arg1 <= 0.0) {
 	      d->qgate = CoxWL * Arg1;
 	      Cgg = CoxWL * (dVgs_eff_dVg - dVgsteff_dVg);
 	      Cgd = -CoxWL * (dVfb_dVd + dVgsteff_dVd);
@@ -1683,7 +1807,7 @@ model MOS7 {
 	      Cgg = T2 * (dVgs_eff_dVg - dVgsteff_dVg);
 	      Cgd = -T2 * (dVfb_dVd + dVgsteff_dVd);
 	      Cgb = -T2 * (dVfb_dVb + dVbseffCV_dVb + dVgsteff_dVb);
-	    }}
+	    }
 	  }
 	  d->qbulk = -d->qgate;
 	  double Cbg = -Cgg;
@@ -1696,7 +1820,7 @@ model MOS7 {
 	  double Csg, Csb, Csd;
 	  {
 	    double VdsatCV = Vgsteff / AbulkCV;
-	    {if (VdsatCV < d->vds) {
+	    if (VdsatCV < d->vds) {
 	      double One_Third_CoxWL = CoxWL / 3.0;
 	      double Two_Third_CoxWL = 2.0 * One_Third_CoxWL;
 	      double dVdsatCV_dVg = 1.0 / AbulkCV;
@@ -1728,13 +1852,13 @@ model MOS7 {
 		Cbd += Cbd1;
 	      }
 	      double T0;
-	      {if (m->xpart > 0.5) {
+	      if (m->xpart > 0.5) {
 		T0 = -Two_Third_CoxWL;
 	      }else if (m->xpart < 0.5) {
 		T0 = -0.4 * CoxWL;
 	      }else{
 		T0 = -One_Third_CoxWL;
-	      }}
+	      }
 	      qsrc = T0 * Vgsteff;
 	      Csg = T0 * dVgsteff_dVg;
 	      Csb = T0 * dVgsteff_dVb;
@@ -1774,7 +1898,7 @@ model MOS7 {
 		Cbb += Cbb1;
 		Cbd += Cbd1;
 	      }
-	      {if (m->xpart > 0.5) {
+	      if (m->xpart > 0.5) {
 		/* 0/100 Charge petition model */
 		T1 = T1 + T1;
 		qsrc = -CoxWL * (0.5 * Vgsteff + 0.25 * T0 - T0 * T0 / T1);
@@ -1808,11 +1932,11 @@ model MOS7 {
 		Csg = -0.5 * (Cgg1 + Cbg1);
 		Csb = -0.5 * (Cgb1 + Cbb1); 
 		Csd = -0.5 * (Cgd1 + Cbd1); 
-	      }}
+	      }
 	      Cgb *= dVbseff_dVb;
 	      Cbb *= dVbseff_dVb;
 	      Csb *= dVbseff_dVb;
-	    }}
+	    }
 	  }
 	  d->qdrn = -(d->qgate + d->qbulk + qsrc);
 	  d->cggb = Cgg;
@@ -1824,7 +1948,9 @@ model MOS7 {
 	  d->cbgb = Cbg;
 	  d->cbsb = -(Cbg + Cbd + Cbb);
 	  d->cbdb = Cbd;
+	  trace0("end capMod == 1");
 	}else if (m->capMod == 2) {
+	  trace0("begin capMod == 2");
 	  double Qac0, dQac0_dVg, dQac0_dVd, dQac0_dVb;
 	  double Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb;
 	  {
@@ -1833,19 +1959,22 @@ model MOS7 {
 	      const double DELTA_3 = 0.02;
 	      double V3 = Vfb - Vgs_eff + VbseffCV - DELTA_3;
 	      double T0, T2;
-	      {if (Vfb <= 0.0) {
+	      if (Vfb <= 0.0) {
 		T0 = sqrt(V3 * V3 - 4.0 * DELTA_3 * Vfb);
 		T2 = -DELTA_3 / T0;
 	      }else{
 		T0 = sqrt(V3 * V3 + 4.0 * DELTA_3 * Vfb);
 		T2 = DELTA_3 / T0;
-	      }}
+	      }
 	      double T1 = 0.5 * (1.0 + V3 / T0);
 	      Vfbeff = Vfb - 0.5 * (V3 + T0);
 	      dVfbeff_dVd = (1.0 - T1 - T2) * dVfb_dVd;
 	      dVfbeff_dVg = T1 * dVgs_eff_dVg;
 	      dVfbeff_dVb = (1.0 - T1 - T2) * dVfb_dVb - T1 * dVbseffCV_dVb;
 	    }
+	    trace3("", Vfbeff, dVfbeff_dVg, dVfbeff_dVb);
+	    trace1("", dVfbeff_dVd);
+
 	    //double Qac0, dQac0_dVg, dQac0_dVd, dQac0_dVb;
 	    {
 	      Qac0 = CoxWL * (Vfbeff - Vfb);
@@ -1853,12 +1982,13 @@ model MOS7 {
 	      dQac0_dVd = CoxWL * (dVfbeff_dVd - dVfb_dVd);
 	      dQac0_dVb = CoxWL * (dVfbeff_dVb - dVfb_dVb);
 	    }
+
 	    //double Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb;
 	    {
 	      double T0 = 0.5 * t->k1;
 	      double T3 = Vgs_eff - Vfbeff - VbseffCV - Vgsteff;
 	      double T1, T2;
-	      {if (t->k1 == 0.0) {
+	      if (t->k1 == 0.0) {
 		T1 = 0.0;
 		T2 = 0.0;
 	      }else if (T3 < 0.0) {
@@ -1867,15 +1997,20 @@ model MOS7 {
 	      }else{
 		T1 = sqrt(T0 * T0 + T3);
 		T2 = CoxWL * T0 / T1;
-	      }}
+	      }
 	      Qsub0 = CoxWL * t->k1 * (T1 - T0);
 	      dQsub0_dVg = T2 * (dVgs_eff_dVg - dVfbeff_dVg - dVgsteff_dVg);
 	      dQsub0_dVd = -T2 * (dVfbeff_dVd + dVgsteff_dVd);
 	      dQsub0_dVb = -T2 * (dVfbeff_dVb +dVbseffCV_dVb +dVgsteff_dVb);
 	    }
 	  }
+	  trace3("", Qac0, dQac0_dVg, dQac0_dVb);
+	  trace1("", dQac0_dVd);
+	  trace4("", Qsub0, dQsub0_dVg, dQsub0_dVd, dQsub0_dVb);
+
 	  double AbulkCV = Abulk0 * s->abulkCVfactor;
 	  double dAbulkCV_dVb = s->abulkCVfactor * dAbulk0_dVb;
+	  trace2("", AbulkCV, dAbulkCV_dVb);
 
 	  double VdseffCV, dVdseffCV_dVg, dVdseffCV_dVd, dVdseffCV_dVb;
 	  {
@@ -1891,10 +2026,14 @@ model MOS7 {
 	    dVdseffCV_dVd = T1;
 	    dVdseffCV_dVb = -T3 * VdsatCV * dAbulkCV_dVb;
 	  }
+	  trace4("", VdseffCV, dVdseffCV_dVg, dVdseffCV_dVd, dVdseffCV_dVb);
+
 	  double T0 = AbulkCV * VdseffCV;
 	  double T1 = 12.0 * (Vgsteff - 0.5 * T0 + 1e-20);
+	  trace2("", T0, T1);
 	  
 	  double Cgg1, Cgd1, Cgb1, Cbg1, Cbd1, Cbb1;
+	  // also 1st estimate of d->qgate, d->qbulk
 	  {
 	    double T2 = VdseffCV / T1;
 	    double T3 = T0 * T2;
@@ -1919,10 +2058,14 @@ model MOS7 {
 	      + Cbg1 * dVgsteff_dVb;
 	    Cbg1 *= dVgsteff_dVg;
 	  }
+	  trace3("", Cgg1, Cgd1, Cgb1);
+	  trace3("", Cbg1, Cbd1, Cbb1);
+	  trace2("2-1", d->qgate, d->qbulk);
 	  
 	  double Csg, Csd, Csb;
-	  {if (m->xpart > 0.5) {
-	    /* 0/100 Charge petition model */
+	  trace1("", m->xpart);
+	  if (m->xpart > 0.5) {
+	    trace0("0/100 Charge petition model");
 	    T1 = T1 + T1;
 	    qsrc = -CoxWL * (0.5 * Vgsteff + 0.25 * T0 - T0 * T0 / T1);
 	    double T7 = (4.0 * Vgsteff - T0) / (T1 * T1);
@@ -1935,7 +2078,7 @@ model MOS7 {
 	      + Csg * dVgsteff_dVb;
 	    Csg *= dVgsteff_dVg;
 	  }else if (m->xpart < 0.5) {
-	    /* 40/60 Charge petition model */
+	    trace0("40/60 Charge petition model");
 	    T1 = T1 / 12.0;
 	    double T2 = 0.5 * CoxWL / (T1 * T1);
 	    double T3 = Vgsteff * (2.0 * T0 * T0 / 3.0 + Vgsteff
@@ -1954,28 +2097,33 @@ model MOS7 {
 	      + Csg * dVgsteff_dVb;
 	    Csg *= dVgsteff_dVg;
 	  }else{
-	    /* 50/50 Charge petition model */
+	    trace0("50/50 Charge petition model");
 	    qsrc = -0.5 * (d->qgate + d->qbulk);
 	    Csg = -0.5 * (Cgg1 + Cbg1);
 	    Csb = -0.5 * (Cgb1 + Cbb1); 
 	    Csd = -0.5 * (Cgd1 + Cbd1); 
-	  }}
+	  }
+	  trace4("", Csg, Csd, Csb, qsrc);
 
 	  d->qgate += Qac0 + Qsub0;
 	  d->qbulk -= (Qac0 + Qsub0);
 	  d->qdrn = -(d->qgate + d->qbulk + qsrc);
+	  trace3("2-2", d->qgate, d->qbulk, d->qdrn);
 	  
 	  double Cgg = dQac0_dVg + dQsub0_dVg + Cgg1;
 	  double Cgd = dQac0_dVd + dQsub0_dVd + Cgd1;
 	  double Cgb = dQac0_dVb + dQsub0_dVb + Cgb1;
+	  trace3("", Cgg, Cgd, Cgb);
 	  
 	  double Cbg = Cbg1 - dQac0_dVg - dQsub0_dVg;
 	  double Cbd = Cbd1 - dQac0_dVd - dQsub0_dVd;
 	  double Cbb = Cbb1 - dQac0_dVb - dQsub0_dVb;
-	  
+	  trace3("", Cbg, Cbd, Cbb);
+
 	  Cgb *= dVbseff_dVb;
 	  Cbb *= dVbseff_dVb;
 	  Csb *= dVbseff_dVb;
+	  trace3("adjusted", Cgb, Cbb, Csb);
 	  
 	  d->cggb = Cgg;
 	  d->cgsb = -(Cgg + Cgd + Cgb);
@@ -1986,23 +2134,25 @@ model MOS7 {
 	  d->cbgb = Cbg;
 	  d->cbsb = -(Cbg + Cbd + Cbb);
 	  d->cbdb = Cbd;
+	  trace0("end capMod == 2");
 	}else{
-	  unreachable();
+	  error(bDANGER, "illegal capmod = %d\n", int(m->capMod));
 	  d->qbulk = d->qgate = NOT_VALID;
-	}}
+	}
+
 	/* Non-quasi-static Model */
 	double tconst;
-	{if (m->nqsMod) {
+	if (m->nqsMod) {
 	  //  d->gtau
 	  double qcheq = -d->qbulk - d->qgate;
 	  double T0 = s->leffCV * s->leffCV;
 	  tconst = t->u0temp * s->elm / CoxWL / T0;
-	  {if (qcheq == 0.0) {
+	  if (qcheq == 0.0) {
 	    tconst = 0.0;
 	  }else if (qcheq < 0.0) {
 	    tconst = -tconst;
 	  }else{
-	  }}
+	  }
 	  double gtau_drift = std::abs(tconst * qcheq);
 	  double gtau_diff = 16.0 * t->u0temp * t->vtm / T0;
 	  d->gtau =  gtau_drift + gtau_diff;
@@ -2025,9 +2175,29 @@ model MOS7 {
 	}else{
 	  d->gtau = 0.0;
 	  d->cqgb = d->cqdb = d->cqsb = d->cqbb = 0.0;
-	}}
-      }}
+	}
+      }
     }
+    trace0("mos7");
+    trace3("", d->qgate, d->qdrn, d->qbulk);
+    trace3("", d->cggb, d->cgsb, d->cgdb);
+    trace3("", d->cdgb, d->cdsb, d->cddb);
+    trace3("", d->cbgb, d->cbsb, d->cbdb);
+
+    trace2("", d->ids, d->gds);
+    trace4("", d->gmf, d->gmr, d->gmbf, d->gmbr);
+    trace4("", d->isub, d->gbbs, d->gbgs, d->gbds);
+    trace4("", d->qgate, d->cggb, d->cgsb, d->cgdb);
+    trace4("", d->qdrn, d->cdgb, d->cdsb, d->cddb);
+    trace4("", d->qbulk, d->cbgb, d->cbsb, d->cbdb);
+    trace1("", d->gtau);
+    trace4("", d->cqgb, d->cqsb, d->cqdb, d->cqbb);
+    trace1("", d->tconst);
+    trace2("", d->cgb, d->qgb);
+    trace2("", d->qgd, d->cgd);
+    trace2("", d->qgs, d->cgs);
+    trace3("", d->vgs, d->vds, d->vbs);
+    trace3("", d->vdsat, d->vgst, d->von);
   }
 }
 /*--------------------------------------------------------------------------*/

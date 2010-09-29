@@ -1,4 +1,4 @@
-/*$Id: u_xprobe.cc,v 23.1 2002/11/06 07:47:50 al Exp $ -*- C++ -*-
+/*$Id: u_xprobe.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,34 +16,54 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * extended probe data
  * used for AC analysis
  */
+//testing=script 2006.07.14
+#include "constant.h"
 #include "u_opt.h"
 #include "u_xprobe.h"
 /*--------------------------------------------------------------------------*/
 double XPROBE::operator()(mod_t m, bool db)const
 {
-  {if (OK()){
+  if (OK()) {
     if (m == mtNONE) {
       m = _modifier;
     }
     double rv = NOT_VALID;
-    switch (m){
-    case mtNONE:  unreachable();	break;
-    case mtMAG:   rv = abs(_value);	break;
+    switch (m) {
+    case mtNONE:
+      unreachable();
+      break;
+    case mtMAG:
+      rv = std::abs(_value);
+      break;
     case mtPHASE:
-      rv = (OPT::phase == pDEGREES) ? arg(_value)*RTOD : arg(_value);	break;
-    case mtREAL:  rv = real(_value);	break;
-    case mtIMAG:  rv = imag(_value);	break;
+      rv = (OPT::phase == pDEGREES) ? arg(_value)*RTOD : arg(_value);
+      break;
+    case mtREAL:
+      rv = real(_value);
+      break;
+    case mtIMAG:
+      untested();
+      rv = imag(_value);
+      break;
     }
     return (db) ? _dbscale * log10(std::max(rv,VOLTMIN)) : rv;
   }else{
     return NOT_VALID;
-  }}
+  }
+}
+/*--------------------------------------------------------------------------*/
+XPROBE& XPROBE::operator=(const XPROBE& p)
+{
+  _value = p._value;
+  _modifier = p._modifier;
+  _dbscale = p._dbscale;
+  return *this;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

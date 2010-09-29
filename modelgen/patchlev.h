@@ -1,1 +1,1 @@
-../src/patchlev.h
+#define PATCHLEVEL "2006.08.28 RCS 25.98"

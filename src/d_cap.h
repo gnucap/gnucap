@@ -1,4 +1,4 @@
-/*$Id: d_cap.h,v 24.20 2004/01/18 07:42:51 al Exp $ -*- C++ -*-
+/*$Id: d_cap.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@ieee.org>
  *
@@ -16,13 +16,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
  *------------------------------------------------------------------
  * capacitance devices:
  *	self-capacitance (C device)
  *	trans-capacitance (non-spice charge transfer device)
+ *------------------------------------------------------------------
+ * capacitor models
+ * y.x = volts, y.f0 = coulombs, ev = y.f1 = farads
+ * q = y history in time
+ * i.x = volts, i.f0 = amps,	      i.f1 = mhos
+ * m.x = volts, m.c0 = amps,    acg = m.c1 = mhos
  */
+//testing=script 2006.07.17
 #ifndef D_CAP_H
 #define D_CAP_H
 #include "e_storag.h"
@@ -37,18 +44,18 @@ protected: // override virtual
   const char* dev_type()const	{return "capacitor";}
   int	   max_nodes()const	{return 2;}
   int	   min_nodes()const	{return 2;}
-  int	   out_nodes()const	{return 2;}
+  int	   out_nodes()const	{untested();return 2;}
   int	   matrix_nodes()const	{return 2;}
   int	   net_nodes()const	{return 2;}
   bool	   is_1port()const	{return true;}
   CARD*	   clone()const		{return new DEV_CAPACITANCE(*this);}
-  //void   parse(CS&);		//ELEMENT
-  //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//COMPONENT
+  //void   parse_spice(CS&);	//ELEMENT
+  //void   print_spice(OMSTREAM,int)const; //ELEMENT
+  //void   elabo1();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
-  void	   tr_alloc_matrix()	{tr_alloc_matrix_passive();}
+  void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
   //void   dc_begin();		//STORAGE
   //void   tr_begin();		//STORAGE
   //void   tr_restore();	//STORAGE
@@ -62,15 +69,17 @@ protected: // override virtual
   //void   tr_accept();		//CARD/nothing
   void	   tr_unload()		{tr_unload_passive();}
   double   tr_involts()const	{return tr_outvolts();}
+  //double tr_input()const	//ELEMENT
   double   tr_involts_limited()const {return tr_outvolts_limited();}
+  //double tr_input_limited()const //ELEMENT
   //double tr_amps()const	//ELEMENT
   double   tr_probe_num(CS&)const;
 
-  void	   ac_alloc_matrix()	{ac_alloc_matrix_passive();}
+  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
   void	   ac_begin()		{_ev = _y0.f1;}
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
-  COMPLEX  ac_involts()const	{return ac_outvolts();}
+  COMPLEX  ac_involts()const	{untested();return ac_outvolts();}
   //COMPLEX ac_amps()const;	//ELEMENT
   //XPROBE ac_probe_ext(CS&)const;//ELEMENT
 };
@@ -81,24 +90,24 @@ private:
 public:
   explicit DEV_TRANSCAP()	:DEV_CAPACITANCE() {}
 private: // override virtual
-  char     id_letter()const	{return '\0';}
+  char     id_letter()const	{untested();return '\0';}
   const char* dev_type()const	{return "tcap";}
   int	   max_nodes()const	{return 4;}
   int	   min_nodes()const	{return 4;}
-  int	   out_nodes()const	{return 2;}
+  int	   out_nodes()const	{untested();return 2;}
   int	   matrix_nodes()const	{return 4;}
   int	   net_nodes()const	{return 4;}
-  bool	   is_1port()const	{untested(); return false;}
-  bool	   is_2port()const	{return true;}
-  bool	   f_is_value()const	{untested(); return true;}
-  CARD*	   clone()const		{untested(); return new DEV_TRANSCAP(*this);}
-  //void   parse(CS&);		//ELEMENT
-  //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//COMPONENT
+  bool	   is_1port()const	{untested();return false;}
+  bool	   is_2port()const	{untested();return true;}
+  bool	   f_is_value()const	{untested();return true;}
+  CARD*	   clone()const		{untested();return new DEV_TRANSCAP(*this);}
+  //void   parse_spice(CS&);	//ELEMENT
+  //void   print_spice(OMSTREAM,int)const; //ELEMENT
+  //void   elabo1();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
-  void	   tr_alloc_matrix()	{tr_alloc_matrix_active();}
+  void	   tr_iwant_matrix()	{tr_iwant_matrix_active();}
   //void   dc_begin();		//STORAGE
   //void   tr_begin();		//STORAGE
   //void   tr_restore();	//STORAGE
@@ -112,11 +121,13 @@ private: // override virtual
   //void   tr_accept();		//CARD/nothing
   //void   tr_unload();		//DEV_CAPACITANCE
   double   tr_involts()const	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
+  //double tr_input()const	//ELEMENT
   double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
+  //double tr_input_limited()const //ELEMENT
   //double tr_amps()const	//ELEMENT
   //double tr_probe_num(CS&)const;//DEV_CAPACITANCE
 
-  void	    ac_alloc_matrix()	{ac_alloc_matrix_active();}
+  void	    ac_iwant_matrix()	{ac_iwant_matrix_active();}
   //void    ac_begin();		//DEV_CAPACITANCE
   //void    do_ac();		//DEV_CAPACITANCE
   void	    ac_load()		{untested(); ac_load_active();}
@@ -132,23 +143,23 @@ private:
 public:
   explicit DEV_VCCAP()		:DEV_CAPACITANCE() {}
 private: // override virtual
-  char     id_letter()const	{return '\0';}
+  char     id_letter()const	{untested();return '\0';}
   const char* dev_type()const	{return "vccap";}
   int	   max_nodes()const	{return 4;}
   int	   min_nodes()const	{return 4;}
-  int	   out_nodes()const	{return 2;}
+  int	   out_nodes()const	{untested();return 2;}
   int	   matrix_nodes()const	{return 4;}
   int	   net_nodes()const	{return 4;}
-  bool	   is_2port()const	{return true;}
-  bool	   f_is_value()const	{untested(); return true;}
-  CARD*	   clone()const		{return new DEV_VCCAP(*this);}
-  //void   parse(CS&);		//ELEMENT
-  //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//COMPONENT
+  bool	   is_2port()const	{untested();return true;}
+  bool	   f_is_value()const	{untested();return true;}
+  CARD*	   clone()const		{untested();return new DEV_VCCAP(*this);}
+  //void   parse_spice(CS&);	//ELEMENT
+  //void   print_spice(OMSTREAM,int)const; //ELEMENT
+  //void   elabo1();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   //void   precalc()		//STORAGE
 
-  void	   tr_alloc_matrix()	{tr_alloc_matrix_extended();}
+  void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
   //void   dc_begin();		//STORAGE
   //void   tr_begin();		//STORAGE
   //void   tr_restore();	//STORAGE
@@ -162,11 +173,13 @@ private: // override virtual
   //void   tr_accept();		//CARD/nothing
   //void   tr_unload();		//DEV_CAPACITANCE
   double   tr_involts()const	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
+  //double tr_input()const	//ELEMENT
   double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
+  //double tr_input_limited()const //ELEMENT
   //double tr_amps()const	//ELEMENT
   //double tr_probe_num(CS&)const;//DEV_CAPACITANCE
 
-  void	    ac_alloc_matrix()	{ac_alloc_matrix_extended();}
+  void	    ac_iwant_matrix()	{ac_iwant_matrix_extended();}
   //void    ac_begin();		//DEV_CAPACITANCE
   //void    do_ac();		//DEV_CAPACITANCE
   //void    ac_load();		//DEV_CAPACITANCE
@@ -175,55 +188,57 @@ private: // override virtual
   //XPROBE  ac_probe_ext(CS&)const;//ELEMENT
 };
 /*--------------------------------------------------------------------------*/
-class DEV_FPOLY_CAP : public STORAGE {
-private:
-  double*  _vy0; // vector form of _y0 _values;
+class DEV_CPOLY_CAP : public STORAGE {
+protected:
+  double*  _vy0; // vector form of _y0 _values; charge, capacitance
   double*  _vy1; // vector form of _y1 _old_values;
-  double*  _vi0; // vector form of _i0
+  double*  _vi0; // vector form of _i0; current, difference conductance
   double*  _vi1; // vector form of _i1
   int	   _n_ports;
-  double   _time;
+  double   _load_time;
   const double** _inputs;
-private:
-  explicit DEV_FPOLY_CAP(const DEV_FPOLY_CAP& p)
+protected:
+  explicit DEV_CPOLY_CAP(const DEV_CPOLY_CAP& p)
     :STORAGE(p) {incomplete(); unreachable();}
 public:
-  explicit DEV_FPOLY_CAP();
-  ~DEV_FPOLY_CAP();
-private: // override virtual
+  explicit DEV_CPOLY_CAP();
+  ~DEV_CPOLY_CAP();
+protected: // override virtual
   char	   id_letter()const	{unreachable(); return '\0';}
-  const char* dev_type()const	{unreachable(); return "pcapacitor";}
+  const char* dev_type()const	{unreachable(); return "cpoly_cap";}
   int	   max_nodes()const	{unreachable(); return 0;}
   int	   min_nodes()const	{unreachable(); return 0;}
-  int	   out_nodes()const	{return 2;}
+  int	   out_nodes()const	{untested();return 2;}
   int	   matrix_nodes()const	{return _n_ports*2;}
   int	   net_nodes()const	{return _n_ports*2;}
-  CARD*	   clone()const	       {unreachable();return new DEV_FPOLY_CAP(*this);}
-  //void   parse(CS&);		//ELEMENT
-  //void   print(OMSTREAM,int)const; //ELEMENT
-  //void   expand();		//COMPONENT
+  CARD*	   clone()const	       {unreachable();return new DEV_CPOLY_CAP(*this);}
+  //void   parse_spice(CS&);	//ELEMENT
+  //void   print_spice(OMSTREAM,int)const; //ELEMENT
+  //void   elabo1();		//COMPONENT
   //void   map_nodes();		//ELEMENT
   //void   precalc();		//STORAGE
 
-  void	   tr_alloc_matrix()	{tr_alloc_matrix_extended();}
+  void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
   //void   dc_begin();		//STORAGE
   //void   tr_begin();		//STORAGE
   //void   tr_restore();	//STORAGE
   //void   dc_advance();	//STORAGE
   //void   tr_advance();	//STORAGE
-  bool	   tr_needs_eval()	{return true;}
+  bool	   tr_needs_eval()const	{/*assert(!is_q_for_eval());*/ return true;}
   //void   tr_queue_eval();	//ELEMENT
   bool	   do_tr();
   void	   tr_load();
-  double   tr_review()		{return NEVER;}//review(_i0.f0, _it1.f0);}
+  DPAIR    tr_review()		{return DPAIR(NEVER, NEVER);}//review(_i0.f0, _it1.f0);}
   //void   tr_accept();		//CARD/nothing
   void	   tr_unload();
   double   tr_involts()const	{unreachable(); return NOT_VALID;}
+  //double tr_input()const	//ELEMENT
   double   tr_involts_limited()const {unreachable(); return NOT_VALID;}
+  //double tr_input_limited()const //ELEMENT
   double   tr_amps()const;
   //double tr_probe_num(CS&)const;//ELEMENT
 
-  void	   ac_alloc_matrix()	{ac_alloc_matrix_extended();}
+  void	   ac_iwant_matrix()	{ac_iwant_matrix_extended();}
   //void   ac_begin();		//CARD/nothing
   void	   do_ac()		{ac_load();}
   void	   ac_load();
@@ -236,8 +251,21 @@ public:
 		      int state_count, double state[],
 		      int node_count, const node_t nodes[]);
   //		      const double* inputs[]=0);
-private:
+protected:
   bool do_tr_con_chk_and_q();
+};
+/*--------------------------------------------------------------------------*/
+class DEV_FPOLY_CAP : public DEV_CPOLY_CAP {
+private:
+  explicit DEV_FPOLY_CAP(const DEV_FPOLY_CAP& p)
+    :DEV_CPOLY_CAP(p) {incomplete(); unreachable();}
+public:
+  explicit DEV_FPOLY_CAP() :DEV_CPOLY_CAP() {}
+private: // override virtual
+  char	   id_letter()const  {unreachable(); return '\0';}
+  const char* dev_type()const{unreachable(); return "fpoly_cap";}
+  CARD*	   clone()const	     {unreachable(); return new DEV_FPOLY_CAP(*this);}
+  bool	   do_tr();
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
