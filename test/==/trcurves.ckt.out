@@ -1,0 +1,15 @@
+TRANSFER curve tracer, ig-spice 
+DC VIN 0 5 .5 VBACK 0 5 1 
+              ^ ? what's this?
+#          
+ 0.        
+ 0.5       
+ 1.        
+ 1.5       
+ 2.        
+ 2.5       
+ 3.        
+ 3.5       
+ 4.        
+ 4.5       
+ 5.        

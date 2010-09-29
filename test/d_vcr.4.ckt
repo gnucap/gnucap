@@ -1,0 +1,26 @@
+'
+V1  1  0  dc 1 ac 1
+R1  1  2  10k
+Rl1  2  0  10k
+Vc2  3  0  1.
+R2  1  4  10k
+.vcr Rv2  4  0  3  0  10k
+Vc3  5  0  2.
+R3  1  6  20k
+.vcr Rv3  6  0  5  0  10k
+
+.print op v(2,3,4,5,6) iter(0)
+.op
+
+.print ac v(nodes)
+.ac 1k
+.print ac vp(nodes)
+.ac 1k
+
+.delete Vc3
+Vc3 5 0  sin freq=1k ampl=1 offset=1 ac 0
+.modify R3=10k
+.print tran v(2,3,4,5,6) iter(0)
+.tran 0 .001 .0001
+
+.end

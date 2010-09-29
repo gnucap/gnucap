@@ -1,0 +1,8 @@
+nmos n gate, saturated, isat of bulk diode == 0 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+print op v(nodes) iter(0) 
+op 
+#           v(2)       v(3)       v(4)       iter(0)   
+ 300.15     2.2        2.2        0.         5.        
+end 

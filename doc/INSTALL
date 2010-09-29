@@ -1,0 +1,62 @@
+GnuCap 0.30 installation instructions  (10/29/2001)
+
+For this version, you can use either the GNU style "configure;make"
+style build process, or the old ACS style.  If it works for you, use
+the GNU style.
+
+For the GNU style build, just type "./configure" then "make" from the
+project's root directory.  This will configure both the model compiler
+and the simulator, and then build the model compiler first, then use
+it to build the simulator.  That should be all that is needed.  You do
+not to read any further.
+
+
+It that doesn't work for you, a two step manual configuration may be
+required.  First you build the model compiler, then you build the
+simulator.  You can usually get away with only building the simulator.
+
+So ..
+cd to modelgen, type make (as below)
+then go back down and cd to src, type make (as below)
+
+If it fails, go into its build directory (the one containing the .o
+files) and manually create a symbolic link to the model compiler.
+
+
+"Type make" really means ......
+
+Usually, you can just type "make".  This will make a "release"
+version, with optimization on and extra debug code out.  It will build
+in the O subdirectory.  This assumes you have g++ in a reasonable
+configuration.
+
+To make a "debug" version (slow, with additional error checking), type
+"make debug".  If you have a recent g++ compiler, this should build it
+in the O-DEBUG subdirectory.
+
+If your compiler is not g=++, but called by "CC", try "make CC".  This
+is believed to work with some compilers.  Some of them do not
+implement the full language, so they cannot be used.  Try it.  There
+is a special one "sun4-CC" for a Sun running Solaris with the most
+recent version of Sun's compiler.  It will not work with older
+versions.
+
+To make a "release" version for a particular system, type make
+followed by your system type, such as "make linux".  This will build
+it in a subdirectory (in this case LINUX).  With this method, you can
+build for multiple systems in the same directory.
+
+Look at "Makefile" for a list of supported systems, and clues of how
+to do it on others.  Most of them have not been tried in years.
+
+If it doesn't work, edit only a "Make2.*" file, and possibly md.h or
+md.cc.  All nonportabilities are confined to these files.
+
+It does require a recent and proper C++ compiler with a proper
+library, including STL.  Gnu compilers older than 2.8 will probably
+not work.  Anything else that old will also probably not work.  Any
+high quality C++ compiler available today should work.
+
+To install ....
+
+Just move or copy the executable to where you want it.

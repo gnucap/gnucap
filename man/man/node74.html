@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>L: Inductor</TITLE>
+<META NAME="description" CONTENT="L: Inductor">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node75.html">
+<LINK REL="previous" HREF="node73.html">
+<LINK REL="up" HREF="node59.html">
+<LINK REL="next" HREF="node75.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1469"
+  HREF="node75.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1465"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1459"
+  HREF="node73.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1467"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1470"
+  HREF="node75.html">M: MOSFET</A>
+<B> Up:</B> <A NAME="tex2html1466"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1460"
+  HREF="node73.html">K: Coupled (Mutual) Inductors</A>
+ &nbsp <B>  <A NAME="tex2html1468"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1471"
+  HREF="#SECTION004151000000000000000">Syntax</A>
+<LI><A NAME="tex2html1472"
+  HREF="#SECTION004152000000000000000">Purpose</A>
+<LI><A NAME="tex2html1473"
+  HREF="#SECTION004153000000000000000">Probes</A>
+<LI><A NAME="tex2html1474"
+  HREF="#SECTION004154000000000000000">Comments</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION004150000000000000000">
+<TT>L</TT>: Inductor</A>
+</H1>
+
+<H2><A NAME="SECTION004151000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>L</TT><I>xxxxxxx n+ n- value</I>
+<BR><TT>L</TT><I>xxxxxxx n+ n- expression</I>
+<BR><TT>L</TT><I>xxxxxxx n+ n- value</I> {<TT>II=</TT><I>initial-current</I>}
+<BR><TT>.INDuctor</TT> <I>label n+ n- expression</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION004152000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Inductor, or general flux storage element.
+
+<H2><A NAME="SECTION004153000000000000000">
+Probes</A>
+</H2>
+
+<P>
+The following probes are available in addition to those available for
+all basic elements. 
+
+<P>
+<DL>
+<DT><STRONG><TT>DT</TT></STRONG></DT>
+<DD>Time step.  The internal time step used for this
+device for numerical integration.  It is not necessarily the same as
+the global time step.
+
+<P>
+</DD>
+<DT><STRONG><TT>TIME</TT></STRONG></DT>
+<DD>Time.  The time of the most recent calculation of this
+device.   It is not necessarily the same as the global time.
+
+<P>
+</DD>
+<DT><STRONG><TT>TIMEOLD</TT></STRONG></DT>
+<DD>The time of the previous calculation of this
+device.  It is not necessarily the same as the global time.
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION004154000000000000000">
+Comments</A>
+</H2>
+
+<P>
+<I>N+</I> and <I>n-</I> are the positive and negative element nodes,
+respectively.  <I>Value</I> is the inductance in Henries.
+
+<P>
+The (optional) initial condition is the initial (time = 0) value of the
+inductor current (in Amperes).  
+Note that the initial conditions (if any)
+apply only if the <TT>UIC</TT> option is specified on the <TT>transient</TT>
+command.
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1469"
+  HREF="node75.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1465"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1459"
+  HREF="node73.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1467"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1470"
+  HREF="node75.html">M: MOSFET</A>
+<B> Up:</B> <A NAME="tex2html1466"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1460"
+  HREF="node73.html">K: Coupled (Mutual) Inductors</A>
+ &nbsp <B>  <A NAME="tex2html1468"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

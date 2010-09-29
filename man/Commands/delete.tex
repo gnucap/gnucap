@@ -1,0 +1,67 @@
+%$Id: delete.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands delete .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt DELETE} command}
+\index{delete command}
+\index{clear circuit}
+\index{erase}
+\index{remove parts}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt DELete} {\it label} ...\\
+{\tt DELete ALL}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Remove a line, or a group of lines, from the circuit description.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+To delete a part, by label, enter the label.  (Example `DEL R15'.)
+Wildcards `{\tt *}' and `{\tt ?}' are allowed, in which case, all that match
+are deleted.
+
+To delete the entire circuit, the entire word {\tt ALL} must be entered.
+(Example `DEL ALL'.)
+
+After deleting anything, there is usually no way to get it back, but if a
+fault had been applied (see {\tt fault} command) {\tt restore} may have
+surprising results.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt delete all}] Delete the entire circuit, but save the title.
+
+\item[{\tt del R12}] Delete {\tt R12}.
+
+\item[{\tt del R12 C3}] Delete {\tt R12} and {\tt C3}.
+
+\item[{\tt del R*}] Delete all resistors.  (Also, any models and subcircuits
+starting with {\tt R}.)
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

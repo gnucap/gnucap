@@ -1,0 +1,9 @@
+This "circuit" has a transfer function of 1 / (js+1).
+There is one complex pole at (-1,1).
+The capacitor value is j1.
+It has an interesting frequency response.
+
+The original purpose was to trick another program "zap"
+(zeros and poles) into giving bogus answers.  It did!!
+We all know that poles come in conjugate pairs.....
+AC only!

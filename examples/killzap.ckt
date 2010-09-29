@@ -1,0 +1,8 @@
+'
+V1   1  0  ac 1.
+R2   1  2  1.
+C3   2  0  complex( 0.  1. ) 
+.print ac vm(2) vdb(2) vp(2)
+.ac 1p 1g dec
+.ac .1 .2 .005
+.end

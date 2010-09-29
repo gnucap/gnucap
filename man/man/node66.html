@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>G: Voltage Controlled Current Source</TITLE>
+<META NAME="description" CONTENT="G: Voltage Controlled Current Source">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node67.html">
+<LINK REL="previous" HREF="node65.html">
+<LINK REL="up" HREF="node59.html">
+<LINK REL="next" HREF="node67.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1347"
+  HREF="node67.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1343"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1337"
+  HREF="node65.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1345"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1348"
+  HREF="node67.html">Voltage Controlled Capacitor</A>
+<B> Up:</B> <A NAME="tex2html1344"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1338"
+  HREF="node65.html">F: Current Controlled Current</A>
+ &nbsp <B>  <A NAME="tex2html1346"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1349"
+  HREF="#SECTION00471000000000000000">Syntax</A>
+<LI><A NAME="tex2html1350"
+  HREF="#SECTION00472000000000000000">Purpose</A>
+<LI><A NAME="tex2html1351"
+  HREF="#SECTION00473000000000000000">Comments</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00470000000000000000">
+<TT>G</TT>: Voltage Controlled Current Source</A>
+</H1>
+
+<H2><A NAME="SECTION00471000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>G</TT><I>xxxxxxx n+ n- nc+ nc-</I> <I>value</I>
+<BR><TT>G</TT><I>xxxxxxx n+ n- nc+ nc-</I> <I>expression</I>
+<BR><TT>.VCCS</TT> <I>label n+ n- nc+ nc-</I> <I>expression</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00472000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Voltage controlled current source, or transconductance block.
+
+<H2><A NAME="SECTION00473000000000000000">
+Comments</A>
+</H2>
+
+<P>
+<I>N+</I> and <I>n-</I> are the positive and negative element (output)
+nodes, respectively.  Current flow is from the positive node, through
+the source, to the negative node.  <I>Nc+</I> and <I>nc-</I> are the
+positive and negative controlling nodes, respectively.  <I>Value</I> is
+the transconductance in mhos.
+
+<P>
+The letter G can also be used to select the <TT>vccap</TT>, <TT>vcr</TT>,
+and <TT>vcg</TT> devices using a syntax compatible with some other
+simulators.
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

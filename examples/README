@@ -1,0 +1,15 @@
+Here are some ACS example circuits.  Some of these will also run on
+Spice and can be used for comparison.
+
+You can run them in batch mode by typing "acs -b name" from the shell.
+You can run them interactively by starting acs then "get name".  Then
+play, change probes, rerun, change values, etc.
+
+The file "runall" is a script so you can automate the testing.  Read
+it before using it.
+
+"runall.out" is the result of running "runall".  Ideally, you should
+get identical results, but there are often small differences in the
+machine math functions that will give small differences in the
+results.  Any numerically significant difference represents a serious
+bug and should be addressed.

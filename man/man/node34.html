@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>INSERT command</TITLE>
+<META NAME="description" CONTENT="INSERT command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node35.html">
+<LINK REL="previous" HREF="node33.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node35.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html834"
+  HREF="node35.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html830"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html824"
+  HREF="node33.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html832"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html835"
+  HREF="node35.html">LIST command</A>
+<B> Up:</B> <A NAME="tex2html831"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html825"
+  HREF="node33.html">IC command</A>
+ &nbsp <B>  <A NAME="tex2html833"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html836"
+  HREF="#SECTION003231000000000000000">Syntax</A>
+<LI><A NAME="tex2html837"
+  HREF="#SECTION003232000000000000000">Purpose</A>
+<LI><A NAME="tex2html838"
+  HREF="#SECTION003233000000000000000">Comments</A>
+<LI><A NAME="tex2html839"
+  HREF="#SECTION003234000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION003230000000000000000"></A>
+<A NAME="2608"></A>
+<A NAME="2609"></A>
+<BR>
+<TT>INSERT</TT> command
+</H1>
+
+<H2><A NAME="SECTION003231000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>INsert</TT> <I>node</I>
+<BR><TT>INsert</TT> <I>node, count</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION003232000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Open up node numbers inside a circuit.
+
+<H2><A NAME="SECTION003233000000000000000">
+Comments</A>
+</H2>
+
+<P>
+To open up an internal node, enter <TT>insert</TT> followed by the number and
+how many.  All node numbers higher than the first number will be raised by
+the second.  The second (how many) is optional.  If omitted, 1 will be
+assumed.
+
+<H2><A NAME="SECTION003234000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>insert 8 3</TT></STRONG></DT>
+<DD>Insert 3 nodes before node 8.  Adds 3 nodes (8,9,10)
+with no connections.  Old node numbers 8 and higher have 3 added to them to
+make room.  Old node 8 is now 11, 9 is now 12, 10 is now 13, 11 is 14, etc.
+
+<P>
+</DD>
+<DT><STRONG><TT>insert 6</TT></STRONG></DT>
+<DD>Insert one node at 6.  Old nodes 6 and higher are
+incremented by 1.  Old node 6 is now 7, 7 is 8, etc.
+
+<P>
+</DD>
+</DL>
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

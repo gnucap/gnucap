@@ -1,0 +1,149 @@
+%$Id: transient.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands transient .
+%------------------------------------------------------------------------
+\section{{\tt TRANSIENT} command}
+\index{transient command}
+\index{time domain}
+\index{nonlinear transient analysis}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt Transient} {\it start stop stepsize} \{{\it options} ...\}\\
+{\tt Transient} {\it stepsize stop start} \{{\it options} ...\}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Performs a nonlinear time domain (transient) analysis.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+The nodes to look at must have been previously selected by the {\tt Print} or
+{\tt Plot} command.
+
+Three parameters are normally needed for a Transient analysis: start time,
+stop time and step size, in this order.  The SPICE order (step size, stop,
+start) is also acceptable.  An optional fourth parameter is the maximum internal time step.
+
+If all of these are omitted, the simulation will continue from where the most
+recent one left off, with the same step size, unless the circuit topology has
+been changed.  It will run for the same length of time as the previous run.
+
+Do not use a step size too large as this will result in errors in the
+results.  If you suspect that the results are not accurate, try a larger
+argument to `Skip'.  This will force a smaller internal step size.  If the
+results are close to the same, they can be trusted.  If not, try a still
+larger `Skip' argument until they appear to match close enough.
+\index{aliasing: transient}
+\index{accuracy: transient}
+\index{stability: transient}
+
+The most obvious error of this type is aliasing.  You must select sample
+frequency at least twice the highest signal frequency that exists anywhere in
+the circuit.  This frequency can be very high, when you use the default step
+function as input.  The signal generator does {\bf not} have any filtering.
+%------------------------------------------------------------------------
+\subsection{Options}
+
+\begin{description}
+
+%%%\item[{\tt <} {\it file}] Get circuit input from {\it file}.
+
+\item[{\tt >} {\it file}] Send results of analysis to {\it file}.
+
+\item[{\tt >>} {\it file}] Append results to {\it file}.
+
+%%%\item[{\tt ACMAx}] Use worst case max values, per last {\tt AC}
+%%%analysis.
+
+%%%\item[{\tt ACMIn}] Use worst case min values, per last {\tt AC}
+%%%analysis.
+
+\item[{\tt Cold}] Zero initial conditions.  Cold start from
+power-up.
+
+%%%\item[{\tt DCMAx}] Use worst case max values, per last {\tt DC}
+%%%or {\tt OP} analysis.
+
+%%%\item[{\tt DCMIn}] Use worst case min values, per last {\tt DC}
+%%%or {\tt OP} analysis.
+
+\item[{\tt DTMIn} = {\it x}] Minimum time step.  (Default = from
+{\tt options})  The smallest internal time step in transient
+analysis.  The {\tt transient} command {\tt dtmin} option and the
+{\tt dtratio} option override it if it is bigger.
+
+\item[{\tt DTRatio} = {\it x}] The ratio between minimum and maximum
+time step.  (Default = from {\tt options}).
+
+%%%\item[{\tt Echo}] Echo disk reads to console, when input is
+%%%from a file.
+
+%%%\item[{\tt LAg}] Use worst case values, for lagging phase, per
+%%%{\tt AC} analysis.
+
+%%%\item[{\tt LEad}] Use worst case values, for leading phase, per
+%%%{\tt AC} analysis.
+
+\item[{\tt NOPlot}] Suppress plotting.
+
+\item[{\tt PLot}] Graphic output, when plotting is otherwise
+off.
+
+\item[{\tt Quiet}] Suppress console output.
+
+\item[{\tt Skip} {\it count}] Force at least {\it count} simulation
+steps for each one displayed.  If the output is a table or ASCII plot, the
+extra steps are hidden.
+
+%%%\item[{\tt Table}] Tabular output. Override default plot.
+
+\item[{\tt TEmperature} {\it degrees}] Temperature, degrees C.
+
+\item[{\tt TRace} {\it n}] Show extended information during solution.
+Must be followed by one of the following:
+\begin{description}
+\item[{\tt Off}] No extended trace information (default, override .opt)
+\item[{\tt Warnings}] Show extended warnings
+\item[{\tt Alltime}] Show all accepted internal time steps.
+\item[{\tt Rejected}] Show all internal time steps including rejected steps.
+\item[{\tt Iterations}] Show every iteration.
+\item[{\tt Verbose}] Show extended diagnostics.
+\end{description}
+
+\item[{\tt UIC}] Use initial conditions.  Use the values
+specified with the {\tt IC =} options on the various elements.
+
+\end{description}
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt transient 0 100u 10n}] Start at time 0, stop after
+100 micro-seconds.  Simulate using 10 nanosecond steps.
+
+\item[{\tt transient}] No parameters mean to continue from the last run.  In
+this case it means to step from 100 us to 200 us in 10 ns steps.  (The same
+step size and run length, but offset to start where the last one stopped.
+
+\item[{\tt transient skip 10}] Do 10 extra steps internally for every step
+that would be done otherwise.  In this case it means to internally step at 1
+nanosecond.  If the output is in tabular form, the extra steps are hidden.
+
+\item[{\tt transient 0}] Start over at time = 0.  Keep the same
+step size and run length.
+
+\item[{\tt transient cold}] Zero initial conditions.  This will
+show the power-on transient.
+
+\item[{\tt transient >arun}] Save the results of this run in
+the file {\tt arun}.
+
+%%%\item[{\tt transient < aninput}] Use the file {\tt aninput}
+%%%as a user defined input.  It substitutes for the signal
+%%%generator.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

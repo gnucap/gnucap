@@ -1,0 +1,19 @@
+Here are two variations on a CMOS op-amp, similar to the sample 2
+stage one in Allen & Holberg's "CMOS Analog Circuit Design" text.
+It is not an optimal design, just one to play with.  The results
+are the same as Spice, as expected.
+
+The files:
+opamp-ol.ckt	open loop: op, ac, dc
+opamp-vf.ckt	voltage follower: op, ac, dc, tran
+
+We do a few extras, like a plot of Cgs(M7) vs. input voltage.  Try
+that in Spice.
+
+Then, there's another one.  An ac analysis at saturation.  Try that
+in Spice.
+
+Spice shows you everything, whether you like it or not, on an "op"
+analysis.  You can't see them at all in any other.  But those values
+are not constant.  They vary with the signals.  ACS will show you
+(if you want) how they vary with the signal.

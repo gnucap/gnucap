@@ -1,0 +1,60 @@
+GNUCAP 0.30 release notes  (10/29/2001)
+
+The primary effort has been to finish the model compiler, to the point
+where it can handle most modeling issues.  The second change is to
+re-release as "gnucap", and add some configuration features to be more
+consistent with other GNU software.
+
+
+New features:
+
+1. More complete model compiler.
+
+2. "./configure" makes compiling more like other GNU software.
+
+
+Some things that are still partially implemented:
+
+1. Internal element: non-quasi-static poly-capacitor.
+
+2. BSIM models, charge effects, "alpha0" parameter.  (computed then ignored)
+
+3. Configure still doesn't handle everything.
+
+4. The model compiler still requires too much raw coding.
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+
+Hot items for a future release (no promises, but highly probable):
+
+1. BJT model.  The model compiler is complete enough that it should be
+easy now.
+
+2. Charge effects and substrate current (alpha0) in BSIM models.  They
+are computed, but not loaded to the matrix.
+
+3. Completion of multi-rate.
+
+4. Homotopy methods to improve convergence.
+
+5. Transmission line accuracy and speed improvements, using a step
+control mechanism similar to that used for capacitors.
+
+6. Parameterized subcircuits and defined parameters.
+
+7. Spice-3 compatible "B" device.
+
+
+To reach me, try this email address:
+	aldavis@ieee.org
+
+ftp sites:
+	ftp://ftp.gnu.org/gnu/gnucap/gnucap-0.30.tar.gz
+	ftp://ftp.geda.seul.org/pub/geda/dist/gnucap-0.30.tar.gz
+	http://www.geda.seul.org/dist/gnucap-0.30.tar.gz
+	ftp://sunsite.unc.edu/pub/Linux/apps/circuits/gnucap-0.30.tar.gz

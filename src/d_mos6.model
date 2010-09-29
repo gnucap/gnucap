@@ -1,0 +1,205 @@
+/* $Id: d_mos6.model,v 20.14 2001/10/19 06:21:08 al Exp $ -*- C++ -*-
+ * Copyright (C) 2001 Albert Davis
+ * Author: Albert Davis <aldavis@ieee.org>
+ *
+ * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ *------------------------------------------------------------------
+ * mos model equations: spice level 6 equivalent
+ */
+h_headers {
+#include "d_mos123.h"
+}
+cc_headers {
+#include "l_denoise.h"
+}
+/*--------------------------------------------------------------------------*/
+model MOS6 {
+  level 6;
+  dev_type MOS;
+  inherit MOS123;
+  independent {
+    override {
+      double lambda0 "" name=LAMBDA;
+      double mjsw "" default=.5;
+      double cox "" final_default=0.;
+      double vto "" final_default=0.;
+      double gamma "" final_default=0.;
+      double phi "" final_default=.6;
+      int mos_level "back-annotate for diode" name=DIODElevel 
+	print_test="mos_level != LEVEL" default=LEVEL;
+    }
+    raw_parameters {
+      double kv "Saturation voltage factor"
+	name=KV default=2.0;
+      double nv "Saturation voltage coeff."
+	name=NV default=0.5;
+      double kc "Saturation current factor"
+	name=KC default=NA final_default=5e-5 print_test="!calc_kc";
+      double nc "Saturation current coeff."
+	name=NC default=1.0;
+      double nvth "Threshold voltage coeff."
+	name=NVTH default=0.5;
+      double ps "Sat. current modification  par."
+	name=PS default=0.0;
+      double gamma1 "Bulk threshold parameter 1"
+	name=GAMMA1 default=0.0;
+      double sigma "Static feedback effect par."
+	name=SIGMA default=0.0;
+      double lambda0 "Channel length modulation param"
+	name=LAMBDA0 default=0.0;
+      double lambda1 "Channel length modulation param. 1"
+	name=LAMBDA1 default=0.0;
+    }
+    calculated_parameters {
+      bool calc_kc "" default=false;
+    }
+    code_pre {
+      if (tox != NA) {
+	cox = E_OX / tox;
+	if (kc == NA) {
+	  kc = .5 * uo * cox;
+	  calc_kc = true;
+	}
+	if (nsub != NA) {
+	  if (phi == NA) {
+	    phi = (2.*KoQ) * _tnom * log(nsub/NI);
+	    if (phi < .1) {
+	      untested();
+	      error(bWARNING,
+		    long_label() + ": calculated phi too small, using .1\n");
+	      phi = .1;
+	    }
+	    calc_phi = true;
+	  }
+	  if (gamma == NA) {
+	    gamma = sqrt(2. * E_SI * Q * nsub) / cox;
+	    calc_gamma = true;
+	  }
+	  if (vto == NA) {
+	    double phi_ms = (tpg == gtMETAL)
+	      ? -.05 - (egap + polarity * phi) / 2.
+	      : -polarity * (tpg * egap + phi) / 2.;
+	    double vfb = phi_ms - Q * nss / cox;
+	    vto = vfb + polarity * (phi + gamma * sqrt(phi));
+	    calc_vto = true;
+	  }
+	}
+      }
+    }
+  }
+  temperature_dependent {
+    calculated_parameters {
+      double phi "" 
+	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+Q*(arg)))";
+      double beta "" calculate="m->kc * tempratio4 * b->w_eff / b->l_eff";
+      double vbi "" calculate="(fixzero(
+	(m->vto - m->polarity * m->gamma * sqrt(m->phi)
+	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi))";
+    }
+    code_pre {
+      double temp = SIM::temp;
+      double tempratio  = temp / m->_tnom;
+      double tempratio4 = tempratio * sqrt(tempratio);
+      double kt = temp * K;
+      double vt = kt / Q;
+      double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
+      double arg = (m->egap*tempratio - egap) / (2*kt);
+    }
+  }
+  /*-----------------------------------------------------------------------*/
+  tr_eval {
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+    trace1(d->long_label().c_str(), d->evaliter());
+    trace3("", d->vds, d->vgs, d->vbs);
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+    d->reverse_if_needed();
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+    double sarg;
+    {if (d->vbs <= 0.){
+      sarg = sqrt(t.phi - d->vbs);
+    }else{
+      sarg = sqrt(t.phi);
+      sarg = sarg - d->vbs / (sarg+sarg);
+      {if (sarg < 0.){
+	untested();
+	sarg = 0.;
+      }else{
+	untested();
+      }}
+    }}
+    trace3("", t.phi, d->vbs, sarg);
+    assert(sarg >= 0.);
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+    trace4("", d->vds, t.vbi, m->gamma, m->gamma1);
+    d->von = t.vbi + m->gamma * sarg - m->gamma1 * d->vbs;
+    // - m->sigma  * d->vds;  // what is this?????
+    d->vgst = d->vgs - d->von;
+    trace3("", d->vds, d->von, d->vgst);
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+    d->cutoff = (d->vgst <= 0.);
+    {if (d->cutoff){
+      d->vdsat = 0.;
+      d->ids = d->gmf = d->gds = d->gmbf = 0.;
+      trace4("cut", d->ids, d->gmf, d->gds, d->gmbf);
+    }else{
+      double vonbm;
+      {if (d->vbs <= 0.){
+	vonbm = m->gamma1 + m->gamma / (sarg + sarg);
+      }else{
+	vonbm = m->gamma1 + m->gamma * .5 / sqrt(t.phi);
+	untested();
+      }}
+      trace3("", m->nc, m->lambda0, m->lambda1);
+      double logvgon = log(d->vgst);
+      double idsat = t.beta * exp(logvgon * m->nc);
+      double Lambda = m->lambda0 - m->lambda1 * d->vbs;
+      trace4("", vonbm, logvgon, idsat, Lambda);
+      
+      d->ids = idsat * (1 + Lambda * d->vds);
+      d->gmf  = d->ids * m->nc / d->vgst;
+      d->gds = d->gmf * m->sigma + idsat * Lambda;
+      d->gmbf = d->gmf * vonbm - idsat * m->lambda1 * d->vds;
+      
+      d->vdsat = m->kv * exp(logvgon * m->nv);
+      trace4("sat", d->ids, d->gmf, d->gds, d->gmbf);
+      
+      d->saturated = (d->vdsat <= d->vds);
+      if (!d->saturated){
+	double vdst   = d->vds / d->vdsat;
+	double vdst2  = (2 - vdst) * vdst;
+	double vdstg  = - vdst * m->nv / d->vgst;
+	double ivdst1 = d->ids * (2 - vdst - vdst);
+	d->ids *= vdst2;
+	d->gmf  = d->gmf  * vdst2 + ivdst1 * vdstg;
+	d->gds = d->gds * vdst2 + ivdst1 * (1 / d->vdsat + vdstg * m->sigma);
+	d->gmbf = d->gmbf * vdst2 + ivdst1 * vdstg * vonbm;
+	trace4("lin", d->ids, d->gmf, d->gds, d->gmbf);
+      }
+    }}
+    {if (d->reversed){
+      d->ids *= -1;
+      d->gmr = d->gmf;
+      d->gmbr = d->gmbf;
+      d->gmf = d->gmbf = 0;
+    }else{
+      d->gmr = d->gmbr = 0.;
+    }}
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/

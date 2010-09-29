@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>FIT: Fit a curve</TITLE>
+<META NAME="description" CONTENT="FIT: Fit a curve">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node91.html">
+<LINK REL="previous" HREF="node89.html">
+<LINK REL="up" HREF="node85.html">
+<LINK REL="next" HREF="node91.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1734"
+  HREF="node91.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1730"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1724"
+  HREF="node89.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1732"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1735"
+  HREF="node91.html">GENERATOR: Signal Generator time</A>
+<B> Up:</B> <A NAME="tex2html1731"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1725"
+  HREF="node89.html">EXP: Exponential time dependent</A>
+ &nbsp <B>  <A NAME="tex2html1733"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1736"
+  HREF="#SECTION00551000000000000000">Syntax</A>
+<LI><A NAME="tex2html1737"
+  HREF="#SECTION00552000000000000000">Purpose</A>
+<LI><A NAME="tex2html1738"
+  HREF="#SECTION00553000000000000000">Comments</A>
+<LI><A NAME="tex2html1739"
+  HREF="#SECTION00554000000000000000">Parameters</A>
+<LI><A NAME="tex2html1740"
+  HREF="#SECTION00555000000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00550000000000000000">
+<TT>FIT</TT>: Fit a curve</A>
+</H1>
+
+<H2><A NAME="SECTION00551000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>FIT</TT> <I>x1,y1 x2,y2 ...</I> <I>args</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00552000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Fits a set of data using piecewise polynomials, or splines.
+
+<H2><A NAME="SECTION00553000000000000000">
+Comments</A>
+</H2>
+
+<P>
+This function fits a set of piecewise polynomials to a set of data.
+
+<P>
+For capacitors, this function defines <EM>charge</EM> as a function of
+voltage.  For inductors, it defines <EM>flux</EM> as a function of
+current.
+
+<P>
+For fixed sources, it defines voltage or current as a function of
+time.
+
+<P>
+The values of <I>x</I> must be in increasing order.
+
+<P>
+If <EM>order</EM> is 1, it is the same as <TT>PWL</TT>.  If <EM>order</EM> is
+3, it will use cubic splines.  The result and its first two
+derivatives are continuous.
+
+<P>
+Outside the specified range, it uses linear extrapolation.  The
+behavior depends on the parameters <EM>below</EM> and <EM>above</EM>.  The
+value of <EM>below</EM> or <EM>above</EM> is the derivative to use, which
+is a resistance for resistors, voltage gain for a VCVS, and so on.  If 
+it is not specified, the value is automatically determined.
+
+<P>
+The properties are determined by the value of <EM>order</EM>.
+
+<P>
+
+<H3><A NAME="SECTION00553100000000000000">
+Order = 3 (cubic splines)</A>
+</H3>
+
+<P>
+The default is to use ``natural'' splines, which sets the second
+derivative to zero at the boundary.  If a value of <EM>below</EM> or
+<EM>above</EM> is specified, ``clamped'' splines will be used.  In any
+case, there will be a smooth transition at the boundaries.  When using
+``clamped'' splines, the second derivative may have a discontinuity at
+the boundaries
+
+<P>
+
+<H3><A NAME="SECTION00553200000000000000">
+Order = 2 (quadratic splines)</A>
+</H3>
+
+<P>
+By default, the derivative at the upper end is determined by the slope
+of the last segment.  This is also the derivative above the range.
+Below the range, the derivative determined at the lower bound is used.
+It is recommended that only one of <EM>below</EM> and <EM>above</EM> be
+specified.  If both are specified, the splines are determined using
+<EM>above</EM>, and there will be a discontinuity in the derivative at
+the lower bound.
+
+<P>
+
+<H3><A NAME="SECTION00553300000000000000">
+Order = 1 (piecewise linear interploation)</A>
+</H3>
+
+<P>
+For first order (linear) interpolation, the default slope outside the
+range is the extension of the slope in the end segments.  The
+parameters <EM>below</EM> and <EM>above</EM> have no effect inside the
+range.
+
+<P>
+
+<H3><A NAME="SECTION00553400000000000000">
+Order = 0 (piecewise constant interploation)</A>
+</H3>
+
+<P>
+The resulting value is constant over the interval, and has
+discontinuities at the specified points.  The parameters <EM>below</EM>
+and <EM>above</EM> are ignored.  The slope is always 0.
+
+<H2><A NAME="SECTION00554000000000000000">
+Parameters</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>Order</TT> = <I>x</I></STRONG></DT>
+<DD>The order of the polynomial to fit,
+  within the supplied data.  (Default = 3) Legal values are 0, 1, 2,
+  and 3, only.
+
+<P>
+</DD>
+<DT><STRONG><TT>Below</TT> = <I>x</I></STRONG></DT>
+<DD>The value of the derivative to use
+below or before the specified range.  
+
+<P>
+</DD>
+<DT><STRONG><TT>Above</TT> = <I>x</I></STRONG></DT>
+<DD>The value of the derivative to use
+above or after the specified range.
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION00555000000000000000">
+Example</A>
+</H2> 
+
+<P>
+<DL>
+<DT><STRONG><TT>C1 2 0 fit -5,-5u 0,0 1,1u 4,2u 5,2u order=1</TT></STRONG></DT>
+<DD>This
+  ``capacitor'' stores 5 microcoulombs at -5 volts (negative,
+  corresponding to the negative voltage, as expected).  The charge
+  varies linearly to 0 at 0 volts, acting like a 1 microfarad
+  capacitor.  (C = dq/dv).  This continues to 1 volt.  The 0,0 point
+  could have been left out.  The charge increases only to 2
+  microcoulombs at 4 volts, for an incremental capacitance of 1u/3 or
+  .3333 microfarads.  The same charge at 5 volts indicates that it
+  saturates at 2 microcoulombs.  For negative voltages, the slope
+  continues.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1734"
+  HREF="node91.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1730"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1724"
+  HREF="node89.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1732"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1735"
+  HREF="node91.html">GENERATOR: Signal Generator time</A>
+<B> Up:</B> <A NAME="tex2html1731"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1725"
+  HREF="node89.html">EXP: Exponential time dependent</A>
+ &nbsp <B>  <A NAME="tex2html1733"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

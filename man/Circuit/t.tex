@@ -1,0 +1,61 @@
+%$Id: t.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit t .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt T}: Transmission Line}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt T}{\it xxxxxxx n1+ n1-- n2+ n2--} \{{\it args}\}\\
+{\tt .TLIne} {\it xxxxxxx n1+ n1-- n2+ n2--} \{{\it args}\}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Lossless transmission line.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+{\it N1+} and {\it n1--} are the nodes at one end.  {\it N2+} and {\it
+n2--} are the nodes at the other end.
+
+The parameters {\tt TD}, {\tt Freq}, and {\tt NL} determine the length
+of the line.  Either {\tt TD} or {\tt Freq} and {\tt NL} must be
+specified.  If only {\tt Freq} is specified, {\tt NL} is assumed to be
+.25.  The other will be calculated based on the one you specify.  If
+you specify too much, {\tt Freq} and {\tt NL} dominate, and a warning
+is issued.
+%------------------------------------------------------------------------
+\subsection{Element Parameters}
+
+\begin{description}
+
+\item[{\tt Z0} = {\it x}] Characteristic impedance.  (Default = 50.)
+
+\item[{\tt TD} = {\it x}] Time delay.
+
+\item[{\tt Freq} = {\it x}] Frequency for NL.
+
+\item[{\tt NL} = {\it x}] Number of wavelengths at {\it Freq}.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

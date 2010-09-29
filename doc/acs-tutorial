@@ -1,0 +1,703 @@
+Tutorial for acs V0.02
+Copyright 1999 Telford Tendys <telford@eng.uts.edu.au>
+
+>>> Introduction
+
+This is not an alternative to reading the acs manual. The manual is
+very nicely presented in LaTeX and you should print it out and keep
+it handy when working with acs. This document is organised starting
+from easy and working towards difficult and presumes that you have some
+idea of what electrical circuits are but don't know much about simulators.
+The acs manual is organised in alphabetical order and in groups of concepts
+and it presumes that you know SPICE already.
+
+>>> The basic concept of a nodal analysis.
+
+Using nodes is one way to describe a lumped element circuit.
+Lumped elements are used because there is no consideration of what is
+occuring inside a given component, only what is happening on the terminals
+of the component. For example, this analysis makes no attempt to find the
+voltage in the middle of a resistor, only at the ends of the resistor.
+
+The whole circuit model consists of ``nodes'' and ``components''.
+A node is (electrically speaking) a single point, it has exactly one voltage
+value at any given time value. A component will connect to two or more nodes
+(usually two) and represents some method by which the voltages at those nodes
+affect one another. Describing which components connect to which nodes will
+completely describe the structure of the circuit.
+
+One additional concept is a ``branch''. The current though a branch is the
+amount of current flowing from a node into a component that connects to that
+node. Some branch currents (such as the current through a voltage source)
+are explicitly calcualted, others (such as the current through a resistor) are
+implicitly calculated as a result of calculating the node voltages.
+
+>>> The basic concept of a circuit file.
+
+Tradition has it that acs input files have the extension ``.ckt''. The
+format is similar to that used by version 2 of the SPICE simulator; it
+is a line oriented format with items separated by whitespace. The overall
+file structure is:
+
+	* Header line (first line of the file) contains the name of
+	  the circuit, traditionally in all capitals.
+
+	* blank lines do nothing
+
+	* comment lines are any line beginning with a star ``*''.
+	  These can be anywhere in the file except the header line.
+
+	* component lines begin with a letter and represent some component
+	  that is in the circuit. The order that components are listed
+	  does not matter because the topology is described by the nodes
+	  that the components are connected to.
+
+	* continuation lines begin with a plus ``+'' and continue the
+	  previous line so that long lines can be written neatly.
+
+	* command lines begin with a dot ``.'' and are not considered
+	  to be part of the circuit, they cause the simulator to execute
+	  some analysis or change some options. They are also used to
+	  delimit special parts of the file such as subcircuits.
+
+>>> The simplest possible circuit file
+
+--------------------------------------------------------------------- eg1.ckt
+RESISTOR DRIVEN BY VOLTAGE SOURCE
+
+Vsupply 0 2 10
+R1 0 2 1k
+----------------------------------------------------------------------
+
+This file defines a circuit containing two nodes and two components.
+The components have the names ``Vsupply'' and ``R1'', the first letter of
+the component name tells what that component is so ``Vsupply'' is a voltage
+source and ``R1'' is a resistor. Each component has a value, the voltage
+source is 10 volts and the resistor is 1000 ohms. The nodes have the
+numbers ``0'' and ``2''. Note that there is no node ``1'' but this doesn't
+matter, not every node number needs to be used. Like SPICE version 2 (but
+unlike version 3) nodes must be numbered in acs.
+
+In order to load this circuit into the simulator the following command
+would be used:
+
+	acs eg1.ckt
+
+What happens is that acs loads in the circuit, finds no commands to execute
+(since this file has no command lines) and so enters interactive mode with
+a ``-->'' prompt. From the interactive mode it is possible to exercise the
+circuit model, firstly by putting a probe on the node that needs measuring
+(using the print statement) then by starting the simulation:
+
+	print dc v(2)
+	dc
+
+Needless to say, ``dc'' is a steady state direct current analysis and
+the ``print'' command used here is saying, ``when you do a DC analysis,
+tell me the voltage at node 2''. The result should be -10 volts. At
+first glance, it might seem like it should be 10 volts... but (same as SPICE)
+the voltage sources are listed with their positive terminal first, then
+their negative terminal. Node 0 is the ground node (or reference node) which
+is always 0 volts so node 2 is at -10 volts. Wiring ``Vsupply'' the other way
+around would change the answer to 10 volts. Things get trickier when dealing
+with current sources where the node at the tail end of the current source
+arrow is listed first (and called ``+'') and the pointy head end of the arrow
+is listed second (and called ``-''). Although this convention may seem
+disorienting to someone who was brought up testing their circuits with
+batteries or a bench power supply and poking their meter probes into things,
+it is a well established SPICE convention and probably never going to change.
+
+However, the voltage of the node may not be the answer required. What about
+the current going through the source? We can move our probe to look at
+current instead:
+
+	print dc i(R1) i(Vsupply)
+	dc
+
+Now we can see 10 milliamps going through both components, note the sign
+convention when probing current; once more this is something that you must
+simply learn, you might draw diagrams of the main components and mark the
+important conventions of [+] terminal, [-] terminal and current flow.
+You might also realise that this convention does have its own logical
+consistency which makes it easier to remember. For example, consider a
+resistor: the terminal called [+] is listed first and the internal current
+flow is positive when current flows into the [+] terminal, through the
+resistor and out of the [-] terminal. In the case of a resistor this sounds
+quite sensible because the [+] terminal WOULD be more positive when
+the current flows in this manner. The sources merely maintain the same
+convention as is applied to a resistor, what is important to remember is
+that [+] and [-] terminals are just names that provide a sign convention
+they don't insist that one terminal is a higher voltage than the other.
+
+This example should provide enough information for analysis of any network
+of voltage sources and resistors and for inspection of any current or voltage
+in such a circuit. The power and resistance of each component can be measured:
+
+	print dc p(R1) p(Vsupply) r(R1) r(Vsupply)
+	dc
+	quit
+
+Note that the supply shows negative power to it is putting power into
+the system while the resistor shows positive power meaning that it is
+taking power out of the system. Also notice that the resistance measurement
+will attempt to find the resistance of the source without error but the
+resulting value is huge (this seems wrong, I would expect it to be zero).
+
+>>> Networks of Resistors and Sources 
+
+The previous example covers enough concepts to model arbitrarily complex
+networks of resistors and sources. These are essentially linear circuits
+that have no relation to time. A more elaborate example is presented below:
+
+--------------------------------------------------------------------- eg2.ckt
+NETWORK OF RESISTORS AND VOLTAGE SOURCES
+
+V1	2	1	10
+V2	4	3	5
+V3	0	3	3
+R1	1	2	220
+R2	2	3	4.7k
+R3	4	5	3k3
+R4	3	5	10k
+R5	0	1	22k
+R6	0	5	15k
+----------------------------------------------------------------------
+
+Run this with:
+
+	acs eg2.ckt
+	print dc v(1) v(2) v(3) v(4) v(5)	
+	dc
+	quit
+
+Note that this is about the limit of what can be done with these two
+components. Other components that offer further possibilities are
+the current source (any component with a name that begins with ``I''
+is a current source) and the dependent sources:
+
+	first letter	output		input
+	of name		type		type
+	-----------------------------------------
+	E		voltage		voltage
+	F		current		current
+	G		current		voltage
+	H		voltage		current
+	-----------------------------------------
+
+Each of these has a gain value expressing the relation between its
+output and its input and they allow the modeling of linear amplifiers
+and other such devices. As mentioned above, none of these components
+understand time nor can they be used to represent a nonlinear device.
+Thus, any network constructed from the components that have been seen
+so far will be reducible to a Thevenin or Norton equivalent circuit
+when considered from the point of view of one particular node and the
+ground node 0.
+
+--------------------------------------------------------------------- eg3.ckt
+NETWORK OF RESISTORS AND DEPENDENT SOURCES
+*
+* Reduce this complicated collection of dependencies
+* down to a single Thevenin equivalent between node 2 and
+* the ground node 0
+*
+I1 1 4 2
+V1 1 0 5
+E1 5 2 1 3 0.4
+F1 5 6 R1 3e-2
+G1 2 3 4 6 1.3
+H1 3 0 R3 1
+R1 4 5 2.2
+R2 1 2 470
+R3 0 2 330
+R4 3 6 1k
+R5 5 6 1e4
+*
+* Look at the voltage at node 2 and the impedance looking into node 2
+*
+.print dc v(2) z(2)
+.dc
+.end
+----------------------------------------------------------------------
+
+Notice that this example file contains some lines that begin with a dot.
+These are command lines and behave exactly like the commands you type
+in interactive mode. These command lines are dotted because of the old
+SPICE tradition of executing all of the component lines first and then
+the command lines, acs doesn't bother with this, it executes every line
+in the order that it sees them, but it still follows the old idea of dotting
+the command lines as a little tribute to SPICE and to make it easier to
+see what is going on when you read a .ckt file.
+
+When you run this example, you might try:
+
+	acs eg3.ckt
+
+And (all going well) you will see that node 2 is equivalent to a
+source of 54.343 volts in series with an 0.83888 ohm resistor.
+You should also notice that acs never goes into interactive command mode.
+This is because of the ``.end'' command that tells acs to finish at this point.
+You may want to use this example circuit in interactive mode, to achieve this
+you could either delete the .end command, or (from the system prompt) type:
+
+	acs
+	get eg3.ckt
+
+Then you can use other interactive commands. Note that you can modify the
+circuit interactively too. Consider adding another resistor by typing the
+following at the acs interactive prompt:
+
+	build R3
+	R6 3 4 12k
+	<blank line>
+
+Which allows you to adjust the topology of the circuit in memory. This 
+includes adding components and modifying existing components. You can
+interactively remove components from the circuit using the ``delete'' command
+or you can wipe out the entire circuit using the ``clear'' command.
+To put the adjusted topology into a file you use the save command:
+
+	save eg3_mod.ckt
+	quit
+	cat eg3_mod.ckt
+
+Looking at what you have saved you will probably notice a few things:
+firstly, acs has remembered your comment lines and command lines and
+saved them too; secondly, your extra line was inserted into the file
+before the line containing component ``R3'', this is caused by the
+argument on the ``build'' command and allows you to insert your build
+lines where you want them.
+
+>>> Things That Can Go Wrong
+
+--------------------------------------------------------------------- eg4.ckt
+VOLTAGE SOURCES IN PARALLEL
+
+V1 1 0 10.0
+V2 1 0 10.2
+.print dc v(1) i(V1) i(V2)
+.dc
+.end
+----------------------------------------------------------------------
+
+Here we have V1 and V2 both driving the same node at about 10 volts.
+Actually, V2 is very slightly higher than 10 volts so there will be
+some argument between V1 and V2 as to exactly what the final voltage
+at node 1 really is. You should see that huge currents are flowing
+through the supplies (10,000 amps) just due to this small voltage
+difference. Also note that acs does not throw in the towel and give
+up, nor does it fail to converge... the answer that it gets for v(1)
+is a compromise, halfway between the two sources.
+
+What is does is introduce a slight imperfection in the voltage sources
+so that they do have a small internal series resistor. This allows it
+to make the best guess that it can in a difficult situation. How much is
+this resistance? You can find out like so:
+
+	acs
+	options
+
+Look at the value of the option called ``short'' (near the middle of
+the block of options), this is the value (in ohms) of the internal
+resistance of a voltage source. The ``u'' character means ``micro''
+or 1e-6 so the default value of a short circuit is 1e-5 ohms. You
+might decide that a different short circuit value is more appropriate
+for running the above circuit so you can type (from the acs prompt):
+
+	options short=0.5
+	get eg4.ckt
+	dc
+	exit
+
+Which should show you the same voltage (10.1) but now the current
+has reduced to only one fifth of an Amp (still not small but a lot
+more reasonable if you were building this with real supplies).
+Other option values can be altered in much the same way and input
+files can contain ``.options'' command lines in order to set these
+options whenever the circuit is loaded.
+
+--------------------------------------------------------------------- eg5.ckt
+CURRENT SOURCES IN SERIES
+
+I1 0 1 2.0001
+I2 1 0 2.0
+.print dc v(1) i(I1) i(I2)
+.dc
+.end
+----------------------------------------------------------------------
+
+The case of putting two current sources in series is much the same
+concept as two voltage sources in parallel. However notice that acs
+copes with it in a different manner. It cannot find a compromise current
+that is partway between the two sources and it always gives a huge
+value for the voltage at node 1. At least it doesn't crash and it does
+give results that give some suggestion as to where the problem might
+be. There is no option that introduces resistance into a current
+source but you can explicitly add these resistors if you like by putting
+the resistor in parallel with the current source.
+
+What if you had a big, complex circuit, you messed up by putting
+two current sources in series but you never thought about checking
+the strange node? How would you ever know that the circuit was broken?
+Try this exercise:
+
+	acs
+	get eg5.ckt
+	alarm dc v(*)(-1e3,1e3)
+	dc
+	quit
+
+Now you get a warning whenever any component gets more that 1000 volts
+across it. This can be used to test component breakdown if you know
+that you are using components that cannot tolerate high voltages. It can
+also be used to ensure that your simulated circuit stays within what you
+might expect to be the absolute maximum values.
+
+>>> Nonlinear Devices -- Diodes
+
+All of the previous circuits have been linear. This is to say that all
+the devices (voltage sources, current sources, dependent source and
+resistors) are linear devices and the overall ``shape'' of the problem
+does not change as the values of the system are scaled up or down.
+For example, if a circuit is solved once, then after that all of the voltage
+sources in the circuit are doubled, the circuit doesn't need to be solved
+a second time because all the node voltages will merely be double those
+of the first solution. Try it yourself if you disbelieve.
+
+Linear circuits also obey the principle of ``superposition'' which is
+to say that the circuit can be solved for each source separately and
+then all of those solutions can be added up to get the solution of a
+circuit containing many sources. A textbook in basic circuit theory will
+explain superposition in linear circuits and you can try working through
+the textbook examples on the simulator using what has been explained so far.
+
+At this point, we take the step into nonlinear circuits which do NOT
+obey superposition and do NOT scale. The most elementary nonlinear
+component is a diode.
+
+--------------------------------------------------------------------- eg6.ckt
+DIODE CASCADE
+
+.model 1N414 D IS=2e-14
+
+Vcc  1   0   5
+Dx   1  10   1N414
+Dy  10  20   1N414
+Dz  20  30   1N414
+Rd1 10   0   1k
+Rd2 20   0   1k
+Rd3 30   0   1k
+
+.print dc v(10) v(20) v(30)
+.dc Vcc 0 5 0.5 >eg6.dat
+.end
+----------------------------------------------------------------------
+
+You can run this example and look at the results like so:
+
+	acs eg6.ckt
+	gnuplot
+	set data style lines
+	plot 'eg6.dat' using 1:2, 'eg6.dat' using 1:3, 'eg6.dat' using 1:4
+	exit
+
+You may not like using gnuplot and may prefer some other plotting program
+such as gwave or gle. Acs output can be used by most plotting programs
+in much the same manner as above by using the redirection arrow on the
+command that runs the simulation (``dc'' in this case). Note that it usually
+won't work to redirect the normal output to a file using your shell and then
+cut and paste that output into your plotting program because the normal output
+does not use standard scientific notation, using the internal redirection
+option provided by acs also guarantees you get a nice, portable data file
+in standard exponential notation.
+
+If the above did work you should have been able to see the node voltages
+as a function of supply voltage and see the diodes move into their conductive
+band one by one. And see the traditional 0.7 volt drop across each diode.
+However, various diodes behave differently so acs needs to know what sort
+of diode you are using. That is what the ``.model'' command line is doing
+for you -- it associated parameters in the diode model with a name that
+you choose to assign to your diodes. (By the way, I have no idea what the
+true measured parameters are for a real 1N414).
+
+>>> Multiplying Two Voltages Using Diode Nonlinearity
+
+The above example shows diode voltage drop behaviour but the diode can
+also be used as an exponential function. In this example, a group of
+diodes are used to construct a voltage multiplier. Most circuit components
+add and subtract voltages and currents but multiplication is a bit special.
+What is done in this circuit is to use the exponential behaviour of the
+diodes to take the logarithm of two input voltages, then add those up and
+use another diode to find the exponential of the sum. This works in the same
+way as a slide rule does.
+
+--------------------------------------------------------------------- eg7.ckt
+MULTILPLY TWO NUMBERS
+
+.subckt multiplier 1 2 3
+*                        1 = input A (voltage)
+*                        2 = input B (voltage)
+*                        3 = output  (voltage)
+* Note that there are scaling factors on inputs and output to keep
+* diodes in the exponential region.
+.model dexp D EG=0 CJ=0 FC=0 gparallel=0
+G1 0 4 1 0 1e-3
+D1 4 0 dexp
+G2 0 5 2 0 1e-3
+D2 5 0 dexp
+I3 0 6 1
+D3 6 0 dexp
+E1 7 0 4 0 1
+E2 8 7 5 0 1
+E3 8 9 6 0 1
+V1 9 10 0
+D4 10 0 dexp
+H1 3 0 V1 1e6
+.ends
+
+V1 1 0 0
+V2 2 0 0.5
+X1 1 2 3 multiplier
+R1 3 0 1
+
+.options vmin=-1e5 vmax=1e5
+.print dc V(3) V(2) V(E1.X1) V(E2.X1) V(E3.X1)
+.!rm eg7_1.dat eg7_2.dat eg7_3.dat
+.dc v1 0 1 0.01 > eg7_1.dat QUIET
+.modify V2=100
+.dc v1 0 1 0.01 > eg7_2.dat QUIET
+.dc v1 0 1000 1 > eg7_3.dat QUIET
+.end
+---------------------------------------------------------------------
+
+This example does not attempt to go beyond the multiplication of two
+numbers, using the DC sweep to test a few ranges of the inputs.
+The output files can be plotted to check the linearity of the outputs.
+If you wanted to build a real circuit to perform analog multiplication,
+you would need something a lot more complex than the above example
+because the dependent voltage and current sources used in this example
+would not be possible to construct in a real circuit.
+
+Even with those ideal simulator components available, this example will
+still only multiply correctly within a limited range. Using it outside
+that range requires adjustment of the input and output scaling factors
+so that the diodes themselves stay close to exponential functions.
+
+This example introduces the concept of a subcircuit which is like a macro
+facility for circuit simulation. The subcircuit is contained between the
+``.subckt'' and ``.ends'' lines and nodes within the subcircuit can use their
+own numbering, independent of the outside world. The subcircuit gets a
+name (in this case ``multiplier'') and the component ``X1'' becomes an 
+instance of that subcircuit. Note the way that probes can be put on devices
+inside the subcircuit, for example ``E1.X1'' refers to the sub-component
+named ``E1'' inside the subcircuit ``X1''.
+
+Another new command here is ``.modify''. In this example, we want to test
+the multiplier on a few DC sweeps but want to change the value of ``V2''
+between the sweeps. This allows a single batch run to test multiple
+possibilities, or it can also be used interactively to trim a component
+value into the value that gives the desired operating point.
+
+>>> A Matter of Time -- AC Analysis
+
+So far the only type of analysis that has been studied has been steady
+state direct current (or DC). Although a lot can be done with this, it
+doesn't give you the full picture when your circuit contains capacitors
+and inductors. These are important devices because they can store energy
+and because they determine what the time constants of the circuit will
+be. Time constants have no meaning in steady state DC analysis but the
+effect of the time constant can be seen by using AC analysis. This allows
+us to study filter circuits.
+
+This example looks at a simple passive filter that is driven by a
+single voltage source and that contains resistors, capacitors and
+inductors. This concept could be extended to active filters by using
+the dependent sources described above or by building op-amp models
+but for the sake of simplicity passive components are used here.
+
+eg8 --
+passive 2-port network, use AC sweep to generate bode plot
+and explain break-points, etc. Explain log plots and why bode is
+plotted on log-log paper. Explain decibel scale (briefly).
+
+Very brief explanation of feedback stability.
+
+eg9 --
+
+
+[explain AC analysis here with some bode plots and pole-zero stuff,
+can acs do root-locus?]
+
+two examples here eg8.ckt, eg9.ckt
+
+AC Analysis has the limitation that it is a LINEAR analysis only.
+This means that the nonlinear devices (such as diodes) must be regarded
+as behaving like linear devices. In order to achieve this, acs finds
+the DC operating point first and then presumes that the AC signal is
+some small value that will slightly perturb the DC operating point
+but will not be large enough for any nonlinear effect to be visible.
+
+Note that circuits that depend on their nonlinearity to extract some
+feature from the input signal (especially circuits containing diodes)
+will not behave the same under AC analysis as they might on the test bench.
+
+>>> Using the Generator in Transient Analysis
+
+At last, we are ready to look at some time domain analysis. Time domain
+means as it happens in time and is also called ``transient analysis''.
+The outputs should be the same as you would see looking into an oscilloscope
+if you were testing a real circuit.
+
+This is a simple circuit showing how to calculate a real result for a simple
+real life problem. The problem is to magnetise some permanent magnets using an
+electromagnetic coil. Ignoring the physical side of the setup and considering
+only the electronics, we have an coil which consists of a resistor in
+series with an inductor, this is being driven by a sinusoidal supply but the
+supply is only switched on for half a cycle.
+
+Here in Australia, the mains supply is 240V RMS AC at 50Hz. Thus, one half
+cycle lasts for 10 miliseconds. The ``generator'' device provided by acs is
+the ideal thing to create a pulse such as this.
+
+--------------------------------------------------------------------- eg10.ckt
+MAINS PULSE HITS MAGNETISING RIG
+V1 1 0 generator 1
+R1 0 2 850m
+L1 1 2 6mH
+.options vmin=-1e5 vmax=1e5
+.generator freq=50 width=10m ampl=339.4
+.print tran I(L1) V(1)
+.op
+.tran 1e-4 30e-3 >eg10.dat
+.end
+----------------------------------------------------------------------
+
+This can be run in batch mode and the output will be in plottable format
+in the file ``eg10.dat''. Looking at the plot, it is easy to see the peak
+current of around 250 Amps (needless to say, don't try the practical experiment
+at home unless you can handle such surges). Also note the shape of the current
+pulse is a little bit like an exponential decay and a little bit like a sine
+wave.
+
+You might notice a number of new commands in the above example. Firstly,
+the word ``generator'' appears in two places. The output end of the generator
+appears in the specification of V1. When used like this, the generator function
+is being invoked and the only parameter this function has is a scaling factor
+(in this case 1 for simplicity). Later n the generator command is invoked on
+a command line (i.e. begins with dot) and this has a bunch of parameters
+(three of which are used in this example). It is important not to get confused
+between the generator function and the generator command, the name is the same
+but the syntax is different and they are used in different places.
+
+As well as the generator, some options are being changed. These options are the
+maximum and minimum voltages that act as limits for convergence purposes. The
+default values are suitable for typical amplifier circuits but if you want to
+work with higher voltages (such as power circuits) then you must explicitly
+tell the simulator by adjusting these options. You can try the above circuit
+with lower values for these or with the default values and see that it does
+alter the output calculation. Currently, there is no warning system to tell
+you something is wrong so make sure you set them comfortably higher than any
+voltage you expect to encounter in the circuit.
+
+Now there is the transient analysis itself. This analysis works by taking time
+steps and you must specify how small you want these steps to be and how long
+the analysis should run for. The output redirection option is the same as
+for other analyses. One special point about the transient analysis is that you
+must run an ``op'' analysis first in order to establish the initial conditions.
+In the example it really is not very important but in other cases it can make
+a significant difference to transient behaviour.
+
+--------------------------------------------------------------------- eg11.ckt
+CAPACITOR PULSE FOR MAGNETISING RIG
+.model switch SW VT=150 VH=150 RON=0.1 ROFF=1Meg
+.model diode D
+V1 1 0 340
+R1 1 2 500
+C1 2 0 2000u IC=299.8
+S1 2 3 2 0 switch OFF
+R2 3 4 850m
+L1 4 0 6mH IC=0
+D1 5 3 diode
+R3 5 0 5
+C2 5 0 200u
+.options vmin=-1e5 vmax=1e5
+.print tran I(L1) V(2) V(3) V(5)
+.tran 0 20e-3 1e-6 >eg11.dat UIC QUIET
+.end
+----------------------------------------------------------------------
+
+This example shows another approach to generating a magnetising pulse --
+discharge a capacitor into the coil, depending on the capacitor as a high
+current source. This also uses some new components and different techniques.
+Firstly, the coil is still modeled using an inductor in series with a
+resistor (in this case L1 and R2). The main energy storage capacitor (C1) is
+fed from a 340V DC source through resistor R1, the value of R1 is such that
+C1 slowly charges. Since the full charge cycle of C1 is boring, we just tell
+the simulator that C1 is almost fully charged.
+
+To achieve this the option, ``IC=299.8'' is used which implies that the initial
+condition of C1 is to be charged up to 299.8 volts. Similarly, L1 is also given
+an initial contition, ``IC=0'', which is to say that at time 0 there is no
+current flowing in the inductor. Thanks to these initial condition
+specifications, we don't need to run an ``.op'' operating point analysis
+prior to the transient analysis. We do, however, need to specify ``UIC''
+on the transient analysis command where UIC means ``Use Initial Conditions''.
+
+The result is that the simulation shows only the last bit of the slow charge
+through R1 until the capacitor reaches 300 volts and the switch activates.
+
+There are a few more special things about this circuit. Consider the component
+S1 that connects the capacitor to the coil. This component is a voltage
+controlled switch. The parameters for the switch are given in the .model
+command, defining a model called (rather unimaginatively) ``switch''. This
+defines what the ``ON'' resistance of the switch is and what the ``OFF''
+resistance is as well as the thresholds for changing state ON to OFF and
+OFF to ON. Many devices such as MOSFETs, relays and optocouplers can
+be approximated by a switch -- admittedly it is an idealised representation,
+but that may be desirable in some situations and at least acceptable in others.
+Note that the switch too is given an initial condition (OFF).
+
+Run the simulation in batch mode as follows:
+
+	acs eg19.ckt
+	gnuplot
+	set data style lines
+	plot 'eg11.dat', 'eg11.dat' using 1:3, 'eg11.dat' using 1:4
+	replot 'eg11.dat' using 1:5
+	exit
+
+Since this run produces rather a lot of output, the ``Quiet'' option is
+added to the transient analysis in order to avoid excessive scrolling.
+It should be evident that the voltage in C1 slowly charges up to 300 volts
+while the switch stays open and nothing much else happens. Then the switch
+shuts and the C1 voltage starts to fall while the current in L1 rises and
+the energy is transfered from the capacitor to the inductor. With a resistance
+of 100 miliohms in the switch and another 850 miliohms in the coil, some
+of the energy is lost to heat and the inductor reaches peak current (approx
+120A) before the capacitor is fully discharged -- ideally the switch could be
+opened there but in this case the switch is programed to open when the
+capacitor voltage reaches zero.
+
+Finally the capacitor voltage does reach zero and the switch opens. This leaves
+a noticable kink in the plot of the inductor current and it starts the
+inductor energy transfering into C2 and R3 through D1. Finally all the energy
+is dumped into R3 as heat. An interesting thing happens when the inductor
+current reaches zero and D1 goes back into reverse bias -- the voltage at node
+3 goes into a brief high frequency oscillation. Is the simulator playing up
+here? What is going on?
+
+Actually, this is correct behaviour as the last tiny burst of energy in
+L1 has nowhere to go, it sets up an oscillation between the junction
+capacitance in D1 and the inductance of L1. This is a property of using
+diodes to switch a coil and does occur in real circuits too. The simulator
+does not know the junction capacitance of D1 because it has not been specified
+in the ``.model'' line (actually with no junction capacitance specified,
+acs drops the capacitor out of the diode model completely) so the oscillation
+flips back and forth with each time step and the magnitude of the swing
+at node 3 is dependent on the size of the timestep used (try a longer timestep
+and see that node 3 shows a larger voltage swing at this point).
+
+In this case, the inductor current is the result of interest but if it
+were necessary to know exactly how node 3 behaved at the end of the pulse
+then more care would be required in determining the capacitance at work
+around node 3 (in particular the diode and switch behaviour).
+

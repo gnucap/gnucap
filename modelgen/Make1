@@ -1,0 +1,40 @@
+#$Id: Make1,v 20.15 2001/10/30 03:58:50 al Exp $
+#
+# Copyright (C) 2001 Albert Davis
+# Author: Albert Davis <aldavis@ieee.org>
+#
+# This file is part of "GnuCap", the Gnu Circuit Analysis Package
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#------------------------------------------------------------------------
+TARGET = modelgen
+#------------------------------------------------------------------------
+SRCS = mg_main.cc mg_out_h.cc mg_error.cc mg_in.cc \
+mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc
+#------------------------------------------------------------------------
+OBJS = mg_main.o mg_out_h.o mg_error.o mg_in.o \
+mg_out_common.o mg_out_dev.o mg_out_lib.o mg_out_model.o mg_out_root.o \
+ap_construct.o ap_convert.o ap_get.o ap_match.o ap_skip.o 
+#------------------------------------------------------------------------
+HDRS = mg_.h mg_out.h
+#------------------------------------------------------------------------
+OTHER = Make1 Make.aux Make.depend TAGS configure
+#------------------------------------------------------------------------
+ALL = $(HDRS) $(SRCS) $(MODELS) $(OTHER)
+#------------------------------------------------------------------------
+DELETED =
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------

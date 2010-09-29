@@ -1,0 +1,77 @@
+%$Id: build.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands build .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt BUILD} command}
+\index{build command}
+\index{new circuit}
+\index{creating new circuit}
+\index{add to circuit}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt Build} \{{\it line}\}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Builds a new circuit, or replaces lines in an existing one.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+{\tt Build} Lets you enter the circuit from the keyboard.  The prompt changes 
+to {\tt >} to show that the program is in the build mode.
+
+At this point, type in the circuit components in standard (Spice type)
+netlist format.
+
+Component labels must be unique.  If not, the old one is modified according
+to the new data, keeping old values where no new ones were specified.
+
+Ordinarily, components are added to the end of the list.  To insert at a
+particular place, specify the label to insert in front of.  Example: {\tt
+Build R77} will cause new items to be added before {\tt R77}, instead of at
+the end.
+
+In either case, components being changed or replaced do not change their
+location in the list.
+
+If it is necessary to start over, {\tt delete all} or {\tt clear} will erase
+the entire circuit in memory.
+
+To exit this mode, enter a blank line.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt build}] Build a circuit.  Add to the end of the list.  This will
+add to the circuit without erasing anything.  It will continue until you
+exit or memory fills up.
+
+\item[{\tt b}] This is the same as the previous example.  Only the first
+letter of the `Build' is necessary.
+
+\item[{\tt build R33}]	Insert new items in front of R33.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

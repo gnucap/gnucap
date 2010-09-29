@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>R: Resistor</TITLE>
+<META NAME="description" CONTENT="R: Resistor">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node78.html">
+<LINK REL="previous" HREF="node76.html">
+<LINK REL="up" HREF="node59.html">
+<LINK REL="next" HREF="node78.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1518"
+  HREF="node78.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1514"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1508"
+  HREF="node76.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1516"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1519"
+  HREF="node78.html">S: Voltage Controlled Switch</A>
+<B> Up:</B> <A NAME="tex2html1515"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1509"
+  HREF="node76.html">Q: Bipolar Junction Transistor</A>
+ &nbsp <B>  <A NAME="tex2html1517"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1520"
+  HREF="#SECTION004181000000000000000">Syntax</A>
+<LI><A NAME="tex2html1521"
+  HREF="#SECTION004182000000000000000">Purpose</A>
+<LI><A NAME="tex2html1522"
+  HREF="#SECTION004183000000000000000">Comments</A>
+<LI><A NAME="tex2html1523"
+  HREF="#SECTION004184000000000000000">Model statement</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION004180000000000000000">
+<TT>R</TT>: Resistor</A>
+</H1>
+
+<H2><A NAME="SECTION004181000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>R</TT><I>xxxxxxx n+ n- value</I>
+<BR>  <TT>R</TT><I>xxxxxxx n+ n- expression</I>
+<BR>  <TT>R</TT><I>xxxxxxx n+ n- model</I> {<TT>L=</TT><I>length</I>}
+        {<TT>W=</TT><I>width</I>} {<TT>TEMP=</TT><I>temperature</I>} 
+<BR>  <TT>.RESistor</TT> <I>label n+ n- expression</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION004182000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Resistor, or general current controlled dissipative element.
+
+<H2><A NAME="SECTION004183000000000000000">
+Comments</A>
+</H2>
+
+<P>
+<I>N+</I> and <I>n-</I> are the positive and negative element nodes,
+respectively.  <I>Value</I> is the resistance in Ohms.
+
+<P>
+The resistor (type <TT>R</TT>) differs from the admittance (type <TT>Y</TT>) in
+that the resistor is a current controlled element, and the conductance is a
+voltage controlled element, in addition to the obvious use of conductance
+(<IMG
+ WIDTH="32" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img19.png"
+ ALT="$1/R$">) instead of resistance.
+
+<P>
+You may specify the <I>value</I> in one of three forms:
+
+<P>
+
+<OL>
+<LI>A simple value.  This is the resistance in Ohms.
+
+<P>
+</LI>
+<LI>An expression, as described in the behavioral modeling chapter.
+  The expression can specify the voltage as a function of current, or
+  the resistance as a function of time.
+
+<P>
+</LI>
+<LI>A <I>model</I>, which calculates the resistance as a function of
+  length and width, referencing a <TT>.model</TT> statement of type <TT>    R</TT>.  This is compatible with the Spice-3 ``semiconductor
+  resistor''.
+
+<P>
+</LI>
+</OL>
+<H2><A NAME="SECTION004184000000000000000">
+Model statement</A>
+</H2>
+
+<P>
+A model statement may be used,, with model type <TT>R</TT> or <TT>Res</TT>.
+The parameters are:
+
+<P>
+<DL>
+<DT><STRONG><TT>RSH</TT> = <I>x</I></STRONG></DT>
+<DD>Sheet resistance. (Ohms / square). (Required)
+
+<P>
+</DD>
+<DT><STRONG><TT>CJSW</TT> = <I>x</I></STRONG></DT>
+<DD>Junction sidewall capacitance. (Farads /
+  meter).  (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>DEFW</TT> = <I>x</I></STRONG></DT>
+<DD>Default width. (meters).  (Default = 1e-6)
+
+<P>
+</DD>
+<DT><STRONG><TT>NARROW</TT> = <I>x</I></STRONG></DT>
+<DD>Narrowing due to side etching. (meters).
+  (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>TC1</TT> = <I>x</I></STRONG></DT>
+<DD>First order temperature coefficient.
+  (Farads / degree C).  (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>TC2</TT> = <I>x</I></STRONG></DT>
+<DD>Second order temperature coefficient.
+  (Farads / degree C squared).  (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>TNOM</TT> = <I>x</I></STRONG></DT>
+<DD>Parameter measurement temperature.
+  (degrees C.).  (Default = 27.)
+
+<P>
+</DD>
+</DL>
+
+<P>
+Resistance is computed by the formula:
+
+<P>
+<PRE>
+resistance = RSH * (L - NARROW) / (W - NARROW)
+</PRE>
+
+<P>
+After the nominal value is calculated, it is adjusted for temperature
+by the formula:
+
+<P>
+<PRE>
+value *= (1 + TC1 * (T-T0) + TC2 * (T-T0)^2)
+</PRE>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1518"
+  HREF="node78.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1514"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1508"
+  HREF="node76.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1516"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1519"
+  HREF="node78.html">S: Voltage Controlled Switch</A>
+<B> Up:</B> <A NAME="tex2html1515"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1509"
+  HREF="node76.html">Q: Bipolar Junction Transistor</A>
+ &nbsp <B>  <A NAME="tex2html1517"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

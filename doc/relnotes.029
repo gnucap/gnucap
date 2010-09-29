@@ -1,0 +1,92 @@
+ACS 0.29 release notes  (06/30/2001)
+
+The primary effort has been to implement IBIS, which is still not
+done.  The changes here are mostly infrastructure changes needed to
+support IBIS.
+
+
+New features:
+
+1. "Fit" function has choice of fit order and extrapolation.  You can
+have order 0, 1, 2, or 3.
+
+2. "Posy" has even and odd options, to determine what happens in the
+negative region.
+
+3. Modelgen improvements.  It now is useful for the whole device,
+sometimes.  It now handles probes and the device side of the model.
+The diode uses it completely.  There are still a few missing features
+needed for the MOSFET and BJT.
+
+4. Spice-3 compatible semiconductor resistor and capacitor.
+
+5. "Table" model statement.
+
+
+Improvements, bug fixes, etc.
+
+1. Option "numdgt" really works.
+
+2. Better error messages from modelgen.
+
+3. Code changes for optimization of commons.  This should reduce
+memory use, sometimes, by sharing commons.  Common sharing is still
+not fully implemented.
+
+4. Fix two bugs that sometimes caused problems after a "modify" or on
+a "fault".
+
+5. Better handling of "vmin" and "vmax".  It should be much less
+likely that limiting causes convergence to a nonsense result.
+
+
+Some things that are still partially implemented:
+
+1. Internal element: non-quasi-static poly-capacitor.
+
+2. BSIM models, charge effects, "alpha0" parameter.  (computed then ignored)
+
+
+Bugs (nothing new, but needs repeating):
+
+1. The transmission line initial conditions are not propagated until
+the transient analysis runs.
+
+2. The makefile does not set up the proper link for the model
+compiler.  You need to do it manually.
+
+3. On some systems, you will get a warning from the linker that "the
+use of 'tmpnam' is dangerous".  You can ignore this warning.
+
+
+Hot items for a future release (no promises, but highly probable):
+
+1. Charge effects and substrate current (alpha0) in BSIM models.  They
+are computed, but not loaded to the matrix.
+
+2. Completion of model compiler, and its documentation.
+
+3. Completion of multi-rate.
+
+4. Homotopy methods to improve convergence.
+
+5. Transmission line accuracy and speed improvements, using a step
+control mechanism similar to that used for capacitors.
+
+6. Parameterized subcircuits and defined parameters.
+
+7. A "trigger" element, so time dependent values can be triggered by
+the circuit, as an alternate to simple time.
+
+8. IBIS support.
+
+9. Spice-3 compatible "B" device.
+
+
+To reach me, try this email address:
+	aldavis@ieee.org
+
+ACS ftp sites:
+	ftp://ftp.geda.seul.org/pub/geda/dist/acs-0.29.tar.gz
+	http://www.geda.seul.org/dist/acs-0.29.tar.gz
+	ftp://sunsite.unc.edu/pub/Linux/apps/circuits/acs-0.29.tar.gz

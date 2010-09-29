@@ -1,0 +1,47 @@
+%$Id: i.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit i .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt I}: Independent Current Source}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt I}{\it xxxxxxx n+ n--} {\it value}\\
+{\tt I}{\it xxxxxxx n+ n--} {\it expression}\\
+{\tt .ISOurce} {\it label n+ n-- expression}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Independent current source.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+{\it N+} and {\it n--} are the positive and negative element nodes,
+respectively.  Positive current flow is from the positive node, through the
+source, to the negative node.  {\it Value} is the current in Amperes.
+
+All of the SPICE time dependent functions ({\tt pulse}, {\tt sin}, {\tt
+exp}, {\tt pwl}, and {\tt sffm} are supported.  An additional
+function {\tt generator} emulates a laboratory type function generator, for
+a more convenient signal input to the circuit.
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

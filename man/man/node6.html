@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Command structure</TITLE>
+<META NAME="description" CONTENT="Command structure">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node7.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node7.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html381"
+  HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html377"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html371"
+  HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html379"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html382"
+  HREF="node7.html">Standard options</A>
+<B> Up:</B> <A NAME="tex2html378"
+  HREF="node2.html">Introduction</A>
+<B> Previous:</B> <A NAME="tex2html372"
+  HREF="node5.html">How to use this</A>
+ &nbsp <B>  <A NAME="tex2html380"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00240000000000000000"></A>
+<A NAME="54"></A>
+<BR>
+Command structure
+</H1>
+
+<P>
+Commands are whole words, but usually you only have to type enough of the
+word to make it unique.  The first three letters will almost always work.
+In some cases less will do.  The whole word is significant, if used, and
+must be spelled correctly.
+<A NAME="55"></A>
+<A NAME="56"></A>
+
+<P>
+In files, commands must be prefixed with a dot (.).  This is done for
+compatibility with other simulation programs, such as SPICE.
+
+<P>
+Command options should be separated by commas or spaces.  In some cases, the
+commas or spaces are not necessary, but it is good practice to use them.
+
+<P>
+Upper and lower case are usually the same.
+<A NAME="57"></A>
+<A NAME="58"></A>
+<A NAME="59"></A>
+
+<P>
+Usually options can be entered in any order.  The exceptions to this are
+numeric parameters, where the order determines their meaning, and
+command-like parameters, where they are executed in order.  If parameters
+conflict, the last takes precedence.
+<A NAME="60"></A>
+
+<P>
+In general, standard numeric parameters, such as sweep limits, must be
+entered first, before any options.
+
+<P>
+Any line starting with <TT>*</TT> is considered a comment line, and is
+ignored.  Anything on any line following a quote is ignored.  This is mainly
+intended for files.
+<A NAME="62"></A>
+
+<P>
+This program supports abbreviated notation for floating point numeric
+entries.  `K' means kilo, or `e3', etc.  `M' and `m' mean milli, not mega
+(for Spice compatibility).  `Meg' means mega.  Of course, it will also take
+the standard scientific notation.  Letters following values, without spaces,
+are ignored.
+<A NAME="63"></A>
+
+<P>
+<BLOCKQUOTE>
+T = Tera = e12
+<BR>
+G = Giga = e9
+<BR>
+Meg = Mega = e6
+<BR>
+K = Kilo = e3
+<BR>
+m = milli = e-3
+<BR>
+u = micro = e-6
+<BR>
+n = nano = e-9
+<BR>
+p = pico = e-12
+<BR>
+f = femto = e-15
+
+</BLOCKQUOTE><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html381"
+  HREF="node7.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html377"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html371"
+  HREF="node5.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html379"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html382"
+  HREF="node7.html">Standard options</A>
+<B> Up:</B> <A NAME="tex2html378"
+  HREF="node2.html">Introduction</A>
+<B> Previous:</B> <A NAME="tex2html372"
+  HREF="node5.html">How to use this</A>
+ &nbsp <B>  <A NAME="tex2html380"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

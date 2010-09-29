@@ -1,0 +1,7 @@
+' cap with initial condition, ignored because I didn't say "uic"
+c1 1 0 1 ic=3
+r1 1 0 1
+.list
+.print tran v(1)
+.tran 1 10 0
+.end

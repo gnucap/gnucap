@@ -1,0 +1,11 @@
+# semiconductor "resistor" test
+v1 1 0 dc 2 ac 5
+r1 1 2 1k
+r2 2 0 t1 (w=2u l=1u temp=37)
+.model t1 r rsh=1k tc2=.01
+.print op v(nodes) r(r*)
+.print ac v(nodes) 
+.op
+.ac
+.list
+.end

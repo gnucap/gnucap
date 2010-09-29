@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>UNFAULT command</TITLE>
+<META NAME="description" CONTENT="UNFAULT command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node57.html">
+<LINK REL="previous" HREF="node55.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node57.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1172"
+  HREF="node57.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1168"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1162"
+  HREF="node55.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1170"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1173"
+  HREF="node57.html">UNMARK command</A>
+<B> Up:</B> <A NAME="tex2html1169"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html1163"
+  HREF="node55.html">TRANSIENT command</A>
+ &nbsp <B>  <A NAME="tex2html1171"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1174"
+  HREF="#SECTION003451000000000000000">Syntax</A>
+<LI><A NAME="tex2html1175"
+  HREF="#SECTION003452000000000000000">Purpose</A>
+<LI><A NAME="tex2html1176"
+  HREF="#SECTION003453000000000000000">Comments</A>
+<LI><A NAME="tex2html1177"
+  HREF="#SECTION003454000000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION003450000000000000000"></A>
+<A NAME="5579"></A>
+<A NAME="5580"></A>
+<A NAME="5581"></A>
+<BR>
+<TT>UNFAULT</TT> command
+</H1>
+
+<H2><A NAME="SECTION003451000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>UNFault</TT>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION003452000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Undo any action from <TT>fault</TT> commands.
+
+<H2><A NAME="SECTION003453000000000000000">
+Comments</A>
+</H2>
+
+<P>
+This command reverses the action of all <TT>fault</TT> commands.
+
+<P>
+It will also clean up any side effects of an aborted <TT>sweep</TT> command.
+
+<P>
+<TT>Unfault</TT> is automatically invoked on any <TT>clear</TT> command.
+
+<P>
+If you change the circuit in any other way, <TT>unfault</TT> will bring back the
+old on top of the changes.  This can bring on some surprises.
+
+<H2><A NAME="SECTION003454000000000000000">
+Example</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>fault R66=1k</TT></STRONG></DT>
+<DD>R66 now has a value of 1k, regardless of what it
+was before.
+
+<P>
+</DD>
+<DT><STRONG><TT>unfault</TT></STRONG></DT>
+<DD>Clears all faults.  In this case, R66 has its old value
+again.
+
+<P>
+</DD>
+</DL>
+
+<P>
+<TT>unfault</TT> can bring on surprises.  Consider this sequence ...
+
+<P>
+<PRE>
+V1   1   0    ac  1
+C3   1   2    1u
+R4   2   0    10k
+</PRE>
+
+<P>
+<DL>
+<DT><STRONG><TT>fault C3=100p</TT></STRONG></DT>
+<DD>C3 is 100 picofarads, for now.
+
+<P>
+</DD>
+<DT><STRONG><TT>modify C3=220p</TT></STRONG></DT>
+<DD>C3 is 220 pf, for now.  It will be restored.
+
+<P>
+</DD>
+<DT><STRONG><TT>modify R4=1k</TT></STRONG></DT>
+<DD>R4 is 1k.  It will not be restored.
+
+<P>
+</DD>
+<DT><STRONG><TT>restore</TT></STRONG></DT>
+<DD>C3 back to 1 uf, but R4 still 1k.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1172"
+  HREF="node57.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1168"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1162"
+  HREF="node55.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1170"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1173"
+  HREF="node57.html">UNMARK command</A>
+<B> Up:</B> <A NAME="tex2html1169"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html1163"
+  HREF="node55.html">TRANSIENT command</A>
+ &nbsp <B>  <A NAME="tex2html1171"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

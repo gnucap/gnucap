@@ -1,0 +1,108 @@
+/* $Id: d_mos123.model,v 20.14 2001/10/19 06:21:08 al Exp $ -*- C++ -*-
+ * Copyright (C) 2001 Albert Davis
+ * Author: Albert Davis <aldavis@ieee.org>
+ *
+ * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ *------------------------------------------------------------------
+ * MOS model - base for levels 1,2,3,6
+ */
+h_headers {
+#include "d_mos_base.h"
+  enum gate_t {gtSAME = -1, gtMETAL = 0, gtOPP = 1};
+  const double NI = 1.45e16;	/* intrinsic carrier concentration */
+}
+cc_headers {
+}
+/*--------------------------------------------------------------------------*/
+model MOS123 {
+  dev_type MOS;
+  inherit MOS_BASE;
+  independent {
+    override {
+      double cjo "" default=0.;
+      double pb "" default=0.8;
+      double pbsw "" final_default=pb;
+      int cmodel "CMODEL" print_test="cmodel!=3"
+	calculate="((!cmodel)?3:cmodel)";
+    }
+    raw_parameters {
+      double vto "zero-bias threshold voltage"
+	name=VTO default=NA
+	scale="(static_cast<double>(polarity))"
+	print_test="!calc_vto" calc_print_test="calc_vto";
+      double gamma "bulk threshold parameter"
+	name=GAmma default=NA
+	print_test="!calc_gamma" calc_print_test="calc_gamma";
+      double phi "surface potential"
+	name=PHI default=NA positive
+	print_test="!calc_phi" calc_print_test="calc_phi";
+      double lambda "channel-length modulation"
+	name=LAmbda default=NA;
+      double tox "oxide thickness"
+	name=TOX default=NA positive;
+      double nsub "substrate doping"
+	name=NSUb default=NA scale=ICM2M3;
+      double nss "surface state density"
+	name=NSS default=0.0 scale=ICM2M2
+	print_test="nss != 0.0 || nsub != NA";
+      double xj "metallurgical junction depth"
+	name=XJ default=NA positive;
+      double ld "lateral diffusion"
+	name=LD default=0.0;
+      double uo "surface mobility" 
+	name=UO default="(600.*CM2M2)" scale=CM2M2;
+      int tpg "type of gate material - really gate_t"
+	name=TPG default=gtOPP;
+    }
+    calculated_parameters {
+      double cox "oxide capacitance (E_OX / tox)"
+	name=COX calc_print_test=true default=NA;
+      bool calc_vto "" default=false;
+      bool calc_gamma "" default=false;
+      bool calc_phi "" default=false;
+    }
+    code_pre {
+      {if (tpg < 0) {		// coerce tpg to a proper value
+	tpg = gtSAME;		
+      }else if (tpg > 0) {
+	tpg = gtOPP;
+      }else{
+	assert(tpg == gtMETAL);
+      }}
+      if (tox != NA && tox <= 0) {
+	untested();
+	tox = NA;
+	error(bWARNING, long_label()+": tox <= 0, treating as if not input\n");
+      }
+      if (nsub != NA && nsub < NI) {
+	untested();
+	nsub = NA;
+	error(bWARNING,long_label()+": nsub < ni, treating as if not input\n");
+      }
+    }
+  }
+  size_dependent {
+    override {
+      double l_eff "" calculate="l_eff - 2. * m->ld";
+      double cgate "" calculate="m->cox * w_eff * l_eff";
+      double phi "" calculate="m->phi";
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/

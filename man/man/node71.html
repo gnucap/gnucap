@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>I: Independent Current Source</TITLE>
+<META NAME="description" CONTENT="I: Independent Current Source">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node72.html">
+<LINK REL="previous" HREF="node70.html">
+<LINK REL="up" HREF="node59.html">
+<LINK REL="next" HREF="node72.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1423"
+  HREF="node72.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1419"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1413"
+  HREF="node70.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1421"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1424"
+  HREF="node72.html">J: Junction Field-Effect Transistor</A>
+<B> Up:</B> <A NAME="tex2html1420"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1414"
+  HREF="node70.html">H: Current Controlled Voltage</A>
+ &nbsp <B>  <A NAME="tex2html1422"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1425"
+  HREF="#SECTION004121000000000000000">Syntax</A>
+<LI><A NAME="tex2html1426"
+  HREF="#SECTION004122000000000000000">Purpose</A>
+<LI><A NAME="tex2html1427"
+  HREF="#SECTION004123000000000000000">Comments</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION004120000000000000000">
+<TT>I</TT>: Independent Current Source</A>
+</H1>
+
+<H2><A NAME="SECTION004121000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>I</TT><I>xxxxxxx n+ n-</I> <I>value</I>
+<BR><TT>I</TT><I>xxxxxxx n+ n-</I> <I>expression</I>
+<BR><TT>.ISOurce</TT> <I>label n+ n- expression</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION004122000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Independent current source.
+
+<H2><A NAME="SECTION004123000000000000000">
+Comments</A>
+</H2>
+
+<P>
+<I>N+</I> and <I>n-</I> are the positive and negative element nodes,
+respectively.  Positive current flow is from the positive node, through the
+source, to the negative node.  <I>Value</I> is the current in Amperes.
+
+<P>
+All of the SPICE time dependent functions (<TT>pulse</TT>, <TT>sin</TT>, <TT>exp</TT>, <TT>pwl</TT>, and <TT>sffm</TT> are supported.  An additional
+function <TT>generator</TT> emulates a laboratory type function generator, for
+a more convenient signal input to the circuit.
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

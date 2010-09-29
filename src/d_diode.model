@@ -1,0 +1,423 @@
+/* $Id: d_diode.model,v 20.14 2001/10/19 06:21:08 al Exp $ -*- C++ -*-
+ * Copyright (C) 2001 Albert Davis
+ * Author: Albert Davis <aldavis@ieee.org>
+ *
+ * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ *------------------------------------------------------------------
+ * diode model.
+ * netlist syntax:
+ * device:  dxxxx n+ n- mname <area> <off> <ic=vd> <model-card-args>
+ * model:   .model mname D <args>
+ *
+ * The section "eval Yj" is a big mess.
+ * It will be redone using multiple files, like the MOS models.
+ */
+h_headers {
+#include "e_subckt.h"
+#include "e_model.h"
+  enum region_t {INITOFF=-2, REVERSE=-1, UNKNOWN=0, FORWARD=1};
+  class DEV_DIODE;
+  class DEV_ADMITTANCE;
+  class DEV_CAPACITANCE;
+}
+cc_headers {
+#include "e_aux.h"
+#include "d_admit.h"
+#include "d_cap.h"
+  static bool dummy=false;
+  enum {USE_OPT = 0x8000};
+}
+/*--------------------------------------------------------------------------*/
+device DIODE {
+  parse_name diode;
+  model_type DIODE;
+  id_letter D;
+  circuit {
+    ports {anode cathode};
+    capacitance Cj {anode cathode} eval=Cj
+      omit="c->cj_adjusted == 0. && c->cjsw_adjusted == 0. && m->tt == 0.";
+    admittance Yj {anode cathode} eval=Yj;
+  }
+  tr_probe {
+    Vd = "@n_anode[V] - @n_cathode[V]";
+    Id = "@Yj[I] + @Cj[I]";
+    IJ = "@Yj[I]";
+    IC = "@Cj[I]";
+    CAPCUR = "@Cj[I]";
+    P  = "@Yj[P]  + @Cj[P]";
+    PD = "@Yj[PD] + @Cj[PD]";
+    PS = "@Yj[PS] + @Cj[PS]";
+    PJ = "@Yj[P]";
+    PC = "@Cj[P]";
+    Capacitance = "@Cj[Capacitance]";
+    CD = "@Cj[Capacitance]";
+    CHARGE = "@Cj[Charge]";
+    Req = "@Yj[R]";
+    Geq = "@Yj[Y]";
+    GD  = "@Yj[Y]";
+    Y   = "@Yj[Y] + @Cj[Y]";
+    Z="port_impedance(@n_anode[],@n_cathode[],lu,tr_probe_num_str(\"Y\"))";
+    ZRAW = "port_impedance(@n_anode[], @n_cathode[], lu, 0.)";
+    REgion = "static_cast<double>(_region)";
+  }
+  device {
+    calculated_parameters {
+      region_t _region "fwd, reverse, unknown" default=UNKNOWN;
+      double _gd "conductance to pass to capacitor";
+      double _isat "is adjusted for temp, etc.";
+    }
+  }
+  common {
+    unnamed area;
+    raw_parameters {
+      double area "area factor"
+	name=Area default=1.0 positive;
+      double perim "perimeter factor"
+	name=Perim default=0.0 positive print_test="perim != 0.";
+      bool off "flag: assume reverse biased"
+	name=OFF default=false print_test=off;
+      double ic "initial voltage"
+	name=IC default=NA print_test="ic != NA";
+      double is_raw "saturation current"
+	name=IS default=NA positive 
+	print_test="is_raw != NA";
+      double rs_raw "series resistance"
+	name=Rs default=NA positive
+	print_test="rs_raw != NA";
+      double cj_raw "zero bias jct capacitance"
+	name=Cjo default=NA positive
+	print_test="cj_raw != NA";
+      double cjsw_raw "zero bias sidewall capacitance" 
+	name=CJSW default=NA positive
+	print_test="cjsw_raw != NA";
+      double gparallel_raw "parallel conductance"
+	name=GParallel default=NA
+	print_test="gparallel_raw != NA";
+    }
+    calculated_parameters {
+      double is_adjusted ""
+	name = IS
+	calculate="((is_raw == NA) ? m->js * area : is_raw)"
+	calc_print_test="is_adjusted != is_raw";
+      double rs_adjusted ""
+	name = RS
+	calculate="((rs_raw == NA) ? m->rs / (area+1e-20) : rs_raw)"
+	calc_print_test="rs_adjusted != rs_raw";
+      double cj_adjusted ""
+	name = CJ
+	calculate="((cj_raw == NA) ? m->cjo * area : cj_raw)"
+	calc_print_test="cj_adjusted != cj_raw";
+      double cjsw_adjusted ""
+	name = CJSW
+	calculate="((cjsw_raw == NA) ? m->cjsw * perim : cjsw_raw)"
+	calc_print_test="cjsw_adjusted != cjsw_raw";
+      double gparallel_adjusted ""
+	name = GParallel
+	calculate="((gparallel_raw == NA) ? m->gparallel*area : gparallel_raw)"
+	print_test="gparallel_adjusted != gparallel_raw";
+    }
+  }
+  eval Cj {
+    double& volts = d->_y0.x;
+    trace1(d->long_label().c_str(), volts);
+    
+    double cb;
+    {if (c->cj_adjusted != 0.) {
+      {if (volts < m->fc * m->pb) {
+	cb = c->cj_adjusted / pow(1. - (volts / m->pb),  m->mj);
+      }else{
+	cb = (c->cj_adjusted / pow(1. - m->fc, 1. + m->mj))
+	  * (1. - m->fc*(1.+m->mj) + (volts/m->pb)*m->mj);
+      }}
+    }else{
+      cb = 0.;
+    }}
+    assert(cb >= 0.);
+    
+    double csw;
+    {if (c->cjsw_adjusted != 0.) {
+      {if (volts < m->fc * m->pbsw) {
+	csw = c->cjsw_adjusted / pow(1. - (volts / m->pbsw),  m->mjsw);
+      }else{
+	csw = (c->cjsw_adjusted / pow(1. - m->fc, 1. + m->mjsw))
+	  * (1. - m->fc*(1.+m->mjsw) + (volts/m->pbsw)*m->mjsw);
+      }}
+    }else{
+      csw = 0.;
+    }}
+    assert(csw >= 0.);
+    
+    double ctt;
+    {if (m->tt != 0.) {
+      ctt = p->_gd * m->tt;
+    }else{
+      ctt = 0.;
+    }}
+    assert(ctt >= 0.);
+    
+    trace4("", cb, csw, ctt, cb+csw+ctt);
+    d->_y0.f1 = cb + csw + ctt;
+    {if (SIM::phase == SIM::pTRAN) {
+      const DEV_CAPACITANCE* dd = prechecked_cast<const DEV_CAPACITANCE*>(d);
+      double cap = (d->_y0.f1 + dd->_q[1].f1) / 2;
+      d->_y0.f0 = (d->_y0.x - dd->_q[1].x) * cap + dd->_q[1].f0;
+    }else{
+      d->_y0.f0 = d->_y0.x * d->_y0.f1;
+    }}
+    trace3(d->long_label().c_str(), d->_y0.x, d->_y0.f0, d->_y0.f1);
+  }
+  eval Yj {
+    assert(m->_tnom > 0);
+    FPOLY1& y = d->_y0;
+    double volts = y.x;
+    double amps  = y.f0;
+    trace2(d->long_label().c_str(), volts, amps);
+    
+    int flags = (m->flags & USE_OPT) ? OPT::diodeflags : m->flags;
+    double tempratio = SIM::temp / m->_tnom;
+    double vt = KoQ * SIM::temp * m->n_factor;
+    region_t oldregion = p->_region;
+    p->_isat = c->is_adjusted * pow(tempratio, m->xti)
+      * Exp((m->eg/vt) *(tempratio-1));
+    trace4("", tempratio, vt, oldregion, p->_isat);
+    
+    if (m->mos_level > 0 || flags & 0040) { // Spice style limiting
+      double vcrit = vt * log(vt/(kRT2*p->_isat));
+      double vold = d->_y1.f0;
+      {if((volts > vcrit) && (std::abs(volts - vold) > (vt + vt))) {
+	{if(vold > 0) {
+	  double arg = 1 + (volts - vold) / vt;
+	  {if(arg > 0) {
+	    volts = vold + vt * log(arg);
+	  }else{
+	    volts = vcrit;
+	  }}
+	}else{
+	  volts = vt *log(volts/vt);
+	}}
+      }else{
+	// leave volts as is
+      }}
+    }
+    
+    {if (m->mos_level > 0 && m->mos_level < 8) {
+      switch (m->mos_level) {
+      case 1:
+      case 2:
+      case 3:
+      case 6:
+      case 4:
+      case 5:
+	{if (volts <= 0.) {
+	  p->_region = REVERSE;
+	  y.f1 = p->_isat / vt + OPT::gmin;
+	  y.f0 = y.f1 * volts;
+	}else{
+	  p->_region = FORWARD;
+	  double ev = exp(volts/vt);
+	  y.f1 = p->_isat * ev / vt + OPT::gmin;
+	  y.f0 = p->_isat * (ev - 1) + OPT::gmin * volts;
+	}}
+	break;
+      case 7:
+	{if (volts < .5) {
+	  p->_region = REVERSE;
+	  double ev = exp(volts/vt);
+	  y.f1 = p->_isat * ev / vt + OPT::gmin;
+	  y.f0 = p->_isat * (ev - 1) + OPT::gmin * volts;
+	}else{
+	  p->_region = FORWARD;
+	  double ev = exp(.5/vt);
+	  double t0 = p->_isat * ev / vt;
+	  y.f1 = t0 + OPT::gmin;
+	  y.f0 = p->_isat * (ev - 1) + t0 * (volts - .5) + OPT::gmin * volts;
+	}}
+	break;
+      default:
+	unreachable();
+	y.f1 = OPT::gmin;
+	y.f0 = volts * y.f1;
+      }
+    }else if (flags & 0040) { // exact Spice model
+      {if (volts >= -3*vt) { // forward and weak reversed
+	double evd = Exp(volts/vt);
+	y.f0 = p->_isat * (evd-1);
+	y.f1 = p->_isat * evd/vt;
+      }else if (m->bv == NA || volts >= m->bv) {
+	double arg = 3 * vt / (volts * kE); // strong reversed
+	arg = arg * arg * arg;
+	y.f0 = -p->_isat * (1+arg);
+	y.f1 = p->_isat * 3 * arg / volts;
+      }else{
+	incomplete();
+	double evrev = exp(-(m->bv+volts)/vt);
+	y.f0 = -p->_isat * evrev;
+	y.f1 = p->_isat * evrev / vt;
+      }}
+      y.f0 += OPT::gmin * volts;
+      y.f1 += OPT::gmin;
+    }else{
+      {if (c->off  &&  STATUS::iter[SIM::mode] <= 1) { /*initially guess off*/
+	p->_region = INITOFF;
+	y.f1 = 0.;
+	y.f0 = 0.;
+	if (flags & 0020) {
+	  untested();
+	  y.f1 = OPT::gmin;
+	}
+	trace2("initoff", y.f0, y.f1);
+      }else if (volts <= 0. /* &&  amps < 0.*/) {    	  /* reverse biased */
+	p->_region = REVERSE;	    		  /* x = volts, f(x) = amps */
+	{if (flags & 0010) {
+	  untested();
+	  y.f1 = y.f0 = 0.;
+	}else{
+	  double expterm = p->_isat * Exp(volts/vt);	
+	  y.f0 = expterm - p->_isat;/* i = f(x) = _isat * (Exp(volts/vt)-1) */
+	  y.f1 = expterm / vt;	    /* f'(x) = (_isat/vt) * Exp(volts/vt)   */
+	}}
+	
+	if (flags & 0002) {	// g = gmin, maintain actual current
+	  y.f1 += OPT::gmin;	// 3 is a resistor, R=1/gmin
+	  y.f0 += OPT::gmin * volts;
+	}
+	if (flags & 0004) {	// 5 is a resistor, R=vt/_isat
+	  double x = p->_isat / vt;
+	  y.f1 += x;
+	  y.f0 += x * volts;
+	}
+	if (flags & 0001) {
+	  //y.f0 = y.f1 * volts;	// a resistor, R=1/f1
+	}
+	
+	trace2("reverse", y.f0, y.f1);
+      }else if (volts >= 0.  &&  amps >= 0.) {		  /* forward biased */
+				    /* x = amps, f(x) = volts */
+	/* derivation: */	    /* if f(x) = log(u): f'(x)=(1/u)(du/dx) */
+	/* poly1 r; */
+	/* r.f0 = vt * log(amps/p->_isat +1.); */
+	/* r.f1 = vt / (_isat + amps); */
+	/* y.f1 = 1. / r.f1; */
+	/* y.f0 = amps - r.f0*y.f1 + volts*y.f1; */
+	
+	p->_region = FORWARD;
+	y.f1 = (p->_isat + amps) / vt;
+	y.f0 = amps - log(amps/p->_isat +1.)*(p->_isat + amps) + volts*y.f1;
+	trace2("forward", y.f0, y.f1);
+      }else{			    /* non-converged, inconsistent	    */
+	p->_region = UNKNOWN;	    /* volts and amps have different signs  */
+	y.f1 = p->_isat/vt;	    /* guess that the voltage should be 0   */
+	y.f0 = 0.;		    /* (it usually is very close)	    */
+	if (flags & 0001) {	    /* use the correct value there	    */
+	  y.f0 = volts * y.f1;
+	}
+	trace2("unknown", y.f0, y.f1);
+      }}
+      y.f1 += c->gparallel_adjusted;
+      y.f0 += c->gparallel_adjusted * volts;
+      
+      if (oldregion != p->_region  &&  OPT::dampstrategy & dsDEVLIMIT) {
+	SIM::fulldamp = true;
+	error(bTRACE, p->long_label() + ":device limit damp\n");
+      }
+      if (flags & 0100) {		// twist g to guarantee g >= gmin
+	{if (y.f1 < OPT::gmin) {	// without changing i
+	  y.f1 = OPT::gmin;
+	  untested();
+	}else{
+	  untested();
+	}}
+      }
+      if (flags & 0200) {		// add a gmin in parallel
+	y.f1 += OPT::gmin;
+	y.f0 += OPT::gmin * volts;
+	untested();
+      }
+      if (flags & 0400) {		// linearize .. shift I to pass thru 0
+	untested();
+	y.f0 = y.f1 * volts;
+      }
+    }}
+    trace3(d->long_label().c_str(), y.x, y.f0, y.f1);
+    p->_gd = y.f1;
+  }
+}
+/*--------------------------------------------------------------------------*/
+model DIODE {
+  dev_type DIODE;
+  base;
+  inherit CARD;
+  keys {
+    D dummy=true;
+  }
+  independent {
+    override {
+      double _tnom "" name=TNOM default=OPT::tnom
+	quiet_min=1.0 offset=-ABS_ZERO;
+    }
+    raw_parameters {
+      double js "= is, saturation current (per area)"
+	name=IS positive default=1e-14;
+      double rs "ohmic resistance (per area)"
+	name=RS positive default=0.0;
+      double n_factor "emission coefficient"
+	name=N positive default=1.0;
+      double tt "transit time"
+	name=TT positive default=0.0;
+      double cjo "cj, zero-bias jct capacitance (per area)"
+	name=CJo positive final_default=0.0;
+      double pb "vj, junction potential"
+	name=PB alt_name=VJ positive final_default=1.0;
+      double mj "m, grading coefficient"
+	name=Mj positive default=0.5;
+      double eg "activation energy"
+	name=EGap positive default=1.11;
+      double xti "saturation-current temp. exp."
+	name=XTI positive default=3.0;
+      double kf "flicker noise coefficient"
+	name=KF positive default=NA;
+      double af "flicker noise exponent"
+	name=AF positive default=NA;
+      double fc "coef for fwd bias depl cap formula"
+	name=FC positive default=0.5;
+      double bv "reverse breakdown voltage"
+	name=BV positive default=NA;
+      double ibv "current at reverse breakdown"
+	name=IBV positive default=1e-3 print_test="bv != NA";
+      /* non-spice extensions */
+      double cjsw "zero bias sidewall cap (per perim.)"
+	name=CJSw positive default=0.0 print_test="cjsw != 0.";
+      double pbsw "sidewall junction potential"
+	name=PBSw positive final_default=pb print_test="cjsw != 0.";
+      double mjsw "sidewall grading coefficient"
+	name=MJSw positive final_default=0.33 print_test="cjsw != 0.";
+      double gparallel "parallel conductance"
+	name=GParallel default=0.0 print_test="gparallel != 0.";
+      int flags ""
+	name=FLAgs octal default=USE_OPT print_test="!(flags & USE_OPT)";
+      int mos_level "" default=0;
+    }
+    code_post {
+      if (bv == 0.) {
+	bv = NA;
+      }
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/

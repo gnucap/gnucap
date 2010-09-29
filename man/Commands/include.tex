@@ -1,0 +1,64 @@
+%$Id: include.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands include .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt INCLUDE} command}
+\index{merge command}
+\index{include command}
+\index{load circuit from file}
+\index{read circuit from file}
+\index{retrieve circuit from file}
+\index{file: get}
+\index{file: include}
+\index{file: merge}
+\index{file: read}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt INClude} {\it filename}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Gets an existing circuit or model file, adds it to what is already in memory.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+The first comment line of the file being read is the new title, and replaces
+the existing title.
+
+Comments in the circuit file are stored, unless they start with {\tt *+} in
+which case they are thrown away.
+
+`Dot cards' are interpreted the same as they would have been had the
+file been simply inserted in place.  This means they are used as
+presets if this file is included from a ``get'', or run if it is
+included from a ``$<$''.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt include npn.mod}] Include the file {\tt npn.mod}.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

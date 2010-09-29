@@ -1,0 +1,92 @@
+nmos bsim3, linear, vbs=0 
+#           v(1)       v(2)       v(3)       iter(0)   
+ 300.15     3.2367     0.009999   0.01       4.        
+#           i(Vgs)     i(Vds)     ps(Vgs)    ps(Vds)   
+ 300.15     0.        -958.34n    0.         9.5834n   
+#           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
+ 300.15     958.34n    3.2367     0.009999   0.         2.0459     0.57887   
+#           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
+ 300.15     731.05n    94.884u    639.68n    0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 300.15     186.5E-18  186.5E-18  0.         1.8647f    3.        
+#           cgs(M1)    cgd(M1)    cgb(M1)    vgst(M1)   von(M1)   
+ 300.15     0.         926.9E-18  1.8647f    1.1909     2.0459    
+#           cgst(M1)   cgdt(M1)   cgbt(M1)   is(M1)     ig(M1)     ib(M1)    
+ 300.15     186.5E-18  1.1134f    1.8647f   -958.34n    0.         13.205f   
+#           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1 iderror(M1
+ 300.15     9.5824n    9.5824n    0.         958.34n   -13.205f    ??        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 300.15     0.0049995  3.2317    -0.0049995 -0.0049995 
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
+ 300.15     0.009999   3.2367     0.         0.        
+#           v(1)       v(2)       v(3)       i(Vds)    
+-10.       -10.        0.01       0.01       0.        
+-9.        -9.         0.01       0.01       0.        
+-8.        -8.         0.01       0.01       0.        
+-7.        -7.         0.01       0.01       0.        
+-6.        -6.         0.01       0.01       0.        
+-5.        -5.         0.01       0.01       0.        
+-4.        -4.         0.01       0.01       0.        
+-3.        -3.         0.01       0.01       0.        
+-2.        -2.         0.01       0.01       0.        
+-1.        -1.         0.01       0.01       0.        
+ 0.         0.         0.01       0.01       0.        
+ 1.         1.         0.01       0.01       0.        
+ 2.         2.         0.01       0.01      -9.5416n   
+ 3.         3.         0.0099992  0.01      -781.3n    
+ 4.         4.         0.0099985  0.01      -1.4777u   
+ 5.         5.         0.0099979  0.01      -2.0558u   
+ 6.         6.         0.0099975  0.01      -2.5389u   
+ 7.         7.         0.0099971  0.01      -2.945u    
+ 8.         8.         0.0099967  0.01      -3.2879u   
+ 9.         9.         0.0099964  0.01      -3.5786u   
+ 10.        10.        0.0099962  0.01      -3.8256u   
+Vgs  1  0  DC   3.236734    
+M1  2  1  0  0  cmosn  l= 900.n  w= 900.n  nrd= 1.  nrs= 1.
+Vds  3  0  DC   0.01
+Rds  2  3  1.
+.model  cmosn  nmos  (level=7  tnom= 27.  fc= 0.5  pb= 1.  cj= 500.u
++  mj= 0.5  cjsw= 0.  mjsw= 0.33  is= 10.f  rsh= 0.  cgso= 207.188p
++  cgdo= 207.188p  cgbo= 0.  cdsc= 240.u  cdscb= 0.  cdscd= 0.
++  cit= 0.  nfactor= 1.  xj= 150.n  vsat= 80.K  at= 33.K  a0= 1.
++  ags= 0.  a1= 0.  a2= 1.  keta=-0.047  nsub= 60.E+15  nch= NA
++  ngate= 0.  gamma1= NA  gamma2= NA  vbx= NA  vbm=-3.  xt= 155.n
++  k1= NA  kt1=-0.11  kt1l= 0.  kt2= 0.022  k2= NA  k3= 80.  k3b= 0.
++  w0= 2.5u  nlx= 174.n  dvt0= 2.2  dvt1= 0.53  dvt2=-0.032  dvt0w= 0.
++  dvt1w= 5.3Meg  dvt2w=-0.032  drout= 0.56  dsub= NA  vth0= NA
++  ua= 2.25n  ua1= 4.31n  ub= 587.E-21  ub1=-7.61E-18  uc= NA  uc1= NA
++  u0= NA  ute=-1.5  voff=-0.08  delta= 0.01  rdsw= 0.  prwg= 0.
++  prwb= 0.  prt= 0.  eta0= 0.08  etab=-0.07  pclm= 1.3  pdiblc1= 0.39
++  pdiblc2= 0.0086  pdiblcb= 0.  pscbe1= 424.Meg  pscbe2= 10.u
++  pvag= 0.  wr= 1.  dwg= 0.  dwb= 0.  b0= 0.  b1= 0.  alpha0= 0.
++  beta0= 30.  elm= 5.  vfbcv=-1.  cgsl= 0.  cgdl= 0.  ckappa= 0.6
++  cf= NA  clc= 100.n  cle= 0.6  capmod=2  nqsmod=0  mobmod=1
++  noimod=1  paramchk=0  binunit=1  version= 3.1  tox= 15.n  xpart= 0.
++  jsw= 0.  mjswg= 0.33  pbswg= 1.  cjswg= 0.  nj= 1.  xti= 3.
++  lint= 0.  ll= 0.  lln= 1.  lw= 0.  lwn= 1.  lwl= 0.  lmin= 0.
++  lmax= 1.  wint= 0.  wl= 0.  wln= 1.  ww= 0.  wwn= 1.  wwl= 0.
++  wmin= 0.  wmax= 1.  dwc= 0.  dlc= 0.  noia= 100.E+18  noib= 50.K
++  noic=-1.4p  em= 41.Meg  ef= 1.)
+*+()
+.print op v(nodes) iter(0) 
+.op 
+.print op i(v*) ps(v*) 
+.op 
+.print op id(m1) vgs(m1) vds(m1) vbs(m1) vth(m1) vdsat(m1) 
+.op 
+.print op gm(m1) gds(m1) gmb(m1) cbd(m1) cbs(m1) 
+.op 
+.print op cgsovl(m1) cgdovl(m1) cgbovl(m1) cgate(m1) region(m1) 
+.op 
+.print op cgs(m1) cgd(m1) cgb(m1) vgst(m1) von(m1) 
+.op 
+.print op cgst(m1) cgdt(m1) cgbt(m1) is(m1) ig(m1) ib(m1) 
+.op 
+.print op p(m1) pd(m1) ps(m1) ids(m1) idstray(m1) iderror(m1) 
+.op 
+.print op vdm(m1) vgm(m1) vbm(m1) vsm(m1) 
+.op 
+.print op vd(m1) vg(m1) vb(m1) vs(m1) 
+.op 
+.print dc v(1) v(2) v(3) i(vds) 
+.dc vgs -10 10 1 

@@ -1,0 +1,69 @@
+%$Id: poly.tex,v 20.15 2001/10/30 03:59:06 al Exp $
+% man behavior poly .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt POLY}: Polynomial nonlinear transfer function}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt POLY} {\it c0 c1 c2 c3 ...}\\
+{\tt POLY} {\it c0 c1 c2 c3 ... args}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Defines a transfer function by a one dimensional polynomial.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+For capacitors, this function defines {\em charge} as a function of
+voltage.  For inductors, it defines {\em flux} as a function of
+current.  If you have the coefficients defining capacitance or
+inductance, prepending a ``0'' to the list will turn it into the
+correct form for GnuCap.
+
+For fixed sources, it defines voltage or current as a polynomial
+function of time.
+
+The transfer function is defined by:
+
+\begin{verbatim}
+out = c0 + (c1*in) + (c2*in^2) + ....
+\end{verbatim}
+%------------------------------------------------------------------------
+\subsection{Parameters}
+
+\begin{description}
+
+\item[{\tt MIN} = {\it x}] Minimum output value (clipping).
+(Default = -infinity.)
+
+\item[{\tt MAX} = {\it x}] Maximum output value (clipping).
+(Default = infinity)
+
+\item[{\tt ABS}] Absolute value, truth value.  (Default = false).  If
+set to true, the result will be always positive.
+
+\end{description}
+%------------------------------------------------------------------------
+%\subsection{Example} 
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

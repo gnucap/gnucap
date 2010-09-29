@@ -1,0 +1,47 @@
+#$Id: Make3,v 20.5 2001/09/17 15:43:17 al Exp $ -*- Makefile -*-
+# Copyright (C) 2001 Albert Davis
+# Author: Albert Davis <aldavis@ieee.org>
+#
+# This file is part of "GnuCap", the Gnu Circuit Analysis Package
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#------------------------------------------------------------------------
+# Part 3 of a Makefile
+#------------------------------------------------------------------------
+tags: $(HDRS) $(SRCS)
+	etags --c++ $(HDRS) $(SRCS)
+#------------------------------------------------------------------------
+checkin:
+	-ci -u`cat rcsversion` -m. -t/dev/null $(ALL)
+	-ci -r`cat rcsversion` -m. -t/dev/null $(DELETED)
+#------------------------------------------------------------------------
+checkout:
+	co $(ALL)
+#------------------------------------------------------------------------
+unclean:
+	rm $(ALL)
+#------------------------------------------------------------------------
+backup:
+	-mkdir BACKUP
+	cp $(ALL) BACKUP
+#------------------------------------------------------------------------
+clean:
+	-rm *.o
+#------------------------------------------------------------------------
+depend: $(SRCS)
+	$(CCC) -MM $(CCFLAGS) $(SRCS) > Make.depend
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------

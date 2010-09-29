@@ -1,0 +1,60 @@
+%$Id: x.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit x .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt X}: Subcircuit Call}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt X}{\it xxxxxxx n1} \{{\it n2 n3 ...}\} {\it subname}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Subcircuit call
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+Subcircuits are used by specifying pseudo-elements beginning with {\tt X},
+followed by the connection nodes.
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+\begin{description}
+
+\item[{\tt V}{\it x}]  Port (terminal node) voltage.  {\it x} is
+which port to probe.  1 is the first node in the "X" statement, 2
+is the second, and so on.
+
+\item[{\tt P}] Power.  The sum of the power probes for all the internal elements.
+
+\item[{\tt PD}] Power dissipated.  The total power dissipated as heat.
+
+\item[{\tt PS}] Power sourced.  The total power generated.
+
+\end{description}
+
+In this release, there are no probes available in AC analysis except for the
+internal elements.  More parameters will be added.  Internal elements can be
+probed by concatenating the internal part label with the subcircuit label.
+R5.X7 is R5 inside X7.
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

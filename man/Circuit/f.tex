@@ -1,0 +1,49 @@
+%$Id: f.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit f .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt F}: Current Controlled Current Source}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt F}{\it xxxxxxx n+ n-- ce} {\it value}\\
+{\tt F}{\it xxxxxxx n+ n-- ce} {\it expression}\\
+{\tt .CCCS} {\it label n+ n-- ce} {\it expression}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Current controlled current source, or current gain block.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+{\it N+} and {\it n--} are the positive and negative element (output)
+nodes, respectively.  Current flow is from the positive node,
+through the source, to the negative node.  {\it Ce} is the name of
+an element through which the controlling current flows.  The
+direction of positive controlling current is from the positive
+node, through the element, to the negative node of {\it ce}.  {\it
+Value} is the transconductance in mhos.
+
+The controlling element can be any simple two terminal element.
+Unlike SPICE, it does not need to be a voltage source.
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

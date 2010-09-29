@@ -1,0 +1,42 @@
+Mutual inductance test circuit  --  lo-z drive
+v1 1 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r1a 1 2 1
+k1 l1a l1b .75
+l1a 2 0 .56
+l1b 3 0 .79
+r1b 3 0 75
+
+v2 4 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r2a 4 5 1
+l2a 5 6 .061151326
+l2b 6 0 .498848674
+l2c 6 7 .291151326
+r2b 7 0 75
+
+v3 8 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r3a 8 9 1
+l3a 10 0 .56
+l3b 11 0 .79
+e3a 9 10 11 0 .631454018
+e3b 12 11 10 0 .890801204
+r3b 12 0 75
+
+v4 13 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+R4a 13 14 1
+l4a 14 0 .245
+l4b 15 0 .345625
+#vp4a 14 16 0
+#vp4b 15 17 0
+f4a 14 0 l4b -.890801204
+f4b 15 0 l4a -.631454018
+r4b 15 0 75
+
+.options nopage
+.width out=170
+.print ac v(2) v(3) v(5) v(7) v(9) v(12) v(14) v(15)
+.ac dec 2 .1 1k
+.print ac  vp(2) vp(3) vp(5) vp(7) vp(9) vp(12) vp(14) vp(15)
+.ac dec 2 .1 1k
+.print tran v(2) v(3) v(5) v(7) v(9) v(12) v(14) v(15)
+.tran .001 .01 0 .0001
+.end

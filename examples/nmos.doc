@@ -1,0 +1,28 @@
+Here are a few strings of NMOS inverters.
+NMOS is harder to simulate than CMOS.
+
+nmos22.ckt	all one power supply
+nmos30.ckt
+nmos100.ckt
+nmp100.ckt	separate power supplies
+
+The number is the number of gates.   
+
+Power supply coupling can hinder convergence, so the big circuits
+have separate power supplies for each gate.  At 1000 gates it makes
+the difference between convergence and non-convergence.  At 100
+gates, it slows it down a bit but doesn't change the number of
+iterations.  The latency exploitation doesn't work as well with
+common power supplies.  The reason for the problem is that the
+voltage source in ACS is non-ideal.  A future release will have an
+ideal voltage source.
+
+Still... Spice 2g6 doesn't converge on either 100 gate circuit.
+
+Another point is that these large circuits show why ACS doesn't
+automatically print everything when you do an "op" analysis.
+Everything Spice gives you is available.  We just don't print it
+automatically.
+
+The two .c files nmosgen.c and nmpgen.c are what I used to generate
+these circuits.

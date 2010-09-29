@@ -1,0 +1,660 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>PRINT command</TITLE>
+<META NAME="description" CONTENT="PRINT command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node47.html">
+<LINK REL="previous" HREF="node45.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node47.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1023"
+  HREF="node47.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1019"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1013"
+  HREF="node45.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1021"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1024"
+  HREF="node47.html">QUIT command</A>
+<B> Up:</B> <A NAME="tex2html1020"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html1014"
+  HREF="node45.html">PLOT command</A>
+ &nbsp <B>  <A NAME="tex2html1022"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1025"
+  HREF="#SECTION003351000000000000000">Syntax</A>
+<LI><A NAME="tex2html1026"
+  HREF="#SECTION003352000000000000000">Purpose</A>
+<LI><A NAME="tex2html1027"
+  HREF="#SECTION003353000000000000000">Comments</A>
+<LI><A NAME="tex2html1028"
+  HREF="#SECTION003354000000000000000">Node probes</A>
+<LI><A NAME="tex2html1029"
+  HREF="#SECTION003355000000000000000">Status probes</A>
+<LI><A NAME="tex2html1030"
+  HREF="#SECTION003356000000000000000">Element probes</A>
+<LI><A NAME="tex2html1031"
+  HREF="#SECTION003357000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION003350000000000000000"></A>
+<A NAME="4432"></A>
+<A NAME="4433"></A>
+<A NAME="4434"></A>
+<A NAME="4435"></A>
+<A NAME="4436"></A>
+<BR>
+<TT>PRINT</TT> command
+</H1>
+
+<H2><A NAME="SECTION003351000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>PRint</TT>
+<BR><TT>PRint</TT> <I>mode points ...</I> ...
+<BR><TT>PRint</TT> <I>mode + points ...</I> ...
+<BR><TT>PRint</TT> <I>mode - points ...</I> ...
+<BR><TT>PRint</TT> <I>mode</I> <TT>CLEAR</TT>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION003352000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Select points in the circuit for tabular output.  Select tabular output.
+
+<H2><A NAME="SECTION003353000000000000000">
+Comments</A>
+</H2>
+
+<P>
+The `<TT>print</TT>' command selects where to look at the circuit, or where to
+hook the voltmeter (ammeter, watt meter, ohm meter, etc.) probe.
+
+<P>
+There are separate lists of probe points for each type of analysis.
+
+<P>
+To list the probe points, use the bare command `<TT>print</TT>'.
+
+<P>
+On start-up, probes are not set.  You must do the command `<TT>print op
+v(nodes)</TT>' or put `<TT>.print op v(nodes)</TT>' in the circuit file to get any
+output from the <TT>op</TT> command.
+
+<P>
+Syntax for each point is <I>parameter(node)</I>, <I>parameter(componentlabel)</I>, or <I>parameter(index)</I>.  Some require a
+dummy index.
+
+<P>
+You can access components in subcircuits by connecting the names with dots.
+For example: <TT>R56.X67.Xone</TT> is <TT>R56</TT> in <TT>X67</TT> in <TT>Xone</TT>.
+Some built-in elements, including diodes, transistors, and mosfets, contain
+subcircuits with internal elements.  <TT>Cgd.M12</TT> is the gate to drain
+capacitor of mosfet <TT>M12</TT>.
+
+<P>
+If the component does not exist, you will get an error message.  If the
+component exists but the parameter is not valid for that type, there will be
+no error message but the value printed will be obviously bogus.
+
+<P>
+The options <TT>plot</TT> and <TT>noplot</TT> on any analysis command turn
+plotting on and off a single run.  The <TT>plot</TT> command turns 
+plotting on and tabular output off.  The <TT>print</TT> command turns plotting 
+off and tabular output on.
+
+<P>
+You can add to or delete from an existing list by prefixing with
+<TT>+</TT> or <TT>-</TT>.  <TT>print ac + v(3)</TT> adds v(3) to the existing
+set of AC probes.  <TT>print ac - q(c5)</TT> removes q(c5) from the
+list.  You can use the wildcard characters <TT>*</TT> and <TT>?</TT> when
+deleting.
+
+<P>
+For AC analysis, by adding a suffix letter to the parameter, you can
+get the magnitude <TT>M</TT>, phase <TT>P</TT>, real part <TT>R</TT>, or
+imaginary part <TT>I</TT>.  Adding <TT>DB</TT> gives the value in decibels,
+relative to 1.  For example, <TT>VRDB(R13)</TT> gives you the real part
+of the voltage across R13, in decibels.
+
+<H2><A NAME="SECTION003354000000000000000">
+Node probes</A>
+</H2>
+
+<P>
+Several parameters are available at each node.
+
+<H3><A NAME="SECTION003354100000000000000">
+All modes</A>
+</H3>
+
+<P>
+<DL>
+<DT><STRONG><TT>V</TT></STRONG></DT>
+<DD>Voltage.
+
+<P>
+</DD>
+</DL>
+<H3><A NAME="SECTION003354200000000000000">
+All except Transient</A>
+</H3>
+
+<P>
+<DL>
+<DT><STRONG><TT>Z</TT></STRONG></DT>
+<DD>Impedance looking into the node.
+
+<P>
+</DD>
+</DL>
+<H3><A NAME="SECTION003354300000000000000">
+Transient, DC, OP only</A>
+</H3>
+<DL>
+<DT><STRONG><TT>Logic</TT></STRONG></DT>
+<DD>A numeric interpretation of the logic value at the node.
+The value is displayed encoded in a number of the form <IMG
+ WIDTH="31" HEIGHT="15" ALIGN="BOTTOM" BORDER="0"
+ SRC="img8.png"
+ ALT="$a.bc$"> where <IMG
+ WIDTH="12" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img9.png"
+ ALT="$a$"> is
+the logic state: <IMG
+ WIDTH="29" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img10.png"
+ ALT="$0 =$"> logic <IMG
+ WIDTH="12" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img11.png"
+ ALT="$0$">, <IMG
+ WIDTH="29" HEIGHT="13" ALIGN="BOTTOM" BORDER="0"
+ SRC="img12.png"
+ ALT="$1 =$"> rising, <IMG
+ WIDTH="29" HEIGHT="13" ALIGN="BOTTOM" BORDER="0"
+ SRC="img13.png"
+ ALT="$2 =$"> falling, <IMG
+ WIDTH="29" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img14.png"
+ ALT="$3 =$"> logic
+<IMG
+ WIDTH="12" HEIGHT="13" ALIGN="BOTTOM" BORDER="0"
+ SRC="img15.png"
+ ALT="$1$">.  <IMG
+ WIDTH="11" HEIGHT="15" ALIGN="BOTTOM" BORDER="0"
+ SRC="img16.png"
+ ALT="$b$"> is an indication of the quality of the digital signal.  <IMG
+ WIDTH="12" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img11.png"
+ ALT="$0$"> is a
+fully valid logic signal.  Nonzero indicates it does not meet the criteria
+for logic simulation.  <IMG
+ WIDTH="11" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img17.png"
+ ALT="$c$"> indicates how the node was calculated:  <IMG
+ WIDTH="12" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img11.png"
+ ALT="$0$">
+indicates logic simulation.  <IMG
+ WIDTH="12" HEIGHT="13" ALIGN="BOTTOM" BORDER="0"
+ SRC="img15.png"
+ ALT="$1$"> indicates analog simulation of a logic
+device.  <IMG
+ WIDTH="12" HEIGHT="13" ALIGN="BOTTOM" BORDER="0"
+ SRC="img18.png"
+ ALT="$2$"> indicates analog simulation of analog devices.
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION003355000000000000000">
+Status probes</A>
+</H2>
+
+<P>
+There are several status variables that can be probed.
+
+<H3><A NAME="SECTION003355100000000000000">
+All modes</A>
+</H3>
+
+<P>
+<DL>
+<DT><STRONG><TT>Temperature(0)</TT></STRONG></DT>
+<DD>The simulation temperature in degrees Celsius.
+
+<P>
+</DD>
+<DT><STRONG><TT>TIme(0)</TT></STRONG></DT>
+<DD>The current time in a transient analysis.  In AC
+analysis it shows the time at which the bias point was set, 0 if it was set
+in a DC or OP analysis, or -1 if it is the bias was not set (power off).
+
+<P>
+</DD>
+</DL>
+<H3><A NAME="SECTION003355200000000000000">
+Transient, DC, OP only</A>
+</H3>
+<DL>
+<DT><STRONG><TT>GEnerator</TT></STRONG></DT>
+<DD>The output of the ``signal generator''.  In a 
+transient analysis, it shows the output of the signal generator, as set 
+up by the <TT>generator</TT> command.  In a DC analysis, it shows the DC
+input voltage (not the power supply).  In an OP analysis, it shows the
+DC input, normally zero.  
+
+<P>
+<A NAME="4505"></A>
+</DD>
+<DT><STRONG><TT>ITer(0)</TT></STRONG></DT>
+<DD>The number of iterations needed for convergence for
+this printed step including any hidden steps.
+
+<P>
+</DD>
+<DT><STRONG><TT>ITer(1)</TT></STRONG></DT>
+<DD>The number of iterations needed for convergence for
+this printed step not including any hidden steps.
+
+<P>
+</DD>
+<DT><STRONG><TT>ITer(2)</TT></STRONG></DT>
+<DD>The total number of iterations needed since startup
+including check passes.
+
+<P>
+</DD>
+<DT><STRONG><TT>Control(0)</TT></STRONG></DT>
+<DD>A number indicating why the simulator chose this
+time to simulate at.
+<DL>
+<DT></DT>
+<DD>1 The user requested it.  One of the steps in a sweep.
+
+<P>
+</DD>
+<DT></DT>
+<DD>2 A discrete event.  An element required a solution at this time.
+
+<P>
+</DD>
+<DT></DT>
+<DD>3 The effect of the ``<TT>skip</TT>'' parameter.
+
+<P>
+</DD>
+<DT></DT>
+<DD>4 The iteration count exceeded <TT>ITL4</TT> so the last step was
+rejected and is being redone at a smaller time step.
+
+<P>
+</DD>
+<DT></DT>
+<DD>5 The iteration count exceeded <TT>ITL3</TT> so the time interval 
+is the same as it was last time.
+
+<P>
+</DD>
+<DT></DT>
+<DD>6 Determined by local truncation error or some other device 
+dependent approximation in hopes of controlling accuracy.
+
+<P>
+</DD>
+<DT></DT>
+<DD>7,8 The step size was limited to twice the previous step size.
+
+<P>
+</DD>
+<DT></DT>
+<DD>9 The step size was reduced to half the interval to an event 
+to avoid a tiny next step.
+
+<P>
+</DD>
+<DT></DT>
+<DD>10 + x The previous step was rejected.
+
+<P>
+</DD>
+<DT></DT>
+<DD>20 + x A zero time step was replaced by <I>mrt</I>.
+
+<P>
+</DD>
+<DT></DT>
+<DD>30 + x The required step size less than <I>mrt</I>, so it was 
+replaced by <I>mrt</I>.
+
+<P>
+</DD>
+</DL>
+
+<P>
+</DD>
+<DT><STRONG><TT>Control(1)</TT></STRONG></DT>
+<DD>The number internal time steps.  (1 if all steps are
+printed.  One more than the number of hidden steps.)
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION003356000000000000000">
+Element probes</A>
+</H2>
+
+<P>
+Each element type has several parameters that can be probed.  In general,
+the form is <TT>Parameter(element)</TT>.  Wild cards are allowed in element
+names to allow probing the same parameter of a group of elements.
+
+<P>
+For components in a subcircuit, the names are connected with dots.  For
+example <TT>R12.X13</TT> is <TT>R12</TT> in the subcircuit <TT>X13</TT>.
+
+<P>
+Most two node elements (capacitors, inductors, resistors, sources) and
+four terminal elements (controlled sources) have at least the
+following parameters available.  Others are available for some
+elements.
+
+<H3><A NAME="SECTION003356100000000000000">
+All modes</A>
+</H3>
+
+<P>
+<DL>
+<DT><STRONG><TT>V</TT></STRONG></DT>
+<DD>Branch voltage.  The first node in the net list is assumed
+positive.  This is the same as ``output voltage''.
+
+<P>
+</DD>
+<DT><STRONG><TT>Vout</TT></STRONG></DT>
+<DD>Output voltage.  The voltage across the ``output''
+terminals. 
+
+<P>
+</DD>
+<DT><STRONG><TT>VIN</TT></STRONG></DT>
+<DD>Input voltage.  The voltage across the ``input''
+terminals.  For two terminal elements, input and output voltages are
+the same.
+
+<P>
+</DD>
+<DT><STRONG><TT>I</TT></STRONG></DT>
+<DD>Branch current.  It flows into the first node in the net
+list, out of the second.
+
+<P>
+</DD>
+<DT><STRONG><TT>P</TT></STRONG></DT>
+<DD>Branch power.  Positive power indicates dissipation. 
+Negative power indicates that the part is supplying power.  Its value 
+is the same as (PD - PS).  In AC analysis, it is the real part only.
+
+<P>
+</DD>
+<DT><STRONG><TT>NV</TT></STRONG></DT>
+<DD>Nominal value.  In most cases, this is just the value
+which is constant, but it can vary for internal elements of complex
+devices. 
+
+<P>
+</DD>
+<DT><STRONG><TT>EV</TT></STRONG></DT>
+<DD>The effective value of the part, in its units.  If the part
+is ordinary, it will just show its value, but if it is time variant or
+nonlinear, it shows what it is now.
+
+<P>
+</DD>
+<DT><STRONG><TT>R</TT></STRONG></DT>
+<DD>Resistance.  The effective resistance of the part, in ohms.
+In AC analysis, shows the magnitude of the self impedance.  In <TT>OP</TT>,
+<TT>DC</TT> or <TT>TRansient</TT> analysis, shows its incremental resistance.  In
+<TT>TRansient</TT> analysis, it shows the effective Z-domain resistance of
+inductors and capacitors.
+
+<P>
+</DD>
+<DT><STRONG><TT>Y</TT></STRONG></DT>
+<DD>Admittance.  <IMG
+ WIDTH="32" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img19.png"
+ ALT="$1/R$">.
+
+<P>
+</DD>
+</DL>
+<H3><A NAME="SECTION003356200000000000000">
+All except Transient</A>
+</H3>
+
+<P>
+<DL>
+<DT><STRONG><TT>Z</TT></STRONG></DT>
+<DD>Impedance at a port.  The port impedance seen looking
+into the circuit across the branch.  It does not include the part
+itself.  In transient analysis, it shows the effective Z-domain
+impedance, which is a meaningless number if there are capacitors or
+inductors in the circuit.
+
+<P>
+</DD>
+<DT><STRONG><TT>ZRAW</TT></STRONG></DT>
+<DD>Impedance at a port, raw.  This is the same as ``Z'' 
+except that it includes the part itself.
+
+<P>
+</DD>
+</DL>
+<H3><A NAME="SECTION003356300000000000000">
+Transient, DC, OP only</A>
+</H3>
+
+<P>
+These parameters are available in addition to the above.
+
+<P>
+<DL>
+<DT><STRONG><TT>PD</TT></STRONG></DT>
+<DD>Branch power dissipated.  The power dissipated in the 
+part.  It is always positive and does not include power sourced.
+
+<P>
+</DD>
+<DT><STRONG><TT>PS</TT></STRONG></DT>
+<DD>Branch power sourced.  The power sourced by the part.  
+It is always positive and does not consider its own dissipation.
+
+<P>
+</DD>
+<DT><STRONG><TT>F</TT></STRONG></DT>
+<DD>The result of evaluating the function related to the 
+part.  It is the voltage across a resistor, the charge stored in a 
+capacitor, the flux in an inductor, etc.
+
+<P>
+</DD>
+<DT><STRONG><TT>INput</TT></STRONG></DT>
+<DD>The ``input'' of the device.  It is the current
+through a resistor or inductor, the voltage across a capacitor or
+admittance, etc.  It is the value used to evaluate nonlinearities.
+
+<P>
+</DD>
+<DT><STRONG><TT>IOffset</TT></STRONG></DT>
+<DD>The offset current in the device.  The current
+through a nonlinear device can be considered to have two parts: a
+passive part and an offset.
+
+<P>
+</DD>
+<DT><STRONG><TT>IPassive</TT></STRONG></DT>
+<DD>The passive part of the current.
+
+<P>
+</DD>
+</DL>
+<H3><A NAME="SECTION003356400000000000000">
+AC only</A>
+</H3>
+
+<P>
+These parameters are available in addition to the above.  In addition
+to those listed here, you can add a suffix (<TT>M, P, R, I</TT> and <TT>DB</TT>) for magnitude, phase, real part, imaginary part, and decibels, to 
+any valid probe.  Some of them have a special meaning, which is listed 
+here.  Negative phase is capacitive.  Positive phase is inductive.
+
+<P>
+<DL>
+<DT><STRONG><TT>PI</TT></STRONG></DT>
+<DD>Reactive (imaginary) power, volt-amps reactive.
+
+<P>
+</DD>
+<DT><STRONG><TT>PIDB</TT></STRONG></DT>
+<DD>Decibels relative to 1 va reactive.
+
+<P>
+</DD>
+<DT><STRONG><TT>PM</TT></STRONG></DT>
+<DD>Volt amps, complex power.
+
+<P>
+</DD>
+<DT><STRONG><TT>PMDB</TT></STRONG></DT>
+<DD>Decibels relative to 1 va.
+
+<P>
+</DD>
+<DT><STRONG><TT>PP</TT></STRONG></DT>
+<DD>Power phase (angle between voltage and current).  
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION003357000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>print ac v(12) v(13) v(14)</TT></STRONG></DT>
+<DD>The voltage at nodes 12, 13, and 14
+for AC analysis.
+
+<P>
+</DD>
+<DT><STRONG><TT>print dc v(r26)</TT></STRONG></DT>
+<DD>The voltage across <TT>R26</TT>, for DC analysis.
+
+<P>
+</DD>
+<DT><STRONG><TT>print tran v(r83) p(r83)</TT></STRONG></DT>
+<DD>Voltage and power of <TT>R83</TT>, for
+transient analysis.
+
+<P>
+</DD>
+<DT><STRONG><TT>print dc i(c8) p(r5) z(r5)</TT></STRONG></DT>
+<DD>The current through <TT>C8</TT>, power
+dissipated in <TT>R5</TT>, and the impedance seen looking into the circuit
+across <TT>R5</TT>.
+
+<P>
+</DD>
+<DT><STRONG><TT>print op v(nodes)</TT></STRONG></DT>
+<DD>The voltage at all nodes for the <TT>op</TT>
+command.
+
+<P>
+</DD>
+<DT><STRONG><TT>print</TT></STRONG></DT>
+<DD>List all the probes, for all modes.
+
+<P>
+</DD>
+<DT><STRONG><TT>print op</TT></STRONG></DT>
+<DD>Display the <TT>OP</TT> probe list.
+
+<P>
+</DD>
+<DT><STRONG><TT>print ac clear</TT></STRONG></DT>
+<DD>Clear the AC list.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1023"
+  HREF="node47.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1019"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1013"
+  HREF="node45.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1021"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1024"
+  HREF="node47.html">QUIT command</A>
+<B> Up:</B> <A NAME="tex2html1020"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html1014"
+  HREF="node45.html">PLOT command</A>
+ &nbsp <B>  <A NAME="tex2html1022"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

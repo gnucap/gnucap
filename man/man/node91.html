@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>GENERATOR: Signal Generator time dependent value</TITLE>
+<META NAME="description" CONTENT="GENERATOR: Signal Generator time dependent value">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node92.html">
+<LINK REL="previous" HREF="node90.html">
+<LINK REL="up" HREF="node85.html">
+<LINK REL="next" HREF="node92.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1751"
+  HREF="node92.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1747"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1741"
+  HREF="node90.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1749"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1752"
+  HREF="node92.html">POLY: Polynomial nonlinear transfer</A>
+<B> Up:</B> <A NAME="tex2html1748"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1742"
+  HREF="node90.html">FIT: Fit a curve</A>
+ &nbsp <B>  <A NAME="tex2html1750"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1753"
+  HREF="#SECTION00561000000000000000">Syntax</A>
+<LI><A NAME="tex2html1754"
+  HREF="#SECTION00562000000000000000">Purpose</A>
+<LI><A NAME="tex2html1755"
+  HREF="#SECTION00563000000000000000">Comments</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00560000000000000000">
+<TT>GENERATOR</TT>: Signal Generator time dependent value</A>
+</H1>
+
+<H2><A NAME="SECTION00561000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>GENERATOR</TT> <I>scale</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00562000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+The component ``value'' is dependent on a ``signal generator'',
+manipulated by the ``generator'' command.
+
+<H2><A NAME="SECTION00563000000000000000">
+Comments</A>
+</H2>
+
+<P>
+For transient analysis, the ``value'' is determined by a signal
+generator, which is considered to be external to the circuit and part
+of the test bench.  See the ``generator'' command for more
+information.
+
+<P>
+For AC analysis, the value here is the amplitude.
+
+<P>
+Strictly, all of the functionality and more is available through the
+Spice-like behavioral modeling functions, but this one provides a user 
+interface closer to the function generator that an analog designer
+would use on a real bench.  It is mainly used for interactive operation.
+
+<P>
+It also provides backward compatibility with predecessors to GnuCap,
+which used a different netlist format.
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

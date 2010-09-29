@@ -1,0 +1,68 @@
+30 cascaded NMOS inverters
+md1  3 2 0 0  modeld w=10u l=2u
+ml1  1 1 3 0  modell w=2u l=2u
+md2  4 3 0 0  modeld w=10u l=2u
+ml2  1 1 4 0  modell w=2u l=2u
+md3  5 4 0 0  modeld w=10u l=2u
+ml3  1 1 5 0  modell w=2u l=2u
+md4  6 5 0 0  modeld w=10u l=2u
+ml4  1 1 6 0  modell w=2u l=2u
+md5  7 6 0 0  modeld w=10u l=2u
+ml5  1 1 7 0  modell w=2u l=2u
+md6  8 7 0 0  modeld w=10u l=2u
+ml6  1 1 8 0  modell w=2u l=2u
+md7  9 8 0 0  modeld w=10u l=2u
+ml7  1 1 9 0  modell w=2u l=2u
+md8  10 9 0 0  modeld w=10u l=2u
+ml8  1 1 10 0  modell w=2u l=2u
+md9  11 10 0 0  modeld w=10u l=2u
+ml9  1 1 11 0  modell w=2u l=2u
+md10  12 11 0 0  modeld w=10u l=2u
+ml10  1 1 12 0  modell w=2u l=2u
+md11  13 12 0 0  modeld w=10u l=2u
+ml11  1 1 13 0  modell w=2u l=2u
+md12  14 13 0 0  modeld w=10u l=2u
+ml12  1 1 14 0  modell w=2u l=2u
+md13  15 14 0 0  modeld w=10u l=2u
+ml13  1 1 15 0  modell w=2u l=2u
+md14  16 15 0 0  modeld w=10u l=2u
+ml14  1 1 16 0  modell w=2u l=2u
+md15  17 16 0 0  modeld w=10u l=2u
+ml15  1 1 17 0  modell w=2u l=2u
+md16  18 17 0 0  modeld w=10u l=2u
+ml16  1 1 18 0  modell w=2u l=2u
+md17  19 18 0 0  modeld w=10u l=2u
+ml17  1 1 19 0  modell w=2u l=2u
+md18  20 19 0 0  modeld w=10u l=2u
+ml18  1 1 20 0  modell w=2u l=2u
+md19  21 20 0 0  modeld w=10u l=2u
+ml19  1 1 21 0  modell w=2u l=2u
+md20  22 21 0 0  modeld w=10u l=2u
+ml20  1 1 22 0  modell w=2u l=2u
+md21  23 22 0 0  modeld w=10u l=2u
+ml21  1 1 23 0  modell w=2u l=2u
+md22  24 23 0 0  modeld w=10u l=2u
+ml22  1 1 24 0  modell w=2u l=2u
+md23  25 24 0 0  modeld w=10u l=2u
+ml23  1 1 25 0  modell w=2u l=2u
+md24  26 25 0 0  modeld w=10u l=2u
+ml24  1 1 26 0  modell w=2u l=2u
+md25  27 26 0 0  modeld w=10u l=2u
+ml25  1 1 27 0  modell w=2u l=2u
+md26  28 27 0 0  modeld w=10u l=2u
+ml26  1 1 28 0  modell w=2u l=2u
+md27  29 28 0 0  modeld w=10u l=2u
+ml27  1 1 29 0  modell w=2u l=2u
+md28  30 29 0 0  modeld w=10u l=2u
+ml28  1 1 30 0  modell w=2u l=2u
+md29  31 30 0 0  modeld w=10u l=2u
+ml29  1 1 31 0  modell w=2u l=2u
+md30  32 31 0 0  modeld w=10u l=2u
+ml30  1 1 32 0  modell w=2u l=2u
+vdd 1 0 5
+vin 2 0 .8
+.MODEL MODELD NMOS (level=2 KP=28U VTO=0.7 LAMBDA=0.01 GAMMA=0.9 PHI=0.5)
+.MODEL MODELL NMOS (level=2 KP=28U VTO=0.7 LAMBDA=0.01 GAMMA=0.9 PHI=0.5)
+.PRINT OP iter(0) V(nodes)
+.op
+.end

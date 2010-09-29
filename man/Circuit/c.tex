@@ -1,0 +1,149 @@
+%$Id: c.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit c .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt C}: Capacitor}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+  {\tt C}{\it xxxxxxx n+ n-- value}\\
+  {\tt C}{\it xxxxxxx n+ n-- expression}\\
+  {\tt C}{\it xxxxxxx n+ n-- value} 
+        \{{\tt IC=}{\it initial-voltage}\}\\
+  {\tt C}{\it xxxxxxx n+ n-- model} \{{\tt L=}{\it length}\}
+        \{{\tt W=}{\it width}\} \{{\tt TEMP=}{\it temperature}\}
+        \{{\tt IC=}{\it initial-voltage}\}\\
+  {\tt .CAPacitor} {\it label n+ n-- expression}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Capacitor, or general charge storage element.
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+The following probes (Transient, DC, and OP analysis) are available in
+addition to those available for all basic elements.
+
+\begin{description}
+  
+\item[{\tt DT}] Time step.  The internal time step used for this
+  device for numerical integration.  It is not necessarily the same as
+  the global time step.
+  
+\item[{\tt TIME}] Time.  The time of the most recent calculation of
+  this device.  It is not necessarily the same as the global time.
+  
+\item[{\tt TIMEOLD}] The time of the previous calculation of this
+  device.  It is not necessarily the same as the global time.
+  
+\item[{\tt TIMEFuture}] The latest recommended time for the next
+  sample, as determined by this device.  The actual time will probably
+  be sooner than this.
+  
+\item[{\tt CHarge}] The charge stored in this capacitor.
+  
+\item[{\tt Q}] The same as {\tt Charge}.
+  
+\item[{\tt Capacitance}] The effective capacitance of this device.
+  For a fixed capacitor, it is constant.  It will vary if this device
+  is nonlinear.
+  
+\item[{\tt DQDT}] The time derivative of charge.  Hopefully this is
+  the same as current, but it is calculated a different way and can be
+  used as an accuracy check.
+  
+\item[{\tt DQ}] The change in charge compared to the previous sample.
+  Its primary use is in debugging models and numerical problems.
+
+\end{description}
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+{\it N+} and {\it n--} are the positive and negative element nodes,
+respectively.  {\it Value} is the capacitance in Farads.
+
+The (optional) initial condition is the initial (time = 0) value of
+the capacitor voltage (in Volts).  Note that the initial conditions
+(if any) apply only if the {\tt UIC} option is specified on the {\tt
+  transient} command.
+
+You may specify the {\it value} in one of three forms:
+
+\begin{enumerate}
+  
+\item A simple value.  This is the capacitance in Farads.
+  
+\item An expression, as described in the behavioral modeling chapter.
+  The expression can specify the charge as a function of voltage, or
+  the capacitance as a function of time.
+  
+\item A {\it model}, which calculates the capacitance as a function of
+  length and width, referencing a {\tt .model} statement of type {\tt
+    C}.  This is compatible with the Spice-3 ``semiconductor
+  capacitor''.
+
+\end{enumerate}
+%------------------------------------------------------------------------
+\subsection{Model statement}
+
+A model statement may be used,, with model type {\tt C} or {\tt Cap}.
+The parameters are:
+
+\begin{description}
+  
+\item[{\tt CJ} = {\it x}] Junction bottom capacitance. (Farads / meter
+  squared).  (Default = 0.)
+  
+\item[{\tt CJSW} = {\it x}] Junction sidewall capacitance. (Farads /
+  meter).  (Default = 0.)
+  
+\item[{\tt DEFW} = {\it x}] Default width. (meters).  (Default = 1e-6)
+  
+\item[{\tt NARROW} = {\it x}] Narrowing due to side etching. (meters).
+  (Default = 0.)
+  
+\item[{\tt TC1} = {\it x}] First order temperature coefficient.
+  (Farads / degree C).  (Default = 0.) (Not in Spice.)
+  
+\item[{\tt TC2} = {\it x}] Second order temperature coefficient.
+  (Farads / degree C squared).  (Default = 0.) (Not in Spice.)
+  
+\item[{\tt TNOM} = {\it x}] Parameter measurement temperature.
+  (degrees C.).  (Default = 27.) (Not in Spice.)
+
+\end{description}
+
+Capacitance is computed by the formula:
+
+\begin{verbatim}
+capacitance = CJ * (L - NARROW) * (W - NARROW)
+  + 2 * CJSW * (L + L - 2 * NARROW)
+\end{verbatim}
+
+After the nominal value is calculated, it is adjusted for temperature
+by the formula:
+
+\begin{verbatim}
+value *= (1 + TC1 * (T-T0) + TC2 * (T-T0)^2)
+\end{verbatim}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

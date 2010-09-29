@@ -1,0 +1,91 @@
+%$Id: 0summary.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit summary .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{Summary}
+
+ To describe a circuit, you must provide a `netlist'.  The netlist is simply
+a list of the components with their connections and values.  The format is
+essentially the same as the standard SPICE format.
+
+Before doing this, number the nodes on your schematic.  (A node is a place
+where parts connect together.)  Then, each part gets a line in the netlist
+(circuit description).  In its simplest form, which you will use most of the
+time, it is just the type, such as `R' for resistor, or a label, like `R47',
+followed by the two nodes it connects to, then its value.
+
+Example:  `{\tt R29 6 8 22k}' is a 22k resistor between nodes 6 and 8.
+
+\index{ground node}
+\index{common node}
+\index{voltage reference}
+ Node 0 is used as a reference for all calculations and is assumed to have a
+voltage of zero.  (This is the ground, earth or common node.)  Nodes must be
+nonnegative integers, but need not be numbered sequentially.
+
+\index{open circuit error}
+ There should be a DC path through the circuit to node 0 from every node
+that is actually used.  The circuit cannot contain a cutset of current
+sources and/or capacitors.  If either of these cases occurs, it will be
+discovered during analysis.  The program will attempt to correct the error,
+issue an `open circuit' error message and continue.  This is rarely a
+problem with real circuits.  Most circuits have such a path, however
+indirect.
+
+Semiconductor devices require both a device statement, and a {\tt .model}
+statement (or ``card'').  The device statement, described in the Circuit
+description chapter, defines individual devices as variations from a
+prototype, as is required for different devices on the same substrate.  The
+model statement, described in this chapter, defines process dependent
+parameters, which usually apply to all devices on a substrate.
+
+The {\tt .model} card syntax is:
+\begin{verse}
+{\tt .model} {\it mname type} \{{\it args}\}
+\end{verse}
+
+{\it Mname} is the model name, which elements will use to refer to this
+model.  {\it Type} is one of several types of built-in models.  {\it Args}
+is a list of the parameters, of the form {\it name}{\tt =}{\it value}.
+
+\begin{description}
+
+\item[{\tt D}] Diode model
+
+\item[{\tt NMOS}] N-channel MOSFET model
+
+\item[{\tt PMOS}] P-channel MOSFET model
+
+\item[{\tt LOGIC}] Logic family description
+
+\item[{\tt SW}] Voltage controlled switch
+
+\item[{\tt CSW}] Current controlled switch
+
+\item[{\tt C}] Semiconductor capacitor
+
+\item[{\tt R}] Semiconductor resistor
+
+\item[{\tt TABLE}] y/x table of values
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

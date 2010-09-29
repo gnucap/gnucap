@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Conditionals</TITLE>
+<META NAME="description" CONTENT="Conditionals">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node87.html">
+<LINK REL="previous" HREF="node85.html">
+<LINK REL="up" HREF="node85.html">
+<LINK REL="next" HREF="node87.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1670"
+  HREF="node87.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1666"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1660"
+  HREF="node85.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1668"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1671"
+  HREF="node87.html">Functions</A>
+<B> Up:</B> <A NAME="tex2html1667"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1661"
+  HREF="node85.html">Behavioral modeling</A>
+ &nbsp <B>  <A NAME="tex2html1669"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1672"
+  HREF="#SECTION00511000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00510000000000000000">
+Conditionals</A>
+</H1>
+GnuCap behavioral modeling conditionals are an extension of the ``AC''
+and ``DC'' Spice source parameters.  
+
+<P>
+The extensions ...
+
+<OL>
+<LI>There are more choices, including an ``else''.
+
+<P>
+</LI>
+<LI>They apply to all elements (primitive components).
+
+<P>
+</LI>
+<LI>Each section can contain functions and options.
+
+<P>
+</LI>
+</OL>
+
+<P>
+The following are available:
+
+<P>
+<DL>
+<DT><STRONG><TT>AC</TT></STRONG></DT>
+<DD>AC analysis only.
+</DD>
+<DT><STRONG><TT>DC</TT></STRONG></DT>
+<DD>DC (steady state) value.
+</DD>
+<DT><STRONG><TT>OP</TT></STRONG></DT>
+<DD>OP analysis.
+</DD>
+<DT><STRONG><TT>TRAN</TT></STRONG></DT>
+<DD>Transient analysis.
+</DD>
+<DT><STRONG><TT>FOUR</TT></STRONG></DT>
+<DD>Fourier analysis only.
+</DD>
+<DT><STRONG><TT>ELSE</TT></STRONG></DT>
+<DD>Anything not listed.
+</DD>
+<DT><STRONG><TT>ALL</TT></STRONG></DT>
+<DD>Anything not listed.
+
+<P>
+</DD>
+</DL>
+
+<P>
+A value or function with no conditional keyword is equivalent to <TT>ALL</TT>.  For SPICE compatibility, use only <TT>DC</TT>, <TT>AC</TT>, or nothing.
+
+<P>
+They are interpreted like a ``switch'' statement.  In case of a
+conflict, the last one applies.  A set of precedence rules applies
+when some keys are missing.  It is SPICE compatible, to the extent the
+features overlap.
+
+<P>
+<DL>
+<DT><STRONG>OP analysis</STRONG></DT>
+<DD>OP, DC, ALL, TRAN, 0
+</DD>
+<DT><STRONG>DC analysis</STRONG></DT>
+<DD>DC, ALL, OP, TRAN, 0
+</DD>
+<DT><STRONG>Transient analysis</STRONG></DT>
+<DD>TRAN, ALL, DC, OP, 0
+</DD>
+<DT><STRONG>Fourier analysis</STRONG></DT>
+<DD>FOUR, TRAN, ALL, DC, OP, 0
+</DD>
+<DT><STRONG>AC analysis, fixed sources</STRONG></DT>
+<DD>AC, 0
+</DD>
+<DT><STRONG>AC analysis, other elements</STRONG></DT>
+<DD>AC, ALL, 0
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION00511000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>V12 1 0 AC 1 DC 3</TT></STRONG></DT>
+<DD>This voltage source has a value of 1
+for AC analysis, 3 for DC.  OP, Transient, and Fourier inherit the DC value.
+
+<P>
+</DD>
+<DT><STRONG><TT>R44 2 3 OP 1 ELSE 1g</TT></STRONG></DT>
+<DD>This resistor has a value of 1 ohm
+for the ``OP'' analysis, 1 gig-ohm for anything else.  This might be
+useful as the feedback resistor on an op-amp.  Set it to 1 ohm to set
+the operating point, then 1 gig to measure its open loop
+characteristics, hiding the fact that the op-amp would probably
+saturate if it was really left open loop.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1670"
+  HREF="node87.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1666"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1660"
+  HREF="node85.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1668"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1671"
+  HREF="node87.html">Functions</A>
+<B> Up:</B> <A NAME="tex2html1667"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1661"
+  HREF="node85.html">Behavioral modeling</A>
+ &nbsp <B>  <A NAME="tex2html1669"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

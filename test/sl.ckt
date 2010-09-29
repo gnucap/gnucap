@@ -1,0 +1,19 @@
+nmos n gate
+Vgs   1  0  3.236734
+M1   2  1  0  4  cmosn  l= 9.u  w= 9.u  nrd= 1.  nrs= 1. 
+Vds   3  0  5
+Rds   2  3  100k
+Vbs   4  0 -1.234875
+.model cmosn  nmos ( level=2  vto= 0.844345  kp= 41.5964u  gamma= 0.863074 
++ phi= 0.6  rd= 0.  rs= 0.  cbd= 0.  cbs= 0.  is= 0  pb= 0.7 
++ cgso= 218.971p  cgdo= 218.971p  cgbo= 0.  rsh= 0.  cj= 384.4u  mj= 0.4884 
++ cjsw= 527.2p  mjsw= 0.3002  js= 0.  tox= 41.8n  nsub= 15.3142E+15 
++ nss= 1.E+12  nfs= 3.5934E+12  tpg=1  xj= 400.n  ld= 265.073n  uo= 503.521 
++ ucrit= 161.166K  uexp= 0.163917  utra= 0.  neff= 1.001  kf= 0.  af= 1. 
++ fc= 0.5  delta= 0.36745 )
+*+(* vfb=-0.4241892 )
+*    lambda= 0.00906241  vmax= 55.9035K
+.op
+*.print dc v(1) v(2) v(3) i(vds)
+*.dc vgs -10 10 1
+.end

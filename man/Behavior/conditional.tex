@@ -1,0 +1,87 @@
+%$Id: conditional.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man behavior conditional .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{Conditionals}
+GnuCap behavioral modeling conditionals are an extension of the ``AC''
+and ``DC'' Spice source parameters.  
+
+The extensions ...
+\begin{enumerate}
+
+\item There are more choices, including an ``else''.
+
+\item They apply to all elements (primitive components).
+
+\item Each section can contain functions and options.
+
+\end{enumerate}
+
+The following are available:
+
+\begin{description}
+
+\item[{\tt AC}] AC analysis only.
+\item[{\tt DC}] DC (steady state) value.
+\item[{\tt OP}] OP analysis.
+\item[{\tt TRAN}] Transient analysis.
+\item[{\tt FOUR}] Fourier analysis only.
+\item[{\tt ELSE}] Anything not listed.
+\item[{\tt ALL}] Anything not listed.
+
+\end{description}
+
+A value or function with no conditional keyword is equivalent to {\tt
+ALL}.  For SPICE compatibility, use only {\tt DC}, {\tt AC}, or nothing.
+
+They are interpreted like a ``switch'' statement.  In case of a
+conflict, the last one applies.  A set of precedence rules applies
+when some keys are missing.  It is SPICE compatible, to the extent the
+features overlap.
+
+\begin{description}
+
+\item[{OP analysis}] OP, DC, ALL, TRAN, 0
+\item[{DC analysis}] DC, ALL, OP, TRAN, 0
+\item[{Transient analysis}] TRAN, ALL, DC, OP, 0
+\item[{Fourier analysis}] FOUR, TRAN, ALL, DC, OP, 0
+\item[{AC analysis, fixed sources}] AC, 0
+\item[{AC analysis, other elements}] AC, ALL, 0
+
+\end{description}
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt V12 1 0 AC 1 DC 3}] This voltage source has a value of 1
+for AC analysis, 3 for DC.  OP, Transient, and Fourier inherit the DC value.
+
+\item[{\tt R44 2 3 OP 1 ELSE 1g}] This resistor has a value of 1 ohm
+for the ``OP'' analysis, 1 gig-ohm for anything else.  This might be
+useful as the feedback resistor on an op-amp.  Set it to 1 ohm to set
+the operating point, then 1 gig to measure its open loop
+characteristics, hiding the fact that the op-amp would probably
+saturate if it was really left open loop.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

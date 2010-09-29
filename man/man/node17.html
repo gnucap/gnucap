@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>ALARM command</TITLE>
+<META NAME="description" CONTENT="ALARM command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node18.html">
+<LINK REL="previous" HREF="node16.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node18.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html575"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html571"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html565"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html573"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html576"
+  HREF="node18.html">ALTER command</A>
+<B> Up:</B> <A NAME="tex2html572"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html566"
+  HREF="node16.html">AC command</A>
+ &nbsp <B>  <A NAME="tex2html574"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html577"
+  HREF="#SECTION00361000000000000000">Syntax</A>
+<LI><A NAME="tex2html578"
+  HREF="#SECTION00362000000000000000">Purpose</A>
+<LI><A NAME="tex2html579"
+  HREF="#SECTION00363000000000000000">Comments</A>
+<LI><A NAME="tex2html580"
+  HREF="#SECTION00364000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00360000000000000000"></A>
+<A NAME="1133"></A>
+<A NAME="1134"></A>
+<A NAME="1135"></A>
+<BR>
+<TT>ALARM</TT> command
+</H1>
+
+<H2><A NAME="SECTION00361000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>ALArm</TT>
+<BR><TT>ALArm</TT> <I>mode points ...</I> ...
+<BR><TT>ALArm</TT> <I>mode + points ...</I> ...
+<BR><TT>ALArm</TT> <I>mode - points ...</I> ...
+<BR><TT>ALArm</TT> <I>mode</I> CLEAR
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00362000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Select points in the circuit to check against user defined limits.
+
+<H2><A NAME="SECTION00363000000000000000">
+Comments</A>
+</H2>
+
+<P>
+The `<TT>alarm</TT>' command selects points in the circuit to check
+against limits.  There is no output unless the limits are exceeded.
+If the limits are exceeded a the value is printed.
+
+<P>
+There are separate lists of probe points for each type of analysis.
+
+<P>
+To list the points, use the bare command `<TT>alarm</TT>'.
+
+<P>
+Syntax for each point is <I>parameter(node)(limits)</I>, <I>parameter(componentlabel)(limits)</I>, or <I>parameter(index)(limits)</I>. Some require a dummy index.
+
+<P>
+For more information on the data available see the <TT>print</TT>
+command.
+
+<P>
+You can add to or delete from an existing list by prefixing with
+<TT>+</TT> or <TT>-</TT>.  <TT>alarm ac + v(3)</TT> adds v(3) to the existing
+set of AC probes.  <TT>alarm ac - q(c5)</TT> removes q(c5) from the
+list.  You can use the wildcard characters <TT>*</TT> and <TT>?</TT> when
+deleting.
+
+<H2><A NAME="SECTION00364000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>alarm ac vm(12)(0,5) vm(13)(-5,5)</TT></STRONG></DT>
+<DD>Check magnitude of
+the voltage at node 12 against a range of 0 to 5, and node 13
+against a range of -5 to 5 for AC analysis.  Print a warning when
+the limits are exceeded.
+
+<P>
+</DD>
+<DT><STRONG><TT>alarm op id(m*)(-100n,100n)</TT></STRONG></DT>
+<DD>Check current in all mosfets.
+In op analysis, print a warning for any that are outside the range of
+-100 to +100 nanoamps.  The range goes both positive and negative so
+it is valid for both N and P channel fets.
+
+<P>
+</DD>
+<DT><STRONG><TT>alarm tran v(r83)(0,5) p(r83)(0,1u)</TT></STRONG></DT>
+<DD>Check the voltage
+and power of <TT>R83</TT> in the next transient analysis.  The voltage
+range is 0 to 5.  The power range is 0 to 1 microwatt.  Print a
+warning when the range is exceeded.
+
+<P>
+</DD>
+<DT><STRONG><TT>alarm</TT></STRONG></DT>
+<DD>List all the probes for all modes.
+
+<P>
+</DD>
+<DT><STRONG><TT>alarm dc</TT></STRONG></DT>
+<DD>Display the DC alarm list.
+
+<P>
+</DD>
+<DT><STRONG><TT>alarm ac CLear</TT></STRONG></DT>
+<DD>Clear the AC list.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html575"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html571"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html565"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html573"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html576"
+  HREF="node18.html">ALTER command</A>
+<B> Up:</B> <A NAME="tex2html572"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html566"
+  HREF="node16.html">AC command</A>
+ &nbsp <B>  <A NAME="tex2html574"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

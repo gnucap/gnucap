@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>POSY: Polynomial with non-integer powers</TITLE>
+<META NAME="description" CONTENT="POSY: Polynomial with non-integer powers">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node94.html">
+<LINK REL="previous" HREF="node92.html">
+<LINK REL="up" HREF="node85.html">
+<LINK REL="next" HREF="node94.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1782"
+  HREF="node94.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1778"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1772"
+  HREF="node92.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1780"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1783"
+  HREF="node94.html">PULSE: Pulsed time dependent</A>
+<B> Up:</B> <A NAME="tex2html1779"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1773"
+  HREF="node92.html">POLY: Polynomial nonlinear transfer</A>
+ &nbsp <B>  <A NAME="tex2html1781"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1784"
+  HREF="#SECTION00581000000000000000">Syntax</A>
+<LI><A NAME="tex2html1785"
+  HREF="#SECTION00582000000000000000">Purpose</A>
+<LI><A NAME="tex2html1786"
+  HREF="#SECTION00583000000000000000">Comments</A>
+<LI><A NAME="tex2html1787"
+  HREF="#SECTION00584000000000000000">Parameters</A>
+<LI><A NAME="tex2html1788"
+  HREF="#SECTION00585000000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00580000000000000000">
+<TT>POSY</TT>: Polynomial with non-integer powers</A>
+</H1>
+
+<H2><A NAME="SECTION00581000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>POSY</TT> <I>c1,p1 c2,p2 ...</I>
+<BR><TT>POSY</TT> <I>c1,p1 c2,p2 ... args</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00582000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Defines a transfer function by a one dimensional ``posynomial'', like
+a polynomial, except that the powers are arbitrary, and usually non-integer.
+
+<H2><A NAME="SECTION00583000000000000000">
+Comments</A>
+</H2>
+
+<P>
+There is no corresponding capability in any SPICE that I know of.
+
+<P>
+For capacitors, this function defines <EM>charge</EM> as a function of
+voltage.  For inductors, it defines <EM>flux</EM> as a function of
+current.
+
+<P>
+For fixed sources, it defines voltage or current as a function of
+time.
+
+<P>
+Normal use of this function required positive input (voltage or
+current).  The result is zero if the input is negative.  Raising a
+negative number to a non-integer power would produce a complex result, 
+which implies a non-causal result, which cannot be represented in a
+traditional transient analysis.
+
+<P>
+The transfer function is defined by:
+
+<P>
+<PRE>
+if (in &gt;= 0){
+  out = (c1*in^p1) + (c2*in^p2) + ....
+}else{
+  out = 0.
+}
+</PRE>
+<H2><A NAME="SECTION00584000000000000000">
+Parameters</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>MIN</TT> = <I>x</I></STRONG></DT>
+<DD>Minimum output value (clipping).  (Default
+  = -infinity.)
+
+<P>
+</DD>
+<DT><STRONG><TT>MAX</TT> = <I>x</I></STRONG></DT>
+<DD>Maximum output value (clipping).  (Default
+  = infinity)
+
+<P>
+</DD>
+<DT><STRONG><TT>ABS</TT></STRONG></DT>
+<DD>Absolute value, truth value.  (Default = false).  If
+  set to true, the result will be always positive.
+
+<P>
+</DD>
+<DT><STRONG><TT>ODD</TT></STRONG></DT>
+<DD>Make odd function, truth value.  (Default = false).
+  If set to true, negative values of x will be evaluated as out =
+  -f(-x), giving odd symmetry.
+
+<P>
+</DD>
+<DT><STRONG><TT>EVEN</TT></STRONG></DT>
+<DD>Make even function, truth value.  (Default = false).
+  If set to true, negative values of x will be evaluated as out =
+  f(-x), giving even symmetry.
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION00585000000000000000">
+Example</A>
+</H2> 
+
+<P>
+<DL>
+<DT><STRONG><TT>E1 2 0 1 0 posy 1 .5</TT></STRONG></DT>
+<DD>The output of <TT>E1</TT> is the
+square root of its input.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1782"
+  HREF="node94.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1778"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1772"
+  HREF="node92.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1780"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1783"
+  HREF="node94.html">PULSE: Pulsed time dependent</A>
+<B> Up:</B> <A NAME="tex2html1779"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1773"
+  HREF="node92.html">POLY: Polynomial nonlinear transfer</A>
+ &nbsp <B>  <A NAME="tex2html1781"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

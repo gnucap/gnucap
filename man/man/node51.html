@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>SWEEP command</TITLE>
+<META NAME="description" CONTENT="SWEEP command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node52.html">
+<LINK REL="previous" HREF="node50.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node52.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1099"
+  HREF="node52.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1095"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1089"
+  HREF="node50.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1097"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1100"
+  HREF="node52.html">TEMP command</A>
+<B> Up:</B> <A NAME="tex2html1096"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html1090"
+  HREF="node50.html">STATUS command</A>
+ &nbsp <B>  <A NAME="tex2html1098"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1101"
+  HREF="#SECTION003401000000000000000">Syntax</A>
+<LI><A NAME="tex2html1102"
+  HREF="#SECTION003402000000000000000">Purpose</A>
+<LI><A NAME="tex2html1103"
+  HREF="#SECTION003403000000000000000">Comments</A>
+<LI><A NAME="tex2html1104"
+  HREF="#SECTION003404000000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION003400000000000000000"></A>
+<A NAME="5131"></A>
+<A NAME="5132"></A>
+<A NAME="5133"></A>
+<BR>
+<TT>SWEEP</TT> command
+</H1>
+
+<H2><A NAME="SECTION003401000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>SWeep</TT> {<I>stepcount</I>}  <I>partlabel=range</I> ...
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION003402000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Sweep a component (or group of components) over a range.  Set up a loop for
+iteration.
+
+<H2><A NAME="SECTION003403000000000000000">
+Comments</A>
+</H2>
+
+<P>
+This command begins a loop which will sweep a component or group of
+components.
+
+<P>
+When this command is given, the only apparent actions will be a change in the
+prompt from `<TT>-&gt;</TT>' to `<TT>&#187;&gt;</TT>', and some disk action.
+
+<P>
+The different prompt means that commands are not executed immediately, but
+are stored in a temporary file.
+
+<P>
+The bare command will repeat the same command sequence as the last time <TT>SWeep</TT> was run, and not prompt for anything else.
+
+<P>
+Additional components can be swept at the same time by entering a `<TT>FAult</TT>' command at the `<TT>&#187;&gt;</TT>' prompt.  The `<TT>FAult</TT>' behaves
+differently here:  It accepts a range, which is the sweep limits.
+
+<P>
+The `<TT>GO</TT>' command will end the entry sequence, and make it all happen.
+After this, the values are restored.  (Also, all <TT>FAult</TT>s are restored,
+as if by the `<TT>Restore</TT>' command.)
+
+<P>
+All commands can be used in this mode.  Of course, some of them are not
+really useful (<TT>Quit</TT>) because they work as usual.
+
+<P>
+Only linear, ordinary parts can be swept.  (No semiconductor devices, or
+elements using behavioral modeling.)  The tolerance remains unchanged.  If
+you attempt to sweep a nonlinear or otherwise strange part, it becomes
+ordinary and linear during the sweep.
+
+<H2><A NAME="SECTION003404000000000000000">
+Example</A>
+</H2>
+
+<P>
+<PRE>
+--&gt;sweep  5   R14=1,100k   R15=100k,1
+&gt;&gt;&gt;list
+&gt;&gt;&gt;ac 500 2k oct
+&gt;&gt;&gt;go
+</PRE>
+
+<P>
+This sequence of commands says to simultaneously sweep R14 and R15 in 5 steps,
+in opposite directions, list the circuit and do an AC analysis for each step.
+
+<P>
+Assuming the circuit was:
+<PRE>
+     R14  1   0   50k
+     R15  2   0   50k
+</PRE>
+
+<P>
+The result of this sequence would be:
+<PRE>
+     R14  1   0   1
+     R15  2   0   100k
+</PRE>
+<I>an AC analysis</I>
+<PRE>
+     R14  1   0   25.75k
+     R15  2   0   75.25k
+</PRE>
+<I>an AC analysis</I>
+<PRE>
+     R14  1   0   50.5k
+     R15  2   0   50.5k
+</PRE>
+<I>an AC analysis</I>
+<PRE>
+     R14  1   0   75.25k
+     R15  2   0   25.75k
+</PRE>
+<I>an AC analysis</I>
+<PRE>
+     R14  1   0   100k
+     R15  2   0   1
+</PRE>
+<I>an AC analysis</I>
+
+<P>
+After all this is done, the circuit is restored, so <TT>list</TT> would show:
+<PRE>
+     R14  1   0   50k
+     R15  2   0   50k
+</PRE>
+
+<P>
+You could accomplish the same thing by entering <TT>fault</TT> commands at the
+`<TT>&#187;&gt;</TT>' prompt.
+
+<P>
+<PRE>
+--&gt;sweep  5
+&gt;&gt;&gt;fault  R14=1, 100k
+&gt;&gt;&gt;fault  R15=100k, 1
+&gt;&gt;&gt;list
+&gt;&gt;&gt;ac 500 2k oct
+&gt;&gt;&gt;go
+</PRE>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1099"
+  HREF="node52.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1095"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1089"
+  HREF="node50.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1097"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1100"
+  HREF="node52.html">TEMP command</A>
+<B> Up:</B> <A NAME="tex2html1096"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html1090"
+  HREF="node50.html">STATUS command</A>
+ &nbsp <B>  <A NAME="tex2html1098"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,72 @@
+%$Id: unmark.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands unmark .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt UNMARK} command}
+\index{unmark command}
+\index{transient reruns}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt UNMark}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Forget remembered circuit voltages and currents.  Undo the `{\tt mark}'
+command.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+Allow time to proceed.  It has been held back by the `{\tt mark}' command.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+\item[{\tt transient 0 1 .01}] A transient analysis starting at zero,
+running until 1 second, with step size .01 seconds.  After this run, the
+clock is at 1 second.
+
+\item[{\tt mark}] Remember the time, voltages, currents, etc.
+
+\item[{\tt transient}] Another transient analysis.  It continues from 1
+second, to 2 seconds.  (It spans 1 second, as before.)  This command was not
+affected by the {\tt mark} command.
+
+\item[{\tt transient}] This will do exactly the same as the last one.  From
+1 second to 2 seconds.  If it were not for {\tt mark}, it would have started
+from 2 seconds.
+
+\item[{\tt transient 1.5 .001}] Try again with smaller steps.  Again, it
+starts at 1 second.
+
+\item[{\tt unmark}] Release the effect of {\tt mark}.
+
+\item[{\tt transient}] Exactly the same as the last time, as if we didn't
+{\tt unmark}.  (1 to 1.5 seconds.)
+
+\item[{\tt transient}] This one continues from where the last one left off:
+at 1.5 seconds.  From now on, time will move forward.
+
+\end{description}
+
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

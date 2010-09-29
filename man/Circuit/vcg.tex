@@ -1,0 +1,49 @@
+%$Id: vcg.tex,v 20.15 2001/10/30 03:59:06 al Exp $
+% man circuit g .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{Voltage Controlled Admittance}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+Preferred syntax:\\
+{\tt .VCG} {\it label n+ n-- nc+ nc--} {\it expression}\\
+Alternate syntax:\\
+{\tt G}{\it xxxxxxx n+ n--} VCG {\it nc+ nc--} {\it expression}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Voltage controlled admittance.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+{\it N+} and {\it n--} are the positive and negative element (output) nodes,
+respectively.  {\it Nc+} and {\it nc--} are the positive and negative
+controlling nodes, respectively.  {\it Value} is the transfactor in
+mhos per volt.
+
+The simulator will faithfully give you a negative admittance if it
+seems appropriate.  Usually, this part is used with a behavioral
+modeling function, like PWL, which allows you to specify a table of
+admittance vs. voltage.
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>BUILD command</TITLE>
+<META NAME="description" CONTENT="BUILD command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node20.html">
+<LINK REL="previous" HREF="node18.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node20.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html603"
+  HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html599"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html593"
+  HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html601"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html604"
+  HREF="node20.html">CHDIR command</A>
+<B> Up:</B> <A NAME="tex2html600"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html594"
+  HREF="node18.html">ALTER command</A>
+ &nbsp <B>  <A NAME="tex2html602"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html605"
+  HREF="#SECTION00381000000000000000">Syntax</A>
+<LI><A NAME="tex2html606"
+  HREF="#SECTION00382000000000000000">Purpose</A>
+<LI><A NAME="tex2html607"
+  HREF="#SECTION00383000000000000000">Comments</A>
+<LI><A NAME="tex2html608"
+  HREF="#SECTION00384000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00380000000000000000"></A>
+<A NAME="1276"></A>
+<A NAME="1277"></A>
+<A NAME="1278"></A>
+<A NAME="1279"></A>
+<BR>
+<TT>BUILD</TT> command
+</H1>
+
+<H2><A NAME="SECTION00381000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>Build</TT> {<I>line</I>}
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00382000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Builds a new circuit, or replaces lines in an existing one.
+
+<H2><A NAME="SECTION00383000000000000000">
+Comments</A>
+</H2>
+
+<P>
+<TT>Build</TT> Lets you enter the circuit from the keyboard.  The prompt changes 
+to <TT>&gt;</TT> to show that the program is in the build mode.
+
+<P>
+At this point, type in the circuit components in standard (Spice type)
+netlist format.
+
+<P>
+Component labels must be unique.  If not, the old one is modified according
+to the new data, keeping old values where no new ones were specified.
+
+<P>
+Ordinarily, components are added to the end of the list.  To insert at a
+particular place, specify the label to insert in front of.  Example: <TT>Build R77</TT> will cause new items to be added before <TT>R77</TT>, instead of at
+the end.
+
+<P>
+In either case, components being changed or replaced do not change their
+location in the list.
+
+<P>
+If it is necessary to start over, <TT>delete all</TT> or <TT>clear</TT> will erase
+the entire circuit in memory.
+
+<P>
+To exit this mode, enter a blank line.
+
+<H2><A NAME="SECTION00384000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>build</TT></STRONG></DT>
+<DD>Build a circuit.  Add to the end of the list.  This will
+add to the circuit without erasing anything.  It will continue until you
+exit or memory fills up.
+
+<P>
+</DD>
+<DT><STRONG><TT>b</TT></STRONG></DT>
+<DD>This is the same as the previous example.  Only the first
+letter of the `Build' is necessary.
+
+<P>
+</DD>
+<DT><STRONG><TT>build R33</TT></STRONG></DT>
+<DD>Insert new items in front of R33.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html603"
+  HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html599"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html593"
+  HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html601"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html604"
+  HREF="node20.html">CHDIR command</A>
+<B> Up:</B> <A NAME="tex2html600"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html594"
+  HREF="node18.html">ALTER command</A>
+ &nbsp <B>  <A NAME="tex2html602"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

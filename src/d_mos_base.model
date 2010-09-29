@@ -1,0 +1,156 @@
+/* $Id: d_mos_base.model,v 20.14 2001/10/19 06:21:08 al Exp $ -*- C++ -*-
+ * Copyright (C) 2001 Albert Davis
+ * Author: Albert Davis <aldavis@ieee.org>
+ *
+ * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ *------------------------------------------------------------------
+ * MOS model - base for levels 1,2,3,6
+ */ 
+h_headers {
+#include "d_mos.h"
+  enum polarity_t {pP = -1, pN = 1};
+}
+cc_headers {
+  const double mDEFAULT_is = 1e-14;
+}
+/*--------------------------------------------------------------------------*/
+model MOS_BASE {
+  dev_type MOS;
+  base;
+  inherit DIODE;
+  keys {
+    NMOS polarity=pN;
+    PMOS polarity=pP;
+  }
+  independent {
+    override {
+      double _tnom "" name=TNOM default=OPT::tnom
+	quiet_min=1.0 offset=-ABS_ZERO;
+      double fc "coef for fwd bis depl cap formula" name=FC;
+      double pb "junction potential" name=PB positive;
+      double cjo "zero-bias jct capacitance (per area)"	name=CJ;
+      double mj "grading coefficient" name=MJ;
+      double cjsw "zero bias sidewall cap (per perim.)" name=CJSW;
+      double pbsw "sidewall junction potential"
+	name=PBSW print_test="pbsw != pb";
+      double mjsw "sidewall grading coefficient" name=MJSW;
+      double kf "flicker noise coefficient" name=KF print_test="kf != NA";
+      double af "flicker noise exponent" name=AF print_test="af != NA";
+    }
+    raw_parameters {
+      int level "dummy" name=LEVEL default=1 print_test=false;
+      double is "bulk jct sat current" name=IS default=NA;
+      double js "bulk jct sat current per sq meter" name=JS default=NA;
+      double rsh "D & S diffusion sheet resistance" name=RSH default=NA;
+      double rd "drain ohmic resistance" name=RD default=NA;
+      double rs "source ohmic resistance" name=RS default=NA;
+      double cbd "0-bias BD jct capacitance" name=CBD default=NA;
+      double cbs "0-bias BS jct capacitance" name=CBS default=NA;
+      double cgso "GS overlap capacitance" name=CGSo default=0.0;
+      double cgdo "GD overlap capacitance" name=CGDo default=0.0;
+      double cgbo "GB overlap capacitance" name=CGBo default=0.0;
+      int cmodel "which capacitor model to use (2 or 3)"
+	name=CMODEL default=0 print_test="false";
+    }
+    calculated_parameters {
+      polarity_t polarity "" default=pN;
+      double egap "energy gap at tnom"
+	calculate="1.16 - (7.02e-4*_tnom*_tnom) / (_tnom+1108.)";
+      bool needs_isub "" default=false;
+    }
+    code_post {
+      {if ((rs == NA)  &&  (rd != NA)){
+	untested();
+	error(bWARNING,
+	      long_label() + ": rd input, but not rs. setting rs = 0.\n");
+	rs = 0.;
+      }else if ((rd == NA)  &&  (rs != NA)){
+	untested();
+	error(bWARNING, 
+	      long_label() + ": rs input, but not rd. setting rd = 0.\n");
+	rd = 0.;
+      }else{
+	/* rd, rs are ok, either have both or neither */
+      }}
+      
+      {if ((rsh != NA)  &&  (rd != NA)){
+	error(bWARNING, long_label() + ": rsh - rs - rd conflict: using "
+	      + (((rd <= 0.)  &&  (rs <= 0.)) ? "rsh" : "rs,rd") + '\n');
+      }else if ((rsh == NA)  &&  (rd == NA)){
+	rsh = 0.;
+      }else{
+	/* rsh, rd are ok, have one or other */
+      }}
+      
+      {if (is == NA  &&  js == NA){
+	is = mDEFAULT_is;
+      }else if (is != NA  &&  js != NA){
+	error(bWARNING, long_label() + ": is - js conflict\n");
+      }else{
+	/* is, js are ok, have one or other */
+      }}
+    }
+  }
+  size_dependent {
+    override {
+    }
+    calculated_parameters {
+      double l_eff "-23-c- actual (electrical) channel length"
+	calculate="(c->l_in != NA) ? c->l_in : OPT::defl";
+      double w_eff "--3-c- actual (electrical) channel width"
+	calculate="(c->w_in != NA) ? c->w_in : OPT::defw";
+      double ad "----c- drain area, actual"
+	calculate="(c->ad_in != NA) ? c->ad_in : OPT::defad";
+      double as "----c- source area, actual"
+	calculate="(c->as_in != NA) ? c->as_in : OPT::defas";
+      double cgate "-----b gate to channel capacitance"
+	calculate=NA;
+      double idsat "-----b drain junction saturation current";
+      double issat "-----b source junction saturation current";
+      double rd "-----b ohmic drain resistance";
+      double rs "-----b ohmic source resistance";
+      double phi "surface potential at strong inversion" calculate=NA;
+    }
+    code_pre {
+    }
+    code_post {
+      {if (m->rsh != NA  &&  m->rd <= 0.  &&  m->rs <= 0.){
+	rd = m->rsh * c->nrd;
+	rs = m->rsh * c->nrs;
+      }else{
+	untested();
+	rd = (m->rd != NA) ? m->rd : 0.;
+	rs = (m->rs != NA) ? m->rs : 0.;
+      }}
+      {if (m->js == NA  ||  ad == 0.  ||  as == 0.){
+	{if (m->is == NA){
+	  untested();
+	  idsat = issat = mDEFAULT_is;
+	  //error(bWARNING, "ignoring js, using default is\n");
+	}else{
+	  idsat = issat = m->is;	/* this convoluted logic */
+	}}				/* is for Spice compatibility */
+      }else{
+	idsat = m->js * ad;
+	issat = m->js * as;
+      }}
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/

@@ -1,0 +1,60 @@
+%$Id: title.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands title
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt TITLE} command}
+\index{title command}
+\index{headings}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt TItle}\\
+{\tt TItle} {\it a line of text}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+View and create the heading line for printouts and files.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+There is a header line at the beginning of every file, to help you identify
+it in the future.  This command sets up what it says.  It also sets up a
+heading for printouts and graphs.
+
+When you use the `{\tt get}' command to bring in a new circuit, it replaces the
+title with the one in the file.  The `{\tt title}' command lets you change it,
+for the next time it is written out.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt title This is a test.}] Sets the file heading to `{\tt This is a
+test.}' In the future, all files written will have `{\tt This is a test.}'
+as their first line.
+
+\item[{\tt title}] Displays the file heading.  In this case, it prints `{\tt
+This is a test.}'
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

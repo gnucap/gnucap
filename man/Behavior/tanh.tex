@@ -1,0 +1,74 @@
+%$Id: tanh.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man behavior tanh .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt TANH}: Hyperbolic tangent transfer function}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt TANH} {\it gain limit}\\
+{\tt TANH} {\it args}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Defines a hyperbolic tangent, or soft limiting, transfer function.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+There is no corresponding capability in any SPICE that I know of, but
+you can get close with POLY. 
+
+For capacitors, this function defines {\em charge} as a function of
+voltage.  For inductors, it defines {\em flux} as a function of
+current.
+
+For fixed sources, it defines voltage or current as a function of
+time, which is probably not useful.
+
+This function describes a hyperbolic tangent transfer function similar 
+to what you get with a single stage push-pull amplifier, or a simple
+CMOS inverter acting as an amplifier.
+%------------------------------------------------------------------------
+\subsection{Parameters}
+
+\begin{description}
+
+\item[{\tt GAIN} = {\it x}] The small signal gain at 0 bias.  (Required)
+
+\item[{\tt LIMIT} = {\it x}] Maximum output value (soft clipping).
+(Required)
+
+\end{description}
+%------------------------------------------------------------------------
+\subsection{Example} 
+
+\begin{description}
+
+\item[{\tt E1 2 0 1 0 tanh gain=-10 limit=2 ioffset=2.5 ooffset=2.5}] 
+This gain block has a small signal gain of -10.  The input is
+centered around 2.5 volts.  The output is also centered at 2.5 volts.
+It ``clips'' softly at 2 volts above and below the output center, or
+at .5 volts ($2.5 - 2$) and 4.5 volts ($2.5 + 2$).
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

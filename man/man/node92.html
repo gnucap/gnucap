@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>POLY: Polynomial nonlinear transfer function</TITLE>
+<META NAME="description" CONTENT="POLY: Polynomial nonlinear transfer function">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node93.html">
+<LINK REL="previous" HREF="node91.html">
+<LINK REL="up" HREF="node85.html">
+<LINK REL="next" HREF="node93.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1766"
+  HREF="node93.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1762"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1756"
+  HREF="node91.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1764"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1767"
+  HREF="node93.html">POSY: Polynomial with non-integer</A>
+<B> Up:</B> <A NAME="tex2html1763"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1757"
+  HREF="node91.html">GENERATOR: Signal Generator time</A>
+ &nbsp <B>  <A NAME="tex2html1765"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1768"
+  HREF="#SECTION00571000000000000000">Syntax</A>
+<LI><A NAME="tex2html1769"
+  HREF="#SECTION00572000000000000000">Purpose</A>
+<LI><A NAME="tex2html1770"
+  HREF="#SECTION00573000000000000000">Comments</A>
+<LI><A NAME="tex2html1771"
+  HREF="#SECTION00574000000000000000">Parameters</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00570000000000000000">
+<TT>POLY</TT>: Polynomial nonlinear transfer function</A>
+</H1>
+
+<H2><A NAME="SECTION00571000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>POLY</TT> <I>c0 c1 c2 c3 ...</I>
+<BR><TT>POLY</TT> <I>c0 c1 c2 c3 ... args</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00572000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Defines a transfer function by a one dimensional polynomial.
+
+<H2><A NAME="SECTION00573000000000000000">
+Comments</A>
+</H2>
+
+<P>
+For capacitors, this function defines <EM>charge</EM> as a function of
+voltage.  For inductors, it defines <EM>flux</EM> as a function of
+current.  If you have the coefficients defining capacitance or
+inductance, prepending a ``0'' to the list will turn it into the
+correct form for GnuCap.
+
+<P>
+For fixed sources, it defines voltage or current as a polynomial
+function of time.
+
+<P>
+The transfer function is defined by:
+
+<P>
+<PRE>
+out = c0 + (c1*in) + (c2*in^2) + ....
+</PRE>
+<H2><A NAME="SECTION00574000000000000000">
+Parameters</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>MIN</TT> = <I>x</I></STRONG></DT>
+<DD>Minimum output value (clipping).
+(Default = -infinity.)
+
+<P>
+</DD>
+<DT><STRONG><TT>MAX</TT> = <I>x</I></STRONG></DT>
+<DD>Maximum output value (clipping).
+(Default = infinity)
+
+<P>
+</DD>
+<DT><STRONG><TT>ABS</TT></STRONG></DT>
+<DD>Absolute value, truth value.  (Default = false).  If
+set to true, the result will be always positive.
+
+<P>
+</DD>
+</DL>
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

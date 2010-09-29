@@ -1,0 +1,84 @@
+%$Id: log.tex,v 20.15 2001/10/30 03:59:06 al Exp $
+% man commands log .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt LOG} command}
+\index{log command}
+\index{batch mode}
+\index{files}
+\index{disk files}
+\index{command record}
+\index{record of commands}
+\index{i-o redirection}
+\index{redirection: i-o}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt LOg} {\it file}\\
+{\tt LOg >>} {\it file}\\
+{\tt LOg}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Saves a copy of your keyboard entries in a file.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+The `{\tt >>}' option appends to an existing file, if it exists, otherwise it
+creates one.
+
+Files can be nested.  If you open one while another is already open, both
+will contain all the information.
+
+A bare {\tt LOg} closes the file.  Because of this, the last line of this
+file is always {\tt LOg}.  Ordinarily, this will not be of any consequence,
+but if a log file is open when you use this file as command input, this will
+close it.  If more than one {\tt LOg} file is open, they will be closed in
+the reverse of the order in which they were opened, maintaining nesting.
+
+See also: `{\tt >}' and `{\tt <}' commands.
+%------------------------------------------------------------------------
+\subsection{Bugs}
+
+The file is an exact copy of what you type, so it is suitable for {\tt
+gnucap <file} from the shell.  It is NOT suitable for the {\tt <}
+command in gnucap or the Spice-like mode {\tt gnucap file} without
+{\tt <}.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt log today}] Save the commands in a file {\tt today} in the
+current directory.  If {\tt today} already exists, the old one is gone.
+
+\item[{\tt log >> doit}] Save the commands in a file {\tt doit}.  If
+{\tt doit} already exists, it is kept, and the new data is added to the
+end.
+
+\item[{\tt log runit.bat}] Use the file {\tt runit.bat}.
+
+\item[{\tt log}] Close the file.  Stop saving.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

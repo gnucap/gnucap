@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Voltage Controlled Resistor</TITLE>
+<META NAME="description" CONTENT="Voltage Controlled Resistor">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node70.html">
+<LINK REL="previous" HREF="node68.html">
+<LINK REL="up" HREF="node59.html">
+<LINK REL="next" HREF="node70.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1393"
+  HREF="node70.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1389"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1383"
+  HREF="node68.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1391"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1394"
+  HREF="node70.html">H: Current Controlled Voltage</A>
+<B> Up:</B> <A NAME="tex2html1390"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1384"
+  HREF="node68.html">Voltage Controlled Admittance</A>
+ &nbsp <B>  <A NAME="tex2html1392"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1395"
+  HREF="#SECTION004101000000000000000">Syntax</A>
+<LI><A NAME="tex2html1396"
+  HREF="#SECTION004102000000000000000">Purpose</A>
+<LI><A NAME="tex2html1397"
+  HREF="#SECTION004103000000000000000">Comments</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION004100000000000000000">
+Voltage Controlled Resistor</A>
+</H1>
+
+<H2><A NAME="SECTION004101000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+Preferred syntax:
+<BR><TT>.VCR</TT> <I>label n+ n- nc+ nc-</I> <I>expression</I>
+<BR>
+Alternate syntax:
+<BR><TT>G</TT><I>xxxxxxx n+ n-</I> VCR <I>nc+ nc-</I> <I>expression</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION004102000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Voltage controlled resistor.
+
+<H2><A NAME="SECTION004103000000000000000">
+Comments</A>
+</H2>
+
+<P>
+<I>N+</I> and <I>n-</I> are the positive and negative element (output) nodes,
+respectively.  <I>Nc+</I> and <I>nc-</I> are the positive and negative
+controlling nodes, respectively.  <I>Value</I> is the transfactor in
+ohms per volt.
+
+<P>
+The simulator will faithfully give you a negative resistor if it
+seems appropriate.  Usually, this part is used with a behavioral
+modeling function, like PWL, which allows you to specify a table of
+resistance vs. voltage.
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

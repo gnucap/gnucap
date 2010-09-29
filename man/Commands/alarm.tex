@@ -1,0 +1,91 @@
+%$Id: alarm.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands alarm .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt ALARM} command}
+\index{alarm command}
+\index{output selection}
+\index{safe operating area}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt ALArm}\\
+{\tt ALArm} {\it mode points ...} ...\\
+{\tt ALArm} {\it mode + points ...} ...\\
+{\tt ALArm} {\it mode - points ...} ...\\
+{\tt ALArm} {\it mode} CLEAR
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Select points in the circuit to check against user defined limits.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+The `{\tt alarm}' command selects points in the circuit to check
+against limits.  There is no output unless the limits are exceeded.
+If the limits are exceeded a the value is printed.
+
+There are separate lists of probe points for each type of analysis.
+
+To list the points, use the bare command `{\tt alarm}'.
+
+Syntax for each point is {\it parameter(node)(limits)}, {\it
+parameter(componentlabel)(limits)}, or {\it
+parameter(index)(limits)}. Some require a dummy index.
+
+For more information on the data available see the {\tt print}
+command.
+
+You can add to or delete from an existing list by prefixing with
+{\tt +} or {\tt -}.  {\tt alarm ac + v(3)} adds v(3) to the existing
+set of AC probes.  {\tt alarm ac - q(c5)} removes q(c5) from the
+list.  You can use the wildcard characters {\tt *} and {\tt ?} when
+deleting.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt alarm ac vm(12)(0,5) vm(13)(-5,5)}] Check magnitude of
+the voltage at node 12 against a range of 0 to 5, and node 13
+against a range of -5 to 5 for AC analysis.  Print a warning when
+the limits are exceeded.
+
+\item[{\tt alarm op id(m*)(-100n,100n)}] Check current in all mosfets.
+In op analysis, print a warning for any that are outside the range of
+-100 to +100 nanoamps.  The range goes both positive and negative so
+it is valid for both N and P channel fets.
+
+\item[{\tt alarm tran v(r83)(0,5) p(r83)(0,1u)}] Check the voltage
+and power of {\tt R83} in the next transient analysis.  The voltage
+range is 0 to 5.  The power range is 0 to 1 microwatt.  Print a
+warning when the range is exceeded.
+
+\item[{\tt alarm}] List all the probes for all modes.
+
+\item[{\tt alarm dc}] Display the DC alarm list.
+
+\item[{\tt alarm ac CLear}] Clear the AC list.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

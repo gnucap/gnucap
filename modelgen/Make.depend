@@ -1,0 +1,14 @@
+mg_main.o: mg_main.cc mg_out.h mg_.h md.h io_error.h io_trace.h ap.h
+mg_out_h.o: mg_out_h.cc mg_out.h mg_.h md.h io_error.h io_trace.h ap.h
+mg_error.o: mg_error.cc ap.h md.h io_error.h io_trace.h
+mg_in.o: mg_in.cc mg_.h md.h io_error.h io_trace.h ap.h
+mg_out_common.o: mg_out_common.cc mg_out.h mg_.h md.h io_error.h \
+  io_trace.h ap.h
+mg_out_dev.o: mg_out_dev.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
+  ap.h
+mg_out_lib.o: mg_out_lib.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
+  ap.h
+mg_out_model.o: mg_out_model.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
+  ap.h
+mg_out_root.o: mg_out_root.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
+  ap.h

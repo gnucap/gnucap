@@ -1,0 +1,556 @@
+/* $Id: d_mos.model,v 20.13 2001/10/15 00:57:11 al Exp $ -*- C++ -*-
+ * Copyright (C) 2001 Albert Davis
+ * Author: Albert Davis <aldavis@ieee.org>
+ *
+ * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ *------------------------------------------------------------------
+ * data structures and defaults for mos model.
+ * internal units all mks (meters)
+ * but some user input parameters are in cm.
+ *
+ * netlist syntax:
+ * device:  mxxxx d g s b mname <device args> <model card args>
+ * model:   .model mname NMOS <args>
+ *	or  .model mname PMOS <args>
+ */
+h_headers {
+#include "e_subckt.h"
+#include "d_diode.h"
+  class DEV_MOS;		/* this file */
+  class COMMON_MOS;
+  class EVAL_MOS_Cgb;
+  class EVAL_MOS_Cgd;
+  class EVAL_MOS_Cgs;
+  class DEV_DIODE;		/* external */
+  class DEV_CAPACITANCE;
+  class DEV_POLY_G;
+  class DEV_RESISTANCE;
+  class MODEL_MOS_BASE;
+  class SDP_MOS_BASE;
+  enum {mNUM_INIT_COND = 3};
+}
+cc_headers {
+#include "d_cap.h"
+#include "d_admit.h"
+#include "d_res.h"
+#include "d_mos_base.h"
+}
+/*--------------------------------------------------------------------------*/
+device MOS {
+  parse_name mosfet;
+  model_type MOS_BASE;
+  id_letter M;
+  circuit {
+    sync;
+    ports {drain gate source bulk};
+    local_nodes {
+      idrain  short_to=drain  short_if="!OPT::rstray || b->rd == 0.";
+      isource short_to=source short_if="!OPT::rstray || b->rs == 0.";
+    }
+    args db DIODE {
+      area = b->ad;
+      perim = pd;
+      is_raw = b->idsat;
+      cj_raw = m->cbd;
+      cjsw_raw = NA;
+      off = true;
+      set_modelname(modelname());
+      attach(model());
+    }
+    args sb DIODE {
+      area = b->as;
+      perim = ps;
+      is_raw = b->issat;
+      cj_raw = m->cbs;
+      cjsw_raw = NA;
+      off = true;
+      set_modelname(modelname());
+      attach(model());
+    }
+    resistance Rs {source isource} value="b->rs"
+      omit="!OPT::rstray || b->rs == 0.";
+    resistance Rd {drain idrain} value="b->rd"
+      omit="!OPT::rstray || b->rd == 0.";
+    diode Ddb {bulk idrain} args="db" reverse="m->polarity==pP"
+      omit="_n[n_bulk].t == _n[n_idrain].t || b->idsat == 0.";
+    diode Dsb {bulk isource} args="sb" reverse="m->polarity==pP"
+      omit="_n[n_bulk].t == _n[n_isource].t || b->issat == 0.";
+    capacitance Cgs {gate isource} value="(m->cgso*b->w_eff)" eval=Cgs
+      omit="!OPT::cstray || _n[n_gate].t == _n[n_isource].t";
+    capacitance Cgd {gate idrain} value="(m->cgdo*b->w_eff)" eval=Cgd
+      omit="!OPT::cstray || _n[n_gate].t == _n[n_idrain].t";
+    capacitance Cgb {gate bulk} value="(m->cgbo*b->l_eff)" eval=Cgb
+      omit="!OPT::cstray || _n[n_bulk].t == _n[n_gate].t";
+    poly_g Ids {idrain,isource  gate,isource  idrain,gate
+		bulk,isource  idrain bulk} state=ids;
+  }
+  tr_probe {
+    VDS = "@n_drain[V] - @n_source[V]";
+    VGS = "@n_gate[V] - @n_source[V]";
+    VBS = "@n_bulk[V] - @n_source[V]";
+    VDSInt = "vds";
+    VGSInt = "vgs";
+    VBSInt = "vbs";
+    VGD = "@n_gate[V] - @n_drain[V]";
+    VBD = "@n_bulk[V] - @n_drain[V]";
+    VSD = "@n_source[V] - @n_drain[V]";
+    VDM = "(@n_drain[V] - @n_source[V] + @n_drain[V] - @n_drain[V]) / 2.";
+    VGM = "(@n_gate[V]  - @n_source[V] + @n_gate[V]  - @n_drain[V]) / 2.";
+    VBM = "(@n_bulk[V]  - @n_source[V] + @n_bulk[V]  - @n_drain[V]) / 2.";
+    VSM = "(@n_source[V] - @n_source[V] + @n_source[V] - @n_drain[V]) / 2.";
+    VDG = "@n_drain[V] - @n_gate[V]";
+    VBG = "@n_bulk[V] - @n_gate[V]";
+    VSG = "@n_source[V] - @n_gate[V]";
+    VDB = "@n_drain[V] - @n_bulk[V]";
+    VGB = "@n_gate[V] - @n_bulk[V]";
+    VSB = "@n_source[V] - @n_bulk[V]";
+    VD = "@n_drain[V]";
+    VG = "@n_gate[V]";
+    VB = "@n_bulk[V]";
+    VS = "@n_source[V]";
+    Id = "(_Rd) ? @Rd[I] : @Ids[I] - @Cgd[I] + @Ddb[I] * m->polarity";
+    IS = "(_Rs) ? @Rs[I] : -@Ids[I] - @Cgs[I] + @Dsb[I] * m->polarity";
+    IG = "@Cgs[I] + @Cgd[I] + @Cgb[I]";
+    IB = "- @Ddb[I] * m->polarity - @Dsb[I] * m->polarity - @Cgb[I]";
+    IBD = "@Ddb[I]";
+    IBS = "@Dsb[I]";
+    CGSOvl = "@Cgs[NV]";
+    CGDOvl = "@Cgd[NV]";
+    CGBOvl = "@Cgb[NV]";
+    CGST = "@Cgs[EV]";
+    CGDT = "@Cgd[EV]";
+    CGBT = "@Cgb[EV]";
+    CGSm = "@Cgs[EV] - @Cgs[NV]";
+    CGDm = "@Cgd[EV] - @Cgd[NV]";
+    CGBm = "@Cgb[EV] - @Cgb[NV]";
+    CBD = "@Ddb[Cap]";
+    CBS = "@Dsb[Cap]";
+    CGATE = "b->cgate";
+    GMR = "gmr";
+    GMF = "gmf";
+    GM = "(reversed) ? gmr : gmf";
+    GDS = "gds";
+    GMBR = "gmbr";
+    GMBF = "gmbf";
+    GMB = "(reversed) ? gmbr : gmbf";
+    GBD = "@Ddb[G]";
+    GBS = "@Dsb[G]";
+    VGST = "vgst";
+    VON = "von";
+    VDSAT = "vdsat * m->polarity";
+    VTH = "von * m->polarity";
+    IDS = "m->polarity * ((reversed) ? -ids : ids)";
+    IDSTray = "- @Cgd[I] + @Ddb[I] * m->polarity";
+    P ="@Rs[P] +@Rd[P] +@Ddb[P] +@Dsb[P] +@Cgs[P] +@Cgd[P] +@Cgb[P] +@Ids[P]";
+    PD="@Rs[PD]+@Rd[PD]+@Ddb[PD]+@Dsb[PD]+@Cgs[PD]+@Cgd[PD]+@Cgb[PD]+@Ids[PD]";
+    PS="@Rs[PS]+@Rd[PS]+@Ddb[PS]+@Dsb[PS]+@Cgs[PS]+@Cgd[PS]+@Cgb[PS]+@Ids[PS]";
+    REgion = "static_cast<double>((!cutoff) + (!subthreshold * 2) 
+	+ (saturated * 4) + (sbfwd * 10) + (dbfwd * 20)
+	+ (punchthru * 40)) * ((reversed)? -1 : 1)";
+    Status = "static_cast<double>(converged() * 2)";
+  }
+  device {
+    calculated_parameters {
+      double ids "" default=0.;
+      double gds "dids/dvds" default=0.;
+      double gmf "dids/dvgs" default=0.;
+      double gmr "dids/dvgd" default=0.;
+      double gmbf "dids/dvbs" default=0.;
+      double gmbr "dids/dvbd" default=0.;
+      
+      double isub "" default=0.;
+      double gbbs "disub/dvbs" default=0.;
+      double gbgs "disub/dvgs" default=0.;
+      double gbds "disub/dvds" default=0.;
+      
+      double qgate "" default=0.;
+      double cggb "" default=0.;
+      double cgsb "" default=0.;
+      double cgdb "" default=0.;
+      
+      double qdrn "" default=0.;
+      double cdgb "" default=0.;
+      double cdsb "" default=0.;
+      double cddb "" default=0.;
+      
+      double qbulk "" default=0.;
+      double cbgb "" default=0.;
+      double cbsb "" default=0.;
+      double cbdb "" default=0.;
+      
+      double gtau "" default=0.;
+      double cqgb "" default=0.;
+      double cqsb "" default=0.;
+      double cqdb "" default=0.;
+      double cqbb "" default=0.;
+      
+      double tconst "" default=0.;
+      double cgb "placeholder" default=0.; /* capacitors and charges */
+      double qgb "placeholder" default=0.;
+      double qgd "" default=0.;
+      double cgd "" default=0.;
+      double qgs "" default=0.;
+      double cgs "" default=0.;
+      
+      double vgs "terminal voltages" default=0.;
+      double vds "" default=0.;
+      double vbs "" default=0.;
+      
+      double vdsat "saturation voltage" default=0.;
+      double vgst "vgs - von." default=0.;
+      double von "actual threshold voltage" default=0.;
+      bool   reversed "flag: Vgs < 0, reverse s & d" default=false;
+      bool   cutoff "flag: in cut off region" default=false;
+      bool   subthreshold "flag: subthreshold region (L2 only)" default=false;
+      bool   saturated "flag: in saturation region" default=false;
+      bool   sbfwd "flag: sb diode fwd biased" default=false;
+      bool   dbfwd "flag: db diode fwd biased" default=false;
+      bool   punchthru "flag: punch thru region" default=false;
+    }
+  }
+  common {
+    raw_parameters {
+      double l_in "drawn (optical) channel length" name=L positive
+	print_test="l_in != NA";
+      double w_in "channel width (drawn)" name=W positive
+	print_test="w_in != NA";
+      double ad_in "drain area, drawn" name=AD positive
+	print_test="ad_in != NA";
+      double as_in "source area, drawn" name=AS positive
+	print_test="as_in != NA";
+      double pd "drain perimeter" name=PD positive default=0.0
+	print_test="pd != 0.";
+      double ps "source perimeter" name=PS positive default=0.0
+	print_test="ps != 0.";
+      double nrd "drain # squares" name=NRD positive default=1.0;
+      double nrs "source # squares" name=NRS positive default=1.0;
+    }
+  }
+  tr_eval {
+    int foo=3;
+  }
+  /*--------------------------------------------------------------------*/
+  eval Cgb {
+    DEV_CAPACITANCE* brh = prechecked_cast<DEV_CAPACITANCE*>(d);
+    assert(brh);
+
+    double cap = brh->value();
+    {if (p->vgst < - b->phi) { 			/* accumulation */
+      cap += b->cgate;
+    }else if (p->vgst < 0.) {			/* depletion */
+      cap += b->cgate * (-p->vgst) / b->phi;
+    }else{					/* active, overlap only */
+    }}
+    
+    brh->_y0.f1 = cap;
+    {if (SIM::phase == SIM::pTRAN) {
+      cap = (brh->_y0.f1 + brh->_q[1].f1) / 2;
+      brh->_y0.f0 = (brh->_y0.x - brh->_q[1].x) * cap + brh->_q[1].f0;
+    }else{
+      brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
+    }}
+    trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
+  }
+  /*--------------------------------------------------------------------*/
+  eval Cgd {
+    DEV_CAPACITANCE* brh = prechecked_cast<DEV_CAPACITANCE*>(d);
+    assert(brh);
+
+    assert(p->vdsat >= 0.);
+    assert(p->vds >= 0.);
+    double vbs    = (m->cmodel == 3) ? 0. : p->vbs;
+    double vdbsat = p->vdsat - vbs;
+    double vdb    = p->vds   - vbs;
+    double ddif   = 2. * vdbsat - vdb;
+    
+    double cap = 0;
+    {if (!p->reversed) { // treat as Cgs
+      if (p->vgst >= 0.) {
+	if (p->vdsat > p->vds) {		/* linear */
+	  cap = (2./3.) * b->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
+	  if (p->vgst <= .1) {
+	    cap *= 10. * p->vgst;	// smooth discontinuity
+	  }
+	}
+      }
+    }else{ // treat as Cgs
+      if (p->vgst >= -b->phi/2.) {		/* depletion  or active */
+	cap = (2./3.) * b->cgate;
+	if (p->vdsat > p->vds) {			/* linear */
+	  double ndif   = p->vdsat - p->vds;
+	  cap *= 1. - (ndif*ndif)/(ddif*ddif);
+	}
+	if (p->vgst <= 0) {
+	  cap *= 1. + p->vgst / (b->phi);
+	  cap *= 1. + p->vgst / (b->phi);
+	}
+      }
+    }}
+    cap += brh->value();		/* else overlap only */
+    
+    brh->_y0.f1 = cap;
+    {if (SIM::phase == SIM::pTRAN) {
+      cap = (brh->_y0.f1 + brh->_q[1].f1) / 2;
+      brh->_y0.f0 = (brh->_y0.x - brh->_q[1].x) * cap + brh->_q[1].f0;
+    }else{
+      brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
+    }}
+    trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
+  }
+  /*--------------------------------------------------------------------*/
+  eval Cgs {
+    DEV_CAPACITANCE* brh = prechecked_cast<DEV_CAPACITANCE*>(d);
+    assert(brh);
+
+    assert(p->vdsat >= 0.);
+    assert(p->vds >= 0.);
+    double vbs    = (m->cmodel == 3) ? 0. : p->vbs;
+    double vdbsat = p->vdsat - vbs;
+    double vdb    = p->vds   - vbs;
+    double ddif   = 2. * vdbsat - vdb;
+    
+    double cap = 0;
+    {if (p->reversed) { // treat as Cgd
+      if (p->vgst >= 0.) {
+	if (p->vdsat > p->vds) {		/* linear */
+	  cap = (2./3.) * b->cgate * (1. - (vdbsat*vdbsat)/(ddif*ddif));
+	  if (p->vgst <= .1) {
+	    cap *= 10. * p->vgst;	// smooth discontinuity
+	  }
+	}
+      }
+    }else{ // treat as Cgs
+      if (p->vgst >= -b->phi/2.) {		/* depletion  or active */
+	cap = (2./3.) * b->cgate;
+	if (p->vdsat > p->vds) {			/* linear */
+	  double ndif   = p->vdsat - p->vds;
+	  cap *= 1. - (ndif*ndif)/(ddif*ddif);
+	}
+	if (p->vgst <= 0) {
+	  cap *= 1. + p->vgst / (b->phi);
+	  cap *= 1. + p->vgst / (b->phi);
+	}
+      }
+    }}
+    cap += brh->value();		/* else overlap only */
+    
+    brh->_y0.f1 = cap;
+    {if (SIM::phase == SIM::pTRAN) {
+      cap = (brh->_y0.f1 + brh->_q[1].f1) / 2;
+      brh->_y0.f0 = (brh->_y0.x - brh->_q[1].x) * cap + brh->_q[1].f0;
+    }else{
+      brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
+    }}
+    trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
+  }
+  /*--------------------------------------------------------------------*/
+  function limit_mos(double Vds, double Vgs, double Vbs) {
+    /* Spice style vgs limiting */
+    {if (!(OPT::mosflags & 0010) && STATUS::iter[SIM::mode] > 1) {
+      //assert(vgst == vgs - von);
+      {if (Vgs > vgs) {			/* increasing */
+	{if (vgst < 0) {			/* was off */
+	  vgs = std::min(Vgs, von + .5);
+	}else if (vgst < 3.5) {		/* ??? */
+	  vgs = std::min(Vgs, von + 4.);
+	}else{
+	  vgs = std::min(Vgs, 3.*vgs - 2.*von + 2.);
+	}}
+      }else{				/* decreasing */
+	{if (vgst < 0) {			/* off */
+	  vgs = std::max(Vgs, 3. * vgs - 2. * von - 2.);
+	}else if (vgst < 3.5) {
+	  vgs = std::max(Vgs, von - .5);
+	}else{
+	  vgs = std::max(Vgs, von + 2.);
+	}}
+      }}
+      //Vds += vgs - Vgs;		/* vds patch (per Spice) not done */
+    }else{				/* because it usually makes it worse */
+      vgs = Vgs;
+    }}
+    {if (_n[n_drain].t == _n[n_gate].t) {	/* gd tied, limiting done */
+      vds = Vds + (vgs - Vgs);		/* it seems that vds = vgs should */
+    					/* work, but it will be a little off */
+					/* if there is resistance */
+      
+					/* Spice style vds limiting */
+    }else if (!(OPT::mosflags & 0020) && STATUS::iter[SIM::mode] > 1) {
+      {if (Vds <= vds) {			/* decreasing */
+	{if (vds < 3.5) {
+	  vds = std::max(Vds,-.5);
+	}else{
+	  vds = std::max(Vds,2.);
+	}}
+      }else{				/* increasing */
+	{if (vds < 3.5) {
+	  vds = std::min(Vds,4.);
+	}else{
+	  vds = std::min(Vds, 3.*vds + 2.);
+	}}
+      }}
+      //vgs += vds - Vds;
+    }else{
+      vds = Vds;
+    }}
+    
+    {if (!(OPT::mosflags & 0040) && STATUS::iter[SIM::mode] > 1) {
+      //    if (Vbs > 0.) {
+      //      if (vbs >= 0.) {
+      //        vbs = std::min(Vbs,vbs+.1);
+      //      }else{
+      //        vbs = 0.;
+      //      }
+      //    }else{
+      //      vbs = Vbs;
+      //    }
+      vbs = std::min(Vbs,0.);
+    }else{
+      vbs = Vbs;
+    }}
+    if (OPT::dampstrategy & dsDEVLIMIT
+	&& (vgs != Vgs || vds != Vds || vbs != Vbs)) {
+      untested();
+      SIM::fulldamp = true;
+      error(bTRACE, long_label() + ":device limit damp\n");
+    }
+    trace1(long_label().c_str(), evaliter());
+    trace3("prop", Vds, Vgs, Vbs);
+    trace3("using", vds, vgs, vbs);
+  }
+  /*--------------------------------------------------------------------*/
+  function reverse_if_needed() {
+    if (vds < 0) {
+      error(bTRACE, long_label() + ": reversing\n");
+      error(bTRACE, "before: vds=%g vgs=%g vbs=%g\n", vds, vgs, vbs);
+      reversed = !reversed;
+      vgs -= vds;
+      vbs -= vds;
+      vds = -vds;
+      error(bTRACE, "after: vds=%g vgs=%g vbs=%g\n", vds, vgs, vbs);
+      if (OPT::dampstrategy & dsREVERSE) {
+	SIM::fulldamp = true;
+	untested();
+	error(bTRACE, long_label() + ":reverse damp\n");
+      }
+      {if (!(OPT::mosflags & 0040)) {
+	vbs = std::min(vbs,0.);
+      }else{
+	untested();
+      }}
+    }
+  }
+  /*--------------------------------------------------------------------*/
+}
+/*--------------------------------------------------------------------------*/
+cc_direct {
+/*--------------------------------------------------------------------------*/
+bool DEV_MOS::tr_needs_eval()
+{
+  {if (is_q_for_eval()) {
+    untested();
+    return false;
+  }else if (!converged()) {
+    return true;
+  }else{
+    const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(common());
+    assert(c);
+    const MODEL_MOS_BASE* m=prechecked_cast<const MODEL_MOS_BASE*>(c->model());
+    assert(m);
+    polarity_t polarity = m->polarity;
+    node_t eff_source((reversed) ? _n[n_idrain] : _n[n_isource]);
+    node_t eff_drain((reversed) ? _n[n_isource] : _n[n_idrain]);
+    return !(conchk(vds,polarity*(eff_drain.v0()-eff_source.v0()),OPT::vntol)
+	     && conchk(vgs, polarity*(_n[n_gate].v0()-eff_source.v0()),
+		       OPT::vntol)
+	     && conchk(vbs, polarity*(_n[n_bulk].v0()-eff_source.v0()),
+		       OPT::vntol));
+  }}
+}
+/*--------------------------------------------------------------------------*/
+bool DEV_MOS::do_tr()
+{
+  const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(common());
+  assert(c);
+  const MODEL_MOS_BASE* m = prechecked_cast<const MODEL_MOS_BASE*>(c->model());
+  assert(m);
+  assert(subckt().exists());
+
+  double Vds, Vgs, Vbs;
+
+  bool was_cutoff = cutoff;
+  bool was_subthreshold = subthreshold;
+  bool was_saturated = saturated;
+  bool was_reversed = reversed;
+  bool was_dbfwd = dbfwd;
+  bool was_sbfwd = sbfwd;
+  polarity_t polarity = m->polarity;
+
+  {if (STATUS::iter[SIM::mode] <= 1) {
+    reversed = false;
+    Vds = Vgs = Vbs = 0.;
+    if (OPT::mosflags & 0100) {
+      untested();
+      //Vds = m->vto;
+    }
+    if (OPT::mosflags & 0200) {
+      untested();
+      //Vgs = m->vto;
+    }
+    if (OPT::mosflags & 0400  &&  _n[n_source].t != _n[n_bulk].t) {
+      untested();
+      Vbs = -1;
+    }
+    if (_n[n_drain].t == _n[n_gate].t) {
+      Vds = Vgs;
+    }
+  }else if (reversed) {
+    Vds = polarity * volts_limited(_n[n_isource],_n[n_idrain]);
+    Vgs = polarity * volts_limited(_n[n_gate],_n[n_idrain]);
+    Vbs = polarity * volts_limited(_n[n_bulk],_n[n_idrain]);
+  }else{
+    Vds = polarity * volts_limited(_n[n_idrain],_n[n_isource]);
+    Vgs = polarity * volts_limited(_n[n_gate],_n[n_isource]);
+    Vbs = polarity * volts_limited(_n[n_bulk],_n[n_isource]);
+  }}
+
+  limit_mos(Vds, Vgs, Vbs);// also sets the new vds,vgs,vbs
+  m->tr_eval(this);
+
+  ids *= polarity;
+
+  set_converged(subckt().do_tr());
+  
+  trace3(long_label().c_str(), vds, vgs, vbs);
+  trace4("", ids, gmf, gds, gmbf);
+  trace4("", ids, gmr, gds, gmbr);
+  if (was_cutoff != cutoff  ||  was_subthreshold != subthreshold  
+  	||  was_saturated != saturated  ||  was_reversed != reversed  
+	||  was_dbfwd != dbfwd  ||  was_sbfwd != sbfwd) {
+    if (OPT::dampstrategy & dsDEVREGION) {
+      SIM::fulldamp = true;
+    }
+    #if defined(DO_TRACE)
+      error(bTRACE,"%s:%d: region change\n", long_label().c_str(), evaliter());
+    #endif
+  }
+  return converged();
+}
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/

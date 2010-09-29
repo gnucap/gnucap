@@ -1,0 +1,773 @@
+/* $Id: d_mos5.model,v 20.15 2001/10/30 03:58:55 al Exp $ -*- C++ -*-
+ * Copyright (C) 2001 Albert Davis
+ * Author: Albert Davis <aldavis@ieee.org>
+ *
+ * This file is part of "GnuCap", the Gnu Circuit Analysis Package
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ *------------------------------------------------------------------
+ * Spice BSIM2 model
+ * derived from Spice3f4,Copyright 1990 Regents of the University of California
+ * 1988 Min-Chie Jeng, Hong J. Park, Thomas L. Quarles
+ * Recoded for GnuCap model compiler, Al Davis, 2000
+ */
+h_headers {
+#include "u_sdp.h"
+#include "d_mos_base.h"
+}
+cc_headers {
+}
+/*--------------------------------------------------------------------------*/
+model MOS5 {
+  level 5;
+  dev_type MOS;
+  inherit MOS_BASE;
+  independent {
+    override {
+      double mjsw "" final_default=.33;
+      double pb "" final_default=0.1 quiet_min=0.1;
+      double pbsw "" final_default=pb quiet_min=0.1;
+      double cjo "" default=0.0;
+      int cmodel "CMODEL" print_test="cmodel!=1"
+	calculate="((!cmodel)?1:cmodel)";
+      int mos_level "back-annotate for diode" name=DIODElevel 
+	print_test="mos_level != LEVEL" default=LEVEL;
+    }
+    raw_parameters {
+      double dl "Channel length reduction"
+	name=DL default=0. scale=MICRON2METER;
+      double dw "Channel width reduction"
+	name=DW default=0. scale=MICRON2METER;
+      double tox "Gate oxide thickness"
+	name=TOX default=0. scale=MICRON2METER quiet_min=1e-20;
+      double vdd "Max Vds"
+	name=VDD default=0.;
+      double vgg "Max Vgs"
+	name=VGG default=0.;
+      double vbb "Max Vbs"
+	name=VBB default=0.;
+      double wdf "Default width of source drain diffusion (ignored)"
+	name=WDF default=0.;
+      double dell "Length reduction of source drain diff (ignored)"
+	name=DELL default=0.;
+      double temp "temperature"
+	name=TEMP default=300.15 offset=-ABS_ZERO;
+      double xpart "Flag for channel charge partitioning"
+	name=XPART default=0.;
+    }
+    calculated_parameters {
+      double cox "" calculate="3.453e-11 /*E_OX*/ / tox";
+      double vdd2 "" calculate="2 * vdd";
+      double vgg2 "" calculate="2 * vgg";
+      double vbb2 "" calculate="2 * vbb";
+      double Vtm "" calculate="8.625e-5 /*K/Q*/ * (temp -.15)";
+    }
+  }
+  size_dependent {
+    raw_parameters {
+      double phi "Strong inversion surface potential"
+	name=PHI default=0.;
+      double vfb "flat band voltage at given L and W"
+	name=VFB default=0.;
+      double k1  "bulk effect coefficient 1"
+	name=K1 default=0.;
+      double k2  "bulk effect coefficient 2"
+	name=K2 default=0.;
+      double eta0 "drain induced barrier lowering"
+	name=ETA0 default=0.;
+      double etaB "Vbs dependence of Eta"
+	name=ETAB default=0.;
+      
+      double mob0 "" name=MU0 default=0.;
+      double mob0B "" name=MU0B default=0.;
+      double mobs0 "" name=MUS0 default=0.;
+      double mobsB "" name=MUSB default=0.;
+      double mob20 "" name=MU20 default=0.;
+      double mob2B "" name=MU2B default=0.;
+      double mob2G "" name=MU2G default=0.;
+      double mob30 "" name=MU30 default=0.;
+      double mob3B "" name=MU3B default=0.;
+      double mob3G "" name=MU3G default=0.;
+      double mob40 "" name=MU40 default=0.;
+      double mob4B "" name=MU4B default=0.;
+      double mob4G "" name=MU4G default=0.;
+      
+      double ua0 "Linear Vgs dependence of Mobility"
+	name=UA0 default=0.;
+      double uaB "Vbs dependence of Ua"
+	name=UAB default=0.;
+      double ub0 "Quadratic Vgs dependence of Mobility"
+	name=UB0 default=0.;
+      double ubB "Vbs dependence of Ub"
+	name=UBB default=0.;
+      double u10 "Drift Velocity Saturation due to Vds"
+	name=U10 default=0.;
+      double u1B "Vbs dependence of U1"
+	name=U1B default=0.;
+      double u1D "Vds dependence of U1"
+	name=U1D default=0.;
+      double n0  "Subthreshold slope at Vds=0, Vbs=0"
+	name=N0 default=0. positive;
+      double nB  "Vbs dependence of n"
+	name=NB default=0.;
+      double nD  "Vds dependence of n"
+	name=ND default=0.;
+      double vof0 "Vth offset at Vds=0, Vbs=0"
+	name=VOF0 default=0.;
+      double vofB "Vbs dependence of Vof"
+	name=VOFB default=0.;
+      double vofD "Vds dependence of Vof"
+	name=VOFD default=0.;
+      double ai0 "Pre-factor in hot-electron effects"
+	name=AI0 default=0.;
+      double aiB "Vbs dependence of Ai"
+	name=AIB default=0.;
+      double bi0 "Exp-factor in hot-electron effects"
+	name=BI0 default=0.;
+      double biB "Vbs dependence of Bi"
+	name=BIB default=0.;
+      double vghigh "Upper bound of cubic spline function"
+	name=VGHIGH default=0.;
+      double vglow  "Lower bound of cubic spline function"
+	name=VGLOW default=0.;
+    }
+    calculated_parameters {
+      double beta0  "Beta at Vds = 0 and Vgs = Vth"
+	calculate="mob0 * CoxWoverL";
+      double beta0B "Vbs dependence of Beta0"
+	calculate="mob0B * CoxWoverL";
+      double betas0  "Beta at Vds=Vdd and Vgs=Vth"
+	calculate="mobs0 * CoxWoverL" quiet_min="1.01*beta0";
+      double betasB "Vbs dependence of Betas"
+	calculate="mobsB * CoxWoverL";
+      double beta20 "Vds dependence of Beta in tanh term"
+	calculate="mob20";
+      double beta2B "Vbs dependence of Beta2"
+	calculate="mob2B";
+      double beta2G "Vgs dependence of Beta2"
+	calculate="mob2G";
+      double beta30 "Vds dependence of Beta in linear term"
+	calculate="mob30 * CoxWoverL";
+      double beta3B "Vbs dependence of Beta3"
+	calculate="mob3B * CoxWoverL";
+      double beta3G "Vgs dependence of Beta3"
+	calculate="mob3G * CoxWoverL";
+      double beta40 "Vds dependence of Beta in quadra term"
+	calculate="mob40 * CoxWoverL";
+      double beta4B "Vbs dependence of Beta4"
+	calculate="mob4B * CoxWoverL";
+      double beta4G "Vgs dependence of Beta4"
+	calculate="mob4G * CoxWoverL";
+      double Phis3 "" calculate="sqrt(phi) * phi";
+      double One_Third_CoxWL "" calculate="cgate / 3.0";
+      double Two_Third_CoxWL "" calculate="2.0 * One_Third_CoxWL";
+      double Arg;
+    }
+    code_pre {
+      l_eff -= m->dl;
+      w_eff -= m->dw;
+      cgate = m->cox * w_eff * l_eff;
+      double L = l_eff/MICRON2METER;
+      double W = w_eff/MICRON2METER;
+      double CoxWoverL = 1e-4 * m->cox * w_eff / l_eff;
+    }
+    override {
+      double cgate "" calculate="m->cox * w_eff * l_eff";
+    }
+    code_post {
+      double tmp = betas0 - beta0 - beta0B * m->vbb;
+      if ((-betasB * m->vbb) > tmp) {
+	untested();
+	betasB = -tmp / m->vbb;
+      }
+      Arg = betasB - beta0B - m->vdd * (beta3B - m->vdd * beta4B);
+    }
+  }
+  /*-----------------------------------------------------------------------*/
+  tr_eval {
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+    trace3("", d->vds, d->vgs, d->vbs);
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
+    d->reverse_if_needed();
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+    trace4("", c->lo, m->dl, c->wo, m->dw);
+    
+    double Vbs = std::max(m->vbb2, d->vbs);
+    double Vgs = std::min(m->vgg2, d->vgs);
+    double Vds = std::min(m->vdd2, d->vds);
+    trace3("", Vbs, Vgs, Vds);
+    
+    /* Threshold Voltage. */
+    double Phisb, dPhisb_dVb, T1s, dT1s_dVb;
+    {if (Vbs <= 0.0) {
+      d->sbfwd = false;
+      Phisb = b->phi - Vbs;
+      dPhisb_dVb = -1.0;
+      T1s = sqrt(Phisb);
+      dT1s_dVb = -0.5 / T1s;
+      trace4("-", Phisb, dPhisb_dVb, T1s, dT1s_dVb);
+    }else{
+      d->sbfwd = true;
+      double tmp = b->phi / (b->phi + Vbs);
+      Phisb = b->phi * tmp;
+      dPhisb_dVb = -tmp * tmp;
+      T1s = b->Phis3 / (b->phi + 0.5 * Vbs);
+      dT1s_dVb = -0.5 * T1s * T1s / b->Phis3;
+      trace4("+", Phisb, dPhisb_dVb, T1s, dT1s_dVb);
+    }}
+    
+    double Eta = b->eta0 + b->etaB * Vbs;
+    double Ua = b->ua0 + b->uaB * Vbs;
+    double Ub = b->ub0 + b->ubB * Vbs;
+    double U1s = b->u10 + b->u1B * Vbs;
+    trace4("", Eta, Ua, Ub, U1s);
+    
+    d->von = b->vfb + b->phi + b->k1*T1s - b->k2*Phisb - Eta*Vds;
+    double dVth_dVd = -Eta;
+    double dVth_dVb = b->k1 * dT1s_dVb + b->k2 - b->etaB * Vds;
+    d->vgst = Vgs - d->von;
+    trace4("", d->von, dVth_dVd, dVth_dVb, d->vgst);
+    
+    double Aa, dAa_dVb, Inv_Aa;
+    {
+      double tmp = 1.0 / (1.744 + 0.8364 * Phisb);
+      double Gg = 1.0 - tmp;
+      double dGg_dVb = 0.8364 * tmp * tmp * dPhisb_dVb;
+      double T0 = Gg / T1s;
+      trace4("", tmp, Gg, dGg_dVb, T0);
+      double tmp1 = 0.5 * T0 * b->k1;
+      Aa = 1.0 + tmp1;
+      dAa_dVb = (Aa - 1.0) * (dGg_dVb / Gg - dT1s_dVb / T1s);
+      Inv_Aa = 1.0 / Aa;
+      trace4("", tmp1, Aa, dAa_dVb, Inv_Aa);
+    }
+    
+    trace3("", b->vghigh, b->vglow, d->vgst);
+    
+    double Exp0, Exp1, n, Vgeff, dVgeff_dVg, dVgeff_dVd, dVgeff_dVb;
+    {if ((d->vgst >= b->vghigh) || (b->n0 == 0.0)) {
+      Exp0 = NOT_VALID;
+      Exp1 = NOT_VALID;
+      n = NOT_VALID;
+      Vgeff = d->vgst;
+      dVgeff_dVg = 1.0;
+      dVgeff_dVd = -dVth_dVd;
+      dVgeff_dVb = -dVth_dVb;
+      trace0("vgst>vghigh");
+    }else{
+      double Vof = b->vof0 + b->vofB * Vbs + b->vofD * Vds;
+      n = b->n0 + b->nB / T1s + b->nD * Vds;
+      double tmp = 0.5 / (n * m->Vtm);
+      trace3("", Vof, n, tmp);
+      
+      double ExpArg1 = -Vds / m->Vtm;
+      ExpArg1 = std::max(ExpArg1, -30.0);
+      Exp1 = exp(ExpArg1);
+      double tmp1 = 1.0 - Exp1;
+      tmp1 = std::max(tmp1, 1.0e-18);
+      double tmp2 = 2.0 * Aa * tmp1;
+      trace4("", ExpArg1, Exp1, tmp1, tmp2);
+      
+      // exports Exp0, Vgeff, dVgeff_dVg, dVgeff_dVd, dVgeff_dVb
+      {if (d->vgst <= b->vglow) {
+	double ExpArg = d->vgst * tmp;
+	ExpArg = std::max(ExpArg, -30.0);
+	Exp0 = exp(0.5 * Vof + ExpArg);
+	Vgeff = sqrt(tmp2) * m->Vtm * Exp0;
+	double T0 = n * m->Vtm;
+	dVgeff_dVg = Vgeff * tmp;
+	dVgeff_dVd = dVgeff_dVg * (n / tmp1 * Exp1 - dVth_dVd 
+				   - d->vgst * b->nD / n + T0 * b->vofD);
+	dVgeff_dVb = dVgeff_dVg * (b->vofB * T0 - dVth_dVb 
+				 + b->nB * d->vgst / (n * T1s * T1s) * dT1s_dVb
+				 + T0 * Inv_Aa * dAa_dVb);
+	trace0("vgst<vglow");
+      }else{
+	double ExpArg = b->vglow * tmp;
+	ExpArg = std::max(ExpArg, -30.0);
+	Exp0 = exp(0.5 * Vof + ExpArg);
+	Vgeff = sqrt(2.0 * Aa * (1.0 - Exp1)) * m->Vtm * Exp0;
+	double Con1 = b->vghigh;
+	double Con3 = Vgeff;
+	double Con4 = Con3 * tmp;
+	double SqrVghigh = b->vghigh * b->vghigh;
+	double SqrVglow = b->vglow * b->vglow;
+	double CubVghigh = b->vghigh * SqrVghigh;
+	double CubVglow = b->vglow * SqrVglow;
+	double T0 = 2.0 * b->vghigh;
+	double T1 = 2.0 * b->vglow;
+	double T2 = 3.0 * SqrVghigh;
+	double T3 = 3.0 * SqrVglow;
+	double T4 = b->vghigh - b->vglow;
+	double T5 = SqrVghigh - SqrVglow;
+	double T6 = CubVghigh - CubVglow;
+	double T7 = Con1 - Con3;
+	double delta = (T1-T0) * T6 + (T2-T3) * T5 + (T0*T3 - T1*T2) * T4;
+	delta = 1.0 / delta;
+	double Coeffb = (T1 - Con4 * T0) * T6 + (Con4 * T2 - T3) * T5 
+	  + (T0 * T3 - T1 * T2) * T7;
+	double Coeffc = (Con4-1.0) * T6 + (T2-T3) * T7 + (T3 - Con4*T2) * T4;
+	double Coeffd = (T1-T0) * T7 + (1.0-Con4) * T5 + (Con4*T0 - T1) * T4;
+	double Coeffa = SqrVghigh * (Coeffc + Coeffd * T0);
+	Vgeff = (Coeffa + d->vgst * (Coeffb + d->vgst*(Coeffc+d->vgst*Coeffd)))
+	  *delta;
+	dVgeff_dVg = (Coeffb + d->vgst*(2.0*Coeffc+3.0*d->vgst*Coeffd)) *delta;
+	T7 = Con3 * tmp;
+	double T8 = dT1s_dVb * b->nB / (T1s * T1s * n);
+	double T9 = n * m->Vtm;
+	double dCon3_dVd = T7*(n*Exp1/tmp1 -b->vglow*b->nD/n + T9*b->vofD);
+	double dCon3_dVb = T7*(T9*Inv_Aa*dAa_dVb + b->vglow*T8 + T9*b->vofB);
+	double dCon4_dVd = tmp * dCon3_dVd - T7 * b->nD / n;
+	double dCon4_dVb = tmp * dCon3_dVb + T7 * T8;
+	
+	double dCoeffb_dVd = dCon4_dVd*(T2*T5-T0*T6) + dCon3_dVd*(T1*T2-T0*T3);
+	double dCoeffc_dVd = dCon4_dVd * (T6 - T2*T4) + dCon3_dVd * (T3 - T2);
+	double dCoeffd_dVd = dCon4_dVd * (T0*T4 - T5) + dCon3_dVd * (T0 - T1);
+	double dCoeffa_dVd = SqrVghigh * (dCoeffc_dVd + dCoeffd_dVd * T0);
+	
+	dVgeff_dVd = -dVgeff_dVg * dVth_dVd + (dCoeffa_dVd 
+		+ d->vgst * (dCoeffb_dVd + d->vgst 
+			    * (dCoeffc_dVd + d->vgst * dCoeffd_dVd))) * delta;
+	
+	double dCoeffb_dVb = dCon4_dVb*(T2*T5-T0*T6) + dCon3_dVb*(T1*T2-T0*T3);
+	double dCoeffc_dVb = dCon4_dVb * (T6 - T2*T4) + dCon3_dVb * (T3 - T2);
+	double dCoeffd_dVb = dCon4_dVb * (T0*T4 - T5) + dCon3_dVb * (T0 - T1);
+	double dCoeffa_dVb = SqrVghigh * (dCoeffc_dVb + dCoeffd_dVb * T0);
+	
+	dVgeff_dVb = -dVgeff_dVg * dVth_dVb + (dCoeffa_dVb 
+		+ d->vgst * (dCoeffb_dVb + d->vgst
+			     * (dCoeffc_dVb + d->vgst * dCoeffd_dVb))) * delta;
+	trace0("else");
+      }}
+    }}
+    trace3("", Exp0, Exp1, n);
+    trace4("", Vgeff, dVgeff_dVg, dVgeff_dVd, dVgeff_dVb);
+    
+    double dVdsat_dVd, dVdsat_dVg, dVdsat_dVb;
+    {if (Vgeff > 0.0) {	// normal operation
+      d->cutoff = false;
+      double Uvert = 1.0 + Vgeff * (Ua + Vgeff * Ub);
+      Uvert = std::max(Uvert, 0.2);
+      double Inv_Uvert = 1.0 / Uvert;
+      double dUvert_dVg, dUvert_dVd, dUvert_dVb;
+      {
+	double T8 = Ua + 2.0 * Ub * Vgeff;
+	dUvert_dVg = T8 * dVgeff_dVg;
+	dUvert_dVd = T8 * dVgeff_dVd;
+	dUvert_dVb = T8 * dVgeff_dVb + Vgeff * (b->uaB + Vgeff * b->ubB);
+	trace2("", T8, Uvert);
+	trace3("", dUvert_dVg, dUvert_dVd, dUvert_dVb);
+      }
+      
+      double Vc, dVc_dVg, dVc_dVd, dVc_dVb;
+      {
+	double T8 = U1s * Inv_Aa * Inv_Uvert;
+	Vc = T8 * Vgeff;
+	double T9 = Vc * Inv_Uvert;
+	dVc_dVg = T8 * dVgeff_dVg - T9 * dUvert_dVg;
+	dVc_dVd = T8 * dVgeff_dVd - T9 * dUvert_dVd;
+	dVc_dVb = T8 * dVgeff_dVb 
+	  + b->u1B * Vgeff * Inv_Aa * Inv_Uvert
+	  - Vc * Inv_Aa * dAa_dVb
+	  - T9 * dUvert_dVb;
+	trace3("", T8, T9, Vc);
+	trace3("", dVc_dVg, dVc_dVd, dVc_dVb);
+      }
+      
+      double Kk, dKk_dVc;
+      {
+	double tmp2 = sqrt(1.0 + 2.0 * Vc);
+	Kk = 0.5 * (1.0 + Vc + tmp2);
+	dKk_dVc = 0.5  + 0.5 / tmp2;
+	trace3("", tmp2, Kk, dKk_dVc);
+      }
+      
+      {
+	double T8 = Inv_Aa / sqrt(Kk);
+	d->vdsat = std::max(Vgeff * T8, 1.0e-18);
+	double T9 = 0.5 * d->vdsat * dKk_dVc / Kk;
+	dVdsat_dVd = T8 * dVgeff_dVd - T9 * dVc_dVd;
+	dVdsat_dVg = T8 * dVgeff_dVg - T9 * dVc_dVg;
+	dVdsat_dVb = T8 * dVgeff_dVb - T9 * dVc_dVb - d->vdsat*Inv_Aa*dAa_dVb;
+	trace3("", T8, T9, d->vdsat);
+	trace3("", dVdsat_dVd, dVdsat_dVg, dVdsat_dVb);
+      }
+      
+      double Beta, dBeta_dVd, dBeta_dVg, dBeta_dVb;
+      {
+	double Beta0 = b->beta0  + b->beta0B * Vbs;
+	double Betas = b->betas0 + b->betasB * Vbs;
+	double Beta2 = b->beta20 + b->beta2B * Vbs + b->beta2G * Vgs;
+	double Beta3 = b->beta30 + b->beta3B * Vbs + b->beta3G * Vgs;
+	double Beta4 = b->beta40 + b->beta4B * Vbs + b->beta4G * Vgs;
+	double Beta1 = Betas - (Beta0 + m->vdd * (Beta3 - m->vdd * Beta4));
+	trace4("", Beta0, b->beta0, b->beta0B, Vbs);
+	trace4("", Betas, b->betas0, b->betasB, Vgs);
+	trace4("", Beta2, b->beta20, b->beta2B, b->beta2G);
+	trace4("", Beta3, b->beta30, b->beta3B, b->beta3G);
+	trace4("", Beta4, b->beta40, b->beta4B, b->beta4G);
+	trace2("", Beta1, m->vdd);
+	
+	double T0 = Vds * Beta2 / d->vdsat;
+	T0 = std::min(T0, 30.0);
+	double T1 = exp(T0);
+	double T2 = T1 * T1;
+	double T3 = T2 + 1.0;
+	trace4("", T0, T1, T2, T3);
+	double tanh = (T2 - 1.0) / T3;
+	double Sqrsech = 4.0 * T2 / (T3 * T3);
+	trace2("", tanh, Sqrsech);
+	
+	Beta = Beta0 + Beta1 * tanh + Vds * (Beta3 - Beta4 * Vds);
+	double T4 = Beta1 * Sqrsech / d->vdsat;
+	double T5 = m->vdd * tanh;
+	dBeta_dVd = Beta3 - 2.0*Beta4*Vds + T4*(Beta2-T0*dVdsat_dVd);
+	dBeta_dVg = T4 * (b->beta2G * Vds - T0 * dVdsat_dVg)
+	  + b->beta3G * (Vds - T5) 
+	  - b->beta4G * (Vds * Vds - m->vdd * T5);
+	double dBeta1_dVb = b->Arg;
+	dBeta_dVb = b->beta0B
+	  + dBeta1_dVb * tanh
+	  + Vds * (b->beta3B - Vds * b->beta4B)
+	  + T4 * (b->beta2B * Vds - T0 * dVdsat_dVb);
+	trace3("", T4, T5, dBeta1_dVb);
+	trace4("", Beta, dBeta_dVd, dBeta_dVg, dBeta_dVb);
+      }
+      
+      {if (d->vgst > b->vglow) {	// not subthreshold
+	d->subthreshold = false;
+	{if (Vds <= d->vdsat) {		// triode region
+	  d->saturated = false;
+	  double T3 = Vds / d->vdsat;
+	  double T4 = T3 - 1.0;
+	  double T2 =  1.0 - b->u1D * T4 * T4;
+	  double U1 =  U1s * T2;
+	  double Utot = Uvert + U1 * Vds;
+	  Utot = std::max(Utot, 0.5);
+	  double Inv_Utot = 1.0 / Utot;
+	  double T5 = 2.0 * U1s * b->u1D * T4 / d->vdsat;
+	  double dU1_dVd = T5 * (T3 * dVdsat_dVd - 1.0);
+	  double dU1_dVg = T5 * T3 * dVdsat_dVg;
+	  double dU1_dVb = T5 * T3 * dVdsat_dVb + b->u1B * T2;
+	  double dUtot_dVd = dUvert_dVd + U1 + Vds * dU1_dVd;
+	  double dUtot_dVg = dUvert_dVg + Vds * dU1_dVg;
+	  double dUtot_dVb = dUvert_dVb + Vds * dU1_dVb;
+	  
+	  double tmp1 = (Vgeff - 0.5 * Aa * Vds);
+	  double tmp3 = tmp1 * Vds;
+	  double Betaeff = Beta * Inv_Utot;
+	  d->ids = Betaeff * tmp3;
+	  double T6 = d->ids / Betaeff * Inv_Utot;
+	  d->gds = T6 * (dBeta_dVd - Betaeff * dUtot_dVd)
+	    + Betaeff * (tmp1 + (dVgeff_dVd - 0.5 * Aa) * Vds);
+	  d->gmf = T6 * (dBeta_dVg - Betaeff * dUtot_dVg)
+	    + Betaeff * Vds * dVgeff_dVg;
+	  d->gmbf = T6 * (dBeta_dVb - Betaeff * dUtot_dVb)
+	    + Betaeff * Vds * (dVgeff_dVb - 0.5 * Vds * dAa_dVb);
+	}else{	// Saturation
+	  d->saturated = true;
+	  double Inv_Kk = 1.0 / Kk;
+	  double tmp1 = Vgeff * Inv_Aa * Inv_Kk;
+	  double tmp3 = 0.5 * Vgeff * tmp1;
+	  double Betaeff = Beta * Inv_Uvert;
+	  d->ids = Betaeff * tmp3;
+	  double T0 = d->ids / Betaeff * Inv_Uvert;
+	  double T1 = Betaeff * Vgeff * Inv_Aa * Inv_Kk;
+	  double T2 = d->ids * Inv_Kk * dKk_dVc;
+	  
+	  {if (b->ai0 != 0.0) {
+	    double Ai = b->ai0 + b->aiB * Vbs;
+	    double Bi = b->bi0 + b->biB * Vbs;
+	    double T5 = Bi / (Vds - d->vdsat);
+	    T5 = std::min(T5, 30.0);
+	    double T6 = exp(-T5);
+	    double FR = 1.0 + Ai * T6;
+	    double T7 = T5 / (Vds - d->vdsat);
+	    double T8 = (1.0 - FR) * T7;
+	    double dFR_dVd = T8 * (dVdsat_dVd - 1.0);
+	    double dFR_dVg = T8 * dVdsat_dVg;
+	    double dFR_dVb = T8 * dVdsat_dVb 
+	      + T6 * (b->aiB - Ai * b->biB / (Vds - d->vdsat));
+	    
+	    d->gds = (T0 * (dBeta_dVd - Betaeff * dUvert_dVd) 
+		     + T1 * dVgeff_dVd - T2 * dVc_dVd) * FR + d->ids * dFR_dVd;
+	    d->gmf = (T0 * (dBeta_dVg - Betaeff * dUvert_dVg) 
+		     + T1 * dVgeff_dVg - T2 * dVc_dVg) * FR + d->ids * dFR_dVg;
+	    d->gmbf = (T0 * (dBeta_dVb - Betaeff * dUvert_dVb)
+		      + T1 * dVgeff_dVb - T2 * dVc_dVb 
+		      - d->ids * Inv_Aa * dAa_dVb) * FR + d->ids * dFR_dVb;
+	    d->ids *= FR;
+	  }else{
+	    d->gds = T0 * (dBeta_dVd - Betaeff * dUvert_dVd)
+	      + T1 * dVgeff_dVd - T2 * dVc_dVd;
+	    d->gmf = T0 * (dBeta_dVg - Betaeff * dUvert_dVg)
+	      + T1 * dVgeff_dVg - T2 * dVc_dVg;
+	    d->gmbf = T0 * (dBeta_dVb - Betaeff * dUvert_dVb)
+	      + T1 * dVgeff_dVb - T2 * dVc_dVb - d->ids * Inv_Aa * dAa_dVb;
+	  }}
+	}}
+      }else{	// subthreshold
+	d->subthreshold = true;
+	assert(Exp0 != NOT_VALID);
+	double T0 = Exp0 * Exp0;
+	assert(Exp1 != NOT_VALID);
+	double T1 = Exp1;
+	trace4("sub", Exp0, Exp1, T0, T1);
+	trace2("", n, m->Vtm);
+	d->ids = Beta * m->Vtm * m->Vtm * T0 * (1.0 - T1);
+	double T2 = d->ids / Beta;
+	double T4 = n * m->Vtm;
+	double T3 = d->ids / T4;
+	trace4("", d->ids, T2, T4, T3);
+	double FR, dFR_dVd, dFR_dVg, dFR_dVb;
+	{if ((Vds > d->vdsat) && b->ai0 != 0.0) {
+	  d->saturated = true;
+	  double Ai = b->ai0 + b->aiB * Vbs;
+	  double Bi = b->bi0 + b->biB * Vbs;
+	  double T5 = Bi / (Vds - d->vdsat);
+	  trace3("", Ai, Bi, T5);
+	  T5 = std::min(T5, 30.0);
+	  double T6 = exp(-T5);
+	  FR = 1.0 + Ai * T6;
+	  double T7 = T5 / (Vds - d->vdsat);
+	  double T8 = (1.0 - FR) * T7;
+	  trace4("", T5, T6, T7, T8);
+	  dFR_dVd = T8 * (dVdsat_dVd - 1.0);
+	  dFR_dVg = T8 * dVdsat_dVg;
+	  dFR_dVb = T8 * dVdsat_dVb + T6 * (b->aiB-Ai*b->biB/(Vds-d->vdsat));
+	  trace4("ai0!=0", FR, dFR_dVd, dFR_dVg, dFR_dVb);
+	}else{
+	  d->saturated = false;
+	  FR = 1.0;
+	  dFR_dVd = 0.0;
+	  dFR_dVg = 0.0;
+	  dFR_dVb = 0.0;
+	  trace4("ai0==0", FR, dFR_dVd, dFR_dVg, dFR_dVb);
+	}}
+	
+	d->gds = (T2 * dBeta_dVd 
+		  + T3 * (b->vofD * T4 - dVth_dVd - b->nD * d->vgst / n)
+		  + Beta * m->Vtm * T0 * T1) * FR + d->ids * dFR_dVd;
+	d->gmf = (T2 * dBeta_dVg + T3) * FR + d->ids * dFR_dVg;
+	d->gmbf = (T2 * dBeta_dVb + T3 * (b->vofB * T4 - dVth_dVb + b->nB
+		* d->vgst / (n * T1s * T1s) * dT1s_dVb)) * FR + d->ids*dFR_dVb;
+	d->ids *= FR;
+      }}
+    }else{	// cutoff???
+      d->cutoff = true;
+      // reachable only if vghigh and vgst both negative
+      d->vdsat = 0.0;
+      dVdsat_dVd = dVdsat_dVg = dVdsat_dVb = 0.0;
+      d->ids = 0.0;
+      d->gmf  = 0.0;
+      d->gds = 0.0;
+      d->gmbf = 0.0;
+    }}
+    trace4("", d->vdsat, dVdsat_dVd, dVdsat_dVg, dVdsat_dVb);
+    trace4("", d->ids, d->gmf, d->gds, d->gmbf);
+    
+    /* Some Limiting of DC Parameters */
+    d->gds = std::max(d->gds, 1.0e-20);
+    d->ids = std::max(d->ids, 1.0e-50);
+    /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+    double Vbseff, dVbseff_dVb;
+    {if (Vbs < 0.0) {
+      Vbseff = Vbs;
+      dVbseff_dVb = 1.0;
+    }else{
+      Vbseff = b->phi - Phisb;
+      dVbseff_dVb = -dPhisb_dVb;
+    }}
+    trace3("", Vbs, Vbseff, dVbseff_dVb);
+    
+    double Arg1 = Vgs - Vbseff - b->vfb;
+    double Arg2 = Arg1 - d->vgst;
+    trace2("", Arg1, Arg2);
+    double Qbulk = b->One_Third_CoxWL * Arg2;
+    double dQbulk_dVb = b->One_Third_CoxWL * (dVth_dVb - dVbseff_dVb);
+    double dQbulk_dVd = b->One_Third_CoxWL * dVth_dVd;
+    trace3("", Qbulk, dQbulk_dVb, dQbulk_dVd);
+    {if (Arg1 <= 0.0) { // accumulation region
+      d->qgate = b->cgate * Arg1;
+      d->qbulk = -(d->qgate);
+      d->qdrn = 0.0;
+      
+      d->cggb = b->cgate;
+      d->cgdb = 0.0;
+      d->cgsb = -d->cggb * (1.0 - dVbseff_dVb);
+      
+      d->cdgb = 0.0;
+      d->cddb = 0.0;
+      d->cdsb = 0.0;
+      
+      d->cbgb = -b->cgate;
+      d->cbdb = 0.0;
+      d->cbsb = -d->cgsb;
+      trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
+      trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
+      trace4("acc", d->qdrn, d->cdgb, d->cddb, d->cdsb);
+    }else if (d->vgst <= 0.0) { // subthreshold
+      double T2 = Arg1 / Arg2;
+      double T3 = T2 * T2 * (b->cgate - b->Two_Third_CoxWL * T2);
+      
+      d->qgate = b->cgate * Arg1 * (1.0 - T2 * (1.0 - T2 / 3.0));
+      d->qbulk = -(d->qgate);
+      d->qdrn = 0.0;
+      
+      d->cggb = b->cgate * (1.0 - T2 * (2.0 - T2));
+      d->cgdb = T3 * dVth_dVd;
+      double tmp = T3 * dVth_dVb - (d->cggb + T3) * dVbseff_dVb;
+      d->cgsb = -(d->cggb + d->cgdb + tmp);
+      
+      d->cbgb = -d->cggb;
+      d->cbdb = -d->cgdb;
+      d->cbsb = -d->cgsb;
+      
+      d->cdgb = 0.0;
+      d->cddb = 0.0;
+      d->cdsb = 0.0;
+      trace3("", T2, T3, tmp);
+      trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
+      trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
+      trace4("sub", d->qdrn, d->cdgb, d->cddb, d->cdsb);
+    }else{
+      double Vdsat; // changes dVdsat_dVd, dVdsat_dVg, dVdsat_dVb;
+      {if (d->vgst < b->vghigh) {
+	double Uvert = 1.0 + d->vgst * (Ua + d->vgst * Ub);
+	Uvert = std::max(Uvert, 0.2);
+	double Inv_Uvert = 1.0 / Uvert;
+	double dUvert_dVg = Ua + 2.0 * Ub * d->vgst;
+	double dUvert_dVd = -dUvert_dVg * dVth_dVd;
+	double dUvert_dVb = -dUvert_dVg * dVth_dVb 
+	  + d->vgst * (b->uaB + d->vgst * b->ubB);
+	trace2("", Uvert, Inv_Uvert);
+	trace3("", dUvert_dVg, dUvert_dVd, dUvert_dVb);
+	
+	double T8 = U1s * Inv_Aa * Inv_Uvert;
+	double Vc = T8 * d->vgst;
+	double T9 = Vc * Inv_Uvert;
+	double dVc_dVg = T8 - T9 * dUvert_dVg;
+	double dVc_dVd = -T8 * dVth_dVd - T9 * dUvert_dVd;
+	double dVc_dVb = -T8 * dVth_dVb
+	  + b->u1B * d->vgst * Inv_Aa * Inv_Uvert 
+	  - Vc * Inv_Aa * dAa_dVb - T9 * dUvert_dVb;
+	trace3("", T8, T9, Vc);
+	trace3("", dVc_dVg, dVc_dVd, dVc_dVb);
+	
+	double tmp2 = sqrt(1.0 + 2.0 * Vc);
+	double Kk = 0.5 * (1.0 + Vc + tmp2);
+	double dKk_dVc = 0.5  + 0.5 / tmp2;
+	trace3("", tmp2, Kk, dKk_dVc);
+	
+	T8 = Inv_Aa / sqrt(Kk);
+	Vdsat = d->vgst * T8;
+	T9 = 0.5 * Vdsat * dKk_dVc / Kk;
+	trace2("", T8, T9);
+	dVdsat_dVd = -T8 * dVth_dVd - T9 * dVc_dVd;
+	dVdsat_dVg = T8 - T9 * dVc_dVg;
+	dVdsat_dVb = -T8*dVth_dVb - T9*dVc_dVb - Vdsat*Inv_Aa*dAa_dVb;
+	trace2("new", d->vdsat, Vdsat);
+	trace3("", dVdsat_dVd, dVdsat_dVg, dVdsat_dVb);
+      }else{
+	Vdsat = d->vdsat;
+	trace2("keep", d->vdsat, Vdsat);
+	trace3("", dVdsat_dVd, dVdsat_dVg, dVdsat_dVb);
+	// keep dVdsat_dVd, dVdsat_dVg, dVdsat_dVb;
+      }}
+      {if (Vds >= Vdsat) {       /* saturation region */
+	d->cggb = b->Two_Third_CoxWL;
+	d->cgdb = -d->cggb * dVth_dVd + dQbulk_dVd;
+	double tmp = -d->cggb * dVth_dVb + dQbulk_dVb;
+	d->cgsb = -(d->cggb + d->cgdb + tmp);
+	trace1("", tmp);
+	
+	d->cbgb = 0.0;
+	d->cbdb = -dQbulk_dVd;
+	d->cbsb = dQbulk_dVd + dQbulk_dVb;
+	
+	d->cdgb = -0.4 * d->cggb;
+	d->cddb = -d->cdgb * dVth_dVd;
+	tmp = -d->cdgb * dVth_dVb;
+	d->cdsb = -(d->cdgb + d->cddb + tmp);
+	trace1("", tmp);
+	
+	d->qbulk = -Qbulk;
+	d->qgate = b->Two_Third_CoxWL * d->vgst + Qbulk;
+	d->qdrn = d->cdgb * d->vgst;
+	trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
+	trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
+	trace4("sat", d->qdrn, d->cdgb, d->cddb, d->cdsb);
+      }else{       /* linear region  */
+	double T7 = Vds / Vdsat;
+	double T8 = d->vgst / Vdsat;
+	double T6 = T7 * T8;
+	double T9 = 1.0 - T7;
+	double Vgdt = d->vgst * T9;
+	double T0 = d->vgst / (d->vgst + Vgdt);
+	double T1 = Vgdt / (d->vgst + Vgdt);
+	double T5 = T0 * T1;
+	double T2 = 1.0 - T1 + T5;
+	double T3 = 1.0 - T0 + T5;
+	trace4("", T7, T8, T6, T9);
+	trace2("", Vgdt, T0);
+	trace4("", T1, T5, T2, T3);
+	
+	double dVgdt_dVg = T9 + T6 * dVdsat_dVg;
+	double dVgdt_dVd = T6 * dVdsat_dVd - T8 -T9 * dVth_dVd;
+	double dVgdt_dVb = T6 * dVdsat_dVb -T9 * dVth_dVb;
+	trace3("", dVgdt_dVg, dVgdt_dVd, dVgdt_dVb);
+	
+	d->qgate = b->Two_Third_CoxWL * (d->vgst + Vgdt 
+				   - Vgdt * T0) + Qbulk;
+	d->qbulk = -Qbulk;
+	d->qdrn = -b->One_Third_CoxWL * (0.2 * Vgdt 
+				    + 0.8 * d->vgst + Vgdt * T1 
+				    + 0.2 * T5 * (Vgdt - d->vgst));
+	
+	d->cggb = b->Two_Third_CoxWL * (T2 + T3 * dVgdt_dVg);
+	d->cgdb = b->Two_Third_CoxWL * (T3*dVgdt_dVd-T2*dVth_dVd) + dQbulk_dVd;
+	double tmp = dQbulk_dVb +b->Two_Third_CoxWL*(T3*dVgdt_dVb-T2*dVth_dVb);
+	d->cgsb = -(d->cggb + d->cgdb + tmp);
+	trace1("", tmp);
+	
+	T2 = 0.8 - 0.4 * T1 * (2.0 * T1 + T0 + T0 * (T1 - T0));
+	T3 = 0.2 + T1 + T0 * (1.0 - 0.4 * T0 * (T1 + 3.0 * T0));
+	d->cdgb = -b->One_Third_CoxWL * (T2 + T3 * dVgdt_dVg);
+	d->cddb = b->One_Third_CoxWL * (T2 * dVth_dVd - T3 * dVgdt_dVd);
+	tmp = b->One_Third_CoxWL * (T2 * dVth_dVb - T3 * dVgdt_dVb);
+	d->cdsb = -(d->cdgb + tmp + d->cddb);
+	trace3("", T2, T3, tmp);
+	
+	d->cbgb = 0.0;
+	d->cbdb = -dQbulk_dVd;
+	d->cbsb = dQbulk_dVd + dQbulk_dVb;
+	trace4("", d->qgate, d->cggb, d->cgdb, d->cgsb);
+	trace4("", d->qbulk, d->cbgb, d->cbdb, d->cbsb);
+	trace4("lin", d->qdrn, d->cdgb, d->cddb, d->cdsb);
+      }}
+    }}
+    {if (d->reversed){
+      d->ids *= -1;
+      d->gmr = d->gmf;
+      d->gmbr = d->gmbf;
+      d->gmf = d->gmbf = 0;
+    }else{
+      d->gmr = d->gmbr = 0.;
+    }}
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/

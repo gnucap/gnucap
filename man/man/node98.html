@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>TANH: Hyperbolic tangent transfer function</TITLE>
+<META NAME="description" CONTENT="TANH: Hyperbolic tangent transfer function">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node99.html">
+<LINK REL="previous" HREF="node97.html">
+<LINK REL="up" HREF="node85.html">
+<LINK REL="next" HREF="node99.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1864"
+  HREF="node99.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1860"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1854"
+  HREF="node97.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1862"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1865"
+  HREF="node99.html">.model TABLE: Fit a</A>
+<B> Up:</B> <A NAME="tex2html1861"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1855"
+  HREF="node97.html">SIN: Sinusoidal time dependent</A>
+ &nbsp <B>  <A NAME="tex2html1863"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1866"
+  HREF="#SECTION005131000000000000000">Syntax</A>
+<LI><A NAME="tex2html1867"
+  HREF="#SECTION005132000000000000000">Purpose</A>
+<LI><A NAME="tex2html1868"
+  HREF="#SECTION005133000000000000000">Comments</A>
+<LI><A NAME="tex2html1869"
+  HREF="#SECTION005134000000000000000">Parameters</A>
+<LI><A NAME="tex2html1870"
+  HREF="#SECTION005135000000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION005130000000000000000">
+<TT>TANH</TT>: Hyperbolic tangent transfer function</A>
+</H1>
+
+<H2><A NAME="SECTION005131000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>TANH</TT> <I>gain limit</I>
+<BR><TT>TANH</TT> <I>args</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION005132000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Defines a hyperbolic tangent, or soft limiting, transfer function.
+
+<H2><A NAME="SECTION005133000000000000000">
+Comments</A>
+</H2>
+
+<P>
+There is no corresponding capability in any SPICE that I know of, but
+you can get close with POLY. 
+
+<P>
+For capacitors, this function defines <EM>charge</EM> as a function of
+voltage.  For inductors, it defines <EM>flux</EM> as a function of
+current.
+
+<P>
+For fixed sources, it defines voltage or current as a function of
+time, which is probably not useful.
+
+<P>
+This function describes a hyperbolic tangent transfer function similar 
+to what you get with a single stage push-pull amplifier, or a simple
+CMOS inverter acting as an amplifier.
+
+<H2><A NAME="SECTION005134000000000000000">
+Parameters</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>GAIN</TT> = <I>x</I></STRONG></DT>
+<DD>The small signal gain at 0 bias.  (Required)
+
+<P>
+</DD>
+<DT><STRONG><TT>LIMIT</TT> = <I>x</I></STRONG></DT>
+<DD>Maximum output value (soft clipping).
+(Required)
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION005135000000000000000">
+Example</A>
+</H2> 
+
+<P>
+<DL>
+<DT><STRONG><TT>E1 2 0 1 0 tanh gain=-10 limit=2 ioffset=2.5 ooffset=2.5</TT></STRONG></DT>
+<DD>This gain block has a small signal gain of -10.  The input is
+centered around 2.5 volts.  The output is also centered at 2.5 volts.
+It ``clips'' softly at 2 volts above and below the output center, or
+at .5 volts (<IMG
+ WIDTH="52" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
+ SRC="img46.png"
+ ALT="$2.5 - 2$">) and 4.5 volts (<IMG
+ WIDTH="52" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
+ SRC="img47.png"
+ ALT="$2.5 + 2$">).
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1864"
+  HREF="node99.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1860"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1854"
+  HREF="node97.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1862"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1865"
+  HREF="node99.html">.model TABLE: Fit a</A>
+<B> Up:</B> <A NAME="tex2html1861"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1855"
+  HREF="node97.html">SIN: Sinusoidal time dependent</A>
+ &nbsp <B>  <A NAME="tex2html1863"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

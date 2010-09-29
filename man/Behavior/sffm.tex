@@ -1,0 +1,66 @@
+%$Id: sffm.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man behavior sffm .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt SFFM}: Frequency Modulation time dependent value}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt SFFM} {\it args}\\
+{\tt SFFM} {\it offset amplitude carrier modindex signal}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+The component value is a sinusoid, frequency modulated by another sinusoid.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+For voltage and current sources, this is the same as the Spice {\tt
+SFFM} function, with some extensions.
+
+The shape of the waveform is described by the following equations:
+
+\begin{verbatim}
+mod = (_modindex * sin(2*PI*_signal*time));
+ev = _offset + _amplitude 
+        * sin(2*PI*_carrier*time + mod);
+\end{verbatim}
+%------------------------------------------------------------------------
+\subsection{Parameters}
+
+\begin{description}
+
+\item[{\tt Offset} = {\it x}] Output offset.  (Default = 0.)
+
+\item[{\tt Amplitude} = {\it x}] Amplitude.  (Default = 1.)
+
+\item[{\tt Carrier} = {\it x}] Carrier frequency, Hz.  (required)
+
+\item[{\tt Modindex} = {\it x}] Modulation index.  (required)
+
+\item[{\tt Signal} = {\it x}] Signal frequency.  (required)
+
+\end{description}
+%------------------------------------------------------------------------
+%\subsection{Example} 
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

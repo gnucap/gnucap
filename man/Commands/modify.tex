@@ -1,0 +1,56 @@
+%$Id: modify.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands modify .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt MODIFY} command}
+\index{modify command}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt MOdify} {\it partlabel}={\it value} ...
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Quickly change a component value.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+This command quickly changes the value of a component.  It is restricted to
+simply changing the value.
+
+If several components have the same label or if wildcard characters are
+used, all are changed.
+%------------------------------------------------------------------------
+\subsection{Example}
+
+\begin{description}
+
+\item[{\tt modify R66=1k}] R66 now has a value of 1k, regardless of what it
+was before.
+
+\item[{\tt modify C12=220p L1=1u}] C12 is 220 pf and L1 is 1 uH.
+
+\item[{\tt mod R*=22k}] All resistors are now 22k.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

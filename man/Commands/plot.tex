@@ -1,0 +1,106 @@
+%$Id: plot.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands plot .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt PLOT} command}
+\index{plot command}
+\index{graphics: set-up}
+\index{plotting: set-up}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt PLot}\\
+{\tt PLot} {\it mode points ...} ...\\
+{\tt PLot} {\it mode + points ...} ...\\
+{\tt PLot} {\it mode - points ...} ...\\
+{\tt PLot} {\it mode} CLEAR
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Select points in the circuit for graphic output.  Select graphic output.
+%------------------------------------------------------------------------
+\subsection{Status}
+
+The plotting leaves something to be desired.  Only two signals can be
+plotted at a time.  The output file is corrupt when plotting is on.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+The `{\tt plot}' command selects where to look at the circuit, or where to
+hook the oscilloscope probe.
+
+There are separate lists of probe points for each type of analysis.
+
+To list the probe points, use the bare command `{\tt plot}'.
+
+Syntax for each point is {\it parameter(node)(limits)}, {\it
+parameter(componentlabel)(limits)}, or {\it parameter(index)(limits)}.
+Some require a dummy index.
+
+For more information on the data available see the {\tt print} command.
+
+You must set the scaling.  If you do not, the default range is fixed
+at -5 to 5.  GnuCap cannot auto-scale because it generates the plot
+during simulation, so the necessary information is not available yet.
+Spice can auto-scale only because it waits for the simulation to
+complete before producing any output.
+
+{\tt Plot} uses the same variables as {\tt print}.  See the print command 
+for a list of what is available.
+
+The options {\tt plot} and {\tt noplot} on any analysis command turn
+plotting on and off a single run.  The {\tt plot} command turns 
+plotting on and tabular output off.  The {\tt print} command turns plotting 
+off and tabular output on.
+
+You can add to or delete from an existing list by prefixing with
+{\tt +} or {\tt -}.  {\tt plot ac + v(3)} adds v(3) to the existing
+set of AC probes.  {\tt plot ac - q(c5)} removes q(c5) from the
+list.  You can use the wildcard characters {\tt *} and {\tt ?} when
+deleting.
+
+Plotting is limited to 2 items.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt plot ac vm(12)(0,5) vm(13)(-5,5)}] The magnitude of the voltage
+at node 12 with a range of 0 to 5, and node 13 with a range of -5 to 5 for
+AC analysis.
+
+\item[{\tt plot dc v(r26)}] The voltage across {\tt R26} for DC analysis.
+Since there is no range, default values will be used.
+
+\item[{\tt plot tran v(r83)(0,5) p(r83)(0,1u)}] Plot the voltage and power 
+of {\tt R83} in the next transient analysis.  The voltage scale is 0 to 5.  
+The power scale is 0 to 1 microwatt.
+
+\item[{\tt plot}] List all the probes for all modes.
+
+\item[{\tt plot dc}] Display the DC plot list.
+
+\item[{\tt plot ac CLear}] Clear the AC list.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

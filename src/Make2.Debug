@@ -1,0 +1,68 @@
+#$Id: Make2.Debug,v 20.9 2001/10/01 02:53:03 al Exp $ -*- Makefile -*-
+# Copyright (C) 2001 Albert Davis
+# Author: Albert Davis <aldavis@ieee.org>
+#
+# This file is part of "GnuCap", the Gnu Circuit Analysis Package
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#------------------------------------------------------------------------
+VPATH = .:..
+
+# Standard base for g++, debugging, a little optimization
+# Running the program will give a spew of line markers for debugging.
+
+CCC = g++
+CCFLAGS = \
+-DUNIX  -g -O -I.. -fno-exceptions -DTRACE_UNTESTED \
+-Wall -W -Wno-sign-compare -Wpointer-arith -Wcast-qual \
+-Wwrite-strings -Wconversion -Wmissing-prototypes \
+-Woverloaded-virtual -Wlong-long \
+-Wsign-compare -Wcast-align 
+LIBS = -lm
+LDFLAGS =
+
+.SUFFIXES : .o .cc
+.cc.o:; $(CCC) $(CCFLAGS) -c $<
+#------------------------------------------------------------------------
+$(TARGET): $(OBJS)
+	-rm $@ >/dev/null 2>&1
+	$(CCC) $(CCFLAGS) $(OBJS) -o $@ $(LIBS) $(LDFLAGS)
+#------------------------------------------------------------
+# warnings turned off, because they warn of nothing wrong
+#-Waggregate-return
+#
+# warnings turned off, because of the public headers
+#-Wold-style-cast (ctype.h)
+#-Wredundant-decls
+#-Wshadow
+#-Winline
+#-Wsynth
+#
+# warnings on here, but may warn on some systems
+#-Wsign-compare (explicit) (stl_deque)
+#-Wcast-align (stl string, g++-3)
+#------------------------------------------------------------
+# If you are porting and using g++, you should use this file as a start,
+#	for a "debug" version, with extra warnings and run-time tracing.
+# If you get errors or warnings, make a copy of it and modify that.
+# After it works, use the file "Make2.g++" as a start for 
+#	executable to use.
+# If the port is non-trivial, check with me first because someone else
+#	may have already done it.
+# If it works without changes, send me a note so I can put it in the docs.
+# Please send the changes to aldavis@ieee.org
+#------------------------------------------------------------
+#------------------------------------------------------------

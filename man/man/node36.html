@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>LOG command</TITLE>
+<META NAME="description" CONTENT="LOG command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node37.html">
+<LINK REL="previous" HREF="node35.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node37.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html866"
+  HREF="node37.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html862"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html856"
+  HREF="node35.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html864"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html867"
+  HREF="node37.html">MARK command</A>
+<B> Up:</B> <A NAME="tex2html863"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html857"
+  HREF="node35.html">LIST command</A>
+ &nbsp <B>  <A NAME="tex2html865"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html868"
+  HREF="#SECTION003251000000000000000">Syntax</A>
+<LI><A NAME="tex2html869"
+  HREF="#SECTION003252000000000000000">Purpose</A>
+<LI><A NAME="tex2html870"
+  HREF="#SECTION003253000000000000000">Comments</A>
+<LI><A NAME="tex2html871"
+  HREF="#SECTION003254000000000000000">Bugs</A>
+<LI><A NAME="tex2html872"
+  HREF="#SECTION003255000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION003250000000000000000"></A>
+<A NAME="2748"></A>
+<A NAME="2749"></A>
+<A NAME="2750"></A>
+<A NAME="2751"></A>
+<A NAME="2752"></A>
+<A NAME="2753"></A>
+<A NAME="2754"></A>
+<A NAME="2755"></A>
+<BR>
+<TT>LOG</TT> command
+</H1>
+
+<H2><A NAME="SECTION003251000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>LOg</TT> <I>file</I>
+<BR><TT>LOg &#187;</TT> <I>file</I>
+<BR><TT>LOg</TT>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION003252000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Saves a copy of your keyboard entries in a file.
+
+<H2><A NAME="SECTION003253000000000000000">
+Comments</A>
+</H2>
+
+<P>
+The `<TT>&#187;</TT>' option appends to an existing file, if it exists, otherwise it
+creates one.
+
+<P>
+Files can be nested.  If you open one while another is already open, both
+will contain all the information.
+
+<P>
+A bare <TT>LOg</TT> closes the file.  Because of this, the last line of this
+file is always <TT>LOg</TT>.  Ordinarily, this will not be of any consequence,
+but if a log file is open when you use this file as command input, this will
+close it.  If more than one <TT>LOg</TT> file is open, they will be closed in
+the reverse of the order in which they were opened, maintaining nesting.
+
+<P>
+See also: `<TT>&gt;</TT>' and `<TT>&lt;</TT>' commands.
+
+<H2><A NAME="SECTION003254000000000000000">
+Bugs</A>
+</H2>
+
+<P>
+The file is an exact copy of what you type, so it is suitable for <TT>gnucap &lt;file</TT> from the shell.  It is NOT suitable for the <TT>&lt;</TT>
+command in gnucap or the Spice-like mode <TT>gnucap file</TT> without
+<TT>&lt;</TT>.
+
+<H2><A NAME="SECTION003255000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>log today</TT></STRONG></DT>
+<DD>Save the commands in a file <TT>today</TT> in the
+current directory.  If <TT>today</TT> already exists, the old one is gone.
+
+<P>
+</DD>
+<DT><STRONG><TT>log &#187; doit</TT></STRONG></DT>
+<DD>Save the commands in a file <TT>doit</TT>.  If
+<TT>doit</TT> already exists, it is kept, and the new data is added to the
+end.
+
+<P>
+</DD>
+<DT><STRONG><TT>log runit.bat</TT></STRONG></DT>
+<DD>Use the file <TT>runit.bat</TT>.
+
+<P>
+</DD>
+<DT><STRONG><TT>log</TT></STRONG></DT>
+<DD>Close the file.  Stop saving.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html866"
+  HREF="node37.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html862"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html856"
+  HREF="node35.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html864"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html867"
+  HREF="node37.html">MARK command</A>
+<B> Up:</B> <A NAME="tex2html863"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html857"
+  HREF="node35.html">LIST command</A>
+ &nbsp <B>  <A NAME="tex2html865"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

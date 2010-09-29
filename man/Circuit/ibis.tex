@@ -1,0 +1,105 @@
+%$Id: ibis.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit ibis .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{Ibis models}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt .IBIs}{\it label nodes ... parameters ...}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+IBIS models, used in signal integrity analysis.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+The IBIS support in GnuCap is based on the draft standard for IBIS-X and
+connectors, with emulation for traditional IBIS versions 4.0, 3.2,
+2.1, and 1.1.
+
+Two parameters are always required: {\tt File} and {\tt Select}.  {\tt
+  File} simply specifies the file name.  {\tt Select} chooses what
+parts of the file to simulate.
+
+The node list and other parameters depend on what parts of the file
+are selected.
+
+Normally, you will {\tt select} one section of the file, which may
+bring in others for completeness.  In general, you need to specify
+both the class of object (in square brackets) and the name of the
+section.  For example, you might select {\tt [Component]foo}, {\tt
+  [Model]drive1}, or {\tt [Test\_Data]set1}.  The name must not have
+any blanks, but you can substitute an underscore for a blank to match
+IBIS keys that have blanks in them.
+
+\subsubsection{[Component], [Board Description], or [Connector] sections}
+
+These sections are designed to model a whole component, board, or
+connector.  Because of this, they usually have more ``pins'' than you
+want to use.  There can often be hundreds of them.  You must select
+which ``pins'' you want to simulate.
+
+To select the ``pins'', use the key {\tt Pins} followed by a list of
+the pins you want, in parentheses.  The nodes correspond to these
+``pins'' in order.  The simulator will use a reduced model, that
+provides information only about these pins.
+
+Example:
+
+{\tt .ibis (2 4 5 7) file=hg2634.ibs select=[Component]hg26a pins=(a1,
+  b2, c3, c5)}
+
+\subsubsection{Sections defined by [Define] macros}
+
+These sections include the traditional IBIS [Model], [Submodel],
+[Test\_Load], and [Test\_Data] sections.  Most older ``spice''
+simulators that support IBIS handle only this part.
+
+The node list is defined by the IBIS-X macro.  In most cases, the
+macro will be selected from the standard library.
+%------------------------------------------------------------------------
+\subsection{Parameters}
+
+\begin{description}
+  
+\item[{\tt File} = {\it x}] File name.  This is the name of the IBIS
+  file.  It usually has the extension {\tt .ibs} but may also have the
+  extensions {\tt .ebd}, {\tt .pkg}, or {\tt .icn}.
+  
+\item[{\tt Select} = {\it x}] What to simulate within the model.  See
+  the notes for its syntax.
+  
+\item[{\tt Pins} = ({\it x})] Pin selection list for component, board,
+  or connector models.
+
+\end{description}
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+\begin{description}
+
+\item[{\tt V}] ``Pin'' voltage for a [Model].
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

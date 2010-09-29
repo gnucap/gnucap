@@ -1,0 +1,4 @@
+#!/bin/bash
+(cd modelgen; ./configure)
+(cd src; ./configure)
+exit 0

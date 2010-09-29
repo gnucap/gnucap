@@ -1,0 +1,20 @@
+There a whole bunch of "eq" circuits of various types and more
+are coming.
+
+This is a 10 band graphic equalizer that I have used as a benchmark
+since my early days of working on simulation.  I have it in more forms
+that are not here.  By using different models for op-amps, cascading
+them, and other tricks I have used it to test just about everything.
+This is a working product of my design that was (and may still be)
+very popular among record producers in the late 70's and early 80's.
+It was designed using a predecessor to ACS on a TRS-80.
+
+eqboost.ckt	the 1k band is boosted 12 db
+eqflat.ckt	all bands are set flat
+eqmodify.ckt	both.  run it batch.
+eq?-????.ckt	A bunch of them cascaded to test the sparse matrix.
+		Try these on Spice if you have lots of CPU time.
+		ACS time growth is almost linear.  Spice-2 growth is quadratic.
+		These probably won't work on a PC.
+		The biggest one has over 9000 nodes.
+		Don't bother with them on MSDOS.  Not enough memory.

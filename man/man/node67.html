@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Voltage Controlled Capacitor</TITLE>
+<META NAME="description" CONTENT="Voltage Controlled Capacitor">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node68.html">
+<LINK REL="previous" HREF="node66.html">
+<LINK REL="up" HREF="node59.html">
+<LINK REL="next" HREF="node68.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1362"
+  HREF="node68.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1358"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1352"
+  HREF="node66.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1360"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1363"
+  HREF="node68.html">Voltage Controlled Admittance</A>
+<B> Up:</B> <A NAME="tex2html1359"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1353"
+  HREF="node66.html">G: Voltage Controlled Current</A>
+ &nbsp <B>  <A NAME="tex2html1361"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1364"
+  HREF="#SECTION00481000000000000000">Syntax</A>
+<LI><A NAME="tex2html1365"
+  HREF="#SECTION00482000000000000000">Purpose</A>
+<LI><A NAME="tex2html1366"
+  HREF="#SECTION00483000000000000000">Probes</A>
+<LI><A NAME="tex2html1367"
+  HREF="#SECTION00484000000000000000">Comments</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00480000000000000000">
+Voltage Controlled Capacitor</A>
+</H1>
+
+<H2><A NAME="SECTION00481000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+Preferred syntax:
+<BR><TT>.VCCAP</TT> <I>label n+ n- nc+ nc-</I> <I>expression</I>
+<BR>
+Alternate syntax:
+<BR><TT>G</TT><I>xxxxxxx n+ n-</I> VCCAP <I>nc+ nc-</I> <I>expression</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00482000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Voltage controlled capacitor.
+
+<H2><A NAME="SECTION00483000000000000000">
+Probes</A>
+</H2>
+
+<P>
+All probes that apply to ordinary capacitors also apply here.
+
+<H2><A NAME="SECTION00484000000000000000">
+Comments</A>
+</H2>
+
+<P>
+<I>N+</I> and <I>n-</I> are the positive and negative element (output) nodes,
+respectively.  <I>Nc+</I> and <I>nc-</I> are the positive and negative
+controlling nodes, respectively.  <I>Value</I> is the transfactor in
+Farads per volt.
+
+<P>
+The simulator will faithfully give you a negative capacitor if it
+seems appropriate.  Usually, this part is used with a behavioral
+modeling function, like PWL, which allows you to specify a table of
+capacitance vs. voltage.
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

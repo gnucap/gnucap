@@ -1,0 +1,124 @@
+%$Id: fit.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man behavior fit .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt FIT}: Fit a curve}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt FIT} {\it x1,y1 x2,y2 ...} {\it args}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Fits a set of data using piecewise polynomials, or splines.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+This function fits a set of piecewise polynomials to a set of data.
+
+For capacitors, this function defines {\em charge} as a function of
+voltage.  For inductors, it defines {\em flux} as a function of
+current.
+
+For fixed sources, it defines voltage or current as a function of
+time.
+
+The values of {\it x} must be in increasing order.
+
+If {\em order} is 1, it is the same as {\tt PWL}.  If {\em order} is
+3, it will use cubic splines.  The result and its first two
+derivatives are continuous.
+
+Outside the specified range, it uses linear extrapolation.  The
+behavior depends on the parameters {\em below} and {\em above}.  The
+value of {\em below} or {\em above} is the derivative to use, which
+is a resistance for resistors, voltage gain for a VCVS, and so on.  If 
+it is not specified, the value is automatically determined.
+
+The properties are determined by the value of {\em order}.
+
+\subsubsection{Order = 3 (cubic splines)}
+
+The default is to use ``natural'' splines, which sets the second
+derivative to zero at the boundary.  If a value of {\em below} or
+{\em above} is specified, ``clamped'' splines will be used.  In any
+case, there will be a smooth transition at the boundaries.  When using
+``clamped'' splines, the second derivative may have a discontinuity at
+the boundaries
+
+\subsubsection{Order = 2 (quadratic splines)}
+
+By default, the derivative at the upper end is determined by the slope
+of the last segment.  This is also the derivative above the range.
+Below the range, the derivative determined at the lower bound is used.
+It is recommended that only one of {\em below} and {\em above} be
+specified.  If both are specified, the splines are determined using
+{\em above}, and there will be a discontinuity in the derivative at
+the lower bound.
+
+\subsubsection{Order = 1 (piecewise linear interploation)}
+
+For first order (linear) interpolation, the default slope outside the
+range is the extension of the slope in the end segments.  The
+parameters {\em below} and {\em above} have no effect inside the
+range.
+
+\subsubsection{Order = 0 (piecewise constant interploation)}
+
+The resulting value is constant over the interval, and has
+discontinuities at the specified points.  The parameters {\em below}
+and {\em above} are ignored.  The slope is always 0.
+%------------------------------------------------------------------------
+\subsection{Parameters}
+
+\begin{description}
+  
+\item[{\tt Order} = {\it x}] The order of the polynomial to fit,
+  within the supplied data.  (Default = 3) Legal values are 0, 1, 2,
+  and 3, only.
+
+\item[{\tt Below} = {\it x}] The value of the derivative to use
+below or before the specified range.  
+
+\item[{\tt Above} = {\it x}] The value of the derivative to use
+above or after the specified range.
+
+\end{description}
+%------------------------------------------------------------------------
+\subsection{Example} 
+
+\begin{description}
+  
+\item[{\tt C1 2 0 fit -5,-5u 0,0 1,1u 4,2u 5,2u order=1}] This
+  ``capacitor'' stores 5 microcoulombs at -5 volts (negative,
+  corresponding to the negative voltage, as expected).  The charge
+  varies linearly to 0 at 0 volts, acting like a 1 microfarad
+  capacitor.  (C = dq/dv).  This continues to 1 volt.  The 0,0 point
+  could have been left out.  The charge increases only to 2
+  microcoulombs at 4 volts, for an incremental capacitance of 1u/3 or
+  .3333 microfarads.  The same charge at 5 volts indicates that it
+  saturates at 2 microcoulombs.  For negative voltages, the slope
+  continues.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

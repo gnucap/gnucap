@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>PULSE: Pulsed time dependent value</TITLE>
+<META NAME="description" CONTENT="PULSE: Pulsed time dependent value">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node95.html">
+<LINK REL="previous" HREF="node93.html">
+<LINK REL="up" HREF="node85.html">
+<LINK REL="next" HREF="node95.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1799"
+  HREF="node95.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1795"
+  HREF="node85.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1789"
+  HREF="node93.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1797"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1800"
+  HREF="node95.html">PWL: Piecewise linear function</A>
+<B> Up:</B> <A NAME="tex2html1796"
+  HREF="node85.html">Behavioral modeling</A>
+<B> Previous:</B> <A NAME="tex2html1790"
+  HREF="node93.html">POSY: Polynomial with non-integer</A>
+ &nbsp <B>  <A NAME="tex2html1798"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1801"
+  HREF="#SECTION00591000000000000000">Syntax</A>
+<LI><A NAME="tex2html1802"
+  HREF="#SECTION00592000000000000000">Purpose</A>
+<LI><A NAME="tex2html1803"
+  HREF="#SECTION00593000000000000000">Comments</A>
+<LI><A NAME="tex2html1804"
+  HREF="#SECTION00594000000000000000">Parameters</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00590000000000000000">
+<TT>PULSE</TT>: Pulsed time dependent value</A>
+</H1>
+
+<H2><A NAME="SECTION00591000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>PULSE</TT> <I>args</I>
+<BR><TT>PULSE</TT> <I>iv pv delay rise fall width period</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00592000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+The component value is a pulsed function of time.
+
+<H2><A NAME="SECTION00593000000000000000">
+Comments</A>
+</H2>
+
+<P>
+For voltage and current sources, this is the same as the Spice <TT>PULSE</TT> function, with some extensions.
+
+<P>
+The shape of a single pulse is described by the following algorithm:
+
+<P>
+<PRE>
+if (time &gt; _delay+_rise+_width+_fall){
+  // past pulse
+  ev = _iv;
+}else if (time &gt; _delay+_rise+_width){
+  // falling
+  interp=(time-(_delay+_rise+_width))/_fall;
+  ev = _pv + interp * (_iv - _pv);
+}else if (time &gt; _delay+_rise){
+  // pulsed value
+  ev = _pv;
+}else if (time &gt; _delay){
+  // rising
+  interp = (time - _delay) / _rise;
+  ev = _iv + interp * (_pv - _iv);
+}else{
+  // initial value
+  ev = _iv;
+}
+</PRE>
+<H2><A NAME="SECTION00594000000000000000">
+Parameters</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>IV</TT> = <I>x</I></STRONG></DT>
+<DD>Initial value.  (required)
+
+<P>
+</DD>
+<DT><STRONG><TT>PV</TT> = <I>x</I></STRONG></DT>
+<DD>Pulsed value.  (required)
+
+<P>
+</DD>
+<DT><STRONG><TT>DELAY</TT> = <I>x</I></STRONG></DT>
+<DD>Rise time delay, seconds.  (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>RISE</TT> = <I>x</I></STRONG></DT>
+<DD>Rise time, seconds.  (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>FALL</TT> = <I>x</I></STRONG></DT>
+<DD>Fall time, seconds.  (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>WIDTH</TT> = <I>x</I></STRONG></DT>
+<DD>Pulse width, seconds.  (Default = 0.)
+
+<P>
+</DD>
+<DT><STRONG><TT>PERIOD</TT> = <I>x</I></STRONG></DT>
+<DD>Repeat period, seconds.  (Default = infinity.)
+
+<P>
+</DD>
+</DL>
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,8 @@
+a current source
+I1   1  0  dc 1.2 ac 1
+R1   1  0  1.
+.print op v(1)
+.op
+.print ac vm(1) vp(1)
+.ac dec 1 1 10
+.end

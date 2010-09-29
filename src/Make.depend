@@ -1,0 +1,390 @@
+md.o: md.cc md.h io_error.h io_trace.h
+globals.o: globals.cc e_node.h u_status.h l_timer.h io_.h l_lib.h md.h \
+  io_error.h io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h \
+  u_opt.h l_jmpbuf.h e_model.h e_card.h e_cardlist.h d_logic.h e_elemnt.h \
+  l_denoise.h e_compon.h m_cpoly.h
+u_opt1.o: u_opt1.cc constant.h md.h io_error.h io_trace.h u_opt.h mode.h \
+  io_.h l_lib.h
+u_opt2.o: u_opt2.cc l_compar.h md.h io_error.h io_trace.h s__.h \
+  constant.h mode.h io_.h l_lib.h e_base.h m_matrix.h ap.h u_opt.h
+io.o: io.cc io_.h l_lib.h md.h io_error.h io_trace.h
+io_contr.o: io_contr.cc io_.h l_lib.h md.h io_error.h io_trace.h ap.h
+io_error.o: io_error.cc u_opt.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h l_jmpbuf.h
+io_findf.o: io_findf.cc l_lib.h md.h io_error.h io_trace.h
+io_getln.o: io_getln.cc l_lib.h md.h io_error.h io_trace.h
+io_out.o: io_out.cc u_opt.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h
+ap_construct.o: ap_construct.cc ap.h md.h io_error.h io_trace.h
+ap_convert.o: ap_convert.cc ap.h md.h io_error.h io_trace.h
+ap_error.o: ap_error.cc ap.h md.h io_error.h io_trace.h u_opt.h mode.h \
+  io_.h l_lib.h
+ap_get.o: ap_get.cc ap.h md.h io_error.h io_trace.h
+ap_match.o: ap_match.cc ap.h md.h io_error.h io_trace.h
+ap_skip.o: ap_skip.cc ap.h md.h io_error.h io_trace.h
+m_fft.o: m_fft.cc constant.h md.h io_error.h io_trace.h declare.h
+m_interp.o: m_interp.cc constant.h md.h io_error.h io_trace.h m_interp.h \
+  m_cpoly.h
+m_matrix.o: m_matrix.cc u_status.h l_timer.h io_.h l_lib.h md.h \
+  io_error.h io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h \
+  e_node.h u_opt.h
+m_spline.o: m_spline.cc l_denoise.h u_opt.h mode.h io_.h l_lib.h md.h \
+  io_error.h io_trace.h constant.h m_spline.h m_cpoly.h
+l_ftos.o: l_ftos.cc l_lib.h md.h io_error.h io_trace.h constant.h
+l_timer.o: l_timer.cc l_timer.h io_.h l_lib.h md.h io_error.h io_trace.h
+l_trim.o: l_trim.cc
+io_xopen.o: io_xopen.cc io_.h l_lib.h md.h io_error.h io_trace.h \
+  constant.h declare.h ap.h
+l_pmatch.o: l_pmatch.cc ap.h md.h io_error.h io_trace.h
+l_wmatch.o: l_wmatch.cc
+u_sdp.o: u_sdp.cc io_.h l_lib.h md.h io_error.h io_trace.h u_sdp.h ap.h
+u_prblst.o: u_prblst.cc e_card.h e_node.h u_status.h l_timer.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h ap.h u_prblst.h u_probe.h l_compar.h
+u_probe.o: u_probe.cc ap.h md.h io_error.h io_trace.h e_node.h u_status.h \
+  l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h m_matrix.h \
+  u_opt.h u_probe.h l_compar.h
+e_base.o: e_base.cc ap.h md.h io_error.h io_trace.h s__.h constant.h \
+  mode.h io_.h l_lib.h e_base.h m_matrix.h u_opt.h u_prblst.h u_probe.h \
+  l_compar.h u_xprobe.h
+e_node.o: e_node.cc l_denoise.h u_opt.h mode.h io_.h l_lib.h md.h \
+  io_error.h io_trace.h declare.h d_logic.h e_model.h e_card.h e_node.h \
+  u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h e_cardlist.h \
+  e_elemnt.h e_compon.h m_cpoly.h e_aux.h u_xprobe.h l_compar.h ap.h
+e_aux.o: e_aux.cc e_aux.h e_node.h u_status.h l_timer.h io_.h l_lib.h \
+  md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h \
+  u_opt.h
+e_cardlist.o: e_cardlist.cc l_stlextra.h md.h io_error.h io_trace.h \
+  e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h constant.h \
+  mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h
+e_card.o: e_card.cc ap.h md.h io_error.h io_trace.h e_card.h e_node.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h
+e_model.o: e_model.cc ap.h md.h io_error.h io_trace.h e_model.h e_card.h \
+  e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h \
+  e_base.h m_matrix.h u_opt.h e_cardlist.h
+e_compon.o: e_compon.cc l_stlextra.h md.h io_error.h io_trace.h ap.h \
+  e_model.h e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h \
+  constant.h mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h e_elemnt.h \
+  l_denoise.h e_compon.h m_cpoly.h
+e_elemnt.o: e_elemnt.cc u_xprobe.h constant.h md.h io_error.h io_trace.h \
+  l_compar.h e_aux.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h \
+  mode.h e_base.h m_matrix.h u_opt.h ap.h bm.h e_elemnt.h l_denoise.h \
+  e_compon.h m_cpoly.h e_card.h e_cardlist.h
+e_ccsrc.o: e_ccsrc.cc ap.h md.h io_error.h io_trace.h e_ccsrc.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_elemnt.h e_compon.h \
+  m_cpoly.h e_card.h e_node.h u_status.h l_timer.h s__.h constant.h \
+  e_base.h m_matrix.h e_cardlist.h
+e_storag.o: e_storag.cc ap.h md.h io_error.h io_trace.h m_divdiff.h \
+  e_storag.h e_elemnt.h l_denoise.h u_opt.h mode.h io_.h l_lib.h \
+  e_compon.h m_cpoly.h e_card.h e_node.h u_status.h l_timer.h s__.h \
+  constant.h e_base.h m_matrix.h e_cardlist.h
+bm.o: bm.cc l_stlextra.h md.h io_error.h io_trace.h ap.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_complex.o: bm_complex.cc ap.h md.h io_error.h io_trace.h bm.h \
+  e_elemnt.h l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h \
+  m_cpoly.h e_card.h e_node.h u_status.h l_timer.h s__.h constant.h \
+  e_base.h m_matrix.h e_cardlist.h
+bm_cond.o: bm_cond.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_exp.o: bm_exp.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_fit.o: bm_fit.cc ap.h md.h io_error.h io_trace.h m_interp.h m_cpoly.h \
+  m_spline.h bm.h e_elemnt.h l_denoise.h u_opt.h mode.h io_.h l_lib.h \
+  e_compon.h e_card.h e_node.h u_status.h l_timer.h s__.h constant.h \
+  e_base.h m_matrix.h e_cardlist.h
+bm_generator.o: bm_generator.cc ap.h md.h io_error.h io_trace.h bm.h \
+  e_elemnt.h l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h \
+  m_cpoly.h e_card.h e_node.h u_status.h l_timer.h s__.h constant.h \
+  e_base.h m_matrix.h e_cardlist.h
+bm_model.o: bm_model.cc e_model.h e_card.h e_node.h u_status.h l_timer.h \
+  io_.h l_lib.h md.h io_error.h io_trace.h s__.h constant.h mode.h \
+  e_base.h m_matrix.h u_opt.h e_cardlist.h ap.h bm.h e_elemnt.h \
+  l_denoise.h e_compon.h m_cpoly.h
+bm_poly.o: bm_poly.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_posy.o: bm_posy.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_pulse.o: bm_pulse.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_pwl.o: bm_pwl.cc ap.h md.h io_error.h io_trace.h m_interp.h m_cpoly.h \
+  bm.h e_elemnt.h l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h \
+  e_card.h e_node.h u_status.h l_timer.h s__.h constant.h e_base.h \
+  m_matrix.h e_cardlist.h
+bm_sffm.o: bm_sffm.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_sin.o: bm_sin.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_tanh.o: bm_tanh.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bm_value.o: bm_value.cc ap.h md.h io_error.h io_trace.h bm.h e_elemnt.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+bmm_table.o: bmm_table.cc ap.h md.h io_error.h io_trace.h m_spline.h \
+  m_cpoly.h bmm_table.h e_model.h e_card.h e_node.h u_status.h l_timer.h \
+  io_.h l_lib.h s__.h constant.h mode.h e_base.h m_matrix.h u_opt.h \
+  e_cardlist.h bm.h e_elemnt.h l_denoise.h e_compon.h
+bmm_semi.o: bmm_semi.cc ap.h md.h io_error.h io_trace.h bmm_semi.h \
+  e_model.h e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h \
+  constant.h mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h bm.h \
+  e_elemnt.h l_denoise.h e_compon.h m_cpoly.h
+d_admit.o: d_admit.cc d_admit.h l_denoise.h u_opt.h mode.h io_.h l_lib.h \
+  md.h io_error.h io_trace.h e_elemnt.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+d_cap.o: d_cap.cc ap.h md.h io_error.h io_trace.h d_cap.h e_storag.h \
+  e_elemnt.h l_denoise.h u_opt.h mode.h io_.h l_lib.h e_compon.h \
+  m_cpoly.h e_card.h e_node.h u_status.h l_timer.h s__.h constant.h \
+  e_base.h m_matrix.h e_cardlist.h
+d_cccs.o: d_cccs.cc d_cccs.h e_ccsrc.h l_denoise.h u_opt.h mode.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h e_elemnt.h e_compon.h m_cpoly.h \
+  e_card.h e_node.h u_status.h l_timer.h s__.h constant.h e_base.h \
+  m_matrix.h e_cardlist.h
+d_ccvs.o: d_ccvs.cc d_ccvs.h e_ccsrc.h l_denoise.h u_opt.h mode.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h e_elemnt.h e_compon.h m_cpoly.h \
+  e_card.h e_node.h u_status.h l_timer.h s__.h constant.h e_base.h \
+  m_matrix.h e_cardlist.h
+d_coil.o: d_coil.cc d_cccs.h e_ccsrc.h l_denoise.h u_opt.h mode.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h e_elemnt.h e_compon.h m_cpoly.h \
+  e_card.h e_node.h u_status.h l_timer.h s__.h constant.h e_base.h \
+  m_matrix.h e_cardlist.h ap.h d_coil.h e_storag.h
+d_coment.o: d_coment.cc ap.h md.h io_error.h io_trace.h d_coment.h \
+  e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h constant.h \
+  mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h
+d_cs.o: d_cs.cc d_cs.h e_elemnt.h l_denoise.h u_opt.h mode.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+d_diode.o: d_diode.cc e_aux.h e_node.h u_status.h l_timer.h io_.h l_lib.h \
+  md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h \
+  u_opt.h d_admit.h l_denoise.h e_elemnt.h e_compon.h m_cpoly.h e_card.h \
+  e_cardlist.h d_cap.h e_storag.h ap.h d_diode.h e_subckt.h e_model.h
+d_dot.o: d_dot.cc c_comand.h md.h io_error.h io_trace.h ap.h d_dot.h \
+  e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h constant.h \
+  mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h
+d_logic.o: d_logic.cc ap.h md.h io_error.h io_trace.h u_xprobe.h \
+  constant.h l_compar.h d_logic.h e_model.h e_card.h e_node.h u_status.h \
+  l_timer.h io_.h l_lib.h s__.h mode.h e_base.h m_matrix.h u_opt.h \
+  e_cardlist.h e_elemnt.h l_denoise.h e_compon.h m_cpoly.h
+d_logicmod.o: d_logicmod.cc ap.h md.h io_error.h io_trace.h d_logic.h \
+  e_model.h e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h \
+  constant.h mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h e_elemnt.h \
+  l_denoise.h e_compon.h m_cpoly.h
+d_mos_base.o: d_mos_base.cc ap.h md.h io_error.h io_trace.h d_mos_base.h \
+  d_mos.h e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h u_status.h \
+  l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h m_matrix.h \
+  u_opt.h e_cardlist.h d_diode.h e_model.h
+d_mos123.o: d_mos123.cc ap.h md.h io_error.h io_trace.h d_mos123.h \
+  d_mos_base.h d_mos.h e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h d_diode.h e_model.h
+d_mos1.o: d_mos1.cc ap.h md.h io_error.h io_trace.h d_mos1.h d_mos123.h \
+  d_mos_base.h d_mos.h e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h d_diode.h e_model.h
+d_mos2.o: d_mos2.cc l_compar.h md.h io_error.h io_trace.h l_denoise.h \
+  u_opt.h mode.h io_.h l_lib.h ap.h d_mos2.h d_mos123.h d_mos_base.h \
+  d_mos.h e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h u_status.h \
+  l_timer.h s__.h constant.h e_base.h m_matrix.h e_cardlist.h d_diode.h \
+  e_model.h
+d_mos3.o: d_mos3.cc l_denoise.h u_opt.h mode.h io_.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h d_mos3.h d_mos123.h d_mos_base.h d_mos.h \
+  e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h u_status.h l_timer.h \
+  s__.h constant.h e_base.h m_matrix.h e_cardlist.h d_diode.h e_model.h
+d_mos4.o: d_mos4.cc ap.h md.h io_error.h io_trace.h d_mos4.h u_sdp.h \
+  d_mos_base.h d_mos.h e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h d_diode.h e_model.h
+d_mos5.o: d_mos5.cc ap.h md.h io_error.h io_trace.h d_mos5.h u_sdp.h \
+  d_mos_base.h d_mos.h e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h d_diode.h e_model.h
+d_mos6.o: d_mos6.cc l_denoise.h u_opt.h mode.h io_.h l_lib.h md.h \
+  io_error.h io_trace.h ap.h d_mos6.h d_mos123.h d_mos_base.h d_mos.h \
+  e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h u_status.h l_timer.h \
+  s__.h constant.h e_base.h m_matrix.h e_cardlist.h d_diode.h e_model.h
+d_mos7.o: d_mos7.cc l_compar.h md.h io_error.h io_trace.h l_denoise.h \
+  u_opt.h mode.h io_.h l_lib.h ap.h d_mos7.h u_sdp.h d_mos_base.h d_mos.h \
+  e_subckt.h e_compon.h m_cpoly.h e_card.h e_node.h u_status.h l_timer.h \
+  s__.h constant.h e_base.h m_matrix.h e_cardlist.h d_diode.h e_model.h
+d_mos.o: d_mos.cc d_cap.h e_storag.h e_elemnt.h l_denoise.h u_opt.h \
+  mode.h io_.h l_lib.h md.h io_error.h io_trace.h e_compon.h m_cpoly.h \
+  e_card.h e_node.h u_status.h l_timer.h s__.h constant.h e_base.h \
+  m_matrix.h e_cardlist.h d_admit.h d_res.h d_mos_base.h d_mos.h \
+  e_subckt.h d_diode.h e_model.h ap.h
+d_res.o: d_res.cc d_res.h e_elemnt.h l_denoise.h u_opt.h mode.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+d_subckt.o: d_subckt.cc l_stlextra.h md.h io_error.h io_trace.h \
+  c_comand.h ap.h e_model.h e_card.h e_node.h u_status.h l_timer.h io_.h \
+  l_lib.h s__.h constant.h mode.h e_base.h m_matrix.h u_opt.h \
+  e_cardlist.h d_subckt.h e_subckt.h e_compon.h m_cpoly.h
+d_switch.o: d_switch.cc ap.h md.h io_error.h io_trace.h d_switch.h \
+  e_model.h e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h \
+  constant.h mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h e_elemnt.h \
+  l_denoise.h e_compon.h m_cpoly.h
+d_trln.o: d_trln.cc ap.h md.h io_error.h io_trace.h d_trln.h m_wave.h \
+  l_denoise.h u_opt.h mode.h io_.h l_lib.h m_interp.h m_cpoly.h \
+  e_elemnt.h e_compon.h e_card.h e_node.h u_status.h l_timer.h s__.h \
+  constant.h e_base.h m_matrix.h e_cardlist.h
+d_vcr.o: d_vcr.cc d_vcr.h e_elemnt.h l_denoise.h u_opt.h mode.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+d_vcvs.o: d_vcvs.cc d_vcvs.h l_denoise.h u_opt.h mode.h io_.h l_lib.h \
+  md.h io_error.h io_trace.h e_elemnt.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+d_vs.o: d_vs.cc d_vs.h e_elemnt.h l_denoise.h u_opt.h mode.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h e_compon.h m_cpoly.h e_card.h \
+  e_node.h u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h \
+  e_cardlist.h
+findbr.o: findbr.cc ap.h md.h io_error.h io_trace.h e_card.h e_node.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h
+s__.o: s__.cc s__.h constant.h md.h io_error.h io_trace.h mode.h io_.h \
+  l_lib.h e_base.h m_matrix.h
+s__aux.o: s__aux.cc u_status.h l_timer.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h
+s__init.o: s__init.cc e_card.h e_node.h u_status.h l_timer.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h l_jmpbuf.h
+s__map.o: s__map.cc e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h \
+  md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h \
+  u_opt.h e_cardlist.h
+s__out.o: s__out.cc u_opt.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h constant.h u_prblst.h u_probe.h l_compar.h declare.h \
+  u_status.h l_timer.h s__.h e_base.h m_matrix.h
+s__solve.o: s__solve.cc e_card.h e_node.h u_status.h l_timer.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h
+u_statu1.o: u_statu1.cc u_status.h l_timer.h io_.h l_lib.h md.h \
+  io_error.h io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h
+u_statu2.o: u_statu2.cc d_subckt.h e_subckt.h e_compon.h m_cpoly.h md.h \
+  io_error.h io_trace.h e_card.h e_node.h u_status.h l_timer.h io_.h \
+  l_lib.h s__.h constant.h mode.h e_base.h m_matrix.h u_opt.h \
+  e_cardlist.h d_logic.h e_model.h e_elemnt.h l_denoise.h d_mos_base.h \
+  d_mos.h d_diode.h ap.h
+s_ac.o: s_ac.cc u_opt.h mode.h io_.h l_lib.h md.h io_error.h io_trace.h \
+  u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h s_ac.h
+s_ac_set.o: s_ac_set.cc u_prblst.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h u_probe.h l_compar.h u_opt.h constant.h ap.h s_ac.h s__.h \
+  e_base.h m_matrix.h
+s_ac_slv.o: s_ac_slv.cc e_cardlist.h md.h io_error.h io_trace.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h s_ac.h
+s_ac_swp.o: s_ac_swp.cc l_compar.h md.h io_error.h io_trace.h constant.h \
+  e_cardlist.h s_ac.h s__.h mode.h io_.h l_lib.h e_base.h m_matrix.h
+s_dc.o: s_dc.cc u_status.h l_timer.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h s_dc.h \
+  u_cardst.h e_compon.h m_cpoly.h e_card.h e_node.h u_opt.h e_cardlist.h
+s_dc_set.o: s_dc_set.cc u_prblst.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h u_probe.h l_compar.h ap.h u_cardst.h e_compon.h m_cpoly.h \
+  e_card.h e_node.h u_status.h l_timer.h s__.h constant.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h s_dc.h
+s_dc_swp.o: s_dc_swp.cc l_denoise.h u_opt.h mode.h io_.h l_lib.h md.h \
+  io_error.h io_trace.h l_compar.h e_card.h e_node.h u_status.h l_timer.h \
+  s__.h constant.h e_base.h m_matrix.h e_cardlist.h s_dc.h u_cardst.h \
+  e_compon.h m_cpoly.h
+s_tr.o: s_tr.cc u_status.h l_timer.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h s__.h constant.h mode.h e_base.h m_matrix.h s_tr.h
+s_tr_rev.o: s_tr_rev.cc u_opt.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h e_cardlist.h u_status.h l_timer.h s__.h constant.h e_base.h \
+  m_matrix.h s_tr.h
+s_tr_set.o: s_tr_set.cc u_prblst.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h u_probe.h l_compar.h l_denoise.h u_opt.h constant.h ap.h \
+  s_tr.h s__.h e_base.h m_matrix.h
+s_tr_swp.o: s_tr_swp.cc e_card.h e_node.h u_status.h l_timer.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h declare.h s_tr.h
+s_fo.o: s_fo.cc u_opt.h mode.h io_.h l_lib.h md.h io_error.h io_trace.h \
+  u_status.h l_timer.h s__.h constant.h e_base.h m_matrix.h s_fo.h s_tr.h
+s_fo_out.o: s_fo_out.cc u_prblst.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h u_probe.h l_compar.h constant.h declare.h s_fo.h s_tr.h \
+  s__.h e_base.h m_matrix.h
+s_fo_set.o: s_fo_set.cc u_prblst.h mode.h io_.h l_lib.h md.h io_error.h \
+  io_trace.h u_probe.h l_compar.h u_opt.h ap.h s_fo.h s_tr.h s__.h \
+  constant.h e_base.h m_matrix.h
+plot.o: plot.cc u_opt.h mode.h io_.h l_lib.h md.h io_error.h io_trace.h \
+  pixelh.h declare.h constant.h s__.h e_base.h m_matrix.h u_prblst.h \
+  u_probe.h l_compar.h
+plotbasi.o: plotbasi.cc io_.h l_lib.h md.h io_error.h io_trace.h \
+  constant.h pixelh.h
+plotline.o: plotline.cc pixelh.h declare.h md.h io_error.h io_trace.h
+plotpost.o: plotpost.cc io_.h l_lib.h md.h io_error.h io_trace.h \
+  constant.h pixelh.h
+plotunix.o: plotunix.cc io_.h l_lib.h md.h io_error.h io_trace.h \
+  constant.h pixelh.h
+plotx.o: plotx.cc io_.h l_lib.h md.h io_error.h io_trace.h constant.h \
+  pixelh.h
+c__cmd.o: c__cmd.cc declare.h md.h io_error.h io_trace.h u_opt.h mode.h \
+  io_.h l_lib.h l_timer.h ap.h c_comand.h
+c_comand.o: c_comand.cc declare.h md.h io_error.h io_trace.h u_status.h \
+  l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h m_matrix.h \
+  u_opt.h ap.h c_comand.h
+c_crtset.o: c_crtset.cc io_.h l_lib.h md.h io_error.h io_trace.h ap.h \
+  pixelh.h c_comand.h
+c_delete.o: c_delete.cc e_card.h e_node.h u_status.h l_timer.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h ap.h c_comand.h
+c_fanout.o: c_fanout.cc ap.h md.h io_error.h io_trace.h e_card.h e_node.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h c_comand.h
+c_file.o: c_file.cc io_.h l_lib.h md.h io_error.h io_trace.h declare.h \
+  ap.h c_comand.h
+c_genrat.o: c_genrat.cc constant.h md.h io_error.h io_trace.h s__.h \
+  mode.h io_.h l_lib.h e_base.h m_matrix.h ap.h c_comand.h
+c_getckt.o: c_getckt.cc bmm_semi.h e_model.h e_card.h e_node.h u_status.h \
+  l_timer.h io_.h l_lib.h md.h io_error.h io_trace.h s__.h constant.h \
+  mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h bm.h e_elemnt.h \
+  l_denoise.h e_compon.h m_cpoly.h bmm_table.h d_admit.h d_cap.h \
+  e_storag.h d_cccs.h e_ccsrc.h d_ccvs.h d_coil.h d_coment.h d_cs.h \
+  d_dot.h d_diode.h e_subckt.h d_logic.h d_mos1.h d_mos123.h d_mos_base.h \
+  d_mos.h d_mos2.h d_mos3.h d_mos4.h u_sdp.h ap.h d_mos5.h d_mos6.h \
+  d_mos7.h d_res.h d_subckt.h d_trln.h m_wave.h m_interp.h d_vcr.h \
+  d_vcvs.h d_vs.h d_switch.h declare.h c_comand.h
+c_insert.o: c_insert.cc e_card.h e_node.h u_status.h l_timer.h io_.h \
+  l_lib.h md.h io_error.h io_trace.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h ap.h c_comand.h
+c_list.o: c_list.cc ap.h md.h io_error.h io_trace.h e_card.h e_node.h \
+  u_status.h l_timer.h io_.h l_lib.h s__.h constant.h mode.h e_base.h \
+  m_matrix.h u_opt.h e_cardlist.h c_comand.h
+c_modify.o: c_modify.cc u_cardst.h e_compon.h m_cpoly.h md.h io_error.h \
+  io_trace.h e_card.h e_node.h u_status.h l_timer.h io_.h l_lib.h s__.h \
+  constant.h mode.h e_base.h m_matrix.h u_opt.h e_cardlist.h c_comand.h \
+  ap.h
+c_nodset.o: c_nodset.cc io_.h l_lib.h md.h io_error.h io_trace.h ap.h \
+  c_comand.h c_nodset.h
+c_prbcmd.o: c_prbcmd.cc ap.h md.h io_error.h io_trace.h s__.h constant.h \
+  mode.h io_.h l_lib.h e_base.h m_matrix.h c_comand.h u_prblst.h \
+  u_probe.h l_compar.h
+c_sweep.o: c_sweep.cc io_.h l_lib.h md.h io_error.h io_trace.h declare.h \
+  c_comand.h ap.h
+c_sim.o: c_sim.cc s_ac.h s__.h constant.h md.h io_error.h io_trace.h \
+  mode.h io_.h l_lib.h e_base.h m_matrix.h s_dc.h u_cardst.h e_compon.h \
+  m_cpoly.h e_card.h e_node.h u_status.h l_timer.h u_opt.h e_cardlist.h \
+  s_tr.h s_fo.h c_comand.h
+c_system.o: c_system.cc io_.h l_lib.h md.h io_error.h io_trace.h ap.h \
+  c_comand.h
+main.o: main.cc patchlev.h c_comand.h md.h io_error.h io_trace.h \
+  declare.h u_opt.h mode.h io_.h l_lib.h l_jmpbuf.h

@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>DC command</TITLE>
+<META NAME="description" CONTENT="DC command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node23.html">
+<LINK REL="previous" HREF="node21.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node23.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html651"
+  HREF="node23.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html647"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html641"
+  HREF="node21.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html649"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html652"
+  HREF="node23.html">DELETE command</A>
+<B> Up:</B> <A NAME="tex2html648"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html642"
+  HREF="node21.html">CLEAR command</A>
+ &nbsp <B>  <A NAME="tex2html650"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html653"
+  HREF="#SECTION003111000000000000000">Syntax</A>
+<LI><A NAME="tex2html654"
+  HREF="#SECTION003112000000000000000">Purpose</A>
+<LI><A NAME="tex2html655"
+  HREF="#SECTION003113000000000000000">Status</A>
+<LI><A NAME="tex2html656"
+  HREF="#SECTION003114000000000000000">Comments</A>
+<LI><A NAME="tex2html657"
+  HREF="#SECTION003115000000000000000">Options</A>
+<LI><A NAME="tex2html658"
+  HREF="#SECTION003116000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION003110000000000000000"></A>
+<A NAME="1455"></A>
+<A NAME="1456"></A>
+<A NAME="1457"></A>
+<BR>
+<TT>DC</TT> command
+</H1>
+
+<H2><A NAME="SECTION003111000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>DC</TT> <I>start stop stepsize</I> {<I>options</I> ...}
+<BR><TT>DC</TT> <I>label start stop stepsize</I> {<I>options</I> ...}
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION003112000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Performs a nonlinear DC steady state analysis, and sweeps the signal input,
+or a component value.
+
+<H2><A NAME="SECTION003113000000000000000">
+Status</A>
+</H2>
+
+<P>
+Nesting of sweeps is not supported.  (SPICE supports two
+levels of nesting.)
+
+<H2><A NAME="SECTION003114000000000000000">
+Comments</A>
+</H2>
+
+<P>
+The nodes to look at must have been previously selected by the <TT>print</TT> or
+<TT>plot</TT> command.
+
+<P>
+If there are numeric arguments, without a part label, they represent a ramp
+from the <TT>generator</TT> function.  They are the start value, stop value
+and step size, in order.  They are saved between commands, so no arguments
+will repeat the previous sweep.
+
+<P>
+A single parameter represents a single input voltage.  Two parameters
+instruct the computer to analyze for those two points only.
+
+<P>
+In some cases, you will get one more step outside the specified range of
+inputs due to internal rounding errors.  The last input may be beyond the end
+point.
+
+<P>
+This command also sets up a movable operating point for subsequent <TT>AC</TT>
+analysis, which can be helpful in distortion analysis.
+
+<P>
+The program will sweep any simple component, including resistors,
+capacitors, and controlled sources.  SPICE sweeps only fixed sources (types
+<TT>V</TT> and <TT>I</TT>).
+
+<H2><A NAME="SECTION003115000000000000000">
+Options</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>*</TT> <I>multiplier</I></STRONG></DT>
+<DD>Log sweep.  Multiply the
+input by <I>multiplier</I> to get the next step.  Do not
+pass zero volts!!
+
+<P>
+</DD>
+<DT><STRONG><TT>&gt;</TT> <I>file</I></STRONG></DT>
+<DD>Send results of analysis to <I>file</I>.
+
+<P>
+</DD>
+<DT><STRONG><TT>&#187;</TT> <I>file</I></STRONG></DT>
+<DD>Append results to <I>file</I>.
+
+<P>
+</DD>
+<DT><STRONG><TT>BY</TT> <I>stepsize</I></STRONG></DT>
+<DD>Linear sweep.  Add <I>stepsize</I> to get the next step.
+
+<P>
+</DD>
+<DT><STRONG><TT>Continue</TT></STRONG></DT>
+<DD>Use the last step of a <TT>OP</TT>,
+<TT>DC</TT> or <TT>Transient</TT> analysis as the first guess.
+
+<P>
+</DD>
+<DT><STRONG><TT>Decade</TT> <I>steps</I></STRONG></DT>
+<DD>Log sweep.  Use <I>steps</I> steps per decade.
+
+<P>
+</DD>
+<DT><STRONG><TT>LOop</TT></STRONG></DT>
+<DD>Repeat the sweep, backwards.
+
+<P>
+</DD>
+<DT><STRONG><TT>NOPlot</TT></STRONG></DT>
+<DD>Suppress plotting.
+
+<P>
+</DD>
+<DT><STRONG><TT>PLot</TT></STRONG></DT>
+<DD>Graphic output, when plotting is
+normally off.
+
+<P>
+</DD>
+<DT><STRONG><TT>Print</TT></STRONG></DT>
+<DD>Send results to printer.
+
+<P>
+</DD>
+<DT><STRONG><TT>Quiet</TT></STRONG></DT>
+<DD>Suppress console output.
+
+<P>
+</DD>
+<DT><STRONG><TT>REverse</TT></STRONG></DT>
+<DD>Sweep in the opposite direction.
+
+<P>
+</DD>
+<DT><STRONG><TT>TEmperature</TT> <I>degrees</I></STRONG></DT>
+<DD>Temperature,
+degrees C.
+
+<P>
+</DD>
+<DT><STRONG><TT>Times</TT> <I>multiplier</I></STRONG></DT>
+<DD>Log sweep.  Multiply
+the input by <I>multiplier</I> to get the next step.  Do
+not pass zero volts!!
+
+<P>
+</DD>
+<DT><STRONG><TT>TRace</TT> <I>n</I></STRONG></DT>
+<DD>Show extended information during solution.
+Must be followed by one of the following:
+<DL>
+<DT><STRONG><TT>Off</TT></STRONG></DT>
+<DD>No extended trace information (default, override .opt)
+</DD>
+<DT><STRONG><TT>Warnings</TT></STRONG></DT>
+<DD>Show extended warnings
+</DD>
+<DT><STRONG><TT>Iterations</TT></STRONG></DT>
+<DD>Show every iteration.
+</DD>
+<DT><STRONG><TT>Verbose</TT></STRONG></DT>
+<DD>Show extended diagnostics.
+</DD>
+</DL>
+
+<P>
+</DD>
+</DL>
+<H2><A NAME="SECTION003116000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>dc 1</TT></STRONG></DT>
+<DD>Do a single point DC signal simulation, with `1 volt'
+input.
+
+<P>
+</DD>
+<DT><STRONG><TT>dc -10 15 1</TT></STRONG></DT>
+<DD>Sweep the circuit input from -10 to +15 in steps of
+1.  (usually volts.)  Do a DC transfer simulation at each step.
+
+<P>
+</DD>
+<DT><STRONG><TT>dc</TT></STRONG></DT>
+<DD>With no parameters, it uses the same ones as the last time.
+In this case, from -10 to 15 in 1 volt steps.
+
+<P>
+</DD>
+<DT><STRONG><TT>dc 20 0 -2</TT></STRONG></DT>
+<DD>You can sweep downward, by asking for a negative
+increment.  Sometimes, this will result in better convergence, or even
+different results!  (For example, in the case of a bi-stable circuit.)
+
+<P>
+</DD>
+<DT><STRONG><TT>dc</TT></STRONG></DT>
+<DD>Since the last time used the <TT>input</TT> option, go back one
+more to find what the sweep parameters were.  In this case, downward from 20
+to 0 in steps of 2.  (Because we did it 2 commands ago.)
+
+<P>
+</DD>
+<DT><STRONG><TT>dc -2 2 .1 loop</TT></STRONG></DT>
+<DD>After the sweep, do it again in the opposite
+direction.  In this case, the sweep is -2 to +2 in steps of .1.  After it
+gets to +2, it will go back, and sweep from +2 to -2 in steps of -.1.  The
+plot will be superimposed on the up sweep.  This way, you can see hysteresis
+in the circuit.
+
+<P>
+</DD>
+<DT><STRONG><TT>dc temperature 75</TT></STRONG></DT>
+<DD>Simulate at 75 degrees, this time.  Since we
+didn't specify new sweep parameters, do the same as last time.  (Without the
+loop.)
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html651"
+  HREF="node23.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html647"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html641"
+  HREF="node21.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html649"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html652"
+  HREF="node23.html">DELETE command</A>
+<B> Up:</B> <A NAME="tex2html648"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html642"
+  HREF="node21.html">CLEAR command</A>
+ &nbsp <B>  <A NAME="tex2html650"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

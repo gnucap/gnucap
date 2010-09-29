@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>&lt; command</TITLE>
+<META NAME="description" CONTENT="&lt; command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node15.html">
+<LINK REL="previous" HREF="node13.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node15.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html526"
+  HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html522"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html516"
+  HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html524"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html527"
+  HREF="node15.html">&gt; command</A>
+<B> Up:</B> <A NAME="tex2html523"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html517"
+  HREF="node13.html">! command</A>
+ &nbsp <B>  <A NAME="tex2html525"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html528"
+  HREF="#SECTION00331000000000000000">Syntax</A>
+<LI><A NAME="tex2html529"
+  HREF="#SECTION00332000000000000000">Purpose</A>
+<LI><A NAME="tex2html530"
+  HREF="#SECTION00333000000000000000">Comments</A>
+<LI><A NAME="tex2html531"
+  HREF="#SECTION00334000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00330000000000000000"></A>
+<A NAME="677"></A>
+<A NAME="678"></A>
+<A NAME="679"></A>
+<A NAME="680"></A>
+<A NAME="681"></A>
+<A NAME="682"></A>
+<A NAME="683"></A>
+<BR>
+<TT>&lt;</TT> command
+</H1>
+
+<H2><A NAME="SECTION00331000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>&lt;</TT> <I>filename</I>
+<BR><TT>&#171;</TT> <I>filename</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION00332000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Run a simulation in batch mode.  Gets the commands and circuit from a disk
+file.  <TT>&#171;</TT> clears the old circuit, first.
+
+<H2><A NAME="SECTION00333000000000000000">
+Comments</A>
+</H2>
+
+<P>
+You can invoke the batch mode directly from the command that starts the
+program.  The first command line argument is considered to be an argument
+for this command.
+
+<P>
+The file format is almost as you would type it on the keyboard.  Commands
+must be prefixed with a dot, and circuit elements can be entered directly,
+as if in <EM>build</EM> mode.  This is compatible with Spice.  
+
+<P>
+The <TT>log</TT> command makes a file as you work the program, but the
+format is not correct for this command.  To fix it, prefix commands
+with a dot, and remove the <TT>build</TT> commands.
+
+<P>
+Any line that starts with <TT>*</TT> a comment line.
+
+<P>
+Any line that starts with <TT>.</TT> (dot) is a command.
+
+<P>
+Any line that starts with a letter is a component to be added or changed.
+
+<P>
+A <TT>&lt;</TT> command in the file transfers control to a new file.  Files can be
+nested.
+
+<P>
+A bare <TT>&lt;</TT> in the file (or the end of the file) gives it back to the
+console.
+
+<P>
+Unlike SPICE, commands are executed in order.  This can result in some
+surprises when using some SPICE files.  SPICE queues up commands, then
+executes them in a predetermined order.
+
+<H2><A NAME="SECTION00334000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>&lt; thisone.ckt</TT></STRONG></DT>
+<DD>Activates batch mode, from the file <TT>thisone.ckt</TT>, in the current directory.
+
+<P>
+</DD>
+<DT><STRONG><TT>&lt; runit.bat</TT></STRONG></DT>
+<DD>Use the file <TT>runit.bat</TT>.
+
+<P>
+From the shell: on start up:
+
+<P>
+</DD>
+<DT><STRONG><TT>gnucap afile</TT></STRONG></DT>
+<DD>Start up the program.  Start using the file <TT>afile.ckt</TT> in batch mode, as if you entered <TT>&lt; afile</TT> as the first
+command.
+
+<P>
+</DD>
+<DT><STRONG><TT>gnucap &lt;afile</TT></STRONG></DT>
+<DD>Start up the program.  Start using the file <TT>afile.ckt</TT> with commands as if you typed them from the keyboard.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html526"
+  HREF="node15.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html522"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html516"
+  HREF="node13.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html524"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html527"
+  HREF="node15.html">&gt; command</A>
+<B> Up:</B> <A NAME="tex2html523"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html517"
+  HREF="node13.html">! command</A>
+ &nbsp <B>  <A NAME="tex2html525"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

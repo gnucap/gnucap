@@ -1,0 +1,60 @@
+%$Id: pause.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands pause .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt PAUSE} command}
+\index{pause command}
+\index{suspend batch mode}
+\index{wait for key hit}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt PAuse} {\it comment}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Suspend batch mode.  Wait for the user to hit a key.
+%------------------------------------------------------------------------
+\subsection{Status}
+
+This command does not work on all systems, due to buffering of console i/o.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+Prints {\tt Continue?} and waits for a key hit.  Type `{\tt n}', `{\tt N}',
+escape or control-c to terminate the batch mode.  Type anything else to 
+continue.
+
+Any {\it comment} is ignored.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt pause Try more gain}]
+
+\item[{\tt pause}] These both work the same.  Ask to continue, wait for a
+key hit, then go on.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

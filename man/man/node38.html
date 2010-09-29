@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>MERGE command</TITLE>
+<META NAME="description" CONTENT="MERGE command">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node39.html">
+<LINK REL="previous" HREF="node37.html">
+<LINK REL="up" HREF="node11.html">
+<LINK REL="next" HREF="node39.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html899"
+  HREF="node39.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html895"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html889"
+  HREF="node37.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html897"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html900"
+  HREF="node39.html">MODIFY command</A>
+<B> Up:</B> <A NAME="tex2html896"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html890"
+  HREF="node37.html">MARK command</A>
+ &nbsp <B>  <A NAME="tex2html898"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html901"
+  HREF="#SECTION003271000000000000000">Syntax</A>
+<LI><A NAME="tex2html902"
+  HREF="#SECTION003272000000000000000">Purpose</A>
+<LI><A NAME="tex2html903"
+  HREF="#SECTION003273000000000000000">Comments</A>
+<LI><A NAME="tex2html904"
+  HREF="#SECTION003274000000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION003270000000000000000"></A>
+<A NAME="2954"></A>
+<A NAME="2955"></A>
+<A NAME="2956"></A>
+<A NAME="2957"></A>
+<A NAME="2958"></A>
+<A NAME="2959"></A>
+<A NAME="2960"></A>
+<BR>
+<TT>MERGE</TT> command
+</H1>
+
+<H2><A NAME="SECTION003271000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>MErge</TT> <I>filename</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION003272000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Gets an existing circuit file, without clearing memory.
+
+<H2><A NAME="SECTION003273000000000000000">
+Comments</A>
+</H2>
+
+<P>
+The first comment line of the file being read is the new title, and replaces
+the existing title.
+
+<P>
+Comments in the circuit file are stored, unless they start with <TT>*+</TT> in
+which case they are thrown away.
+
+<P>
+`Dot cards' are set up, but not executed.  This means that variables and
+options are changed, but simulation commands are not actually done.  As
+an example, the <TT>options</TT> command is actually performed, since it only
+sets up variables.  The <TT>ac</TT> command is not performed, but its parameters
+are stored, so that a plain <TT>ac</TT> command will perform the analysis
+specified in the file.
+
+<P>
+Any circuit already in memory is kept.  New elements with duplicate labels
+replace the old ones.  New elements that are not duplicates are added to the
+end of the list, as if the files were appended.
+
+<H2><A NAME="SECTION003274000000000000000">
+Examples</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>merge amp.ckt</TT></STRONG></DT>
+<DD>Get the circuit file <TT>amp.ckt</TT> from
+the current directory.  Use it to change the circuit in memory.
+
+<P>
+</DD>
+<DT><STRONG><TT>merge npn.mod</TT></STRONG></DT>
+<DD>Include the file <TT>npn.mod</TT>.
+
+<P>
+</DD>
+</DL>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html899"
+  HREF="node39.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html895"
+  HREF="node11.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html889"
+  HREF="node37.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html897"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html900"
+  HREF="node39.html">MODIFY command</A>
+<B> Up:</B> <A NAME="tex2html896"
+  HREF="node11.html">Command descriptions</A>
+<B> Previous:</B> <A NAME="tex2html890"
+  HREF="node37.html">MARK command</A>
+ &nbsp <B>  <A NAME="tex2html898"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

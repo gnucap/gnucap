@@ -1,0 +1,58 @@
+2 stage op-amp open loop  02/16/88
+*
+m1 3 2 5 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m2 4 1 5 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m3 3 3 9 9 cmosp w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m4 4 3 9 9 cmosp w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m5 5 7 8 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m6 6 4 9 9 cmosp w=9u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m7 6 7 8 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m8 7 7 8 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+cc 4 6 5.0p
+ib 9 7 .36u
+vdd 9 0 2.5
+vss 8 0 -2.5
+cl 6 0 20p
+*
+vin 1 0 dc=0 ac=.5
+ein 0 2 1 0 1
+*
+.model cmosn nmos (level=2 ld=0.265073u tox=418.0e-10
++ nsub=1.53142e+16 vto=0.844345 kp=4.15964e-05 gamma=0.863074
++ phi=0.6 uo=503.521 uexp=0.163917 ucrit=161166
++ delta=1e-06 vmax=55903.5 xj=0.400000u lambda=0.01
++ nfs=3.5934e+12 neff=1.001 nss=1e+12 tpg=1.000000
++ rsh=29.3 cgdo=2.18971e-10 cgso=2.18971e-10
++ cj=0.0003844 mj=0.488400 cjsw=5.272e-10 mjsw=0.300200 pb=0.700000)
+.model cmosp pmos (level=2 ld=0.299878u tox=418.0e-10
++ nsub=4.19363e+15 vto=-0.79089 kp=1.64047e-05 gamma=0.451645
++ phi=0.6 uo=198.577 uexp=0.343935 ucrit=110988
++ delta=0.956806 vmax=41456.3 xj=0.400000u lambda=0.02
++ nfs=1e+12 neff=1.001 nss=1e+12 tpg=-1.000000
++ rsh=107.6 cgdo=2.47722e-10 cgso=2.47722e-10
++ cj=0.0002281 mj=0.508000 cjsw=3.077e-10 mjsw=0.193500 pb=0.740000)
+*
+.print op iter(0) v(nodes)
+.op
+*
+.plot ac vdb(6) (0,80) vp(6) (-180,180)
+.ac dec 5 1 10meg
+*ac steps start stop
+*
+.plot dc v(6) (-4,4)
+.dc vin -500u 500u 20u
+*dc start stop stepsize
+*
+* Try this in Spice.  Compare to the AC analysis above. (same sweep parameters)
+* It uses the last step in the DC analysis as the bias point.
+.ac
+*
+* Try this in Spice.
+.plot dc cgs(m7)(5f 7f)
+.dc
+*.plot dc cgs(m7)(5f 7f) cgs(m6)(15f 25f)
+*.dc
+*.print dc region(m*)
+*.dc
+*
+.end

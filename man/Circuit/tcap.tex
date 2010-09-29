@@ -1,0 +1,59 @@
+%$Id: tcap.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit tcap .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{Trans-capacitor}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+  {\tt .TCAPacitor} {\it label n+ n-- nc+ nc-- expression}\\
+  {\tt .TCAPacitor} {\it label n+ n-- nc+ nc-- value}
+        \{{\tt IV=}{\it initial-voltage}\}\\
+  {\tt .TCAPacitor} {\it label n+ n-- model} \{{\tt L=}{\it length}\}
+        \{{\tt W=}{\it width}\} \{{\tt IC=}{\it initial-voltage}\}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Trans-capacitor, or charge transfer device.
+%------------------------------------------------------------------------
+\subsection{Probes}
+
+All probes that apply to ordinary capacitors also apply here.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+{\it N+} and {\it n--} are the positive and negative element nodes,
+respectively.  {\it Nc+} and {\it nc--} are the positive and negative
+controlling nodes, respectively. 
+
+This device places a charge between the output nodes that depends on
+the voltage on its input nodes.  If you parallel the input with the
+output, it becomes an ordinary capacitor.  While the use of this
+device may appear straightforward, be careful.  It is easy to use it
+in an unstable way.
+
+All options, expressions, models, and probes that apply to ordinary
+capacitors can also be used here.
+
+It is used internally in some transistor models.
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

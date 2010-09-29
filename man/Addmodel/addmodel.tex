@@ -1,0 +1,402 @@
+%$Id: addmodel.tex,v 19.26 2001/06/30 07:16:35 al Exp $
+% incorrect and disjoint!!
+% man Tech addmodel .
+%------------------------------------------------------------------------
+\section{Model addition}
+\index{model addition}
+
+This section attempts to help the engineer to add new models.  It is assumed
+that the source for the existing models is available.  This is not a
+step-by-step procedure, but instead an attempt to help the reader understand
+the process.  The sources, particularly the {\tt d\_*} files should be
+studied as examples.
+
+In general, anything that can appear in a netlist is considered to be an
+element here, including comments and dot cards.
+
+One of the goals of the program was to use it as a research tool in device
+modeling.  It was designed so that the researcher can concentrate on the
+physics and not worry about the details of convergence checking and loading
+the solution matrix.  There are functions provided to load the matrix,
+expand subcircuits, probe elements, parse and print the description strings,
+and other details that need to be done but are distractions for the
+researcher.
+
+This section was written quickly for an older version of the program.
+There have been significant changes, some of which have been incorporated here.  There may be errors in details but it is
+still a good approximation of what is there.
+%------------------------------------------------------------------------
+\subsection{Functions}
+
+For each element type there are (presently) 15 functions and 5 parameters that may be
+provided.  All entry points are contained in a structure ({\tt struct
+functions} defined in {\tt branch.h}).  Every line in the netlist, including
+models, ``dot cards'' and comments, has this same group of functions.  Some
+of the functions can be omitted in cases where they are meaningless or when the default function is acceptable.  Any
+that are omitted or defaulted should be defined as NULL, with a cast to the appropriate
+return type.
+
+The file {\tt dev.c} contains the default functions and the arbitration to select which one to use.
+%------------------------------------------------------------------------
+\subsubsection{create}
+
+The {\tt create} function creates an element of the appropriate type as a
+copy of a prototype.  Its one argument {\tt proto} is a prototype to copy.
+If {\tt proto} is NULL, all parameters are defaulted.  {\tt Create} returns
+a pointer to the newly created element.
+
+The new element has the appropriate memory allocated to it, but it is not
+linked into any list.  Normally, a call to {\tt parse} will fill in all the
+actual values, and a call to {\tt insertbranch} will insert it into the
+appropriate list, but neither of these are of concern to the person adding
+new models.
+
+If there is no {\tt create} function, the function {\tt createbranch} in {\tt dev.c} will be used.  Usually this is adequate for devices but more is needed for models.  When it is not adequate, usually calling {\tt createbranch} is a good start.
+
+The {\tt createbranch} function does the following:
+\begin{enumerate}
+\item Allocate memory for a standard netlist item.
+\item Copy the prototype, if provided, otherwise set the connection nodes to
+{\em invalid}.
+\item Set the pointer to the function structure, if provided, otherwise
+leave it as in the prototype.  This identifies what type of element this is.
+\item Set the node pointer to point to where the nodes are.
+\item Set the {\em subckt} pointer to {\tt NULL}, to indicate not expanded.
+\item Create the nonstandard part.
+\item Set linked list links to {\tt NULL}.
+\item Zero flags.
+\end{enumerate}
+
+{\em Create the nonstandard part} consists of:
+\begin{enumerate}
+\item Allocate memory, the same size block as the prototype.
+\item Copy the prototype into the new block.
+\item Recursively handle additional blocks the same way.
+\end{enumerate}
+
+After {\tt createbranch} returns, additional changes can be made.  There are
+two cases where existing code does this.  Models are accessed fast through a
+{\em same type} list, so one of the pointers is set to facilitate the link.
+Subcircuits may have more than four connection nodes, so the node pointer is
+set to point to the nonstandard part where the node numbers are actually
+stored.
+%------------------------------------------------------------------------
+\subsubsection{parse}
+
+The {\tt parse} function parses an input string, and fills in the actual
+values.  It takes 3 arguments: a raw element ({\em brh}), with the
+defaults (or old values) filled in, the input string ({\em cmd}), and an
+index ({\em cnt}) into the input string.  It scans the input string, fills
+in all the parameters that are specified, and calculates some additional
+ones.
+
+The default parse function is adequate for simple elements such as resistors, capacitors, and controlled sources.  The default function includes a parser for behavioral modeling expressions.
+
+For simple elements such as resistors, a single call to {\tt parsegeneric}
+does the job.  {\tt Parsegeneric} takes four arguments, the three that {\tt
+parse} is called with, and the ``correct'' number of nodes.  It will handle
+the standard form of {\em label}, {\em nodes}, {\em value}, where {\em
+value} is either a number or an expression.  
+
+In some cases you may want to change the functions after or during parsing.
+For example, the resistor uses different functions depending on whether it
+is simple or a behavioral model.  Solid state devices use different function
+for different models.
+
+In the more general case, for more complicated models likely to be
+installed, it is necessary to process the tokens in the input string one at
+a time, in order.  For circuit elements, such as mosfets and diodes, there
+are a few specialized functions to help this, as well as some general
+purpose string functions.  For other items, such as {\tt .model} cards, you
+are mostly on your own, but there are some string functions available that
+might help.
+
+Since circuit elements all start with a label, then connections, there are
+functions provided for this.  You must use them.  {\tt Parselabel} reads the
+label from the input string, checks for validity, and puts it in the
+appropriate place.  {\tt Parsenodes} reads the nodes (connections), checks
+for validity, and stores them in the appropriate place.
+
+After that, you must read the arguments.  {\tt Ctostr} reads a string.  {\tt
+Ctof} reads a floating point number.  {\tt Argparse} reads a list of
+arguments.  The existing code provides good examples of their usage.
+
+After you have read all reasonable input, call {\tt syntax} to check what
+remains of the input string.  {\tt Syntax} will print a message if there is
+more text left in the buffer.
+
+After reading the input the {\tt parse} function must calculate missing
+parameters, if necessary, and print error messages when conflicts arise or
+inappropriate values are entered.  The mosfet {\tt parse} function does
+extensive error checking and arbitration and can be used as an example.  In
+some cases it is a good idea to set flags when certain values are input, so
+it is possible to tell whether they were input, defaulted, or calculated.
+
+It must be possible to call {\tt parse} twice (or more) on the same string,
+with the same results as calling it once.
+%------------------------------------------------------------------------
+\subsubsection{print}
+
+The {\tt print} function prints an element description, in a form such that
+it can be read by the {\tt parse} function to re-create the same element.
+It takes 2 arguments:  the element {\em brh}, and where to print it {\em
+where}.
+
+For simple elements a call to {\tt printgeneric} is all that is necessary.
+In the more general case, it is necessary to print the information an item
+at a time.  Functions are provided to print the label ({\tt printlabel}) and
+the connections ({\tt printnodes}).  You must use these functions.  Most
+other data should be printed using the {\tt mprintf} function, a variation
+on the standard C {\tt printf} function, with identical syntax, except for
+the type of the file argument, for which {\tt mprintf} takes {\tt where}
+directly.  The function {\tt ftos} generates a string in abbreviated
+notation, with a fixed field width (example: 10.5K) from a floating point
+number.
+
+You do not have to be concerned about line length, because it will
+automatically be wrapped to the correct width, but it will not break text
+contained in a single call to {\tt mprintf}.  You may force a new line, by
+printing ``\verb=\n='', and beginning the next (continuation) line with
+``{\tt +}''.
+
+You may print out comments, by starting a new line with ``{\tt *}''.  You
+may print comments to be thrown away when the file is read by starting a new
+line with ``{\tt *+}''.  In general, any comments generated by the program
+should be of the throw away type, otherwise duplicate comments will
+accumulate in files that are changed and saved repeatedly.  Comments must
+follow the data, because the continuation does not work across comments.
+
+In general, you should print out all parameters, including those that are
+defaulted.  You should not print the parameters that are calculated by the
+program, because you probably want them to be calculated again next time.
+Instead, print them as comments.
+%------------------------------------------------------------------------
+\subsubsection{expand}
+
+The {\tt expand} function does pre-processing of a circuit element.  It is
+called once, on the start of a simulation command, if anything has changed.
+
+Some tasks that should be done here are:
+
+\begin{enumerate}
+
+\item Check to see if the element has already been expanded.  If it has,
+only some of the work needs to be done over, in case a parameter has changed.
+
+\item If the element references a {\em .model}, search for the appropriate
+{\em .model}, and make the appropriate links to it.
+
+\item Do one-time calculations.  In many cases, some calculations are not
+dependent on voltages or currents, so can be calculated once.  This should
+be done here.  Examples of calculations that should be done here include
+actual diode saturation current and capacitances (and many others).
+
+\item Build a copy of a subcircuit.  In many cases, elements are composed of
+subcircuits of several elements.  The copy, with actual parameters and node
+numbers plugged in, should be built here, and attached at {\tt brh->subckt}.
+The most obvious of these is the subcircuit call, but most active devices
+and voltage sources expand into an equivalent network of simpler elements.
+The usual procedure is to call the prototype element's {\tt create} function
+to create a copy, change the appropriate values to suit, then insert it into
+the new subcircuit.
+
+\end{enumerate}
+
+For simple elements, like resistors, {\em expand} is not required, and could
+be set to {\tt NULL}.  It may still be useful to do some pre-calculations,
+such as the value of $1/R$.  This is also a good time to check to see if a
+simpler model can be used, for example, if behavioral modeling is not used,
+skip the calls to its evaluation.
+
+The {\tt expand} function, for a model, comment, or dot card is usually {\tt
+NULL}.
+
+It must be possible to expand an element more than once, and maintain
+correct results.  This means it is not permissible to use the same variable
+for different purposes before and after expansion.  Be careful not to
+allocate memory for additional parameters and subcircuits multiple times.
+%------------------------------------------------------------------------
+\subsubsection{trprobe}
+
+Probe the circuit for data, in DC or transient analysis.  Given 2
+arguments:  {\em brh}, the element, and {\em probe}, a string representing
+what information we want, it returns the appropriate voltage, current, or
+whatever was asked for.  The information desired includes voltages,
+currents, power dissipations, linearized values, error calculations, and
+others that may be added in the future.  The possible values of {\em probe}
+depend on the device.  In all cases, the strings are those entered in the
+{\tt print} or {\tt plot} command, converted to lower case.  For example,
+{\tt print tran vds(m12)} calls {\tt m12}'s {\tt trprobe} function with the
+string ``{\tt vds}''.  The function probably should interpret ``{\tt vds}''
+to mean the drain to source voltage.  It should return the constant NOTVALID
+if the string does not match anything.
+%------------------------------------------------------------------------
+\subsubsection{acprobe}
+
+Probe the circuit for data, in AC analysis.  This is similar to {\em
+trprobe} except that it may have a different set of values that are
+appropriate for frequency domain analysis.
+%------------------------------------------------------------------------
+\subsubsection{dotr}
+
+The {\tt dotr} function does transient and DC model evaluation, for full
+Newton iteration.  It does a full evaluation of the model, and loads the
+appropriate values into the admittance matrix and right-side.  It is the
+responsibility of this function to do integration, interpolation, iteration,
+or whatever is required.  It also updates AC equivalent values, and returns
+a convergence status.
+
+There are two ways to handle this: you can code the full evaluation, and
+treat it as a simple component, like a resistor or controlled source, or you
+can use a subcircuit approach, where the work is deferred to the elements of
+the subcircuit.  It is also possible to combine the two methods.  For new
+sophisticated models, the subcircuit approach is recommended, using the
+pre-defined simple elements to do the real work.
+
+Assuming you are using the subcircuit approach, all that is necessary is to
+call the function {\tt trfilllist} with the argument {\tt brh->subckt}.
+This will process the subcircuit.  The function should return the
+convergence status, which is what {\tt trfilllist} returns.  If the {\tt
+expand} function was designed correctly, a call to {\tt trfilllist} may be
+all that is necessary.  See the diode model as an example.
+
+For a ``simple'' element, that does not use a subcircuit, there are several
+steps that must be performed.
+
+\begin{enumerate}
+
+\item Save the old values of admittance, intercept, and input, for
+convergence checking.  This should be done by a call to {\tt trsetup}.
+
+\item Determine the present input, and save it in {\tt brh->m.tr.x0}.
+
+\item Evaluate the model equations, leaving the resulting effective
+admittance in {\tt brh->y0.c1} and intercept in {\tt brh->y0.c0}.  Calculate
+an effective AC value (often the same as effective admittance) and save it
+in {\tt brh->ev}.
+
+\item Load the system matrix.  The function {\tt trloadpassive} loads a
+passive element, where input and output terminals are the same, as in a
+resistor, so the matrix entries are symmetric about the diagonal.  The
+function {\tt trloadactive} loads an active element, where input and output
+terminals are different, for example, a controlled source, so the matrix
+entries are asymmetric.  The function {\tt trloadsource} loads only the
+right side vector, and nothing into the admittance matrix, and is used for
+fixed sources.  You should call one of these, depending on the type of
+element.  You should not attempt to access the matrices directly.
+
+\item Check convergence, and return the result.  If the element is known to
+be linear, this step means to simply return the value {\tt YES}.  If the
+element is nonlinear, a call to {\tt conv\_check} will do the necessary
+convergence checking.
+
+\end{enumerate}
+%------------------------------------------------------------------------
+\subsubsection{untr}
+
+The {\tt untr} function unloads an element from the matrix.  It is used for
+incrementally updating the matrix.
+%------------------------------------------------------------------------
+\subsubsection{doac}
+
+The {\tt doac} function does AC model evaluation.  It evaluates the model
+for AC analysis, and loads the admittance matrix and right-side.  It assumes
+that the DC operating point has been set, by doing the appropriate {\em op},
+{\em dc}, or {\em transient} analysis.  In some cases, it simply takes the
+equivalent values calculated by {\em dotr}.
+
+Like in {\tt dotr}, you can either code the full evaluation, and treat it as
+a simple component, or use the subcircuit approach.  The {\tt doac} function
+must use the same approach as {\tt dotr}.  The full evaluation approach can
+often be simplified to using the value {\tt brh->ev} without further
+calculations.
+
+With the subcircuit apporach, a call to {\tt acfilllist} will process the
+subcircuit.
+
+For a ``simple'' element, some equations must be evaluated, unless they were
+done by {\tt dotr}.  The procedure is essentially the same as {\tt dotr}
+except that there is no convergence checking, and no need to save old
+values.  You need to calculate an effective AC admittance, and possibly
+source value, with real ({\tt brh->m.ac.g.x}) and imaginary ({\tt
+brh->m.ac.g.y}) parts.  The function {\tt acloadpassive} loads a passive
+element into the admittance matrix.  If it is known that either the real or
+imaginary part is zero, you may use {\tt acloadpassivereal} or {\tt
+acloadpassiveimaginary} instead.  For an active element, use {\tt
+acloadactive}.  For a fixed source, use {\tt acloadsource}.
+%------------------------------------------------------------------------
+\subsubsection{trguess}
+
+The {\tt trguess} function is supposed to provide an initial guess for
+iteration.  It is not implemented.
+%------------------------------------------------------------------------
+\subsubsection{tradvance}
+
+The {\tt tradvance} function is supposed to do the first evaluation at a new
+time step.  It is not implemented.
+%------------------------------------------------------------------------
+\subsubsection{trreview}
+
+The {\tt trreview} function checks errors and signal conditions after a time
+step has converged.  It makes entries into the event queue, makes mode
+decisions for mixed-mode simulation, and evaluates time step dependent
+errors.  It returns an approximate time that the element wants for the next
+step.  The actual next time step will probably be sooner than the value
+returned.
+%------------------------------------------------------------------------
+\subsubsection{trfun1}
+
+The {\tt trfun1} function evaluates nonlinearities for transient and DC
+analysis.  In some cases, an otherwise ordinary device has special
+nonlinearities.
+
+For example, a diode can be considered a special type of resistor, with an
+exponential transfer characteristic.  The model for a resistor could be
+used, but {\em trfun1} patched to call a special function to evaluate the
+resistor's behavior, in this case, the diode equation.  It returns a first
+order polynomial representing the tangent line to the curve, at a point
+determined by the prior iteration.  The actual code for the diode uses an
+admittance, with {\tt trfun1} patched to evaluate the diode equation, in
+parallel with a capacitor, {\tt trfun1} patched to evaluate the nonlinear
+capacitance.
+
+The usual method of building a special model is to use a subcircuit
+expansion, with almost ordinary elements, such as resistors, capacitors, and
+controlled sources, with a special evaluation function, hooked at {\tt
+trfun}.  Both the diode and mosfet are examples of models built this way.
+
+{\em Trfun1} must evaluate the function and its first derivative.  It also
+evaluates time dependencies, if any.  It returns the result as a first order
+polynomial: the slope and intercept of the line tangent to the curve.
+%------------------------------------------------------------------------
+\subsubsection{trfun0}
+
+The {\tt trfun0} function is a relaxation version of {\tt trfun1}.  It is
+not implemented.
+%------------------------------------------------------------------------
+\subsubsection{acfun}
+
+The {\tt acfun} function evaluates nonlinearities for AC analysis, as {\tt
+trfun} does for transient and DC analysis.  The return value is a complex
+effective value.  It is used less often, because the {\tt dotr} saves an AC
+effective value, which can usually be used without further calculations.
+%------------------------------------------------------------------------
+\subsection{Hooks}
+
+There are three places where existing code must be changed to accomodate the
+new model.
+
+\begin{enumerate}
+
+\item Add the declaration to the file {\tt types.h}.
+
+\item Change the function {\tt cparse} in the file {\tt getckt.c} to assign
+a letter to the new device.  ({\tt for circuit elements, or anything that
+starts with a particular character})
+
+\item Change the function {\tt parse\_dot\_model} in the file {\tt
+dev\_dot.c} to match a keyword to a new model.  ({\tt .Model card only})
+
+\end{enumerate}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

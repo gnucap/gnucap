@@ -1,0 +1,59 @@
+%$Id: edit.tex,v 20.15 2001/10/30 03:59:06 al Exp $
+% man commands edit .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt EDIT} command}
+\index{edit command}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt Edit} \\
+{\tt Edit} {\it file}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Use your editor to change the circuit.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+The {\tt edit} command runs your editor on a copy of the circuit in memory, 
+then reloads it.
+
+{\tt Edit} {\it file} runs your editor on the specified {\it file}.
+
+If you are only changing a component value, the {\tt modify} command may be
+easier to use.
+
+The program uses the {\tt EDITOR} environment variable to find the editor
+to use.  The command fails if there is no {\tt EDITOR} defined.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt edit}] Brings up your editor on the circuit.
+
+\item[{\tt edit foo}] Edits the file {\tt foo} in your current directory.
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

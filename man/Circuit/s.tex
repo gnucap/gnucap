@@ -1,0 +1,70 @@
+%$Id: s.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man circuit s .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt S}: Voltage Controlled Switch}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt S}{\it xxxxxxx n+ n-- nc+ nc-- mname} \{{\it ic}\}\\
+{\tt .VSWitch} {\it label n+ n-- nc+ nc-- mname} \{{\it ic}\}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Voltage controlled switch.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+{\it N+} and {\it n--} are the positive and negative element nodes,
+respectively.  {\it Nc+} and {\it nc--} are the controlling nodes.
+{\it Mname} is the model name.  A switch is a resistor between {\it
+n+} and {\it n--}.  The value of the resistor is determined by the
+state of the switch.
+
+The resistance between {\it n+} and {\it n--} will be {\it RON}
+when the controlling voltage (between {\it nc+} and {\it nc--}) is
+above {\it VT} + {\it VH}.  The resistance will be {\it ROFF} when
+the controlling voltage is below {\it VT} - {\it VH}.  When the
+controlling voltage is between {\it VT} - {\it VH} and {\it VT} +
+{\it VH}, the resistance will retain its prior value.
+
+You may specify {\tt ON} or {\tt OFF} to indicate the initial state
+of the switch when the controlling voltage is in the hysteresis
+region.
+
+{\tt RON} and {\tt ROFF} must have finite positive values.
+%------------------------------------------------------------------------
+\subsection{Model Parameters}
+
+\begin{description}
+
+\item[{\tt VT} = {\it x}] Threshold voltage.  (Default = 0.)
+
+\item[{\tt VH} = {\it x}] Hysteresis voltage.  (Default = 0.)
+
+\item[{\tt RON} = {\it x}] On resistance.  (Default = 1.)
+
+\item[{\tt ROFF} = {\it x}] Off resistance.  (Default = 1e12)
+
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

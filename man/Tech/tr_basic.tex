@@ -1,0 +1,231 @@
+%$Id: tr_basic.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man Tech tr_basic .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\subsection{The basic solution algorithm}
+
+In simplified form, the algorithm looks like this ...
+
+before doing anything ....
+\begin{verbatim}
+  expand()
+  precalc()
+\end{verbatim}
+
+on issuing the ``tran'' command ..
+\begin{verbatim}
+tr_begin() // get ready
+for (each time step) {
+  tr_advance() // precalculate and propagate
+  for (each iteration) {
+    tr_queue_eval() // decide which models need evaluating
+    do_tr() // evaluate models
+    tr_load() // build the matrix of equations
+    solve the resulting system of equations
+  }
+  if (converged) {
+    tr_review() // how are we doing? suggest time step
+  }
+  if (no problems) {
+    tr_accept() // postcalculate and accept data
+  }
+}
+\end{verbatim}
+
+The functions referred to above are actually loops that call that
+function for all devices in the circuit.
+
+For all of them, it is possible that they may not be called.  If there
+is evidence that the result will not change from the last time it was
+called, it probably will not be called.  Since this algorithm is not
+perfect, it is possible that any particular function may be called
+twice, so they are written so calling more than once is equivalent to
+calling once.
+
+\subsubsection{expand}
+
+The {\em expand} functions expand subcircuits and models, as needed.
+Unlike Spice, it does not flatten the circuit.  It allocates space for
+the additional storage, attaches models, and related tasks.  It does
+not compute any values.  It is called once after reading the circuit,
+and possibly later when the topology of the circuit is changed.
+
+Most simple elements do not have expand functions.  Most advanced
+components do.
+
+Expanding a subcircuit makes a copy of it, and remaps the nodes.  Most
+components use a shallow copy.  That is, if something is attached
+through a pointer, the value of the pointer is copied, not the
+attachment.  Commons are never copied when the owner components are
+copied. 
+
+It is ok to expand a component more than once.  Either it frees then
+re-expands, or it keeps what it can and checks to make sure it is
+correct. 
+
+\subsubsection{precalc}
+
+The {\em precalc} functions attempt to pre-calculate anything that
+will remain constant during a simulation run.  This includes size
+dependent transistor parameters and the stamp values for linear
+elements.
+
+The actual evaluation of constant linear elements is done here.  For
+nonlinear elements, it computes a first guess.
+
+\subsubsection{dc\_begin, tr\_begin, tr\_restore}
+
+These functions are called once on issuing a simulation command.  The
+{\em dc\_begin} functions are called on starting a DC or OP anaylsis.
+The {\em tr\_begin} functions are called on starting a transient
+analysis from time = 0, or the first time.  The {\em tr\_restore}
+functions are called on starting a transient analysis in such a way
+that the analysis continues from where a previous transient analysis
+left off.
+
+The purpose is to make sure that the initial guesses and numbers for
+prior iterations that don't exist are properly set up.  For linear
+elements, the values are set up here and are not computed later.
+
+\subsubsection{dc\_advance, tr\_advance}
+
+These functions are called before beginning a new time or voltage
+step.
+
+For basic storage elements like capacitors, they store the data from
+the previous step.  They may also attempt to predict a new value, in
+hopes of speeding up the real solution.
+
+For delay elements like logic devices and transmission lines, this
+function does the real work.  It takes previous results and applies
+them, generating data that will be later loaded into the matrix.
+
+\subsubsection{tr\_needs\_eval}
+
+This function returns true if the component needs to be evaluated on
+this iteration.  It should return false if it has already been queued,
+but some do not do this.
+
+\subsubsection{tr\_queue\_eval}
+
+This function queues the component to be evaluated, if it needs it.
+If {\em tr\_queue\_eval} is not called, it will not be evaluated.
+
+\subsubsection{do\_tr}
+
+In most cases, the {\em do\_tr} functions do the real work, or call
+the {\em tr\_eval} function to do it.  It evaluates the model, checks
+convergence, and queues it for loading.  Calling this function more
+than once on an iteration is harmless, except for the waste of time.
+
+Usually, it calculates the function and derivative.  It may also do
+integration, interpolation, iteration, or whatever is required.  The
+result is a set of values ready to stamp into the admittance matrix
+and current vector.
+
+There are several distinct steps within this function.
+
+\begin{enumerate}
+
+\item The first step is to gather the information necessary to make
+the computations.  Usually, this is the node voltages, but it could be 
+currents, temperature, charge, or something else.
+
+\item The next step is to evaluate any attached function.  This could
+be done in line, or by a call to {\em tr\_eval}.  The result of this
+evaluation is stored in {\em \_y0} (of type {\em FPOLY1}.  The {\em tr\_eval} 
+function reads the value of {\em x} from {\em \_y0}, and fills in the
+{\em f0} with the result of function evaluation, and {\em f1} with its 
+derivative.  The {\em tr\_eval} function must also check for
+convergence by comparing the new {\em \_y0} with the old value, {\em
+\_y1}.  This attached function is generic in the sense that it is the
+same for all device types.  This is the $y = f(x)$ that is referred to 
+in the behavioral modeling documentation.
+
+\item These values are stored for convergence checking and probing.
+
+\item After that, it must be converted to a current and admittance so
+it can be used in the system of nodal equations.  This step is
+dependent on what type of device it is.  For a conductance element,
+{\em tr\_eval} directly returns the correct information, so nothing
+needs to be done here.  For a capacitor, this step does numerical
+integration.  Capacitors store this in {\em \_i0}.  Most other elements 
+do not store this result directly.
+
+\item Then, it must be converted into {\em CPOLY} form to meet the
+requirements of the system of equations.
+
+\item The device is queued for loading.  Unlike Spice, GnuCap does not
+actually load the matrix here.
+
+\end{enumerate}
+
+
+\subsubsection{tr\_load}
+
+This function gives the appearance of loading the admittance matrix
+and current vector with the values calculated in {\em do\_tr}.
+
+Actually, it does much more.  In most cases, it actually loads a
+correction factor, assuming the old values are already loaded.  To do
+this, it keeps track of what values are actually loaded.  Whether it
+loads a correction or the actual value is determined first by the
+option {\em incmode}, then by status information about the solution.
+If it is suspected that correcting would cause too much roundoff
+error, it loads the actual value.  The decision of whether to do a
+full load or an update is global.
+
+In addition, it may apply damping in hopes of improving convergence.
+This means to load a value somewhere between the new and old values,
+in effect taking a partial step.  The decision to damp is semi-global.
+Groups of elements are adjusted together.
+
+The actual loading is done by one or more of a small group of general
+functions, depending on whether the element is active, passive, poly,
+or a source.  Only certain patterns can be stamped.  Complex devices
+use a combination of these patterns.
+
+WARNING to model developers:  DO NOT stamp the matrix directly!
+
+\subsubsection{tr\_review}
+
+The {\em tr\_review} function checks errors and signal conditions
+after a time step has converged.  It makes entries into the event
+queue, makes mode decisions for mixed-mode simulation, and evaluates
+time step dependent errors.  It returns an approximate time that the
+element wants for the next step.  The actual next time step will
+probably be sooner than the value returned.
+
+\subsubsection{tr\_accept}
+
+This function is called after the solution at a time step has been
+accepted.  For most devices, it does nothing.  For devices having
+storage and delayed propagation, it evaluates what signal will be
+propagated.  For a transmission line, it calculates and sends on the
+reflections.
+
+\subsubsection{tr\_unload}
+
+This function removes the component from the matrix, possibly by
+subtracting off what was loaded.  Usually, it sets the current values
+to 0 and calls {\em tr\_load}.
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

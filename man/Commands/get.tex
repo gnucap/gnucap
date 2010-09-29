@@ -1,0 +1,70 @@
+%$Id: get.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands get .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt GET} command}
+\index{get command}
+\index{load circuit from file}
+\index{read circuit from file}
+\index{retrieve circuit from file}
+\index{file: get}
+\index{file: read}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt GET} {\it filename}
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Gets an existing circuit file, after clearing memory.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+The first comment line of the file being read is taken as the `title'.  See
+the {\tt title} command.
+
+Comments in the circuit file are stored, unless they start with {\tt *+} in
+which case they are thrown away.
+
+`Dot cards' are set up, but not executed.  This means that variables and
+options are changed, but simulation commands are not actually done.  As
+an example, the {\tt options} command is actually performed, since it only
+sets up variables.  The {\tt ac} card is not performed, but its parameters
+are stored, so that a plain {\tt ac} command will perform the analysis
+specified in the file.
+
+Any circuit already in memory will be erased before loading the new circuit.
+%------------------------------------------------------------------------
+\subsection{Examples}
+
+\begin{description}
+
+\item[{\tt get amp.ckt}] Get the circuit file {\tt amp.ckt} from
+the current directory.
+
+\item[{\tt get /usr/foo/ckt/amp.ckt}] Get the file {\tt amp.ckt}
+from the {\tt /usr/foo/ckt} directory.
+
+\item[{\tt get npn.mod}] Get the file {\tt npn.mod}.
+\end{description}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------

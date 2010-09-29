@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.50)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>X: Subcircuit Call</TITLE>
+<META NAME="description" CONTENT="X: Subcircuit Call">
+<META NAME="keywords" CONTENT="man">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="man.css">
+
+<LINK REL="next" HREF="node84.html">
+<LINK REL="previous" HREF="node82.html">
+<LINK REL="up" HREF="node59.html">
+<LINK REL="next" HREF="node84.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1615"
+  HREF="node84.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1611"
+  HREF="node59.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1605"
+  HREF="node82.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1613"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1616"
+  HREF="node84.html">Y: Admittance</A>
+<B> Up:</B> <A NAME="tex2html1612"
+  HREF="node59.html">Circuit description</A>
+<B> Previous:</B> <A NAME="tex2html1606"
+  HREF="node82.html">W: Current Controlled Switch</A>
+ &nbsp <B>  <A NAME="tex2html1614"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1617"
+  HREF="#SECTION004241000000000000000">Syntax</A>
+<LI><A NAME="tex2html1618"
+  HREF="#SECTION004242000000000000000">Purpose</A>
+<LI><A NAME="tex2html1619"
+  HREF="#SECTION004243000000000000000">Comments</A>
+<LI><A NAME="tex2html1620"
+  HREF="#SECTION004244000000000000000">Probes</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION004240000000000000000">
+<TT>X</TT>: Subcircuit Call</A>
+</H1>
+
+<H2><A NAME="SECTION004241000000000000000">
+Syntax</A>
+</H2>
+<BLOCKQUOTE>
+<TT>X</TT><I>xxxxxxx n1</I> {<I>n2 n3 ...</I>} <I>subname</I>
+
+</BLOCKQUOTE>
+<H2><A NAME="SECTION004242000000000000000">
+Purpose</A>
+</H2>
+
+<P>
+Subcircuit call
+
+<H2><A NAME="SECTION004243000000000000000">
+Comments</A>
+</H2>
+
+<P>
+Subcircuits are used by specifying pseudo-elements beginning with <TT>X</TT>,
+followed by the connection nodes.
+
+<H2><A NAME="SECTION004244000000000000000">
+Probes</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG><TT>V</TT><I>x</I></STRONG></DT>
+<DD>Port (terminal node) voltage.  <I>x</I> is
+which port to probe.  1 is the first node in the "X" statement, 2
+is the second, and so on.
+
+<P>
+</DD>
+<DT><STRONG><TT>P</TT></STRONG></DT>
+<DD>Power.  The sum of the power probes for all the internal elements.
+
+<P>
+</DD>
+<DT><STRONG><TT>PD</TT></STRONG></DT>
+<DD>Power dissipated.  The total power dissipated as heat.
+
+<P>
+</DD>
+<DT><STRONG><TT>PS</TT></STRONG></DT>
+<DD>Power sourced.  The total power generated.
+
+<P>
+</DD>
+</DL>
+
+<P>
+In this release, there are no probes available in AC analysis except for the
+internal elements.  More parameters will be added.  Internal elements can be
+probed by concatenating the internal part label with the subcircuit label.
+R5.X7 is R5 inside X7.
+<BR><HR>
+<ADDRESS>
+Al Davis
+2001-10-28
+</ADDRESS>
+</BODY>
+</HTML>

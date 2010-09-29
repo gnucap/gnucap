@@ -1,0 +1,131 @@
+%$Id: sweep.tex,v 20.14 2001/10/19 06:21:44 al Exp $
+% man commands sweep .
+% Copyright (C) 2001 Albert Davis
+% Author: Albert Davis <aldavis@ieee.org>
+%
+% This file is part of "GnuCap", the Gnu Circuit Analysis Package
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2, or (at your option)
+% any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+% 02111-1307, USA.
+%------------------------------------------------------------------------
+\section{{\tt SWEEP} command}
+\index{sweep command}
+\index{sweep component values}
+\index{step component values}
+%------------------------------------------------------------------------
+\subsection{Syntax}
+\begin{verse}
+{\tt SWeep} \{{\it stepcount}\}  {\it partlabel=range} ...
+\end{verse}
+%------------------------------------------------------------------------
+\subsection{Purpose}
+
+Sweep a component (or group of components) over a range.  Set up a loop for
+iteration.
+%------------------------------------------------------------------------
+\subsection{Comments}
+
+This command begins a loop which will sweep a component or group of
+components.
+
+When this command is given, the only apparent actions will be a change in the
+prompt from `{\tt -->}' to `{\tt >>>}', and some disk action.
+
+The different prompt means that commands are not executed immediately, but
+are stored in a temporary file.
+
+The bare command will repeat the same command sequence as the last time {\tt
+SWeep} was run, and not prompt for anything else.
+
+Additional components can be swept at the same time by entering a `{\tt
+FAult}' command at the `{\tt >>>}' prompt.  The `{\tt FAult}' behaves
+differently here:  It accepts a range, which is the sweep limits.
+
+The `{\tt GO}' command will end the entry sequence, and make it all happen.
+After this, the values are restored.  (Also, all {\tt FAult}s are restored,
+as if by the `{\tt Restore}' command.)
+
+All commands can be used in this mode.  Of course, some of them are not
+really useful ({\tt Quit}) because they work as usual.
+
+Only linear, ordinary parts can be swept.  (No semiconductor devices, or
+elements using behavioral modeling.)  The tolerance remains unchanged.  If
+you attempt to sweep a nonlinear or otherwise strange part, it becomes
+ordinary and linear during the sweep.
+%------------------------------------------------------------------------
+\subsection{Example}
+
+\begin{verbatim}
+-->sweep  5   R14=1,100k   R15=100k,1
+>>>list
+>>>ac 500 2k oct
+>>>go
+\end{verbatim}
+
+This sequence of commands says to simultaneously sweep R14 and R15 in 5 steps,
+in opposite directions, list the circuit and do an AC analysis for each step.
+
+Assuming the circuit was:
+\begin{verbatim}
+     R14  1   0   50k
+     R15  2   0   50k
+\end{verbatim}
+
+The result of this sequence would be:
+\begin{verbatim}
+     R14  1   0   1
+     R15  2   0   100k
+\end{verbatim}
+{\rm {\it an AC analysis}}
+\begin{verbatim}
+     R14  1   0   25.75k
+     R15  2   0   75.25k
+\end{verbatim}
+{\rm {\it an AC analysis}}
+\begin{verbatim}
+     R14  1   0   50.5k
+     R15  2   0   50.5k
+\end{verbatim}
+{\rm {\it an AC analysis}}
+\begin{verbatim}
+     R14  1   0   75.25k
+     R15  2   0   25.75k
+\end{verbatim}
+{\rm {\it an AC analysis}}
+\begin{verbatim}
+     R14  1   0   100k
+     R15  2   0   1
+\end{verbatim}
+{\rm {\it an AC analysis}}
+
+After all this is done, the circuit is restored, so {\tt list} would show:
+\begin{verbatim}
+     R14  1   0   50k
+     R15  2   0   50k
+\end{verbatim}
+
+You could accomplish the same thing by entering {\tt fault} commands at the
+`{\tt >>>}' prompt.
+
+\begin{verbatim}
+-->sweep  5
+>>>fault  R14=1, 100k
+>>>fault  R15=100k, 1
+>>>list
+>>>ac 500 2k oct
+>>>go
+\end{verbatim}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
