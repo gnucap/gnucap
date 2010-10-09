@@ -1,12 +1,12 @@
-/*$Id: bm_pulse.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: bm_pulse.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,7 +22,11 @@
  * SPICE compatible PULSE
  */
 //testing=script 2005.10.06
+#include "e_elemnt.h"
+#include "u_lang.h"
 #include "bm.h"
+/*--------------------------------------------------------------------------*/
+namespace {
 /*--------------------------------------------------------------------------*/
 const double _default_iv    (NOT_INPUT);
 const double _default_pv    (NOT_INPUT);
@@ -31,6 +35,35 @@ const double _default_rise  (0);
 const double _default_fall  (0);
 const double _default_width (BIGBIG);
 const double _default_period(BIGBIG);
+/*--------------------------------------------------------------------------*/
+class EVAL_BM_PULSE : public EVAL_BM_ACTION_BASE {
+private:
+  PARAMETER<double> _iv;
+  PARAMETER<double> _pv;
+  PARAMETER<double> _delay;
+  PARAMETER<double> _rise;
+  PARAMETER<double> _fall;
+  PARAMETER<double> _width;
+  PARAMETER<double> _period;
+  PARAMETER<double> _end;
+  explicit	EVAL_BM_PULSE(const EVAL_BM_PULSE& p);
+public:
+  explicit      EVAL_BM_PULSE(int c=0);
+		~EVAL_BM_PULSE()	{}
+private: // override vitrual
+  bool		operator==(const COMMON_COMPONENT&)const;
+  COMMON_COMPONENT* clone()const	{return new EVAL_BM_PULSE(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+
+  void		precalc_first(const CARD_LIST*);
+  void		tr_eval(ELEMENT*)const;
+  TIME_PAIR	tr_review(COMPONENT*);
+  std::string	name()const		{return "pulse";}
+  bool		ac_too()const		{return false;}
+  bool		parse_numlist(CS&);
+  bool		parse_params_obsolete_callback(CS&);
+};
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 EVAL_BM_PULSE::EVAL_BM_PULSE(int c)
   :EVAL_BM_ACTION_BASE(c),
@@ -76,96 +109,134 @@ bool EVAL_BM_PULSE::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_PULSE::print(OMSTREAM& o)const
+void EVAL_BM_PULSE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
-  o << ' ' << name()
-    << " iv="	  << _iv
-    << " pv="	  << _pv
-    << " delay="  << _delay
-    << " rise="	  << _rise
-    << " fall="	  << _fall
-    << " width="  << _width
-    << " period=" << _period;
-  EVAL_BM_ACTION_BASE::print(o);
+  assert(lang);
+  o << name();
+  print_pair(o, lang, "iv", _iv);
+  print_pair(o, lang, "pv", _pv);
+  print_pair(o, lang, "delay", _delay);
+  print_pair(o, lang, "rise", _rise);
+  print_pair(o, lang, "fall", _fall);
+  print_pair(o, lang, "width", _width);
+  print_pair(o, lang, "period", _period);
+  EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_PULSE::elabo3(const COMPONENT* c)
+void EVAL_BM_PULSE::precalc_first(const CARD_LIST* Scope)
 {
-  assert(c);
-  const CARD_LIST* par_scope = c->scope();
-  assert(par_scope);
-  EVAL_BM_ACTION_BASE::elabo3(c);
-  _iv.e_val(_default_iv, par_scope);
-  _pv.e_val(_default_pv, par_scope);
-  _delay.e_val(_default_delay, par_scope);
-  _rise.e_val(_default_rise, par_scope);
-  _fall.e_val(_default_fall, par_scope);
-  _width.e_val(_default_width, par_scope);
-  _period.e_val(_default_period, par_scope);
+  assert(Scope);
+  EVAL_BM_ACTION_BASE::precalc_first(Scope);
+  _iv.e_val(_default_iv, Scope);
+  _pv.e_val(_default_pv, Scope);
+  _delay.e_val(_default_delay, Scope);
+  _rise.e_val(_default_rise, Scope);
+  _fall.e_val(_default_fall, Scope);
+  _width.e_val(_default_width, Scope);
+  _period.e_val(_default_period, Scope);
 
-  if (_width == 0.) {
+  if (_width == 0.) {untested();
     _width = _default_width;
-    untested();
+  }else{
   }
-  if (_period == 0.) {
+  if (_period == 0.) {untested();
     _period = _default_period;
-    untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_PULSE::tr_eval(ELEMENT* d)const
 {
-  double time = SIM::time0;
+  double time = d->_sim->_time0;
   if (0 < _period && _period < BIGBIG) {
-    time = fmod(time,_period);
+    //time = fmod(time,_period);
+    if (time > _delay) {
+      time = fmod(time - _delay, _period) + _delay;
+    }else{
+    }
+  }else{
   }
-  
   double ev = 0; // effective value
-  if (time > _delay+_rise+_width+_fall) {	/* past pulse	*/
+  if (time >= _delay+_rise+_width+_fall) {	/* past pulse	*/
     ev = _iv;
-  }else if (time > _delay+_rise+_width) {	/* falling 	*/
+  }else if (time >= _delay+_rise+_width) {	/* falling 	*/
     double interp = (time - (_delay+_rise+_width)) / _fall;
     ev = _pv + interp * (_iv - _pv);
-  }else if (time > _delay+_rise) {		/* pulse val 	*/
+  }else if (time >= _delay + _rise) {		/* pulse val 	*/
     ev = _pv;
-  }else if (time > _delay) {			/* rising 	*/
+  }else if (time >= _delay) {			/* rising 	*/
     double interp = (time - _delay) / _rise;
     ev = _iv + interp * (_pv - _iv);
   }else{					/* init val	*/
     ev = _iv;
   }
-
+  //d->q_accept();
   tr_finish_tdv(d, ev);
+}
+/*--------------------------------------------------------------------------*/
+TIME_PAIR EVAL_BM_PULSE::tr_review(COMPONENT* d)
+{
+  double time = d->_sim->_time0;
+  time += d->_sim->_dtmin * .01;  // hack to avoid duplicate events from numerical noise
+  double raw_time = time;
+
+  if (0 < _period && _period < BIGBIG) {
+    if (time > _delay) {
+      time = fmod(time - _delay, _period) + _delay;
+    }else{
+    }
+  }else{
+  }
+  double time_offset = raw_time - time;
+
+  if (time >= _delay+_rise+_width+_fall) {		/* past pulse	*/
+    d->_time_by.min_event(_delay + _period + time_offset);
+  }else if (time >= _delay+_rise+_width) {		/* falling 	*/
+    d->_time_by.min_event(_delay + _rise + _width + _fall + time_offset);
+  }else if (time >= _delay + _rise) {			/* pulse val 	*/
+    d->_time_by.min_event(_delay + _rise + _width + time_offset);
+  }else if (time >= _delay) {				/* rising 	*/
+    d->_time_by.min_event(_delay + _rise + time_offset);
+  }else{						/* init val	*/
+    d->_time_by.min_event(_delay + time_offset);
+  }
+
+  return d->_time_by;
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_PULSE::parse_numlist(CS& cmd)
 {
-  int start = cmd.cursor();
-  int here = cmd.cursor();
+  unsigned start = cmd.cursor();
+  unsigned here = cmd.cursor();
   for (PARAMETER<double>* i = &_iv;  i < &_end;  ++i) {
-    double value=NOT_VALID;
-    cmd >> value;
+    PARAMETER<double> val(NOT_VALID);
+    cmd >> val;
     if (cmd.stuck(&here)) {
       break;
     }else{
-      *i = value;
+      *i = val;
     }
   }
   return cmd.gotit(start);
 }
 /*--------------------------------------------------------------------------*/
-bool EVAL_BM_PULSE::parse_params(CS& cmd)
+bool EVAL_BM_PULSE::parse_params_obsolete_callback(CS& cmd)
 {
   return ONE_OF
-    || get(cmd, "IV", 	  &_iv)
-    || get(cmd, "PV", 	  &_pv)
-    || get(cmd, "Delay",  &_delay)
-    || get(cmd, "Rise",	  &_rise)
-    || get(cmd, "Fall",	  &_fall)
-    || get(cmd, "Width",  &_width)
-    || get(cmd, "PEriod", &_period)
-    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    || Get(cmd, "iv", 	  &_iv)
+    || Get(cmd, "pv", 	  &_pv)
+    || Get(cmd, "delay",  &_delay)
+    || Get(cmd, "rise",   &_rise)
+    || Get(cmd, "fall",   &_fall)
+    || Get(cmd, "width",  &_width)
+    || Get(cmd, "period", &_period)
+    || EVAL_BM_ACTION_BASE::parse_params_obsolete_callback(cmd)
     ;
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+EVAL_BM_PULSE p1(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher, "pulse", &p1);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

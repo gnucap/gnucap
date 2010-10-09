@@ -1,12 +1,12 @@
-/* $Id: d_mos.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+/* $Id: d_mos.model,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,163 +30,146 @@
  */
 h_headers {
 #include "d_diode.h"
-  class DEV_MOS;		/* this file */
-  class COMMON_MOS;
-  class EVAL_MOS_Cgb;
-  class EVAL_MOS_Cgd;
-  class EVAL_MOS_Cgs;
-  class DEV_DIODE;		/* external */
-  class DEV_CAPACITANCE;
-  class DEV_FPOLY_CAP;
-  class DEV_CPOLY_G;
-  class DEV_RESISTANCE;
-  class MODEL_MOS_BASE;
-  class SDP_MOS_BASE;
-  enum {mNUM_INIT_COND = 3};
 }
 cc_headers {
 #include "u_limit.h"
-#include "d_cap.h"
-#include "d_admit.h"
-#include "d_res.h"
+#include "e_storag.h"
 #include "d_mos_base.h"
 }
 /*--------------------------------------------------------------------------*/
-device MOS {
+device BUILT_IN_MOS {
   parse_name mosfet;
-  model_type MOS_BASE;
+  model_type BUILT_IN_MOS_BASE;
   id_letter M;
   circuit {
     sync;
-    ports {drain gate source bulk};
+    ports {d g s b};
     local_nodes {
-      idrain  short_to=drain  short_if="!OPT::rstray || s->rd == 0.";
-      isource short_to=source short_if="!OPT::rstray || s->rs == 0.";
+      id short_to=d short_if="!OPT::rstray || s->rd == 0.";
+      is short_to=s short_if="!OPT::rstray || s->rs == 0.";
     }
-    args db DIODE {
-      m = c->m;
-      area = s->ad;
-      perim = c->pd;
-      is_raw = s->idsat;
-      cj_raw = m->cbd;
+    args db BUILT_IN_DIODE {
+      area = double(s->ad);
+      perim = double(c->pd);
+      is_raw = double(s->idsat);
+      cj_raw = double(m->cbd);
       cjsw_raw = NA;
       off = true;
       set_modelname(modelname());
       attach(model());
     }
-    args sb DIODE {
-      m = c->m;
-      area = s->as;
-      perim = c->ps;
-      is_raw = s->issat;
-      cj_raw = m->cbs;
+    args sb BUILT_IN_DIODE {
+      area = double(s->as);
+      perim = double(c->ps);
+      is_raw = double(s->issat);
+      cj_raw = double(m->cbs);
       cjsw_raw = NA;
       off = true;
       set_modelname(modelname());
       attach(model());
     }
-    resistance Rs {source isource} value="s->rs/c->m"
+    resistor Rs {s is} value="s->rs"
       omit="!OPT::rstray || s->rs == 0.";
-    resistance Rd {drain idrain} value="s->rd/c->m"
+    resistor Rd {d id} value="s->rd"
       omit="!OPT::rstray || s->rd == 0.";
-    diode Ddb {bulk idrain} args="db" reverse="m->polarity==pP"
-      omit="_n[n_bulk].n_() == _n[n_drain].n_() || s->idsat == 0.";
-    diode Dsb {bulk isource} args="sb" reverse="m->polarity==pP"
-      omit="_n[n_bulk].n_() == _n[n_source].n_() || s->issat == 0.";
+    diode Ddb {b id} args="db" reverse="m->polarity==pP"
+      omit="_n[n_b].n_() == _n[n_d].n_() || s->idsat == 0.";
+    diode Dsb {b is} args="sb" reverse="m->polarity==pP"
+      omit="_n[n_b].n_() == _n[n_s].n_() || s->issat == 0.";
     
-    capacitance Cgs {gate isource} value="s->cgso" eval=Cgs
-      omit="!OPT::cstray || _n[n_gate].n_() == _n[n_source].n_()";
-    capacitance Cgd {gate idrain} value="s->cgdo" eval=Cgd
-      omit="!OPT::cstray || _n[n_gate].n_() == _n[n_drain].n_()";
-    capacitance Cgb {gate bulk} value="s->cgbo" eval=Cgb
-      omit="!OPT::cstray || _n[n_bulk].n_() == _n[n_gate].n_()";
+    capacitor Cgs {g is} value="s->cgso" eval=Cgs
+      omit="!OPT::cstray || _n[n_g].n_() == _n[n_s].n_()";
+    capacitor Cgd {g id} value="s->cgdo" eval=Cgd
+      omit="!OPT::cstray || _n[n_g].n_() == _n[n_d].n_()";
+    capacitor Cgb {g b} value="s->cgbo" eval=Cgb
+      omit="!OPT::cstray || _n[n_b].n_() == _n[n_g].n_()";
     /*
-    fpoly_cap Cqgs {gate isource gate bulk isource bulk idrain bulk}
+    fpoly_cap Cqgs {g is g b is b id b}
       state=qgs  // qgate, cgs, cggb, cgsb, cgdb
       omit="m->cmodel != 0 || !OPT::cstray 
-		|| _n[n_gate].n_() == _n[n_isource].n_()";
-    fpoly_cap Cqgd {gate idrain gate bulk idrain bulk isource bulk}
+		|| _n[n_g].n_() == _n[n_is].n_()";
+    fpoly_cap Cqgd {g id g b id b is b}
       state=qgd  // qgate, cgs, cggb, cgsb, cgdb
       omit="m->cmodel != 0 || !OPT::cstray 
-		|| _n[n_gate].n_() == _n[n_idrain].n_()";
+		|| _n[n_g].n_() == _n[n_id].n_()";
 
-    fpoly_cap Cqds {idrain isource gate bulk isource bulk idrain bulk}
+    fpoly_cap Cqds {id is g b is b id b}
       state=qdrn  // qdrn, cds, cdgb, cdsb, cddb
       omit="m->cmodel != 0 || !OPT::cstray 
-             || _n[n_idrain].n_() == _n[n_isource].n_()";
+             || _n[n_id].n_() == _n[n_is].n_()";
 
-    fpoly_cap Cqbs {bulk isource gate bulk isource bulk idrain bulk}
+    fpoly_cap Cqbs {b is g b is b id b}
       state=qbs
       omit="m->cmodel != 0 || !OPT::cstray 
-             || _n[n_bulk].n_() == _n[n_isource].n_()";
+             || _n[n_b].n_() == _n[n_is].n_()";
 
-    fpoly_cap Cqbd {bulk idrain gate bulk idrain bulk isource bulk}
+    fpoly_cap Cqbd {b id g b id b is b}
       state=qbd
       omit="m->cmodel != 0 || !OPT::cstray 
-             || _n[n_bulk].n_() == _n[n_idrain].n_()";
+             || _n[n_b].n_() == _n[n_id].n_()";
     */
-    cpoly_g Ids {idrain isource  gate isource  idrain gate
-		bulk isource  idrain bulk} state=idsxxx;
-    cpoly_g Idb {idrain bulk  idrain isource  gate isource  bulk isource}
+    cpoly_g Ids {id is  g is  id g
+		b is  id b} state=idsxxx;
+    cpoly_g Idb {id b  id is  g is  b is}
       state=idbxxx 
-      omit="!(m->needs_isub) || _n[n_drain].n_() == _n[n_bulk].n_()";
-    cpoly_g Isb {isource bulk  isource idrain  gate idrain  bulk idrain}
+      omit="!(m->needs_isub) || _n[n_d].n_() == _n[n_b].n_()";
+    cpoly_g Isb {is b  is id  g id  b id}
       state=isbxxx 
-      omit="!(m->needs_isub) || _n[n_source].n_() == _n[n_bulk].n_()";
+      omit="!(m->needs_isub) || _n[n_s].n_() == _n[n_b].n_()";
   }
   tr_probe {
-    VDS = "@n_drain[V] - @n_source[V]";
-    VGS = "@n_gate[V] - @n_source[V]";
-    VBS = "@n_bulk[V] - @n_source[V]";
-    VDSInt = "vds";
-    VGSInt = "vgs";
-    VBSInt = "vbs";
-    VGD = "@n_gate[V] - @n_drain[V]";
-    VBD = "@n_bulk[V] - @n_drain[V]";
-    VSD = "@n_source[V] - @n_drain[V]";
-    VDM = "(@n_drain[V] - @n_source[V] + @n_drain[V] - @n_drain[V]) / 2.";
-    VGM = "(@n_gate[V]  - @n_source[V] + @n_gate[V]  - @n_drain[V]) / 2.";
-    VBM = "(@n_bulk[V]  - @n_source[V] + @n_bulk[V]  - @n_drain[V]) / 2.";
-    VSM = "(@n_source[V] - @n_source[V] + @n_source[V] - @n_drain[V]) / 2.";
-    VDG = "@n_drain[V] - @n_gate[V]";
-    VBG = "@n_bulk[V] - @n_gate[V]";
-    VSG = "@n_source[V] - @n_gate[V]";
-    VDB = "@n_drain[V] - @n_bulk[V]";
-    VGB = "@n_gate[V] - @n_bulk[V]";
-    VSB = "@n_source[V] - @n_bulk[V]";
-    VD = "@n_drain[V]";
-    VG = "@n_gate[V]";
-    VB = "@n_bulk[V]";
-    VS = "@n_source[V]";
-    Id = "(_Rd) ? @Rd[I] : @Ids[I] - @Cgd[I] + @Ddb[I] * m->polarity";
-    IS = "(_Rs) ? @Rs[I] : -@Ids[I] - @Cgs[I] + @Dsb[I] * m->polarity";
-    IG = "@Cgs[I] + @Cgd[I] + @Cgb[I]";
-    IB = "- @Ddb[I] * m->polarity - @Dsb[I] * m->polarity - @Cgb[I]";
-    IBD = "@Ddb[I]";
-    IBS = "@Dsb[I]";
-    CGSOvl = "@Cgs[NV]";
-    CGDOvl = "@Cgd[NV]";
-    CGBOvl = "@Cgb[NV]";
-    CGST = "@Cgs[EV]";
-    CGDT = "@Cgd[EV]";
-    CGBT = "@Cgb[EV]";
-    CGSm = "@Cgs[EV] - @Cgs[NV]";
-    CGDm = "@Cgd[EV] - @Cgd[NV]";
-    CGBm = "@Cgb[EV] - @Cgb[NV]";
-    CBD = "@Ddb[Cap]";
-    CBS = "@Dsb[Cap]";
-    CGATE = "s->cgate";
-    GM = "(reversed) ? gmr : gmf";
-    GMBs = "(reversed) ? gmbr : gmbf";
-    GBD = "@Ddb[G]";
-    GBS = "@Dsb[G]";
-    VDSAT = "vdsat * m->polarity";
-    VTH = "von * m->polarity";
-    IDS = "m->polarity * ((reversed) ? -ids : ids)";
-    IDSTray = "- @Cgd[I] + @Ddb[I] * m->polarity";
-    P ="@Rs[P] +@Rd[P] +@Ddb[P] +@Dsb[P] +@Cgs[P] +@Cgd[P] +@Cgb[P] +@Ids[P]";
-    PD="@Rs[PD]+@Rd[PD]+@Ddb[PD]+@Dsb[PD]+@Cgs[PD]+@Cgd[PD]+@Cgb[PD]+@Ids[PD]";
-    PS="@Rs[PS]+@Rd[PS]+@Ddb[PS]+@Dsb[PS]+@Cgs[PS]+@Cgd[PS]+@Cgb[PS]+@Ids[PS]";
+    v   = "@n_d[V] - @n_s[V]";
+    vds = "@n_d[V] - @n_s[V]";
+    vgs = "@n_g[V] - @n_s[V]";
+    vbs = "@n_b[V] - @n_s[V]";
+    "vdsi{nt}" = "vds";
+    "vgsi{nt}" = "vgs";
+    "vbsi{nt}" = "vbs";
+    vgd = "@n_g[V] - @n_d[V]";
+    vbd = "@n_b[V] - @n_d[V]";
+    vsd = "@n_s[V] - @n_d[V]";
+    vdm = "(@n_d[V] - @n_s[V] + @n_d[V] - @n_d[V]) / 2.";
+    vgm = "(@n_g[V]  - @n_s[V] + @n_g[V]  - @n_d[V]) / 2.";
+    vbm = "(@n_b[V]  - @n_s[V] + @n_b[V]  - @n_d[V]) / 2.";
+    vsm = "(@n_s[V] - @n_s[V] + @n_s[V] - @n_d[V]) / 2.";
+    vdg = "@n_d[V] - @n_g[V]";
+    vbg = "@n_b[V] - @n_g[V]";
+    vsg = "@n_s[V] - @n_g[V]";
+    vdb = "@n_d[V] - @n_b[V]";
+    vgb = "@n_g[V] - @n_b[V]";
+    vsb = "@n_s[V] - @n_b[V]";
+    vd = "@n_d[V]";
+    vg = "@n_g[V]";
+    vb = "@n_b[V]";
+    vs = "@n_s[V]";
+    "i{d}" = "(_Rd) ? @Rd[I] : (@Ids[I] - @Cgd[I] - @Ddb[I] * m->polarity)";
+    is = "(_Rs) ? @Rs[I] : (-@Ids[I] - @Cgs[I] - @Dsb[I] * m->polarity)";
+    ig = "@Cgs[I] + @Cgd[I] + @Cgb[I]";
+    ib = "- @Ddb[I] * m->polarity - @Dsb[I] * m->polarity - @Cgb[I]";
+    ibd = "@Ddb[I]";
+    ibs = "@Dsb[I]";
+    "cgso{vl}" = "@Cgs[NV]";
+    "cgdo{vl}" = "@Cgd[NV]";
+    "cgbo{vl}" = "@Cgb[NV]";
+    cgst = "@Cgs[EV]";
+    cgdt = "@Cgd[EV]";
+    cgbt = "@Cgb[EV]";
+    "cgs{m}" = "@Cgs[EV] - @Cgs[NV]";
+    "cgd{m}" = "@Cgd[EV] - @Cgd[NV]";
+    "cgb{m}" = "@Cgb[EV] - @Cgb[NV]";
+    cbd = "@Ddb[Cap]";
+    cbs = "@Dsb[Cap]";
+    cgate = "s->cgate";
+    gm = "(reversed) ? gmr : gmf";
+    "gmb{s}" = "(reversed) ? gmbr : gmbf";
+    gbd = "@Ddb[G]";
+    gbs = "@Dsb[G]";
+    vth = "von * m->polarity";
+    ids = "m->polarity * ((reversed) ? -ids : ids)";
+    "idst{ray}" = "- @Cgd[I] + @Ddb[I] * m->polarity";
+    p ="@Rs[P] +@Rd[P] +@Ddb[P] +@Dsb[P] +@Cgs[P] +@Cgd[P] +@Cgb[P] +@Ids[P]";
+    pd="@Rs[PD]+@Rd[PD]+@Ddb[PD]+@Dsb[PD]+@Cgs[PD]+@Cgd[PD]+@Cgb[PD]+@Ids[PD]";
+    ps="@Rs[PS]+@Rd[PS]+@Ddb[PS]+@Dsb[PS]+@Cgs[PS]+@Cgd[PS]+@Cgb[PS]+@Ids[PS]";
     REgion = "static_cast<double>((!cutoff) + (!subthreshold * 2) 
 	+ (saturated * 4) + (sbfwd * 10) + ((vbs > vds) * 20)
 	+ (punchthru * 40)) * ((reversed)? -1 : 1)";
@@ -197,7 +180,7 @@ device MOS {
     SBFwd = "static_cast<double>(sbfwd)";
     DBFwd = "static_cast<double>(vbs > vds)";
     REVersed = "static_cast<double>(reversed)";
-    Status = "static_cast<double>(converged() * 2)";
+    status = "static_cast<double>(converged() * 2)";
   }
   device {
     calculated_parameters {
@@ -303,22 +286,24 @@ device MOS {
   }
   common {
     raw_parameters {
-      double m "device multiplier"
-	name=M default=1.0 positive print_test="m != 1.";
-      double l_in "drawn (optical) channel length" name=L positive;
-      double w_in "channel width (drawn)" name=W positive;
-      double ad_in "drain area, drawn" name=AD positive
-	print_test="ad_in != NA";
-      double as_in "source area, drawn" name=AS positive
-	print_test="as_in != NA";
+      double l_in "drawn (optical) channel length"
+	name=L positive default="OPT::defl";
+      double w_in "channel width (drawn)" 
+	name=W positive default="OPT::defw";
+      double ad_in "drain area, drawn"
+	name=AD positive default="OPT::defad"
+	print_test="has_hard_value(ad_in)";
+      double as_in "source area, drawn" 
+	name=AS positive default="OPT::defas"
+	print_test="has_hard_value(as_in)";
       double pd "drain perimeter" name=PD positive default=0.0
-	print_test="pd != 0.";
+	print_test="has_hard_value(pd)";
       double ps "source perimeter" name=PS positive default=0.0
-	print_test="ps != 0.";
+	print_test="has_hard_value(ps)";
       double nrd "drain # squares" name=NRD positive default=1.0
-	print_test="nrd != 1.";
+	print_test="has_hard_value(nrd)";
       double nrs "source # squares" name=NRS positive default=1.0
-	print_test="nrs != 1.";
+	print_test="has_hard_value(nrs)";
     }
   }
   tr_eval {
@@ -326,7 +311,7 @@ device MOS {
   }
   /*--------------------------------------------------------------------*/
   eval Cgb {
-    DEV_CAPACITANCE* brh = prechecked_cast<DEV_CAPACITANCE*>(d);
+    STORAGE* brh = prechecked_cast<STORAGE*>(d);
     assert(brh);
 
     double cap = brh->value();
@@ -339,19 +324,19 @@ device MOS {
       }else{					/* active, overlap only */
       }
     }
-    brh->_y0.f1 = cap;
-    if (SIM::phase == SIM::pTRAN) {
-      cap = (brh->_y0.f1 + brh->_q[1].f1) / 2;
-      brh->_y0.f0 = (brh->_y0.x - brh->_q[1].x) * cap + brh->_q[1].f0;
+    brh->_y[0].f1 = cap;
+    if (d->_sim->analysis_is_tran_dynamic()) {
+      cap = (brh->_y[0].f1 + brh->_y[1].f1) / 2;
+      brh->_y[0].f0 = (brh->_y[0].x - brh->_y[1].x) * cap + brh->_y[1].f0;
     }else{
-      brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
+      assert(d->_sim->analysis_is_static() || d->_sim->analysis_is_restore());
+      brh->_y[0].f0 = brh->_y[0].x * brh->_y[0].f1;
     }
-    brh->_y0 *= c->m;
-    trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
+    trace3(brh->long_label().c_str(), brh->_y[0].x, brh->_y[0].f0, brh->_y[0].f1);
   }
   /*--------------------------------------------------------------------*/
   eval Cgd {
-    DEV_CAPACITANCE* brh = prechecked_cast<DEV_CAPACITANCE*>(d);
+    STORAGE* brh = prechecked_cast<STORAGE*>(d);
     assert(brh);
 
     double cap = 0;
@@ -388,19 +373,19 @@ device MOS {
     }
     cap += brh->value();		/* else overlap only */
     
-    brh->_y0.f1 = cap;
-    if (SIM::phase == SIM::pTRAN) {
-      cap = (brh->_y0.f1 + brh->_q[1].f1) / 2;
-      brh->_y0.f0 = (brh->_y0.x - brh->_q[1].x) * cap + brh->_q[1].f0;
+    brh->_y[0].f1 = cap;
+    if (d->_sim->analysis_is_tran_dynamic()) {
+      cap = (brh->_y[0].f1 + brh->_y[1].f1) / 2;
+      brh->_y[0].f0 = (brh->_y[0].x - brh->_y[1].x) * cap + brh->_y[1].f0;
     }else{
-      brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
+      assert(d->_sim->analysis_is_static() || d->_sim->analysis_is_restore());
+      brh->_y[0].f0 = brh->_y[0].x * brh->_y[0].f1;
     }
-    brh->_y0 *= c->m;
-    trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
+    trace3(brh->long_label().c_str(), brh->_y[0].x, brh->_y[0].f0, brh->_y[0].f1);
   }
   /*--------------------------------------------------------------------*/
   eval Cgs {
-    DEV_CAPACITANCE* brh = prechecked_cast<DEV_CAPACITANCE*>(d);
+    STORAGE* brh = prechecked_cast<STORAGE*>(d);
     assert(brh);
 
     double cap = 0;
@@ -437,15 +422,15 @@ device MOS {
     }
     cap += brh->value();		/* else overlap only */
     
-    brh->_y0.f1 = cap;
-    if (SIM::phase == SIM::pTRAN) {
-      cap = (brh->_y0.f1 + brh->_q[1].f1) / 2;
-      brh->_y0.f0 = (brh->_y0.x - brh->_q[1].x) * cap + brh->_q[1].f0;
+    brh->_y[0].f1 = cap;
+    if (d->_sim->analysis_is_tran_dynamic()) {
+      cap = (brh->_y[0].f1 + brh->_y[1].f1) / 2;
+      brh->_y[0].f0 = (brh->_y[0].x - brh->_y[1].x) * cap + brh->_y[1].f0;
     }else{
-      brh->_y0.f0 = brh->_y0.x * brh->_y0.f1;
+      assert(d->_sim->analysis_is_static() || d->_sim->analysis_is_restore());
+      brh->_y[0].f0 = brh->_y[0].x * brh->_y[0].f1;
     }
-    brh->_y0 *= c->m;
-    trace3(brh->long_label().c_str(), brh->_y0.x, brh->_y0.f0, brh->_y0.f1);
+    trace3(brh->long_label().c_str(), brh->_y[0].x, brh->_y[0].f0, brh->_y[0].f1);
   }
   /*--------------------------------------------------------------------*/
   function reverse_if_needed() {
@@ -458,7 +443,7 @@ device MOS {
       vds = -vds;
       error(bTRACE, "after: vds=%g vgs=%g vbs=%g\n", vds, vgs, vbs);
       if (OPT::dampstrategy & dsREVERSE) {
-	SIM::fulldamp = true;
+	_sim->_fulldamp = true;
 	untested();
 	error(bTRACE, long_label() + ":reverse damp\n");
       }
@@ -474,7 +459,7 @@ device MOS {
 /*--------------------------------------------------------------------------*/
 cc_direct {
 /*--------------------------------------------------------------------------*/
-bool DEV_MOS::tr_needs_eval()const
+bool DEV_BUILT_IN_MOS::tr_needs_eval()const
 {
   if (is_q_for_eval()) {
     untested();
@@ -482,26 +467,26 @@ bool DEV_MOS::tr_needs_eval()const
   }else if (!converged()) {
     return true;
   }else{
-    const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(common());
+    const COMMON_BUILT_IN_MOS* c = prechecked_cast<const COMMON_BUILT_IN_MOS*>(common());
     assert(c);
-    const MODEL_MOS_BASE* m=prechecked_cast<const MODEL_MOS_BASE*>(c->model());
+    const MODEL_BUILT_IN_MOS_BASE* m=prechecked_cast<const MODEL_BUILT_IN_MOS_BASE*>(c->model());
     assert(m);
     polarity_t polarity = m->polarity;
-    node_t eff_source((reversed) ? _n[n_idrain] : _n[n_isource]);
-    node_t eff_drain((reversed) ? _n[n_isource] : _n[n_idrain]);
-    return !(conchk(vds,polarity*(eff_drain.v0()-eff_source.v0()),OPT::vntol)
-	     && conchk(vgs, polarity*(_n[n_gate].v0()-eff_source.v0()),
+    node_t& eff_s((reversed) ? _n[n_id] : _n[n_is]);
+    node_t& eff_d((reversed) ? _n[n_is] : _n[n_id]);
+    return !(conchk(vds,polarity*(eff_d.v0()-eff_s.v0()),OPT::vntol)
+	     && conchk(vgs, polarity*(_n[n_g].v0()-eff_s.v0()),
 		       OPT::vntol)
-	     && conchk(vbs, polarity*(_n[n_bulk].v0()-eff_source.v0()),
+	     && conchk(vbs, polarity*(_n[n_b].v0()-eff_s.v0()),
 		       OPT::vntol));
   }
 }
 /*--------------------------------------------------------------------------*/
-bool DEV_MOS::do_tr()
+bool DEV_BUILT_IN_MOS::do_tr()
 {
-  const COMMON_MOS* c = prechecked_cast<const COMMON_MOS*>(common());
+  const COMMON_BUILT_IN_MOS* c = prechecked_cast<const COMMON_BUILT_IN_MOS*>(common());
   assert(c);
-  const MODEL_MOS_BASE* m = prechecked_cast<const MODEL_MOS_BASE*>(c->model());
+  const MODEL_BUILT_IN_MOS_BASE* m = prechecked_cast<const MODEL_BUILT_IN_MOS_BASE*>(c->model());
   assert(m);
 
   bool was_cutoff = cutoff;
@@ -511,22 +496,22 @@ bool DEV_MOS::do_tr()
   bool was_sbfwd = sbfwd;
   polarity_t polarity = m->polarity;
 
-  if (initial_step(SIM::mode)) {
+  if (_sim->is_initial_step()) {
     reversed = false;
     vds = vgs = vbs = 0.;
   }else{
     double Vds, Vgs, Vbs;
     if (reversed) {
-      Vds = polarity * volts_limited(_n[n_isource],_n[n_idrain]);
-      Vgs = polarity * volts_limited(_n[n_gate],_n[n_idrain]);
-      Vbs = polarity * volts_limited(_n[n_bulk],_n[n_idrain]);
+      Vds = polarity * volts_limited(_n[n_is],_n[n_id]);
+      Vgs = polarity * volts_limited(_n[n_g],_n[n_id]);
+      Vbs = polarity * volts_limited(_n[n_b],_n[n_id]);
     }else{
-      Vds = polarity * volts_limited(_n[n_idrain],_n[n_isource]);
-      Vgs = polarity * volts_limited(_n[n_gate],_n[n_isource]);
-      Vbs = polarity * volts_limited(_n[n_bulk],_n[n_isource]);
+      Vds = polarity * volts_limited(_n[n_id],_n[n_is]);
+      Vgs = polarity * volts_limited(_n[n_g],_n[n_is]);
+      Vbs = polarity * volts_limited(_n[n_b],_n[n_is]);
     }
     vgs = fet_limit_vgs(Vgs, vgs, von);
-    if (_n[n_drain].n_() == _n[n_gate].n_()) {
+    if (_n[n_d].n_() == _n[n_g].n_()) {
       vds = Vds + (vgs - Vgs);
     }else{
       // Spice hacks Vds here, but my tests show that it often makes
@@ -574,35 +559,6 @@ bool DEV_MOS::do_tr()
   }
   ids *= polarity;
   idsxxx *= polarity;
-  if (c->m != 1.) {
-    ids *= c->m;
-    idsxxx *= c->m;
-    gds *= c->m;
-    gmf *= c->m;
-    gmr *= c->m;
-    gmbf *= c->m;
-    gmbr *= c->m;
-
-    idb *= c->m;
-    idbxxx *= c->m;
-    gdbds *= c->m;
-    gdbgs *= c->m;
-    gdbbs *= c->m;
-    isb *= c->m;
-    isbxxx *= c->m;
-    gsbsd *= c->m;
-    gsbgd *= c->m;
-    gsbbd *= c->m;
-
-    qgate *= c->m;
-    cggb *= c->m;
-    cgsb *= c->m;
-    cgdb *= c->m;
-    qdrn *= c->m;
-    cddb *= c->m;
-    cdgb *= c->m;
-    cdsb *= c->m;
-  }
   assert(subckt());
   set_converged(subckt()->do_tr());
   
@@ -613,11 +569,13 @@ bool DEV_MOS::do_tr()
   	||  was_saturated != saturated  ||  was_reversed != reversed  
 	||  was_sbfwd != sbfwd) {
     if (OPT::dampstrategy & dsDEVREGION) {
-      SIM::fulldamp = true;
+      _sim->_fulldamp = true;
+    }else{
     }
     #if defined(DO_TRACE)
       error(bTRACE,"%s:%d: region change\n", long_label().c_str(), evaliter());
     #endif
+  }else{
   }
   return converged();
 }

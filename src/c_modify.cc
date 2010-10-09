@@ -1,12 +1,12 @@
-/*$Id: c_modify.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: c_modify.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,74 +20,44 @@
  * 02110-1301, USA.
  */
 //testing=script,sparse 2006.07.17
-#include "u_cardst.h" // includes e_compon.h
+#include "e_elemnt.h"
+#include "u_cardst.h"
 #include "c_comand.h"
-enum WHATTODO {FAULT, MODIFY};
-/*--------------------------------------------------------------------------*/
-//	void	CMD::modify(CS&);
-//	void	CMD::fault(CS&);
-static	void	modify_fault(CS&,WHATTODO);
-static	double	sweep_fix(CS&,const CARD*);
-static	void	faultbranch(CARD*,double);
-//	void	CMD::restore(CS&);
-//	void	CMD::unfault(CS&);
-/*--------------------------------------------------------------------------*/
+
 extern const int swp_type[];
 extern const int swp_count[], swp_steps[];
 extern const int swp_nest;
-static std::list<CARDSTASH> faultstack;
 /*--------------------------------------------------------------------------*/
-void CMD::modify(CS& cmd)
-{
-  modify_fault(cmd,MODIFY);
-}
+namespace {
 /*--------------------------------------------------------------------------*/
-void CMD::fault(CS& cmd)
-{
-  modify_fault(cmd,FAULT);
-}
+enum WHATTODO {FAULT, MODIFY};
+std::list<CARDSTASH> faultstack;
 /*--------------------------------------------------------------------------*/
-static void modify_fault(CS& cmd, WHATTODO command)
+/* faultbranch: "fault" a single branch. (temporarily change a value)
+ * save the existing info in "faultlist", then patch
+ */
+void faultbranch(CARD* brh, double value)
 {
-  SIM::uninit();
-  while (cmd.is_alpha()) {
-    int mark = cmd.cursor();
-    int cmax = cmd.cursor();
-    CARD_LIST::fat_iterator ci(&CARD_LIST::card_list);
-    for (;;) {
-      cmd.reset(mark);
-      ci = findbranch(cmd, ci);
-      cmax = std::max(cmax, cmd.cursor());
-      if (ci.is_end()) {
-	break;
-      }
-      cmd.skip1b('=');
-      CARD* brh = *ci;
-      switch (command) {
-      case MODIFY:
-	brh->set_value(cmd.ctof(), 0);
-	break;
-      case FAULT:
-	faultbranch(brh, sweep_fix(cmd,brh));
-	break;
-      }
-      cmax = std::max(cmax, cmd.cursor());
-      ++ci;
-    }
-    cmd.reset(cmax);
-    if (mark == cmax) {
-      untested();
-      cmd.check(bWARNING, "what's this?");
-      cmd.skiparg();
-    }
+  if (!brh->is_device()) {
+    untested();
+    error(bWARNING, brh->long_label() + ": not a device, can't fault:\n");
+  }else if (brh->subckt()) {
+    untested();
+    error(bWARNING, brh->long_label() + " has subckt, can't fault:\n");
+  }else{
+    faultstack.push_back(CARDSTASH(brh));
+    ELEMENT* e = prechecked_cast<ELEMENT*>(brh);
+    assert(e);
+    e->set_value(value, 0);
+    //BUG// messy way to do this, loses other attributes
   }
-}   
+}
 /*--------------------------------------------------------------------------*/
 /* sweep_fix: fix the value for sweep command.
  * (find value by interpolation)
  * if not sweeping, return "start" (the first arg).
  */
-static double sweep_fix(CS& cmd, const CARD *brh)
+double sweep_fix(CS& cmd, const CARD *brh)
 {
   double start = cmd.ctof();
   double value = start;
@@ -100,7 +70,7 @@ static double sweep_fix(CS& cmd, const CARD *brh)
       untested();
       if (start == 0.) {
 	untested();
-	error(bERROR, "log sweep can't pass zero\n");
+	throw Exception("log sweep can't pass zero");
 	value = 0;
       }else{
 	untested();
@@ -117,39 +87,86 @@ static double sweep_fix(CS& cmd, const CARD *brh)
   return value;
 }
 /*--------------------------------------------------------------------------*/
-/* faultbranch: "fault" a single branch. (temporarily change a value)
- * save the existing info in "faultlist", then patch
- */
-static void faultbranch(CARD* brh, double value)
+void modify_fault(CS& cmd, WHATTODO command, CARD_LIST* scope)
 {
-  if (!brh->is_device()) {
-    untested();
-    error(bWARNING, brh->long_label() + ": not a device, can't fault:\n");
-  }else if (brh->subckt()) {
-    untested();
-    error(bWARNING, brh->long_label() + " has subckt, can't fault:\n");
-  }else{
-    faultstack.push_back(CARDSTASH(brh));
-    brh->set_value(value, 0);
+  CKT_BASE::_sim->uninit();
+  while (cmd.is_alpha()) {
+    unsigned mark = cmd.cursor();
+    unsigned cmax = cmd.cursor();
+    CARD_LIST::fat_iterator ci(scope, scope->begin());
+    for (;;) {
+      cmd.reset(mark);
+      ci = findbranch(cmd, ci);
+      cmax = std::max(cmax, cmd.cursor());
+      if (ci.is_end()) {
+	break;
+      }
+      cmd.skip1b('=');
+      CARD* brh = *ci;
+      switch (command) {
+      case MODIFY:{
+	ELEMENT* e = prechecked_cast<ELEMENT*>(brh);
+	assert(e);
+	e->set_value(cmd.ctof(), 0);
+	//BUG// messy way to do this, loses other attributes
+      } break;
+      case FAULT:{
+	faultbranch(brh, sweep_fix(cmd,brh));
+      }	break;
+      }
+      cmax = std::max(cmax, cmd.cursor());
+      ++ci;
+    }
+    cmd.reset(cmax);
+    if (mark == cmax) {
+      untested();
+      cmd.check(bWARNING, "what's this?");
+      cmd.skiparg();
+    }
   }
-}
+}   
 /*--------------------------------------------------------------------------*/
-void CMD::restore(CS& cmd)
-{
-  untested();
-  unfault(cmd);
-  unmark(cmd);
-}
-/*--------------------------------------------------------------------------*/
-/* CMD::unfault: (command) remove faults and restore pre-fault values
- */
-void CMD::unfault(CS&)
-{
-  while (!faultstack.empty()) {
-    faultstack.back().restore();
-    faultstack.pop_back();
+class CMD_MODIFY : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST* Scope)
+  {
+    modify_fault(cmd, MODIFY, Scope);
   }
-  SIM::uninit();
+} p1;
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "modify|alter", &p1);
+/*--------------------------------------------------------------------------*/
+class CMD_FAULT : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST* Scope)
+  {
+    modify_fault(cmd, FAULT, Scope);
+  }
+} p2;
+DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "fault", &p2);
+/*--------------------------------------------------------------------------*/
+class CMD_RESTORE : public CMD {
+public:
+  void do_it(CS&, CARD_LIST* Scope)
+  {untested();
+    command("unfault", Scope);
+    command("unmark", Scope);
+  }
+} p3;
+DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "restore", &p3);
+/*--------------------------------------------------------------------------*/
+class CMD_UNFAULT : public CMD {
+public:
+  void do_it(CS&, CARD_LIST*)
+  {
+    while (!faultstack.empty()) {
+      faultstack.back().restore();
+      faultstack.pop_back();
+    }
+    _sim->uninit();
+  }
+} p4;
+DISPATCHER<CMD>::INSTALL d4(&command_dispatcher, "unfault", &p4);
+/*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

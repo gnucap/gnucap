@@ -1,12 +1,12 @@
-#$Id: Make2.Debug,v 25.96 2006/08/28 05:45:51 al Exp $ -*- Makefile -*-
+#$Id: Make2.Debug,v 26.97 2008/10/11 03:13:53 al Exp $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
-# Author: Albert Davis <aldavis@ieee.org>
+# Author: Albert Davis <aldavis@gnu.org>
 #
 # This file is part of "Gnucap", the Gnu Circuit Analysis Package
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
+# the Free Software Foundation; either version 3, or (at your option)
 # any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -28,38 +28,56 @@ CCC = g++
 
 CCFLAGS = \
 -DHAVE_LIBREADLINE \
--DUNIX  -g -O -I. -I.. -DTRACE_UNTESTED \
--Wall -W -Wno-sign-compare -Wpointer-arith -Wcast-qual \
--Wwrite-strings -Wconversion \
--Woverloaded-virtual -Wlong-long \
--Wsign-compare -Wcast-align 
+-DUNIX  -g -O0 -I. -I.. -DTRACE_UNTESTED \
+-Wall -Wextra \
+-Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
+-Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
+-Winit-self -Wmissing-include-dirs -Winvalid-pch \
+-Wvolatile-register-var -Wstack-protector \
+-Wlogical-op -Wvla -Woverlength-strings -Wsign-conversion
+#last line not in 4.1
 
 LIBS = \
 -lreadline -ltermcap \
 
-LDFLAGS =
+LDFLAGS = -rdynamic
 
-.SUFFIXES:
+%.SUFFIXES:
 .SUFFIXES: .o .cc
 .cc.o:; $(CCC) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
-$(TARGET): $(OBJS)
+$(TARGET): $(TARGET_DEPENDS)
 	rm -f $@
-	$(CCC) $(CCFLAGS) $(OBJS) -o $@ $(LIBS) $(LDFLAGS)
+	$(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
-#-Waggregate-return
-#
-# warnings turned off, because of the public headers
-#-Wold-style-cast (ctype.h)
-#-Wredundant-decls
-#-Wshadow
+# 4.3
+#-Wswitch-default -- lack of default is correct with enum
+#-Wfloat-equal -- warns on NA, div by zero trap
+#-Wpadded -- a bool in a class is enough
+#-Wredundant-decls -- in both header and func is an error check
+#-Wmissing-declarations -- pascal style
+#-Wmissing-noreturn -- warns when always throws exception
+#-Wunreachable-code -- warns even if reachable .. compiler bug??
+#-Waggregate-return -- warns even if passed by reference
+#-Wunsafe-loop-optimizations -- if can't unroll a loop
 #-Winline
-#-Wsynth
-#
-# warnings on here, but may warn on some systems
-#-Wsign-compare (explicit) (stl_deque)
-#-Wcast-align (stl string, g++-3)
+#-Wdisabled-optimization -- -O0 disables optimization, so it warns
+
+# 4.2
+#-Wpadded -- a bool in a class is enough
+#-Winline
+#-Waggregate-return -- warns even if passed by reference
+#-Wfloat-equal -- warns on NA, div by zero trap
+#-Wredundant-decls -- in both header and func is an error check
+#-Wunsafe-loop-optimizations -- warns on any loop with variable count
+
+# warnings turned off, because of the public headers
+#-Wunreachable-code -- didn't use nonportable syntax to hide
+#-Wmissing-noreturn -- didn't use nonportable syntax to hide
+
+# warnings that should be on, but ...
+#-Wshadow -- lambda functions
 #------------------------------------------------------------
 # If you are porting and using g++, you should use this file as a start,
 #	for a "debug" version, with extra warnings and run-time tracing.
@@ -69,6 +87,6 @@ $(TARGET): $(OBJS)
 # If the port is non-trivial, check with me first because someone else
 #	may have already done it.
 # If it works without changes, send me a note so I can put it in the docs.
-# Please send the changes to aldavis@ieee.org
+# Please send the changes to aldavis@gnu.org
 #------------------------------------------------------------
 #------------------------------------------------------------

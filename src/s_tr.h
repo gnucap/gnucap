@@ -1,12 +1,12 @@
-/*$Id: s_tr.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: s_tr.h,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,11 +24,12 @@
 //testing=script,complete 2006.07.14
 #ifndef S_TR_H
 #define S_TR_H
+#include "u_parameter.h"
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 class TRANSIENT : public SIM {
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-private:
+protected:
   enum STEP_CAUSE {
     scUSER      = 1,	/* user requested				*/
     scEVENTQ    = 2,	/* an "event" from the queue			*/
@@ -48,29 +49,23 @@ private:
 public:
   explicit TRANSIENT():
     SIM(),
-    tstart(0.),
-    tstop(0.),
-    tstep(0.),
-    dtmax(0.),
-    dtratio(0.),
-    skip(0),
-    cold(false),
-    cont(false),
-    echo(false),
-    trace(tNONE),
-    time_suggested_by_review(0.),
-    control(scINITIAL),
-    time_by_iteration_count(0.),
-    time_by_user_request(0.),
-    time_by_error_estimate(0.),
-    time_by_ambiguous_event(0.),
-    converged(false),
-    accepted(false)
+    _skip_in(1),
+    _dtmax(0.),
+    _cold(false),
+    _cont(false),
+    _trace(tNONE),
+    _time_by_iteration_count(0.),
+    _time_by_user_request(0.),
+    _time_by_error_estimate(0.),
+    _time_by_ambiguous_event(0.),
+    _converged(false),
+    _accepted(false)
   {
   }
   ~TRANSIENT() {}
 public:
-  void	command(CS&);
+  void	do_it(CS&, CARD_LIST* scope);
+  std::string status()const;
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:		// s_tr_rev.cc
   bool	review();
@@ -93,28 +88,29 @@ public:
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
   bool	is_step_rejected()const {return (step_cause() > scREJECT);}
-  explicit TRANSIENT(const TRANSIENT&): SIM() {unreachable(); incomplete();}
+  explicit TRANSIENT(const TRANSIENT&): SIM(),_skip_in(1) {unreachable(); incomplete();}
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:
-  double tstart;	// sweep start time
-  double tstop;		// sweep stop time
-  double tstep;		// printed step size
-  double dtmax;		// max internal step size (step / skip)
-  double dtratio;	// ratio of max/min dt
-  int skip;		// fixed step size: internal steps per external
-  bool cold;		// flag: start time=0, all voltages=0
-  bool cont;		// flag: continue from previous run
+  PARAMETER<double> _tstart;	// sweep start time
+  PARAMETER<double> _tstop;	// sweep stop time
+  PARAMETER<double> _tstep;	// printed step size
+  PARAMETER<double> _dtratio_in;// ratio of max/min dt
+  PARAMETER<double> _dtmin_in;	// min internal step size
+  PARAMETER<double> _dtmax_in;	// max internal step size (user)
+  PARAMETER<int>    _skip_in;	// fixed step size: internal steps per external
+  double time1;		/* time at previous time step */
+  double _dtmax;	// max internal step size (step / _skip)
+  bool _cold;		// flag: start time=0, all voltages=0
+  bool _cont;		// flag: continue from previous run
+  int _stepno;		// count of visible (saved) steps
 private:
-  bool echo;		// flag: echo the input when using input data file
-  TRACE trace;		// enum: show extended diagnostics
-  double time_suggested_by_review;	// guess at best time for next step
-  STEP_CAUSE control;	// why this time (enum)
-  double time_by_iteration_count;
-  double time_by_user_request;
-  double time_by_error_estimate;
-  double time_by_ambiguous_event;
-  bool converged;
-  bool accepted;
+  TRACE _trace;		// enum: show extended diagnostics
+  double _time_by_iteration_count;
+  double _time_by_user_request;
+  double _time_by_error_estimate;
+  double _time_by_ambiguous_event;
+  bool _converged;
+  bool _accepted;
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 private:
   static int steps_accepted_;

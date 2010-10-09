@@ -1,12 +1,12 @@
-/*$Id: bm.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: bm.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,75 +22,19 @@
  * behavioral modeling action base
  */
 //testing=script 2006.07.13
+#include "u_lang.h"
 #include "e_elemnt.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
 const double _default_bandwidth	(NOT_INPUT);
-const double _default_delay	(0);
-const double _default_phase	(0);
-const double _default_ooffset	(0);
-const double _default_ioffset	(0);
+const double _default_delay	(0.);
+const double _default_phase	(0.);
+const double _default_ooffset	(0.);
+const double _default_ioffset	(0.);
 const double _default_scale	(1.);
-const double _default_tc1	(0);
-const double _default_tc2	(0);
-const double _default_ic	(NOT_INPUT);
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-class EVAL_DISPATCHER {
-private:
-  std::map<std::string, COMMON_COMPONENT*> _map;
-public:
-  explicit EVAL_DISPATCHER();
-  COMMON_COMPONENT* operator()(CS& cmd);
-};
-/*--------------------------------------------------------------------------*/
-static EVAL_DISPATCHER bm_dispatcher;
-/*--------------------------------------------------------------------------*/
-EVAL_DISPATCHER::EVAL_DISPATCHER()
-{
-  _map["complex"]  = new EVAL_BM_COMPLEX;
-  _map["exp"]	   = new EVAL_BM_EXP;
-  _map["fit"]	   = new EVAL_BM_FIT;
-  _map["generator"] =
-    _map["gen"]    = new EVAL_BM_GENERATOR;
-  _map["poly"]     = new EVAL_BM_POLY;
-  _map["posy"]     = new EVAL_BM_POSY;
-  _map["pulse"]    = new EVAL_BM_PULSE;
-  _map["pwl"]	   = new EVAL_BM_PWL;
-  _map["sffm"]     = new EVAL_BM_SFFM;
-  _map["sin"]	   = new EVAL_BM_SIN;
-  _map["tanh"]     = new EVAL_BM_TANH;
-  _map["value"]    = new EVAL_BM_VALUE;
-}
-/*--------------------------------------------------------------------------*/
-COMMON_COMPONENT* EVAL_DISPATCHER::operator()(CS& cmd)
-{
-  if (cmd.is_float() || cmd.match1('_') || cmd.skip1b('=')) {
-    return new EVAL_BM_VALUE;
-  }else{
-    // try to look up keyword
-    int here = cmd.cursor();
-    std::string s;
-    cmd >> s;
-    notstd::to_lower(&s);
-    //------------------------
-    const COMMON_COMPONENT* p = _map[s];
-    //------------------------
-    if (p) {
-      // found match
-      if (dynamic_cast<const EVAL_BM_POLY*>(p)
-	  || dynamic_cast<const EVAL_BM_PWL*>(p)) {
-	cmd.ematch("(1)"); // HSpice compatibility kluge
-      }
-      return p->clone();
-    }else{
-      // no match
-      cmd.reset(here);
-      return 0;
-    }
-  }
-  unreachable();
-}
+const double _default_tc1	(0.);
+const double _default_tc2	(0.);
+const double _default_ic	(0.);
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(int c)
@@ -103,8 +47,7 @@ EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(int c)
    _scale(_default_scale),
    _tc1(_default_tc1),
    _tc2(_default_tc2),
-   _ic(_default_ic),
-   _has_ext_args(false)
+   _ic(_default_ic)
 {
 }
 /*--------------------------------------------------------------------------*/
@@ -118,8 +61,7 @@ EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(const EVAL_BM_ACTION_BASE& p)
    _scale(p._scale),
    _tc1(p._tc1),
    _tc2(p._tc2),
-   _ic(p._ic),
-   _has_ext_args(p._has_ext_args)
+   _ic(p._ic)
 {
 }
 /*--------------------------------------------------------------------------*/
@@ -134,6 +76,7 @@ void EVAL_BM_ACTION_BASE::tr_final_adjust(FPOLY1* y, bool f_is_value)const
   if (f_is_value) {
     y->f1 = y->f0;
     y->f0 = 0.;
+  }else{
   }
   *y *= temp_adjust();
   y->f0 += _ooffset;
@@ -141,36 +84,34 @@ void EVAL_BM_ACTION_BASE::tr_final_adjust(FPOLY1* y, bool f_is_value)const
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::tr_finish_tdv(ELEMENT* d, double val)const
 {
-  d->_y0 = FPOLY1(CPOLY1(ioffset(d->_y0.x), 0., val));
-  tr_final_adjust(&(d->_y0), false);
+  d->_y[0] = FPOLY1(CPOLY1(ioffset(d->_y[0].x), 0., val));
+  tr_final_adjust(&(d->_y[0]), false);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::ac_final_adjust(COMPLEX* y)const
 {
-  if (_bandwidth != NOT_INPUT && _bandwidth != 0.) {
-    untested();
+  if (_bandwidth != NOT_INPUT && _bandwidth != 0.) {untested();
     assert(y->imag() == 0);
-    double ratio = SIM::freq / _bandwidth;
+    double ratio = CKT_BASE::_sim->_freq / _bandwidth;
     double coeff = y->real() / (1.+(ratio*ratio));
     *y = COMPLEX(coeff, -coeff * ratio);
+  }else{
   }
   
-  if (_phase != 0.) {
-    untested();
+  if (_phase != 0.) {itested();
     *y *= std::polar(1., _phase*DTOR);
+  }else{
   }
 
-  if (_delay != 0.) {
-    untested();
-    double ratio = SIM::freq * _delay;
-    if (ratio > 100000.) {
-      untested();
+  if (_delay != 0.) {untested();
+    double ratio = CKT_BASE::_sim->_freq * _delay;
+    if (ratio > 100000.) {untested();
       error(bPICKY, "delay too long\n");
       ratio = 0.;
-    }else{
-      untested();
+    }else{untested();
     }
     *y *= std::polar(1., -360.0 * DTOR * ratio);
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -194,82 +135,90 @@ bool EVAL_BM_ACTION_BASE::operator==(const COMMON_COMPONENT& x)const
     && _tc2 == p->_tc2
     && _ic == p->_ic
     && EVAL_BM_BASE::operator==(x);
-  if (rv) {
-    untested();
+  if (rv) {untested();
+  }else{
   }
   return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_ACTION_BASE::print(OMSTREAM& o)const
+void EVAL_BM_ACTION_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
-  if(_bandwidth.has_value()) {untested();o <<" bandwidth="<<_bandwidth;}
-  if(_delay.has_value())     {untested();o <<" delay="	<<_delay;}
-  if(_phase.has_value())     {untested();o <<" phase="	<<_phase;}
-  if(_ioffset.has_value())   {untested();o <<" ioffset="<<_ioffset;}
-  if(_ooffset.has_value())   {untested();o <<" ooffset="<<_ooffset;}
-  if(_scale.has_value())     {		 o <<" scale="	<<_scale;}
-  if(_tc1.has_value())	     {untested();o <<" tc1="	<<_tc1;}
-  if(_tc2.has_value())	     {untested();o <<" tc2="	<<_tc2;}
-  if(_ic.has_value())	     {		 o <<" ic="	<<_ic;}
-  COMMON_COMPONENT::print(o);
+  print_pair(o, lang, "bandwidth",_bandwidth,_bandwidth.has_hard_value());
+  print_pair(o, lang, "delay",	  _delay,    _delay.has_hard_value());
+  print_pair(o, lang, "phase",	  _phase,    _phase.has_hard_value());
+  print_pair(o, lang, "ioffset",  _ioffset,  _ioffset.has_hard_value());
+  print_pair(o, lang, "ooffset",  _ooffset,  _ooffset.has_hard_value());
+  print_pair(o, lang, "scale",	  _scale,    _scale.has_hard_value());
+  print_pair(o, lang, "tc1",	  _tc1,	     _tc1.has_hard_value());
+  print_pair(o, lang, "tc2",	  _tc2,	     _tc2.has_hard_value());
+  print_pair(o, lang, "ic",	  _ic,	     _ic.has_hard_value());
+  COMMON_COMPONENT::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_ACTION_BASE::elabo3(const COMPONENT* c)
+void EVAL_BM_ACTION_BASE::precalc_first(const CARD_LIST* Scope)
 {
-  assert(c);
-  const CARD_LIST* par_scope = c->scope();
-  assert(par_scope);
-  COMMON_COMPONENT::elabo3(c);
-  _bandwidth.e_val(_default_bandwidth, par_scope);
-  _delay.e_val(_default_delay, par_scope);
-  _phase.e_val(_default_phase, par_scope);
-  _ooffset.e_val(_default_ooffset, par_scope);
-  _ioffset.e_val(_default_ioffset, par_scope);
-  _scale.e_val(_default_scale, par_scope);
-  _tc1.e_val(_default_tc1, par_scope);
-  _tc2.e_val(_default_tc2, par_scope);
-  _ic.e_val(_default_ic, par_scope);
+  assert(Scope);
+  COMMON_COMPONENT::precalc_first(Scope);
+  _bandwidth.e_val(_default_bandwidth, Scope);
+  _delay.e_val(_default_delay, Scope);
+  _phase.e_val(_default_phase, Scope);
+  _ooffset.e_val(_default_ooffset, Scope);
+  _ioffset.e_val(_default_ioffset, Scope);
+  _scale.e_val(_default_scale, Scope);
+  _tc1.e_val(_default_tc1, Scope);
+  _tc2.e_val(_default_tc2, Scope);
+  _ic.e_val(_default_ic, Scope);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::ac_eval(ELEMENT* d)const 
 {
   tr_eval(d);
-  d->_ev = d->_y0.f1;
+  d->_ev = d->_y[0].f1;
   ac_final_adjust(&(d->_ev));
 }
 /*--------------------------------------------------------------------------*/
-bool EVAL_BM_ACTION_BASE::parse_params(CS& cmd)
+bool EVAL_BM_ACTION_BASE::parse_params_obsolete_callback(CS& cmd)
 {
   return ONE_OF
-    || get(cmd, "Bandwidth",&_bandwidth)
-    || get(cmd, "Delay",    &_delay)
-    || get(cmd, "Phase",    &_phase)
-    || get(cmd, "IOffset",  &_ioffset)
-    || get(cmd, "OOffset",  &_ooffset)
-    || get(cmd, "Scale",    &_scale)
-    || get(cmd, "TC1",      &_tc1)
-    || get(cmd, "TC2",      &_tc2)
-    || get(cmd, "IC",       &_ic)
-    || COMMON_COMPONENT::parse_params(cmd);
+    || Get(cmd, "bandwidth",&_bandwidth)
+    || Get(cmd, "delay",    &_delay)
+    || Get(cmd, "phase",    &_phase)
+    || Get(cmd, "ioffset",  &_ioffset)
+    || Get(cmd, "ooffset",  &_ooffset)
+    || Get(cmd, "scale",    &_scale)
+    || Get(cmd, "tc1",      &_tc1)
+    || Get(cmd, "tc2",      &_tc2)
+    || Get(cmd, "ic",       &_ic)
+    || COMMON_COMPONENT::parse_params_obsolete_callback(cmd);
     ;
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_ACTION_BASE::has_ext_args()const
 {
-  return  (_bandwidth.has_value()
-	   || _delay.has_value()
-	   || _phase.has_value()
-	   || _ooffset.has_value()
-	   || _ioffset.has_value()
-	   || _scale.has_value()
-	   || _tc1.has_value()
-	   || _tc2.has_value()
-	   || _ic.has_value());
+  return  (_bandwidth.has_hard_value()
+	   || _delay.has_hard_value()
+	   || _phase.has_hard_value()
+	   || _ooffset.has_hard_value()
+	   || _ioffset.has_hard_value()
+	   || _scale.has_hard_value()
+	   || _tc1.has_hard_value()
+	   || _tc2.has_hard_value()
+	   || _ic.has_hard_value());
 }
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT* EVAL_BM_ACTION_BASE::parse_func_type(CS& cmd)
 {
-  return bm_dispatcher(cmd);
+  const COMMON_COMPONENT* p = 
+    (cmd.is_float() || cmd.match1('_') || cmd.skip1b('='))
+    ? bm_dispatcher["eval_bm_value"]
+    : bm_dispatcher[cmd];
+
+  if (p) {
+    p->skip_type_tail(cmd);
+    return p->clone();
+  }else{
+    return NULL;
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

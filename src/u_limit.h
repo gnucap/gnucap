@@ -1,12 +1,12 @@
-/* $Id: u_limit.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/* $Id: u_limit.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -38,7 +38,7 @@ inline double pnj_limit(double vnew, double vold, double vt, double vcrit)
       return vlim;
     }else{
       double vlim = vt * log(vnew/vt);
-      trace3("limit-2", *vlim, vt*log(vnew/vt), vnew/vt);
+      trace3("limit-2", vlim, vt*log(vnew/vt), vnew/vt);
       return vlim;
     }
   }else{
@@ -50,8 +50,7 @@ inline double pnj_limit(double vnew, double vold, double vt, double vcrit)
 inline double fet_limit_vds(double vnew, double vold)
 {
   if (vold >= 3.5) {
-    if (vnew > (3*vold + 2)) {
-      untested();
+    if (vnew > (3*vold + 2)) {itested();
       return 3 * vold + 2;
     }else if (vnew < 2) {
       return 2;
@@ -80,7 +79,7 @@ inline double fet_limit_vgs(double vnew, double vold, double vto)
   if (vgst_old >= 3.5) { /* was strong on */
     if (vgst_new < 2) {
       v_limited = 2;
-    }else if (vgst_new > (3 * vgst_old + 2)) {untested();
+    }else if (vgst_new > (3 * vgst_old + 2)) {itested();
       v_limited = 3*vgst_old + 2;
     }else{
       v_limited = vgst_new;

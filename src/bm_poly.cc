@@ -1,12 +1,12 @@
-/*$Id: bm_poly.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: bm_poly.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,12 +22,40 @@
  * HSPICE compatible POLY
  */
 //testing=script,complete 2005.10.06
+#include "u_lang.h"
 #include "e_elemnt.h"
 #include "bm.h"
+/*--------------------------------------------------------------------------*/
+namespace {
 /*--------------------------------------------------------------------------*/
 const double _default_max(BIGBIG);
 const double _default_min(-BIGBIG);
 const bool   _default_abs(false);
+/*--------------------------------------------------------------------------*/
+class EVAL_BM_POLY : public EVAL_BM_ACTION_BASE {
+private:
+  PARAMETER<double> _min;
+  PARAMETER<double> _max;
+  PARAMETER<bool>   _abs;
+  std::vector<PARAMETER<double> > _c;
+  explicit	EVAL_BM_POLY(const EVAL_BM_POLY& p);
+public:
+  explicit      EVAL_BM_POLY(int c=0);
+		~EVAL_BM_POLY()		{}
+private: // override vitrual
+  bool		operator==(const COMMON_COMPONENT&)const;
+  COMMON_COMPONENT* clone()const	{return new EVAL_BM_POLY(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+
+  void		precalc_first(const CARD_LIST*);
+  void		tr_eval(ELEMENT*)const;
+  std::string	name()const		{return "poly";}
+  bool		ac_too()const		{untested();return false;}
+  bool		parse_numlist(CS&);
+  bool		parse_params_obsolete_callback(CS&);
+  void		skip_type_tail(CS& cmd)const {cmd.umatch("(1)");}
+};
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 EVAL_BM_POLY::EVAL_BM_POLY(int c)
   :EVAL_BM_ACTION_BASE(c),
@@ -62,45 +90,44 @@ bool EVAL_BM_POLY::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_POLY::print(OMSTREAM& o)const
+void EVAL_BM_POLY::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
-  o << ' ' << name() << '(';
+  assert(lang);
+  o << name() << '(';
   for (std::vector<PARAMETER<double> >::const_iterator
 	 p = _c.begin();  p != _c.end();  ++p) {
     o << *p << ' ';
   }
   o << ')';
-  if (_min.has_value()) {o << " min=" << _min;}
-  if (_max.has_value()) {o << " max=" << _max;}
-  if (_abs.has_value()) {o << " abs=" << _abs;}
-  EVAL_BM_ACTION_BASE::print(o);
+  print_pair(o, lang, "min", _min, _min.has_hard_value());
+  print_pair(o, lang, "max", _max, _max.has_hard_value());
+  print_pair(o, lang, "abs", _abs, _abs.has_hard_value());
+  EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_POLY::elabo3(const COMPONENT* c)
+void EVAL_BM_POLY::precalc_first(const CARD_LIST* Scope)
 {
-  assert(c);
-  const CARD_LIST* par_scope = c->scope();
-  assert(par_scope);
-  EVAL_BM_ACTION_BASE::elabo3(c);
+  assert(Scope);
+  EVAL_BM_ACTION_BASE::precalc_first(Scope);
   for (std::vector<PARAMETER<double> >::const_iterator
 	 p = _c.begin();  p != _c.end();  ++p) {
-    (*p).e_val(0, par_scope);
+    (*p).e_val(0, Scope);
   }
-  _min.e_val(_default_min, par_scope);
-  _max.e_val(_default_max, par_scope);
-  _abs.e_val(_default_abs, par_scope);
+  _min.e_val(_default_min, Scope);
+  _max.e_val(_default_max, Scope);
+  _abs.e_val(_default_abs, Scope);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_POLY::tr_eval(ELEMENT* d)const
 {
-  double x = ioffset(d->_y0.x);
+  double x = ioffset(d->_y[0].x);
   double f0 = 0.;
   double f1 = 0.;
-  for (int i=_c.size()-1; i>0; --i) {
+  for (size_t i=_c.size()-1; i>0; --i) {
     f0 += _c[i];
     f0 *= x;
     f1 *= x;
-    f1 += _c[i]*i;
+    f1 += _c[i]*int(i);
   }
   f0 += _c[0];
 
@@ -117,18 +144,18 @@ void EVAL_BM_POLY::tr_eval(ELEMENT* d)const
     f1 = 0;
   }
 
-  d->_y0 = FPOLY1(x, f0, f1);
-  tr_final_adjust(&(d->_y0), d->f_is_value());
+  d->_y[0] = FPOLY1(x, f0, f1);
+  tr_final_adjust(&(d->_y[0]), d->f_is_value());
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_POLY::parse_numlist(CS& cmd)
 {
-  int start = cmd.cursor();
-  int here = cmd.cursor();
+  unsigned start = cmd.cursor();
+  unsigned here = cmd.cursor();
   for (;;) {
-    int old_here = here;
-    PARAMETER<double> value;
-    cmd >> value;
+    unsigned old_here = here;
+    PARAMETER<double> val;
+    cmd >> val;
     if (cmd.stuck(&here)) {
       // no more, graceful finish
       break;
@@ -138,7 +165,7 @@ bool EVAL_BM_POLY::parse_numlist(CS& cmd)
 	cmd.reset(old_here);
 	break;
       }else{
-	_c.push_back(value);
+	_c.push_back(val);
       }
     }
   }
@@ -149,14 +176,19 @@ bool EVAL_BM_POLY::parse_numlist(CS& cmd)
   return cmd.gotit(start);
 }
 /*--------------------------------------------------------------------------*/
-bool EVAL_BM_POLY::parse_params(CS& cmd)
+bool EVAL_BM_POLY::parse_params_obsolete_callback(CS& cmd)
 {
   return ONE_OF
-    || get(cmd, "MIn", &_min)
-    || get(cmd, "MAx", &_max)
-    || get(cmd, "Abs", &_abs)
-    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    || Get(cmd, "min", &_min)
+    || Get(cmd, "max", &_max)
+    || Get(cmd, "abs", &_abs)
+    || EVAL_BM_ACTION_BASE::parse_params_obsolete_callback(cmd)
     ;
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+EVAL_BM_POLY p1(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher, "poly", &p1);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

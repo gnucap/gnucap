@@ -1,12 +1,12 @@
-/*$Id: c_sweep.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: c_sweep.cc,v 26.83 2008/06/05 04:46:59 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,30 +22,31 @@
  * Step a parameter and repeat a group of commands
  */
 //testing=none 2006.07.17
-#include "io_.h"
-#include "declare.h"	/* getcmd */
 #include "c_comand.h"
-#include "ap.h"
-/*--------------------------------------------------------------------------*/
-//	void	CMD::sweep(CS&);
-static	void	buildfile(CS&);
-static	void	doit();
-static	void	setup(CS&);
-/*--------------------------------------------------------------------------*/
+#include "globals.h"
 extern int swp_count[], swp_steps[];
 extern int swp_type[];
 extern int swp_nest;
-static char tempfile[] = STEPFILE;
 /*--------------------------------------------------------------------------*/
-void CMD::sweep(CS& cmd)
+namespace {
+  static std::string tempfile = STEPFILE;
+/*--------------------------------------------------------------------------*/
+static void setup(CS& cmd)
 {
-  if (cmd.more()) {
-    buildfile(cmd);
-  }else{
-    
+  for (;;) {
+    if (cmd.is_digit()) {
+      swp_steps[swp_nest] = cmd.ctoi() ;
+      swp_steps[swp_nest] = (swp_steps[swp_nest]) 
+	? swp_steps[swp_nest]-1
+	: 0;
+    }else if (cmd.umatch("li{near} ")) {
+      swp_type[swp_nest] = 0;
+    }else if (cmd.umatch("lo{g} ")) {
+      swp_type[swp_nest] = 'L';
+    }else{
+      break;
+    }
   }
-  doit();
-  unfault(cmd);
 }
 /*--------------------------------------------------------------------------*/
 static void buildfile(CS& cmd)
@@ -57,17 +58,17 @@ static void buildfile(CS& cmd)
     fclose(fptr);
   }else{
   }
-  fptr = fopen(tempfile, "w");
+  fptr = fopen(tempfile.c_str(), "w");
   if (!fptr) {
-    error(bERROR, "can't open temporary file\n" );
+    throw Exception_File_Open("can't open temporary file:" + tempfile);
   }else{
   }
-  fprintf(fptr, "%s\n", cmd.fullstring() );
+  fprintf(fptr, "%s\n", cmd.fullstring().c_str());
   
   for (;;) {
     char buffer[BUFLEN];
     getcmd(">>>", buffer, BUFLEN);
-    if (pmatch(buffer,"GO")) {
+    if (Umatch(buffer,"go ")) {
       break;
     }else{
     }
@@ -77,7 +78,7 @@ static void buildfile(CS& cmd)
   fptr = NULL;
 }
 /*--------------------------------------------------------------------------*/
-static void doit()
+static void doit(CARD_LIST* scope)
 {
   static FILE *fptr;
   
@@ -87,34 +88,40 @@ static void doit()
       fclose(fptr);
     }else{
     }
-    fptr = fopen(tempfile, "r");
+    fptr = fopen(tempfile.c_str(), "r");
     if (!fptr) {
-      error(bERROR, "can't open %s\n", tempfile);
+      throw Exception_File_Open("can't open " + tempfile);
     }else{
     }
     char buffer[BUFLEN];
     fgets(buffer,BUFLEN,fptr);
-    CS cmd(buffer);
-    if (cmd.pmatch("SWeep")) {
-      setup(cmd);
-    }else{
-      error(bERROR, "bad file format: %s\n", tempfile);
-    }
-    int ind = cmd.cursor();
-    strncpy(buffer, "fault                              ", ind);
-    buffer[ind-1] = ' ';		/* make sure there is a delimiter   */
-					/* in case the words run together   */
+    {
+      CS cmd(CS::_STRING, buffer); //fgets from local file, obsolete
+      if (cmd.umatch("sw{eep} ")) {
+	setup(cmd);
+      }else{
+	throw Exception("bad file format: " + tempfile);
+      }
+      unsigned ind = cmd.cursor();
+      strncpy(buffer, "fault                              ", ind);
+      buffer[ind-1] = ' ';		/* make sure there is a delimiter   */
+    }					/* in case the words run together   */
     for (;;) {				/* may wipe out one letter of fault */
-      CMD::cmdproc(buffer);
+      {
+	CS cmd(CS::_STRING, buffer); //fgets from local file, obsolete
+	CMD::cmdproc(cmd, scope);
+      }
       if (!fgets(buffer,BUFLEN,fptr)) {
 	break;
       }else{
       }
-      CS cmd(buffer);
-      if (cmd.pmatch("SWeep")) {
-	cmd.warn(bDANGER, "command not allowed in sweep");
-	buffer[0] = '\'';
-      }else{
+      {
+	CS cmd(CS::_STRING, buffer); //fgets from local file, obsolete
+	if (cmd.umatch("sw{eep} ")) {
+	  cmd.warn(bDANGER, "command not allowed in sweep");
+	  buffer[0] = '\'';
+	}else{
+	}
       }
       IO::mstdout << swp_count[swp_nest]+1 << "> " << buffer;
     }
@@ -124,22 +131,20 @@ static void doit()
   swp_count[swp_nest] = 0;
 }
 /*--------------------------------------------------------------------------*/
-static void setup(CS& cmd)
-{
-  for (;;) {
-    if (cmd.is_digit()) {
-      swp_steps[swp_nest] = cmd.ctoi() ;
-      swp_steps[swp_nest] = (swp_steps[swp_nest]) 
-	? swp_steps[swp_nest]-1
-	: 0;
-    }else if (cmd.pmatch("LInear")) {
-      swp_type[swp_nest] = 0;
-    }else if (cmd.pmatch("LOg")) {
-      swp_type[swp_nest] = 'L';
+class CMD_SWEEP : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST* Scope)
+  {
+    if (cmd.more()) {
+      buildfile(cmd);
     }else{
-      break;
     }
+    doit(Scope);
+    command("unfault", Scope);
   }
+} p;
+DISPATCHER<CMD>::INSTALL d(&command_dispatcher, "sweep", &p);
+/*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

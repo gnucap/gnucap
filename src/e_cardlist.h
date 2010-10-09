@@ -1,12 +1,12 @@
-/*$Id: e_cardlist.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.h,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,12 +33,15 @@ class CARD_LIST;
 class CARD;
 class PARAM_LIST;
 class NODE_MAP;
+class LANGUAGE;
+class TIME_PAIR;
 /*--------------------------------------------------------------------------*/
-class CARD_LIST {
+class INTERFACE CARD_LIST {
 private:
   const CARD_LIST* _parent;
   mutable NODE_MAP* _nm;
-  PARAM_LIST* _params;
+  mutable PARAM_LIST* _params;
+  LANGUAGE* _language;
   std::list<CARD*> _cl;
 public:
   // internal types
@@ -55,15 +58,13 @@ public:
 			: _list(p._list), _iter(p._iter) {}
     explicit	  fat_iterator(CARD_LIST* l, iterator i)
 			: _list(l), _iter(i) {}
-    explicit	  fat_iterator(CARD_LIST* l)
-			: _list(l) {_iter=_list->begin();}
     bool	  is_end()const		{return _iter == _list->end();}
     CARD*	  operator*()		{return (is_end()) ? NULL : *_iter;}
     fat_iterator& operator++()	{assert(!is_end()); ++_iter; return *this;}
     fat_iterator  operator++(int)
 		{assert(!is_end()); fat_iterator t(*this); ++_iter; return t;}
-    //bool	  operator==(const fat_iterator& x)const
-    //		{untested(); assert(_list==x._list); return (_iter==x._iter);}
+    bool	  operator==(const fat_iterator& x)const
+    	     {unreachable(); assert(_list==x._list); return (_iter==x._iter);}
     bool	  operator!=(const fat_iterator& x)const
 			{assert(_list==x._list); return (_iter!=x._iter);}
     iterator	  iter()const		{return _iter;}
@@ -74,20 +75,23 @@ public:
   };
 
   // status queries
-  //bool is_empty()const		{untested(); return _cl.empty();}
+  bool is_empty()const			{return _cl.empty();}
   const CARD_LIST* parent()const	{return _parent;}
+  const LANGUAGE* language()const	{untested(); return _language;}
 
   // return an iterator
   iterator begin()			{return _cl.begin();}
   iterator end()			{return _cl.end();}
-  iterator find(const std::string& short_name);
-  CARD* operator[](const std::string& short_name);
+  iterator find_again(const std::string& short_name, iterator);
+  iterator find_(const std::string& short_name) 
+					{return find_again(short_name, begin());}
 
   // return a const_iterator
   const_iterator begin()const		{return _cl.begin();}
   const_iterator end()const		{return _cl.end();}
-  const_iterator find(const std::string& short_name)const;
-  const CARD* operator[](const std::string& short_name)const;
+  const_iterator find_again(const std::string& short_name, const_iterator)const;
+  const_iterator find_(const std::string& short_name)const
+					{return find_again(short_name, begin());}
 
   // add to it
   CARD_LIST& push_front(CARD* c)	{_cl.push_front(c); return *this;}
@@ -103,20 +107,21 @@ public:
   // operations on the whole list
   CARD_LIST& set_owner(CARD* owner);
   CARD_LIST& set_slave();
-  CARD_LIST& elabo2();
+  CARD_LIST& precalc_first();
+  CARD_LIST& expand();
+  CARD_LIST& precalc_last();
   CARD_LIST& map_nodes();
-  CARD_LIST& precalc();
   CARD_LIST& tr_iwant_matrix();
-  CARD_LIST& dc_begin();
   CARD_LIST& tr_begin();
   CARD_LIST& tr_restore();
   CARD_LIST& dc_advance();
   CARD_LIST& tr_advance();
+  CARD_LIST& tr_regress();
   bool	     tr_needs_eval()const;
   CARD_LIST& tr_queue_eval();
   bool	     do_tr();
   CARD_LIST& tr_load();
-  DPAIR      tr_review();
+  TIME_PAIR  tr_review();
   CARD_LIST& tr_accept();
   CARD_LIST& tr_unload();
   CARD_LIST& ac_iwant_matrix();
@@ -126,22 +131,30 @@ public:
 
   NODE_MAP*   nodes()const {assert(_nm); return _nm;}
   PARAM_LIST* params();
-  const PARAM_LIST* params()const;
+  PARAM_LIST* params()const;
 
   // more complex stuff
   void attach_params(PARAM_LIST* p, const CARD_LIST* scope);
   void shallow_copy(const CARD_LIST*);
   void map_subckt_nodes(const CARD* model, const CARD* owner);
 
-  CARD_LIST();
+  explicit CARD_LIST();
+  CARD_LIST(const CARD* model, CARD* owner, const CARD_LIST* scope,
+  	    PARAM_LIST* p);
   ~CARD_LIST();
 private:
   explicit CARD_LIST(const CARD_LIST&) {unreachable(); incomplete();}
 public:
   static CARD_LIST card_list; // in globals.cc
-public: // d_subckt, c_getckt
-  static CARD_LIST::fat_iterator putbefore;
 };
+/*--------------------------------------------------------------------------*/
+INTERFACE CARD_LIST::fat_iterator findbranch(CS&,CARD_LIST::fat_iterator);
+/*--------------------------------------------------------------------------*/
+inline CARD_LIST::fat_iterator findbranch(CS& cmd, CARD_LIST* cl)
+{
+  assert(cl);
+  return findbranch(cmd, CARD_LIST::fat_iterator(cl, cl->begin()));
+}
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

@@ -1,12 +1,12 @@
-/*$Id: c_prbcmd.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: c_prbcmd.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,42 +24,18 @@
  * command line operations
  */
 //testing=script,sparse 2006.07.17
-#include "ap.h"
-#include "s__.h"
+#include "u_sim_data.h"
 #include "c_comand.h"
 #include "u_prblst.h"
+#include "globals.h"
 /*--------------------------------------------------------------------------*/
-//	void	CMD::alarm(CS&);
-//	void	CMD::plot(CS&);
-//	void	CMD::print(CS&);
-static	void	do_probe(CS&,PROBELIST*);
+namespace {
 /*--------------------------------------------------------------------------*/
-PROBELIST PROBE_LISTS::alarm[sCOUNT]; /* list of alarm points */
-PROBELIST PROBE_LISTS::plot[sCOUNT];  /* list of plot points */
-PROBELIST PROBE_LISTS::print[sCOUNT]; /* list of print points */
-PROBELIST PROBE_LISTS::store[sCOUNT]; /* list of pts to store for postproc */
-/*--------------------------------------------------------------------------*/
-void CMD::alarm(CS& cmd)
+void do_probe(CS& cmd, PROBELIST *probes)
 {
-  do_probe(cmd,PROBE_LISTS::alarm);
-}
-/*--------------------------------------------------------------------------*/
-void CMD::plot(CS& cmd)
-{
-  IO::plotset = true;
-  do_probe(cmd,PROBE_LISTS::plot);
-}
-/*--------------------------------------------------------------------------*/
-void CMD::print(CS& cmd)
-{
-  IO::plotset = false;
-  do_probe(cmd,PROBE_LISTS::print);
-}
-/*--------------------------------------------------------------------------*/
-static void do_probe(CS& cmd, PROBELIST *probes)
-{
+  CKT_BASE::_sim->set_command_none();
   enum {aADD, aDELETE, aNEW} action;
-  SIM_MODE simtype = sNONE;
+  SIM_MODE simtype = s_NONE;
 
   if (cmd.match1('-')) {untested();	/* handle .probe - ac ...... */
     action = aDELETE;		/* etc. 		     */
@@ -72,35 +48,35 @@ static void do_probe(CS& cmd, PROBELIST *probes)
   }				/* which will not clear first	    */
 
   ONE_OF
-    || set(cmd, "TRansient", &simtype,	sTRAN)
-    || set(cmd, "AC",	     &simtype,	sAC)
-    || set(cmd, "DC",	     &simtype,	sDC)
-    || set(cmd, "OP",	     &simtype,	sOP)
-    || set(cmd, "FOurier",   &simtype,	sFOURIER)
+    || Set(cmd, "tr{ansient}", &simtype, s_TRAN)
+    || Set(cmd, "ac",	       &simtype, s_AC)
+    || Set(cmd, "dc",	       &simtype, s_DC)
+    || Set(cmd, "op",	       &simtype, s_OP)
+    || Set(cmd, "fo{urier}",   &simtype, s_FOURIER)
     ;
   
   if (!simtype) {			/* must be all simtypes */
     if (cmd.is_end()) {			/* list all */
-      probes[sTRAN].listing("tran");
-      probes[sAC].listing("ac");
-      probes[sDC].listing("dc");
-      probes[sOP].listing("op");
-      probes[sFOURIER].listing("fourier");
-    }else if (cmd.pmatch("CLEAR")) {		/* clear all */
+      probes[s_TRAN].listing("tran");
+      probes[s_AC].listing("ac");
+      probes[s_DC].listing("dc");
+      probes[s_OP].listing("op");
+      probes[s_FOURIER].listing("fourier");
+    }else if (cmd.umatch("clear ")) {		/* clear all */
       for (int ii = sSTART;  ii < sCOUNT;  ++ii) {
 	probes[ii].clear();
       }
-    }else{untested();					/* error */
-      cmd.warn(bERROR, "what's this?");
+    }else{itested();				/* error */
+      throw Exception_CS("what's this?", cmd);
     }
   }else{
     if (cmd.is_end()) {untested();		/* list */
       probes[simtype].listing("");
-    }else if (cmd.pmatch("CLEAR")) {untested();	/* clear */
+    }else if (cmd.umatch("clear ")) {untested();/* clear */
       probes[simtype].clear();
-    }else{				/* add/remove */
-      SIM::init();
-      if (cmd.match1('-')) {untested();			/* setup cases like: */
+    }else{					/* add/remove */
+      CKT_BASE::_sim->init();
+      if (cmd.match1('-')) {itested();		/* setup cases like: */
 	action = aDELETE;			/* .probe ac + ....  */
 	cmd.skip();
       }else if (cmd.match1('+')) {
@@ -114,15 +90,15 @@ static void do_probe(CS& cmd, PROBELIST *probes)
       }else{
       }
       while (cmd.more()) {			/* do-it */
-	if (cmd.match1('-')) {untested();			/* handle cases like:	    */
+	if (cmd.match1('-')) {			/* handle cases like:	    */
 	  action = aDELETE;			/* .pr ac +v(7) -e(6) +r(8) */
 	  cmd.skip();
-	}else if (cmd.match1('+')) {untested();
+	}else if (cmd.match1('+')) {itested();
 	  action = aADD;
 	  cmd.skip();
 	}else{
 	}
-	if (action == aDELETE) {untested();
+	if (action == aDELETE) {
 	  probes[simtype].remove_list(cmd);
 	}else{
 	  probes[simtype].add_list(cmd);
@@ -130,6 +106,46 @@ static void do_probe(CS& cmd, PROBELIST *probes)
       }
     }
   }
+}
+/*--------------------------------------------------------------------------*/
+class CMD_STORE : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*)
+  {
+    do_probe(cmd,PROBE_LISTS::store);
+  }
+} p0;
+DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "store", &p0);
+/*--------------------------------------------------------------------------*/
+class CMD_ALARM : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*)
+  {
+    do_probe(cmd,PROBE_LISTS::alarm);
+  }
+} p1;
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "alarm", &p1);
+/*--------------------------------------------------------------------------*/
+class CMD_PLOT : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*)
+  {
+    IO::plotset = true;
+    do_probe(cmd,PROBE_LISTS::plot);
+  }
+} p2;
+DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "iplot|plot", &p2);
+/*--------------------------------------------------------------------------*/
+class CMD_PRINT : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*)
+  {
+    IO::plotset = false;
+    do_probe(cmd,PROBE_LISTS::print);
+  }
+} p3;
+DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "iprint|print|probe", &p3);
+/*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

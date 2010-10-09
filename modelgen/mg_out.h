@@ -1,12 +1,12 @@
-/*$Id: mg_out.h,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
+/*$Id: mg_out.h,v 26.128 2009/11/10 04:21:03 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,8 +25,10 @@
 /* mg_out_root.cc */
 void make_h_file(const File&);
 void make_cc_file(const File&);
+void make_dump_file(const File&);
 /*--------------------------------------------------------------------------*/
 /* mg_out_lib.cc */
+void make_final_adjust_eval_parameter_list(std::ofstream&, const Parameter_List&);
 void make_final_adjust_value(std::ofstream&, const Parameter&);
 void make_final_adjust_value_list(std::ofstream&, const Parameter_List&);
 void make_final_adjust_parameter(std::ofstream&, const Parameter&);

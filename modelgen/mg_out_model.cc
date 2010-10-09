@@ -1,12 +1,12 @@
-/*$Id: mg_out_model.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
+/*$Id: mg_out_model.cc,v 26.128 2009/11/10 04:21:03 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -19,27 +19,65 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+//testing=script 2006.11.01
 #include "mg_out.h"
+/*--------------------------------------------------------------------------*/
+static void make_model_dispatcher(std::ofstream& out, const Model& m)
+{
+  if (m.level() != "") {
+    out << "const int LEVEL(" << m.level() <<");\n"
+      "/*--------------------------------------------------------------------------*/\n";
+  }else{
+  }
+  if (!m.public_key_list().is_empty()) {
+    out << 
+      "namespace MODEL_" << m.name() << "_DISPATCHER { \n"
+      "  static DEV_" << m.dev_type() << " p1d;\n"
+      "  static MODEL_" << m.name() << " p1(&p1d);\n"
+      "  static DISPATCHER<MODEL_CARD>::INSTALL\n"
+      "    d1(&model_dispatcher, \"";
+    for (Key_List::const_iterator
+	 k = m.public_key_list().begin();
+	 k != m.public_key_list().end();
+	 ++k) {
+      if (k != m.public_key_list().begin()) {
+	out << '|';
+      }else{
+      }
+      out << (**k).name();
+    }
+    out << "\", &p1);\n"
+      "}\n"
+      "/*--------------------------------------------------------------------------*/\n";
+  }else{
+  }
+}
 /*--------------------------------------------------------------------------*/
 static void make_sdp_constructor(std::ofstream& out, const Model& m)
 {
-  out << "SDP_" << m.name() << "::SDP_" << m.name() 
-      << "(const COMMON_COMPONENT* cc)\n"
-      << "  :SDP_" << m.inherit() << "(cc)\n"
-      << "{\n";
+#if 0
+  out <<
+    "SDP_" << m.name() << "::SDP_" << m.name() << "(const COMMON_COMPONENT* cc)\n"
+    "  :SDP_" << m.inherit() << "(cc)\n"
+    "{\n";
+#else
+  out << 
+    "void SDP_" << m.name() << "::init(const COMMON_COMPONENT* cc)\n"
+    "{\n"
+    "  assert(cc);\n"
+    "  SDP_" << m.inherit() << "::init(cc);\n";
+#endif
   if (!m.size_dependent().is_empty()) {
-    out << "  assert(cc);\n"
+    out <<
       "  const COMMON_" << m.dev_type()
 	<< "* c = prechecked_cast<const COMMON_" << m.dev_type() << "*>(cc);\n"
       "  assert(c);\n"
-      "  const MODEL_" << m.name() 
-	<< "* m = prechecked_cast<const MODEL_" 
+      "  const MODEL_" << m.name() << "* m = prechecked_cast<const MODEL_" 
 	<< m.name() << "*>(c->model());\n"
-      "  assert(m);\n";
-    if (!(m.size_dependent().raw().is_empty())) {
-      out << "  const CARD_LIST* par_scope = m->scope();\n"
-	"  assert(par_scope);\n";
-    }
+      "  assert(m);\n"
+      "  const CARD_LIST* par_scope = m->scope();\n"
+      "  assert(par_scope);\n";
+    
     out << m.size_dependent().code_pre();
 
     out << "  // adjust: override\n";
@@ -48,19 +86,19 @@ static void make_sdp_constructor(std::ofstream& out, const Model& m)
 
     out << "  // adjust: raw\n";
     for (Parameter_List::const_iterator
-	   p = m.size_dependent().raw().begin();
-	 p != m.size_dependent().raw().end(); ++p) {
-      {if (!((**p).final_default().empty())) {
+	 p = m.size_dependent().raw().begin();
+	 p != m.size_dependent().raw().end();
+	 ++p) {
+      if (!((**p).final_default().empty())) {
 	out << "  " << (**p).code_name() << " = m->" << (**p).code_name()
 	    << "(L, W, " << (**p).final_default() << ", par_scope);\n";
       }else if (!((**p).default_val().empty())) {
 	out << "  " << (**p).code_name() << " = m->" << (**p).code_name()
 	    << "(L, W, " << (**p).default_val() << ", par_scope);\n";
-      }else{
-	untested();
+      }else{untested();
 	out << "  " << (**p).code_name() << " = m->" << (**p).code_name()
 	    << "(L, W, 0., par_scope);\n";
-      }}
+      }
       make_final_adjust_value(out, **p);
     }
 
@@ -69,23 +107,25 @@ static void make_sdp_constructor(std::ofstream& out, const Model& m)
 
     out << "  // code_post\n"
 	<< m.size_dependent().code_post();
+  }else{
   }
   
   out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
 static void make_tdp_constructor(std::ofstream& out, const Model& m)
 {
   out << "TDP_" << m.name() << "::TDP_" << m.name() 
       << "(const DEV_" << m.dev_type() << '*';
-  if (!m.is_base() || !m.temperature().is_empty()) {
+  if (!m.hide_base() || !m.temperature().is_empty()) {
     out << " d";
+  }else{
   }
   out << ")\n";
-  if (!m.is_base()) {
+  if (!m.hide_base()) {
     out << "  :TDP_" << m.inherit() << "(d)\n";
+  }else{
   }
   out << "{\n";
   if (!m.temperature().is_empty()) {
@@ -99,249 +139,576 @@ static void make_tdp_constructor(std::ofstream& out, const Model& m)
       "  assert(s);\n"
       "  const MODEL_" << m.name() << "* m = prechecked_cast<const MODEL_" 
 	<< m.name() << "*>(c->model());\n"
-      "  assert(m);\n";
+      "  assert(m);\n"
+      "  const CARD_LIST* par_scope = d->scope();\n"
+      "  assert(par_scope);\n";
+    make_final_adjust_eval_parameter_list(out, m.temperature().raw());
     make_final_adjust(out, m.temperature());
+  }else{
   }
 
   out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
-static void make_model_constructor(std::ofstream& out, const Model& m)
+static void make_model_default_constructor(std::ofstream& out, const Model& m)
 {
-  out << "MODEL_" << m.name() << "::MODEL_" << m.name() << "()\n"
-    "  :MODEL_" << m.inherit() << "()";
+  out << "MODEL_" << m.name() << "::MODEL_" << m.name() << "(const BASE_SUBCKT* p)\n"
+    "  :MODEL_" << m.inherit() << "(p)";
 
   make_construct_parameter_list(out, m.size_dependent().raw());
   make_construct_parameter_list(out, m.independent().raw());
   make_construct_parameter_list(out, m.independent().calculated());
   out << "\n{\n"
-    "  ++_count;\n";
+    "  if (ENV::run_mode != rPRE_MAIN) {\n"
+    "    ++_count;\n"
+    "  }else{\n"
+    "  }\n";
   for (Parameter_List::const_iterator
-	 p = m.independent().override().begin();
+       p = m.independent().override().begin();
        p != m.independent().override().end();
        ++p) {
     if (!((**p).final_default().empty())) {
-      out << "  " << (**p).code_name() << " = NA;\n";
+      //out << "  " << (**p).code_name() << " = NA;\n";
+      out << "  set_default(&" << (**p).code_name() << ", NA);\n";
+    }else{
     }
     if (!((**p).default_val().empty())) {
-      out << "  " << (**p).code_name() << " = " << (**p).default_val() <<";\n";
-    }
-  }
-  out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
-}
-/*--------------------------------------------------------------------------*/
-static void make_model_parse_front(std::ofstream& out, const Model& m)
-{
-  out << "bool MODEL_" << m.name() << "::parse_front(CS&";
-  {if (!m.key_list().is_empty()) {
-    out << " cmd)\n"
-      "{\n"
-      "  return ONE_OF\n";
-    for (Key_List::const_iterator k = m.key_list().begin();
-	  k != m.key_list().end();
-	  ++k) {
-      out << "    || set(cmd, \"" << (**k).name() << "\", &" 
-	  << (**k).var() << ", " << (**k).value() << ")\n";
-    }
-    if (!m.is_base()) {
-      untested();
-      out << "    || MODEL_" << m.inherit() << "::parse_front(cmd)\n";
-    }
-    out << "    ;\n";
-  }else{
-    {if (!m.is_base()) {
-      out << " cmd)\n"
-	"{\n"
-	"  return MODEL_" << m.inherit() << "::parse_front(cmd);\n";
+      //out << "  " << (**p).code_name() << " = " 
+      //	  << (**p).default_val() << ";\n";
+      out << "  set_default(&" << (**p).code_name() << ", " 
+      	  << (**p).default_val() << ");\n";
     }else{
-      untested();
-      out << ")\n"
-	"{\n"
-	"  return true;\n";
-    }}
-  }}
+    }
+  }
   out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
-static void make_model_parse_params(std::ofstream& out, const Model& m)
-{
-  out << "bool MODEL_" << m.name() << "::parse_params(CS& cmd)\n"
-    "{\n"
-    "  return ONE_OF\n";
-  make_get_param_list(out, m.independent().override());
-  make_get_param_list(out, m.size_dependent().raw());
-  make_get_param_list(out, m.independent().raw());
-  if (!m.is_base()) {
-    out << "    || MODEL_" << m.inherit() << "::parse_params(cmd)\n";
-  }
-  out << "    ;\n"
-    "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
-}
-/*--------------------------------------------------------------------------*/
-static void make_model_parse_finish(std::ofstream& out, const Model& m)
+static void make_model_copy_constructor(std::ofstream& out, const Model& m)
 {
   out <<
-    "void MODEL_" << m.name() << "::elabo1()\n"
-    "{\n"
-    "  if (1 || !evaluated()) {\n"
-    "    const CARD_LIST* par_scope = scope();\n"
-    "    assert(par_scope);\n";
-  if (!m.is_base()) {
-    out << "    MODEL_" << m.inherit() << "::elabo1();\n";
+    "MODEL_" << m.name() << "::MODEL_" << m.name() << "(const MODEL_" << m.name() << "& p)\n"
+    "  :MODEL_" << m.inherit() << "(p)";
+
+  make_copy_construct_parameter_list(out, m.size_dependent().raw());
+  make_copy_construct_parameter_list(out, m.independent().raw());
+  make_copy_construct_parameter_list(out, m.independent().calculated());
+  out << "\n{\n"
+    "  if (ENV::run_mode != rPRE_MAIN) {\n"
+    "    ++_count;\n"
+    "  }else{untested();//194\n"
+    "  }\n";
+#if 0
+  for (Parameter_List::const_iterator
+       p = m.independent().override().begin();
+       p != m.independent().override().end();
+       ++p) {untested();
+    out << "  itested();\n";
+    //out << ",\n   " << (**p).code_name() << "(p." << (**p).code_name() << ")";
   }
-  make_final_adjust(out, m.independent());
-  out <<
-    "  }else{\n"
-    "    untested();\n"
-    "  }\n"
-    "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+#endif
+  out << "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
-static void make_model_new_sdp(std::ofstream& out, const Model& m)
+static void make_model_dev_type(std::ofstream& out, const Model& m)
 {
-  out << "SDP_CARD* MODEL_" << m.name() 
-      << "::new_sdp(const COMMON_COMPONENT* c)const\n"
-    "{\n"
-    "  assert(c);\n"
-    "  {if (dynamic_cast<const COMMON_" << m.dev_type() << "*>(c)) {\n"
-    "    return new SDP_" << m.name() << "(c);\n"
-    "  }else{\n"
-    "    return MODEL_" << m.inherit() << "::new_sdp(c);\n"
-    "  }}\n"
-    "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
-}
-/*--------------------------------------------------------------------------*/
-static void make_model_print_front(std::ofstream& out, const Model& m)
-{
-  out << "void MODEL_" << m.name() << "::print_front(OMSTREAM&";
-  {if (!m.key_list().is_empty()) {
-    out << " o)const\n"
+  out << "std::string MODEL_" << m.name() << "::dev_type()const\n";
+  if (!m.public_key_list().is_empty() || !m.private_key_list().is_empty()) {
+    out << 
       "{\n"
-      "  {";
-    Key_List::const_iterator k = m.key_list().begin();
+      "  ";
+    Key_List::const_iterator k = 
+      (m.public_key_list().is_empty())
+      ? m.private_key_list().begin()
+      : m.public_key_list().begin();
     for (;;) {
       out << "if (" << (**k).var() << " == " << (**k).value() << ") {\n"
-	  << "    o << \"  " << to_lower((**k).name()) << "\";\n";
+	"    return \"" << (**k).name() << "\";\n";
       ++k;
-      if (k == m.key_list().end()) {
+      if (k == m.public_key_list().end()) {
+	k = m.private_key_list().begin();
+      }else{
+      }
+      if (k == m.private_key_list().end()) {
 	break;
+      }else{
+      }
+      out << "  }else ";
+    }
+    out <<
+      "  }else{untested();//235\n"
+      "    return MODEL_" << m.inherit() << "::dev_type();\n"
+      "  }\n";
+  }else{
+    out <<
+      "{untested();//240\n"
+      "  return MODEL_" << m.inherit() << "::dev_type();\n";
+  }
+  out << "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
+static void make_model_set_dev_type(std::ofstream& out, const Model& m)
+{
+  out <<
+    "void MODEL_" << m.name() << "::set_dev_type(const std::string& new_type)\n"
+    "{\n"
+    "  ";
+  if (!m.public_key_list().is_empty() || !m.private_key_list().is_empty()) {
+    Key_List::const_iterator k = 
+      (m.public_key_list().is_empty())
+      ? m.private_key_list().begin()
+      : m.public_key_list().begin();
+    for (;;) {
+      out << "if (Umatch(new_type, \"" << (**k).name() << " \")) {\n"
+	"    " <<  (**k).var() << " = " << (**k).value() << ";\n";
+      ++k;
+      if (k == m.public_key_list().end()) {
+	k = m.private_key_list().begin();
+      }else{
+      }
+      if (k == m.private_key_list().end()) {
+	break;
+      }else{
       }
       out << "  }else ";
     }
     out << "  }else{\n";
-    {if (!m.is_base()) {
-      out << "    MODEL_" << m.inherit() << "::print_front(o);\n";
-    }else{
-      out << "    unreachable();\n";
-    }}
-    out << "  }}\n";
   }else{
-    {if (!m.is_base()) {
-      out << " o)const\n"
-	"{\n"
-	"  MODEL_" << m.inherit() << "::print_front(o);\n";
-    }else{
-      out << ")const\n"
-	"{\n";
-    }}
-  }}
+    out << "{\n";
+  }
+  if (!m.hide_base()) {
+    out << "    MODEL_" << m.inherit() << "::set_dev_type(new_type);\n";
+  }else{
+    out << "    MODEL_CARD::set_dev_type(new_type);\n";
+  }
+  out << "  }\n";
   out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
-static void make_model_print_params(std::ofstream& out, const Model& m)
+static void make_model_precalc(std::ofstream& out, const Model& m)
 {
-  out << "void MODEL_" << m.name() << "::print_params(OMSTREAM& o)const\n{\n";
-  
+  out <<
+    "void MODEL_" << m.name() << "::precalc_first()\n"
+    "{\n"
+    "    const CARD_LIST* par_scope = scope();\n"
+    "    assert(par_scope);\n";
+  if (!m.hide_base()) {
+    out << "    MODEL_" << m.inherit() << "::precalc_first();\n";
+  }else{
+    out << "    MODEL_CARD::precalc_first();\n";
+  }
+  make_final_adjust_eval_parameter_list(out, m.independent().raw());
+  make_final_adjust(out, m.independent());
+  out <<
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+  out <<
+    "void MODEL_" << m.name() << "::precalc_last()\n"
+    "{\n";
+  if (!m.hide_base()) {
+    out << "    MODEL_" << m.inherit() << "::precalc_last();\n";
+  }else{
+    out << "    MODEL_CARD::precalc_last();\n";
+  }
+  out <<
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
+static void make_model_new_sdp(std::ofstream& out, const Model& m)
+{
+  out << "SDP_CARD* MODEL_" << m.name() << "::new_sdp(COMMON_COMPONENT* c)const\n"
+    "{\n"
+    "  assert(c);\n"
+    "  if (COMMON_" << m.dev_type() << "* cc = dynamic_cast<COMMON_" 
+      << m.dev_type() << "*>(c)) {\n"
+    "    if (cc->_sdp) {\n"
+    "      cc->_sdp->init(cc);\n"
+    "      return cc->_sdp;\n"
+    "    }else{\n"
+    "      delete cc->_sdp;\n"
+    "      return new SDP_" << m.name() << "(c);\n"
+    "    }\n"
+    "  }else{\n"
+    "    return MODEL_" << m.inherit() << "::new_sdp(c);\n"
+    "  }\n"
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
+static void make_model_set_param_by_index(std::ofstream& out, const Model& m)
+{
+  out << 
+    "void MODEL_" << m.name() << "::set_param_by_index(int i, std::string& value, int offset)\n"
+    "{\n"
+    "  switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+  size_t i = 0;
   if (m.level() != "") {
-    out << "  o << \"level=" << m.level() << "\";\n";
+    out << "  case " << i++ << ": level = value; break; //" << m.level() << "\n";
+  }else{
+    out << "  case " << i++ << ": untested(); break;\n";
   }
-  if (!m.is_base()) {
-    out << "  MODEL_" << m.inherit() << "::print_params(o);\n";
-  }
-  make_print_param_list(out, m.independent().override());
-
-  for (Parameter_List::const_iterator
-	 p = m.size_dependent().raw().begin();
-       p != m.size_dependent().raw().end(); ++p) {
+  for (Parameter_List::const_iterator 
+       p = m.independent().override().begin(); 
+       p != m.independent().override().end();
+       ++p) {
     if (!((**p).user_name().empty())) {
-      out << "  " << (**p).code_name() << ".print(o, \"" 
-	  << to_lower((**p).user_name()) << "\");\n";
+      out << "  case " << i++ << ": " << (**p).code_name() << " = value; break;\n";
+    }else{
+      out << "  case " << i++ << ": unreachable(); break;\n";
     }
   }
+  assert(i == 1 + m.independent().override().size());
 
-  make_print_param_list(out, m.independent().raw());
-  out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+  for (Parameter_List::const_iterator
+       p = m.size_dependent().raw().begin();
+       p != m.size_dependent().raw().end();
+       ++p) {
+    out << "  case " << i++ << ": " << (**p).code_name() << ".set_nom(value); break;\n";
+    out << "  case " << i++ << ": " << (**p).code_name() << ".set_w(value); break;\n";
+    out << "  case " << i++ << ": " << (**p).code_name() << ".set_l(value); break;\n";
+    out << "  case " << i++ << ": " << (**p).code_name() << ".set_p(value); break;\n";
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size());
+
+  for (Parameter_List::const_iterator 
+       p = m.independent().raw().begin(); 
+       p != m.independent().raw().end();
+       ++p) {
+    out << "  case " << i++ << ": " << (**p).code_name() << " = value; break;\n";
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size()
+	 + m.independent().raw().size());
+
+  if (!m.hide_base()) {
+    out << "  default: MODEL_" << m.inherit() 
+	<< "::set_param_by_index(i, value, offset); break;\n";
+  }else{
+    out << "  default: throw Exception_Too_Many(i, " << i-1 << ", offset); break;\n";
+  }
+  out <<
+    "  }\n"
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
-static void make_model_print_calculated(std::ofstream& out, const Model& m)
+void make_model_param_is_printable(std::ofstream& out, const Model& m)
 {
-  out << "void MODEL_" << m.name() 
-      << "::print_calculated(OMSTREAM& o)const\n{\n";
-  {if (!m.is_base()) {
-    out << "  MODEL_" << m.inherit() << "::print_calculated(o);\n";
+  make_tag();
+  out << "bool MODEL_" << m.name() 
+      << "::param_is_printable(int i)const\n"
+    "{\n"
+    "  switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+  size_t i = 0;
+  if (m.level() != "") {
+    out << "  case " << i++ << ":  return (true);\n";
   }else{
-    out << "  o << \"\";\n"; // print nothing, suppresses a warning
-  }}
-  make_print_calc_param_list(out, m.independent().override());
-  make_print_calc_param_list(out, m.independent().raw());
-  make_print_calc_param_list(out, m.independent().calculated());
-  out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+    out << "  case " << i++ << ":  return (false);\n";
+  }
+  for (Parameter_List::const_iterator 
+       p = m.independent().override().begin(); 
+       p != m.independent().override().end();
+       ++p) {
+    if (!((**p).user_name().empty())) {
+      out << "  case " << i++ << ":  return (";
+      if (!((**p).print_test().empty())) {
+	out << (**p).print_test() << ");\n";
+	//}else if ((**p).default_val() == "NA" && (**p).final_default().empty()) {untested();
+	//out << (**p).code_name() << ".has_hard_value());\n"; //" != NA);\n";
+      }else if ((**p).default_val() == "NA") {
+	out << (**p).code_name() << ".has_hard_value());\n";
+      }else{
+	out << "true);\n";
+      }
+    }else{
+      out << "  case " << i++ << ":  return (false);\n";
+    }
+  }
+  assert(i == 1 + m.independent().override().size());
+
+  for (Parameter_List::const_iterator
+       p = m.size_dependent().raw().begin();
+       p != m.size_dependent().raw().end();
+       ++p) {
+    out << "  case " << i++ << ":  return (";
+    if (!((**p).print_test().empty())) {
+      out << (**p).print_test() << ");\n";
+    }else if ((**p).default_val() == "NA") {
+      out << (**p).code_name() << ".has_value());\n";
+    }else{
+      out << "true);\n";
+    }
+    out << "  case " << i++ << ":  return (" << (**p).code_name() << ".w_has_value());\n";
+    out << "  case " << i++ << ":  return (" << (**p).code_name() << ".l_has_value());\n";
+    out << "  case " << i++ << ":  return (" << (**p).code_name() << ".p_has_value());\n";
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size());
+
+  for (Parameter_List::const_iterator 
+       p = m.independent().raw().begin(); 
+       p != m.independent().raw().end();
+       ++p) {
+    out << "  case " << i++ << ":  return (";
+    if (!((**p).print_test().empty())) {
+      out << (**p).print_test() << ");\n";
+      //}else if ((**p).default_val() == "NA" && (**p).final_default().empty()) {
+      //out << (**p).code_name() << ".has_hard_value());\n"; //" != NA);\n";
+    }else if ((**p).default_val() == "NA") {
+      out << (**p).code_name() << ".has_hard_value());\n";
+    }else{
+      out << "true);\n";
+    }
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size()
+	 + m.independent().raw().size());
+
+  if (!m.hide_base()) {
+    out << "  default: return MODEL_" << m.inherit() << "::param_is_printable(i);\n";
+  }else{
+    out << "  default: return false;\n";
+  }
+  out <<
+    "  }\n"
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
+void make_model_param_name(std::ofstream& out, const Model& m)
+{
+  make_tag();
+  out << "std::string MODEL_" << m.name() << "::param_name(int i)const\n"
+    "{\n"
+    "  switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+  size_t i = 0;
+  if (m.level() != "") {
+    out << "  case " << i++ << ":  return \"level\";\n";
+  }else{
+    out << "  case " << i++ << ":  return \"=====\";\n";
+  }
+  for (Parameter_List::const_iterator 
+       p = m.independent().override().begin(); 
+       p != m.independent().override().end();
+       ++p) {
+    if (!((**p).user_name().empty())) {
+      out << "  case " << i++ << ":  return \"" << to_lower((**p).user_name()) << "\";\n";
+    }else{
+      out << "  case " << i++ << ":  return \"=====\";\n";
+    }
+  }
+  assert(i == 1 + m.independent().override().size());
+
+  for (Parameter_List::const_iterator
+       p = m.size_dependent().raw().begin();
+       p != m.size_dependent().raw().end();
+       ++p) {
+    if (!((**p).user_name().empty())) {
+      out << "  case " << i++ << ":  return \""  << to_lower((**p).user_name()) << "\";\n";
+      out << "  case " << i++ << ":  return \"w" << to_lower((**p).user_name()) << "\";\n";
+      out << "  case " << i++ << ":  return \"l" << to_lower((**p).user_name()) << "\";\n";
+      out << "  case " << i++ << ":  return \"p" << to_lower((**p).user_name()) << "\";\n";
+    }else{unreachable();
+      out << "  case " << i++ << ":  return \"=====\";\n";
+    }
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size());
+
+  for (Parameter_List::const_iterator 
+       p = m.independent().raw().begin(); 
+       p != m.independent().raw().end();
+       ++p) {
+    if (!((**p).user_name().empty())) {
+      out << "  case " << i++ << ":  return \"" << to_lower((**p).user_name()) << "\";\n";
+    }else{unreachable();
+      out << "  case " << i++ << ":  return \"=====\";\n";
+    }
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size()
+	 + m.independent().raw().size());
+
+  if (!m.hide_base()) {
+    out << "  default: return MODEL_" << m.inherit() << "::param_name(i);\n";
+  }else{
+    out << "  default: return \"\";\n";
+  }
+  out <<
+    "  }\n"
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
+void make_model_param_name_or_alias(std::ofstream& out, const Model& m)
+{
+  make_tag();
+  out << "std::string MODEL_" << m.name() << "::param_name(int i, int j)const\n"
+    "{\n"
+    "  if (j == 0) {\n"
+    "    return param_name(i);\n"
+    "  }else if (j == 1) {\n"
+    "    switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+  size_t i = 0;
+  if (m.level() != "") {
+    out << "    case " << i++ << ":  return \"\";\n";
+  }else{
+    out << "    case " << i++ << ":  return \"\";\n";
+  }
+  for (Parameter_List::const_iterator 
+       p = m.independent().override().begin(); 
+       p != m.independent().override().end();
+       ++p) {
+    out << "    case " << i++ << ":  return \"" << to_lower((**p).alt_name()) << "\";\n";
+  }
+  assert(i == 1 + m.independent().override().size());
+
+  for (Parameter_List::const_iterator
+       p = m.size_dependent().raw().begin();
+       p != m.size_dependent().raw().end();
+       ++p) {
+    if (!((**p).user_name().empty())) {
+      if (!((**p).alt_name().empty())) {
+	out << "    case " << i++ << ":  return \""  << to_lower((**p).alt_name()) << "\";\n";
+	out << "    case " << i++ << ":  return \"w" << to_lower((**p).alt_name()) << "\";\n";
+	out << "    case " << i++ << ":  return \"l" << to_lower((**p).alt_name()) << "\";\n";
+	out << "    case " << i++ << ":  return \"p" << to_lower((**p).alt_name()) << "\";\n";
+      }else{
+	out << "    case " << i++ << ":  return \"\";\n";
+	out << "    case " << i++ << ":  return \"\";\n";
+	out << "    case " << i++ << ":  return \"\";\n";
+	out << "    case " << i++ << ":  return \"\";\n";
+      }
+    }else{unreachable();
+      out << "    case " << i++ << ":  return \"\";\n";
+      out << "    case " << i++ << ":  return \"\";\n";
+      out << "    case " << i++ << ":  return \"\";\n";
+      out << "    case " << i++ << ":  return \"\";\n";
+    }
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size());
+
+  for (Parameter_List::const_iterator 
+       p = m.independent().raw().begin(); 
+       p != m.independent().raw().end();
+       ++p) {
+    out << "    case " << i++ << ":  return \"" << to_lower((**p).alt_name()) << "\";\n";
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size()
+	 + m.independent().raw().size());
+
+  if (!m.hide_base()) {
+    out << "    default: return MODEL_" << m.inherit() << "::param_name(i, j);\n";
+  }else{
+    out << "    default: return \"\";\n";
+  }
+  out << "    }\n";
+  if (!m.hide_base()) {
+    out << 
+      "  }else if (i < " << i << ") {\n"
+      "    return \"\";\n"
+      "  }else{\n"
+      "    return MODEL_" << m.inherit() << "::param_name(i, j);\n";
+  }else{
+    out << 
+      "  }else{\n"
+      "    return \"\";\n";
+  }
+  out <<
+    "  }\n"
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
+void make_model_param_value(std::ofstream& out, const Model& m)
+{
+  make_tag();
+  out << "std::string MODEL_" << m.name() << "::param_value(int i)const\n"
+    "{\n"
+    "  switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+  size_t i = 0;
+  if (m.level() != "") {
+    out << "  case " << i++ << ":  return \"" << m.level() << "\";\n";
+  }else{
+    out << "  case " << i++ << ":  unreachable(); return \"\";\n";
+  }
+  for (Parameter_List::const_iterator 
+       p = m.independent().override().begin(); 
+       p != m.independent().override().end();
+       ++p) {
+    if (!((**p).user_name().empty())) {
+      out << "  case " << i++ << ":  return " << (**p).code_name() << ".string();\n";
+    }else{
+      out << "  case " << i++ << ":  unreachable(); return \"\";\n";
+    }
+  }
+  assert(i == 1 + m.independent().override().size());
+
+  for (Parameter_List::const_iterator
+       p = m.size_dependent().raw().begin();
+       p != m.size_dependent().raw().end();
+       ++p) {
+    out << "  case " << i++ << ":  return " << (**p).code_name() << ".string();\n";
+    out << "  case " << i++ << ":  return " << (**p).code_name() << ".w_string();\n";
+    out << "  case " << i++ << ":  return " << (**p).code_name() << ".l_string();\n";
+    out << "  case " << i++ << ":  return " << (**p).code_name() << ".p_string();\n";
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size());
+
+  for (Parameter_List::const_iterator 
+       p = m.independent().raw().begin(); 
+       p != m.independent().raw().end();
+       ++p) {
+    out << "  case " << i++ << ":  return " << (**p).code_name() << ".string();\n";
+  }
+  assert(i == 1 + m.independent().override().size() + 4 * m.size_dependent().raw().size()
+	 + m.independent().raw().size());
+
+  if (!m.hide_base()) {
+    out << "  default: return MODEL_" << m.inherit() << "::param_value(i);\n";
+  }else{
+    out << "  default: return \"\";\n";
+  }
+  out <<
+    "  }\n"
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
 static void make_model_is_valid(std::ofstream& out, const Model& m)
 {
   out <<
-    "bool MODEL_" << m.name()
-      << "::is_valid(const COMMON_COMPONENT* cc)const\n"
-    "{\n";
-  {if (m.validate().is_empty()) {
-    out << "  return MODEL_" << m.inherit() << "::is_valid(cc);\n";
+    "bool MODEL_" << m.name() << "::is_valid(const COMPONENT* d)const\n"
+    "{\n"
+    "  assert(d);\n";
+  if (m.validate().is_empty()) {
+    out << "  return MODEL_" << m.inherit() << "::is_valid(d);\n";
   }else{
-    out << "  const COMMON_" << m.dev_type()
-	<< "* c = dynamic_cast<const COMMON_" << m.dev_type() << "*>(cc);\n"
-      "  {if (!c) {\n"
-      "    return MODEL_" << m.inherit() << "::is_valid(cc);\n"
+    out <<
+      "  const COMMON_" << m.dev_type() << "* c = dynamic_cast<const COMMON_"
+	<< m.dev_type() << "*>(d->common());\n"
+      "  if (!c) {\n"
+      "    return MODEL_" << m.inherit() << "::is_valid(d);\n"
       "  }else{\n"
       "    const MODEL_" << m.name() << "* m = this;"
 	<< m.validate() <<
-      "  }}\n";
-  }}
+      "  }\n";
+  }
   out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
 static void make_tr_eval(std::ofstream& out, const Model& m)
 {
   out << "void MODEL_" << m.name() << "::tr_eval(COMPONENT*";
-  {if (m.tr_eval().is_empty() && m.temperature().is_empty()) {
-    out << ")const\n{\n";
+  if (m.tr_eval().is_empty() && m.temperature().is_empty()) {
+    out << ")const\n{untested();//425\n";
   }else{
     out << " brh)const\n{\n"
-      "  DEV_" << m.dev_type() << "* d = prechecked_cast<DEV_"
-	<< m.dev_type() << "*>(brh);\n"
+      "  DEV_" << m.dev_type() << "* d = prechecked_cast<DEV_" << m.dev_type() << "*>(brh);\n"
       "  assert(d);\n"
-      "  const COMMON_" << m.dev_type()
-	<< "* c = prechecked_cast<const COMMON_" << m.dev_type() 
-	<< "*>(d->common());\n"
+      "  const COMMON_" << m.dev_type() << "* c = prechecked_cast<const COMMON_"
+	<< m.dev_type() << "*>(d->common());\n"
       "  assert(c);\n"
       "  const SDP_" << m.name() << "* s = prechecked_cast<const SDP_" 
 	<< m.name() << "*>(c->sdp());\n"
@@ -350,33 +717,35 @@ static void make_tr_eval(std::ofstream& out, const Model& m)
     if (!m.temperature().is_empty()) {
       out << "  const TDP_" << m.name() << " T(d);\n"
 	"  const TDP_" << m.name() << "* t = &T;\n";
+    }else{
     }
     out << m.tr_eval();
-  }}
+  }
   out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+    "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
 void make_cc_model(std::ofstream& out, const Model& m)
 {
   out << "int MODEL_" << m.name() << "::_count = 0;\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
+    "/*--------------------------------------------------------------------------*/\n";
+  make_model_dispatcher(out, m);
   make_sdp_constructor(out, m);
   make_tdp_constructor(out, m);
-  make_model_constructor(out, m);
-  make_model_parse_front(out, m);
-  make_model_parse_params(out, m);
-  make_model_parse_finish(out, m);
+  make_model_default_constructor(out, m);
+  make_model_copy_constructor(out, m);
+  make_model_dev_type(out, m);
+  make_model_set_dev_type(out, m);
+  make_model_precalc(out, m);
   make_model_new_sdp(out, m);
-  make_model_print_front(out, m);
-  make_model_print_params(out, m);
-  make_model_print_calculated(out, m);
+  make_model_set_param_by_index(out, m);
+  make_model_param_is_printable(out, m);
+  make_model_param_name(out, m);
+  make_model_param_name_or_alias(out, m);
+  make_model_param_value(out, m);
   make_model_is_valid(out, m);
   make_tr_eval(out, m);
-  out << "/*--------------------------------------"
-    "------------------------------------*/\n";
+  out << "/*--------------------------------------------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

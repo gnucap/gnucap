@@ -1,12 +1,12 @@
-/* $Id: d_mos6.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+/* $Id: d_mos6.model,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,10 +28,14 @@ cc_headers {
 #include "l_denoise.h"
 }
 /*--------------------------------------------------------------------------*/
-model MOS6 {
+model BUILT_IN_MOS6 {
   level 6;
-  dev_type MOS;
-  inherit MOS123;
+  public_keys {
+    nmos6 polarity=pN;
+    pmos6 polarity=pP;
+  }
+  dev_type BUILT_IN_MOS;
+  inherit BUILT_IN_MOS123;
   independent {
     override {
       double lambda0 "" name=LAMBDA;
@@ -80,7 +84,7 @@ model MOS6 {
 	    phi = (2. * P_K_Q) * tnom_k * log(nsub/NI);
 	    if (phi < .1) {
 	      untested();
-	      error(bWARNING,
+	      error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
 		    long_label() + ": calculated phi too small, using .1\n");
 	      phi = .1;
 	    }
@@ -92,10 +96,10 @@ model MOS6 {
 	  }
 	  if (vto == NA) {
 	    double phi_ms = (tpg == gtMETAL)
-	      ? -.05 - (egap + polarity * phi) / 2.
-	      : -polarity * (tpg * egap + phi) / 2.;
-	    double vfb = phi_ms - P_Q * nss / cox;
-	    vto = vfb + polarity * (phi + gamma * sqrt(phi));
+	      ? polarity * (-.05 - (egap + polarity * phi) / 2.)
+	      : -(tpg * egap + phi) / 2.;
+	    double vfb = phi_ms - polarity * P_Q * nss / cox;
+	    vto = vfb + phi + gamma * sqrt(phi);
 	    calc_vto = true;
 	  }
 	}
@@ -104,15 +108,14 @@ model MOS6 {
   }
   temperature_dependent {
     calculated_parameters {
-      double phi "" 
-	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+P_Q*(arg)))";
-      double beta "" calculate="m->kc * tempratio4 * s->w_eff / s->l_eff";
+      double phi "" calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+P_Q*(arg)))";
+      double beta "" calculate="(m->kc / tempratio4) * s->w_eff / s->l_eff";
       double vbi "" calculate="(fixzero(
-	(m->vto - m->polarity * m->gamma * sqrt(m->phi)
+	(m->vto - m->gamma * sqrt(m->phi)
 	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi))";
     }
     code_pre {
-      double temp = SIM::temp_c + P_CELSIUS0;
+      double temp = d->_sim->_temp_c + P_CELSIUS0;
       double tempratio  = temp / m->tnom_k;
       double tempratio4 = tempratio * sqrt(tempratio);
       double kt = temp * P_K;

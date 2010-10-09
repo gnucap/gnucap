@@ -1,12 +1,12 @@
-/*$Id: m_matrix.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: m_matrix.h,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -106,7 +106,7 @@
  * "s" will let you change the value of zero,
  *   but you will find out about it later.
  */
-//testing=script 2006.07.13
+//testing=script 2008.09.19
 #ifndef M_MATRIX_H
 #define M_MATRIX_H
 /*--------------------------------------------------------------------------*/
@@ -130,13 +130,11 @@ private:
   explicit	BSMATRIX(const BSMATRIX<T>&) {incomplete();unreachable();}
   void		uninit();
   void		init(int s=0);
-  const T& 	d(int r, int  )const	{return *(_diaptr[r]);}
-  const T& 	u(int r, int c)const	{return _colptr[c][r];}
-  const T& 	l(int r, int c)const	{return _rowptr[r][-c];}
   T&		subtract_dot_product(int r, int c, int d);
   T&		subtract_dot_product(int r, int c, int d, const T& in);
   int		lownode(int i)const	{return _lownode[i];}
   bool		is_changed(int n)const	{return _changed[n];}
+  void		set_changed(int n, bool x = true)const {_changed[n] = x;}
 public:
   explicit	BSMATRIX(int ss=0);
   		~BSMATRIX()		{uninit();}
@@ -146,20 +144,24 @@ public:
   void		unallocate();
   void		allocate();
   void		reallocate()		{unallocate(); allocate();}
-  void		set_changed(int n, bool x = true)const {_changed[n] = x;}
   void		set_min_pivot(double x)	{_min_pivot = x;}
   void		zero();
   void		dezero(T& o);
   int		size()const		{return _size;}
   double 	density();
-  //double 	sparsity()		{untested(); return 1.-density();}
+  T 	d(int r, int  )const	{return *(_diaptr[r]);}
 private:
+  T 	u(int r, int c)const	{return _colptr[c][r];}
+  T 	l(int r, int c)const	{return _rowptr[r][-c];}
   T&	d(int r, int c);
   T&	u(int r, int c);
   T&	l(int r, int c);
   T&	m(int r, int c);
   //T&	s(int r, int c);
 public:
+  void		load_diagonal_point(int i, T value);
+  void		load_point(int i, int j, T value);
+  void		load_couple(int i, int j, T value);
   void		load_symmetric(int i, int j, T value);
   void		load_asymmetric(int r1, int r2, int c1, int c2, T value);
   
@@ -220,6 +222,7 @@ T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd)
     for (int ii = 0;   ii < len;   ++ii) {
       dot -= row[-ii] * col[ii];
     }
+  }else{
   }
   return dot;
 }
@@ -239,6 +242,7 @@ T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd, const T& in)
     for (int ii = 0;   ii < len;   ++ii) {
       dot -= row[-ii] * col[ii];
     }
+  }else{
   }
   return dot;
 }
@@ -268,11 +272,9 @@ BSMATRIX<T>::BSMATRIX(int ss)
  */
 template <class T>
 void BSMATRIX<T>::clone(const BSMATRIX<T> & aa)
-{
-  untested();
+{untested();
   reinit(aa.size());
-  for (int ii = 0;  ii <= size();  ++ii) {
-    untested();
+  for (int ii = 0;  ii <= size();  ++ii) {untested();
     _lownode[ii] = aa.lownode(ii);
   }
 }
@@ -287,12 +289,14 @@ void BSMATRIX<T>::iwant(int node1, int node2)
   assert(node1 <= size());
   assert(node2 <= size());
 
-  if (node1 == 0  ||  node2 == 0) {	/* node 0 is ground, and doesn't    */
-    ;					/* count as a connection	    */
+  if (node1 <= 0  ||  node2 <= 0) {
+    // node 0 is ground, and doesn't count as a connection
+    // negative is invalid, not used but still may be in a node list
   }else if (node1 < _lownode[node2]) {
     _lownode[node2]=node1;
   }else if (node2 < _lownode[node1]) {
     _lownode[node1]=node2;
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -377,13 +381,13 @@ double BSMATRIX<T>::density()
     for (int ii = 0;   ii <= size();   ++ii) {
       _nzcount += 2 * (ii - _lownode[ii]) + 1;
     }
-    return static_cast<double>(_nzcount-1)/(size()*size());
+    return static_cast<double>(_nzcount-1)/(static_cast<double>(size())*size());
   }else{
     return 0;
   }
 }
 /*--------------------------------------------------------------------------*/
-/* d: fast matrix entry access
+/* d: fast matrix entry access, lvalue
  * It is known that the entry is valid and on the diagonal
  */
 template <class T>
@@ -405,10 +409,11 @@ T& BSMATRIX<T>::u(int r, int c)
 {
   assert(_colptr);
   assert(_lownode);
-  assert(1 <= _lownode[c]);
-  assert(_lownode[c] <= r);
+  assert(0 < r);
   assert(r <= c);
   assert(c <= _size);
+  assert(1 <= _lownode[c]);
+  assert(_lownode[c] <= r);
 
   return _colptr[c][r];
 }
@@ -421,10 +426,11 @@ T& BSMATRIX<T>::l(int r, int c)
 {
   assert(_rowptr);
   assert(_lownode);
-  assert(1 <= _lownode[r]);
-  assert(_lownode[r] <= c);
+  assert(0 < c);
   assert(c <= r);
   assert(r <= _size);
+  assert(1 <= _lownode[r]);
+  assert(_lownode[r] <= c);
 
   return _rowptr[r][-c];
 }
@@ -454,7 +460,7 @@ T& BSMATRIX<T>::m(int r, int c)
 #if 0
 template <class T>
 T& BSMATRIX<T>::s(int row, int col)
-{
+{untested();
   assert(_lownode);
   assert(0 <= col);
   assert(col <= size());
@@ -462,25 +468,23 @@ T& BSMATRIX<T>::s(int row, int col)
   assert(row <= size());
   assert(_zero == 0.);
 
-  if (col == row) {
+  if (col == row) {untested();
     return d(row,col);
-  }else if (col > row) {	/* above the diagonal */
-    if (row == 0) {
+  }else if (col > row) {untested();	/* above the diagonal */
+    if (row == 0) {untested();
       return _trash;
-    }else if (row < _lownode[col]) {
-      untested();
+    }else if (row < _lownode[col]) {untested();
       return _zero;
-    }else{
+    }else{untested();
       return u(row,col);
     }
-  }else{			/* below the diagonal */
+  }else{untested();			/* below the diagonal */
     assert(col < row);
-    if (col == 0) {
+    if (col == 0) {untested();
       return _trash;
-    }else if (col < _lownode[row]) {
-      untested();
+    }else if (col < _lownode[row]) {untested();
       return _zero;
-    }else{
+    }else{untested();
       return l(row,col);
     }
   }
@@ -489,45 +493,100 @@ T& BSMATRIX<T>::s(int row, int col)
 #endif
 /*--------------------------------------------------------------------------*/
 template <class T>
+void BSMATRIX<T>::load_point(int i, int j, T value)
+{
+  if (i > 0 && j > 0) {
+    set_changed(j);
+    set_changed(i);
+    m(i,j) += value;
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+// load_point(i, i, value);
+template <class T>
+void BSMATRIX<T>::load_diagonal_point(int i, T value)
+{
+  if (i > 0) {
+    set_changed(i);
+    d(i,i) += value;
+  }else{untested();
+  }
+}
+/*--------------------------------------------------------------------------*/
+// load_point(i, j, -value);
+// load_point(j, i, -value);
+template <class T>
+void BSMATRIX<T>::load_couple(int i, int j, T value)
+{
+  if (j > 0) {
+    set_changed(j);
+    if (i > 0) {
+      set_changed(i);
+      m(i,j) -= value;
+      m(j,i) -= value;
+    }else{
+    }
+  }else{untested();
+  }
+}
+/*--------------------------------------------------------------------------*/
+// load_point(i, i, value); or load_diagonal_point(i, value);
+// load_point(j, j, value); or load_diagonal_point(j, value);
+// load_point(i, j, -value);
+// load_point(j, i, -value);
+template <class T>
 void BSMATRIX<T>::load_symmetric(int i, int j, T value)
 {
-  if (j != 0) {
+  if (j > 0) {
     set_changed(j);
     d(j,j) += value;
-    if (i != 0) {
+    if (i > 0) {
       set_changed(i);
       d(i,i) += value;
       m(i,j) -= value;
       m(j,i) -= value;
+    }else{
     }
-  }else if (i != 0) {
+  }else if (i > 0) {
     set_changed(i);
     d(i,i) += value;
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
+// load_point(r1, c1, value);
+// load_point(r2, c2, value);
+// load_point(r1, c2, -value);
+// load_point(r2, c1, -value);
 template <class T>
 void BSMATRIX<T>::load_asymmetric(int r1,int r2,int c1,int c2,T value)
 {
   set_changed(c1);
   set_changed(c2);
-  if (r1 != 0) {
+  if (r1 > 0) {
     set_changed(r1);
-    if (c1 != 0) {
+    if (c1 > 0) {
       m(r1,c1) += value;
+    }else{
     }
-    if (c2 != 0) {
+    if (c2 > 0) {
       m(r1,c2) -= value;
+    }else{
     }
+  }else{
   }
-  if (r2 != 0) {
+  if (r2 > 0) {
     set_changed(r2);
-    if (c1 != 0) {
+    if (c1 > 0) {
       m(r2,c1) -= value;
+    }else{
     }
-    if (c2 != 0) {
+    if (c2 > 0) {
       m(r2,c2) += value;
+    }else{
     }
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -558,19 +617,20 @@ void BSMATRIX<T>::lu_decomp(const BSMATRIX<T>& aa, bool do_partial)
 	}
 	{ /* jj == mm */
 	  /* d(mm,mm) = aa.d(mm,mm) - dot(mm,mm,mm); then test */
-	  if (subtract_dot_product(mm,mm,mm,aa.d(mm,mm)) == 0.) {
-	    untested();
+	  if (subtract_dot_product(mm,mm,mm,aa.d(mm,mm)) == 0.) {untested();
 	    error(bWARNING, "open circuit: internal node %u\n", mm);
 	    d(mm,mm) = _min_pivot;
+	  }else{
 	  }
 	}
       }else{    /* bn == mm */
 	d(mm,mm) = aa.d(mm,mm);
-	if (d(mm,mm)==0.) {
-	  untested();
+	if (d(mm,mm)==0.) {untested();
 	  d(mm,mm) = _min_pivot;
+	}else{
 	}
       }
+    }else{
     }
   }
 }
@@ -593,16 +653,16 @@ void BSMATRIX<T>::lu_decomp()
       }
       { /* jj == mm */
 	/* m(mm,mm) -= dot(mm,mm,mm); then test */
-	if (subtract_dot_product(mm,mm,mm) == 0.) {
-	  untested();
+	if (subtract_dot_product(mm,mm,mm) == 0.) {untested();
 	  error(bWARNING, "open circuit: internal node %u\n", mm);
 	  d(mm,mm) = _min_pivot;
+	}else{
 	}
       }
     }else{    /* bn == mm */
       if (d(mm,mm)==0.) {
-	untested();
 	d(mm,mm) = _min_pivot;
+      }else{
       }
     }
   }
@@ -649,15 +709,16 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
     for (   ; ii <= size(); ++ii) {
       if (b[ii] != 0.) {
 	break;
+      }else{
       }
       c[ii] = 0.;
     }
 
     int first_nz = ii;
     for (   ; ii <= size(); ++ii) {		/* forward substitution */
-      int lownode = std::max(_lownode[ii], first_nz);
+      int low_node = std::max(_lownode[ii], first_nz);
       c[ii] = b[ii];
-      for (int jj = lownode; jj < ii; ++jj) {
+      for (int jj = low_node; jj < ii; ++jj) {
 	c[ii] -= l(ii,jj) * c[jj];
       }
       c[ii] /= d(ii,ii);
@@ -671,6 +732,8 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
       x[ii] -= u(ii,jj) * x[jj];
     }
   }
+  x[0] = 0.;
+  //BUG// some things don't work unless there is a zero here.
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

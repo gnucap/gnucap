@@ -1,12 +1,12 @@
-/*$Id: m_cpoly.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: m_cpoly.h,v 26.83 2008/06/05 04:46:59 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -36,7 +36,7 @@
 //testing=script,sparse 2006.07.13
 #ifndef M_CPOLY_H
 #define M_CPOLY_H
-#include "md.h"
+#include "constant.h"
 /*--------------------------------------------------------------------------*/
 struct FPOLY1;
 struct CPOLY1;
@@ -46,7 +46,7 @@ struct FPOLY1{		/* first order polynomial	*/
   double   f0;		/* the function (c0 + x*f1)	*/
   double   f1;		/* the first derivative		*/
   explicit FPOLY1() : x(0), f0(0), f1(0) {}
-           FPOLY1(const FPOLY1& p) : x(p.x), f0(p.f0), f1(p.f1) {untested();}
+           FPOLY1(const FPOLY1& p) : x(p.x), f0(p.f0), f1(p.f1) {}
   explicit FPOLY1(double X,double F0,double F1) : x(X), f0(F0), f1(F1) {}
   explicit FPOLY1(const CPOLY1& p);
   ~FPOLY1() {}
@@ -59,8 +59,9 @@ struct FPOLY1{		/* first order polynomial	*/
   FPOLY1&  operator+=(const FPOLY1& s)
 		{untested(); assert(x==s.x); f0+=s.f0; f1+=s.f1; return *this;}
   FPOLY1   operator-()const	{untested(); return FPOLY1(x, -f0, -f1);}
-  double   c1()const		{return f1;}
-  double   c0()const		{assert(f0 != LINEAR); return (f0 - x * f1);}
+  double   c1()const		{assert(f1 == f1); return f1;}
+  double   c0()const		
+  {assert(f0==f0); assert(f1==f1); assert(x==x); assert(f0!=LINEAR); return (f0 - x * f1);}
 };
 /*--------------------------------------------------------------------------*/
 struct CPOLY1{		/* first order polynomial	*/
@@ -85,6 +86,8 @@ inline FPOLY1::FPOLY1(const CPOLY1& p)
    f0(p.f0()),
    f1(p.f1())
 {
+  assert(p == p);
+  assert(*this == *this);
 }
 /*--------------------------------------------------------------------------*/
 inline CPOLY1::CPOLY1(const FPOLY1& p)
@@ -92,6 +95,11 @@ inline CPOLY1::CPOLY1(const FPOLY1& p)
    c0(p.c0()),
    c1(p.c1())
 {
+  assert(p == p);
+  assert(x == x);
+  assert(c1 == c1);
+  assert(c0 == c0);
+  assert(*this == *this);
 }
 /*--------------------------------------------------------------------------*/
 inline FPOLY1& FPOLY1::operator*=(const FPOLY1& s)

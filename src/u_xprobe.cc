@@ -1,12 +1,12 @@
-/*$Id: u_xprobe.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: u_xprobe.cc,v 26.110 2009/05/28 15:32:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,13 +23,12 @@
  * used for AC analysis
  */
 //testing=script 2006.07.14
-#include "constant.h"
-#include "u_opt.h"
+#include "m_phase.h"
 #include "u_xprobe.h"
 /*--------------------------------------------------------------------------*/
 double XPROBE::operator()(mod_t m, bool db)const
 {
-  if (OK()) {
+  if (exists()) {
     if (m == mtNONE) {
       m = _modifier;
     }
@@ -42,13 +41,12 @@ double XPROBE::operator()(mod_t m, bool db)const
       rv = std::abs(_value);
       break;
     case mtPHASE:
-      rv = (OPT::phase == pDEGREES) ? arg(_value)*RTOD : arg(_value);
+      rv = phase(_value);
       break;
     case mtREAL:
       rv = real(_value);
       break;
     case mtIMAG:
-      untested();
       rv = imag(_value);
       break;
     }

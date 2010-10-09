@@ -1,12 +1,12 @@
-/*$Id: c_sim.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: c_sim.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,18 +22,30 @@
  * command interface functions associated with the SIM base class
  */
 //testing=script 2006.07.17
-#include "s_ac.h"
-#include "s_dc.h"
-#include "s_tr.h"
-#include "s_fo.h"
+#include "u_sim_data.h"
 #include "c_comand.h"
+#include "globals.h"
 /*--------------------------------------------------------------------------*/
-void CMD::ac(CS& cmd)		{static AC ac;		ac.command(cmd);}
-void CMD::dc(CS& cmd)		{static DC dc;		dc.command(cmd);}
-void CMD::fourier(CS& cmd)	{static FOURIER fo;	fo.command(cmd);}
-void CMD::op(CS& cmd)		{static OP op;		op.command(cmd);}
-void CMD::tr(CS& cmd)		{static TRANSIENT tr;	tr.command(cmd);}
-void CMD::mark(CS&)		{untested();SIM::freezetime = true;}
-void CMD::unmark(CS&)		{SIM::freezetime = false;}
+namespace {
+/*--------------------------------------------------------------------------*/
+class CMD_MARK : public CMD {
+public:
+  void do_it(CS&, CARD_LIST*)
+  {itested();
+    _sim->_freezetime = true;
+  }
+} p6;
+DISPATCHER<CMD>::INSTALL d6(&command_dispatcher, "mark|freeze", &p6);
+/*--------------------------------------------------------------------------*/
+class CMD_UNMARK : public CMD {
+public:
+  void do_it(CS&, CARD_LIST*)
+  {
+    _sim->_freezetime = false;
+  }
+} p7;
+DISPATCHER<CMD>::INSTALL d7(&command_dispatcher, "unmark|unfreeze", &p7);
+/*--------------------------------------------------------------------------*/
+}
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

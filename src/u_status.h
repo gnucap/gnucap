@@ -1,12 +1,12 @@
-/*$Id: u_status.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: u_status.h,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,8 +24,8 @@
 //testing=script 2006.07.14
 #ifndef STATUS_H
 #define STATUS_H
-#include "l_timer.h"
 #include "mode.h"
+#include "l_timer.h"
 /*--------------------------------------------------------------------------*/
 class CS;
 /*--------------------------------------------------------------------------*/
@@ -55,16 +55,9 @@ public:
   TIMER aux2;
   TIMER aux3;
   TIMER total;
-  int user_nodes;
-  int subckt_nodes;
-  int model_nodes;
-  int total_nodes;
-  int control[cCOUNT];
-  int iter[iCOUNT];
+  int control;
+  int hidden_steps;
   
-  int newnode_subckt() {++subckt_nodes; return ++total_nodes;}
-  int newnode_model()  {++model_nodes;  return ++total_nodes;}
-
   void compute_overhead()const {
     overhead = total - advance - queue - evaluate - load - lud - back 
       - output - review - accept;
@@ -93,20 +86,16 @@ public:
     aux2("aux2"),
     aux3("aux3"),
     total("total"),
-    user_nodes(0),
-    subckt_nodes(0),
-    model_nodes(0),
-    total_nodes(0)
+    control(0),
+    hidden_steps(0)
   {
-    std::fill_n(control, cCOUNT, 0);
-    std::fill_n(iter, iCOUNT, 0);
   }
   ~STATUS() {}
 private:
   explicit STATUS(const STATUS&) {unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
-extern STATUS status;
+extern INTERFACE STATUS status;
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

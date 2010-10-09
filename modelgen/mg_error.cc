@@ -1,12 +1,12 @@
-/*$Id: mg_error.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
+/*$Id: mg_error.cc,v 26.81 2008/05/27 05:33:43 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,11 +21,17 @@
  *------------------------------------------------------------------
  * Error handler.
  */
+//testing=script,sparse 2006.10.31
 #include "ap.h"
 extern int errorcount;
 /*--------------------------------------------------------------------------*/
 void error(int, const std::string& message)
-{
+{untested();
+  std::cout << message << '\n';
+  exit(2);
+}
+void error(int,const char* message,...)
+{untested();
   std::cout << message << '\n';
   exit(2);
 }
@@ -37,7 +43,7 @@ void error(int, const std::string& message)
  * otherwise, it is an error (the arrow pointing at the offending word)
  */
 CS & CS::check(int badness, const std::string& message)
-{
+{untested();
   skipbl();
   switch (peek()) {
     case '\'':	_ok = true;  skip();	   break;
@@ -47,9 +53,9 @@ CS & CS::check(int badness, const std::string& message)
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-static void tab(int n)
-{
-  for (int i=0; i<n; ++i) {
+static void tab(unsigned n)
+{itested();
+  for (unsigned i=0; i<n; ++i) {itested();
     std::cout << ' ';
   }
 }
@@ -57,44 +63,46 @@ static void tab(int n)
 /* syntax_msg: print syntax error message
  * echo a portion of the input with an arrow pointing to the current place
  */
-CS & CS::warn(int badness, int spot, const std::string& message)
-{
-  if (badness >= 0) {
+CS & CS::warn(int badness, unsigned spot, const std::string& message)
+{itested();
+  if (badness >= 0) {itested();
     ++errorcount;
-    int linestart = spot;
-    assert(linestart >= 0);
-    for (;;) {
-      {if (linestart == 0) {
+    unsigned linestart = spot;
+
+    for (;;) {itested();
+      if (linestart == 0) {untested();
 	break;
-      }else if (_cmd[linestart] == '\n') {
+      }else if (_cmd[linestart] == '\n') {itested();
 	++linestart;
 	break;
-      }else{
+      }else{itested();
 	--linestart;
-      }}
+      }
     }
     int lineno = 1;
-    for (int i=0; i<linestart; ++i) {
-      if (_cmd[i] == '\n') {
+    for (unsigned i=0; i<linestart; ++i) {itested();
+      if (_cmd[i] == '\n') {itested();
 	++lineno;
+      }else{itested();
       }
     }
     std::cout << _name << ':' << lineno << ":\n";
-    {if (spot-linestart < 20) {
-      for (int i=linestart; _cmd[i] && _cmd[i]!='\n'; ++i) {
+    if (spot-linestart < 20) {itested();
+      for (unsigned i=linestart; _cmd[i] && _cmd[i]!='\n'; ++i) {itested();
 	std::cout << _cmd[i];
       }
       std::cout << '\n';
       tab(spot-linestart);
-    }else{
+    }else{itested();
       std::cout << "..";
-      for (int i=spot-15; _cmd[i] && _cmd[i]!='\n'; ++i) {
+      for (unsigned i=spot-15; _cmd[i] && _cmd[i]!='\n'; ++i) {itested();
 	std::cout << _cmd[i];
       }
       std::cout << '\n';
       tab(17);
-    }}
+    }
     std::cout << "^ ? " << message << '\n';
+  }else{untested();
   }
   return *this;
 }

@@ -1,12 +1,12 @@
-/*$Id: d_dot.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
- * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+/*$Id: d_dot.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+ * Copyright (C) 2007 Albert Davis
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -19,9 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  *------------------------------------------------------------------
- * a "dot card"
  */
-//testing=script 2006.07.17
 #ifndef D_DOT_H
 #define D_DOT_H
 #include "e_card.h"
@@ -29,15 +27,17 @@
 class DEV_DOT : public CARD {
 private:
   std::string	_s;
-  explicit DEV_DOT(const DEV_DOT& p) :CARD(p) {untested();set_constant(true);}
+  explicit DEV_DOT(const DEV_DOT& p) :CARD(p) {set_constant(true);}
 public:
   explicit	DEV_DOT()		:CARD() {set_constant(true);}
 private: // override virtual
+  std::string   value_name()const	{return "";}
   char		id_letter()const	{untested();return '\0';}
-  const char*	dev_type()const		{untested();return "dotcard";}
-  CARD*		clone()const		{untested();return new DEV_DOT(*this);}
-  void		parse_spice(CS&);
-  void		print_spice(OMSTREAM&,int)const;
+  std::string	dev_type()const		{untested();return "dotcard";}
+  CARD*		clone()const		{return new DEV_DOT(*this);}
+public:
+  void set(const std::string& S) {_s = S;}
+  const std::string& s()const {return _s;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

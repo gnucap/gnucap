@@ -1,12 +1,12 @@
-/* $Id: d_mos7.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+/* $Id: d_mos7.model,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -76,10 +76,14 @@ cc_headers {
       double cgbo "Gate-bulk overlap capacitance per length"
 	name=CGBO default=NA;
  */
-model MOS7 {
+model BUILT_IN_MOS7 {
   level 7
-  dev_type MOS;
-  inherit MOS_BASE;
+  public_keys {
+    nmos7 polarity=pN;
+    pmos7 polarity=pP;
+  }
+  dev_type BUILT_IN_MOS;
+  inherit BUILT_IN_MOS_BASE;
   independent {
     override {
       double mjsw "" final_default=.33;
@@ -185,10 +189,10 @@ model MOS7 {
       cox = 3.453133e-11 / tox;
     }
     code_post {
-      if (npeak.nom() > 1.0e20) {
+      if (npeak.has_good_value() && npeak.nom() > 1.0e20) {
 	npeak.set_nom(npeak.nom() * 1.0e-6);
       }
-      if (ngate.nom() > 1.0e23) {
+      if (ngate.has_good_value() && ngate.nom() > 1.0e23) {
 	ngate.set_nom(ngate.nom() * 1.0e-6);
       }
     }
@@ -465,7 +469,7 @@ model MOS7 {
       double thetaRout;
     }
     code_pre {
-      temp = SIM::temp_c + P_CELSIUS0;
+      temp = d->_sim->_temp_c + P_CELSIUS0;
       double egap = 1.16 - 7.02e-4 * temp * temp / (temp + 1108.0);
     }
     code_post {
@@ -640,22 +644,22 @@ model MOS7 {
       {
 	double ltw, dltw_dVb;
 	{
-	  double T3 = sqrt(Xdep);
-	  double T0 = s->dvt2w * Vbseff;
-	  double T1, T2;
-	  if (T0 >= - 0.5) {
-	    T1 = 1.0 + T0;
-	    T2 = s->dvt2w;
+	  double t3 = sqrt(Xdep);
+	  double t0 = s->dvt2w * Vbseff;
+	  double t1, t2;
+	  if (t0 >= - 0.5) {
+	    t1 = 1.0 + t0;
+	    t2 = s->dvt2w;
 	  }else{
 	    untested();
 	    /* Added to avoid any discontinuity problems caused by dvt2w */ 
-	    double T4 = 1.0 / (3.0 + 8.0 * T0);
-	    T1 = (1.0 + 3.0 * T0) * T4; 
-	    T2 = s->dvt2w * T4 * T4;
+	    double t4 = 1.0 / (3.0 + 8.0 * t0);
+	    t1 = (1.0 + 3.0 * t0) * t4; 
+	    t2 = s->dvt2w * t4 * t4;
 	  }
-	  trace4("", T0, T1, T2, T3);
-	  ltw = m->factor1 * T3 * T1;
-	  dltw_dVb = m->factor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * T2);
+	  trace4("", t0, t1, t2, t3);
+	  ltw = m->factor1 * t3 * t1;
+	  dltw_dVb = m->factor1 * (0.5 / t3 * t1 * dXdep_dVb + t3 * t2);
 	}
 	trace2("", ltw, dltw_dVb);
 	double T0 = -0.5 * s->dvt1w * s->weff * s->leff / ltw;
@@ -897,31 +901,31 @@ model MOS7 {
 
       if (Abulk0 < 0.1) {
 	/* added to avoid the problems caused by Abulk0 */
-	double T9 = 1.0 / (3.0 - 20.0 * Abulk0);
-	Abulk0 = (0.2 - Abulk0) * T9;
-	dAbulk0_dVb *= T9 * T9;
+	double t9 = 1.0 / (3.0 - 20.0 * Abulk0);
+	Abulk0 = (0.2 - Abulk0) * t9;
+	dAbulk0_dVb *= t9 * t9;
 	trace2("2", Abulk0, dAbulk0_dVb);
       }
       if (Abulk < 0.1) {
 	/* added to avoid the problems caused by Abulk */
-	double T9 = 1.0 / (3.0 - 20.0 * Abulk);
-	Abulk = (0.2 - Abulk) * T9;
-	dAbulk_dVb *= T9 * T9;
+	double t9 = 1.0 / (3.0 - 20.0 * Abulk);
+	Abulk = (0.2 - Abulk) * t9;
+	dAbulk_dVb *= t9 * t9;
 	trace3("2", dAbulk_dVg, Abulk, dAbulk_dVb);
       }
 
       double T0, dT0_dVb;
       {
-	double T2 = s->keta * Vbseff;
-	if (T2 >= -0.9) {
-	  T0 = 1.0 / (1.0 + T2);
+	double t2 = s->keta * Vbseff;
+	if (t2 >= -0.9) {
+	  T0 = 1.0 / (1.0 + t2);
 	  dT0_dVb = -s->keta * T0 * T0;
-	  trace3("", T2, T0, dT0_dVb);
+	  trace3("", t2, T0, dT0_dVb);
 	}else{
 	  /* added to avoid the problems caused by Keta */
-	  double T1 = 1.0 / (0.8 + T2);
-	  T0 = (17.0 + 20.0 * T2) * T1;
-	  dT0_dVb = -s->keta * T1 * T1;
+	  double t1 = 1.0 / (0.8 + T2);
+	  T0 = (17.0 + 20.0 * T2) * t1;
+	  dT0_dVb = -s->keta * t1 * t1;
 	  trace3("keta fix", T2, T0, dT0_dVb);
 	}
       }
@@ -969,19 +973,19 @@ model MOS7 {
 	  Denomi = 1.0 + T5;
 	}else{
 	  /* Added to avoid the discontinuity problem caused by ua and ub*/ 
-	  double T9 = 1.0 / (7.0 + 10.0 * T5);
-	  Denomi = (0.6 + T5) * T9;
-	  T9 *= T9;
-	  dDenomi_dVg *= T9;
-	  dDenomi_dVd *= T9;
-	  dDenomi_dVb *= T9;
+	  double t9 = 1.0 / (7.0 + 10.0 * T5);
+	  Denomi = (0.6 + T5) * t9;
+	  t9 *= t9;
+	  dDenomi_dVg *= t9;
+	  dDenomi_dVd *= t9;
+	  dDenomi_dVb *= t9;
 	}
       }
       ueff = t->u0temp / Denomi;
-      double T9 = -ueff / Denomi;
-      dueff_dVg = T9 * dDenomi_dVg;
-      dueff_dVd = T9 * dDenomi_dVd;
-      dueff_dVb = T9 * dDenomi_dVb;
+      double t9 = -ueff / Denomi;
+      dueff_dVg = t9 * dDenomi_dVg;
+      dueff_dVd = t9 * dDenomi_dVd;
+      dueff_dVb = t9 * dDenomi_dVb;
     }
     trace4("", ueff, dueff_dVg, dueff_dVd, dueff_dVb);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

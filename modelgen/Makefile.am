@@ -1,6 +1,6 @@
 # -*- Automake -*-
 #
-# $Id: Makefile.am,v 25.96 2006/08/28 05:45:36 al Exp $
+# $Id: Makefile.am,v 26.70 2008/02/05 02:03:56 al Exp $
 #
 # Process this file with autoconf to produce a configure script.
 #
@@ -13,7 +13,7 @@
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
+#  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
@@ -28,11 +28,13 @@
 bin_PROGRAMS= gnucap-modelgen
 
 gnucap_modelgen_SOURCES= \
-	ap_construct.cc ap_convert.cc  ap_get.cc ap.h \
-	ap_match.cc ap_skip.cc io_error.h io_.h io_trace.h l_lib.h md.h \
-	mg_error.cc mg_.h mg_in.cc mg_main.cc mg_out_common.cc \
-	mg_out_dev.cc mg_out.h mg_out_h.cc mg_out_lib.cc mg_out_model.cc \
-	mg_out_root.cc patchlev.h 
+ap_construct.cc ap_convert.cc ap_get.cc ap_match.cc ap_skip.cc \
+l_trim.cc u_opt1.cc io_out.cc io.cc \
+ap.h io_.h io_error.h io_trace.h l_lib.h md.h patchlev.h u_opt.h mode.h \
+mg_main.cc mg_error.cc mg_in.cc mg_out_h.cc mg_out_dump.cc \
+mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc \
+mg_.h mg_out.h declare.h
+
 
 EXTRA_DIST= \
  Make1 Make3 Make.depend Make2.g++ Make2.Debug Make2.mingw32 \

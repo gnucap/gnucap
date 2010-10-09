@@ -1,14 +1,14 @@
-/*$Id: m_interp.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: m_interp.h,v 26.83 2008/06/05 04:46:59 al Exp $ -*- C++ -*-
  * interpolation on a sorted array
  *
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,7 +24,6 @@
 //testing=script,sparse 2006.07.13
 #ifndef M_INTERP_H
 #define M_INTERP_H
-#include "constant.h"
 #include "m_cpoly.h"
 /*--------------------------------------------------------------------------*/
 /* interpolate:  linear interpolation on a table.
@@ -38,7 +37,7 @@ FPOLY1 interpolate(Iterator begin, Iterator end, double x,
   double f0 = NOT_VALID;
   if (begin == end) {
     untested();
-    error(bERROR, "interpolate table is empty\n");
+    throw Exception("interpolate table is empty");
   }
   --end;
   if (begin == end) { // only 1 entry -- constant
@@ -78,7 +77,7 @@ FPOLY1 interpolate(Iterator begin, Iterator end, double x,
       }
       f1 = below;
     }else if ((*upper).first <= (*lower).first) {untested();
-      error(bERROR, "interpolate table is not sorted or has duplicate keys\n");
+      throw Exception("interpolate table is not sorted or has duplicate keys");
       f1 = 0.;
     }else{
       // ordinary interpolation

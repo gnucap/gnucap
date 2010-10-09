@@ -1,12 +1,12 @@
-/*$Id: c_system.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: c_system.cc,v 26.83 2008/06/05 04:46:59 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,58 +22,64 @@
  * system calls: change directory, invoke another program, invoke editor, etc.
  */
 //testing=none 2006.07.17
-#include "io_.h"
-#include "ap.h"
 #include "c_comand.h"
+#include "globals.h"
 /*--------------------------------------------------------------------------*/
-//	void	CMD::edit(CS&);
-//	void	CMD::system(CS&);
-//	void	CMD::chdir(CS&);
+namespace {
 /*--------------------------------------------------------------------------*/
 /* cmd_edit: (command) invoke user defined editor on the netlist
  * if command has an argument, it edits that file instead
  * else actually edits a temporary file, and reads it back.
  */
-void CMD::edit(CS& cmd)
-{
-  std::string editor(OS::getenv("EDITOR"));
-  if (editor.empty()) {
-    error(bERROR, "no editor defined\n"
-	  "You need to set the EDITOR environment variable.");
-  }else{
-    if (cmd.more()) {
-      OS::system(editor + ' ' + cmd.tail());
+class CMD_EDIT : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST* Scope)
+  {itested();
+    std::string editor(OS::getenv("EDITOR"));
+    if (editor == "") {
+      throw Exception("no editor defined\n"
+	    "You need to set the EDITOR environment variable.");
     }else{
-      //std::string temp_file(::tmpnam(0));
-      std::string temp_file("/tmp/foo");
-      if (temp_file.empty()) {
-	error(bERROR, "cannot create temp file\n");
+      if (cmd.more()) {itested();
+	OS::system(editor + ' ' + cmd.tail());
       }else{
-	cmdproc("save " + temp_file + " quiet");
+	std::string temp_file("/tmp/gnucap" + to_string(unsigned(time(NULL))));
+	command("save " + temp_file + " quiet", Scope);
 	OS::system(editor + ' ' + temp_file);
-	cmdproc("get " + temp_file + " quiet");
+	command("get " + temp_file + " quiet", Scope);
 	OS::remove(temp_file);
       }
     }
   }
-}
+} p1;
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "edit", &p1);
 /*--------------------------------------------------------------------------*/
-void CMD::system(CS& cmd)
-{
-  if (cmd.more()) {
-    OS::system(cmd.tail());
-  }else{
-    OS::system(SHELL);
+class CMD_SYSTEM : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*)
+  {itested();
+    if (cmd.more()) {itested();
+      OS::system(cmd.tail());
+    }else{
+      OS::system(SHELL);
+    }
   }
-}
+} p2;
+DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "system|!", &p2);
 /*--------------------------------------------------------------------------*/
-void CMD::chdir(CS& cmd)
-{
-  if (cmd.more()) {
-    OS::chdir(cmd.ctos(""));
-  }else{
+class CMD_CHDIR : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*)
+  {itested();
+    if (cmd.more()) {
+      OS::chdir(cmd.ctos(""));
+    }else{
+    }
+    IO::mstdout << OS::getcwd() << '\n';
   }
-  IO::mstdout << OS::getcwd() << '\n';
+} p3;
+DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "chdir|cd", &p3);
+/*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

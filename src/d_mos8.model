@@ -1,12 +1,12 @@
-/* $Id: d_mos8.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+/* $Id: d_mos8.model,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -84,10 +84,16 @@ cc_headers {
       double cgbo "Gate-bulk overlap capacitance per length"
 	name=CGBO default=NA;
  */
-model MOS8 {
+model BUILT_IN_MOS8 {
   level 8
-  dev_type MOS;
-  inherit MOS_BASE;
+  public_keys {
+    nmos8 polarity=pN;
+    pmos8 polarity=pP;
+    nmos49 polarity=pN;
+    pmos49 polarity=pP;
+  }
+  dev_type BUILT_IN_MOS;
+  inherit BUILT_IN_MOS_BASE;
   independent {
     override {
       double mjsw "" final_default=.33;
@@ -526,7 +532,7 @@ model MOS8 {
       double vfbzb;
     }
     code_pre {
-      temp = SIM::temp_c + P_CELSIUS0;
+      temp = d->_sim->_temp_c + P_CELSIUS0;
       double egap = 1.16 - 7.02e-4 * temp * temp / (temp + 1108.0);
     }
     code_post {
@@ -633,8 +639,8 @@ model MOS8 {
 	{
 	  double T0 = -0.5 * s->dvt1 * s->leff / tmp2;
 	  double T1 = (T0 > -EXP_THRESHOLD) ? exp(T0) : MIN_EXP;
-	  double T2 = T1 * (1.0 + 2.0 * T1);
-	  T3 = s->dvt0 * T2 * tmp1;
+	  double t2 = T1 * (1.0 + 2.0 * T1);
+	  T3 = s->dvt0 * t2 * tmp1;
 	}
 	double T4 = m->tox * phi / (s->weff + s->w0);
 	double T5;
@@ -652,7 +658,6 @@ model MOS8 {
   }
   /*-----------------------------------------------------------------------*/
   tr_eval {
-    #line 658
     trace3("", d->vds, d->vgs, d->vbs);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     const double EXP_THRESHOLD = 34.0;
@@ -751,20 +756,20 @@ model MOS8 {
 	{
 	  double T3 = sqrt(Xdep);
 	  double T0 = s->dvt2w * Vbseff;
-	  double T1, T2;
+	  double T1, t2;
 	  if (T0 >= - 0.5) {
 	    T1 = 1.0 + T0;
-	    T2 = s->dvt2w;
+	    t2 = s->dvt2w;
 	  }else{
 	    untested();
 	    /* Added to avoid any discontinuity problems caused by dvt2w */ 
 	    double T4 = 1.0 / (3.0 + 8.0 * T0);
 	    T1 = (1.0 + 3.0 * T0) * T4; 
-	    T2 = s->dvt2w * T4 * T4;
+	    t2 = s->dvt2w * T4 * T4;
 	  }
-	  trace4("", T0, T1, T2, T3);
+	  trace4("", T0, T1, t2, T3);
 	  ltw = m->factor1 * T3 * T1;
-	  dltw_dVb = m->factor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * T2);
+	  dltw_dVb = m->factor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * t2);
 	}
 	trace2("", ltw, dltw_dVb);
 	double T0 = -0.5 * s->dvt1w * s->weff * s->leff / ltw;
@@ -1006,16 +1011,16 @@ model MOS8 {
 
       if (Abulk0 < 0.1) {
 	/* added to avoid the problems caused by Abulk0 */
-	double T9 = 1.0 / (3.0 - 20.0 * Abulk0);
-	Abulk0 = (0.2 - Abulk0) * T9;
-	dAbulk0_dVb *= T9 * T9;
+	double t9 = 1.0 / (3.0 - 20.0 * Abulk0);
+	Abulk0 = (0.2 - Abulk0) * t9;
+	dAbulk0_dVb *= t9 * t9;
 	trace2("2", Abulk0, dAbulk0_dVb);
       }
       if (Abulk < 0.1) {
 	/* added to avoid the problems caused by Abulk */
-	double T9 = 1.0 / (3.0 - 20.0 * Abulk);
-	Abulk = (0.2 - Abulk) * T9;
-	double T10 = T9 * T9;
+	double t9 = 1.0 / (3.0 - 20.0 * Abulk);
+	Abulk = (0.2 - Abulk) * t9;
+	double T10 = t9 * t9;
 	dAbulk_dVb *= T10;
 	dAbulk_dVg *= T10;
 	trace3("2", dAbulk_dVg, Abulk, dAbulk_dVb);
@@ -1024,17 +1029,17 @@ model MOS8 {
 
       double T0, dT0_dVb;
       {
-	double T2 = s->keta * Vbseff;
-	if (T2 >= -0.9) {
-	  T0 = 1.0 / (1.0 + T2);
+	double t2 = s->keta * Vbseff;
+	if (t2 >= -0.9) {
+	  T0 = 1.0 / (1.0 + t2);
 	  dT0_dVb = -s->keta * T0 * T0;
-	  trace3("", T2, T0, dT0_dVb);
+	  trace3("", t2, T0, dT0_dVb);
 	}else{
 	  /* added to avoid the problems caused by Keta */
-	  double T1 = 1.0 / (0.8 + T2);
-	  T0 = (17.0 + 20.0 * T2) * T1;
-	  dT0_dVb = -s->keta * T1 * T1;
-	  trace3("keta fix", T2, T0, dT0_dVb);
+	  double t1 = 1.0 / (0.8 + t2);
+	  T0 = (17.0 + 20.0 * t2) * t1;
+	  dT0_dVb = -s->keta * t1 * t1;
+	  trace3("keta fix", t2, T0, dT0_dVb);
 	}
       }
       dAbulk_dVg *= T0;
@@ -1913,11 +1918,11 @@ model MOS8 {
 	double Vgsteff;
 	{
 	  /* Seperate VgsteffCV with noff and voffcv */
-	  double noff = n * s->noff;
+	  double nnoff = n * s->noff;
 	  double dnoff_dVd = s->noff * dn_dVd;
 	  double dnoff_dVb = s->noff * dn_dVb;
 
-	  double T0 = t->vtm * noff;
+	  double T0 = t->vtm * nnoff;
 	  double Vgst = Vgs_eff - d->von;
 	  double VgstNVt = (Vgst - s->voffcv) / (2*T0);
 	  
@@ -1934,7 +1939,7 @@ model MOS8 {
 	    trace0("VgstNVt below");
 	    Vgsteff = T0 * log(1.0 + MIN_EXP);
 	    dVgsteff_dVg = 0.0;
-	    dVgsteff_dVd = Vgsteff / noff;
+	    dVgsteff_dVd = Vgsteff / nnoff;
 	    dVgsteff_dVb = dVgsteff_dVd * dnoff_dVb;
 	    dVgsteff_dVd *= dnoff_dVd;
 	  }else{
@@ -1944,11 +1949,11 @@ model MOS8 {
 	    Vgsteff = T0 * log(1.0 + ExpVgst);
 	    dVgsteff_dVg = ExpVgst / (1.0 + ExpVgst);
 	    dVgsteff_dVd = -dVgsteff_dVg
-	      * (dVth_dVd + (Vgst - s->voffcv) / noff * dnoff_dVd)
-	      + Vgsteff / noff * dnoff_dVd;
+	      * (dVth_dVd + (Vgst - s->voffcv) / nnoff * dnoff_dVd)
+	      + Vgsteff / nnoff * dnoff_dVd;
 	    dVgsteff_dVb = -dVgsteff_dVg
-	      * (dVth_dVb + (Vgst - s->voffcv) / noff * dnoff_dVb)
-	      + Vgsteff / noff * dnoff_dVb;
+	      * (dVth_dVb + (Vgst - s->voffcv) / nnoff * dnoff_dVb)
+	      + Vgsteff / nnoff * dnoff_dVb;
 	    dVgsteff_dVg *= dVgs_eff_dVg;
 	  } /* End of VgsteffCV */
 	}
@@ -2746,9 +2751,11 @@ model MOS8 {
     if (d->reversed) {
       d->qdrn = -d->qdrn;
       d->cdgb = -d->cdgb;
-      double t = d->cdsb;
-      d->cdsb = -d->cddb;
-      d->cddb = -t;
+      {
+	double t1 = d->cdsb;
+	d->cdsb = -d->cddb;
+	d->cddb = -t1;
+      }
 
       d->qgd   = d->qgate;
       d->cgdgb = d->cggb;

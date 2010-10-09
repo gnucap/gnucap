@@ -1,12 +1,12 @@
-/*$Id: c__cmd.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
+/*$Id: c__cmd.cc,v 26.130 2009/11/15 21:51:59 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,107 +21,101 @@
  *------------------------------------------------------------------
  * command interpreter and dispatcher
  */
-//testing=script 2006.07.17
+//testing=obsolete
 #include "u_status.h"
 #include "declare.h"	/* plclose */
-#include "u_opt.h"
-#include "ap.h"
 #include "c_comand.h"
-/*--------------------------------------------------------------------------*/
-//	void	CMD::cmdproc(const char*);
+#include "globals.h"
 /*--------------------------------------------------------------------------*/
 /* cmdproc: process a command
  * parse, and act on, a command string
  */
-void CMD::cmdproc(const std::string& cs)
+void CMD::cmdproc(CS& cmd, CARD_LIST* scope)
 {
   bool get_timer_was_running = ::status.get.is_running();
   ::status.get.stop();
 
-  CS cmd(cs);
   static TIMER timecheck;
   bool didsomething = true;
   
-  error(bTRACE, "%s\n", cmd.fullstring());
+  error(bTRACE, ">>>>>" + cmd.fullstring() + "\n");
   
   timecheck.stop().reset().start();
 
-  cmd.ematch(ANTI_COMMENT);
-  while (cmd.ematch(I_PROMPT)) {itested();
+  cmd.umatch(ANTI_COMMENT);
+  while (cmd.umatch(I_PROMPT)) {itested();
     /* skip any number of these */
   }
 
-       if (cmd.pmatch("AC"))         {            ac(cmd);}
-  else if (cmd.pmatch("ALArm"))      {            alarm(cmd);}
-  else if (cmd.pmatch("ALTer"))      {untested(); modify(cmd);}
-  else if (cmd.pmatch("Build"))      {itested();  build(cmd);}
-  else if (cmd.pmatch("CHDir"))      {untested(); chdir(cmd);}
-  else if (cmd.pmatch("CDir"))       {untested(); chdir(cmd);}
-  else if (cmd.pmatch("CLEAR"))      {            clear(cmd);}
-  else if (cmd.pmatch("DC"))         {            dc(cmd);}
-  else if (cmd.pmatch("DELete"))     {            del(cmd);}
-  else if (cmd.pmatch("DIsto"))      {untested(); disto(cmd);}
-  else if (cmd.pmatch("EDit"))       {untested(); edit(cmd);}
-  else if (cmd.pmatch("END"))        {            end(cmd);}
-  else if (cmd.pmatch("EXIt"))       {untested(); quit(cmd);}
-  //else if (cmd.pmatch("FANout"))   {untested(); fanout(cmd);}
-  else if (cmd.pmatch("FAult"))      {            fault(cmd);}
-  else if (cmd.pmatch("FOurier"))    {            fourier(cmd);}
-  else if (cmd.pmatch("GENerator"))  {            generator(cmd);}
-  else if (cmd.pmatch("GET"))        {            get(cmd);}
-  else if (cmd.pmatch("IC"))         {untested(); ic(cmd);}
-  else if (cmd.pmatch("INClude"))    {untested(); include(cmd);}
-  else if (cmd.pmatch("LISt"))       {            do_list(cmd);}
-  else if (cmd.pmatch("LOg"))        {untested(); logger(cmd);}
-  else if (cmd.pmatch("MACro"))      {untested(); subckt(cmd);}
-  else if (cmd.pmatch("MARk"))       {untested(); mark(cmd);}
-  else if (cmd.pmatch("MErge"))      {untested(); merge(cmd);}
-  else if (cmd.pmatch("MODEL"))      {untested(); model(cmd);}
-  else if (cmd.pmatch("Modify"))     {            modify(cmd);}
-  else if (cmd.pmatch("NODeset"))    {untested(); nodeset(cmd);}
-  else if (cmd.pmatch("NOIse"))      {untested(); noise(cmd);}
-  else if (cmd.pmatch("OP"))         {            op(cmd);}
-  else if (cmd.pmatch("OPTions"))    {            options(cmd);}
-  else if (cmd.pmatch("PARameter"))  {            param(cmd);}
-  else if (cmd.pmatch("PAUse"))      {untested(); pause(cmd);}
-  else if (cmd.pmatch("PLot"))       {            plot(cmd);}
-  else if (cmd.pmatch("PRint"))      {            print(cmd);}
-  else if (cmd.pmatch("PRobe"))      {untested(); print(cmd);}
-  else if (cmd.pmatch("Quit"))       {itested();  quit(cmd);}
-  else if (cmd.pmatch("REstore"))    {untested(); restore(cmd);}
-  else if (cmd.pmatch("RM"))         {untested(); del(cmd);}
-  else if (cmd.pmatch("SAve"))       {untested(); save(cmd);}
-  else if (cmd.pmatch("SENs"))       {untested(); sens(cmd);}
-  else if (cmd.pmatch("SET"))        {untested(); options(cmd);}
-  else if (cmd.pmatch("SPectrum"))   {untested(); fourier(cmd);}
-  else if (cmd.pmatch("STatus"))     {            status(cmd);}
-  else if (cmd.pmatch("SUbckt"))     {untested(); subckt(cmd);}
-  else if (cmd.pmatch("SWeep"))      {untested(); sweep(cmd);}
-  else if (cmd.pmatch("TEmperature")){untested(); temp(cmd);}
-  else if (cmd.pmatch("TF"))         {untested(); tf(cmd);}
-  else if (cmd.pmatch("TItle"))      {untested(); title(cmd);}
-  else if (cmd.pmatch("TRansient"))  {            tr(cmd);}
-  else if (cmd.pmatch("UNFault"))    {            unfault(cmd);}
-  else if (cmd.pmatch("UNMark"))     {untested(); unmark(cmd);}
-  else if (cmd.pmatch("Width"))      {            options(cmd);}
-  else if (cmd.pmatch("!$$"))        {untested(); system(cmd);}
-  else if (cmd.pmatch("<$$"))        {            run(cmd);}
-  else if (cmd.pmatch(">$$"))        {untested(); file(cmd);}
-  else{ /* comment or error */
-    comment(cmd);
+  unsigned here = cmd.cursor();
+  std::string s;
+
+  // Map possible short names to full ones.
+  // If this if/else block is removed, the only loss is the short names.
+  // Although it looks like it can be used to make aliases, don't.
+  if (cmd.umatch("'|*|#|//|\""))	{itested(); s = "xxxxcomment";}
+  else if (cmd.umatch("b{uild} "))      {itested();  s = "build";}
+  else if (cmd.umatch("del{ete} "))     {            s = "delete";}
+  else if (cmd.umatch("fo{urier} "))    {            s = "fourier";}
+  else if (cmd.umatch("gen{erator} "))  {	     s = "generator";}
+  else if (cmd.umatch("inc{lude} "))    {itested();  s = "include";}
+  else if (cmd.umatch("l{ist} "))       {            s = "list";}
+  else if (cmd.umatch("m{odify} "))     {            s = "modify";}
+  else if (cmd.umatch("opt{ions} "))    {            s = "options";}
+  else if (cmd.umatch("par{ameter} "))  {            s = "param";}
+  else if (cmd.umatch("pr{int} "))      {            s = "print";}
+  else if (cmd.umatch("q{uit} "))       {	     s = "quit";}
+  else if (cmd.umatch("st{atus} "))     {            s = "status";}
+  else if (cmd.umatch("te{mperature} ")){itested();  s = "temperature";}
+  else if (cmd.umatch("tr{ansient} "))  {            s = "transient";}
+  else if (cmd.umatch("!"))		{	     s = "system";}
+  else if (cmd.umatch("<"))		{untested(); s = "<";}
+  else if (cmd.umatch(">"))		{untested(); s = ">";}
+  else{ /* no shortcut available */
+    cmd >> s;
     didsomething = false;
   }
-  if (OPT::acct  &&  didsomething) {untested();
+
+  if (s == "xxxxcomment") {itested();
+    // nothing
+  }else if (s != "") {
+    CMD* c = command_dispatcher[s];
+    if (c) {
+      c->do_it(cmd, scope);
+      didsomething = true;
+    }else{itested();
+      cmd.warn(bWARNING, here, "what's this?");
+    }
+  }else if (!didsomething) {itested();
+    cmd.check(bWARNING, "bad command");
+    didsomething = false;
+  }else{itested();
+  }
+  
+  if (OPT::acct  &&  didsomething) {itested();
     IO::mstdout.form("time=%8.2f\n", timecheck.check().elapsed());
   }else{
   }
   plclose();
-  IO::suppresserrors = false;
   outreset();
 
   if (get_timer_was_running) {
     ::status.get.start();
   }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void CMD::command(const std::string& cs, CARD_LIST* scope)
+{
+  CS cmd(CS::_STRING, cs); // from string, full command
+  std::string s;
+  cmd >> s;
+
+  CMD* c = command_dispatcher[s];
+  if (c) {
+    c->do_it(cmd, scope);
+  }else{itested();
+    throw Exception("bad internal command: " + s);
   }
 }
 /*--------------------------------------------------------------------------*/

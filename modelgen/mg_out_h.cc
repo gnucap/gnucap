@@ -1,12 +1,12 @@
-/*$Id: mg_out_h.cc,v 25.94 2006/08/08 03:17:09 al Exp $ -*- C++ -*-
+/*$Id: mg_out_h.cc,v 26.134 2009/11/29 03:44:57 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+//testing=script 2006.11.01
 #include "mg_out.h"
 /*--------------------------------------------------------------------------*/
 static void make_header(std::ofstream& out, const File& in,
@@ -43,15 +44,19 @@ static void make_sdp(std::ofstream& out, const Model& m)
       << "\n  :public SDP_" << m.inherit()
       << "{\n"
     "public:\n"
-    "  explicit SDP_" << m.name() << "(const COMMON_COMPONENT*);\n"
+    "  explicit SDP_" << m.name() << "(const COMMON_COMPONENT* c) : SDP_" 
+      << m.inherit() << "(c) {init(c);}\n"
+    "  void init(const COMMON_COMPONENT*);\n"
     "public:\n";
   Parameter_List::const_iterator p = m.size_dependent().raw().begin();
   for (;;) {
     if (p == m.size_dependent().raw().end()) {
       p = m.size_dependent().calculated().begin();
+    }else{
     }
     if (p == m.size_dependent().calculated().end()) {
       break;
+    }else{
     }
     out << "  " << (**p).type() << " " << (**p).code_name() 
 	<< ";\t// " << (**p).comment() << '\n';
@@ -64,9 +69,11 @@ static void make_sdp(std::ofstream& out, const Model& m)
 /*--------------------------------------------------------------------------*/
 static void make_tdp(std::ofstream& out, const Model& m)
 {
+  out << "class DEV_" << m.dev_type() << ";\n";
   out << "class TDP_" << m.name();
-  if (!m.is_base()) {
+  if (!m.hide_base()) {
     out << "\n  :public TDP_" << m.inherit();
+  }else{
   }
   out <<
     "{\n"
@@ -74,8 +81,9 @@ static void make_tdp(std::ofstream& out, const Model& m)
     "  explicit TDP_"<< m.name() <<"(const DEV_" << m.dev_type() << "*);\n"
     "public:\n";
   for (Parameter_List::const_iterator
-	 p = m.temperature().calculated().begin();
-       p != m.temperature().calculated().end(); ++p) {
+       p = m.temperature().calculated().begin();
+       p != m.temperature().calculated().end();
+       ++p) {
     out << "  " << (**p).type() << " " << (**p).code_name() 
 	<< ";\t// " << (**p).comment() << '\n';
   }
@@ -90,45 +98,58 @@ static void make_model(std::ofstream& out, const Model& m)
   out <<
     "class " << class_name << "\n"
     "  :public MODEL_" << m.inherit() << "{\n"
+    "protected:\n"
+    "  explicit " << class_name << "(const " << class_name << "& p);\n"
     "public:\n"
-    "  // using generated copy constructor, should be unreachable\n"
-    "  explicit " << class_name << "();\n"
+    "  explicit " << class_name << "(const BASE_SUBCKT*);\n"
     "  ~" << class_name << "() {--_count;}\n"
     "public: // override virtual\n"
-    "  bool      parse_front(CS&);\n"
-    "  bool      parse_params(CS&);\n"
-    "  void      elabo1();\n"
-    "  SDP_CARD* new_sdp(const COMMON_COMPONENT* c)const;\n"
-    "  void      print_front(OMSTREAM&)const;\n"
-    "  void      print_params(OMSTREAM&)const;\n"
-    "  void      print_calculated(OMSTREAM&)const;\n"
-    "  bool      is_valid(const COMMON_COMPONENT*)const;\n"
+    "  std::string dev_type()const;\n"
+    "  void      set_dev_type(const std::string& nt);\n"
+    "  CARD*     clone()const {return new " << class_name << "(*this);}\n"
+    "  void      precalc_first();\n"
+    "  void      precalc_last();\n"
+    "  SDP_CARD* new_sdp(COMMON_COMPONENT* c)const;\n"
+    "  void      set_param_by_index(int, std::string&, int);\n"
+    "  bool      param_is_printable(int)const;\n"
+    "  std::string param_name(int)const;\n"
+    "  std::string param_name(int,int)const;\n"
+    "  std::string param_value(int)const;\n"
+    "  int param_count()const {return (" << 1 + m.independent().override().size()
+		+ 4 * m.size_dependent().raw().size() + m.independent().raw().size();
+  if (!m.hide_base()) {
+    out << " + MODEL_" << m.inherit() << "::param_count());}\n";
+  }else{
+    out << ");}\n";
+  }
+  out <<
+    "  bool      is_valid(const COMPONENT*)const;\n"
     "  void      tr_eval(COMPONENT*)const;\n"
     "public: // not virtual\n"
     "  static int count() {return _count;}\n"
     "private: // strictly internal\n";
-  if (m.level() != "") {
-    out << "  enum {LEVEL=" << m.level() <<"};\n";
-  }
   out <<
     "  static int _count;\n"
     "public: // input parameters\n";
   for (Parameter_List::const_iterator
-	 p = m.size_dependent().raw().begin();
-       p != m.size_dependent().raw().end(); ++p) {
+       p = m.size_dependent().raw().begin();
+       p != m.size_dependent().raw().end();
+       ++p) {
     out << "  " << "SDP" << " " << (**p).code_name()
 	<< ";\t// " << (**p).comment() << '\n';
   }
   for (Parameter_List::const_iterator
-	 p = m.independent().raw().begin();
-       p != m.independent().raw().end(); ++p) {
+       p = m.independent().raw().begin();
+       p != m.independent().raw().end();
+       ++p) {
     out << "  PARAMETER<" << (**p).type() << "> " << (**p).code_name()
 	<< ";\t// " << (**p).comment() << '\n';
   }
   out << "public: // calculated parameters\n";
   for (Parameter_List::const_iterator
-	 p = m.independent().calculated().begin();
-       p != m.independent().calculated().end(); ++p) {
+       p = m.independent().calculated().begin();
+       p != m.independent().calculated().end();
+       ++p) {
     out << "  " << (**p).type() << " " << (**p).code_name()
 	<< ";\t// " << (**p).comment() << '\n';
   }
@@ -147,38 +168,48 @@ static void make_common(std::ofstream& out, const Device& d)
     "  explicit " << class_name << "(const " << class_name << "& p);\n"
     "  explicit " << class_name << "(int c=0);\n"
     "           ~" << class_name << "();\n"
-    "  bool        operator==(const COMMON_COMPONENT&)const;\n"
+    "  bool     operator==(const COMMON_COMPONENT&)const;\n"
     "  COMMON_COMPONENT* clone()const {return new "<<class_name<<"(*this);}\n"
-    "  void        parse(CS&);\n"
-    "  void        print(OMSTREAM&)const;\n"
-    "  void        elabo3(const COMPONENT*);\n"
-    "  const char* name()const {return \"" << d.parse_name() << "\";}\n"
+    "  void     set_param_by_index(int, std::string&, int);\n"
+    "  bool     param_is_printable(int)const;\n"
+    "  std::string param_name(int)const;\n"
+    "  std::string param_name(int,int)const;\n"
+    "  std::string param_value(int)const;\n"
+    "  int param_count()const {return (" 
+	     << d.common().override().size() + d.common().raw().size()
+	     << " + COMMON_COMPONENT::param_count());}\n"
+    "  void     precalc_first(const CARD_LIST*);\n"
+    "  void     expand(const COMPONENT*);\n"
+    "  void     precalc_last(const CARD_LIST*);\n"
+    "  std::string name()const {itested();return \"" << d.parse_name() << "\";}\n"
     "  const SDP_CARD* sdp()const {return _sdp;}\n"
-    "  bool      has_sdp()const {return _sdp;}\n"
+    "  bool     has_sdp()const {untested();return _sdp;}\n"
     "  static int  count() {return _count;}\n"
     "private: // strictly internal\n"
     "  static int _count;\n"
     "public: // input parameters\n";
   for (Parameter_List::const_iterator
-	 p = d.common().raw().begin();
-       p != d.common().raw().end(); ++p) {
+       p = d.common().raw().begin();
+       p != d.common().raw().end();
+       ++p) {
     out << "  PARAMETER<" << (**p).type() << "> " << (**p).code_name()
 	<< ";\t// " << (**p).comment() << '\n';
   }
   out <<
     "public: // calculated parameters\n"
-    "  const SDP_CARD* _sdp;\n";
+    "  SDP_CARD* _sdp;\n";
   for (Parameter_List::const_iterator
-	 p = d.common().calculated().begin();
-       p != d.common().calculated().end(); ++p) {
+       p = d.common().calculated().begin();
+       p != d.common().calculated().end();
+       ++p) {
     out << "  " << (**p).type() << " " << (**p).code_name()
 	<< ";\t// " << (**p).comment() << '\n';
   }
   out << "public: // attached commons\n";
   for (Args_List::const_iterator
-	  p = d.circuit().args_list().begin();
-	p != d.circuit().args_list().end();
-	++p) {
+       p = d.circuit().args_list().begin();
+       p != d.circuit().args_list().end();
+       ++p) {
     out << "  COMMON_COMPONENT* _" << (**p).name() << ";\n";
   }
   out << "};\n"
@@ -197,57 +228,55 @@ static void make_device(std::ofstream& out, const Device& d)
     "  explicit " << class_name << "();\n"
     "           ~" << class_name << "() {--_count;}\n"
     "private: // override virtual\n"
-    "  char      id_letter()const     {return '" << d.id_letter() << "';}\n"
-    "  const char* dev_type()const    {return \"" << d.parse_name() << "\";}\n"
+    "  char      id_letter()const     {untested();return '" << d.id_letter() << "';}\n"
+    "  bool      print_type_in_spice()const {return true;}\n"
+    "  std::string value_name()const  {return \"area\";}\n"
+    "  //std::string dev_type()const;   //BASE_SUBCKT\n"
     "  int       max_nodes()const     {return " << d.max_nodes() << ";}\n"
     "  int       min_nodes()const     {return " << d.min_nodes() << ";}\n";
-  {if (d.max_nodes() != d.min_nodes()) {
+  if (d.max_nodes() != d.min_nodes()) {
     out <<
-      "  //int     out_nodes()const;    //BASE_SUBCKT\n"
       "  //int     matrix_nodes()const; //BASE_SUBCKT\n"
       "  //int     net_nodes()const;    //BASE_SUBCKT\n";
   }else{
     out <<
-      "  int       out_nodes()const     {return " << d.max_nodes() <<";}\n"
       "  //int     matrix_nodes()const; //BASE_SUBCKT\n"
       "  int       net_nodes()const     {return " << d.max_nodes() << ";}\n";
-  }}
+  }
   out << 
     "  int       int_nodes()const     {return " 
       << d.circuit().local_nodes().size() << ";}\n"
     "  CARD*     clone()const         {return new "
       << class_name << "(*this);}\n"
-    "  //void    parse_spice(CS&);    //BASE_SUBCKT\n"
-    "  //void    print_spice(OMSTREAM&,int)const; //BASE_SUBCKT\n"
-    "  void      elabo1();\n"
+    "  void      precalc_first() {COMPONENT::precalc_first(); if(subckt()) subckt()->precalc_first();}\n"
+    "  void      expand();\n"
+    "  void      precalc_last()  {COMPONENT::precalc_last(); assert(subckt()); subckt()->precalc_last();}\n"
     "  //void    map_nodes();         //BASE_SUBCKT\n"
-    "  //void    precalc();           //BASE_SUBCKT\n"
-    "  //void    dc_begin();          //BASE_SUBCKT\n"
     "  //void    tr_begin();          //BASE_SUBCKT\n"
     "  //void    tr_restore();        //BASE_SUBCKT\n";
-  {if (d.tr_eval().is_empty()) {
+  if (d.tr_eval().is_empty()) {
     out <<
       "  //void    dc_advance();        //BASE_SUBCKT\n"
       "  //void    tr_advance();        //BASE_SUBCKT\n"
+      "  //void    tr_regress();        //BASE_SUBCKT\n"
       "  //bool    tr_needs_eval()const;//BASE_SUBCKT\n"
       "  //void    tr_queue_eval();     //BASE_SUBCKT\n"
       "  //bool    do_tr();             //BASE_SUBCKT\n";
   }else{
     out <<
-      "  void      dc_advance() "
-      "{set_not_converged(); BASE_SUBCKT::dc_advance();}\n"
-      "  void      tr_advance() "
-      "{set_not_converged(); BASE_SUBCKT::tr_advance();}\n"
+      "  void      dc_advance() {set_not_converged(); BASE_SUBCKT::dc_advance();}\n"
+      "  void      tr_advance() {set_not_converged(); BASE_SUBCKT::tr_advance();}\n"
+      "  void      tr_regress() {set_not_converged(); BASE_SUBCKT::tr_regress();}\n"
       "  bool      tr_needs_eval()const;\n"
       "  void      tr_queue_eval()      {if(tr_needs_eval()){q_eval();}}\n"
       "  bool      do_tr();\n";
-  }}
+  }
   out <<
     "  //void    tr_load();           //BASE_SUBCKT\n"
     "  //double  tr_review();         //BASE_SUBCKT\n"
     "  //void    tr_accept();         //BASE_SUBCKT\n"
     "  //void    tr_unload();         //BASE_SUBCKT\n"
-    "  double    tr_probe_num(CS&)const;\n"
+    "  double    tr_probe_num(const std::string&)const;\n"
     "  //void    ac_begin();          //BASE_SUBCKT\n"
     "  //void    do_ac();             //BASE_SUBCKT\n"
     "  //void    ac_load();           //BASE_SUBCKT\n"
@@ -256,8 +285,9 @@ static void make_device(std::ofstream& out, const Device& d)
     "  static int  count() {return _count;}\n"
     "public: // may be used by models\n";
   for (Function_List::const_iterator
-	  p = d.function_list().begin();
-	p != d.function_list().end(); ++p) {
+       p = d.function_list().begin();
+       p != d.function_list().end();
+       ++p) {
     out << "  void " << (**p).name() << ";\n";
   }
   out << 
@@ -265,50 +295,76 @@ static void make_device(std::ofstream& out, const Device& d)
     "  static int _count;\n";
   out <<  "public: // input parameters\n";
   for (Parameter_List::const_iterator
-	 p = d.device().raw().begin();
-       p != d.device().raw().end(); ++p) {
+       p = d.device().raw().begin();
+       p != d.device().raw().end();
+       ++p) {untested();
     untested();
     out << "  PARAMETER<" << (**p).type() << "> " << (**p).code_name()
 	<< ";\t// " << (**p).comment() << '\n';
   }
   out << "public: // calculated parameters\n";
   for (Parameter_List::const_iterator
-	 p = d.device().calculated().begin();
-       p != d.device().calculated().end(); ++p) {
+       p = d.device().calculated().begin();
+       p != d.device().calculated().end();
+       ++p) {
     out << "  " << (**p).type() << " " << (**p).code_name()
 	<< ";\t// " << (**p).comment() << '\n';
   }
   out << "public: // netlist\n";
   for (Element_List::const_iterator
-	 p = d.circuit().elements().begin();
-       p != d.circuit().elements().end(); ++p) {
-    out << "  " << (**p).class_name() << "* _" << (**p).name() << ";\n";
+       p = d.circuit().elements().begin();
+       p != d.circuit().elements().end();
+       ++p) {
+    out << "  COMPONENT* _" << (**p).name() << ";\n";
   }
   out << "private: // node list\n"
     "  enum {";
-  int port_nodes = 0;
   for (Port_List::const_iterator
-	 p = d.circuit().req_nodes().begin();
-       p != d.circuit().req_nodes().end(); ++p) {
+       p = d.circuit().req_nodes().begin();
+       p != d.circuit().req_nodes().end();
+       ++p) {
     if (p != d.circuit().req_nodes().begin()) {
       out << ", ";
+    }else{
     }
-    out << "n_" << (**p).name() << "=" << port_nodes++;
+    out << "n_" << (**p).name();
   }
   for (Port_List::const_iterator
-	 p = d.circuit().opt_nodes().begin();
-       p != d.circuit().opt_nodes().end(); ++p) {
+       p = d.circuit().opt_nodes().begin();
+       p != d.circuit().opt_nodes().end();
+       ++p) {
     out << ", ";
-    out << "n_" << (**p).name() << "=" << port_nodes++;
+    out << "n_" << (**p).name();
   }
-  int local_nodes = 0;
   for (Port_List::const_iterator
-	 p = d.circuit().local_nodes().begin();
-       p != d.circuit().local_nodes().end(); ++p) {
-    out << ", n_" << (**p).name() << "=-" << ++local_nodes;
+       p = d.circuit().local_nodes().begin();
+       p != d.circuit().local_nodes().end();
+       ++p) {
+    out << ", n_" << (**p).name();
   }
+  size_t total_nodes = d.circuit().req_nodes().size() + d.circuit().opt_nodes().size()
+    + d.circuit().local_nodes().size();
   out << "};\n"
-    "  node_t _nodes[" << (local_nodes + port_nodes) << "];\n"
+    "  node_t _nodes[" << total_nodes << "];\n"
+    "  std::string port_name(int i)const {\n"
+    "    assert(i >= 0);\n"
+    "    assert(i < " << d.circuit().req_nodes().size() + d.circuit().opt_nodes().size() << ");\n"
+    "    static std::string names[] = {";
+  for (Port_List::const_iterator
+	 p = d.circuit().req_nodes().begin();
+       p != d.circuit().req_nodes().end();
+       ++p) {
+    out << '"' << (**p).name() << "\", ";
+  }
+  for (Port_List::const_iterator
+       p = d.circuit().opt_nodes().begin();
+       p != d.circuit().opt_nodes().end();
+       ++p) {
+    out << '"' << (**p).name() << "\", ";
+  }
+  out << "\"\"};\n"
+    "    return names[i];\n"
+    "  }\n"
     "};\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
@@ -327,9 +383,9 @@ static void make_eval(std::ofstream& out, const Eval& e,
     "public:\n"
     "  explicit "<< class_name << "(int c=0) :COMMON_COMPONENT(c) {}\n"
     "  bool operator==(const COMMON_COMPONENT& x)const "
-    "{return COMMON_COMPONENT::operator==(x);}\n"
+		"{return COMMON_COMPONENT::operator==(x);}\n"
     "  COMMON_COMPONENT* clone()const {return new "<<class_name<<"(*this);}\n"
-    "  const char* name()const {untested(); return \""<< class_name << "\";}\n"
+    "  std::string name()const {untested(); return \""<< class_name << "\";}\n"
     "  void tr_eval(ELEMENT*d)const;\n"
     "  bool has_tr_eval()const {return true;}\n"
     "  bool has_ac_eval()const {return false;}\n"
@@ -341,7 +397,9 @@ static void make_eval(std::ofstream& out, const Eval& e,
 static void make_evals(std::ofstream& out, const Device& d)
 {
   for (Eval_List::const_iterator
-	 e = d.eval_list().begin(); e != d.eval_list().end(); ++e) {
+       e = d.eval_list().begin();
+       e != d.eval_list().end();
+       ++e) {
     make_eval(out, **e, d.name());
   }
 }
@@ -361,38 +419,45 @@ void make_h_file(const File& in)
   std::string dump_name = in.name();
   { // chop suffix .model
     std::string::size_type loc = dump_name.rfind(".model");
+    if (loc == std::string::npos) {
+      untested();
+      loc = dump_name.rfind(".vams");
+    }else{
+    }
     if (loc != std::string::npos) {
       dump_name.erase(loc);
-    }else{
-      untested();
+    }else{untested();
     }
   }
   { // chop prefix path
     std::string::size_type loc = dump_name.find_last_of(ENDDIR);
     if (loc != std::string::npos) {
       dump_name.erase(0, loc+1);
-    }else{
-      untested();
+    }else{itested();
     }
   }
 
   // open file
   std::ofstream out((dump_name+".h").c_str());
-  if (!out) {
-    untested();
+  if (!out) {untested();
     os_error(dump_name);
+  }else{
   }
 
   make_header(out, in, dump_name);
 
   for (Model_List::const_iterator
-	 m = in.models().begin();  m != in.models().end();  ++m) {
+       m = in.models().begin();
+       m != in.models().end();
+       ++m) {
     make_sdp(out, **m);
     make_tdp(out, **m);
     make_model(out, **m);
   }
   for (Device_List::const_iterator
-	 m = in.devices().begin();  m != in.devices().end();  ++m) {
+       m = in.devices().begin();
+       m != in.devices().end();
+       ++m) {
     make_common(out, **m);
     make_evals(out, **m);
     make_device(out, **m);

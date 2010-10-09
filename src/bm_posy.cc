@@ -1,12 +1,12 @@
-/*$Id: bm_posy.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: bm_posy.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,14 +23,43 @@
  * pair ...  first is key, second is value
  */
 //testing=script 2005.10.06
+#include "u_lang.h"
 #include "e_elemnt.h"
 #include "bm.h"
+/*--------------------------------------------------------------------------*/
+namespace {
 /*--------------------------------------------------------------------------*/
 const double _default_max(BIGBIG);
 const double _default_min(-BIGBIG);
 const bool   _default_abs(false);
 const bool   _default_odd(false);
 const bool   _default_even(false);
+/*--------------------------------------------------------------------------*/
+class EVAL_BM_POSY : public EVAL_BM_ACTION_BASE {
+private:
+  PARAMETER<double> _min;
+  PARAMETER<double> _max;
+  PARAMETER<bool>   _abs;
+  PARAMETER<bool>   _odd;
+  PARAMETER<bool>   _even;
+  std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > > _table;
+  explicit	EVAL_BM_POSY(const EVAL_BM_POSY& p);
+public:
+  explicit      EVAL_BM_POSY(int c=0);
+		~EVAL_BM_POSY()		{}
+private: // override vitrual
+  bool		operator==(const COMMON_COMPONENT&)const;
+  COMMON_COMPONENT* clone()const	{return new EVAL_BM_POSY(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+
+  void		precalc_first(const CARD_LIST*);
+  void		tr_eval(ELEMENT*)const;
+  std::string	name()const		{return "posy";}
+  bool		ac_too()const		{untested();return false;}
+  bool		parse_numlist(CS&);
+  bool		parse_params_obsolete_callback(CS&);
+};
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 EVAL_BM_POSY::EVAL_BM_POSY(int c)
   :EVAL_BM_ACTION_BASE(c),
@@ -71,43 +100,42 @@ bool EVAL_BM_POSY::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_POSY::print(OMSTREAM& o)const
+void EVAL_BM_POSY::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
-  o << ' ' << name() << '(';
+  assert(lang);
+  o << name() << '(';
   for (std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > >::
 	 const_iterator p = _table.begin();  p != _table.end();  ++p) {
     o << p->second << ',' << p->first << ' ';
   }
   o << ')';
-  if (_min.has_value())  {o << " min="  << _min;  untested();}
-  if (_max.has_value())  {o << " max="  << _max;  untested();}
-  if (_abs.has_value())  {o << " abs="  << _abs;  untested();}
-  if (_odd.has_value())  {o << " odd="  << _odd;}
-  if (_even.has_value()) {o << " even=" << _even;  untested();}
-  EVAL_BM_ACTION_BASE::print(o);
+  print_pair(o, lang, "min", _min, _min.has_hard_value());
+  print_pair(o, lang, "max", _max, _max.has_hard_value());
+  print_pair(o, lang, "abs", _abs, _abs.has_hard_value());
+  print_pair(o, lang, "odd", _odd, _odd.has_hard_value());
+  print_pair(o, lang, "even",_even,_even.has_hard_value());
+  EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_POSY::elabo3(const COMPONENT* c)
+void EVAL_BM_POSY::precalc_first(const CARD_LIST* Scope)
 {
-  assert(c);
-  const CARD_LIST* par_scope = c->scope();
-  assert(par_scope);
-  EVAL_BM_ACTION_BASE::elabo3(c);
-  _min.e_val(_default_min, par_scope);
-  _max.e_val(_default_max, par_scope);
-  _abs.e_val(_default_abs, par_scope);
-  _odd.e_val(_default_odd, par_scope);
-  _even.e_val(_default_even, par_scope);
+  assert(Scope);
+  EVAL_BM_ACTION_BASE::precalc_first(Scope);
+  _min.e_val(_default_min, Scope);
+  _max.e_val(_default_max, Scope);
+  _abs.e_val(_default_abs, Scope);
+  _odd.e_val(_default_odd, Scope);
+  _even.e_val(_default_even, Scope);
   for (std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > >::
 	 iterator p = _table.begin();  p != _table.end();  ++p) {
-    p->first.e_val(0, par_scope);
-    p->second.e_val(0, par_scope);
+    p->first.e_val(0, Scope);
+    p->second.e_val(0, Scope);
   }
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_POSY::tr_eval(ELEMENT* d)const
 {
-  double x_raw = ioffset(d->_y0.x);
+  double x_raw = ioffset(d->_y[0].x);
   trace1("before", x_raw);
   double x = (x_raw < 0)
     ? ((_odd || _even) ? -x_raw : 0.)
@@ -128,7 +156,7 @@ void EVAL_BM_POSY::tr_eval(ELEMENT* d)const
     assert(x == 0);
     for (std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > >::
 	   const_iterator p = _table.begin();  p != _table.end();  ++p) {
-      if (p->first == 0) {
+      if (p->first == 0.) {
 	f0 += 1;
 	untested();
       }
@@ -162,17 +190,17 @@ void EVAL_BM_POSY::tr_eval(ELEMENT* d)const
     untested();
   }
 
-  d->_y0 = FPOLY1(x_raw, f0, f1);
-  tr_final_adjust(&(d->_y0), d->f_is_value());
-  trace3("fa", d->_y0.x, d->_y0.f0, d->_y0.f1);
+  d->_y[0] = FPOLY1(x_raw, f0, f1);
+  tr_final_adjust(&(d->_y[0]), d->f_is_value());
+  trace3("fa", d->_y[0].x, d->_y[0].f0, d->_y[0].f1);
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_POSY::parse_numlist(CS& cmd)
 {
-  int start = cmd.cursor();
-  int here = cmd.cursor();
+  unsigned start = cmd.cursor();
+  unsigned here = cmd.cursor();
   for (;;) {
-    int start_of_pair = here;
+    unsigned start_of_pair = here;
     std::pair<PARAMETER<double>, PARAMETER<double> > p;
     cmd >> p.second; // value
     if (cmd.stuck(&here)) {
@@ -197,16 +225,21 @@ bool EVAL_BM_POSY::parse_numlist(CS& cmd)
   return cmd.gotit(start);
 }
 /*--------------------------------------------------------------------------*/
-bool EVAL_BM_POSY::parse_params(CS& cmd)
+bool EVAL_BM_POSY::parse_params_obsolete_callback(CS& cmd)
 {
   return ONE_OF
-    || get(cmd, "MIn",  &_min)
-    || get(cmd, "MAx",  &_max)
-    || get(cmd, "Abs",  &_abs)
-    || get(cmd, "Odd",  &_odd)
-    || get(cmd, "Even", &_even)
-    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    || Get(cmd, "min",  &_min)
+    || Get(cmd, "max",  &_max)
+    || Get(cmd, "abs",  &_abs)
+    || Get(cmd, "odd",  &_odd)
+    || Get(cmd, "even", &_even)
+    || EVAL_BM_ACTION_BASE::parse_params_obsolete_callback(cmd)
     ;
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+EVAL_BM_POSY p1(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher, "posy", &p1);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

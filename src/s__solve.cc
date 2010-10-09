@@ -1,12 +1,12 @@
-/*$Id: s__solve.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
+/*$Id: s__solve.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,8 +22,10 @@
  * solve one step of a transient or dc analysis
  */
 //testing=script 2006.07.14
+#include "e_cardlist.h"
+#include "u_status.h"
 #include "e_node.h"
-//#include "s__.h"
+#include "s__.h"
 /*--------------------------------------------------------------------------*/
 //	bool	SIM::solve(int,int);
 //	void	SIM::finish_building_evalq();
@@ -42,31 +44,30 @@ bool SIM::solve(OPT::ITL itl, TRACE trace)
   converged = false;
   int convergedcount = 0;
   
-  reset_iteration_counter(iSTEP);
+  _sim->reset_iteration_counter(iSTEP);
   advance_time();
-  
-  inc_mode = (inc_mode == tsNO) ? tsBAD : inc_mode;
-  damp = OPT::dampmax;
-  
+
+  _sim->_damp = OPT::dampmax;
+ 
   do{
     if (trace >= tITERATION) {
-      print(static_cast<double>(-iteration_number()));
+      print_results(static_cast<double>(-_sim->iteration_number()));
     }
     set_flags();
     clear_arrays();
     finish_building_evalq();
     
-    count_iterations(iPRINTSTEP);
-    count_iterations(iSTEP);
-    count_iterations(mode);
-    count_iterations(iTOTAL);
+    _sim->count_iterations(iPRINTSTEP);
+    _sim->count_iterations(iSTEP);
+    _sim->count_iterations(_sim->_mode);
+    _sim->count_iterations(iTOTAL);
     
     evaluate_models();
 
     if (converged) {
-      if (limiting) {
+      if (_sim->_limiting) {
 	error(bDEBUG, "converged beyond limit, resetting limit\n");
-	set_limit();
+	_sim->set_limit();
 	convergedcount = 0;
       }else{
 	++convergedcount;
@@ -78,15 +79,48 @@ bool SIM::solve(OPT::ITL itl, TRACE trace)
       converged = false;
     }
       
-    if (!converged || !OPT::fbbypass || damp < .99) {
+    if (!converged || !OPT::fbbypass || _sim->_damp < .99) {
       set_damp();
       load_matrix();
       solve_equations();
-      if (exceeds_iteration_limit(OPT::TRACE)) {itested();
-	IO::suppresserrors = false;
+    }
+  }while (!converged && !_sim->exceeds_iteration_limit(itl));
+
+  return converged;
+}
+/*--------------------------------------------------------------------------*/
+bool SIM::solve_with_homotopy(OPT::ITL itl, TRACE trace)
+{
+  solve(itl, trace);
+  trace2("plain", ::status.iter[iSTEP], OPT::gmin);
+  if (!converged && OPT::itl[OPT::SSTEP] > 0) {
+    int save_itermin = OPT::itermin;
+    OPT::itermin = 0;
+    double save_gmin = OPT::gmin;
+    OPT::gmin = 1;
+    while (_sim->_iter[iPRINTSTEP] < OPT::itl[OPT::SSTEP] && OPT::gmin > save_gmin) {
+      //CARD_LIST::card_list.precalc();
+      _sim->set_inc_mode_no();
+      solve(itl, trace);
+      if (!converged) {
+	trace2("fail", _sim->_iter[iSTEP], OPT::gmin);
+	OPT::gmin *= 3.5;
+      }else{
+	trace2("success", _sim->_iter[iSTEP], OPT::gmin);
+	OPT::gmin /= 4;
       }
     }
-  }while (!converged && !exceeds_iteration_limit(itl));
+    OPT::itermin = save_itermin;
+    OPT::gmin = save_gmin;
+    //CARD_LIST::card_list.precalc();
+    solve(itl, trace);
+    if (!converged) {
+      trace2("final fail", _sim->_iter[iSTEP], OPT::gmin);
+    }else{
+      trace2("final success", _sim->_iter[iSTEP], OPT::gmin);
+    }
+  }else{
+  }
   return converged;
 }
 /*--------------------------------------------------------------------------*/
@@ -110,49 +144,59 @@ void SIM::advance_time(void)
 {
   ::status.advance.start();
   static double last_iter_time;
-  if (SIM::time0 > 0) {
-    if (SIM::time0 > last_iter_time) {	/* moving forward */
-      notstd::copy_n(v0, ::status.total_nodes+1, vt1);
+  if (_sim->_time0 > 0) {
+    if (_sim->_time0 > last_iter_time) {	/* moving forward */
+      notstd::copy_n(_sim->_v0, _sim->_total_nodes+1, _sim->_vt1);
+      CARD_LIST::card_list.tr_advance();
     }else{				/* moving backward */
       /* don't save voltages.  They're wrong! */
       /* instead, restore a clean start for iteration */
-      notstd::copy_n(vt1, ::status.total_nodes+1, v0);
+      notstd::copy_n(_sim->_vt1, _sim->_total_nodes+1, _sim->_v0);
+      CARD_LIST::card_list.tr_regress();
     }
-    CARD_LIST::card_list.tr_advance();
   }else{
     CARD_LIST::card_list.dc_advance();
   }
-  last_iter_time = SIM::time0;
+  last_iter_time = _sim->_time0;
   ::status.advance.stop();
 }
 /* last_iter_time is initially 0 by C definition.
  * On subsequent runs it will start with an arbitrary positive value.
- * SIM::time0 starts at either 0 or the ending time of the last run.
+ * _sim->_time0 starts at either 0 or the ending time of the last run.
  * In either case, (time0 > last_iter_time) is false on the first step.
  * This correctly results in "don't save voltages..."
  */
 /*--------------------------------------------------------------------------*/
 void SIM::set_flags()
 {
-  limiting = false;
-  fulldamp = false;
-  inc_mode = (inc_mode == tsBAD || OPT::incmode == false
-	      || is_iteration_number(OPT::itl[OPT::TRLOW]))
-    ? tsNO
-    : tsYES;
-  bypass_ok = 
-    (is_step_rejected()  ||  damp < OPT::dampmax*OPT::dampmax)
+  _sim->_limiting = false;
+  _sim->_fulldamp = false;
+  
+  if (OPT::incmode == false) {
+    _sim->set_inc_mode_no();
+  }else if (_sim->inc_mode_is_bad()) {
+    _sim->set_inc_mode_no();
+  }else if (_sim->is_iteration_number(OPT::itl[OPT::TRLOW])) {
+    _sim->set_inc_mode_no();
+  }else if (_sim->is_iteration_number(0)) {
+    // leave it as is
+  }else{
+    _sim->set_inc_mode_yes();
+  }
+
+  _sim->_bypass_ok = 
+    (is_step_rejected()  ||  _sim->_damp < OPT::dampmax*OPT::dampmax)
     ? false : bool(OPT::bypass);
 }
 /*--------------------------------------------------------------------------*/
 void SIM::clear_arrays(void)
 {
-  if (!SIM::inc_mode) {			/* Clear working array */
-    SIM::aa.zero();
-    SIM::aa.dezero(OPT::gmin);		/* gmin fudge */
-    std::fill_n(i, aa.size()+1, 0);
+  if (!_sim->is_inc_mode()) {			/* Clear working array */
+    _sim->_aa.zero();
+    _sim->_aa.dezero(OPT::gmin);		/* gmin fudge */
+    std::fill_n(_sim->_i, _sim->_aa.size()+1, 0);
   }
-  loadq.clear();
+  _sim->_loadq.clear();
 }
 /*--------------------------------------------------------------------------*/
 void SIM::evaluate_models()
@@ -160,42 +204,46 @@ void SIM::evaluate_models()
   ::status.evaluate.start();
   if (OPT::bypass) {
     converged = true;
-    swap(evalq, evalq_uc);
-    while (!evalq->empty()) {
-      converged &= evalq->front()->do_tr();
-      evalq->pop_front();
+    swap(_sim->_evalq, _sim->_evalq_uc);
+    while (!_sim->_evalq->empty()) {
+      converged &= _sim->_evalq->front()->do_tr();
+      _sim->_evalq->pop_front();
     }
   }else{
-    evalq_uc->clear();
+    _sim->_evalq_uc->clear();
     converged = CARD_LIST::card_list.do_tr();
+  }
+  while (!_sim->_late_evalq.empty()) { //BUG// encapsulation violation
+    converged &= _sim->_late_evalq.front()->do_tr_last();
+    _sim->_late_evalq.pop_front();
   }
   ::status.evaluate.stop();
 }
 /*--------------------------------------------------------------------------*/
 void SIM::set_damp()
 {
-  if (is_second_iteration() && !converged && OPT::dampstrategy&dsINIT) {
-    damp = OPT::dampmin;
-  }else if (is_first_iteration()  ||  converged) {
-    damp = OPT::dampmax;
-  }else if (fulldamp) {
-    damp = OPT::dampmin;
+  if (_sim->is_second_iteration() && !converged && OPT::dampstrategy&dsINIT) {
+    _sim->_damp = OPT::dampmin;
+  }else if (_sim->is_first_iteration()  ||  converged) {
+    _sim->_damp = OPT::dampmax;
+  }else if (_sim->_fulldamp) {
+    _sim->_damp = OPT::dampmin;
   }else{
-    damp = OPT::dampmax;
+    _sim->_damp = OPT::dampmax;
   }
-  trace1("", damp);
+  trace1("", _sim->_damp);
 }
 /*--------------------------------------------------------------------------*/
 void SIM::load_matrix()
 {
   ::status.load.start();
-  if (OPT::traceload && SIM::inc_mode) {
-    while (!loadq.empty()) {
-      loadq.back()->tr_load();
-      loadq.pop_back();
+  if (OPT::traceload && _sim->is_inc_mode()) {
+    while (!_sim->_loadq.empty()) {
+      _sim->_loadq.back()->tr_load();
+      _sim->_loadq.pop_back();
     }
   }else{
-    loadq.clear();
+    _sim->_loadq.clear();
     CARD_LIST::card_list.tr_load();
   }
   ::status.load.stop();
@@ -204,18 +252,17 @@ void SIM::load_matrix()
 void SIM::solve_equations()
 {
   ::status.lud.start();
-  lu.lu_decomp(aa, bool(OPT::lubypass && SIM::inc_mode));
+  _sim->_lu.lu_decomp(_sim->_aa, bool(OPT::lubypass && _sim->is_inc_mode()));
   ::status.lud.stop();
 
   ::status.back.start();
-  lu.fbsub(v0, i, fw);
+  _sim->_lu.fbsub(_sim->_v0, _sim->_i, _sim->_v0);
   ::status.back.stop();
   
-  extern LOGIC_NODE* nstat;
-  if (nstat) {
+  if (_sim->_nstat) {
     // mixed mode
-    for (int ii = lu.size(); ii >= 1; --ii) {
-      nstat[ii].set_a_iter();
+    for (int ii = _sim->_lu.size(); ii >= 1; --ii) {
+      _sim->_nstat[ii].set_a_iter();
     }
   }else{
     // pure analog

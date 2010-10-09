@@ -1,12 +1,12 @@
-/*$Id: ap_error.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: ap_error.cc,v 26.122 2009/09/23 11:23:50 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -38,9 +38,11 @@ CS & CS::check(int badness, const std::string& message)
 {
   skipbl();
   switch (peek()) {
-    case '\'':	untested(); _ok = true;  skip();     break;
-    case '\0':		    _ok = true;		     break;
-    default:	_ok = false; warn(badness, message); break;
+  case '/': _ok = umatch("//"); skip(); break;
+  case ';':
+  case '\'':	itested(); _ok = true;  skip();     break;
+  case '\0':		    _ok = true;		     break;
+  default:	_ok = false; warn(badness, message); break;
   }
   return *this;
 }
@@ -48,18 +50,18 @@ CS & CS::check(int badness, const std::string& message)
 /* syntax_msg: print syntax error message
  * echo a portion of the input with an arrow pointing to the current place
  */
-CS & CS::warn(int badness, int spot, const std::string& message)
+CS & CS::warn(int badness, unsigned spot, const std::string& message)
 {
   if (badness >= OPT::picky) {
     if (spot < 40) {
-      IO::error.form("%.60s\n", _cmd);
+      IO::error << _cmd.substr(0,70) << '\n';
       IO::error.tab(spot);
     }else{
-      IO::error.form("... %.56s\n", &_cmd[spot-36]);
+      IO::error << _cmd.substr(0,15) << " ... " << _cmd.substr(spot-20, 56) << '\n';
       IO::error.tab(40);
     }
-    error(badness, "^ ? " + message + '\n');
-  }else{untested();
+    IO::error << "^ ? " + message + '\n';
+  }else{
   }
   return *this;
 }

@@ -1,12 +1,12 @@
-/*$Id: main.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
+/*$Id: main.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,51 +23,16 @@
  * it all starts here
  */
 //testing=script 2006.07.14
+#include "e_cardlist.h"
+#include "u_lang.h"
+#include "ap.h"
 #include "patchlev.h"
 #include "c_comand.h"
-#include "declare.h"	/* lots */
-#include "u_opt.h"
-#include "l_jmpbuf.h"
+#include "declare.h"	/* plclose */
 /*--------------------------------------------------------------------------*/
-	int	main(int,const char*[]);
-static	void    sign_on(void);
-static	void    read_startup_files(void);
-static	void    process_cmd_line(int,const char*[]);
-static	void	finish(void);
-/*--------------------------------------------------------------------------*/
-extern JMP_BUF env;
-/*--------------------------------------------------------------------------*/
-int main(int argc, const char *argv[])
-{
-  {
-    SET_RUN_MODE xx(rBATCH);
-    sign_on();
-    if (!sigsetjmp(env.p, true)) {
-      //try {
-      read_startup_files();
-      setup_traps();
-      process_cmd_line(argc,argv);
-    }else{
-      //}catch (...) {
-      finish();		/* error clean up (from longjmp())	*/
-      exit(0);
-    }
-  }
-  for (;;) {itested();
-    SET_RUN_MODE xx(rINTERACTIVE);
-    if (!sigsetjmp(env.p, true)) {itested();
-      //try {
-      char cmdbuf[BUFLEN];
-      CMD::count++;
-      getcmd(I_PROMPT, cmdbuf, BUFLEN);
-      CMD::cmdproc(cmdbuf);
-    }else{itested();
-      //}catch (...) {
-      finish();		/* error clean up (from longjmp())	*/
-    }
-  }
-  return 0;
-}
+struct JMP_BUF{
+  sigjmp_buf p;
+} env;
 /*--------------------------------------------------------------------------*/
 static void sign_on(void)
 {
@@ -75,58 +40,193 @@ static void sign_on(void)
     "Gnucap "  PATCHLEVEL  "\n"
     "The Gnu Circuit Analysis Package\n"
     "Never trust any version less than 1.0\n"
-    "Copyright 1982-2006, Albert Davis\n"
+    "Copyright 1982-2009, Albert Davis\n"
     "Gnucap comes with ABSOLUTELY NO WARRANTY\n"
     "This is free software, and you are welcome\n"
-    "to redistribute it under certain conditions\n"
-    "according to the GNU General Public License.\n"
+    "to redistribute it under the terms of \n"
+    "the GNU General Public License, version 3 or later.\n"
     "See the file \"COPYING\" for details.\n";
 }
 /*--------------------------------------------------------------------------*/
 static void read_startup_files(void)
 {
   std::string name = findfile(SYSTEMSTARTFILE, SYSTEMSTARTPATH, R_OK);
-  if (!name.empty()) {untested();
-    char cmdbuf[BUFLEN];
-    sprintf(cmdbuf, "get %s", name.c_str());
-    CMD::cmdproc(cmdbuf);
+  if (name != "") {untested();
+    CMD::command("get " + name, &CARD_LIST::card_list);
+  }else{
   }
   name = findfile(USERSTARTFILE, USERSTARTPATH, R_OK);
-  if (!name.empty()) {untested();
-    char cmdbuf[BUFLEN];
-    sprintf(cmdbuf, "get %s", name.c_str());
-    CMD::cmdproc(cmdbuf);
+  if (name != "") {untested();
+    CMD::command("get " + name, &CARD_LIST::card_list);
+  }else{
   }
-  CMD::cmdproc("clear");
+  CMD::command("clear", &CARD_LIST::card_list);
+  if (!OPT::language) {
+    CMD::command(std::string("options lang=") + DEFAULT_LANGUAGE, &CARD_LIST::card_list);
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
-static void process_cmd_line(int argc, const char *argv[])
-{
-  char cmdbuf[BUFLEN];
-  if ((argc > 2) && (strcasecmp(argv[1], "-i") == 0)) {untested();
-    sprintf(cmdbuf, "get %s", argv[2]);
-    CMD::cmdproc(cmdbuf);
-  }else if ((argc > 2) && (strcasecmp(argv[1], "-b") == 0)) {
-    sprintf(cmdbuf, "< %s", argv[2]);
-    CMD::cmdproc(cmdbuf);
-    CMD::cmdproc("end");
-  }else if (argc > 1) {itested();
-    sprintf(cmdbuf, "get %s", argv[1]);
-    CMD::cmdproc(cmdbuf);
-  }else{itested();
+/* sig_abrt: trap asserts
+ */
+extern "C" {
+  static void sig_abrt(SIGNALARGS)
+  {itested();
+    signal(SIGINT,sig_abrt);
+    static int count = 10;
+    if (--count > 0) {itested();
+      error(bDANGER, "\n");
+    }else{untested();
+      exit(1);
+    }
   }
+}
+/*--------------------------------------------------------------------------*/
+/* sig_int: what to do on receipt of interrupt signal (SIGINT)
+ * cancel batch files, then back to command mode.
+ * (actually, control-c trap)
+ */
+extern "C" {
+  static void sig_int(SIGNALARGS)
+  {
+    signal(SIGINT,sig_int);
+    if (ENV::run_mode == rBATCH) {untested();
+      exit(1);
+    }else{
+      IO::error << '\n';
+      siglongjmp(env.p,1);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+extern "C" {
+  static void sig_fpe(SIGNALARGS)
+  {
+    untested();
+    signal(SIGFPE,sig_fpe);
+    error(bDANGER, "floating point error\n");
+  }
+}
+/*--------------------------------------------------------------------------*/
+static void setup_traps(void)
+{
+  signal(SIGFPE,sig_fpe);
+  signal(SIGINT,sig_int);
+  signal(SIGABRT,sig_abrt);
 }
 /*--------------------------------------------------------------------------*/
 /* finish: clean up after a command
  * deallocates space, closes plot windows, resets i/o redirection, etc.
  * This is done separately for exception handling.
  * If a command aborts, clean-up is still done, leaving a consistent state.
+ * //BUG// It is a function to call as a remnant of old C code.
+ * Should be in a destructor, so it doesn't need to be explicitly called.
  */
 static void finish(void)
 {
   plclose();
-  IO::suppresserrors = false;
   outreset();
+}
+/*--------------------------------------------------------------------------*/
+static void process_cmd_line(int argc, const char *argv[])
+{
+  for (int ii = 1;  ii < argc;  /*inside*/) {
+    try {
+      if (strcasecmp(argv[ii], "-i") == 0) {itested();
+	++ii;
+	if (ii < argc) {itested();
+	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+	}else{untested();
+	}
+      }else if (strcasecmp(argv[ii], "-c") == 0) {itested();
+	++ii;
+	if (ii < argc) {itested();
+	  CS cmd(CS::_STRING, argv[ii++]); // command line
+	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
+	}else{untested();
+	}
+      }else if (strcasecmp(argv[ii], "-b") == 0) {
+	try {
+	  ++ii;
+	  if (ii < argc) {
+	    CMD::command(std::string("< ") + argv[ii++], &CARD_LIST::card_list);
+	  }else{untested();
+	    CMD::command(std::string("< /dev/stdin"), &CARD_LIST::card_list);
+	  }
+	}catch (Exception& e) {
+	  error(bDANGER, e.message() + '\n');
+	  finish();
+	}
+	if (ii >= argc) {
+	  CMD::command("end", &CARD_LIST::card_list);
+	}else{untested();
+	}
+      }else if (strcasecmp(argv[ii], "-a") == 0) {itested();
+	++ii;
+	if (ii < argc) {itested();
+	  CMD::command(std::string("attach ") + argv[ii++], &CARD_LIST::card_list);
+	}else{untested();
+	}
+      }else{itested();
+	CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+      }
+    }catch (Exception& e) {itested();
+      error(bDANGER, e.message() + '\n');
+      finish();
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+int main(int argc, const char *argv[])
+{
+  {
+    SET_RUN_MODE xx(rBATCH);
+    sign_on();
+    if (!sigsetjmp(env.p, true)) {
+      try {
+	read_startup_files();
+	setup_traps();
+	process_cmd_line(argc,argv);
+      }catch (Exception& e) {untested();
+	error(bDANGER, e.message() + '\n');
+	finish();		/* error clean up (from longjmp()) */
+	CMD::command("quit", &CARD_LIST::card_list);
+	unreachable();
+	exit(0);
+      }
+    }else{
+      finish();		/* error clean up (from longjmp()) */
+      CMD::command("quit", &CARD_LIST::card_list);
+      exit(0);
+    }
+  }
+  {itested();
+    SET_RUN_MODE xx(rINTERACTIVE);
+    CS cmd(CS::_STDIN);
+    for (;;) {itested();
+      if (!sigsetjmp(env.p, true)) {itested();
+	try {
+	  if (OPT::language) {
+	    OPT::language->parse_top_item(cmd, &CARD_LIST::card_list);
+	  }else{
+	    CMD::cmdproc(cmd.get_line(I_PROMPT), &CARD_LIST::card_list);
+	  }
+	}catch (Exception_End_Of_Input& e) {itested();
+	  error(bDANGER, e.message() + '\n');
+	  finish();
+	  CMD::command("quit", &CARD_LIST::card_list);
+	  exit(0);
+	}catch (Exception& e) {itested();
+	  error(bDANGER, e.message() + '\n');
+	  finish();
+	}
+      }else{itested();
+	finish();		/* error clean up (from longjmp()) */
+      }
+    }
+  }
+  unreachable();
+  return 0;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

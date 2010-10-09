@@ -1,12 +1,12 @@
-/*$Id: u_parameter.cc,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+/*$Id: u_parameter.cc,v 26.119 2009/09/09 13:27:53 al Exp $ -*- C++ -*-
  * Copyright (C) 2005 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,55 +24,115 @@
  * and passing arguments to models and subcircuits
  */
 //testing=script,sparse 2006.07.14
+#include "l_stlextra.h"
 #include "u_parameter.h"
+#include "u_lang.h"
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::parse(CS& cmd)
 {
-  int here = cmd.cursor();
+  (cmd >> "real |integer "); // ignore type
+  unsigned here = cmd.cursor();
   for (;;) {
     if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
       break;
+    }else{
     }
-    std::string name;
-    PARAMETER<double> value;
-    cmd >> name >> '=' >> value;
+    std::string Name;
+    PARAMETER<double> Value;
+    cmd >> Name >> '=' >> Value;
     if (cmd.stuck(&here)) {untested();
       break;
+    }else{
     }
-    _pl[name] = value;      
+    if (OPT::case_insensitive) {
+      notstd::to_lower(&Name);
+    }else{
+    }
+    _pl[Name] = Value;
+  }
+  cmd.check(bDANGER, "syntax error");
+}
+/*--------------------------------------------------------------------------*/
+void PARAM_LIST::print(OMSTREAM& o, LANGUAGE* lang)const
+{
+  for (const_iterator i = _pl.begin(); i != _pl.end(); ++i) {
+    if (i->second.has_hard_value()) {
+      print_pair(o, lang, i->first, i->second);
+    }else{
+    }
   }
 }
 /*--------------------------------------------------------------------------*/
-void PARAM_LIST::print(OMSTREAM& o)const
+bool PARAM_LIST::is_printable(int i)const
 {
-  for (const_iterator i = _pl.begin(); i != _pl.end(); ++i) {
-    if (i->second.has_value()) {
-      o << "  " << i->first << '=' << i->second;
-    }else{untested();
+  //BUG// ugly linear search
+  int i_try = 0;
+  for (const_iterator ii = _pl.begin(); ii != _pl.end(); ++ii) {
+    if (i_try++ == i) {
+      return ii->second.has_hard_value();
+    }else{
     }
   }
+  return false;
+}
+/*--------------------------------------------------------------------------*/
+std::string PARAM_LIST::name(int i)const
+{
+  //BUG// ugly linear search
+  int i_try = 0;
+  for (const_iterator ii = _pl.begin(); ii != _pl.end(); ++ii) {
+    if (i_try++ == i) {
+      return ii->first;
+    }else{
+    }
+  }
+  return "";
+}
+/*--------------------------------------------------------------------------*/
+std::string PARAM_LIST::value(int i)const
+{
+  //BUG// ugly linear search
+  int i_try = 0;
+  for (const_iterator ii = _pl.begin(); ii != _pl.end(); ++ii) {
+    if (i_try++ == i) {
+      return ii->second.string();
+    }else{
+    }
+  }
+  return "";
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::eval_copy(PARAM_LIST& p, const CARD_LIST* scope)
 {
+  assert(!_try_again);
+  _try_again = p._try_again;
+
   for (iterator i = p._pl.begin(); i != p._pl.end(); ++i) {
-    if (i->second.has_value()) {
-      _pl[i->first] = i->second.e_val(_pl[i->first], scope);
-    }else{untested();
+    if (i->second.has_hard_value()) {
+      if (_pl[i->first].has_hard_value()) {untested();
+	_pl[i->first] = i->second.e_val(_pl[i->first], scope);
+      }else{
+	_pl[i->first] = i->second.e_val(NOT_INPUT, scope);
+      }
+    }else{
     }
   }
 }
 /*--------------------------------------------------------------------------*/
-PARAMETER<double> PARAM_LIST::operator[](const std::string& i)
+const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
 {
-  PARAMETER<double> & rv = _pl[i];
-  if (rv.has_value()) {
+  if (OPT::case_insensitive) {
+    notstd::to_lower(&Name);
+  }else{
+  }
+  PARAMETER<double> & rv = _pl[Name];
+  if (rv.has_hard_value()) {
     // found a value, return it
     return rv;
-  }else if (try_again) {untested();
+  }else if (_try_again) {
     // didn't find one, look in enclosing scope
-    return (*try_again)[i];
-  }else{itested();
+    return _try_again->deep_lookup(Name);
+  }else{
     // no enclosing scope to look in
     // really didn't find it, give up
     // return garbage value (NOT_INPUT)
@@ -80,17 +140,26 @@ PARAMETER<double> PARAM_LIST::operator[](const std::string& i)
   }
 }
 /*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-bool get(CS& cmd, const std::string& key, PARAMETER<bool>* val)
+void PARAM_LIST::set(std::string Name, const std::string& Value)
 {
-  if (cmd.dmatch(key)) {
+  if (OPT::case_insensitive) {
+    notstd::to_lower(&Name);
+  }else{
+  }
+  _pl[Name] = Value;
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+bool Get(CS& cmd, const std::string& key, PARAMETER<bool>* val)
+{
+  if (cmd.umatch(key + ' ')) {
     if (cmd.skip1b('=')) {
       cmd >> *val;
     }else{
       *val = true;
     }
     return true;
-  }else if (cmd.dmatch("NO" + key)) {
+  }else if (cmd.umatch("no" + key)) {
     *val = false;
     return true;
   }else{
@@ -98,10 +167,9 @@ bool get(CS& cmd, const std::string& key, PARAMETER<bool>* val)
   }
 }
 /*--------------------------------------------------------------------------*/
-bool get(CS& cmd, const std::string& key, PARAMETER<int>* val)
+bool Get(CS& cmd, const std::string& key, PARAMETER<int>* val)
 {
-  if (cmd.dmatch(key)) {
-    cmd.skip1b('=');
+  if (cmd.umatch(key + " {=}")) {
     *val = int(cmd.ctof());
     return true;
   }else{

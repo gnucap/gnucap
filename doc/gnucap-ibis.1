@@ -1,0 +1,72 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH GNUCAP-IBIS 1 "November 2001" "Debian Project" "Debian GNU"
+
+.SH NAME
+gnucap-ibis \- GNU Circuit Analysis Package IBIS translator
+.SH SYNOPSIS
+.B gnucap-ibis
+[\fB--typ\fP] [\fB--min\fP] [\fB--max\fP] [\fB--power-on\fP] [\fB--on\fP] [\fB--off\fP] filename [\fB--dump\fP [filename]] [\fB--spice\fP [filename]]
+.br
+.SH DESCRIPTION
+.I GNUCAP-IBIS 
+is a IBIS translator tool in the GNUCAP suite. It will transform IBIS models
+into SPICE models for use in SPICE simulations.
+.PP
+The IBIS model in \fIfilename\fP is being parsed and can be translated to
+whatever format is requested. By using the \fB--spice\fP option a SPICE model
+can be generated. By using the \fB--dump\fP option a IBIS dump may be performed
+(mainly for testing purposes). A typical usage can be
+
+gnucap-ibis mymodel.ibis -spice
+
+.SH OPTIONS
+
+.TP
+\fI--typ\fI
+sets simulation mode to typical values (default)
+.TP
+\fI--min\fI
+sets simulation mode to minimal values
+.TP
+\fI--max\fI
+sets simulation mode to maximal values
+.TP
+\fI--power-on\fI
+sets device state to power on
+.TP
+\fI--on\fI
+sets device state to on
+.TP
+\fI--off\fI
+sets device state to off
+.TP
+\fI--prefix prefix\fI
+sets the prefix on generated code (default no prefix)
+.TP
+\fI--dump [filename]\fI
+enable the dumping of the interprented IBIS file in IBIS format. Optionally an
+output filename may be given (default filename is incomming filename with .dump
+postfix)
+.TP
+\fI--spice [filename]\fI
+enable the dumping of a SPICE model. Optionally an output filename may be given
+(default filename is incomming filename . mode .ckt).
+
+.SH BUGS
+See 
+.B /usr/share/doc/gnucap/bugs 
+for a list of known bugs in this release.
+.PP
+GNUCAP is an ongoing research project.  It is being released in a
+preliminary phase in hopes that it will be useful and that others
+will use it as a thrust or base for their research.  I also hope
+for some comments that may help me direct my research.
+
+.SH AUTHOR
+GNUCAP is being written by Albert Davis <aldavis@ieee.org>
+.PP
+This manual page was written by Magnus Danielson <cfmd@bredband.net> and
+maintained by Hamish Moffatt <hamish@debian.org> for the Debian package of 
+gnucap. 
+For the full LaTeX documentation, please see 
+.B /usr/share/doc/gnucap/manual.

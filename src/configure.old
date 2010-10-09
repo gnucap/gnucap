@@ -4,7 +4,7 @@ ln -s ../modelgen/O/gnucap-modelgen .
 mkdir O
 
 echo "CCFLAGS = \\" >Make.ccflags
-echo "LIBS = \\" >Make.libs
+echo "LIBS = -ldl \\" >Make.libs
     
 (cd O; rm -f gnucap-modelgen; ln -s ../../modelgen/O/gnucap-modelgen gnucap-modelgen)
 
@@ -28,7 +28,7 @@ cat <<CAT_EOF >Make.sys
 VPATH = .:..
 CCC = g++
 
-LDFLAGS =
+LDFLAGS = -rdynamic
 
 .SUFFIXES:
 .SUFFIXES: .o .cc
@@ -36,7 +36,7 @@ LDFLAGS =
 #------------------------------------------------------------------------
 \$(TARGET): \$(OBJS)
 	rm -f \$@
-	\$(CCC) \$(CCFLAGS) \$(OBJS) -o \$@ \$(LIBS) \$(LDFLAGS)
+	\$(CCC) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@
 #------------------------------------------------------------------------
 CAT_EOF
 

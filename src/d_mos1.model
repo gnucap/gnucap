@@ -1,12 +1,12 @@
-/* $Id: d_mos1.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+/* $Id: d_mos1.model,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,10 +27,16 @@ h_headers {
 cc_headers {
 }
 /*--------------------------------------------------------------------------*/
-model MOS1 {
+model BUILT_IN_MOS1 {
   level 1;
-  dev_type MOS;
-  inherit MOS123;
+  public_keys {
+    nmos1 polarity=pN;
+    pmos1 polarity=pP;
+    nmos polarity=pN;
+    pmos polarity=pP;
+  }
+  dev_type BUILT_IN_MOS;
+  inherit BUILT_IN_MOS123;
   independent {
     override {
       double mjsw "" default=.5;
@@ -61,7 +67,7 @@ model MOS1 {
 	    phi = (2. * P_K_Q) * tnom_k * log(nsub/NI);
 	    if (phi < .1) {
 	      untested();
-	      error(bWARNING,
+	      error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
 		    long_label() + ": calculated phi too small, using .1\n");
 	      phi = .1;
 	    }
@@ -73,10 +79,10 @@ model MOS1 {
 	  }
 	  if (vto == NA) {
 	    double phi_ms = (tpg == gtMETAL)
-	      ? -.05 - (egap + polarity * phi) / 2.
-	      : -polarity * (tpg * egap + phi) / 2.;
-	    double vfb = phi_ms - P_Q * nss / cox;
-	    vto = vfb + polarity * (phi + gamma * sqrt(phi));
+	      ? polarity * (-.05 - (egap + polarity * phi) / 2.)
+	      : -(tpg * egap + phi) / 2.;
+	    double vfb = phi_ms - polarity * P_Q * nss / cox;
+	    vto = vfb + phi + gamma * sqrt(phi);
 	    calc_vto = true;
 	  }
 	}else{
@@ -87,25 +93,25 @@ model MOS1 {
   }
   temperature_dependent {
     calculated_parameters {
-      double phi "" 
-	calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+P_Q*(arg)))";
-      double beta "" calculate="m->kp * tempratio4 * s->w_eff / s->l_eff";
+      double phi "" calculate="m->phi*tempratio + (-2*vt*(1.5*log(tempratio)+P_Q*(arg)))";
+      double beta "" calculate="(m->kp / tempratio4) * s->w_eff / s->l_eff";
       double sqrt_phi "" calculate="sqrt(phi)";
+      double egap "" calculate="egap_";
     }
     code_pre {
-      double temp = SIM::temp_c + P_CELSIUS0;
+      double temp = d->_sim->_temp_c + P_CELSIUS0;
       double tempratio  = temp / m->tnom_k;
       double tempratio4 = tempratio * sqrt(tempratio);
       double kt = temp * P_K;
       double vt = temp * P_K_Q;
-      double egap = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
-      double arg = (m->egap*tempratio - egap) / (2*kt);
+      double egap_ = 1.16 - (7.02e-4*temp*temp) / (temp+1108.);
+      double arg = (m->egap*tempratio - egap_) / (2*kt);
     }
   }
   /*-----------------------------------------------------------------------*/
   tr_eval {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-    trace1(d->long_label().c_str(), d->evaliter());
+    trace0(d->long_label().c_str());
     trace3("", d->vds, d->vgs, d->vbs);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     d->reverse_if_needed();
@@ -126,7 +132,8 @@ model MOS1 {
       }
     }
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-    d->von = m->vto + m->gamma * (sarg - t->sqrt_phi);
+    d->von = m->vto + m->gamma * (sarg - sqrt(m->phi))
+      + .5 * (m->egap - t->egap) + .5 * (t->phi - m->phi);
     d->vgst = d->vdsat = d->vgs - d->von;
     if (d->vdsat < 0.) {
       d->vdsat = 0.;

@@ -1,12 +1,12 @@
-/*$Id: d_subckt.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
+/*$Id: d_subckt.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -34,10 +34,16 @@
 //testing=script 2006.07.17
 #include "d_subckt.h"
 /*--------------------------------------------------------------------------*/
-int DEV_SUBCKT::_count = 0;
+int DEV_SUBCKT::_count = -1;
 int COMMON_SUBCKT::_count = -1;
-int MODEL_SUBCKT::_count = 0;
+int MODEL_SUBCKT::_count = -1;
 static COMMON_SUBCKT Default_SUBCKT(CC_STATIC);
+/*--------------------------------------------------------------------------*/
+static DEV_SUBCKT   p1;
+static MODEL_SUBCKT p2;
+static DISPATCHER<CARD>::INSTALL
+  d1(&device_dispatcher, "X|dev_subckt", &p1),
+  d2(&device_dispatcher, "subckt|macro", &p2);
 /*--------------------------------------------------------------------------*/
 bool COMMON_SUBCKT::operator==(const COMMON_COMPONENT& x)const
 {
@@ -48,22 +54,81 @@ bool COMMON_SUBCKT::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
-bool COMMON_SUBCKT::parse_params(CS& cmd)
+bool COMMON_SUBCKT::param_is_printable(int i)const
 {
-  _params.parse(cmd);
-  return true;
+  assert(i < COMMON_SUBCKT::param_count());
+  if (i >= COMMON_COMPONENT::param_count()) {
+    return _params.is_printable(COMMON_SUBCKT::param_count() - 1 - i);
+  }else{
+    return COMMON_COMPONENT::param_is_printable(i);
+  }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_SUBCKT::print(OMSTREAM& o)const
+std::string COMMON_SUBCKT::param_name(int i)const
 {
-  _params.print(o);
+  assert(i < COMMON_SUBCKT::param_count());
+  if (i >= COMMON_COMPONENT::param_count()) {
+    return _params.name(COMMON_SUBCKT::param_count() - 1 - i);
+  }else{
+    return COMMON_COMPONENT::param_name(i);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string COMMON_SUBCKT::param_name(int i, int j)const
+{
+  assert(i < COMMON_SUBCKT::param_count());
+  if (j == 0) {untested();
+    return param_name(i);
+  }else if (i >= COMMON_COMPONENT::param_count()) {untested();
+    return "";
+  }else{untested();
+    return COMMON_COMPONENT::param_name(i);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string COMMON_SUBCKT::param_value(int i)const
+{
+  assert(i < COMMON_SUBCKT::param_count());
+  if (i >= COMMON_COMPONENT::param_count()) {
+    return _params.value(COMMON_SUBCKT::param_count() - 1 - i);
+  }else{
+    return COMMON_COMPONENT::param_value(i);
+  }
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_SUBCKT::precalc_first(const CARD_LIST* Scope)
+{
+  assert(Scope);
+  COMMON_COMPONENT::precalc_first(Scope);
+
+  for (PARAM_LIST::iterator i = _params.begin(); i != _params.end(); ++i) {
+    i->second.e_val(NOT_INPUT,Scope);
+  }
+  _mfactor = _params.deep_lookup("m");
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_SUBCKT::precalc_last(const CARD_LIST* Scope)
+{
+  assert(Scope);
+  COMMON_COMPONENT::precalc_last(Scope);
 }
 /*--------------------------------------------------------------------------*/
 MODEL_SUBCKT::MODEL_SUBCKT()
-  :COMPONENT(),
-   _net_nodes(0)
+  :COMPONENT()
 {
   _n = _nodes;
+  new_subckt();
+  ++_count;
+}
+/*--------------------------------------------------------------------------*/
+MODEL_SUBCKT::MODEL_SUBCKT(const MODEL_SUBCKT& p)
+  :COMPONENT(p)
+{
+  for (int ii = 0;  ii < max_nodes();  ++ii) {
+    _nodes[ii] = p._nodes[ii];
+  }
+  _n = _nodes;
+  assert(p.subckt()->is_empty()); // incomplete, but enough for now.
   new_subckt();
   ++_count;
 }
@@ -73,36 +138,16 @@ MODEL_SUBCKT::~MODEL_SUBCKT()
   --_count;
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SUBCKT::parse_spice(CS& cmd)
-{ 
-  // parse the line
-  cmd.reset();
-  cmd.skiparg();	/* skip known ".subckt" */
-  parse_label(cmd);
-  _net_nodes = parse_nodes(cmd, max_nodes(), min_nodes(), 
-			   0/*no unnamed par*/, 0/*start*/, true/*all new*/);
-  cmd.check(bDANGER, "subckt default parameters not supported yet");
-}
-/*--------------------------------------------------------------------------*/
-void MODEL_SUBCKT::print_spice(OMSTREAM& o, int)const
-{
-  o << ".subckt " << short_label() << ' ';
-  printnodes(o);
-  o << '\n';
-
-  if (subckt()) {
-    for (CARD_LIST::const_iterator 
-	   ci = subckt()->begin(); ci != subckt()->end(); ++ci) {
-      (**ci).print_spice(o, false);
-    }
-  }else{untested();
-  }
-  o << ".ends " << short_label() << '\n';
+CARD* MODEL_SUBCKT::clone_instance()const
+{itested();
+  DEV_SUBCKT* new_instance = dynamic_cast<DEV_SUBCKT*>(p1.clone());
+  new_instance->_parent = this;
+  return new_instance;
 }
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT::DEV_SUBCKT()
   :BASE_SUBCKT(),
-   _net_nodes(0)
+   _parent(NULL)
 {
   attach_common(&Default_SUBCKT);
   _n = _nodes;
@@ -111,7 +156,7 @@ DEV_SUBCKT::DEV_SUBCKT()
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
   :BASE_SUBCKT(p),
-   _net_nodes(p._net_nodes)
+   _parent(p._parent)
 {
   //strcpy(modelname, p.modelname); in common
   for (int ii = 0;  ii < max_nodes();  ++ii) {
@@ -121,76 +166,62 @@ DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
-void DEV_SUBCKT::parse_spice(CS& cmd)
+void DEV_SUBCKT::expand()
 {
-  assert(has_common());
-  COMMON_SUBCKT* c = prechecked_cast<COMMON_SUBCKT*>(common()->clone());
-  assert(c);
-  assert(!c->has_model());
-
-  parse_Label(cmd);
-  _net_nodes = parse_nodes(cmd, max_nodes(), min_nodes(),
-			   1/*subckt_name*/, 0/*start*/);
-  c->parse_modelname(cmd);
-  c->parse(cmd);
-  attach_common(c);
-}
-/*--------------------------------------------------------------------------*/
-void DEV_SUBCKT::print_spice(OMSTREAM& o, int)const
-{
-  const COMMON_SUBCKT* c = prechecked_cast<const COMMON_SUBCKT*>(common());
-  assert(c);
-  o << short_label();
-  printnodes(o);
-  o << "  " << c->modelname();
-  c->print(o);
-  o << '\n';
-}
-/*--------------------------------------------------------------------------*/
-inline const CARD* find_subckt_model(CARD* scope, const std::string& modelname)
-{untested();
-  const CARD* model = 0;
-  {untested();
-    model = scope->find_looking_out(modelname, bDEBUG);
-    if (!model) {untested();
-      error(bDANGER, "can't find subckt: " + modelname + '\n');
-      return NULL;
-    }else if(!dynamic_cast<const MODEL_SUBCKT*>(model)) {untested();
-      error(bDANGER, modelname + " is not a subckt\n");
-      return NULL;
-    }else{untested();
-    }
-  }
-  return model;
-}
-/*--------------------------------------------------------------------------*/
-void DEV_SUBCKT::elabo1()
-{ 
-  BASE_SUBCKT::elabo1();
+  BASE_SUBCKT::expand();
   COMMON_SUBCKT* c = prechecked_cast<COMMON_SUBCKT*>(mutable_common());
   assert(c);
+  const CARD* model = find_looking_out(c->modelname());
+  if (!_parent) {
+    if(!dynamic_cast<const MODEL_SUBCKT*>(model)) {
+      throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
+    }else{
+      _parent = prechecked_cast<const MODEL_SUBCKT*>(model);
+    }
+  }else{
+    assert(model && model == _parent);
+  }
+  
+  //assert(!c->_params._try_again);
+  assert(model->subckt());
+  assert(model->subckt()->params());
+  PARAM_LIST* pl = const_cast<PARAM_LIST*>(model->subckt()->params());
+  assert(pl);
+  c->_params.set_try_again(pl);
+  assert(c->_params._try_again);
+  renew_subckt(model, this, scope(), &(c->_params));
+  subckt()->expand();
+}
+/*--------------------------------------------------------------------------*/
+void DEV_SUBCKT::precalc_first()
+{
+  BASE_SUBCKT::precalc_first();
 
-  const CARD* model = find_subckt_model(this /*scope*/, c->modelname());
-  if (!model) {untested();
-    error(bERROR, "no subckt\n");
+  if (subckt()) {
+    COMMON_SUBCKT* c = prechecked_cast<COMMON_SUBCKT*>(mutable_common());
+    assert(c);
+    subckt()->attach_params(&(c->_params), scope());
+    subckt()->precalc_first();
   }else{
   }
-  new_subckt();
+  assert(!is_constant()); /* because I have more work to do */
+}
+/*--------------------------------------------------------------------------*/
+void DEV_SUBCKT::precalc_last()
+{
+  BASE_SUBCKT::precalc_last();
+
+  COMMON_SUBCKT* c = prechecked_cast<COMMON_SUBCKT*>(mutable_common());
+  assert(c);
   subckt()->attach_params(&(c->_params), scope());
-  subckt()->shallow_copy(model->subckt());
-  subckt()->set_owner(this);
-  subckt()->map_subckt_nodes(model, this);
-  subckt()->elabo2();
+  subckt()->precalc_last();
 
   assert(!is_constant()); /* because I have more work to do */
 }
 /*--------------------------------------------------------------------------*/
-double DEV_SUBCKT::tr_probe_num(CS& cmd)const
-{untested();  
-  if (cmd.pmatch("V")) {untested();
-    int nn = cmd.ctoi();
-    return (nn > 0 && nn <= net_nodes()) ? _n[nn-1].v0() : NOT_VALID;
-  }else if (cmd.pmatch("P")) {untested();
+double DEV_SUBCKT::tr_probe_num(const std::string& x)const
+{itested();
+  if (Umatch(x, "p ")) {untested();
     double power = 0.;
     assert(subckt());
     for (CARD_LIST::const_iterator
@@ -198,7 +229,7 @@ double DEV_SUBCKT::tr_probe_num(CS& cmd)const
       power += CARD::probe(*ci,"P");
     }      
     return power;
-  }else if (cmd.pmatch("PD")) {untested();
+  }else if (Umatch(x, "pd ")) {untested();
     double power = 0.;
     assert(subckt());
     for (CARD_LIST::const_iterator
@@ -206,7 +237,7 @@ double DEV_SUBCKT::tr_probe_num(CS& cmd)const
       power += CARD::probe(*ci,"PD");
     }      
     return power;
-  }else if (cmd.pmatch("PS")) {untested();
+  }else if (Umatch(x, "ps ")) {untested();
     double power = 0.;
     assert(subckt());
     for (CARD_LIST::const_iterator
@@ -214,8 +245,8 @@ double DEV_SUBCKT::tr_probe_num(CS& cmd)const
       power += CARD::probe(*ci,"PS");
     }      
     return power;
-  }else{untested();
-    return COMPONENT::tr_probe_num(cmd);
+  }else{itested();
+    return COMPONENT::tr_probe_num(x);
   }
   /*NOTREACHED*/
 }

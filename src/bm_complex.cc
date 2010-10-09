@@ -1,12 +1,12 @@
-/*$Id: bm_complex.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: bm_complex.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,6 +25,27 @@
 //testing=script 2006.07.13
 #include "e_elemnt.h"
 #include "bm.h"
+/*--------------------------------------------------------------------------*/
+namespace {
+/*--------------------------------------------------------------------------*/
+class EVAL_BM_COMPLEX : public EVAL_BM_ACTION_BASE {
+private:
+  COMPLEX _value;
+  explicit	EVAL_BM_COMPLEX(const EVAL_BM_COMPLEX& p);
+public:
+  explicit      EVAL_BM_COMPLEX(int c=0);
+		~EVAL_BM_COMPLEX()	{}
+private: // override virtual
+  bool		operator==(const COMMON_COMPONENT&)const;
+  COMMON_COMPONENT* clone()const	{return new EVAL_BM_COMPLEX(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  void		tr_eval(ELEMENT*)const;
+  void		ac_eval(ELEMENT*)const;
+  std::string	name()const		{return "complex";}
+  bool		ac_too()const		{untested();return true;}
+  bool		parse_numlist(CS&);
+};
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 EVAL_BM_COMPLEX::EVAL_BM_COMPLEX(int c)
   :EVAL_BM_ACTION_BASE(c),
@@ -50,11 +71,12 @@ bool EVAL_BM_COMPLEX::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COMPLEX::print(OMSTREAM& o)const
+void EVAL_BM_COMPLEX::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
-  o << ' ' << name() << '(' 
+  assert(lang);
+  o << name() << '(' 
     << _value.real() << ',' << _value.imag() << ')';
-  EVAL_BM_ACTION_BASE::print(o);
+  EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_COMPLEX::tr_eval(ELEMENT* d)const
@@ -70,7 +92,7 @@ void EVAL_BM_COMPLEX::ac_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_COMPLEX::parse_numlist(CS& cmd)
 {
-  int here = cmd.cursor();
+  unsigned here = cmd.cursor();
   double real = NOT_VALID;
   double imag = 0.;
   cmd >> real >> imag;
@@ -81,6 +103,11 @@ bool EVAL_BM_COMPLEX::parse_numlist(CS& cmd)
     untested();
     return false;
   }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+EVAL_BM_COMPLEX p1(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher, "complex", &p1);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

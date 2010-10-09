@@ -1,12 +1,12 @@
-/*$Id: c_delete.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: c_delete.cc,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,106 +22,103 @@
  * delete and clear commands
  */
 //testing=script,complete 2006.07.16
-//BUG:: If someone deletes an element inside an instance of a subckt
+//BUG// If someone deletes an element inside an instance of a subckt
 // (like ".delete r1.x1", there is no error message, and the deleted
 // element will reappear next time an elaboration occurs, which is 
 // usually before anything else.
-#include "e_card.h"
-#include "s__.h"
+
+#include "d_subckt.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
-//	void	CMD::clear(CS&);
-//	void	CMD::del(CS&);
+namespace {
 /*--------------------------------------------------------------------------*/
-/* cmd_clear: clear the whole circuit, including faults, etc
- *   equivalent to unfault; unkeep; delete all; title = (blank)
- */
-void CMD::clear(CS&)
-{
-  {CS nil("");      unfault(nil);}
-  {CS nil("");      unmark(nil);}
-  {CS clr("clear"); ic(clr);}
-  {CS clr("clear"); nodeset(clr);}
-  {CS clr("clear"); alarm(clr);}
-  {CS clr("clear"); plot(clr);}
-  {CS clr("clear"); print(clr);}
-  {CS All("all");   del(All);}
-  {CS q("'");       title(q);}
-}
-/*--------------------------------------------------------------------------*/
-static bool delete_one_name(const std::string& name, CARD_LIST* scope)
-{
-  assert(scope);
-
-  std::string::size_type dotplace = name.find_last_of(".");
-  if (dotplace != std::string::npos) {
-    // has a dot, look deeper
-    // Split the name into two parts:
-    // "container" -- where to look (all following the dot)
-    // "dev_name" -- what to look for (all before the dot)
-    std::string container = name.substr(dotplace+1, std::string::npos);
-    std::string dev_name = name.substr(0, dotplace);
-    // container name must be exact match
-    CARD* card = (*scope)[container];
-    if (!card) {
-      // can't find "container" (probably .subckt) - no match
-      return false;
-    }else if (!card->subckt()) {
-      // found a match, but it isn't a container (subckt)
-      return false;
+class CMD_DELETE : public CMD {
+private:
+  bool delete_one_name(const std::string& name, CARD_LIST* Scope)const
+  {
+    assert(Scope);
+    
+    std::string::size_type dotplace = name.find_first_of(".");
+    if (dotplace != std::string::npos) {
+      // has a dot, look deeper
+      // Split the name into two parts:
+      // "container" -- where to look (all following the dot)
+      // "dev_name" -- what to look for (all before the dot)
+      std::string dev_name  = name.substr(dotplace+1, std::string::npos);
+      std::string container = name.substr(0, dotplace);
+      // container name must be exact match
+      CARD_LIST::iterator i = Scope->find_(container);
+      if (i == Scope->end()) {
+	// can't find "container" (probably .subckt) - no match
+	// try reverse
+	dotplace = name.find_last_of(".");
+	container = name.substr(dotplace+1, std::string::npos);
+	dev_name  = name.substr(0, dotplace);
+	// container name must be exact match
+	i = Scope->find_(container);
+      }else{
+      }
+      if (i == Scope->end()) {
+	// can't find "container" (probably .subckt) - no match
+	return false;
+      }else if (!dynamic_cast<MODEL_SUBCKT*>(*i)) {
+	// found a match, but it isn't a container (subckt)
+	return false;
+      }else{
+	// found the container, look inside
+	return delete_one_name(dev_name, (**i).subckt());
+      }
+      unreachable();
     }else{
-      // found the container, look inside
-      return delete_one_name(dev_name, card->subckt());
-    }
-    unreachable();
-  }else{
-    // no dots, look here
-    if (name.find_first_of("*?") != std::string::npos) {
-      // there's a wild card.  do linear search for all matches
-      bool didit = false;
-      {
-	CARD_LIST::iterator i = scope->begin();
-	while (i != scope->end()) {
-	  CARD_LIST::iterator old_i = i++;
-	  // ^^^^^^^^^^^^ move i past the item being deleted
-	  if (wmatch((**old_i).short_label(), name)) {
-	    scope->erase(old_i);
-	    didit = true;
+      // no dots, look here
+      if (name.find_first_of("*?") != std::string::npos) {
+	// there's a wild card.  do linear search for all matches
+	bool didit = false;
+	{
+	  CARD_LIST::iterator i = Scope->begin();
+	  while (i != Scope->end()) {
+	    CARD_LIST::iterator old_i = i++;
+	    // ^^^^^^^^^^^^ move i past the item being deleted
+	    if (wmatch((**old_i).short_label(), name)) {
+	      Scope->erase(old_i);
+	      didit = true;
+	    }
 	  }
 	}
-      }
-      return didit;
-    }else{
-      // no wild card.  fast search for one exact match
-      CARD_LIST::iterator i = scope->find(name);
-      if (i != scope->end()) {
-	scope->erase(i);
-	return true;
+	return didit;
       }else{
-	return false;
+	// no wild card.  fast search for one exact match
+	CARD_LIST::iterator i = Scope->find_(name);
+	if (i != Scope->end()) {
+	  Scope->erase(i);
+	  return true;
+	}else{
+	  return false;
+	}
       }
+      unreachable();
     }
     unreachable();
+    return false;
   }
-  unreachable();
-}
-/*--------------------------------------------------------------------------*/
-/* cmd_delete:  delete command
- */
-void CMD::del(CS& cmd)
-{
-  SIM::uninit();
-  if (cmd.pmatch("ALL")) {
-    CARD_LIST::card_list.erase_all();
-  }else{
-    while (cmd.more()) {
-      int mark = cmd.cursor();
-      bool didit = delete_one_name(cmd.ctos(), &CARD_LIST::card_list);
-      if (!didit) {
-	cmd.warn(bWARNING, mark, "no match");
+  //-----------------------------------
+  void do_it(CS& cmd, CARD_LIST* Scope)
+  {
+    if (cmd.umatch("all ")) {
+      CARD_LIST::card_list.erase_all();
+    }else{
+      while (cmd.more()) {
+	unsigned mark = cmd.cursor();
+	bool didit = delete_one_name(cmd.ctos(), Scope);
+	if (!didit) {
+	  cmd.warn(bWARNING, mark, "no match");
+	}
       }
     }
   }
+} p1;
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "delete|rm", &p1);
+/*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,12 +1,12 @@
-/*$Id: l_compar.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: l_compar.h,v 26.98 2008/10/24 06:10:07 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -44,16 +44,6 @@ inline T to_range(T a, T b, T c)
 {
   return std::min(std::max(a,b),c);
 }
-
-#if 0
-/* is_equal: returns true if all 3 are equal */
-template <class T>
-inline bool is_equal(T a, T b, T c)
-{
-  untested();
-  return (a == b) && (b == c);
-}
-#endif
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

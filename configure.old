@@ -28,8 +28,8 @@ args="--prefix=$prefix"
 echo "Configuring gnucap using $args"
 #---------------------------------------------------
 cp Makefile.template Makefile
-echo man
-(cd man; ./configure.old $args)
+#echo man
+#(cd man; ./configure.old $args)
 echo modelgen
 (cd modelgen; ./configure.old $args)
 echo src

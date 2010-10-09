@@ -1,33 +1,5 @@
 Gnucap revision history
  ------------------------------------------------------------------
-Gnucap 0.35 release notes  (09/20/2006)
-
-New features:
-
-1. Named nodes.  (Extended beyond Spice compatibility)
-
-2. Nested subcircuits.  (Spice compatibility)
-
-3. Parameters.  ("param" statement, passing parameters to subcircuits)
-Parameters are variables, so you can change them at any time.
-
-4. MOS level 8 and 49 models.
-
-5. DC sweeps can be nested, for now up to 4 deep.  (Beyond Spice
-compatibility.)
-
-6. Autoconf based build system. The old build system is still
-available by running "configure.old".
-
-7. Improvements to the transient analysis step control algorithm.
-
-8. Improvements to the switch model, focusing on timing accuracy and
-convergence.
-
-
-Other changes:
-
-1. C++ language standard corrections, so it compiles with gcc 4.1.
  ------------------------------------------------------------------
 Gnucap 0.34 release notes  (02/01/2004)
 

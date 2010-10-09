@@ -1,12 +1,12 @@
-/*$Id: e_node.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: e_node.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,14 +22,10 @@
  * node probes
  */
 //testing=script,sparse 2006.07.11
-#include "d_subckt.h"
 #include "u_nodemap.h"
 #include "d_logic.h"
 #include "e_aux.h"
 #include "u_xprobe.h"
-//#include "e_node.h"
-/*--------------------------------------------------------------------------*/
-double volts_limited(const node_t & n1, const node_t & n2);
 /*--------------------------------------------------------------------------*/
 const _LOGICVAL LOGICVAL::or_truth[lvNUM_STATES][lvNUM_STATES] = {
   {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
@@ -95,7 +91,7 @@ LOGIC_NODE::LOGIC_NODE()
 NODE::NODE()
   :CKT_BASE(),
    _user_number(INVALID_NODE)
-   //_flat_number(INVALID_NODE),
+   //_flat_number(INVALID_NODE)
    //_matrix_number(INVALID_NODE)
 {
 }
@@ -105,18 +101,19 @@ NODE::NODE()
 NODE::NODE(const NODE& p)
   :CKT_BASE(p),
    _user_number(p._user_number)
-   //_flat_number(INVALID_NODE),
+   //_flat_number(p._flat_number)
    //_matrix_number(INVALID_NODE)
 {
   unreachable();
 }
 /*--------------------------------------------------------------------------*/
 /* constructor taking a pointer : it must be valid
+ * supposedly not used, but used by a required function that is also not used
  */
 NODE::NODE(const NODE* p)
   :CKT_BASE(*p),
    _user_number(p->_user_number)
-   //_flat_number(INVALID_NODE),
+   //_flat_number(p->_flat_number)
    //_matrix_number(INVALID_NODE)
 {
   unreachable();
@@ -127,130 +124,123 @@ NODE::NODE(const NODE* p)
 NODE::NODE(const std::string& s, int n)
   :CKT_BASE(s),
    _user_number(n)
-   //_flat_number(INVALID_NODE),
+   //_flat_number(n)
    //_matrix_number(INVALID_NODE)
 {
 }
 /*--------------------------------------------------------------------------*/
 node_t::node_t()
-  :_m(INVALID_NODE),
-   _t(INVALID_NODE),
-   _n(0)
+  :_nnn(0),
+   _ttt(INVALID_NODE),
+   _m(INVALID_NODE)
 {
 }
 node_t::node_t(const node_t& p)
-  :_m(p._m),
-   _t(p._t),
-   _n(p._n)
+  :_nnn(p._nnn),
+   _ttt(p._ttt),
+   _m(p._m)
 {
+  //assert(_ttt == _nnn->flat_number());
 }
 node_t::node_t(NODE* n)
-  :_m(INVALID_NODE),
-   _t(INVALID_NODE),
-   _n(n)
+  :_nnn(n),
+   _ttt(n->user_number()),
+   _m(to_internal(n->user_number()))
 {
-  _t = n->user_number();
-  map();
+  //assert(_ttt == _nnn->flat_number());
+}
+node_t& node_t::operator=(const node_t& p)
+{
+  if (p._nnn) {
+    //assert(p._ttt == p._nnn->flat_number());
+  }else{
+    assert(p._ttt == INVALID_NODE);
+    assert(p._m   == INVALID_NODE);
+  }
+  _nnn   = p._nnn;
+  _ttt = p._ttt;
+  _m   = p._m;
+  return *this;
 }
 /*--------------------------------------------------------------------------*/
-double NODE::tr_probe_num(CS& cmd)const
+LOGIC_NODE& node_t::data()const
 {
-  int here = cmd.cursor();
-  if (cmd.pmatch("V")) {
+  assert(CKT_BASE::_sim->_nstat);
+  return CKT_BASE::_sim->_nstat[m_()];
+}
+/*--------------------------------------------------------------------------*/
+double NODE::tr_probe_num(const std::string& x)const
+{
+  if (Umatch(x, "v ")) {
+    // return v0(); denoised
     return floor(v0()/OPT::vfloor + .5) * OPT::vfloor;
-  }else if (cmd.pmatch("Z")) {
-    return port_impedance(node_t(const_cast<NODE*>(this)),
-			  node_t(&ground_node), lu, 0.);
-  }else if (ONE_OF
-	    || cmd.pmatch("Logic")
-	    || cmd.pmatch("LAstchange")
-	    || cmd.pmatch("FInaltime")
-	    || cmd.pmatch("DIter")
-	    || cmd.pmatch("AIter")
-	    || cmd.pmatch("COUNT")
-	    ) {
-    extern LOGIC_NODE* nstat;
-    assert(nstat);
-    cmd.reset(here);
-    return nstat[matrix_number()].tr_probe_num(cmd);
-#if 0
-  }else if (cmd.pmatch("MDY")) {
-    untested();
+  }else if (Umatch(x, "z ")) {
+    return port_impedance(node_t(const_cast<NODE*>(this)), node_t(&ground_node), _sim->_lu, 0.);
+  }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) {
+    assert(_sim->_nstat);
+    return _sim->_nstat[matrix_number()].tr_probe_num(x);
+  }else if (Umatch(x, "mdy ")) {
     // matrix diagonal admittance
-    return aa.d(m_(),m_());
-  }else if (cmd.pmatch("MDZ")) {
-    untested();
+    const BSMATRIX<double>&  aaa = _sim->_aa;
+    return aaa.d(m_(),m_());
+  }else if (Umatch(x, "mdz ")) {
     // matrix diagonal impedance
-    return 1/aa.d(m_(),m_());
-#endif
-  }else if (cmd.pmatch("ZERO")) {
-    untested();
+    const BSMATRIX<double>&  aaa = _sim->_aa;
+    return 1/aaa.d(m_(),m_());
+  }else if (Umatch(x, "zero ")) {
     // fake probe: 0.0
     return 0.0;
-  }else if (cmd.pmatch("PDZ")) {
-    untested();
+  }else if (Umatch(x, "pdz ")) {
     // fake probe 1/0 .. positive divide by zero = Infinity
-    CS x1("ZERO");
-    double z1 = tr_probe_num(x1);
+    double z1 = tr_probe_num("zero ");
     return 1.0/z1;
-  }else if (cmd.pmatch("NDZ")) {
-    untested();
+  }else if (Umatch(x, "ndz ")) {
     // fake probe -1/0 .. negative divide by zero = -Infinity
-    CS x1("ZERO");
-    double z1 = tr_probe_num(x1);
+    double z1 = tr_probe_num("zero ");
     return -1.0/z1;
-  }else if (cmd.pmatch("NAN")) {
-    untested();
+  }else if (Umatch(x, "nan ")) {
     // fake probe 0/0 = NaN
-    CS x1("ZERO");
-    CS x2("ZERO");
-    double z1 = tr_probe_num(x1);
-    double z2 = tr_probe_num(x2);
+    double z1 = tr_probe_num("zero ");
+    double z2 = tr_probe_num("zero ");
     return z1/z2;
-  }else{
-    untested();
-    return CKT_BASE::tr_probe_num(cmd);
+  }else{itested();
+    return CKT_BASE::tr_probe_num(x);
   }
 }
 /*--------------------------------------------------------------------------*/
-double LOGIC_NODE::tr_probe_num(CS& cmd)const
+double LOGIC_NODE::tr_probe_num(const std::string& x)const
 {
-  if (cmd.pmatch("Logic")) {
+  if (Umatch(x, "l{ogic} ")) {
     return annotated_logic_value();
-  }else if (cmd.pmatch("LAstchange")) {
-    untested();
+  }else if (Umatch(x, "la{stchange} ")) {untested();
     return _lastchange;
-  }else if (cmd.pmatch("FInaltime")) {
-    untested();
+  }else if (Umatch(x, "fi{naltime} ")) {untested();
     return final_time();
-  }else if (cmd.pmatch("DIter")) {
-    untested();
+  }else if (Umatch(x, "di{ter} ")) {untested();
     return static_cast<double>(_d_iter);
-  }else if (cmd.pmatch("AIter")) {
-    untested();
+  }else if (Umatch(x, "ai{ter} ")) {untested();
     return static_cast<double>(_a_iter);
   }else{
-    return NODE::tr_probe_num(cmd);
+    return NODE::tr_probe_num(x);
   }
 }
 /*--------------------------------------------------------------------------*/
-XPROBE NODE::ac_probe_ext(CS& cmd)const
+XPROBE NODE::ac_probe_ext(const std::string& x)const
 {
-  if (cmd.pmatch("V")) {
+  if (Umatch(x, "v ")) {
     return XPROBE(vac());
-  }else if (cmd.pmatch("Z")) {
+  }else if (Umatch(x, "z ")) {
     return XPROBE(port_impedance(node_t(const_cast<NODE*>(this)),
-				 node_t(&ground_node), acx, COMPLEX(0.)));
-  }else{
-    untested();
-    return CKT_BASE::ac_probe_ext(cmd);
+				 node_t(&ground_node), _sim->_acx, COMPLEX(0.)));
+  }else{itested();
+    return CKT_BASE::ac_probe_ext(x);
   }
 }
 /*--------------------------------------------------------------------------*/
 /* annotated_logic_value:  a printable value for probe
  * that has secondary info encoded in its fraction part
  */
-const double LOGIC_NODE::annotated_logic_value()const
+double LOGIC_NODE::annotated_logic_value()const
 {
   return (_lv + (.1 * (OPT::transits - quality())) + (.01 * (2 - _mode)));
 }
@@ -264,7 +254,7 @@ static bool newly_stable[lvUNKNOWN+1][lvUNKNOWN+1] = { // oldlv, _lv
   /* u  */{true,  false, false, true,  false}
 };
 /*--------------------------------------------------------------------------*/
-inline const bool LOGIC_NODE::just_reached_stable()const
+inline bool LOGIC_NODE::just_reached_stable()const
 {
   return newly_stable[old_lv()][lv()];
 }
@@ -277,8 +267,7 @@ inline const bool LOGIC_NODE::just_reached_stable()const
 void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
 {
   assert(f);
-  if (process() && process() != f) {
-    untested();
+  if (process() && process() != f) {untested();
     set_bad_quality("logic process mismatch");
     error(bWARNING, "node " + long_label() 
 	  + " logic process mismatch\nis it " + process()->long_label() 
@@ -287,30 +276,24 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
   set_process(f);
 
   if (is_analog() &&  d_iter() < a_iter()) {
-    switch (SIM::phase) {
-    case SIM::pDC_SWEEP:
-    case SIM::pINIT_DC:
+    if (_sim->analysis_is_restore()) {untested();
+    }else if (_sim->analysis_is_static()) {
+    }else{
+    }
+    if (_sim->analysis_is_static() || _sim->analysis_is_restore()) {
       set_last_change_time(0);
       store_old_last_change_time();
       set_lv(lvUNKNOWN);
-      break;
-    case SIM::pTRAN:
-      break;
-    case SIM::pNONE:
-      unreachable();
-      break;
+    }else{
     }
-    double dt = SIM::time0 - last_change_time();
-    if (dt < 0.) {
-      untested();
+    double dt = _sim->_time0 - last_change_time();
+    if (dt < 0.) {untested();
       error(bPICKY, "time moving backwards.  was %g, now %g\n",
-	    last_change_time(), SIM::time0);
-      dt = SIM::time0 - old_last_change_time();
-      if (dt <= 0.) {
-	untested();
-	error(bERROR,"internal error: time moving backwards, can't recover\n");
-      }else{
-	untested();
+	    last_change_time(), _sim->_time0);
+      dt = _sim->_time0 - old_last_change_time();
+      if (dt <= 0.) {untested();
+	throw Exception("internal error: time moving backwards, can't recover");
+      }else{untested();
       }
       assert(dt > 0.);
       restore_lv();			/* skip back one */
@@ -379,7 +362,6 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
 	  if (-diff < dt/(process()->mf * process()->fall)) {
 	    set_bad_quality("slow fall");
 	  }else{
-	    untested();
 	    dont_set_quality("continuing good fall");
 	  }
 	  break;
@@ -417,8 +399,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
 double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)
 {
   assert(f);
-  if (process() && process() != f) {
-    untested();
+  if (process() && process() != f) {untested();
     error(bWARNING, "node " + long_label() 
 	  + " logic process mismatch\nis it " + process()->long_label() 
 	  + " or " + f->long_label() + "?\n");
@@ -451,14 +432,14 @@ double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)
   assert(end   != NOT_VALID);
   assert(risefall != NOT_VALID);
 
-  if (SIM::time0 <= (final_time()-risefall)) {
+  if (_sim->_time0 <= (final_time()-risefall)) {
     return start;
-  }else if (SIM::time0 >= final_time()) {
+  }else if (_sim->_time0 >= final_time()) {
     untested();
     return end;
   }else{
     untested();
-    return end - ((end-start) * (final_time()-SIM::time0) / risefall);
+    return end - ((end-start) * (final_time()-_sim->_time0) / risefall);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -480,8 +461,12 @@ void LOGIC_NODE::propagate()
 /*--------------------------------------------------------------------------*/
 void LOGIC_NODE::force_initial_value(LOGICVAL v)
 {
-  assert(SIM::phase == SIM::pINIT_DC || SIM::phase == SIM::pDC_SWEEP);
-  assert(SIM::time0 == 0.);
+  if (_sim->analysis_is_restore()) {untested();
+  }else if (_sim->analysis_is_static()) {
+  }else{untested();
+  }
+  assert(_sim->analysis_is_static() || _sim->analysis_is_restore());
+  assert(_sim->_time0 == 0.);
   assert(is_unknown());
   assert(is_digital());
   set_lv(v); // BUG ??
@@ -494,106 +479,68 @@ void LOGIC_NODE::force_initial_value(LOGICVAL v)
 void LOGIC_NODE::set_event(double delay, LOGICVAL v)
 {
   _lv.set_in_transition(v);
-  if (SIM::phase == SIM::pTRAN  &&  in_transit()) { 
-    untested();
+  if (_sim->analysis_is_tran_dynamic()  &&  in_transit()) {untested();
     set_bad_quality("race");
   }
   set_d_iter();
-  set_final_time(SIM::time0 + delay);
-  if (OPT::picky <= bTRACE) {
-    untested();
+  set_final_time(_sim->_time0 + delay);
+  if (OPT::picky <= bTRACE) {untested();
     error(bTRACE, "%s:%u:%g new event\n",
 	  long_label().c_str(), d_iter(), final_time());
   }
-  SIM::new_event(final_time());
   set_last_change_time();
 }
 /*--------------------------------------------------------------------------*/
-void node_t::parse(CS& cmd, CARD* d)
+void node_t::set_to_ground(CARD* d)
 {
-  int here = cmd.cursor();
-  std::string node_name = cmd.ctos();
-  if (cmd.stuck(&here)) {
-    untested();
-    // didn't move, probably a terminator.
-    _t = INVALID_NODE;
-  }else{
-    // legal node name, store it.
-    assert(d);
-    NODE_MAP* map = d->scope()->nodes();
-    assert(map);
-    _n = map->new_node(node_name);
-    _t = _n->user_number();
-  }
-}
-/*--------------------------------------------------------------------------*/
-void node_t::set_to_0(CARD* d)
-{
-  untested();
+  //assert(!_nnn); //BUG// fails on MUTUAL_L::expand after clone
   assert(d);
-  const CARD* owner = (dynamic_cast<const MODEL_SUBCKT*>(d))
-    ? d			// subckt header, makes its own scope
-    : d->owner();	// normal element, owner determines scope
-  const CARD_LIST* sc_ope = (owner) 
-    ? (owner->subckt())		// in a subckt, or is a subckt
-    : &(CARD_LIST::card_list);	// root circuit
-  assert(sc_ope);
-  assert(sc_ope == d->scope());
-  NODE_MAP* map = sc_ope->nodes();
-  assert(map);
-  _n = (*map)["0"];
-  _t = 0;
+
+  NODE_MAP* Map = d->scope()->nodes();
+  assert(Map);
+  _nnn = (*Map)["0"];
+  _ttt = 0;
+  assert(_nnn);
 }
 /*--------------------------------------------------------------------------*/
-void node_t::map_subckt_node(int* m)
-{
-  assert(e_() != INVALID_NODE);
-  assert(e_() >= 0);	/* bad node? */
-  assert(m[e_()] >= 0);	/* node map,all mapped and valid */
-  _t = m[e_()];
-}
-/*--------------------------------------------------------------------------*/
-/* volts_limited: transient voltage, best approximation, with limiting
+/* new_node: a raw new node, as when a netlist is parsed
  */
-double volts_limited(const node_t & n1, const node_t & n2)
+void node_t::new_node(const std::string& node_name, const CARD* d)
 {
-  bool limiting = false;
+  //assert(!_nnn); //BUG// fails on MUTUAL_L::expand after clone
+  assert(d);
 
-  double v1 = n1.v0();
-  assert(v1 == v1);
-  if (v1 < CKT_BASE::_vmin) {
-    limiting = true;
-    v1 = CKT_BASE::_vmin;
-  }else if (v1 > CKT_BASE::_vmax) {
-    limiting = true;
-    v1 = CKT_BASE::_vmax;
+  NODE_MAP* Map = d->scope()->nodes();
+  assert(Map);
+  _nnn = Map->new_node(node_name);
+  _ttt = _nnn->user_number();
+  assert(_nnn);
+}
+/*--------------------------------------------------------------------------*/
+/* new_model_node: a mapped new node, produced through model expansion.
+ * Not really a model_node, but a node in the subckt that is made
+ * in model expansion.
+ * Supposedly equivalent to new_node() then map_subckt_node()
+ * but it does it without building a map
+ */
+void node_t::new_model_node(const std::string& node_name, CARD* d)
+{
+  new_node(node_name, d);
+  _ttt = CKT_BASE::_sim->newnode_model();
+  //assert(_ttt == _nnn->flat_number());
+}
+/*--------------------------------------------------------------------------*/
+void node_t::map_subckt_node(int* m, const CARD* d)
+{
+  assert(m);
+  assert(e_() >= 0);
+  if (node_is_valid(m[e_()])) {
+    _ttt = m[e_()];
+  }else{untested();
+    throw Exception(d->long_label() + ": need more nodes");
   }
-
-  double v2 = n2.v0();
-  assert(v2 == v2);
-  if (v2 < CKT_BASE::_vmin) {
-    limiting = true;
-    v2 = CKT_BASE::_vmin;
-  }else if (v2 > CKT_BASE::_vmax) {
-    limiting = true;
-    v2 = CKT_BASE::_vmax;
-  }
-
-  if (limiting) {
-    SIM::limiting = true;
-    if (OPT::dampstrategy & dsRANGE) {
-      SIM::fulldamp = true;
-      error(bTRACE, "range limit damp\n");
-    }
-    if (OPT::picky <= bTRACE) {
-      untested();
-      error(bNOERROR,"node limiting (n1,n2,dif) "
-	    "was (%g %g %g) now (%g %g %g)\n",
-	    n1.v0(), n2.v0(), n1.v0() - n2.v0(), v1, v2, v1-v2);
-    }
-  }
-
-  return dn_diff(v1,v2);
+  //_nnn->set_flat_number(_ttt);
+  assert(node_is_valid(_ttt));
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

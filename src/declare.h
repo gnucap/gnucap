@@ -1,12 +1,12 @@
-/*$Id: declare.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: declare.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -26,15 +26,14 @@
 #ifndef DECLARE_H
 #define DECLARE_H
 #include "md.h"
+class PROBELIST;
 /*--------------------------------------------------------------------------*/
-/* md	    */	void	  setup_traps();
-/* fft      */	void	  fft(COMPLEX*,int,int);
-/* c_file   */	char	  *getcmd(const char*,char*,int);
-/* generat  */	double	  gen();
-/* plot     */	void	  plottr(double);
-		int	  plopen(double,double);
-		void	  plclose();
-		void	  plclear();
+/* fft     */ INTERFACE	void	fft(COMPLEX*,int,int);
+/* generat */ INTERFACE	double	gen();
+/* plot    */		void	plottr(double,const PROBELIST&);
+			int	plopen(double,double,const PROBELIST&);
+	      INTERFACE	void	plclose();
+	      INTERFACE	void	plclear();
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

@@ -1,12 +1,12 @@
-/*$Id: d_switch.cc,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
+/*$Id: d_switch.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,30 +28,213 @@
  * model:   .model mname CSW <args>
  */
 //testing=script 2006.06.14
-#include "d_switch.h"
+#include "e_model.h"
+#include "e_elemnt.h"
+/*--------------------------------------------------------------------------*/
+namespace {
+/*--------------------------------------------------------------------------*/
+  enum state_t {_UNKNOWN, _ON, _OFF};
+/*--------------------------------------------------------------------------*/
+class COMMON_SWITCH : public COMMON_COMPONENT {
+private:
+  explicit COMMON_SWITCH(const COMMON_SWITCH& p)
+    :COMMON_COMPONENT(p), _ic(p._ic) {}
+public:
+  explicit COMMON_SWITCH(int c=0) 
+    :COMMON_COMPONENT(c), _ic(_UNKNOWN) {}
+  bool operator==(const COMMON_COMPONENT&)const;
+  COMMON_COMPONENT* clone()const {return new COMMON_SWITCH(*this);}
+  std::string name()const	 {untested(); return "switch";}
+
+  bool		param_is_printable(int)const;
+  std::string	param_name(int)const;
+  std::string	param_name(int,int)const;
+  std::string	param_value(int)const;
+  int param_count()const {return (1 + COMMON_COMPONENT::param_count());}
+public:
+  state_t	_ic;		/* initial state, belongs in common */
+  //BUG// no way to set _ic
+};
+/*--------------------------------------------------------------------------*/
+class SWITCH_BASE : public ELEMENT {
+protected:
+  explicit	SWITCH_BASE();
+  explicit	SWITCH_BASE(const SWITCH_BASE& p);
+protected: // override virtual
+  std::string value_name()const	{return "";}
+  std::string dev_type()const {assert(common()); return common()->modelname().c_str();}
+  bool	   print_type_in_spice()const {return true;}
+  int	   tail_size()const	{return 1;}
+  int	   max_nodes()const	= 0;
+  int	   min_nodes()const	= 0;
+  int	   matrix_nodes()const	{return 2;}
+  int	   net_nodes()const	= 0;
+  CARD*	   clone()const		= 0;
+  void     expand();
+  void     precalc_last();
+  void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
+  void	   tr_begin();
+  void     dc_advance();
+  void     tr_advance();
+  void     tr_regress();
+  bool	   tr_needs_eval()const {return _sim->analysis_is_static();} // also q by tr_advance
+  bool	   do_tr();
+  void	   tr_load()		{tr_load_passive();}
+  TIME_PAIR tr_review();
+  void	   tr_unload()		{untested(); tr_unload_passive();}
+  double   tr_involts()const	{untested(); return tr_outvolts();}
+  double   tr_involts_limited()const {unreachable(); return tr_outvolts_limited();}
+  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
+  void	   ac_begin()		{_ev = _y[0].f1; _acg = _m0.c1;}
+  void	   do_ac();
+  void	   ac_load()		{ac_load_passive();}
+  COMPLEX  ac_involts()const	{untested(); return ac_outvolts();}
+protected:
+  const ELEMENT* _input;
+private:
+  double	_in[OPT::_keep_time_steps];
+  state_t	_state[OPT::_keep_time_steps];
+};
+/*--------------------------------------------------------------------------*/
+class DEV_VSWITCH : public SWITCH_BASE {
+private:
+  explicit  DEV_VSWITCH(const DEV_VSWITCH& p) :SWITCH_BASE(p) {}
+public:
+  explicit  DEV_VSWITCH()	:SWITCH_BASE() {}
+private: // override virtual
+  int	    max_nodes()const	{return 4;}
+  int	    min_nodes()const	{return 4;}
+  int	    net_nodes()const	{return 4;}
+  CARD*	    clone()const	{return new DEV_VSWITCH(*this);}
+  char	    id_letter()const	{return 'S';}
+
+  std::string port_name(int i)const {itested();
+    assert(i >= 0);
+    assert(i < 4);
+    static std::string names[] = {"p", "n", "ps", "ns"};
+    return names[i];
+  }
+};
+/*--------------------------------------------------------------------------*/
+class DEV_CSWITCH : public SWITCH_BASE {
+private:
+  explicit  DEV_CSWITCH(const DEV_CSWITCH& p) 
+    :SWITCH_BASE(p), _input_label(p._input_label) {}
+public:
+  explicit  DEV_CSWITCH()	:SWITCH_BASE(), _input_label() {}
+private: // override virtual
+  int	    max_nodes()const	{return 3;}
+  int	    ext_nodes()const	{return 2;}
+  int	    min_nodes()const	{return 3;}
+  int	    net_nodes()const	{return 2;}
+  int	    num_current_ports()const {return 1;}
+  const std::string current_port_value(int)const {return _input_label;};
+  CARD*	    clone()const	{return new DEV_CSWITCH(*this);}
+  void	    expand();
+  char	    id_letter()const	{return 'W';}
+  void	   set_port_by_name(std::string& Name, std::string& Value)
+		{untested(); SWITCH_BASE::set_port_by_name(Name,Value);}
+  void	   set_port_by_index(int, std::string&);
+  bool	   node_is_connected(int)const;
+
+  std::string port_name(int i)const {itested();
+    assert(i >= 0);
+    assert(i < 2);
+    static std::string names[] = {"p", "n"};
+    return names[i];
+  }
+  std::string current_port_name(int i)const {
+    assert(i >= 0);
+    assert(i < 1);
+    static std::string names[] = {"in"};
+    return names[i];
+  }
+private:
+  std::string	 _input_label;
+};
+/*--------------------------------------------------------------------------*/
+class MODEL_SWITCH : public MODEL_CARD {
+private:
+  explicit	MODEL_SWITCH(const MODEL_SWITCH& p);
+public:
+  explicit	MODEL_SWITCH(const SWITCH_BASE*);
+private: // override virtual
+  void		set_dev_type(const std::string& nt);
+  std::string	dev_type()const;
+  CARD*		clone()const	{return new MODEL_SWITCH(*this);}
+  void		precalc_first();
+  void		set_param_by_index(int, std::string&, int);
+  bool		param_is_printable(int)const;
+  std::string	param_name(int)const;
+  std::string	param_name(int,int)const;
+  std::string	param_value(int)const;
+  int param_count()const {return (6 + MODEL_CARD::param_count());}
+public:
+  PARAMETER<double> vt;		/* threshold voltage */
+  PARAMETER<double> vh;		/* hysteresis voltage */
+  PARAMETER<double> ron;	/* on resistance */
+  PARAMETER<double> roff;	/* off resistance */
+  PARAMETER<double> von;
+  PARAMETER<double> voff;
+  enum control_t {VOLTAGE, CURRENT};
+  control_t type;	/* current or voltage controlled */
+private:
+  static double const _default_vt;
+  static double const _default_vh;
+  static double const _default_ron;
+  static double const _default_roff;
+};
 /*--------------------------------------------------------------------------*/
 static COMMON_SWITCH Default_SWITCH(CC_STATIC);
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-bool COMMON_SWITCH::operator==(const COMMON_COMPONENT& x)const
-{
-  const COMMON_SWITCH* p = dynamic_cast<const COMMON_SWITCH*>(&x);
-  bool rv = p
-    && COMMON_COMPONENT::operator==(x);
-  if (rv) {
-    untested();
-  }
-  return rv;
-}
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
 double const MODEL_SWITCH::_default_vt = 0.;
 double const MODEL_SWITCH::_default_vh = 0.;
 double const MODEL_SWITCH::_default_ron = 1.;
 double const MODEL_SWITCH::_default_roff = 1e12;
 /*--------------------------------------------------------------------------*/
-MODEL_SWITCH::MODEL_SWITCH()
-  :MODEL_CARD(),
+bool COMMON_SWITCH::operator==(const COMMON_COMPONENT& x)const
+{
+  const COMMON_SWITCH* p = dynamic_cast<const COMMON_SWITCH*>(&x);
+  return p && COMMON_COMPONENT::operator==(x);
+}
+/*--------------------------------------------------------------------------*/
+bool COMMON_SWITCH::param_is_printable(int i)const
+{
+  switch (COMMON_SWITCH::param_count() - 1 - i) {
+  case 0:  return (_ic == _ON || _ic == _OFF);
+  default: return COMMON_COMPONENT::param_is_printable(i);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string COMMON_SWITCH::param_name(int i)const
+{
+  switch (COMMON_SWITCH::param_count() - 1 - i) {
+  case 0:  return "ic";
+  default: return COMMON_COMPONENT::param_name(i);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string COMMON_SWITCH::param_name(int i, int j)const
+{itested();
+  if (j == 0) {itested();
+    return param_name(i);
+  }else if (i >= COMMON_COMPONENT::param_count()) {itested();
+    return "";
+  }else{itested();
+    return COMMON_COMPONENT::param_name(i, j);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string COMMON_SWITCH::param_value(int i)const
+{itested();
+  switch (COMMON_SWITCH::param_count() - 1 - i) {
+  case 0:  return (_ic == _ON) ? "1" : "0";
+  default: return COMMON_COMPONENT::param_value(i);
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+MODEL_SWITCH::MODEL_SWITCH(const SWITCH_BASE* p)
+  :MODEL_CARD(p),
    vt(_default_vt),
    vh(_default_vh),
    ron(_default_ron),
@@ -62,193 +245,199 @@ MODEL_SWITCH::MODEL_SWITCH()
 {
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SWITCH::parse_spice(CS& cmd)
+MODEL_SWITCH::MODEL_SWITCH(const MODEL_SWITCH& p)
+  :MODEL_CARD(p),
+   vt(p.vt),
+   vh(p.vh),
+   ron(p.ron),
+   roff(p.roff),
+   von(p.von),
+   voff(p.voff),
+   type(p.type)
 {
-  cmd.reset();
-  cmd.skiparg();		// skip known ".model"
-  parse_label(cmd);
-  int here = cmd.cursor();
-  ONE_OF
-    || set(cmd, "SW",  &type, VOLTAGE)
-    || set(cmd, "CSW", &type, CURRENT)
-    ;
-  if (cmd.stuck(&here)) {
-    untested();
-    cmd.warn(bWARNING, "need sw or csw");
-  }
-  cmd.skip1b('(');
-  cmd.stuck(&here);
-  do{
-    ONE_OF
-      || get(cmd, "VT",   &vt)
-      || get(cmd, "VH",   &vh)	//,  mPOSITIVE)
-      || get(cmd, "IT",   &vt)
-      || get(cmd, "IH",   &vh)	//,  mPOSITIVE)
-      || get(cmd, "RON",  &ron)
-      || get(cmd, "ROFF", &roff)
-      || get(cmd, "VON",  &von)
-      || get(cmd, "VOFF", &voff)
-      || get(cmd, "ION",  &von)
-      || get(cmd, "IOFF", &voff)
-      ;
-  }while (cmd.more() && !cmd.stuck(&here));
-  cmd.skip1b(')');
-  cmd.check(bWARNING, "what's this?");
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SWITCH::elabo1()
+void MODEL_SWITCH::set_dev_type(const std::string& new_type)
 {
-  if (1 || !evaluated()) {
-    const CARD_LIST* par_scope = scope();
-    assert(par_scope);
-    MODEL_CARD::elabo1();
-    vt.e_val(_default_vt, par_scope);
-    vh.e_val(_default_vh, par_scope);
-    ron.e_val(_default_ron, par_scope);
-    roff.e_val(_default_roff, par_scope);
-    von.e_val(vt + vh, par_scope);
-    voff.e_val(vt - vh, par_scope);
+  if (new_type == "sw") {
+    type = VOLTAGE;
+  }else if (new_type == "csw") {
+    type = CURRENT;
   }else{
-    untested();
+    MODEL_CARD::set_dev_type(new_type);
   }
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SWITCH::print_spice(OMSTREAM& where, int)const
+void MODEL_SWITCH::precalc_first()
 {
-  where.setfloatwidth(7);
+  MODEL_CARD::precalc_first();
+
+  const CARD_LIST* par_scope = scope();
+  assert(par_scope);
+
+  vt.e_val(_default_vt, par_scope);
+  vh.e_val(_default_vh, par_scope);
+  ron.e_val(_default_ron, par_scope);
+  roff.e_val(_default_roff, par_scope);
+  von.e_val(vt + vh, par_scope);
+  voff.e_val(vt - vh, par_scope);
+}
+/*--------------------------------------------------------------------------*/
+std::string MODEL_SWITCH::dev_type()const
+{
   switch (type) {
   case VOLTAGE:
-    where << ".model " << short_label() << " sw ("
-	  <<   "vt=" << vt
-	  << "  vh=" << vh
-	  << "  von="  << von
-	  << "  voff=" << voff;
+    return "sw";
     break;
   case CURRENT:
-    where << ".model " << short_label() << " csw ("
-	  <<   "it=" << vt
-	  << "  ih=" << vh
-	  << "  ion="  << von
-	  << "  ioff=" << voff;
+    return "csw";
     break;
   }
-  where << "  ron="  << ron
-	<< "  roff=" << roff
-	<< ")\n";
+  unreachable();
+  return "";
+}
+/*--------------------------------------------------------------------------*/
+void MODEL_SWITCH::set_param_by_index(int i, std::string& value, int offset)
+{
+  switch (MODEL_SWITCH::param_count() - 1 - i) {
+  case 0: vt = value; break;
+  case 1: vh = value; break;
+  case 2: von = value; break;
+  case 3: voff = value; break;
+  case 4: ron = value; break;
+  case 5: roff = value; break;
+  default: MODEL_CARD::set_param_by_index(i, value, offset); break;
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool MODEL_SWITCH::param_is_printable(int i)const
+{
+  switch (MODEL_SWITCH::param_count() - 1 - i) {
+  case 0: 
+  case 1: 
+  case 2: 
+  case 3: 
+  case 4: 
+  case 5: return true;
+  default: return MODEL_CARD::param_is_printable(i);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string MODEL_SWITCH::param_name(int i)const
+{
+  switch (type) {
+  case VOLTAGE:
+    switch (MODEL_SWITCH::param_count() - 1 - i) {
+    case 0: return "vt";
+    case 1: return "vh";
+    case 2: return "von";
+    case 3: return "voff";
+    case 4: return "ron";
+    case 5: return "roff";
+    default: return MODEL_CARD::param_name(i);
+    }
+  case CURRENT:
+    switch (MODEL_SWITCH::param_count() - 1 - i) {
+    case 0: return "it";
+    case 1: return "ih";
+    case 2: return "ion";
+    case 3: return "ioff";
+    case 4: return "ron";
+    case 5: return "roff";
+    default: return MODEL_CARD::param_name(i);
+    }
+  }
+  unreachable();
+  return "";
+}
+/*--------------------------------------------------------------------------*/
+std::string MODEL_SWITCH::param_name(int i, int j)const
+{
+  if (j == 0) {
+    return param_name(i);
+  }else if (i >= MODEL_CARD::param_count()) {
+    return "";
+  }else{
+    return MODEL_CARD::param_name(i, j);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string MODEL_SWITCH::param_value(int i)const
+{
+  switch (MODEL_SWITCH::param_count() - 1 - i) {
+  case 0: return vt.string();
+  case 1: return vh.string();
+  case 2: return von.string();
+  case 3: return voff.string();
+  case 4: return ron.string();
+  case 5: return roff.string();
+  default: return MODEL_CARD::param_value(i);
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 SWITCH_BASE::SWITCH_BASE()
   :ELEMENT(),
-   _input_label(),
-   _input(0),
-   _ic(_UNKNOWN),
-   _time_future(0.)
+   _input(NULL)
 {
   attach_common(&Default_SWITCH);
-  std::fill_n(_time, int(_keep_time_steps), 0.);
-  std::fill_n(_in, int(_keep_time_steps), 0.);
-  std::fill_n(_state, int(_keep_time_steps), _UNKNOWN);
+  std::fill_n(_in, int(OPT::_keep_time_steps), 0.);
+  std::fill_n(_state, int(OPT::_keep_time_steps), _UNKNOWN);
 }
 /*--------------------------------------------------------------------------*/
 SWITCH_BASE::SWITCH_BASE(const SWITCH_BASE& p)
   :ELEMENT(p),
-   _input_label(p._input_label),
-   _input(0),
-   _ic(p._ic),
-   _time_future(p._time_future)
+   _input(NULL)
 {
-  untested();
-  notstd::copy_n(p._time, int(_keep_time_steps), _time);
-  notstd::copy_n(p._in, int(_keep_time_steps), _in);
-  notstd::copy_n(p._state, int(_keep_time_steps), _state);  
+  notstd::copy_n(p._in, int(OPT::_keep_time_steps), _in);
+  notstd::copy_n(p._state, int(OPT::_keep_time_steps), _state);  
 }
 /*--------------------------------------------------------------------------*/
-void SWITCH_BASE::parse_spice(CS& cmd)
+void SWITCH_BASE::expand()
 {
-  assert(has_common());
-  COMMON_SWITCH* c = prechecked_cast<COMMON_SWITCH*>(common()->clone());
+  ELEMENT::expand();
+  
+  attach_model();
+  const COMMON_SWITCH* c = dynamic_cast<const COMMON_SWITCH*>(common());
   assert(c);
-  assert(!c->has_model());
-
-  parse_Label(cmd);
-  parse_nodes(cmd, max_nodes(), min_nodes(), 1/*model_name*/, 0/*start*/);
-  if (typeid(*this) == typeid(DEV_CSWITCH)) {
-    _input_label = cmd.ctos(TOKENTERM);
-    _input_label[0] = toupper(_input_label[0]);
-  }else{
-    assert(typeid(*this) == typeid(DEV_VSWITCH));
-  }
-  c->parse_modelname(cmd);
-  int here = cmd.cursor();
-  ONE_OF
-    || set(cmd, "OFF",    &_ic, _OFF)
-    || set(cmd, "ON",	  &_ic, _ON)
-    || set(cmd, "UNKNOWN",&_ic, _UNKNOWN)
-    ;
-  if (cmd.stuck(&here)) {
-    cmd.check(bWARNING, "need off, on, or unknown");
-  }else{
-    cmd.check(bWARNING, "what's this?");
-    untested();
-  }
-  attach_common(c);
-}
-/*--------------------------------------------------------------------------*/
-void SWITCH_BASE::print_spice(OMSTREAM& where, int)const
-{
-  const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
-  assert(c);
-  where << short_label();
-  printnodes(where);
-  if (_input) {
-    where << "  " << _input->short_label();
-  }else{
-    where << "  " << _input_label;
-  }
-  where << ' ' << c->modelname();
-
-  switch (_ic) {
-    case _OFF:     untested();	where << " off"; break;
-    case _ON:      untested();	where << " on";  break;
-    case _UNKNOWN: break;
-  }
-  where << '\n';
-}
-/*--------------------------------------------------------------------------*/
-void SWITCH_BASE::elabo1()
-{
-  ELEMENT::elabo1();
-  const MODEL_SWITCH* m = dynamic_cast<const MODEL_SWITCH*>(attach_model());
+  const MODEL_SWITCH* m = dynamic_cast<const MODEL_SWITCH*>(c->model());
   if (!m) {
-    untested();
     assert(has_common());
-    error(bERROR, long_label() + ": model " + common()->modelname()
-	  + " is not a switch (SW or CSW)\n");
+    throw Exception_Model_Type_Mismatch(long_label(), common()->modelname(),
+					"switch (SW or CSW)");
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
-void SWITCH_BASE::precalc()
+void SWITCH_BASE::precalc_last()
 {
-  const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
-  assert(c);
-  const MODEL_SWITCH* m = prechecked_cast<const MODEL_SWITCH*>(c->model());
-  assert(m);
+  ELEMENT::precalc_last();
+    
+  if (_sim->is_first_expand()) {
+    const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
+    assert(c);
+    const MODEL_SWITCH* m = prechecked_cast<const MODEL_SWITCH*>(c->model());
+    assert(m);
+    _y1.f1 = _y[0].f1 = (c->_ic == _ON) ? m->ron : m->roff;	// override, unknown is off
+    
+    assert(!is_constant()); // depends on input
+    // converged?????
+    
+    _m0.c1 = 1./_y[0].f1;
+    _m0.c0 = 0.;
+    _m1 = _m0;
+    _state[1] = _state[0] = c->_ic;
+  }else{
+  }
 
-  set_value(m->ron);
-  _y0.f0 = LINEAR;
-  _y0.f1 = (_ic == _ON) ? m->ron : m->roff;	/* unknown is off */
-  _m0.c1 = 1./_y0.f1;
-  _m0.c0 = 0.;
-  _m1 = _m0;
-  _state[1] = _state[0] = _ic;
   assert(_loss0 == 0.);
   assert(_loss1 == 0.);
-  assert(!is_constant()); /* depends on input */
 }
 /*--------------------------------------------------------------------------*/
 void SWITCH_BASE::tr_begin()
 {
+  ELEMENT::tr_begin();
+
   const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
   assert(c);
   const MODEL_SWITCH* m = prechecked_cast<const MODEL_SWITCH*>(c->model());
@@ -256,60 +445,70 @@ void SWITCH_BASE::tr_begin()
 
   assert(_loss0 == 0.);
   assert(_loss1 == 0.);
-  assert(_y0.f0 == LINEAR);
-  _y0.f1 = ((_ic == _ON) ? m->ron : m->roff);  /* unknown is off */
-  _m0.c1 = 1./_y0.f1;
+  assert(_y[0].f0 == LINEAR);
+  _y1.f1 = _y[0].f1 = ((c->_ic == _ON) ? m->ron : m->roff);  /* unknown is off */
+  _m0.c1 = 1./_y[0].f1;
   assert(_m0.c0 == 0.);
   _m1 = _m0;
-  _state[0] = _state[0] = _ic;
-  _time[0] = _time[1] = 0.;
+  _state[1] = _state[0] = c->_ic;
   set_converged();
 }
 /*--------------------------------------------------------------------------*/
 void SWITCH_BASE::dc_advance()
-{ 
+{
+  ELEMENT::dc_advance();
   _state[1] = _state[0];
-  _time[0] = _time[1] = 0.;
 }
 /*--------------------------------------------------------------------------*/
 void SWITCH_BASE::tr_advance()
 {
+  ELEMENT::tr_advance();
+
   const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
   assert(c);
   const MODEL_SWITCH* m = prechecked_cast<const MODEL_SWITCH*>(c->model());
   assert(m);
   
-  if (_time[0] < SIM::time0) {		// forward
-    assert(_time[1] < _time[0] || _time[0] == 0.);
-    _time[1] = _time[0];
-    _state[1] = _state[0];
-    _y0.x = _in[1] = _in[0];
-    
-    if (_y0.x >= m->von) {
-      _state[0] = _ON;
-    }else if (_y0.x <= m->voff) {
-      _state[0] = _OFF;
-    }else{
-      _state[0] = _state[1];
-    }
-    
-    if (_state[1] != _state[0]) {
-      _y0.f1 = (_state[0] == _ON) ? m->ron : m->roff;	/* unknown is off */
-      _m0.c1 = 1./_y0.f1;
-      q_eval();
-    }
+   _state[1] = _state[0];
+  _y[0].x = _in[1] = _in[0];
+  
+  if (_y[0].x >= m->von) {
+    _state[0] = _ON;
+  }else if (_y[0].x <= m->voff) {
+    _state[0] = _OFF;
   }else{
-    assert(_time[1] < SIM::time0);
-    assert(_time[0] >= SIM::time0);
-    assert(_time[1] < _time[0] || _time[0] == 0.);
-    // else backward, don't do anything
+    _state[0] = _state[1];
   }
-  assert(_y0.f1 == ((_state[0] == _ON) ? m->ron : m->roff));
-  assert(_y0.f0 == LINEAR);
-  assert(_m0.c1 == 1./_y0.f1);
+  
+  if (_state[1] != _state[0]) {
+    _y[0].f1 = (_state[0] == _ON) ? m->ron : m->roff;	/* unknown is off */
+    _m0.c1 = 1./_y[0].f1;
+    q_eval();
+  }else{
+  }
+  
+  assert(_y[0].f1 == ((_state[0] == _ON) ? m->ron : m->roff));
+  assert(_y[0].f0 == LINEAR);
+  trace4("", _m0.c1, 1./_y[0].f1, ((_m0.c1) - (1./_y[0].f1)), ((_m0.c1) / (1./_y[0].f1)));
+  assert(conchk(_m0.c1, 1./_y[0].f1));
   assert(_m0.c0 == 0.);
   set_converged();
-  _time[0] = SIM::time0;
+}
+/*--------------------------------------------------------------------------*/
+void SWITCH_BASE::tr_regress()
+{
+  ELEMENT::tr_regress();
+
+  const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
+  assert(c);
+  const MODEL_SWITCH* m = prechecked_cast<const MODEL_SWITCH*>(c->model());
+  assert(m);
+
+  assert(_y[0].f1 == ((_state[0] == _ON) ? m->ron : m->roff));
+  assert(_y[0].f0 == LINEAR);
+  assert(_m0.c1 == 1./_y[0].f1);
+  assert(_m0.c0 == 0.);
+  set_converged();
 }
 /*--------------------------------------------------------------------------*/
 bool SWITCH_BASE::do_tr()
@@ -318,32 +517,37 @@ bool SWITCH_BASE::do_tr()
   assert(c);
   const MODEL_SWITCH* m = prechecked_cast<const MODEL_SWITCH*>(c->model());
   assert(m);
-  
-  if (SIM::phase != SIM::pTRAN) {
-    _y0.x = (_input)			/* _y0.x is controlling value */
+
+  if (_sim->analysis_is_static()) {
+    _y[0].x = (_input)			/* _y[0].x is controlling value */
       ? CARD::probe(_input,"I")		/* current controlled */
       : _n[IN1].v0() - _n[IN2].v0();	/* voltage controlled */
     
     state_t new_state;
-    if (_y0.x > m->von) {
+    if (_y[0].x > m->von) {
       new_state = _ON;
-    }else if (_y0.x < m->voff) {
+    }else if (_y[0].x < m->voff) {
       new_state = _OFF;
     }else{
       new_state = _state[1];
     }
     
     if (new_state != _state[0]) {
-      _y0.f1 = (new_state == _ON) ? m->ron : m->roff;	/* unknown is off */
+      _y[0].f1 = (new_state == _ON) ? m->ron : m->roff;	/* unknown is off */
       _state[0] = new_state;
-      _m0.c1 = 1./_y0.f1;
+      _m0.c1 = 1./_y[0].f1;
+      trace4("change", new_state, old_state, _y[0].f1, _m0.c1);
       q_load();
       store_values();
       set_not_converged();
     }else{
+      trace3("no change", new_state, _y[0].f1, _m0.c1);
       set_converged();
     }
   }else{
+    // Above isn't necessary because it was done in tr_advance,
+    // and doesn't iterate.
+    // I believe it is not necessary on restart, because it is stored.
     if (_state[0] != _state[1]) {
       q_load();
       store_values();
@@ -352,15 +556,17 @@ bool SWITCH_BASE::do_tr()
     }
     assert(converged());
   }
-  assert(_y0.f1 == ((_state[0] == _ON) ? m->ron : m->roff));
-  assert(_y0.f0 == LINEAR);
-  //assert(_m0.c1 == 1./_y0.f1);
+  assert(_y[0].f1 == ((_state[0] == _ON) ? m->ron : m->roff));
+  assert(_y[0].f0 == LINEAR);
+  //assert(_m0.c1 == 1./_y[0].f1);
   assert(_m0.c0 == 0.);
   return converged();
 }
 /*--------------------------------------------------------------------------*/
-DPAIR SWITCH_BASE::tr_review()
+TIME_PAIR SWITCH_BASE::tr_review()
 {
+  ELEMENT::tr_review();
+
   const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
   assert(c);
   const MODEL_SWITCH* m = prechecked_cast<const MODEL_SWITCH*>(c->model());
@@ -370,63 +576,72 @@ DPAIR SWITCH_BASE::tr_review()
     ? CARD::probe(_input,"I")
     : _n[IN1].v0() - _n[IN2].v0();
 
-  double dt = _time[0] - _time[1];
-  double dv = _in[0] - _in[1];
-  double dvdt = dv / dt;
-  if (_state[0] != _ON  &&  dvdt > 0) {
+  double old_dt = _time[0] - _time[1];
+  double old_dv = _in[0] - _in[1];
+
+  if (_state[0] != _ON  &&  old_dv > 0) {
     double new_dv = m->von - _in[1];
-    _time_future = _time[1] + new_dv / dvdt;
-  }else if (_state[0] != _OFF  &&  dvdt < 0) {
+    double new_dt = old_dt * new_dv / old_dv;
+    _time_by.min_event(_time[1] + new_dt);
+  }else if (_state[0] != _OFF  &&  old_dv < 0) {
     double new_dv = m->voff - _in[1];
-    _time_future = _time[1] + new_dv / dvdt;
+    double new_dt = old_dt * new_dv / old_dv;
+    _time_by.min_event(_time[1] + new_dt);
   }else{
-    _time_future = NEVER;
+    assert(_time_by._event == NEVER);
   }
-  if (_time_future < _time[1] + 2*SIM::dtmin) {
-    _time_future = _time[1] + 2*SIM::dtmin;
-  }
-  if (conchk(_time_future, _time[0], 2*SIM::dtmin, 0.)) {
-    _time_future = _time[0] + 2*SIM::dtmin;
-  }
-  return DPAIR(NEVER, _time_future);
-}
-/*--------------------------------------------------------------------------*/
-double SWITCH_BASE::tr_probe_num(CS& cmd)const
-{
-  if (cmd.pmatch("DT")) {
-    untested();
-    return _time[0] - _time[1];
-  }else if (cmd.pmatch("TIME")) {
-    untested();
-    return _time[0];
-  }else if (cmd.pmatch("TIMEOld")) {
-    untested();
-    return _time[1];
-  }else if (cmd.pmatch("TIMEFuture")) {
-    return _time_future;
-  }else{
-    return ELEMENT::tr_probe_num(cmd);
-  }
+  // _time_by_event is the predicted switch time
+
+  return _time_by;
 }
 /*--------------------------------------------------------------------------*/
 void SWITCH_BASE::do_ac()
 {
-  assert(_ev  == _y0.f1);
+  assert(_ev  == _y[0].f1);
   assert(_acg == _m0.c1);
-  ac_load();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-void DEV_CSWITCH::elabo1()
+void DEV_CSWITCH::expand()
 {
-  SWITCH_BASE::elabo1();
-  _input = dynamic_cast<const ELEMENT*>(
-	   find_in_my_scope(_input_label, bERROR));
+  SWITCH_BASE::expand();
+  _input = dynamic_cast<const ELEMENT*>(find_in_my_scope(_input_label));
   if (!_input) {
-    untested();
-    error(bERROR,
-	  long_label() + ": " + _input_label + " cannot be used as input\n");
+    throw Exception(long_label() + ": " + _input_label + " cannot be used as input");
+  }else{
   }
+}
+/*--------------------------------------------------------------------------*/
+void DEV_CSWITCH::set_port_by_index(int Num, std::string& Value)
+{
+  if (Num == 2) {
+    _input_label = Value;
+  }else{
+    SWITCH_BASE::set_port_by_index(Num, Value);
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool DEV_CSWITCH::node_is_connected(int i)const
+{
+  if (i == 2) {
+    return _input_label != "";
+  }else{
+    return SWITCH_BASE::node_is_connected(i);
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+DEV_VSWITCH p2;
+DEV_CSWITCH p3;
+DISPATCHER<CARD>::INSTALL
+  d2(&device_dispatcher, "S|vswitch", &p2),
+  d3(&device_dispatcher, "W|cswitch|iswitch", &p3);
+
+MODEL_SWITCH p1(&p2);
+MODEL_SWITCH p4(&p3);
+DISPATCHER<MODEL_CARD>::INSTALL
+  d1(&model_dispatcher, "sw", &p1),
+  d4(&model_dispatcher, "csw", &p4);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

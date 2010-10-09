@@ -1,12 +1,12 @@
-/* $Id: d_mos123.model,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
+/* $Id: d_mos123.model,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,9 +29,9 @@ h_headers {
 cc_headers {
 }
 /*--------------------------------------------------------------------------*/
-model MOS123 {
-  dev_type MOS;
-  inherit MOS_BASE;
+model BUILT_IN_MOS123 {
+  dev_type BUILT_IN_MOS;
+  inherit BUILT_IN_MOS_BASE;
   independent {
     override {
       double cjo "" default=0.;
@@ -58,22 +58,22 @@ model MOS123 {
 	name=NSUb default=NA;
       double nss_cm "surface state density"
 	name=NSS default=0.0
-	print_test="nss_cm != 0.0 || nsub_cm != NA";
+	print_test="nss_cm != 0.0 || has_hard_value(nsub_cm)";
       double xj "metallurgical junction depth"
 	name=XJ default=NA positive;
 
       double uo_cm "surface mobility" 
 	name=UO alt_name=U0 default="600.";
       int tpg "type of gate material - really gate_t"
-	name=TPG default=gtOPP;
+	name=TPG default="int(gtOPP)";
     }
     calculated_parameters {
       double nsub "" 
-	calculate="((nsub_cm.has_value()) ? nsub_cm*ICM2M3 : NA)";
+	calculate="((nsub_cm.has_hard_value()) ? nsub_cm*ICM2M3 : NA)";
       double nss "" calculate="nss_cm*ICM2M2";
       double uo "" calculate="uo_cm*CM2M2";
       double vto "" name=VTO
-	calculate="((vto_raw.has_value()) ? vto_raw * polarity : NA)"
+	calculate="((vto_raw.has_hard_value()) ? vto_raw * polarity : NA)"
 	calc_print_test="calc_vto";
       double cox "oxide capacitance (E_OX / tox)"
 	name=COX calc_print_test=true default=NA;
@@ -81,23 +81,25 @@ model MOS123 {
       bool calc_gamma "" default=false;
       bool calc_phi "" default=false;
     }
-    code_pre {
-      {if (tpg < 0) {		// coerce tpg to a proper value
+    code_post {
+      if (tpg < 0) {		// coerce tpg to a proper value
 	tpg = gtSAME;		
       }else if (tpg > 0) {
 	tpg = gtOPP;
       }else{
 	assert(tpg == gtMETAL);
-      }}
-      if (tox != NA && tox <= 0) {
-	untested();
-	tox = NA;
-	error(bWARNING, long_label()+": tox <= 0, treating as if not input\n");
       }
-      if (nsub != NA && nsub < NI) {
-	untested();
-	nsub = NA;
-	error(bWARNING,long_label()+": nsub < ni, treating as if not input\n");
+      if (has_hard_value(tox) && tox <= 0) {
+        untested();
+        set_default(&tox, NA);
+	error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
+	      long_label()+": tox <= 0, treating as if not input\n");
+      }
+      if (has_hard_value(nsub_cm) && nsub < NI) {
+        untested();
+        nsub = NA;
+	error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
+	      long_label()+": nsub < ni, treating as if not input\n");
       }
     }
   }

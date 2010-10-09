@@ -1,12 +1,12 @@
-/*$Id: u_probe.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: u_probe.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,20 +28,17 @@
 /*--------------------------------------------------------------------------*/
 class CKT_BASE;
 /*--------------------------------------------------------------------------*/
-class PROBE {
+class INTERFACE PROBE {
 private:
   std::string	_what;    
-  int		_node;
   const CKT_BASE* _brh;
   double	_lo,_hi;
 public:
-  explicit  PROBE(const std::string& what, int node, double lo=0, double hi=0);
-  explicit  PROBE(const std::string& what, const CKT_BASE *brh,
-		  double lo=0, double hi=0);
+  explicit  PROBE(const std::string& what, const CKT_BASE *brh);
 	    PROBE(const PROBE& p);
 	    ~PROBE()				{detach();}
 
-  void	    set_limit(double lo,double hi)	{_lo = lo; _hi = hi;}
+  void	    set_limit(double Lo,double Hi)	{_lo = Lo; _hi = Hi;}
   void	    detach();
   PROBE&    operator=(const PROBE& p);
 

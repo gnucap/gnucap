@@ -1,12 +1,12 @@
-/*$Id: u_opt2.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: u_opt2.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,9 +22,9 @@
  * command and functions to access OPT class
  */
 //testing=script,complete 2006.07.14
+#include "u_lang.h"
 #include "l_compar.h"
 #include "ap.h"
-#include "u_opt.h"
 /*--------------------------------------------------------------------------*/
 void OPT::command(CS& cmd)
 {
@@ -38,139 +38,142 @@ void OPT::command(CS& cmd)
  */
 bool OPT::set_values(CS& cmd)
 {
+  bool big_change = false;
   bool changed = false;
-  int here = cmd.cursor();
+  unsigned here = cmd.cursor();
   do{
     ONE_OF
-      || get(cmd, "ACCT",	 &acct)
-      || get(cmd, "LIST",	 &listing)
-      || get(cmd, "MOD",	 &mod)
-      || get(cmd, "PAGE",	 &page)
-      || get(cmd, "NODE",	 &node)
-      || get(cmd, "OPTS",	 &opts)
-      || get(cmd, "GMIN",	 &gmin,		mPOSITIVE)
-      || get(cmd, "RELTOL",	 &reltol,	mPOSITIVE)
-      || get(cmd, "ABSTOL",	 &abstol,	mPOSITIVE)
-      || get(cmd, "VNTOL",	 &vntol,	mPOSITIVE)
-      || get(cmd, "TRTOL",	 &trtol,	mPOSITIVE)
-      || get(cmd, "CHGTOL",	 &chgtol,	mPOSITIVE)
-      || get(cmd, "PIVTOL",	 &pivtol,	mPOSITIVE)
-      || get(cmd, "PIVREL",	 &pivrel,	mPOSITIVE)
-      || get(cmd, "NUMDGT",	 &numdgt)
-      || get(cmd, "TNOM",	 &tnom_c)
-      || get(cmd, "CPTIME",	 &cptime)
-      || get(cmd, "LIMTIM",	 &limtim)
-      || get(cmd, "LIMPTS",	 &limpts)
-      || get(cmd, "LVLCOD",	 &lvlcod)
-      || get(cmd, "LVLTIM",	 &lvltim)
-      || (cmd.pmatch("METHOD") &&
-	  ((cmd.skip1b('='), false)
-	   || set(cmd, "Euler",	     &method,	meEULER)
-	   || set(cmd, "EULEROnly",  &method,	meEULERONLY)
-	   || set(cmd, "Trapezoidal",&method,	meTRAP)
-	   || set(cmd, "TRAPOnly",   &method,	meTRAPONLY)
-	   || set(cmd, "Gear",	     &method,	meGEAR2)
-	   || set(cmd, "GEAR2",	     &method,	meGEAR2)
-	   || set(cmd, "GEAR2Only",  &method,	meGEAR2ONLY)
-	   || set(cmd, "TRAPGear",   &method,	meTRAPGEAR)
-	   || set(cmd, "TG",	     &method,	meTRAPGEAR)
-	   || set(cmd, "TRAPEuler",  &method,	meTRAPEULER)
-	   || set(cmd, "TE",	     &method,	meTRAPEULER)
+      || Get(cmd, "acct",	&acct)
+      || Get(cmd, "list",	&listing)
+      || Get(cmd, "mod",	&mod)
+      || Get(cmd, "page",	&page)
+      || Get(cmd, "node",	&node)
+      || Get(cmd, "opts",	&opts)
+      || Get(cmd, "gmin",	&gmin,   mPOSITIVE)
+      || Get(cmd, "bypasstol",	&bypasstol, mPOSITIVE)
+      || Get(cmd, "loadtol",	&loadtol,   mPOSITIVE)
+      || Get(cmd, "reltol",	&reltol, mPOSITIVE)
+      || Get(cmd, "abstol",	&abstol, mPOSITIVE)
+      || Get(cmd, "vntol",	&vntol,  mPOSITIVE)
+      || Get(cmd, "trtol",	&trtol,  mPOSITIVE)
+      || Get(cmd, "chgtol",	&chgtol, mPOSITIVE)
+      || Get(cmd, "pivtol",	&pivtol, mPOSITIVE)
+      || Get(cmd, "pivrel",	&pivrel, mPOSITIVE)
+      || Get(cmd, "numdgt",	&numdgt)
+      || Get(cmd, "tnom",	&tnom_c)
+      || Get(cmd, "cptime",	&cptime)
+      || Get(cmd, "limtim",	&limtim)
+      || Get(cmd, "limpts",	&limpts)
+      || Get(cmd, "lvlcod",	&lvlcod)
+      || Get(cmd, "lvltim",	&lvltim)
+      || (cmd.umatch("method {=}") &&
+	  (ONE_OF
+	   || Set(cmd, "euler", 	&method, meEULER)
+	   || Set(cmd, "eulero{nly}",	&method, meEULERONLY)
+	   || Set(cmd, "trap{ezoidal}",	&method, meTRAP)
+	   || Set(cmd, "trapo{nly}",	&method, meTRAPONLY)
+	   || Set(cmd, "gear{2}", 	&method, meGEAR2)
+	   || Set(cmd, "gear2o{nly}",	&method, meGEAR2ONLY)
+	   || Set(cmd, "t{rap}g{ear}",	&method, meTRAPGEAR)
+	   || Set(cmd, "t{rap}e{uler}",	&method, meTRAPEULER)
 	   || cmd.warn(bWARNING, "illegal method")))
-      || get(cmd, "MAXORD",	 &maxord)
-      || get(cmd, "DEFL",	 &defl,		mPOSITIVE)
-      || get(cmd, "DEFW",	 &defw,		mPOSITIVE)
-      || get(cmd, "DEFAD",	 &defad,	mPOSITIVE)
-      || get(cmd, "DEFAS",	 &defas,	mPOSITIVE)
-      || get(cmd, "CLobber",	 &clobber)
-      || get(cmd, "DAMPMAX",	 &dampmax,	mPOSITIVE)
-      || get(cmd, "DAMPMIN",	 &dampmin,	mPOSITIVE)
-      || get(cmd, "DAMPStrategy",&dampstrategy, mOCTAL)
-      || get(cmd, "FLOOR",	 &floor,	mPOSITIVE)
-      || get(cmd, "VFLOOR",	 &vfloor,	mPOSITIVE)
-      || get(cmd, "ROUndofftol", &roundofftol,	mPOSITIVE)
-      || get(cmd, "Tempamb",	 &temp_c)
-      || get(cmd, "Temperature", &temp_c)
-      || get(cmd, "Short",	 &shortckt,	mPOSITIVE)
-      || get(cmd, "INwidth",	 &inwidth)
-      || get(cmd, "OUTwidth",	 &outwidth)
-      || get(cmd, "YDivisions",	 &ydivisions,	mPOSITIVE)
-      || set(cmd, "NAG",	 &picky,	bNOERROR)
-      || set(cmd, "NONAG",	 &picky,	bTRACE)
-      || set(cmd, "TRACE",	 &picky,	bTRACE)
-      || set(cmd, "NOTRACE",	 &picky,	bLOG)
-      || set(cmd, "LOG",	 &picky,	bLOG)
-      || set(cmd, "NOLOG",	 &picky,	bDEBUG)
-      || set(cmd, "DEBUG",	 &picky,	bDEBUG)
-      || set(cmd, "NODEBUG",	 &picky,	bPICKY)
-      || set(cmd, "PICKY",	 &picky,	bPICKY)
-      || set(cmd, "NOPICKY",	 &picky,	bWARNING)
-      || set(cmd, "WARNing",	 &picky,	bWARNING)
-      || set(cmd, "NOWARN",	 &picky,	bDANGER)
-      || set(cmd, "ERRor",	 &picky,	bERROR)
-      || set(cmd, "NOERRor",	 &picky,	bDISASTER)
-      || set(cmd, "DISASTER",	 &picky,	bDISASTER)
-      || (cmd.pmatch("PHase") &&
-	  ((cmd.skip1b('='), false)
-	   || set(cmd, "Degrees", &phase,	pDEGREES)
-	   || set(cmd, "Radians", &phase,	pRADIANS)
+      || Get(cmd, "maxord",	   &maxord)
+      || Get(cmd, "defl",	   &defl,	mPOSITIVE)
+      || Get(cmd, "defw",	   &defw,	mPOSITIVE)
+      || Get(cmd, "defad",	   &defad,	mPOSITIVE)
+      || Get(cmd, "defas",	   &defas,	mPOSITIVE)
+      || Get(cmd, "clobber",	   &clobber)
+      || Get(cmd, "dampmax",	   &dampmax,	mPOSITIVE)
+      || Get(cmd, "dampmin",	   &dampmin,	mPOSITIVE)
+      || Get(cmd, "damps{trategy}",&dampstrategy, mOCTAL)
+      || Get(cmd, "floor",	   &floor,	mPOSITIVE)
+      || Get(cmd, "vfloor",	   &vfloor,	mPOSITIVE)
+      || Get(cmd, "roundofftol",   &roundofftol, mPOSITIVE)
+      || Get(cmd, "t{empamb}",	   &temp_c)
+      || Get(cmd, "t{emperature}", &temp_c)
+      || Get(cmd, "short",	   &shortckt,	mPOSITIVE)
+      || Get(cmd, "out{width}",    &outwidth)
+      || Get(cmd, "ydiv{isions}",  &ydivisions, mPOSITIVE)
+      || Set(cmd, "nag",	   &picky,	bNOERROR)
+      || Set(cmd, "nonag",	   &picky,	bTRACE)
+      || Set(cmd, "trace",	   &picky,	bTRACE)
+      || Set(cmd, "notrace",	   &picky,	bLOG)
+      || Set(cmd, "log",	   &picky,	bLOG)
+      || Set(cmd, "nolog",	   &picky,	bDEBUG)
+      || Set(cmd, "debug",	   &picky,	bDEBUG)
+      || Set(cmd, "nodebug",	   &picky,	bPICKY)
+      || Set(cmd, "picky",	   &picky,	bPICKY)
+      || Set(cmd, "nopicky",	   &picky,	bWARNING)
+      || Set(cmd, "warn{ing}",	   &picky,	bWARNING)
+      || Set(cmd, "nowarn",	   &picky,	bDANGER)
+      || (cmd.umatch("phase {=}") &&
+	  (ONE_OF
+	   || Set(cmd, "d{egrees}",  &phase,	pDEGREES)
+	   || Set(cmd, "+d{egrees}", &phase,	pP_DEGREES)
+	   || Set(cmd, "-d{egrees}", &phase,	pN_DEGREES)
+	   || Set(cmd, "r{adians}",  &phase,	pRADIANS)
 	   || cmd.warn(bWARNING, "need degrees or radians")))
-      || (cmd.pmatch("ORder") &&
-	  ((cmd.skip1b('='), false)
-	   || set(cmd, "Reverse", &order,	oREVERSE)
-	   || set(cmd, "Forward", &order,	oFORWARD)
-	   || set(cmd, "Auto",    &order,	oAUTO)
+      || (cmd.umatch("order {=}") &&
+	  (ONE_OF
+	   || Set(cmd, "r{everse}", &order,	oREVERSE)
+	   || Set(cmd, "f{orward}", &order,	oFORWARD)
+	   || Set(cmd, "a{uto}",    &order,	oAUTO)
 	   || cmd.warn(bWARNING, "need reverse, forward, or auto")))
-      || (cmd.pmatch("MODe") &&
-	  ((cmd.skip1b('='), false)
-	   || set(cmd, "Analog",  &mode,	moANALOG)
-	   || set(cmd, "Digital", &mode,	moDIGITAL)
-	   || set(cmd, "Mixed",   &mode,	moMIXED)
+      || (cmd.umatch("mode {=}") &&
+	  (ONE_OF
+	   || Set(cmd, "a{nalog}",  &mode,	moANALOG)
+	   || Set(cmd, "d{igital}", &mode,	moDIGITAL)
+	   || Set(cmd, "m{ixed}",   &mode,	moMIXED)
 	   || cmd.warn(bWARNING, "need analog, digital, or mixed")))
-      || get(cmd, "TRansits",	 &transits)
-      || get(cmd, "DUPcheck",	  &dupcheck)
-      || get(cmd, "BYPass",	  &bypass)
-      || get(cmd, "INCmode",	  &incmode)
-      || get(cmd, "LCBypasss",    &lcbypass)
-      || get(cmd, "LUBypasss",    &lubypass)
-      || get(cmd, "FBBypasss",    &fbbypass)
-      || get(cmd, "TRACELoad",    &traceload)
-      || get(cmd, "ITERMIN",	  &itermin)
-      || get(cmd, "VMAX",	  &vmax)
-      || get(cmd, "VMIN",	  &vmin)
-      || get(cmd, "MRT",	  &dtmin,	mPOSITIVE)
-      || get(cmd, "DTMIn",	  &dtmin,	mPOSITIVE)
-      || get(cmd, "DTRatio",	  &dtratio,	mPOSITIVE)
-      || get(cmd, "RSTray",	  &rstray)
-      || get(cmd, "CSTray",	  &cstray)
-      || get(cmd, "Harmonics",    &harmonics)
-      || get(cmd, "TRSTEPGrow",   &trstepgrow,  mPOSITIVE)
-      || get(cmd, "TRSTEPHold",   &trstephold,  mPOSITIVE)
-      || get(cmd, "TRSTEPShrink", &trstepshrink,mPOSITIVE)
-      || get(cmd, "TRReject",     &trreject,	mPOSITIVE)
-      || get(cmd, "SHOWALL",	  &showall)
-      || get(cmd, "FOOOO",	  &foooo)
-      || get(cmd, "DIODEflags",   &diodeflags,  mOCTAL)
-      || get(cmd, "MOSflags",     &mosflags,	mOCTAL)
-      || get(cmd, "QUITCONVfail", &quitconvfail)
-      || get(cmd, "EDIT",	  &edit)
-      || get(cmd, "RECURsion",	  &recursion)
-      || get(cmd, "ITL1",	  &itl[1])
-      || get(cmd, "ITL2",	  &itl[2])
-      || get(cmd, "ITL3",	  &itl[3])
-      || get(cmd, "ITL4",	  &itl[4])
-      || get(cmd, "ITL5",	  &itl[5])
-      || get(cmd, "ITL6",	  &itl[6])
-      || get(cmd, "ITL7",	  &itl[7])
-      || get(cmd, "ITL8",	  &itl[8])
-#ifdef KNEECHORD
-      || (cmd.pmatch("STRategy") &&
-	  ((cmd.skip1b('='), false)
-	   || set( cmd, "Newton", &strategy, stNEWTON )
-	   || set( cmd, "Kneechord", &strategy, stKNEECHORD )
-	   || cmd.warn( bWARNING,
-			"available strategies are `Newton' and `Kneechord'")))
-#endif
+      || Get(cmd, "tr{ansits}",    &transits)
+      || Get(cmd, "dup{check}",    &dupcheck)
+      || Get(cmd, "byp{ass}",	   &bypass)
+      || Get(cmd, "inc{mode}",	   &incmode)
+      || Get(cmd, "lcb{ypass}",    &lcbypass)
+      || Get(cmd, "lub{ypass}",    &lubypass)
+      || Get(cmd, "fbb{ypass}",	   &fbbypass)
+      || Get(cmd, "tracel{oad}",   &traceload)
+      || Get(cmd, "itermin",	   &itermin)
+      || Get(cmd, "vmax",	   &vmax)
+      || Get(cmd, "vmin",	   &vmin)
+      || Get(cmd, "mrt",	   &dtmin,	mPOSITIVE)
+      || Get(cmd, "dtmin",	   &dtmin,	mPOSITIVE)
+      || Get(cmd, "dtr{atio}",	   &dtratio,	mPOSITIVE)
+      || (Get(cmd, "rstray",	   &rstray) && (big_change = true))
+      || (Get(cmd, "cstray",	   &cstray) && (big_change = true))
+      || Get(cmd, "harmonics",	   &harmonics)
+      || Get(cmd, "trstepgrow",    &trstepgrow,  mPOSITIVE)
+      || Get(cmd, "trstephold",    &trstephold,  mPOSITIVE)
+      || Get(cmd, "trstepshrink",  &trstepshrink,mPOSITIVE)
+      || Get(cmd, "trreject",      &trreject,	mPOSITIVE)
+      || Get(cmd, "trsteporder",   &trsteporder)
+      || Get(cmd, "trstepcoef1",   &trstepcoef[1])
+      || Get(cmd, "trstepcoef2",   &trstepcoef[2])
+      || Get(cmd, "trstepcoef3",   &trstepcoef[3])
+      || Get(cmd, "showall",	   &showall)
+      || Get(cmd, "foooo",	   &foooo)
+      || Get(cmd, "diode{flags}",  &diodeflags,  mOCTAL)
+      || Get(cmd, "mos{flags}",    &mosflags,	mOCTAL)
+      || Get(cmd, "quitconv{fail}",&quitconvfail)
+      || Get(cmd, "edit",	   &edit)
+      || Get(cmd, "recur{sion}",   &recursion)
+      || (Get(cmd, "lang{uage}",   &language)
+	  && ((case_insensitive = language->case_insensitive()),
+	      (units = language->units()), true))
+      || Get(cmd, "insensitive",   &case_insensitive)
+      || (cmd.umatch("units {=}") &&
+	  (ONE_OF
+	   || Set(cmd, "si",	&units,	uSI)
+	   || Set(cmd, "spice", &units,	uSPICE)
+	   || cmd.warn(bWARNING, "need si or spice")))
+      || Get(cmd, "itl1",	   &itl[1])
+      || Get(cmd, "itl2",	   &itl[2])
+      || Get(cmd, "itl3",	   &itl[3])
+      || Get(cmd, "itl4",	   &itl[4])
+      || Get(cmd, "itl5",	   &itl[5])
+      || Get(cmd, "itl6",	   &itl[6])
+      || Get(cmd, "itl7",	   &itl[7])
+      || Get(cmd, "itl8",	   &itl[8])
       || (cmd.check(bWARNING, "what's this?"), cmd.skiparg());
 
     if (!cmd.stuck(&here)) {
@@ -178,8 +181,15 @@ bool OPT::set_values(CS& cmd)
     }
   }while (cmd.more() && changed);
 
+  if (big_change) {
+    //_sim->uninit();
+    //BUG// not sure if this is really working
+    //regressions do go both ways, but not sure if it actually
+    //makes the topology changes expected
+  }else{
+  }
+
   if (changed) {
-    //SIM::uninit();
     lowlim = 1 - reltol;
     uplim  = 1 + reltol;
     numdgt = to_range(3, numdgt, 20);
@@ -187,87 +197,124 @@ bool OPT::set_values(CS& cmd)
   return changed;
 }
 /*--------------------------------------------------------------------------*/
-/* print: "print" all option values to "where"
+/* print: "print" all option values to "o"
  * string is in a form suitable for passing to set
  */
-void OPT::print(OMSTREAM& where)
+void OPT::print(OMSTREAM& o)
 {
-  where.setfloatwidth(7);
-  where << ".options";
-  where << ((acct)   ?"  acct" :"  noacct");
-  where << ((listing)?"  list" :"  nolist");
-  where << ((mod)    ?"  mod"  :"  nomod");
-  where << ((page)   ?"  page" :"  nopage");
-  where << ((node)   ?"  node" :"  nonode");
-  where << ((opts)   ?"  opts" :"  noopts");
-  where << "  gmin="   << gmin;
-  where << "  reltol=" << reltol;
-  where << "  abstol=" << abstol;
-  where << "  vntol="  << vntol;
-  where << "  trtol="  << trtol;
-  where << "  chgtol=" << chgtol;
-  where << "  pivtol=" << pivtol;
-  where << "  pivrel=" << pivrel;
-  where << "  numdgt=" << numdgt;
-  where << "  tnom="   << tnom_c;
-  where << "  cptime=" << cptime;
-  where << "  limtim=" << limtim;
-  where << "  limpts=" << limpts;
-  where << "  lvlcod=" << lvlcod;
-  where << "  lvltim=" << lvltim;
-  where << "  method=" << method;
-  where << "  maxord=" << maxord;
-  for (int ii=1;  ii<ITL_COUNT;  ii++)
-    where << "  itl@" << ii << "=" << itl[ii];
-  where << "  defl="   << defl;
-  where << "  defw="   << defw;
-  where << "  defad="  << defad;
-  where << "  defas="  << defas;
-  where << ((clobber) ? "  clobber" : "  noclobber");
-  where << "  dampmax="<< dampmax;
-  where << "  dampmin="<< dampmin;
-  where << "  dampstrategy="<< octal(dampstrategy);
-  where << "  floor="  << floor;
-  where << "  vfloor=" << vfloor;
-  where << "  roundofftol=" << roundofftol;
-  where << "  temperature="<< temp_c;
-  where << "  short="  << shortckt;
-  where << "  in="     << inwidth;
-  where << "  out="    << outwidth;
-  where << "  ydivisions=" << ydivisions;
-  where << "  phase="  << phase;
-  where << "  order="  << order;
-  where << "  mode="   << mode;
-  where << "  transits=" << transits;
-  where << ((dupcheck) ?"  dupcheck" :"  nodupcheck");
-  where << ((bypass)   ?"  bypass"   :"  nobypass");
-  where << ((incmode)  ?"  incmode"  :"  noincmode");    
-  where << ((lcbypass) ?"  lcbypass" :"  nolcbypass");    
-  where << ((lubypass) ?"  lubypass" :"  nolubypass");    
-  where << ((fbbypass) ?"  fbbypass" :"  nofbbypass");    
-  where << ((traceload)?"  traceload":"  notraceload");    
-  where << "  itermin="<< itermin;
-  where << "  vmax="   << vmax;
-  where << "  vmin="   << vmin;
-  where << "  dtmin="  << dtmin;
-  where << "  dtratio="<< dtratio;
-  where << ((rstray)?"  rstray":"  norstray");
-  where << ((cstray)?"  cstray":"  nocstray");
-  where << "  harmonics="   << harmonics;
-  where << "  trstepgrow="  << trstepgrow;
-  where << "  trstephold="  << trstephold;
-  where << "  trstepshrink="<< trstepshrink;
-  where << "  trreject="    << trreject;
+  o.setfloatwidth(7);
+
+  o << "* i/o\n";
+  o << ".options";
+  o << ((acct)   ?"  acct" :"  noacct");
+  o << ((listing)?"  list" :"  nolist");
+  o << ((clobber) ? "  clobber" : "  noclobber");
+  o << "  out="    << outwidth;
+  o << "  ydivisions=" << ydivisions;
+  o << "  phase="  << phase;
+  o << "  harmonics="   << harmonics;
+  o << ((edit)	?"  edit"    :"  noedit");
+  o << "  language=" << language;
+  o << ((case_insensitive) ?"  insensitive":"  noinsensitive");
+  o << "  units=" << units;
+  o << "  recursion="<< recursion;
+  o << "\n\n";
+
+  o << "* accuracy, i/o\n";
+  o << ".options";
+  o << "  numdgt=" << numdgt;
+  o << "  floor="  << floor;
+  o << "  vfloor=" << vfloor;
+  o << "  roundofftol=" << roundofftol;
+  o << "\n\n";
+
+  o << "* accuracy, tolerances\n";
+  o << ".options";
+  o << "  gmin="   << gmin;
+  o << "  short="  << shortckt;
+  o << "  reltol=" << reltol;
+  o << "  abstol=" << abstol;
+  o << "  vntol="  << vntol;
+  o << "  trtol="  << trtol;
+  o << "  chgtol=" << chgtol;
+  o << "  pivtol=" << pivtol;
+  o << "  bypasstol=" << bypasstol;
+  o << "  loadtol=" << loadtol;
+  o << "\n\n";
+
+  o << "* accuracy, algorithms\n";
+  o << ".options";
+  o << "  method=" << method;
+  o << ((bypass)   ?"  bypass"   :"  nobypass");
+  o << ((incmode)  ?"  incmode"  :"  noincmode");    
+  o << ((lcbypass) ?"  lcbypass" :"  nolcbypass");    
+  o << ((lubypass) ?"  lubypass" :"  nolubypass");    
+  o << ((fbbypass) ?"  fbbypass" :"  nofbbypass");    
+  o << ((traceload)?"  traceload":"  notraceload");    
+  o << "  order="  << order;
+  o << "  mode="   << mode;
+  o << "  transits=" << transits;
+  o << ((quitconvfail)?"  quitconvfail":"  noquitconvfail");
+  o << "\n\n";
+
+  o << "* iteration limiting and heuristics\n";
+  o << ".options";
+  for (int ii=1;  ii<ITL_COUNT;  ii++) {
+    o << "  itl@" << ii << "=" << itl[ii];
+  }
+  o << "  itermin="<< itermin;
+  o << "  vmax="   << vmax;
+  o << "  vmin="   << vmin;
+  o << "  dampmax="<< dampmax;
+  o << "  dampmin="<< dampmin;
+  o << "  dampstrategy="<< octal(dampstrategy);
+  o << "\n\n";
+
+  o << "* time step control\n";
+  o << ".options";
+  o << "  dtmin="  << dtmin;
+  o << "  dtratio="<< dtratio;
+  o << "  trstepgrow="  << trstepgrow;
+  o << "  trstephold="  << trstephold;
+  o << "  trstepshrink="<< trstepshrink;
+  o << "  trreject="    << trreject;
+  o << "  trsteporder="	<< trsteporder;
+  o << "  trstepcoef1="	<< trstepcoef[1];
+  o << "  trstepcoef2="	<< trstepcoef[2];
+  o << "  trstepcoef3="	<< trstepcoef[3];
+  o << "\n\n";
+
+  o << "* circuit environment\n";
+  o << ".options";
+  o << "  tnom="   << tnom_c;
+  o << "  temperature="<< temp_c;
+  o << ((rstray)?"  rstray":"  norstray");
+  o << ((cstray)?"  cstray":"  nocstray");
+  o << "  defl="   << defl;
+  o << "  defw="   << defw;
+  o << "  defad="  << defad;
+  o << "  defas="  << defas;
   if (diodeflags) {
-    where << "  diodeflags="  << octal(diodeflags);
+    o << "  diodeflags="  << octal(diodeflags);
   }
   if (mosflags) {
-    where << "  mosflags="    << octal(mosflags);
+    o << "  mosflags="    << octal(mosflags);
   }
-  where << ((quitconvfail)?"  quitconvfail":"  noquitconvfail");
-  where << ((edit)	?"  edit"    :"  noedit");
-  where << "  recursion="<< recursion;
-  where << '\n';
+  o << "\n\n";
+
+  // compatibility options ignored
+  //o << ((mod)    ?"  mod"  :"  nomod");
+  //o << ((page)   ?"  page" :"  nopage");
+  //o << ((node)   ?"  node" :"  nonode");
+  //o << ((opts)   ?"  opts" :"  noopts");
+  //o << ((dupcheck) ?"  dupcheck" :"  nodupcheck");
+  //o << "  maxord=" << maxord;
+  //o << "  cptime=" << cptime;
+  //o << "  limtim=" << limtim;
+  //o << "  limpts=" << limpts;
+  //o << "  lvlcod=" << lvlcod;
+  //o << "  lvltim=" << lvltim;
+  //o << "  pivrel=" << pivrel;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

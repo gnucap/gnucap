@@ -4,11 +4,11 @@
 #
 #                            COPYRIGHT
 #
-#  Copyright (C) 2005 Dan McMahill
+#  Copyright (C) 2005, 2006 Dan McMahill
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
+#  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
@@ -26,7 +26,7 @@ AC_INIT([src/main.cc])
 # this is any file in the source directory
 # used as a check to be sure we found it
 
-AM_INIT_AUTOMAKE(gnucap, 0.35)
+AM_INIT_AUTOMAKE(gnucap, 2009-12-07)
 AM_CONFIG_HEADER([config.h])
 
 AM_MAINTAINER_MODE
@@ -65,21 +65,34 @@ else
 fi
 
 # for building the documentation
-AC_PATH_PROG(DVIPDFM, dvipdfm, notfound)
-AM_CONDITIONAL(MISSING_DVIPDFM, test x$DVIPDFM = xnotfound)
-AC_PATH_PROG(HACHA, hacha, notfound)
-AC_PATH_PROG(HEVEA, hevea, notfound)
-AM_CONDITIONAL(MISSING_HEVEA, test x$HEVEA = xnotfound -o x$HACHA = xnotfound)
-AC_PATH_PROG(LATEX, latex, notfound)
-AC_PATH_PROG(MAKEINDEX, makeindex, notfound)
-AM_CONDITIONAL(MISSING_LATEX, test x$LATEX = xnotfound -o x$MAKEINDEX = xnotfound)
+#AC_PATH_PROG(DVIPDFM, dvipdfm, notfound)
+#AM_CONDITIONAL(MISSING_DVIPDFM, test x$DVIPDFM = xnotfound)
+#AC_PATH_PROG(HACHA, hacha, notfound)
+#AC_PATH_PROG(HEVEA, hevea, notfound)
+#AM_CONDITIONAL(MISSING_HEVEA, test x$HEVEA = xnotfound -o x$HACHA = xnotfound)
+#AC_PATH_PROG(LATEX, latex, notfound)
+#AC_PATH_PROG(MAKEINDEX, makeindex, notfound)
+#AM_CONDITIONAL(MISSING_LATEX, test x$LATEX = xnotfound -o x$MAKEINDEX = xnotfound)
 
 # Checks for libraries.
 
 # this is a c++ program so use c++ for the tests
 AC_LANG([C++])
-AC_CHECK_LIB([termcap], [main])
-AC_CHECK_LIB([readline], [main])
+
+#AC_CHECK_LIB([termcap], [main])	
+#AC_CHECK_LIB([readline], [main])
+AC_ARG_WITH([readline],
+[AS_HELP_STRING([--with-readline],
+  [support command line editing @<:@default=yes@:>@])],
+[],
+[with_readline=yes])
+ 
+if test "x$with_readline" != xno ; then
+	AC_CHECK_LIB([termcap], [main])	
+	AC_CHECK_LIB([readline], [main])
+fi    
+
+AC_CHECK_LIB([dl], [dlopen])
 
 # Checks for header files.
 #AC_CHECK_HEADERS([fcntl.h unistd.h])
@@ -119,16 +132,27 @@ if test "x$GCC" = "xyes" -a "$enable_debug" = "yes"; then
 	done
 fi
 
+# exports symbols to plugins
+LDFLAGS="$LDFLAGS -rdynamic"
+
+#AC_OUTPUT([
+#	Makefile
+#	doc/Makefile
+#	examples/Makefile
+#	man/Makefile
+#	man/Addmodel/Makefile
+#	man/Behavior/Makefile
+#	man/Circuit/Makefile
+#	man/Commands/Makefile
+#	man/Tech/Makefile
+#	modelgen/Makefile
+#	src/Makefile
+#	])
+
 AC_OUTPUT([
 	Makefile
 	doc/Makefile
 	examples/Makefile
-	man/Makefile
-	man/Addmodel/Makefile
-	man/Behavior/Makefile
-	man/Circuit/Makefile
-	man/Commands/Makefile
-	man/Tech/Makefile
 	modelgen/Makefile
 	src/Makefile
 	])

@@ -1,12 +1,12 @@
-/*$Id: l_ftos.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: l_ftos.cc,v 26.96 2008/10/09 05:36:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -31,7 +31,7 @@
  *		  FMTEXP  = exponential notation
  *		  FMTSIGN = always inlcude sign
  *		  FMTFILL = fill in zeros
- * BUG:
+ * //BUG//
  * returns a pointer to static space where the string is.
  * there is a finite pool, so repeated calls work, to a point.
  * after that, the space is overwritten, every POOLSIZE calls
@@ -51,6 +51,18 @@ std::string to_string(unsigned n)
   char s[100];
   sprintf(s, "%u", n);
   return s;
+}
+/*--------------------------------------------------------------------------*/
+std::string to_string(int n)
+{
+  char s[100];
+  sprintf(s, "%d", n);
+  return s;
+}
+/*--------------------------------------------------------------------------*/
+std::string to_string(double n)
+{
+  return ftos(n, 0, 7, 0);
 }
 /*--------------------------------------------------------------------------*/
 char* ftos(double num, int fieldwidth, int len, int fmt)
@@ -74,7 +86,7 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
   
   char *str;
   { /* get a buffer from the pool */
-    // BUG: It is possible to have too many buffers active
+    //BUG// It is possible to have too many buffers active
     // then the extras are overwritten, giving bad output
     // There are no known cases, but it is not checked.
     static char strpool[POOLSIZE][MAXLENGTH];
@@ -118,8 +130,9 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
   }else if (num >= BIGBIG) {
     strncpy(str," Inf", 4);
   }else if (num <= -BIGBIG) {
-    untested();
     strncpy(str,"-Inf", 4);
+  }else if (num != num) {
+    strncpy(str," NaN", 4);
   }else{
     if (std::abs(num) < ftos_floor) {	/* hide noise */
       num = 0.;
@@ -129,7 +142,7 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
     int nnn = 0; 	/* char counter -- pos in string	*/
     if (num == 0.) {
       strcpy(str, " 0.");
-      nnn = strlen(str);		/* num==0 .. build string 0.000...  */
+      nnn = static_cast<int>(strlen(str)); /* num==0 .. build string 0.000...  */
       while (--len) {
 	str[nnn++] = '0';
       }
@@ -202,8 +215,8 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
 	    int digit = static_cast<int>(floor(num));
 	    num -= static_cast<double>(digit);/* subtract off last digit    */
 	    if ((flg += digit)) {	/* if int part !=0		    */
-	     str[nnn++]=static_cast<char>(digit)+'0';/*(not all zeros so far)*/
-	     --len;			/* stuff the digit into the string  */
+	      str[nnn++]=static_cast<char>(digit+'0');/*(not all zeros so far)*/
+	      --len;			/* stuff the digit into the string  */
 	    }
 	    if (iii==0) {		/* if we found the dec.pt. and	    */
 	      str[nnn++] = '.';		/*   haven't used up all the space  */

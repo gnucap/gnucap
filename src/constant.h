@@ -1,12 +1,12 @@
-/*$Id: constant.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: constant.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -91,7 +91,7 @@ double const MAXDBL    = DBL_MAX;
 #endif
 
 double const BIGBIG    =  (MAXDBL)*(.9247958);	/* unlikely number	  */
-double const OVERDUE   = -(MAXDBL)*(.9347958);	/* unlikely number	  */
+//double const OVERDUE   = -(MAXDBL)*(.9347958);/* unlikely number	  */
 double const NEVER     =  (MAXDBL)*(.9447958);	/* unlikely number	  */
 double const NOT_INPUT = -(MAXDBL)*(.9547658);	/* unlikely number	  */
 double const NOT_VALID = -(MAXDBL)*(.9647958);	/* unlikely number	  */
@@ -105,7 +105,6 @@ double const PWRMIN    =  1.0e-100;
 const char TOKENTERM[] = ",=()[]";
 
 enum {FILE_OK=0, FILE_BAD=-1};
-enum TRI_STATE {tsNO=0, tsYES=1, tsBAD=-1};
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

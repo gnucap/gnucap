@@ -1,12 +1,12 @@
-/* $Id: d_mos5.model,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+/* $Id: d_mos5.model,v 26.92 2008/08/23 05:40:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,10 +30,14 @@ h_headers {
 cc_headers {
 }
 /*--------------------------------------------------------------------------*/
-model MOS5 {
+model BUILT_IN_MOS5 {
   level 5;
-  dev_type MOS;
-  inherit MOS_BASE;
+  public_keys {
+    nmos5 polarity=pN;
+    pmos5 polarity=pP;
+  }
+  dev_type BUILT_IN_MOS;
+  inherit BUILT_IN_MOS_BASE;
   independent {
     override {
       double mjsw "" final_default=.33;
@@ -63,7 +67,7 @@ model MOS5 {
       double dell "Length reduction of source drain diff (ignored)"
 	name=DELL default=0.;
       double temp_c "temperature"
-	name=TEMP default=27;
+	name=TEMP default=27.;
       double xpart "Flag for channel charge partitioning"
 	name=XPART default=0.;
     }

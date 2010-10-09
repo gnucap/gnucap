@@ -1,12 +1,12 @@
-/*$Id: c_comand.cc,v 25.96 2006/08/28 05:45:51 al Exp $ -*- C++ -*-
+/*$Id: c_comand.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,131 +23,108 @@
  */
 //testing=script,sparse 2006.07.16
 #include "constant.h"
-#include "declare.h"	/* plclear */
-#include "u_status.h"
-#include "u_opt.h"
-#include "ap.h"
 #include "c_comand.h"
+#include "globals.h"
 /*--------------------------------------------------------------------------*/
-void CMD::disto(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::model(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::noise(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::sens(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::subckt(CS&cmd) {untested(); cmd.warn(bWARNING,"bad command");}
-void CMD::tf(CS&cmd)	 {untested(); cmd.warn(bWARNING,"bad command");}
-/*--------------------------------------------------------------------------*/
-void CMD::options(CS&cmd)	{static OPT o;    o.command(cmd);}
-/*--------------------------------------------------------------------------*/
-int CMD::count = 0;
 extern std::string head;
-static int oldcount = 0;     /* so we can check for consecutive comments */
 /*--------------------------------------------------------------------------*/
-/* cmd_comment: user command
- * if there are two consecutive comments, exit graphics mode
- * (this is a kluge)
- */
-void CMD::comment(CS& cmd)
-{
-  if (count == oldcount+1) {
-    itested();
-    plclear();
+namespace {
+/*--------------------------------------------------------------------------*/
+class CMD_OPT : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*) {
+    static OPT o;
+    o.command(cmd);
   }
-  oldcount = count;
-  cmd.check(bWARNING, "bad command");
-}
+} p5;
+DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "options|set|width", &p5);
 /*--------------------------------------------------------------------------*/
-void CMD::end(CS& cmd)
-{
-  switch (ENV::run_mode) {
-  case rIGNORE:
-    unreachable();
-    break;
-  case rPRESET:
-    untested();
-    // BUG: this should close the file
-    break;
-  case rINTERACTIVE:
-    untested();
-    {CS nil(""); quit(nil);}
-    break;
-  case rSCRIPT:
-    untested();
-    if (OPT::acct) {
+class CMD_END : public CMD {
+public:
+  void do_it(CS&, CARD_LIST* Scope) {
+    switch (ENV::run_mode) {
+    case rPRE_MAIN: unreachable(); break;
+    case rPRESET:   untested(); break;  //BUG// this should close the file
+    case rINTERACTIVE:
+      itested();
+      command("quit", Scope);
+      break;
+    case rSCRIPT:
+      if (OPT::acct) {untested();
+	command("status", Scope);
+      }else{untested();
+      }
       untested();
-      status(cmd);
-    }else{
-      untested();
+      throw Exception("end");
+      break;
+    case rBATCH:
+      if (OPT::acct) {itested();
+	command("status", Scope);
+      }else{
+      }
+      command("quit", Scope);
+      break;
     }
-    error(bERROR, "");
-    break;
-  case rBATCH:
-    if (OPT::acct) {
-      untested();
-      status(cmd);
+  }
+} p0;
+DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "end", &p0);
+/*--------------------------------------------------------------------------*/
+class CMD_PAUSE : public CMD {
+public:
+  void do_it(CS&, CARD_LIST*) {untested();
+    //BUG// buffer problem
+    //BUG// redirection problem
+    IO::error << "Continue? ";
+    int ch = getchar();
+    if (ch=='n' || ch=='N' || ch=='C'-'@' || ch=='['-'@') {untested();
+      throw Exception("pause-stop");
+    }else{untested();
     }
-    {CS nil(""); quit(nil);}
-    break;
   }
-}
+} p1;
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "pause", &p1);
 /*--------------------------------------------------------------------------*/
-void CMD::pause(CS&)
-{
-  untested(); 
-  oldcount = count;
-  IO::error << "Continue? ";
-  int ch = getchar();
-  if (ch=='n' || ch=='N' || ch=='C'-'@' || ch=='['-'@') {
-    untested();
-    error(bERROR, "\r");
-  }else{
-    untested();
+class CMD_QUIT : public CMD {
+public:
+  void do_it(CS&, CARD_LIST* Scope) {
+    switch (ENV::run_mode) {
+    case rPRE_MAIN:	unreachable(); break;
+    case rINTERACTIVE:	itested();
+    case rSCRIPT:
+    case rBATCH:	command("clear", Scope); exit(0); break;
+    case rPRESET:	untested(); /*nothing*/ break;
+    }
   }
-}
+} p2;
+DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "quit|exit", &p2);
 /*--------------------------------------------------------------------------*/
-void CMD::quit(CS&)
-{
-  switch (ENV::run_mode) {
-  case rSCRIPT:
-    untested();
-  case rINTERACTIVE:
-    itested();
-  case rBATCH:
-    {CS nil(""); clear(nil);}
-    exit(0);
-    break;
-  case rIGNORE:
-    untested(); 
-  case rPRESET:
-    untested(); 
-    /*nothing*/
-    break;
+class CMD_TEMP : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*) {itested();
+    double t = NOT_INPUT;
+    unsigned here = cmd.cursor();
+    cmd >> '=' >> t;
+    if (!cmd.stuck(&here)) {itested();
+      OPT::temp_c = t;
+    }else{itested();
+      IO::mstdout << ".temp = " << OPT::temp_c << '\n';
+    }
   }
-}
+} p3;
+DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "temperature|temp", &p3);
 /*--------------------------------------------------------------------------*/
-void CMD::temp(CS& cmd)
-{
-  untested();
-  double t = NOT_INPUT;
-  int here = cmd.cursor();
-  cmd >> '=' >> t;
-  if (!cmd.stuck(&here)) {
-    untested();
-    OPT::temp_c = t;
-  }else{
-    untested();
-    IO::mstdout << ".temp = " << OPT::temp_c << '\n';
+class CMD_TITLE : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*) {
+    if (cmd.more()) {
+      head = cmd.tail();
+    }else{itested(); 
+      IO::mstdout << head << '\n';
+    }
   }
-}
+} p4;
+DISPATCHER<CMD>::INSTALL d4(&command_dispatcher, "title", &p4);
 /*--------------------------------------------------------------------------*/
-void CMD::title(CS& cmd)
-{
-  if (cmd.more()) {
-    head = cmd.tail();
-  }else{
-    untested(); 
-    IO::mstdout << head << '\n';
-  }
 }
-/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

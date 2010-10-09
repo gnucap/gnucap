@@ -1,12 +1,12 @@
-/*$Id: bm_cond.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: bm_cond.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,9 +24,43 @@
  * An array "_func" stores handles to commons specific to each mode.
  */
 //testing=script 2006.07.13
+#include "e_elemnt.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
+namespace {
+/*--------------------------------------------------------------------------*/
 static EVAL_BM_VALUE func_zero(CC_STATIC);
+/*--------------------------------------------------------------------------*/
+class EVAL_BM_COND : public EVAL_BM_BASE {
+private:
+  COMMON_COMPONENT* _func[sCOUNT];
+  bool _set[sCOUNT];
+  explicit	EVAL_BM_COND(const EVAL_BM_COND& p);
+public:
+  explicit	EVAL_BM_COND(int c=0);
+		~EVAL_BM_COND();
+private: // override virtual
+  bool  operator==(const COMMON_COMPONENT&)const;
+  COMMON_COMPONENT* clone()const	{return new EVAL_BM_COND(*this);}
+  void  parse_common_obsolete_callback(CS&);
+  void  print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  
+  void  	precalc_first(const CARD_LIST*);
+  void		expand(const COMPONENT*);
+  COMMON_COMPONENT* deflate();
+  void  	precalc_last(const CARD_LIST*);
+
+  void  tr_eval(ELEMENT*d)const
+	{assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_eval(d);}
+  void  ac_eval(ELEMENT*d)const
+	{assert(_func[s_AC]);	   _func[s_AC]->ac_eval(d);}
+  TIME_PAIR tr_review(COMPONENT*d)
+	{assert(_func[d->_sim->sim_mode()]); return _func[d->_sim->sim_mode()]->tr_review(d);}
+  void  tr_accept(COMPONENT*d)
+	{assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_accept(d);}
+  std::string name()const		{itested(); return "????";}
+};
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 EVAL_BM_COND::EVAL_BM_COND(int c)
   :EVAL_BM_BASE(c)
@@ -63,57 +97,63 @@ bool EVAL_BM_COND::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COND::parse(CS& cmd)
+void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
 {
-  int here = cmd.cursor();
+  unsigned here = cmd.cursor();
   cmd.reset().skipbl();
   bool is_source = cmd.match1("viVI") 
-    || (cmd.match1('.') && (cmd.pmatch(".VSOurce") || cmd.pmatch(".ISOurce")));
+    || (cmd.match1('.') && (cmd.umatch(".vso{urce} ") || cmd.umatch(".iso{urce} ")));
   cmd.reset(here);
 
   do {
-    SIM_MODE mode(sNONE);
+    SIM_MODE mode(s_NONE);
     ONE_OF
-      || set(cmd, "AC",	     &mode, sAC)
-      || set(cmd, "OP",	     &mode, sOP)
-      || set(cmd, "DC",	     &mode, sDC)
-      || set(cmd, "TRANsient",&mode, sTRAN)
-      || set(cmd, "FOURier",  &mode, sFOURIER)
-      || set(cmd, "ELSE",     &mode, sNONE)
-      || set(cmd, "ALL",      &mode, sNONE)
-      || (mode = sNONE)
+      || Set(cmd, "ac", 	&mode, s_AC)
+      || Set(cmd, "op", 	&mode, s_OP)
+      || Set(cmd, "dc", 	&mode, s_DC)
+      || Set(cmd, "tran{sient}",&mode, s_TRAN)
+      || Set(cmd, "four{ier}",  &mode, s_FOURIER)
+      || Set(cmd, "else",       &mode, s_NONE)
+      || Set(cmd, "all",        &mode, s_NONE)
+      || (mode = s_NONE)
       ;
-    if (_set[mode]) {untested();
-      cmd.warn(bWARNING, (mode != sNONE) ? "duplicate mode" : "what's this?");
+    if (_set[mode]) {itested();
+      cmd.warn(bWARNING, (mode != s_NONE) ? "duplicate mode" : "what's this?");
     }
 
 
     COMMON_COMPONENT* c = EVAL_BM_ACTION_BASE::parse_func_type(cmd);
-
     if (!c) {
       // no match for func_type
       if (cmd.more()) {
-	// if there is anything left, assume it's a "model", for now
-	//c = new EVAL_BM_MODEL;
-	if (cmd.match1("\"'{")) {
+	if (!cmd.match1("\"'{")) {
 	  // quoted means it is a parameter or expression
-	  c = new EVAL_BM_VALUE;
-	}else{
-	  // assume it's a "model", for now
+	  // otherwise assume it's a "model", for now
 	  // it might not be, but we fix later
-	  c = new EVAL_BM_MODEL;
+	  c = bm_dispatcher.clone("eval_bm_model");
+	}else{
 	}
+	if (!c) {
+	  c = bm_dispatcher.clone("eval_bm_value");
+	}else{
+	}
+      }else{
+	// no more
       }
+    }else{
+      // got bm function
     }
     
     if (is_source		// Spice compatibility
-	&& mode == sNONE	// for sources, no condition implies "DC"
-	&& !_set[sDC]
+	&& mode == s_NONE	// for sources, no condition implies "DC"
+	&& !_set[s_DC]
 	&& dynamic_cast<EVAL_BM_VALUE*>(c)) {
-      mode = sDC;
+      mode = s_DC;
+    }else{
     }
+
     if (c) {
-      c->parse(cmd);
+      c->parse_common_obsolete_callback(cmd); //BUG//callback
     }else{
       c = &func_zero;
     }
@@ -127,41 +167,42 @@ void EVAL_BM_COND::parse(CS& cmd)
   } while (cmd.more() && !cmd.stuck(&here));
   
   // apply rules to determine states not explicitly specified
-  if (!_func[sOP] && _set[sDC])    {attach_common(_func[sDC],  &(_func[sOP]));}
-  if (!_func[sOP] && _set[sNONE])  {attach_common(_func[sNONE],&(_func[sOP]));}
-  if (!_func[sOP] && _set[sTRAN])  {untested();attach_common(_func[sTRAN],&(_func[sOP]));}
-  if (!_func[sOP])		   {attach_common(&func_zero,  &(_func[sOP]));}
+  if (!_func[s_OP] && _set[s_DC])    {attach_common(_func[s_DC],  &(_func[s_OP]));}
+  if (!_func[s_OP] && _set[s_NONE])  {attach_common(_func[s_NONE],&(_func[s_OP]));}
+  if (!_func[s_OP] && _set[s_TRAN])  {untested();attach_common(_func[s_TRAN],&(_func[s_OP]));}
+  if (!_func[s_OP])		     {attach_common(&func_zero,  &(_func[s_OP]));}
   
-  if (!_func[sDC] && _set[sNONE])  {attach_common(_func[sNONE],&(_func[sDC]));}
-  if (!_func[sDC] && _set[sOP])    {untested();attach_common(_func[sOP],  &(_func[sDC]));}
-  if (!_func[sDC] && _set[sTRAN])  {untested();attach_common(_func[sTRAN],&(_func[sDC]));}
-  if (!_func[sDC])		   {attach_common(&func_zero,  &(_func[sDC]));}
+  if (!_func[s_DC] && _set[s_NONE])  {attach_common(_func[s_NONE],&(_func[s_DC]));}
+  if (!_func[s_DC] && _set[s_OP])    {untested();attach_common(_func[s_OP],  &(_func[s_DC]));}
+  if (!_func[s_DC] && _set[s_TRAN])  {untested();attach_common(_func[s_TRAN],&(_func[s_DC]));}
+  if (!_func[s_DC])		     {attach_common(&func_zero,  &(_func[s_DC]));}
 
-  if (!_func[sTRAN]&&_set[sNONE]){attach_common(_func[sNONE],&(_func[sTRAN]));}
-  if (!_func[sTRAN] && _set[sDC])  {attach_common(_func[sDC],&(_func[sTRAN]));}
-  if (!_func[sTRAN] && _set[sOP])  {untested();attach_common(_func[sOP],&(_func[sTRAN]));}
-  if (!_func[sTRAN])		   {attach_common(&func_zero,&(_func[sTRAN]));}
+  if (!_func[s_TRAN]&&_set[s_NONE])  {attach_common(_func[s_NONE],&(_func[s_TRAN]));}
+  if (!_func[s_TRAN] && _set[s_DC])  {attach_common(_func[s_DC],&(_func[s_TRAN]));}
+  if (!_func[s_TRAN] && _set[s_OP])  {untested();attach_common(_func[s_OP],&(_func[s_TRAN]));}
+  if (!_func[s_TRAN])		     {attach_common(&func_zero,&(_func[s_TRAN]));}
 
-  if (!_func[sFOURIER])	      {attach_common(_func[sTRAN],&(_func[sFOURIER]));}
+  if (!_func[s_FOURIER])	     {attach_common(_func[s_TRAN],&(_func[s_FOURIER]));}
 
-  const EVAL_BM_ACTION_BASE* c = 
-    prechecked_cast<const EVAL_BM_ACTION_BASE*>(_func[sNONE]);
-  if (!_func[sAC] && _set[sNONE] && (!is_source || c->ac_too()))
-				   {attach_common(_func[sNONE],&(_func[sAC]));}
-  if (!_func[sAC])		   {attach_common(&func_zero,  &(_func[sAC]));}
+  const EVAL_BM_ACTION_BASE* c = prechecked_cast<const EVAL_BM_ACTION_BASE*>(_func[s_NONE]);
+
+  if (!_func[s_AC] && _set[s_NONE] && (!is_source || c->ac_too()))
+				   {attach_common(_func[s_NONE],&(_func[s_AC]));}
+  if (!_func[s_AC])		   {attach_common(&func_zero,  &(_func[s_AC]));}
   
   for (int i = 1; i < sCOUNT; ++i) {
     assert(_func[i]);
   }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COND::elabo3(const COMPONENT* c)
+void EVAL_BM_COND::expand(const COMPONENT* d)
 {
+  EVAL_BM_BASE::expand(d);
   for (int i = 1; i < sCOUNT; ++i) {
-    // makes unnecessary duplicates
+    //BUG// makes unnecessary duplicates
     assert(_func[i]);
     COMMON_COMPONENT* new_common = _func[i]->clone();
-    new_common->elabo3(c);
+    new_common->expand(d);
     COMMON_COMPONENT* deflated_common = new_common->deflate();
     if (deflated_common != _func[i]) {
       attach_common(deflated_common, &(_func[i]));
@@ -170,31 +211,80 @@ void EVAL_BM_COND::elabo3(const COMPONENT* c)
   }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COND::print(OMSTREAM& o)const
-{
-  if (_set[sNONE]) {
-    _func[sNONE]->print(o);
-  }
-  for (int i = sCOUNT-1; i != sNONE; --i) {
-    if (_set[i]) {
-      o << "  " << static_cast<SIM_MODE>(i);
-      _func[i]->print(o);
-    }
-  }
-}
-/*--------------------------------------------------------------------------*/
+// If all are the same, there is no use for the COND.
+// Return the one thing that is attached, so the caller can replace it.
 COMMON_COMPONENT* EVAL_BM_COND::deflate()
 {
-  // If all are the same, there is no use for the COND.
-  // Return the one thing that is attached, so the caller can replace it.
   for (int i = 1; i < sCOUNT; ++i) {
-    if (_func[i] != _func[sNONE]) {
+    if (_func[i] != _func[s_NONE]) {
       // they are not all the same, don't deflate
       return this;
     }
   }
   // they are all the same.  Take one of them.
-  return _func[sNONE]->deflate();
+  return _func[s_NONE]->deflate();
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_COND::precalc_first(const CARD_LIST* Scope)
+{
+  //BUG// calls the individual precalc more than once
+  // wastes time and makes multiple "has no value" warnings
+  // when there should be only one
+  COMMON_COMPONENT* did_this = NULL;
+  for (int i = 1; i < sCOUNT; ++i) {
+    assert(_func[i]);
+    if (_func[i] != did_this) {
+      _func[i]->precalc_first(Scope);
+      did_this = _func[i];
+    }else{
+      // already did
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_COND::precalc_last(const CARD_LIST* Scope)
+{
+  //BUG// calls the individual precalc more than once
+  // wastes time and makes multiple "has no value" warnings
+  // when there should be only one
+  COMMON_COMPONENT* did_this = NULL;
+  for (int i = 1; i < sCOUNT; ++i) {
+    assert(_func[i]);
+    if (_func[i] != did_this) {
+      _func[i]->precalc_last(Scope);
+      did_this = _func[i];
+    }else{itested();
+      // already did
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_COND::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
+{
+  assert(lang);
+  bool more = false;
+  if (_set[s_NONE]) {
+    _func[s_NONE]->print_common_obsolete_callback(o, lang);
+    more = true;
+  }else{
+  }
+  for (int i = sCOUNT-1; i != s_NONE; --i) {
+    if (_set[i]) {
+      if (more) {
+	o << ' ';
+      }else{
+      }
+      o << ' ' << static_cast<SIM_MODE>(i) << ' ';
+      _func[i]->print_common_obsolete_callback(o, lang);
+      more = true;
+    }else{
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+EVAL_BM_COND p1(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher, "eval_bm_cond", &p1);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

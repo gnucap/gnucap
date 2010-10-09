@@ -1,12 +1,12 @@
-/*$Id: bm_generator.cc,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
+/*$Id: bm_generator.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,6 +25,26 @@
 //testing=script,complete 2005.10.06
 #include "e_elemnt.h"
 #include "bm.h"
+/*--------------------------------------------------------------------------*/
+namespace {
+/*--------------------------------------------------------------------------*/
+class EVAL_BM_GENERATOR : public EVAL_BM_ACTION_BASE {
+private:
+  explicit	EVAL_BM_GENERATOR(const EVAL_BM_GENERATOR& p);
+public:
+  explicit      EVAL_BM_GENERATOR(int c=0);
+		~EVAL_BM_GENERATOR()	{}
+private: // override virtual
+  bool		operator==(const COMMON_COMPONENT&)const;
+  COMMON_COMPONENT* clone()const	{return new EVAL_BM_GENERATOR(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  void		tr_eval(ELEMENT*)const;
+  void		ac_eval(ELEMENT*)const;
+  std::string	name()const		{return "generator";}
+  bool		ac_too()const		{return true;}
+  bool		parse_numlist(CS&);
+};
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 EVAL_BM_GENERATOR::EVAL_BM_GENERATOR(int c)
   :EVAL_BM_ACTION_BASE(c)
@@ -48,15 +68,16 @@ bool EVAL_BM_GENERATOR::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_GENERATOR::print(OMSTREAM& o)const
+void EVAL_BM_GENERATOR::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
-  o << ' ' << name();
-  EVAL_BM_ACTION_BASE::print(o);
+  assert(lang);
+  o << name();
+  EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_GENERATOR::tr_eval(ELEMENT* d)const
 {
-  tr_finish_tdv(d, SIM::genout);
+  tr_finish_tdv(d, d->_sim->_genout);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_GENERATOR::ac_eval(ELEMENT* d)const
@@ -67,15 +88,20 @@ void EVAL_BM_GENERATOR::ac_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_GENERATOR::parse_numlist(CS& cmd)
 {
-  int here = cmd.cursor();
-  double value=NOT_VALID;
-  cmd >> value;
+  unsigned here = cmd.cursor();
+  PARAMETER<double> new_value(NOT_VALID);
+  cmd >> new_value;
   if (cmd.gotit(here)) {
-    _scale = value;
+    _scale = new_value;
     return true;
   }else{
     return false;
   }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+EVAL_BM_GENERATOR p1(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher, "gen|generator", &p1);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

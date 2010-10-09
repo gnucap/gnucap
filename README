@@ -1,0 +1,72 @@
+Readme for development snapshot 2007-02-21
+
+This is a development snapshot.  As such, there may be problems due to
+new work.
+
+The most important change here is enhanced plugin support, and the 3
+new model packages, distributed separately.
+
+Also, commands use the dispatcher, so they can be added as plugins.
+
+
+
+Readme for development snapshot 2006-12-04
+
+This is a development snapshot.  As such, there may be problems due to
+new work.
+
+New features: "attach" and "detach" commands, for attaching and
+detaching compiled modules.
+
+To use ....
+
+Start with a .model file.
+
+Compile it .....
+
+>> gnucap-modelgen my-model.model
+
+.. produces my-model.h amd my-model.cc
+
+Compile that, with "-fPIC -shared" options
+
+>> g++  -fPIC -shared  my-model.cc
+
+.. produces a.out  (you could name it with -o ..)
+
+Now, run gnucap
+
+>> gnucap
+
+(signs on..)
+
+then you can attach the model..
+
+gnucap> attach ./a.out
+
+gnucap>  
+
+.. now you can use your model!!
+
+
+
+
+This snapshot includes some new verilog code, which is incomplete and
+not ready for anyone but a developer.  You can safely ignore it for
+now.
+
+It also changes the way models, devices, and functions are dispatched.
+The new version uses a dispatcher object, that is built on start-up,
+based on what modules are linked.  Models, devices, and functions can
+be added simply by linking them in.  There is no need to change
+anything else.  Likewise, if you don't need a model, device, or
+function, and want a version with it missing, just remove it from
+"Make1" and relink.
+
+The latest "stable" version is 0.35.  If you want to help development,
+use this snapshot and tell us what you find.  If you don't want to
+live on the edge, use the stable version.
+
+If you are making binary packages for distribution, please try this
+version and let me know how it works, but continue to distribute 0.35.
+

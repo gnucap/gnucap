@@ -1,12 +1,12 @@
-/*$Id: findbr.cc,v 25.95 2006/08/26 01:23:57 al Exp $ -*- C++ -*-
+/*$Id: findbr.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,6 +23,10 @@
  * returns the branch pointer
  */
 //testing=script,sparse 2006.07.17
+#include "l_lib.h"
+#include "constant.h"
+#include "e_cardlist.h"
+#include "ap.h"
 #include "e_card.h"
 /*--------------------------------------------------------------------------*/
 /* findbranch: find a matching label, by (ugh) linear search
@@ -34,7 +38,7 @@
  */
 CARD_LIST::fat_iterator findbranch(CS& cmd, CARD_LIST::fat_iterator here)
 {
-  int save = cmd.cursor();
+  unsigned save = cmd.cursor();
 
   char labelwanted[BUFLEN+1];
   cmd.ctostr(labelwanted, BUFLEN, TOKENTERM);
@@ -75,7 +79,7 @@ CARD_LIST::fat_iterator findbranch(CS& cmd, CARD_LIST::fat_iterator here)
 	if ((**here).subckt()) {untested();
 	  untested();
 	  // has a subckt, and its name matches, doing fine
-	  CS want(local_part);
+	  CS want(CS::_STRING, local_part); // recursion
 	  CARD_LIST::fat_iterator subbrh=findbranch(want,(**here).subckt());
 	  if (!subbrh.is_end()) {untested();
 	    // found it in a subckt

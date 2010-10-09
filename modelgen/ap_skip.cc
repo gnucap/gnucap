@@ -1,12 +1,12 @@
-/*$Id: ap_skip.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: ap_skip.cc,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -95,13 +95,13 @@ CS& CS::skip1(const std::string& t)
  */
 CS& CS::skiparg()
 {
-  int here = cursor();
+  unsigned here = cursor();
   if (!skipcom()) {
     if (peek()) {
       skip();
     }else{
     }
-    while (is_alpha() || is_pfloat() || is_argsym()) {
+    while (is_alpha() || is_float() || is_argsym()) {
       skip();
     }
     skipcom();
@@ -112,13 +112,12 @@ CS& CS::skiparg()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-#if 0
 /* skipto: skip to a character (one of ...)
  * _ok = skipped something
  */
 CS& CS::skipto1(const std::string& t)
 {untested();
-  int here = cursor();
+  unsigned here = cursor();
   while (ns_more() && !match1(t)) {untested();
     skip();
   }
@@ -129,14 +128,13 @@ CS& CS::skipto1(const std::string& t)
   }
   return *this;
 }
-#endif
 /*--------------------------------------------------------------------------*/
 /* skipto: skip to a character (explicit)
  * _ok = skipped something
  */
 CS& CS::skipto1(char c)
 {
-  int here = cursor();
+  unsigned here = cursor();
   while (ns_more() && !match1(c)) {
     skip();
   }

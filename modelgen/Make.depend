@@ -1,20 +1,31 @@
-mg_main.o: mg_main.cc mg_out.h mg_.h md.h io_error.h io_trace.h ap.h \
-  patchlev.h
-mg_out_h.o: mg_out_h.cc mg_out.h mg_.h md.h io_error.h io_trace.h ap.h
-mg_error.o: mg_error.cc ap.h md.h io_error.h io_trace.h
-mg_in.o: mg_in.cc mg_.h md.h io_error.h io_trace.h ap.h
-mg_out_common.o: mg_out_common.cc mg_out.h mg_.h md.h io_error.h \
-  io_trace.h ap.h
-mg_out_dev.o: mg_out_dev.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
-  ap.h
-mg_out_lib.o: mg_out_lib.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
-  ap.h
-mg_out_model.o: mg_out_model.cc mg_out.h mg_.h md.h io_error.h io_trace.h \
-  ap.h
-mg_out_root.o: mg_out_root.cc md.h io_error.h io_trace.h mg_out.h mg_.h \
-  ap.h
-ap_construct.o: ap_construct.cc ap.h md.h io_error.h io_trace.h
-ap_convert.o: ap_convert.cc ap.h md.h io_error.h io_trace.h
-ap_get.o: ap_get.cc ap.h md.h io_error.h io_trace.h
-ap_match.o: ap_match.cc ap.h md.h io_error.h io_trace.h
-ap_skip.o: ap_skip.cc ap.h md.h io_error.h io_trace.h
+mg_main.o: mg_main.cc u_opt.h mode.h io_.h l_lib.h md.h io_trace.h \
+ io_error.h mg_out.h mg_.h ap.h patchlev.h
+mg_error.o: mg_error.cc ap.h md.h io_trace.h io_error.h
+mg_in.o: mg_in.cc mg_.h md.h io_trace.h io_error.h ap.h
+mg_out_h.o: mg_out_h.cc mg_out.h mg_.h md.h io_trace.h io_error.h ap.h
+mg_out_dump.o: mg_out_dump.cc md.h io_trace.h io_error.h mg_out.h mg_.h \
+ ap.h
+mg_out_common.o: mg_out_common.cc mg_out.h mg_.h md.h io_trace.h \
+ io_error.h ap.h
+mg_out_dev.o: mg_out_dev.cc mg_out.h mg_.h md.h io_trace.h io_error.h \
+ ap.h
+mg_out_lib.o: mg_out_lib.cc mg_out.h mg_.h md.h io_trace.h io_error.h \
+ ap.h
+mg_out_model.o: mg_out_model.cc mg_out.h mg_.h md.h io_trace.h io_error.h \
+ ap.h
+mg_out_root.o: mg_out_root.cc md.h io_trace.h io_error.h mg_out.h mg_.h \
+ ap.h
+ap_construct.o: ap_construct.cc u_opt.h mode.h io_.h l_lib.h md.h \
+ io_trace.h io_error.h ap.h
+ap_convert.o: ap_convert.cc u_opt.h mode.h io_.h l_lib.h md.h io_trace.h \
+ io_error.h ap.h
+ap_get.o: ap_get.cc ap.h md.h io_trace.h io_error.h
+ap_match.o: ap_match.cc u_opt.h mode.h io_.h l_lib.h md.h io_trace.h \
+ io_error.h ap.h
+ap_skip.o: ap_skip.cc ap.h md.h io_trace.h io_error.h
+l_trim.o: l_trim.cc
+u_opt1.o: u_opt1.cc u_opt.h mode.h io_.h l_lib.h md.h io_trace.h \
+ io_error.h
+io_out.o: io_out.cc u_opt.h mode.h io_.h l_lib.h md.h io_trace.h \
+ io_error.h
+io.o: io.cc io_.h l_lib.h md.h io_trace.h io_error.h

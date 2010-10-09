@@ -1,12 +1,12 @@
-/*$Id: u_nodemap.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: u_nodemap.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2002 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -36,15 +36,15 @@ private:
 public:
   explicit  NODE_MAP();
 	   ~NODE_MAP();
-  NODE*     operator[](const std::string&);
-  NODE*     new_node(const std::string&);
+  NODE*     operator[](std::string);
+  NODE*     new_node(std::string);
 
   typedef std::map<const std::string, NODE*>::iterator iterator;
   typedef std::map<const std::string, NODE*>::const_iterator const_iterator;
 
   const_iterator begin()const		{return _node_map.begin();}
   const_iterator end()const		{return _node_map.end();}
-  int		 how_many()const	{return _node_map.size()-1;}
+  int		 how_many()const	{return static_cast<int>(_node_map.size()-1);}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -1,12 +1,12 @@
-/*$Id: u_nodemap.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: u_nodemap.cc,v 26.83 2008/06/05 04:46:59 al Exp $ -*- C++ -*-
  * Copyright (C) 2002 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -66,21 +66,35 @@ NODE_MAP::~NODE_MAP()
 /* return a pointer to a node given a string
  * returns NULL pointer if no match
  */
-NODE* NODE_MAP::operator[](const std::string& s)
+NODE* NODE_MAP::operator[](std::string s)
 {
   const_iterator i = _node_map.find(s);
+  if (i != _node_map.end()) {
+    return i->second;
+  }else if (OPT::case_insensitive) {
+    notstd::to_lower(&s);
+    i = _node_map.find(s);
+  }else{
+    return NULL;
+  }
   return (i != _node_map.end()) ? i->second : NULL;
 }
 /*--------------------------------------------------------------------------*/
 /* return a pointer to a node given a string
  * creates a new one if it isn't already there.
  */
-NODE* NODE_MAP::new_node(const std::string& s)
-{
+NODE* NODE_MAP::new_node(std::string s)
+{  
+  if (OPT::case_insensitive) {
+    notstd::to_lower(&s);
+  }else{
+  }
   NODE* node = _node_map[s];
+
   // increments how_many() when lookup fails (new s)  
   if (!node) {
     node = new NODE(s, how_many());
+    //                 ^^^^ is really the map number of the new node
     _node_map[s] = node;
   }
   assert(node);

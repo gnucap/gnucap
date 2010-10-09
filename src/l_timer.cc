@@ -1,12 +1,12 @@
-/*$Id: l_timer.cc,v 25.94 2006/08/08 03:22:25 al Exp $	-*- C++ -*-
+/*$Id: l_timer.cc,v 26.81 2008/05/27 05:34:00 al Exp $	-*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -42,14 +42,12 @@ inline double run_time()
 /*--------------------------------------------------------------------------*/
 TIMER::TIMER()
 {
-  _name[0] = '\0';
   fullreset();
 }
 /*--------------------------------------------------------------------------*/
-TIMER::TIMER(const char* label)
+TIMER::TIMER(const std::string& label)
+  :_name(label)
 {
-  strncpy(_name, label, _T_NAME_LEN);
-  _name[_T_NAME_LEN] = '\0';
   fullreset();
 }
 /*--------------------------------------------------------------------------*/
@@ -93,9 +91,9 @@ TIMER& TIMER::stop()
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::check()
 {
-  untested();
+  itested();
   if (_running) {
-    untested();
+    itested();
     stop();
     start();
   }else{
@@ -106,7 +104,7 @@ TIMER& TIMER::check()
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::print(OMSTREAM& s)
 {
-  s.form("%10s %8.2f %8.2f\n", _name, _last, _total);
+  s.form("%10s %8.2f %8.2f\n", _name.c_str(), _last, _total);
   return *this;
 }
 /*--------------------------------------------------------------------------*/

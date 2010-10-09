@@ -1,12 +1,12 @@
-/*$Id: s__out.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: s__out.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,38 +22,30 @@
  * tr,dc analysis output functions (and some ac)
  */
 //testing=obsolete,script 2005.09.17
+#include "u_sim_data.h"
+#include "u_status.h"
+#include "m_wave.h"
 #include "u_prblst.h"
 #include "declare.h"	/* plottr, plopen */
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
-//	PROBELIST& SIM::alarmlist()
-//	PROBELIST& SIM::plotlist()
-//	PROBELIST& SIM::printlist()
-//	PROBELIST& SIM::storelist()
-//	void	SIM::outdata(double);
-//	void	SIM::head(double,double,const char*);
-//	void	SIM::print(double);
-//	void	SIM::alarm(void);
-//	void	SIM::store(void);
-/*--------------------------------------------------------------------------*/
 /* SIM::____list: access probe lists
  */
-PROBELIST& SIM::alarmlist()
+const PROBELIST& SIM::alarmlist()const
 {
-  return PROBE_LISTS::alarm[mode];
+  return PROBE_LISTS::alarm[_sim->_mode];
 }
-PROBELIST& SIM::plotlist()
+const PROBELIST& SIM::plotlist()const
 {
-  return PROBE_LISTS::plot[mode];
+  return PROBE_LISTS::plot[_sim->_mode];
 }
-PROBELIST& SIM::printlist()
+const PROBELIST& SIM::printlist()const
 {
-  return PROBE_LISTS::print[mode];
+  return PROBE_LISTS::print[_sim->_mode];
 }
-PROBELIST& SIM::storelist()
+const PROBELIST& SIM::storelist()const
 {
-  untested();
-  return PROBE_LISTS::store[mode];
+  return PROBE_LISTS::store[_sim->_mode];
 }
 /*--------------------------------------------------------------------------*/
 /* SIM::out: output the data, "keep" for ac reference
@@ -61,56 +53,60 @@ PROBELIST& SIM::storelist()
 void SIM::outdata(double x)
 {
   ::status.output.start();
-  plottr(x);
-  print(x);
+  plottr(x, plotlist());
+  print_results(x);
   alarm();
-  store();
-  reset_iteration_counter(iPRINTSTEP);
-  ::status.control[cSTEPS] = 0;
+  store_results(x);
+  _sim->reset_iteration_counter(iPRINTSTEP);
+  ::status.hidden_steps = 0;
   ::status.output.stop();
 }
 /*--------------------------------------------------------------------------*/
 /* SIM::head: print column headings and draw plot borders
  */
-void SIM::head(double start, double stop, const char *col1)
+void SIM::head(double start, double stop, const std::string& col1)
 {
-  if (!plopen(start,stop)) {
+  if (_sim->_waves) {
+    delete [] _sim->_waves;
+  }else{
+  }
+
+  _sim->_waves = new WAVE [storelist().size()];
+
+
+  if (!plopen(start, stop, plotlist())) {
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     int width = std::min(OPT::numdgt+5, BIGBUFLEN-10);
     char format[20];
-    sprintf(format, "%%c%%-%u.%us", width, width);
-    if (col1  &&  *col1) {      
-      out.form(format, '#', col1);
-    }else{
-      unreachable();
-      incomplete();
-    }
+    //sprintf(format, "%%c%%-%u.%us", width, width);
+    sprintf(format, "%%c%%-%us", width);
+
+    _out.form(format, '#', col1.c_str());
+
     for (PROBELIST::const_iterator
 	   p=printlist().begin();  p!=printlist().end();  ++p) {
-      out.form(format, ' ', p->label().c_str());
+      _out.form(format, ' ', p->label().c_str());
     }
-    out << '\n';
+    _out << '\n';
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
-/* SIM::print: print the list of results (text form) to out
+/* SIM::print_results: print the list of results (text form) to _out
  * The argument is the first column (independent variable, aka "x")
  */
-void SIM::print(double x)
+void SIM::print_results(double x)
 {
   if (!IO::plotout.any()) {
-    out.setfloatwidth(OPT::numdgt, OPT::numdgt+6);
-    if (x != NOT_VALID) {
-      out << x;
-    }else{
-      unreachable();
-      incomplete();
-    }
+    _out.setfloatwidth(OPT::numdgt, OPT::numdgt+6);
+    assert(x != NOT_VALID);
+    _out << x;
     for (PROBELIST::const_iterator
 	   p=printlist().begin();  p!=printlist().end();  ++p) {
-      out << p->value();
+      _out << p->value();
     }
-    out << '\n';
+    _out << '\n';
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -118,19 +114,25 @@ void SIM::print(double x)
  */
 void SIM::alarm(void)
 {
-  out.setfloatwidth(OPT::numdgt, OPT::numdgt+6);
+  _out.setfloatwidth(OPT::numdgt, OPT::numdgt+6);
   for (PROBELIST::const_iterator
 	 p=alarmlist().begin();  p!=alarmlist().end();  ++p) {
     if (!p->in_range()) {
-      out << p->label() << '=' << p->value() << '\n';
+      _out << p->label() << '=' << p->value() << '\n';
+    }else{
     }
   }
 }
 /*--------------------------------------------------------------------------*/
-/* SIM::store: a stub: will be store data in preparation for post processing
+/* SIM::store: store data in preparation for post processing
  */
-void SIM::store(void)
+void SIM::store_results(double x)
 {
+  int ii = 0;
+  for (PROBELIST::const_iterator
+	 p=storelist().begin();  p!=storelist().end();  ++p) {
+    _sim->_waves[ii++].push(x, p->value());
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

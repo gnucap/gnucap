@@ -1,12 +1,12 @@
-/*$Id: u_opt.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: u_opt.h,v 26.127 2009/11/09 16:06:11 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,6 +27,7 @@
 #include "mode.h"
 /*--------------------------------------------------------------------------*/
 class CS;
+class LANGUAGE;
 /*--------------------------------------------------------------------------*/
 /* integration method selector -- not all methods are implemented */
 enum method_t {meUNKNOWN=0,	// no method set
@@ -40,48 +41,32 @@ enum method_t {meUNKNOWN=0,	// no method set
 	       meTRAPEULER,	// alt trap & euler
 	       meNUM_METHODS};	// number of methods (array dimension)
 inline OMSTREAM& operator<<(OMSTREAM& o, method_t t) {
-  const char* s[] = {"unknown", "euler", "euleronly", "trap", "traponly",
+  const std::string s[] = {"unknown", "euler", "euleronly", "trap", "traponly",
 		     "gear2", "gear2only", "trapgear", "trapeuler"};
   return (o << s[t]);
 }
 /*--------------------------------------------------------------------------*/
 enum order_t {oREVERSE=1, oFORWARD, oAUTO};
 inline OMSTREAM& operator<<(OMSTREAM& o, order_t t) {
-  const char* s[] = {"", "reverse", "forward", "auto"};
+  const std::string s[] = {"", "reverse", "forward", "auto"};
   return (o << s[t]);
 }
 /*--------------------------------------------------------------------------*/
-enum phase_t {pDEGREES, pRADIANS};
+enum phase_t {pDEGREES, pRADIANS, pP_DEGREES, pN_DEGREES};
 inline OMSTREAM& operator<<(OMSTREAM& o, phase_t t) {
-  const char* s[] = {"degrees", "radians"};
+  const std::string s[] = {"degrees", "radians", "+degrees", "-degrees"};
   return (o << s[t]);
 }
 /*--------------------------------------------------------------------------*/
-/* run_mode   what to do with dot cards on reading		*/
-enum RUN_MODE {
-  rIGNORE,	/* treat as comments				*/
-  rPRESET,	/* do set up commands now, but not simulation	*/
-		/* store parameters, so bare invocation of a	*/
-		/* simulation command will do it this way.	*/
-  rINTERACTIVE,	/* run the commands, interactively		*/
-  rSCRIPT,	/* execute now, as a command, then restore mode	*/
-  rBATCH	/* execute now, as a command, then exit		*/
-};
-/*--------------------------------------------------------------------------*/
-/* secant strategy is not implemented but it is a well known
- * method which may sometime be added
- */
-#ifdef KNEECHORD
-enum strategy_t {stNEWTON, stKNEECHORD, stSECANT};
-inline OMSTREAM& operator<<(OMSTREAM& o, strategy_t t) {untested();
-  const char* s[] = {"newton", "kneechord", "secant"};
+enum UNITS {uSI, uSPICE};
+inline OMSTREAM& operator<<(OMSTREAM& o, UNITS t) {
+  const std::string s[] = {"si", "spice"};
   return (o << s[t]);
 }
-#endif
 /*--------------------------------------------------------------------------*/
 enum {dsINIT=001, dsRANGE=002, dsDEVLIMIT=004, dsDEVREGION=010, dsREVERSE=020};
 /*--------------------------------------------------------------------------*/
-class OPT {
+class INTERFACE OPT {
 private:
   explicit OPT(const OPT&) {unreachable(); incomplete();}
 public:
@@ -94,6 +79,7 @@ private:
 public:
   enum ITL {DCBIAS=1, DCXFER=2, TRLOW=3, TRHIGH=4, TRTOTAL=5, SSTEP=6,
 	WCASE=7, TRACE=8, ITL_COUNT=9};
+  enum {_keep_time_steps = 5};
 public:
   static bool acct;	    // flag: print accounting info
   static bool listing;	    // flag: print listing
@@ -102,6 +88,8 @@ public:
   static bool node;	    // flag: print node table
   static bool opts;	    // flag: print options
   static double gmin;	    // minimum conductance allowed
+  static double bypasstol;  // bypass tolerance multiplier
+  static double loadtol;    // trace load tolerance multiplier
   static double reltol;	    // relative error tolerance
   static double abstol;	    // absolute current error tolerance
   static double vntol;	    // absolute voltage error tolerance
@@ -134,8 +122,7 @@ public:
   static double temp_c;    // ambient temperature
   static double shortckt;   // short resistance
   static int picky;	    // error picky-ness
-  static int inwidth;	    // width of input devices
-  static int outwidth;	    // width of output devices
+  static unsigned outwidth; // width of output devices
   static double ydivisions; // plot divisions, y axis
   static phase_t phase;	    // how to print phase (degrees or radians)
   static order_t order;	    // ordering method
@@ -160,6 +147,8 @@ public:
   static double trstephold; // hold step size growth, converges slowly
   static double trstepshrink;// amt to shrink step size on convergence failure
   static double trreject;   // how bad trunc error has to be to reject a step
+  static int trsteporder;   // interpolation order for step size control
+  static double trstepcoef[_keep_time_steps]; // coefficient for step size control
   static bool showall;	    // flag: show development flags
   static int foooo;	    // a reusable value to aid development
   static int diodeflags;    // convergence heuristic flags for diode
@@ -167,6 +156,9 @@ public:
   static bool quitconvfail; // quit on convergence failure
   static bool edit;	    // use readline - command editing
   static int recursion;	    // max recursion depth
+  static LANGUAGE* language; // simulation language
+  static bool case_insensitive;
+  static UNITS units;
   
   static double lowlim;	    // 1 - reltol
   static double uplim;	    // 1 + reltol
@@ -179,14 +171,6 @@ public:
 			    // 6=source stepping iteration limit
 			    // 7=worst case iteration limit
 			    // 8=trace nonconvergence start iteration
-#ifdef KNEECHORD
-  static strategy_t strategy; // What method we use to encourage non-linear devices to converge
-#endif
-};
-/*--------------------------------------------------------------------------*/
-class ENV {
-public:
-  static RUN_MODE run_mode; // variations on handling of dot commands
 };
 /*--------------------------------------------------------------------------*/
 class SET_RUN_MODE {
@@ -195,8 +179,14 @@ private:
   explicit SET_RUN_MODE() :_old_run_mode(ENV::run_mode) {unreachable();}
 public:
   explicit SET_RUN_MODE(RUN_MODE rm)
-    :_old_run_mode(ENV::run_mode) {ENV::run_mode = rm;}
-  ~SET_RUN_MODE() {ENV::run_mode = _old_run_mode;}
+    :_old_run_mode(ENV::run_mode) 
+  {
+    ENV::run_mode = rm;
+  }
+  ~SET_RUN_MODE()
+  {
+    ENV::run_mode = _old_run_mode;
+  }
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

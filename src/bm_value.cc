@@ -1,12 +1,12 @@
-/*$Id: bm_value.cc,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
+/*$Id: bm_value.cc,v 26.130 2009/11/15 21:51:59 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,49 +25,44 @@
 //testing=script 2005.10.07
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
-const double _default_value (0);
-/*--------------------------------------------------------------------------*/
-EVAL_BM_VALUE::EVAL_BM_VALUE(int c)
-  :EVAL_BM_ACTION_BASE(c),
-   _value(0)
-{
-}
-/*--------------------------------------------------------------------------*/
-EVAL_BM_VALUE::EVAL_BM_VALUE(const EVAL_BM_VALUE& p)
-  :EVAL_BM_ACTION_BASE(p),
-   _value(p._value)
-{
-}
+static EVAL_BM_VALUE p1(CC_STATIC);
+static DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher, "value|eval_bm_value", &p1);
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_VALUE::operator==(const COMMON_COMPONENT& x)const
 {
   const EVAL_BM_VALUE* p = dynamic_cast<const EVAL_BM_VALUE*>(&x);
-  bool rv = p
-    && _value == p->_value
-    && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
-    incomplete();
-    untested();
-  }
-  return rv;
+  return  p && EVAL_BM_ACTION_BASE::operator==(x);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_VALUE::print(OMSTREAM& o)const
+void EVAL_BM_VALUE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
-  o << ' ' << _value;
-  EVAL_BM_ACTION_BASE::print(o);
+  o << _value;
+  EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_VALUE::elabo3(const COMPONENT* c)
+bool EVAL_BM_VALUE::is_trivial()const
+{
+  return  !(_bandwidth.has_hard_value()
+	    || _delay.has_hard_value()
+	    || _phase.has_hard_value()
+	    || _ooffset.has_hard_value()
+	    || _ioffset.has_hard_value()
+	    || _scale.has_hard_value()
+	    || _tc1.has_hard_value()
+	    || _tc2.has_hard_value()
+	    || _ic.has_hard_value()
+	    || _tnom_c.has_hard_value()
+	    || _dtemp.has_hard_value()
+	    || _temp_c.has_hard_value());
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_VALUE::precalc_first(const CARD_LIST* Scope)
 {
   if (modelname() != "") {
     _value = modelname();
+  }else{
   }
-  assert(c);
-  const CARD_LIST* par_scope = c->scope();
-  assert(par_scope);
-  EVAL_BM_ACTION_BASE::elabo3(c);
-  _value.e_val(_default_value, par_scope);
+  EVAL_BM_ACTION_BASE::precalc_first(Scope);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_VALUE::tr_eval(ELEMENT* d)const
@@ -77,22 +72,22 @@ void EVAL_BM_VALUE::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_VALUE::parse_numlist(CS& cmd)
 {
-  int here = cmd.cursor();
-  PARAMETER<double> value(NOT_VALID);
-  cmd >> value;
+  unsigned here = cmd.cursor();
+  PARAMETER<double> new_value(NOT_VALID);
+  cmd >> new_value;
   if (cmd.gotit(here)) {
-    _value = value;
+    _value = new_value;
     return true;
   }else{
     return false;
   }
 }
 /*--------------------------------------------------------------------------*/
-bool EVAL_BM_VALUE::parse_params(CS& cmd)
+bool EVAL_BM_VALUE::parse_params_obsolete_callback(CS& cmd)
 {
   return ONE_OF
-    || get(cmd, "=",	&_value)
-    || EVAL_BM_ACTION_BASE::parse_params(cmd)
+    || Get(cmd, "=", &_value)
+    || EVAL_BM_ACTION_BASE::parse_params_obsolete_callback(cmd)
     ;
 }
 /*--------------------------------------------------------------------------*/

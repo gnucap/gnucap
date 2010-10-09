@@ -1,12 +1,12 @@
-/*$Id: mg_in.cc,v 25.92 2006/06/28 15:03:12 al Exp $ -*- C++ -*-
+/*$Id: mg_in.cc,v 26.81 2008/05/27 05:33:43 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -19,126 +19,121 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+//testing=script 2006.10.31
 #include "mg_.h"
 /*--------------------------------------------------------------------------*/
 static C_Comment   dummy_c_comment;
 static Cxx_Comment dummy_cxx_comment;
 /*--------------------------------------------------------------------------*/
-#if 0
-template <class T, char BEGIN, char END>
-void List<T, BEGIN, END>::parse(CS& file)
+void Parameter::parse(CS& file)
 {
-  int paren = file.skip1b(BEGIN);
-  int here = file.cursor();
+  file >> _type >> _code_name >> _comment;
+  unsigned here = file.cursor();
   for (;;) {
-    get(file, "/*$$", &dummy_c_comment);
-    get(file, "//$$", &dummy_cxx_comment);
-    if (file.stuck(&here)) {
-      paren -= file.skip1b(END);
-      if (paren == 0) {
-	break;
-      }
-      T* p = new T(file);
-      {if (!file.stuck(&here)) {
-	_list.push_back(p);
-      }else {
-	delete p;
-	file.warn(0, "not valid here");
-	break;
-      }}
+    ONE_OF
+      || Set(file, "positive",	     &_positive,	true)
+      || Set(file, "octal",	     &_octal,		true)
+      || ((file >> "name =")	       && (file >> _user_name))
+      || ((file >> "alt_name =")       && (file >> _alt_name))
+      || ((file >> "default =")	       && (file >> _default_val))
+      || ((file >> "offset =")	       && (file >> _offset))
+      || ((file >> "print_test =")     && (file >> _print_test))
+      || ((file >> "calc_print_test =")&& (file >> _calc_print_test))
+      || ((file >> "scale =")	       && (file >> _scale))
+      || ((file >> "calculate =")      && (file >> _calculate))
+      || ((file >> "quiet_min =")      && (file >> _quiet_min))
+      || ((file >> "quiet_max =")      && (file >> _quiet_max))
+      || ((file >> "final_default =")  && (file >> _final_default))
+      || ((file >> "/*")	       && (file >> dummy_c_comment))
+      || ((file >> "//")	       && (file >> dummy_cxx_comment))
+      ;
+    if (file.skip1b(";,")) {
+      break;
+    }else if (!file.more()) {untested();
+      file.warn(0, "premature EOF (parameter)");
+      break;
+    }else if (file.stuck(&here)) {untested();
+      file.warn(0, "need ;");
+      break;
+    }else{
     }
   }
 }
 /*--------------------------------------------------------------------------*/
-template <class T>
-void Collection<T>::parse(CS& file)
+void Parameter::print(std::ostream& out)const
 {
-  int here = file.cursor();
-  T* m = new T(file);
-  {if (!file.stuck(&here)) {
-    _list.push_back(m);
-  }else{
-    delete m;
-    file.warn(0, "what's this??");
-  }}
-}
-#endif
-/*--------------------------------------------------------------------------*/
-void Parameter::parse(CS& file)
-{
-  file >> _type >> _code_name >> _comment;
-  int here = file.cursor();
-  for (;;) {
-    ONE_OF 
-      || get(file, "NAME",	     &_user_name)
-      || get(file, "ALT_name",	     &_alt_name)
-      || get(file, "DEFAult",	     &_default_val)
-      || get(file, "OFFSet",	     &_offset)
-      || set(file, "POSItive",	     &_positive,	true)
-      || set(file, "OCTAl",	     &_octal,		true)
-      || get(file, "PRINt_test",     &_print_test)
-      || get(file, "CALC_Print_test",&_calc_print_test)
-      || get(file, "SCALe",	     &_scale)
-      || get(file, "CALCUlate",	     &_calculate)
-      || get(file, "QUIET_MIn",	     &_quiet_min)
-      || get(file, "QUIET_MAx",	     &_quiet_max)
-      || get(file, "FINAl_default",  &_final_default)
-      || get(file, "/*$$",	     &dummy_c_comment)
-      || get(file, "//$$",	     &dummy_cxx_comment)
-      ;
-    {if (file.skip1(";")) {
-      break;
-    }else if (!file.more()) {
-      file.warn(0, "premature EOF (Parameter)");
-      break;
-    }else if (file.stuck(&here)) {
-      file.warn(0, "need ;");
-      break;
-    }}
+  out << "\n"
+    "      " << type() << " " << code_name() << " \"" << comment() << "\"\n        "
+    "name=\"" << user_name() << "\" "
+    "alt_name=\"" << alt_name() << "\" "
+    "default=\"" << default_val() << "\" "
+    "offset=\"" << offset() << "\"\n        ";
+  if (positive()) {
+    out << "positive ";
   }
+  if (octal()) {
+    out << "octal ";
+  }
+  out <<
+    "print_test=\"" << print_test() << "\" "
+    "calc_print_test=\"" << calc_print_test() << "\"\n        "
+    "scale=\"" << scale() << "\" "
+    "calculate=\"" << calculate() << "\"\n        "
+    "quiet_min=\"" << quiet_min() << "\" "
+    "quiet_max=\"" << quiet_max() << "\"\n        "
+    "final_default=\"" << final_default() << "\";";
 }
 /*--------------------------------------------------------------------------*/
 void Code_Block::parse(CS& file) 
 {
   // skips the code block, delimited by {}
-  // sets _begin and _end, making that part of file the string
-  // does not copy it.
   // also checks paren balance, so you can have {} inside the block
 
-  int paren = file.skipbl().skip1("{");
-  if (paren == 0) {
+  int paren = file.skip1("{");
+  if (paren == 0) {untested();
     file.warn(0, "need {");
+  }else{
   }
-  int here = file.cursor();
-  _begin = file.tail();
+  unsigned here = file.cursor();
+  unsigned begin = here;
+  unsigned end = here;
   for (;;) {
     paren -= file.skip1b("])");
-    if (paren == 0) {
+    if (paren == 0) {untested();
       file.warn(0, "unbalanced {}[]()");
       break;
+    }else{
     }
-    _end = file.tail();
+    end = file.cursor();
     paren -= file.skip1b("}");
     if (paren == 0) {
-      while (*(--_end) != '\n' && _end >= _begin) {
+      unsigned ihere = file.cursor();
+      while (file.reset(--end).peek() != '\n' && end >= begin) {
       }
-      ++_end;
+      ++end;
+      file.reset(ihere);
       break;
+    }else{
     }
-    if (file.stuck(&here)) {
+    if (file.stuck(&here)) {untested();
       file.warn(0, "syntax error");
       break;
+    }else{
     }
     paren += file.skip1b("{[(");
     file.skip1b(";=");
     std::string foo;
     file >> foo;
   }
+  s = file.substr(begin, end - begin);
 }
 /*--------------------------------------------------------------------------*/
 static void fill_in_default_names(Parameter_List& pl)
 {
-  for (Parameter_List::const_iterator p = pl.begin(); p != pl.end(); ++p) {
+  for (Parameter_List::const_iterator
+       p = pl.begin();
+       p != pl.end();
+       ++p) {
     (**p).fill_in_default_name();
   }
 }
@@ -146,38 +141,62 @@ static void fill_in_default_names(Parameter_List& pl)
 void Parameter_Block::parse(CS& file)
 { 
   int paren = file.skip1b("{");
-  int here = file.cursor();
+  unsigned here = file.cursor();
   for (;;) {
     ONE_OF
-      || get(file, "UNNAmed",		&_unnamed_value)
-      || get(file, "OVERride",		&_override)
-      || get(file, "RAW_parameters",	&_raw)
-      || get(file, "CALCulated_parameters",&_calculated)
-      || get(file, "CODE_PRE",		&_code_pre)
-      || get(file, "CODE_MID",		&_code_mid)
-      || get(file, "CODE_POST",		&_code_post)
-      || get(file, "/*$$",		&dummy_c_comment)
-      || get(file, "//$$",		&dummy_cxx_comment)
+      || ((file >> "unnamed ")		    && (file >> _unnamed_value))
+      || ((file >> "override ")		    && (file >> _override))
+      || ((file >> "raw_parameters ")	    && (file >> _raw))
+      || ((file >> "calculated_parameters ")&& (file >> _calculated))
+      || ((file >> "code_pre ")		    && (file >> _code_pre))
+      || ((file >> "code_mid ")		    && (file >> _code_mid))
+      || ((file >> "code_post ")	    && (file >> _code_post))
+      || ((file >> "/*")	            && (file >> dummy_c_comment))
+      || ((file >> "//")	            && (file >> dummy_cxx_comment))
       ;
     paren -= file.skip1b("}");
-    {if (paren == 0) {
+    if (paren == 0) {
       break;
-    }else if (!file.more()) {
+    }else if (!file.more()) {untested();
       file.warn(0, "premature EOF (Parameter_Block)");
       break;
-    }else if (file.stuck(&here)) {
+    }else if (file.stuck(&here)) {itested();
       file.warn(0, "bad Parameter_Code_Block");
       break;
-    }}
+    }else{
+    }
   }
   fill_in_default_names(_calculated);
   fill_in_default_names(_raw);
   // but not _override
 }
 /*--------------------------------------------------------------------------*/
+void Parameter_Block::print(std::ostream& out)const
+{
+  out << "{\n";
+  if (unnamed_value() != "") {
+    out << "    unnamed " << unnamed_value() << ";\n";
+  }
+  out <<
+    "    override " << override() << "\n"
+    "    raw_parameters " << raw() << "\n"
+    "    calculated_parameters " << calculated() << "\n"
+    "    code_pre {" << code_pre() << "  }\n"
+    "    code_mid {" << code_mid() << "  }\n"
+    "    code_post {" << code_post() << "  }\n"
+    "  }\n";
+}
+/*--------------------------------------------------------------------------*/
 void Eval::parse(CS& file)
 {
   file >> _name >> _code;
+}
+/*--------------------------------------------------------------------------*/
+void Eval::print(std::ostream& out)const
+{
+  out << "  eval " << name() << " {"
+      << code() <<
+    "  }\n";
 }
 /*--------------------------------------------------------------------------*/
 void Function::parse(CS& file)
@@ -187,227 +206,328 @@ void Function::parse(CS& file)
   file >> _code;
 }
 /*--------------------------------------------------------------------------*/
-void Port::parse(CS& file)
+void Function::print(std::ostream& out)const
 {
-  file >> _name;
-  int here = file.cursor();
-  for (;;) {
-    ONE_OF
-      || get(file, "SHORT_TO",	&_short_to)
-      || get(file, "SHORT_IF",	&_short_if)
-      ;
-    {if (file.skip1(";,")) {
-      break;
-    }else if (!file.more()) {
-      file.warn(0, "premature EOF (Port)");
-      break;
-    }else if (file.stuck(&here)) {
-      break;
-    }}
-  }
+  out << "  function " << name() << " {"
+      << code() <<
+    "  }\n";
 }
 /*--------------------------------------------------------------------------*/
 void Element::parse(CS& file)
 {
   file >> _dev_type >> _name >> _port_list;
-  int here = file.cursor();
+  unsigned here = file.cursor();
   for (;;) {
     ONE_OF
-      || get(file, "EVAL",	&_eval)
-      || get(file, "VALue",	&_value)
-      || get(file, "ARGS",	&_args)
-      || get(file, "OMIT",	&_omit)
-      || get(file, "REVerse",	&_reverse)
-      || get(file, "STAte",	&_state)
-      || get(file, "/*$$",	&dummy_c_comment)
-      || get(file, "//$$",	&dummy_cxx_comment)
+      || ((file >> "eval =")	&& (file >> _eval))
+      || ((file >> "value =")	&& (file >> _value))
+      || ((file >> "args =")	&& (file >> _args))
+      || ((file >> "omit =")	&& (file >> _omit))
+      || ((file >> "reverse =")	&& (file >> _reverse))
+      || ((file >> "state =")	&& (file >> _state))
+      || ((file >> "/*")	&& (file >> dummy_c_comment))
+      || ((file >> "//")	&& (file >> dummy_cxx_comment))
       ;
-    {if (file.skip1(";")) {
+    if (file.skip1b(";")) {
       break;
-    }else if (!file.more()) {
+    }else if (!file.more()) {untested();
       file.warn(0, "premature EOF (Element)");
       break;
-    }else if (file.stuck(&here)) {
+    }else if (file.stuck(&here)) {untested();
       file.warn(0, "need ;");
       break;
-    }}
+    }else{
+    }
   }
-  _class_name = "DEV_" + to_upper(_dev_type);
+}
+/*--------------------------------------------------------------------------*/
+void Element::print(std::ostream& out)const
+{
+  out << "    " << dev_type() << " " << name() << " " << ports();
+  if (eval() != "") {
+    out << " eval=\"" << eval() << "\"";
+  }
+  if (value() != "") {
+    out << " value=\"" << value() << "\"";
+  }
+  if (args() != "") {
+    out << " args=\"" << args() << "\"";
+  }
+  if (omit() != "") {
+    out << " omit=\"" << omit() << "\"";
+  }
+  if (reverse() != "") {
+    out << " reverse=\"" << reverse() << "\"";
+  }
+  if (state() != "") {
+    out << " state=\"" << state() << "\"";
+  }
+  out << ";\n";
 }
 /*--------------------------------------------------------------------------*/
 void Arg::parse(CS& file)
 {
   file.skipbl();
   _arg = file.get_to(";");
-  file.skip1(";");
+  file.skip1b(";");
 }
 /*--------------------------------------------------------------------------*/
 void Circuit::parse(CS& file)
 {
   int paren = file.skip1b("{");
-  get(file, "/*$$", &dummy_c_comment);
-  get(file, "//$$", &dummy_cxx_comment);
-  get(file, "SYNC", &_sync) && file.skip1(";");
-  (get(file, "PORts", &_required_nodes)
-   && ((file >> _optional_nodes), file.skip1(";")))
-    || file.warn(0, "need Ports");
-  get(file, "LOCal_nodes", &_local_nodes) && file.skip1(";");
-  int here = file.cursor();
+  (file >> "/*")     && (file >> dummy_c_comment);
+  (file >> "//")     && (file >> dummy_cxx_comment);
+  (file >> "sync ;") && (_sync = true);
+  (file >> "ports ") && ((file >> _required_nodes >> _optional_nodes >> ';')
+			 || file.warn(0, "need ports"));
+  (file >> "local_nodes ") && (file >> _local_nodes >> ';');
+  unsigned here = file.cursor();
   do {
-    get(file, "ARGs", &_args_list);
+    (file >> "args ") && (file >> _args_list);
   } while (file.more() && !file.stuck(&here));
   for (;;) {
     paren -= file.skip1b("}");
-    {if (paren == 0) {
+    if (paren == 0) {
       break;
-    }else if (!file.more()) {
+    }else if (!file.more()) {untested();
       file.warn(0, "premature EOF (Circuit)");
       break;
-    }}
+    }else{
+    }
     ONE_OF
-      || get(file, "/*$$", &dummy_c_comment)
-      || get(file, "//$$", &dummy_cxx_comment)
+      || ((file >> "/*") && (file >> dummy_c_comment))
+      || ((file >> "//") && (file >> dummy_cxx_comment))
       || (file >> _element_list)
       ;
-    if (file.stuck(&here)) {
+    if (file.stuck(&here)) {untested();
       file.warn(0, "bad Circuit");
       break;
+    }else{
     }
   }
+}
+/*--------------------------------------------------------------------------*/
+void Circuit::print(std::ostream& out)const
+{
+  out << " {\n";
+  if (sync()) {
+    out << "  sync;\n";
+  }
+  out <<
+    "  ports " << req_nodes() << opt_nodes() << ";\n"
+    "  local_nodes " << local_nodes() << "\n"
+	       << args_list()
+	       << elements() <<
+    "}\n";
 }
 /*--------------------------------------------------------------------------*/
 void Model::parse(CS& file)
 {
   file >> _name;
   int paren = file.skip1b("{");
-  int here = file.cursor();
+  unsigned here = file.cursor();
   for (;;) {
     ONE_OF
-      || get(file, "BASE",		&_is_base)
-      || get(file, "LEVEl",		&_level)
-      || get(file, "DEV_type",		&_dev_type)
-      || get(file, "INHErit",		&_inherit)
-      || get(file, "KEYS",		&_key_list)
-      || get(file, "INDEpendent",	&_independent)
-      || get(file, "SIZE_dependent",	&_size_dependent)
-      || get(file, "TEMPerature_dependent", &_temperature)
-      || get(file, "TR_Eval",		&_tr_eval)
-      || get(file, "VALidate",		&_validate)
-      || get(file, "/*$$",		&dummy_c_comment)
-      || get(file, "//$$",		&dummy_cxx_comment)
+      || ((file >> "hide_base ")	     && (file >> _hide_base))
+      || ((file >> "level ")		     && (file >> _level))
+      || ((file >> "dev_type ")		     && (file >> _dev_type))
+      || ((file >> "inherit ")		     && (file >> _inherit))
+      || ((file >> "public_keys ")	     && (file >> _public_key_list))
+      || ((file >> "private_keys ")	     && (file >> _private_key_list))
+      || ((file >> "independent ")	     && (file >> _independent))
+      || ((file >> "size_dependent ")	     && (file >> _size_dependent))
+      || ((file >> "temperature_dependent ") && (file >> _temperature))
+      || ((file >> "tr_eval ")		     && (file >> _tr_eval))
+      || ((file >> "validate ")		     && (file >> _validate))
+      || ((file >> "/*")		     && (file >> dummy_c_comment))
+      || ((file >> "//")		     && (file >> dummy_cxx_comment))
       ;
     paren -= file.skip1b("}");
-    {if (paren == 0) {
+    if (paren == 0) {
       break;
-    }else if (!file.more()) {
+    }else if (!file.more()) {untested();
       file.warn(0, "premature EOF (Model)");
       break;
-    }else if (file.stuck(&here)) {
+    }else if (file.stuck(&here)) {itested();
       file.warn(0, "bad Model");
       break;
-    }}
+    }else{
+    }
   }
+}
+/*--------------------------------------------------------------------------*/
+void Model::print(std::ostream& out)const
+{
+  out << "model " << name() << " {\n";
+  if (hide_base()) {
+    out << "  hide_base;\n";
+  }
+  out << 
+    "  level = " << level() << ";\n"
+    "  dev_type = " << dev_type() << ";\n"
+    "  inherit = " << inherit() << ";\n"
+    "  public_keys " << public_key_list() << "\n"
+    "  private_keys " << private_key_list() << "\n"
+    "  independent " << independent() << "\n"
+    "  size_dependent " << size_dependent() << "\n"
+    "  temperature_dependent " << temperature() << "\n"
+    "  tr_eval {" << tr_eval() << "  }\n"
+    "  validate {" << validate() << "  }\n"
+    "}\n";
 }
 /*--------------------------------------------------------------------------*/
 void Device::parse(CS& file)
 {
   file >> _name;
   int paren = file.skip1b("{");
-  int here = file.cursor();
+  unsigned here = file.cursor();
   for (;;) {
     ONE_OF
-      || get(file, "PARSe_name",&_parse_name)
-      || get(file, "ID_letter",	&_id_letter)
-      || get(file, "MODel_type",&_model_type)
-      || get(file, "CIRcuit",	&_circuit)
-      || get(file, "TR_Probes",	&_probes)
-      || get(file, "DEVIce",	&_device)
-      || get(file, "COMmon", 	&_common)
-      || get(file, "TR_Eval",	&_tr_eval)
-      || get(file, "EVAL",	&_eval_list)
-      || get(file, "FUNction",	&_function_list)
-      || get(file, "/*$$",	&dummy_c_comment)
-      || get(file, "//$$",	&dummy_cxx_comment)
+      || ((file >> "parse_name ") && (file >> _parse_name))
+      || ((file >> "id_letter ")  && (file >> _id_letter))
+      || ((file >> "model_type ") && (file >> _model_type))
+      || ((file >> "circuit ")	  && (file >> _circuit))
+      || ((file >> "tr_probe ")   && (file >> _probes))
+      || ((file >> "device ")	  && (file >> _device))
+      || ((file >> "common ") 	  && (file >> _common))
+      || ((file >> "tr_eval ")	  && (file >> _tr_eval))
+      || ((file >> "eval ")	  && (file >> _eval_list))
+      || ((file >> "function ")   && (file >> _function_list))
+      || ((file >> "/*")	  && (file >> dummy_c_comment))
+      || ((file >> "//")	  && (file >> dummy_cxx_comment))
       ;
     paren -= file.skip1b("}");
-    {if (paren == 0) {
+    if (paren == 0) {
       break;
-    }else if (!file.more()) {
+    }else if (!file.more()) {untested();
       file.warn(0, "premature EOF (Device)");
       break;
-    }else if (file.stuck(&here)) {
+    }else if (file.stuck(&here)) {itested();
       file.warn(0, "bad Device");
       break;
-    }}
+    }else{
+    }
   }
+}
+/*--------------------------------------------------------------------------*/
+void Device::print(std::ostream& out)const
+{
+  out <<
+    "device " << name() << " {\n"
+    "  parse_name " << parse_name() << ";\n"
+    "  id_letter " << id_letter() << ";\n"
+    "  model_type " << model_type() << ";\n"
+    "  circuit " << circuit() << "\n"
+    "  tr_probe " << probes() << "\n"
+    "  device " << device() << "\n"
+    "  common " << common() << "\n"
+    "  tr_eval {" << tr_eval() << "  }\n"
+	      << eval_list()
+	      << function_list() <<
+    "}\n";
 }
 /*--------------------------------------------------------------------------*/
 void C_Comment::parse(CS& file)
 {
-  int here = file.cursor();
+  unsigned here = file.cursor();
   for (;;) {
     file.skipto1('*');
-    {if (file.pmatch("*/$$")) {
+    if (file.umatch("*/")) {
       break;  // done with comment
-    }else if (file.stuck(&here)) {
+    }else if (file.stuck(&here)) {untested();
       file.warn(0, "unterminated C comment");
       break;
-    }else{
+    }else{untested();
       file.skip();
-    }}
+    }
   }
 }
 /*--------------------------------------------------------------------------*/
 void Cxx_Comment::parse(CS& file)
 {
-  int here = file.cursor();
+  unsigned here = file.cursor();
   file.skipto1('\n');
-  if (file.stuck(&here)) {
+  if (file.stuck(&here)) {untested();
     file.warn(0, "unterminated C++ comment");
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Port::parse(CS& file)
+{
+  file >> _name;
+  unsigned here = file.cursor();
+  for (;;) {
+    ONE_OF
+      || ((file >> "short_to =") && (file >> _short_to))
+      || ((file >> "short_if =") && (file >> _short_if))
+      ;
+    if (file.skip1b(";")) {
+      break;
+    }else if (!file.more()) {untested();
+      file.warn(0, "premature EOF (Port)");
+      break;
+    }else if (file.stuck(&here)) {
+      break;
+    }else{
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Port::print(std::ostream& out)const
+{
+  if (short_to() != "" || short_if() != "") {
+    out << name() << " short_to=\"" << short_to() 
+	<< "\" short_if=\"" << short_if() << "\";\n";
+  }else{
+    out << name() << "; ";
   }
 }
 /*--------------------------------------------------------------------------*/
 void Head::parse(CS& file)
 {
-  int here = file.cursor();
-  _begin = file.fullstring();
+  unsigned here = file.cursor();
+  unsigned begin = 0;
+  unsigned end = here;
   for (;;) {
     file.skipto1('*');
-    {if (file.pmatch("*/$$")) {
-      _end = file.tail();
+    if (file.umatch("*/")) {
+      end = file.cursor();
       break;  // done with head
-    }else if (file.stuck(&here)) {
+    }else if (file.stuck(&here)) {untested();
       file.warn(0, "unterminated head");
       break;
     }else{
       file.skip();
-    }}
+    }
   }
+  s = file.substr(begin, end-begin);
 }
 /*--------------------------------------------------------------------------*/
 File::File(const std::string& file_name)
   :_name(file_name),
-   _file(CS_FILE(), file_name)
+   _file(CS::_WHOLE_FILE, file_name)
 {
-  get(_file, "/*$$",		&_head);
-  int here = _file.cursor();
+  (_file >>  "/*") && (_file >> _head);
+  unsigned here = _file.cursor();
   for (;;) {
     ONE_OF
-      || get(_file, "H_Headers", &_h_headers)
-      || get(_file, "CC_Headers",&_cc_headers)
-      || get(_file, "DEVice",	 &_device_list)
-      || get(_file, "MODel", 	 &_model_list)
-      || get(_file, "H_Direct",  &_h_direct)
-      || get(_file, "CC_Direct", &_cc_direct)
-      || get(_file, "/*$$",	 &dummy_c_comment)
-      || get(_file, "//$$",	 &dummy_cxx_comment)
+      || ((_file >> "/*")	  && (_file >> dummy_c_comment))
+      || ((_file >> "//")	  && (_file >> dummy_cxx_comment))
+      || ((_file >> "h_headers ") && (_file >> _h_headers))
+      || ((_file >> "cc_headers ")&& (_file >> _cc_headers))
+      || ((_file >> "device ")	  && (_file >> _device_list))
+      || ((_file >> "model ") 	  && (_file >> _model_list))
+      || ((_file >> "h_direct ")  && (_file >> _h_direct))
+      || ((_file >> "cc_direct ") && (_file >> _cc_direct))
       ;
-    {if (!_file.more()) {
+    if (!_file.more()) {
       break;
-    }else if (_file.stuck(&here)) {
+    }else if (_file.stuck(&here)) {itested();
       _file.warn(0, "syntax error, need head or model");
       break;
-    }}
+    }else{
+    }
   }
 }
 /*--------------------------------------------------------------------------*/

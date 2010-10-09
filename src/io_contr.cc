@@ -1,12 +1,12 @@
-/*$Id: io_contr.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: io_contr.cc,v 26.110 2009/05/28 15:32:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -104,23 +104,23 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
 {
   bool echo = false;
   for (;;) {
-    if (cmd.pmatch("Basic")) {
+    if (cmd.umatch("basic ")) {
       IO::formaat = ftos_EXP;
       (*out).setformat(ftos_EXP);
-    }else if (cmd.pmatch("Cipher")) {untested();
+    }else if (cmd.umatch("cipher ")) {untested();
       (*out).setcipher().setpack();
-    }else if (cmd.pmatch("Pack")) {untested();
+    }else if (cmd.umatch("pack ")) {itested();
       (*out).setpack();
-    }else if (cmd.pmatch("Quiet")) {untested();
+    }else if (cmd.umatch("quiet ")) {itested();
       echo = false;
       (*out).detach(IO::mstdout);
-    }else if (cmd.pmatch("Echo") || cmd.pmatch("List")) {untested();
+    }else if (cmd.umatch("echo ") || cmd.umatch("list ")) {itested();
       echo = true;
       (*out).attach(IO::mstdout);
-    }else if (cmd.pmatch("SAve")) {untested();
+    }else if (cmd.umatch("save ")) {itested();
       fn = file_open(cmd,"","w",fn);
       (*out).attach(fn);
-    }else if (cmd.pmatch("|$$")) {untested();
+    }else if (cmd.umatch("\\|")) {untested();
       // open a pipe
       std::string command;
       cmd >> command;
@@ -136,15 +136,15 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
 	(*out).detach(IO::mstdout);
       }else{untested();
       }
-    }else if (cmd.pmatch(">$$")) {untested();
+    }else if (cmd.umatch(">")) {itested();
       // open a file for write or append
       const char *rwaflag;
-      rwaflag = (cmd.pmatch(">$$")) ? "a" : "w";
+      rwaflag = (cmd.umatch(">")) ? "a" : "w";
       fn = file_open(cmd,"",rwaflag,fn);
       (*out).attach(fn);
       IO::formaat = ftos_EXP;
       (*out).setformat(ftos_EXP);
-      if (!echo) {untested();
+      if (!echo) {itested();
 	(*out).detach(IO::mstdout);
       }else{untested();
       }
@@ -162,12 +162,12 @@ static FILE *file_open(
 	const char *ext,
 	const char *rwaflag,
 	FILE *fileptr)
-{untested();
+{itested();
   xclose(&fileptr);
   fileptr = xopen(cmd,ext,rwaflag);
-  if (!fileptr) {untested();
-    error(bERROR, "");
-  }else{untested();
+  if (!fileptr) {itested();
+    throw Exception_File_Open("");
+  }else{itested();
   }
   return fileptr;
 }

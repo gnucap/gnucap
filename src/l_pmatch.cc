@@ -1,12 +1,12 @@
-/*$Id: l_pmatch.cc,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: l_pmatch.cc,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,25 +30,13 @@
  */
 //testing=script,complete 2006.07.13
 #include "ap.h"
+#include "l_lib.h"
 /*--------------------------------------------------------------------------*/
-/* pmatch: match str1 (under test) against str2 (reference)
- * if no match, returns 0
- * if match, returns the number of characters that match,
- *	---including whitespace---
- * return value is usually interpreted as a truth value:
- *	true if match exists.
- * str1 (being tested) is considered to be case-insensitive
- *	is terminated by a non-alpha character
- * str2 (reference) has special considerations:
- *	upper case characters must match, and must be present
- *	lower case characters must match if present, but may be omitted
- * strings are alpha only.
- */
-int pmatch(const char* str1, const char* str2)
+bool Umatch(const std::string& str1, const std::string& str2)
 {
-  CS cmd(str1);
-  if (cmd.pmatch(str2)) {
-    return cmd.cursor();
+  CS cmd(CS::_STRING, str1); //call to CS member on string
+  if (cmd.umatch(str2)) {
+    return true;
   }else{
     return 0;
   }

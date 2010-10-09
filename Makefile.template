@@ -30,9 +30,9 @@ clean:
 
 #  This moves Makefile.original back to Makefile.
 unconfig:
-	(cd man; make unconfig)
 	(cd modelgen; make unconfig)
 	(cd src; make unconfig)
+#	(cd man; make unconfig)
 
 #  This creates Makefile.original, and then assembles
 #  Makefile.
@@ -45,9 +45,9 @@ uninstall: nothing
 	(cd src; make uninstall)
 
 manifest:
-	(cd man; make manifest)
 	(cd modelgen; make manifest)
 	(cd src; make manifest)
+#	(cd man; make manifest)
 
 nothing:
 

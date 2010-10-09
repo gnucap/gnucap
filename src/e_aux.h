@@ -1,12 +1,12 @@
-/*$Id: e_aux.h,v 25.94 2006/08/08 03:22:25 al Exp $ -*- C++ -*-
+/*$Id: e_aux.h,v 26.83 2008/06/05 04:46:59 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,11 +21,10 @@
  *------------------------------------------------------------------
  * helper functions, etc., that sort of belong to circuit elements
  */
-//testing=script 2006.07.12
+//testing=script 2007.07.13
 #ifndef E_AUX_H
 #define E_AUX_H
 #include "e_node.h"
-#include "m_matrix.h"
 /*--------------------------------------------------------------------------*/
 template <class T>
 T port_impedance(const node_t& n1, const node_t& n2,
@@ -38,12 +37,11 @@ T port_impedance(const node_t& n1, const node_t& n2,
   }
   if (n1.m_() != 0) {
     zapit[n1.m_()] =  1.;
-  }else{
-    untested();
+  }else{untested();
   }
-  if (n2.m_() != 0) {
+  if (n2.m_() != 0) {untested();
     zapit[n2.m_()] = -1.;
-    untested();
+  }else{
   }
 
   mat.fbsub(zapit);

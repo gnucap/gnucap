@@ -16,7 +16,7 @@ echo "Running autoheader..."
 autoheader || exit 1
 
 echo "Running automake..."
-automake -a -c --gnu --ignore-deps || exit 1
+automake -a -c --gnu || exit 1
 
 echo "Running autoconf..."
 autoconf || exit 1

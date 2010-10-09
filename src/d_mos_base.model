@@ -1,12 +1,12 @@
-/* $Id: d_mos_base.model,v 25.92 2006/06/28 15:02:53 al Exp $ -*- C++ -*-
+/* $Id: d_mos_base.model,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@ieee.org>
+ * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,22 +28,28 @@ cc_headers {
   const double mDEFAULT_is = 1e-14;
 }
 /*--------------------------------------------------------------------------*/
-model MOS_BASE {
-  dev_type MOS;
-  base;
-  inherit DIODE;
-  keys {
-    NMOS polarity=pN;
-    PMOS polarity=pP;
+model BUILT_IN_MOS_BASE {
+  dev_type BUILT_IN_MOS;
+  hide_base;
+  inherit BUILT_IN_DIODE;
+  private_keys {
+    nmos polarity=pN;
+    pmos polarity=pP;
   }
   validate {
+    c->l_in.e_val(OPT::defl,d->scope());
+    c->w_in.e_val(OPT::defw,d->scope());
+    m->lmin.e_val(0,m->scope());
+    m->lmax.e_val(INF,m->scope());
+    m->wmin.e_val(0,m->scope());
+    m->wmax.e_val(INF,m->scope());
     return c->l_in >= m->lmin && c->l_in <= m->lmax
       && c->w_in >= m->wmin && c->w_in <= m->wmax;
   }
   independent {
     override {
       double _tnom_c "" name=TNOM default=OPT::tnom_c;
-      double fc "coef for fwd bis depl cap formula" name=FC;
+      double fc "coef for fwd bias depl cap formula" name=FC;
       double pb "junction potential" name=PB positive;
       double cjo "zero-bias jct capacitance (per area)"	name=CJ;
       double mj "grading coefficient" name=MJ;
@@ -51,35 +57,40 @@ model MOS_BASE {
       double pbsw "sidewall junction potential"
 	name=PBSW print_test="pbsw != pb";
       double mjsw "sidewall grading coefficient" name=MJSW;
-      double kf "flicker noise coefficient" name=KF print_test="kf != NA";
-      double af "flicker noise exponent" name=AF print_test="af != NA";
+      double kf "flicker noise coefficient"
+	name=KF print_test="has_good_value(kf)";
+      double af "flicker noise exponent"
+	name=AF print_test="has_good_value(af)";
     }
     raw_parameters {
       int level "dummy" name=LEVEL default=1 print_test=false;
       double wmax "max width"
 	name=WMAX positive default=INF print_test="wmax<INF";
       double wmin "min width"
-	name=WMIN positive default=0 print_test="wmin>0";
+	name=WMIN positive default=0. print_test="wmin>0";
       double lmax "max length"
 	name=LMAX positive default=INF print_test="lmax<INF";
       double lmin "min length"
-	name=LMIN positive default=0 print_test="lmin>0";
-      double is "bulk jct sat current" name=IS default=NA;
+	name=LMIN positive default=0. print_test="lmin>0";
+      double is "bulk jct sat current" name=IS default=mDEFAULT_is;
       double js "bulk jct sat current per sq meter" name=JS default=NA;
-      double rsh "D & S diffusion sheet resistance" name=RSH default=NA;
-      double rd "drain ohmic resistance" name=RD default=NA;
-      double rs "source ohmic resistance" name=RS default=NA;
+      double rsh "D & S diffusion sheet resistance"
+	name=RSH default=0.0 print_test="has_hard_value(rsh)";
+      double rd "drain ohmic resistance"
+	name=RD default=0.0 print_test="has_hard_value(rd)";
+      double rs "source ohmic resistance"
+	name=RS default=0.0 print_test="has_hard_value(rs)";
       double cbd "0-bias BD jct capacitance" name=CBD default=NA;
       double cbs "0-bias BS jct capacitance" name=CBS default=NA;
-      double cgso "GS overlap capacitance" name=CGSo default=0.0;
-      double cgdo "GD overlap capacitance" name=CGDo default=0.0;
-      double cgbo "GB overlap capacitance" name=CGBo default=0.0;
+      double cgso "GS overlap capacitance" name=CGSo alt_name=CGS default=0.0;
+      double cgdo "GD overlap capacitance" name=CGDo alt_name=CGD default=0.0;
+      double cgbo "GB overlap capacitance" name=CGBo alt_name=CGB default=0.0;
       int cmodel "which capacitor model to use (2 or 3)"
 	name=CMODEL default=0 print_test="false";
       double xl "length bias accounts for masking and etching effects"
-	name=XL alt_name=DL alt_name=LDEL default=0.0 print_test="xl!=0.0";
+	name=XL alt_name=DL\0LDEL default=0.0 print_test="xl!=0.0";
       double xw "width bias accounts for masking and etching effects"
-	name=XW alt_name=DW alt_name=WDEL default=0.0 print_test="xw!=0.0";
+	name=XW alt_name=DW\0WDEL default=0.0 print_test="xw!=0.0";
       double lmlt "length shrink factor"
 	name=LMLT default=1.0 print_test="lmlt!=1.0";
       double wmlt "width shrink factor"
@@ -87,7 +98,7 @@ model MOS_BASE {
       double del "channel length reduction each side"
 	name=DEL default=0.0 print_test="del!=0.0";
       double ld "lateral length diffusion"
-	name=LD alt_name=DLAT alt_name=LADT default=0.0;
+	name=LD alt_name=DLAT\0LADT default=0.0;
       double wd "width diffusion"
 	name=WD default=0.0 print_test="wd!=0.0";
     }
@@ -100,51 +111,55 @@ model MOS_BASE {
       bool needs_isub "" default=false;
     }
     code_post {
-      {if ((rs == NA)  &&  (rd != NA)) {
-	error(bWARNING,
+      if ((!has_hard_value(rs)) && has_hard_value(rd)) {untested();//106
+	error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
 	      long_label() + ": rd input, but not rs. setting rs = 0.\n");
-	rs = 0.;
-      }else if ((rd == NA)  &&  (rs != NA)) {
-	untested();
-	error(bWARNING, 
+	rs.set_default(0.);
+      }else if ((!has_hard_value(rd)) && has_hard_value(rs)) {untested();//109
+	error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)), 
 	      long_label() + ": rs input, but not rd. setting rd = 0.\n");
-	rd = 0.;
+	rd.set_default(0.);
       }else{
 	/* rd, rs are ok, either have both or neither */
-      }}
+      }
       
-      {if ((rsh != NA)  &&  (rd != NA)) {
-	error(bWARNING, long_label() + ": rsh - rs - rd conflict: using "
+      if (has_hard_value(rsh)
+	  &&  (has_hard_value(rd) || has_hard_value(rs))) {
+	error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
+	      long_label() + ": rsh - rs - rd conflict: using "
 	      + (((rd <= 0.)  &&  (rs <= 0.)) ? "rsh" : "rs,rd") + '\n');
-      }else if ((rsh == NA)  &&  (rd == NA)) {
-	rsh = 0.;
+      }else if (!has_hard_value(rsh)
+		&& (!has_hard_value(rd))
+		&& (!has_hard_value(rs))) {
+	// don't have anything
       }else{
 	/* rsh, rd are ok, have one or other */
-      }}
+      }
       
-      {if (is == NA  &&  js == NA) {
-	is = mDEFAULT_is;
-      }else if (is != NA  &&  js != NA) {
-	error(bWARNING, long_label() + ": is - js conflict\n");
+      if (!has_hard_value(is) && !has_hard_value(js)) {
+	/* don't have either, use default is */
+      }else if (has_hard_value(is) && has_hard_value(js)) {
+	error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
+	      long_label() + ": is - js conflict\n");
       }else{
 	/* is, js are ok, have one or other */
-      }}
+      }
     }
   }
   size_dependent {
     calculated_parameters {
       double l_eff "-23-c- actual (electrical) channel length"
-	calculate="(c->l_in != NA) 
+	calculate="(has_hard_value(c->l_in))
 		? c->l_in * m->lmlt + m->xl - 2. * (m->ld + m->del)
 		: OPT::defl";
       double w_eff "--3-c- actual (electrical) channel width"
-	calculate="(c->w_in != NA) 
+	calculate="(has_hard_value(c->w_in))
 		? c->w_in * m->wmlt + m->xw - 2. * m->wd
 		: OPT::defw";
       double ad "----c- drain area, actual"
-	calculate="(c->ad_in != NA) ? c->ad_in : OPT::defad";
+	calculate="(has_hard_value(c->ad_in)) ? c->ad_in : OPT::defad";
       double as "----c- source area, actual"
-	calculate="(c->as_in != NA) ? c->as_in : OPT::defas";
+	calculate="(has_hard_value(c->as_in)) ? c->as_in : OPT::defas";
       double cgate "-----b gate to channel capacitance"
 	calculate=NA;
       double idsat "-----b drain junction saturation current";
@@ -159,25 +174,19 @@ model MOS_BASE {
 
     }
     code_post {
-      {if (m->rsh != NA  &&  m->rd <= 0.  &&  m->rs <= 0.) {
+      if (has_hard_value(m->rd) || has_hard_value(m->rs)) {
+	rd = m->rd;
+	rs = m->rs;
+      }else{
 	rd = m->rsh * c->nrd;
 	rs = m->rsh * c->nrs;
-      }else{
-	rd = (m->rd != NA) ? m->rd : 0.;
-	rs = (m->rs != NA) ? m->rs : 0.;
-      }}
-      {if (m->js == NA  ||  ad == 0.  ||  as == 0.) {
-	{if (m->is == NA) {
-	  untested();
-	  idsat = issat = mDEFAULT_is;
-	  //error(bWARNING, "ignoring js, using default is\n");
-	}else{
-	  idsat = issat = m->is;	/* this convoluted logic */
-	}}				/* is for Spice compatibility */
-      }else{
+      }	
+      if (!has_hard_value(m->js) || ad == 0. || as == 0.) {
+	idsat = issat = m->is;	/* this convoluted logic */
+      }else{			/* is for Spice compatibility */
 	idsat = m->js * ad;
 	issat = m->js * as;
-      }}
+      }
     }
   }
 }
