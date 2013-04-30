@@ -1,4 +1,4 @@
-/*$Id: d_subckt.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: d_subckt.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -32,6 +32,7 @@
  *	- need to process the entire ring - for doesn't work
  */
 //testing=script 2006.07.17
+#include "globals.h"
 #include "d_subckt.h"
 /*--------------------------------------------------------------------------*/
 int DEV_SUBCKT::_count = -1;
@@ -171,25 +172,24 @@ void DEV_SUBCKT::expand()
   BASE_SUBCKT::expand();
   COMMON_SUBCKT* c = prechecked_cast<COMMON_SUBCKT*>(mutable_common());
   assert(c);
-  const CARD* model = find_looking_out(c->modelname());
   if (!_parent) {
+    const CARD* model = find_looking_out(c->modelname());
     if(!dynamic_cast<const MODEL_SUBCKT*>(model)) {
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
     }else{
       _parent = prechecked_cast<const MODEL_SUBCKT*>(model);
     }
   }else{
-    assert(model && model == _parent);
+    assert(find_looking_out(c->modelname()) == _parent);
   }
   
-  //assert(!c->_params._try_again);
-  assert(model->subckt());
-  assert(model->subckt()->params());
-  PARAM_LIST* pl = const_cast<PARAM_LIST*>(model->subckt()->params());
+  assert(_parent->subckt());
+  assert(_parent->subckt()->params());
+  PARAM_LIST* pl = const_cast<PARAM_LIST*>(_parent->subckt()->params());
   assert(pl);
   c->_params.set_try_again(pl);
-  assert(c->_params._try_again);
-  renew_subckt(model, this, scope(), &(c->_params));
+
+  renew_subckt(_parent, this, scope(), &(c->_params));
   subckt()->expand();
 }
 /*--------------------------------------------------------------------------*/

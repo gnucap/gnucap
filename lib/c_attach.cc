@@ -1,4 +1,4 @@
-/*$Id: c_attach.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: c_attach.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -101,6 +101,28 @@ public:
   }
 } p2;
 DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "detach|unload", &p2);
+/*--------------------------------------------------------------------------*/
+class CMD_DETACH_ALL : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST*)
+  {
+    if (CARD_LIST::card_list.is_empty()) {
+      for (std::map<std::string, void*>::iterator
+	     ii = attach_list.begin(); ii != attach_list.end(); ++ii) {
+	void* handle = ii->second;
+	if (handle) {
+	  dlclose(handle);
+	  ii->second = NULL;
+	}else{itested();
+	  throw Exception_CS("plugin not attached", cmd);
+	untested();}
+      }
+    }else{untested();
+      throw Exception_CS("detach prohibited when there is a circuit", cmd);
+    untested();}
+  }
+} p3;
+DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "detach_all", &p3);
 /*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: d_logic.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: d_logic.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -25,6 +25,7 @@
  * model:   .model mname LOGIC <args>
  */
 //testing=script,sparse 2006.07.17
+#include "globals.h"
 #include "d_subckt.h"
 #include "u_xprobe.h"
 #include "d_logic.h"

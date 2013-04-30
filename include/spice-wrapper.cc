@@ -1,4 +1,4 @@
-/* $Id: spice-wrapper.cc,v 26.136 2009/12/07 23:20:42 al Exp $ -*- C++ -*-
+/* $Id: spice-wrapper.cc,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -59,7 +59,7 @@ extern "C" {
 }
 /*--------------------------------------------------------------------------*/
 // gnucap includes
-//#include "globals.h"
+#include "globals.h"
 #include "u_xprobe.h"
 #include "d_subckt.h"
 #include "e_storag.h"
@@ -585,7 +585,7 @@ void MODEL_SPICE::Set_param_by_name(std::string Name, std::string new_value)
     }else{
     }
   }
-  if (Name != "level") {
+  if (Name != "level") {untested();
     throw Exception_No_Match(Name);
   }else{
   }
@@ -1522,7 +1522,7 @@ void DEV_SPICE::ac_load()
 	ihit[ni] = 1;
 	int nii = ni-OFFSET;
 	trace3("", ii, ni, nii);
-	ac_load_source_point(_n[ii], COMPLEX(_i0[node[ni]], _i1[node[ni]]));
+	ac_load_source_point(_n[ii], COMPLEX(_i0[ni], _i1[ni]));
 	for (int jj = 0; jj < matrix_nodes(); ++jj) {
 	  int nj = node[jj];
 	  if (nj && jhit[nj] != ni) {

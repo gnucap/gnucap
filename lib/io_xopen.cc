@@ -1,4 +1,4 @@
-/*$Id: io_xopen.cc,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: io_xopen.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -106,13 +106,7 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
     code = fopen(fname,how);
   }
   
-  if (code && fileno(code)>MAXHANDLE) {untested(); 
-    error(bWARNING, "internal error: files: %d\n", fileno(code));
-    fclose(code);
-    code = NULL;
-  }
   if (code) {
-    IO::stream[static_cast<int>(fileno(code))] = code;
   }else{itested();
     error(bWARNING, "can't open %s, %s\n", fname, strerror(errno));
   }

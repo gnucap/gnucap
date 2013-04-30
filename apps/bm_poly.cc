@@ -1,4 +1,4 @@
-/*$Id: bm_poly.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: bm_poly.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,6 +22,7 @@
  * HSPICE compatible POLY
  */
 //testing=script,complete 2005.10.06
+#include "globals.h"
 #include "u_lang.h"
 #include "e_elemnt.h"
 #include "bm.h"

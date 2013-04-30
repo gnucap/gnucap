@@ -1,4 +1,4 @@
-/*$Id: u_probe.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: u_probe.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -63,7 +63,7 @@ PROBE& PROBE::operator=(const PROBE& p)
   _hi   = p._hi;
   if (_brh) {
     _brh->inc_probes();
-  }else{untested();
+  }else{itested();
   }
   return *this;
 }
@@ -80,7 +80,7 @@ void PROBE::detach()
   }else{
   }
   _what = "";
-  _brh = 0;
+  _brh = NULL;
 }
 /*--------------------------------------------------------------------------*/
 /* label: returns a string corresponding to a possible probe point

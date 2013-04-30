@@ -1,4 +1,4 @@
-/*$Id: main.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: main.cc,v 26.138 2013/04/24 03:32:53 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -23,6 +23,9 @@
  * it all starts here
  */
 //testing=script 2006.07.14
+#include "globals.h"
+#include "u_prblst.h"
+#include "u_sim_data.h"
 #include "e_cardlist.h"
 #include "u_lang.h"
 #include "ap.h"
@@ -37,33 +40,52 @@ struct JMP_BUF{
 static void sign_on(void)
 {
   IO::mstdout <<
-    "Gnucap "  PATCHLEVEL  "\n"
-    "The Gnu Circuit Analysis Package\n"
+    "Gnucap : The Gnu Circuit Analysis Package\n"
     "Never trust any version less than 1.0\n"
-    "Copyright 1982-2009, Albert Davis\n"
+    "Copyright 1982-2013, Albert Davis\n"
     "Gnucap comes with ABSOLUTELY NO WARRANTY\n"
     "This is free software, and you are welcome\n"
     "to redistribute it under the terms of \n"
     "the GNU General Public License, version 3 or later.\n"
-    "See the file \"COPYING\" for details.\n";
+    "See the file \"COPYING\" for details.\n"
+    "main version: " PATCHLEVEL "\n"
+    "core-lib version: " << lib_version() << "\n";  
 }
 /*--------------------------------------------------------------------------*/
 static void read_startup_files(void)
 {
-  std::string name = findfile(SYSTEMSTARTFILE, SYSTEMSTARTPATH, R_OK);
-  if (name != "") {untested();
-    CMD::command("get " + name, &CARD_LIST::card_list);
-  }else{
+  {
+    std::string name = findfile(SYSTEMSTARTFILE, SYSTEMSTARTPATH, R_OK);
+    if (name != "") {untested();
+      CMD::command("include " + name, &CARD_LIST::card_list);
+    }else{
+      CMD::command(std::string("load " DEFAULT_PLUGINS), &CARD_LIST::card_list);
+    }
   }
-  name = findfile(USERSTARTFILE, USERSTARTPATH, R_OK);
-  if (name != "") {untested();
-    CMD::command("get " + name, &CARD_LIST::card_list);
-  }else{
+  {
+    std::string name = findfile(USERSTARTFILE, USERSTARTPATH, R_OK);
+    if (name != "") {untested();
+      CMD::command("include " + name, &CARD_LIST::card_list);
+    }else{
+    }
   }
-  CMD::command("clear", &CARD_LIST::card_list);
+  //CMD::command("clear", &CARD_LIST::card_list);
   if (!OPT::language) {
-    CMD::command(std::string("options lang=") + DEFAULT_LANGUAGE, &CARD_LIST::card_list);
+    OPT::language = language_dispatcher[DEFAULT_LANGUAGE];
+    
+    for(DISPATCHER<LANGUAGE>::const_iterator
+	  i=language_dispatcher.begin(); !OPT::language && i!=language_dispatcher.end(); ++i) {
+      OPT::language = i->second;
+    }
+  }else{untested();
+    // already have a language specified in a startup file
+  }
+  if (OPT::language) {
+    OPT::case_insensitive = OPT::language->case_insensitive();
+    OPT::units            = OPT::language->units();
   }else{
+    OPT::case_insensitive = false;
+    OPT::units            = uSI;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -71,11 +93,12 @@ static void read_startup_files(void)
  */
 extern "C" {
   static void sig_abrt(SIGNALARGS)
-  {itested();
-    signal(SIGINT,sig_abrt);
-    static int count = 10;
-    if (--count > 0) {itested();
-      error(bDANGER, "\n");
+  {untested();
+    signal(SIGABRT,sig_abrt);
+    static int count = 100;
+    if (--count > 0 && ENV::run_mode != rBATCH) {untested();
+      IO::error << '\n';
+      siglongjmp(env.p,1);
     }else{untested();
       exit(1);
     }
@@ -88,11 +111,11 @@ extern "C" {
  */
 extern "C" {
   static void sig_int(SIGNALARGS)
-  {
+  {itested();
     signal(SIGINT,sig_int);
     if (ENV::run_mode == rBATCH) {untested();
       exit(1);
-    }else{
+    }else{itested();
       IO::error << '\n';
       siglongjmp(env.p,1);
     }
@@ -101,8 +124,7 @@ extern "C" {
 /*--------------------------------------------------------------------------*/
 extern "C" {
   static void sig_fpe(SIGNALARGS)
-  {
-    untested();
+  {untested();
     signal(SIGFPE,sig_fpe);
     error(bDANGER, "floating point error\n");
   }
@@ -112,7 +134,7 @@ static void setup_traps(void)
 {
   signal(SIGFPE,sig_fpe);
   signal(SIGINT,sig_int);
-  signal(SIGABRT,sig_abrt);
+  //signal(SIGABRT,sig_abrt);
 }
 /*--------------------------------------------------------------------------*/
 /* finish: clean up after a command
@@ -132,17 +154,23 @@ static void process_cmd_line(int argc, const char *argv[])
 {
   for (int ii = 1;  ii < argc;  /*inside*/) {
     try {
-      if (strcasecmp(argv[ii], "-i") == 0) {itested();
-	++ii;
-	if (ii < argc) {itested();
-	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+      if (strncmp(argv[ii], "--", 2) == 0) {
+	if (ii < argc) {
+	  CS cmd(CS::_STRING, argv[ii++]+2); // command line
+	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
 	}else{untested();
 	}
-      }else if (strcasecmp(argv[ii], "-c") == 0) {itested();
+      }else if (strcasecmp(argv[ii], "-c") == 0) {
 	++ii;
-	if (ii < argc) {itested();
+	if (ii < argc) {
 	  CS cmd(CS::_STRING, argv[ii++]); // command line
 	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
+	}else{untested();
+	}
+      }else if (strcasecmp(argv[ii], "-i") == 0) {untested();
+	++ii;
+	if (ii < argc) {untested();
+	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
 	}else{untested();
 	}
       }else if (strcasecmp(argv[ii], "-b") == 0) {
@@ -158,19 +186,23 @@ static void process_cmd_line(int argc, const char *argv[])
 	  finish();
 	}
 	if (ii >= argc) {
-	  CMD::command("end", &CARD_LIST::card_list);
+	  //CMD::command("end", &CARD_LIST::card_list);
+	  throw Exception_Quit("");
 	}else{untested();
 	}
-      }else if (strcasecmp(argv[ii], "-a") == 0) {itested();
+      }else if (strcasecmp(argv[ii], "-a") == 0) {
 	++ii;
-	if (ii < argc) {itested();
+	if (ii < argc) {
 	  CMD::command(std::string("attach ") + argv[ii++], &CARD_LIST::card_list);
 	}else{untested();
 	}
       }else{itested();
 	CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
       }
+    }catch (Exception_Quit& e) {
+      throw;
     }catch (Exception& e) {itested();
+      // abort command, continue loop
       error(bDANGER, e.message() + '\n');
       finish();
     }
@@ -179,44 +211,52 @@ static void process_cmd_line(int argc, const char *argv[])
 /*--------------------------------------------------------------------------*/
 int main(int argc, const char *argv[])
 {
+  CKT_BASE::_sim = new SIM_DATA;
+  CKT_BASE::_probe_lists = new PROBE_LISTS;
+  try {
   {
     SET_RUN_MODE xx(rBATCH);
     sign_on();
     if (!sigsetjmp(env.p, true)) {
-      try {
+#if 0
+      try {untested();
+#endif
 	read_startup_files();
 	setup_traps();
 	process_cmd_line(argc,argv);
+#if 0
       }catch (Exception& e) {untested();
 	error(bDANGER, e.message() + '\n');
 	finish();		/* error clean up (from longjmp()) */
-	CMD::command("quit", &CARD_LIST::card_list);
+	//CMD::command("quit", &CARD_LIST::card_list);
 	unreachable();
 	exit(0);
       }
-    }else{
+#endif
+    }else{untested();
       finish();		/* error clean up (from longjmp()) */
-      CMD::command("quit", &CARD_LIST::card_list);
+      //CMD::command("quit", &CARD_LIST::card_list);
       exit(0);
     }
   }
-  {itested();
+  {
     SET_RUN_MODE xx(rINTERACTIVE);
     CS cmd(CS::_STDIN);
-    for (;;) {itested();
-      if (!sigsetjmp(env.p, true)) {itested();
+    for (;;) {
+      if (!sigsetjmp(env.p, true)) {
 	try {
 	  if (OPT::language) {
 	    OPT::language->parse_top_item(cmd, &CARD_LIST::card_list);
-	  }else{
+	  }else{untested();
 	    CMD::cmdproc(cmd.get_line(I_PROMPT), &CARD_LIST::card_list);
 	  }
-	}catch (Exception_End_Of_Input& e) {itested();
+	}catch (Exception_End_Of_Input& e) {
 	  error(bDANGER, e.message() + '\n');
 	  finish();
-	  CMD::command("quit", &CARD_LIST::card_list);
-	  exit(0);
-	}catch (Exception& e) {itested();
+	  //CMD::command("quit", &CARD_LIST::card_list);
+	  //exit(0);
+	  break;
+	}catch (Exception& e) {
 	  error(bDANGER, e.message() + '\n');
 	  finish();
 	}
@@ -225,7 +265,20 @@ int main(int argc, const char *argv[])
       }
     }
   }
-  unreachable();
+  }catch (Exception_Quit&) {
+  }catch (Exception& e) {untested();
+    error(bDANGER, e.message() + '\n');
+  }
+  
+  //CARD_LIST::card_list.erase_all();
+  CMD::command("clear", &CARD_LIST::card_list);
+  assert(CARD_LIST::card_list.is_empty());
+  CMD::command("detach_all", &CARD_LIST::card_list);
+  delete CKT_BASE::_probe_lists;
+  CKT_BASE::_probe_lists = NULL;
+  delete CKT_BASE::_sim;
+  CKT_BASE::_sim = NULL;
+  
   return 0;
 }
 /*--------------------------------------------------------------------------*/

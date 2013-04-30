@@ -1,4 +1,4 @@
-/*$Id: m_expression_reduce.cc,v 26.127 2009/11/09 16:06:11 al Exp $ -*- C++ -*-
+/*$Id: m_expression_reduce.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2003 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -25,6 +25,7 @@
  *	Not sure what should happen when expression is empty
  */
 //testing=script,sparse 2009.08.12
+#include "globals.h"
 #include "u_function.h"
 #include "u_parameter.h"
 /*--------------------------------------------------------------------------*/
@@ -173,7 +174,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	delete t1;
       }else{
 	// fail - one arg is unknown, push back args
-	if (strchr("+*", name()[0]) && !dynamic_cast<const Float*>(t1->data())) {untested();
+	if (strchr("+*", name()[0]) && !dynamic_cast<const Float*>(t1->data())) {
 	  // change order to enable later optimization
 	  E->push_back(t1);
 	  E->push_back(t2);
@@ -185,19 +186,19 @@ void Token_BINOP::stack_op(Expression* E)const
 	delete t;
       }
     }else if (((*t2) == (*this)) && strchr("+*", name()[0])
-	      && dynamic_cast<Token_CONSTANT*>(E->back())) {untested();
+	      && dynamic_cast<Token_CONSTANT*>(E->back())) {
       // have # + # + .. becomes result + (previous unknown, try to optimize)
       Token* t3 = E->back();
       E->pop_back();
       Token* t = op(t3, t1);
       assert(t);
-      if (t->data()) {untested();
+      if (t->data()) {
 	// success
 	E->push_back(t);
 	E->push_back(t2);
 	delete t3;
 	delete t1;
-      }else{untested();
+      }else{
 	// fail - push all
 	E->push_back(t3);
 	E->push_back(t2);

@@ -1,4 +1,4 @@
-/*$Id: s_dc.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
+/*$Id: s_dc.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,6 +22,7 @@
  * dc analysis top
  */
 //testing=script,complete 2006.07.14
+#include "globals.h"
 #include "u_status.h"
 #include "u_prblst.h"
 #include "u_cardst.h"
@@ -98,6 +99,7 @@ void DC::do_it(CS& Cmd, CARD_LIST* Scope)
   ::status.dc.reset().start();
   _sim->_temp_c = temp_c_in;
   command_base(Cmd);
+  _scope = NULL;
   ::status.dc.stop();
 }
 /*--------------------------------------------------------------------------*/
@@ -110,6 +112,7 @@ void OP::do_it(CS& Cmd, CARD_LIST* Scope)
   ::status.op.reset().start();
   _sim->_temp_c = temp_c_in;
   command_base(Cmd);
+  _scope = NULL;
   ::status.op.stop();
 }
 /*--------------------------------------------------------------------------*/
@@ -132,10 +135,10 @@ DCOP::DCOP()
   }
   
   //BUG// in SIM.  should be initialized there.
-  _sim->_genout=0.;
+  //_sim->_genout=0.;
   temp_c_in=OPT::temp_c;
   _out=IO::mstdout;
-  _sim->_uic=false;
+  //_sim->_uic=false;
 }
 /*--------------------------------------------------------------------------*/
 void DCOP::finish(void)
@@ -146,6 +149,7 @@ void DCOP::finish(void)
       _zap[ii]->dec_probes();
       _zap[ii]->precalc_first();
       _zap[ii]->precalc_last();
+      _zap[ii] = NULL;
     }else{
     }
   }

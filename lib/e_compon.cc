@@ -1,4 +1,4 @@
-/*$Id: e_compon.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: e_compon.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -377,7 +377,10 @@ COMPONENT::COMPONENT()
    _q_for_eval(-1),
    _time_by()
 {
-  _sim->uninit();
+  if (_sim) {
+    _sim->uninit();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT(const COMPONENT& p)
@@ -390,7 +393,10 @@ COMPONENT::COMPONENT(const COMPONENT& p)
    _q_for_eval(-1),
    _time_by(p._time_by)
 {
-  _sim->uninit();
+  if (_sim) {
+    _sim->uninit();
+  }else{untested();
+  }
   attach_common(p._common);
   assert(_common == p._common);
 }
@@ -398,7 +404,10 @@ COMPONENT::COMPONENT(const COMPONENT& p)
 COMPONENT::~COMPONENT()
 {
   detach_common();
-  _sim->uninit();
+  if (_sim) {
+    _sim->uninit();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 bool COMPONENT::node_is_grounded(int i)const 

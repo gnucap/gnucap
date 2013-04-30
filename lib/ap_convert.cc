@@ -1,4 +1,4 @@
-/*$Id: ap_convert.cc,v 26.125 2009/10/15 20:58:21 al Exp $ -*- C++ -*-
+/*$Id: ap_convert.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -324,6 +324,8 @@ double CS::ctof()
     power *= ((OPT::units == uSI) ? (1e15) : 1e-12);
   }else if (skip1("fF")) {
     power *= 1e-15;
+  }else if (skip1("aA")) {
+    power *= 1e-18;
   }else if (skip1("kK")) {
     power *= 1e3;
   }else if (skip1("gG")) {

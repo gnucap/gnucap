@@ -1,4 +1,4 @@
-/* $Id: s__init.cc,v 26.135 2009/12/02 09:26:53 al Exp $
+/* $Id: s__init.cc,v 26.137 2010/04/10 02:37:05 al Exp $
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -27,7 +27,9 @@
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 void SIM::command_base(CS& cmd)
-{  reset_timers();
+{  
+  assert(_sim);
+  reset_timers();
   _sim->reset_iteration_counter(_sim->_mode);
   _sim->reset_iteration_counter(iPRINTSTEP);
   
@@ -65,7 +67,11 @@ void SIM::command_base(CS& cmd)
 /*--------------------------------------------------------------------------*/
 SIM::~SIM()
 {
-  _sim->uninit();
+  //assert(!_scope);
+  if (_sim) {
+    _sim->uninit();
+  }else{itested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 void SIM::reset_timers()

@@ -1,4 +1,4 @@
-/*$Id: d_admit.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: d_admit.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -30,6 +30,7 @@
  *		_loss0 == 1/R. (mhos)
  */
 //testing=script 2006.07.17
+#include "globals.h"
 #include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
 namespace {
@@ -146,7 +147,7 @@ bool DEV_ADMITTANCE::do_tr()
 /*--------------------------------------------------------------------------*/
 void DEV_ADMITTANCE::do_ac()
 {
-  if (using_ac_eval()) {untested();
+  if (using_ac_eval()) {itested();
     ac_eval();
     _acg = _ev;
   }else{

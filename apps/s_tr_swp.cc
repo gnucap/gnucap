@@ -1,4 +1,4 @@
-/*$Id: s_tr_swp.cc,v 26.136 2009/12/08 02:03:49 al Exp $ -*- C++ -*-
+/*$Id: s_tr_swp.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -79,6 +79,8 @@ void TRANSIENT::sweep()
       _sim->_late_evalq.pop_front();
     }
     _converged = true;
+    _sim->_loadq.clear(); // fake solve, clear the queue
+    //BUG// UIC needs further analysis.
   }else{
     _converged = solve_with_homotopy(OPT::DCBIAS,_trace);
     if (!_converged) {

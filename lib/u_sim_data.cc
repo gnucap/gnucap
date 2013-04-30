@@ -1,4 +1,4 @@
-/*$Id: u_sim_data.cc,v 26.135 2009/12/02 09:26:53 al Exp $ -*- C++ -*-
+/*$Id: u_sim_data.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,10 +22,118 @@
  * aux functions associated with the SIM class
  */
 //testing=obsolete
+#include "m_wave.h"
 #include "e_node.h"
 #include "u_nodemap.h"
 #include "e_cardlist.h"
 #include "u_status.h"
+/*--------------------------------------------------------------------------*/
+SIM_DATA::SIM_DATA()
+  :_time0(0.),
+   _freq(0.),
+   _temp_c(0.),
+   _damp(0.),
+   _dtmin(0.),
+   _genout(0.),
+   _bypass_ok(true),
+   _fulldamp(false),
+   _last_time(0.),
+   _freezetime(false),
+   //_iter(),
+   _user_nodes(0),
+   _subckt_nodes(0),
+   _model_nodes(0),
+   _total_nodes(0),
+   _jomega(0.,0.),
+   _limiting(true),
+   _vmax(0.),
+   _vmin(0.),
+   _uic(false),
+   _inc_mode(tsNO),
+   //_mode(),
+   //_phase(),
+   _nm(NULL),
+   _i(NULL),
+   _v0(NULL),
+   _vt1(NULL),
+   _ac(NULL),
+   _nstat(NULL),
+   _vdc(NULL),
+   _aa(),
+   _lu(),
+   _acx(),
+   _eq(),
+   _loadq(),
+   _acceptq(),
+   _evalq1(),
+   _evalq2(),
+   _late_evalq(),
+   _evalq(NULL),
+   _evalq_uc(NULL),
+   _waves(NULL)
+{
+  _evalq = &_evalq1;
+  _evalq_uc = &_evalq2;
+}
+/*--------------------------------------------------------------------------*/
+SIM_DATA::~SIM_DATA()
+{
+  if (_nm) {untested();
+    delete [] _nm;
+    _nm = NULL;
+  }else{
+  }
+  if (_i) {untested();
+    delete [] _i;
+    _i = NULL;
+  }else{
+  }
+  if (_v0) {untested();
+    delete [] _v0;
+    _v0 = NULL;
+  }else{
+  }
+  if (_vt1) {untested();
+    delete [] _vt1;
+    _vt1 = NULL;
+  }else{
+  }
+  if (_ac) {untested();
+    delete [] _ac;
+    _ac = NULL;
+  }else{
+  }
+  if (_nstat) {untested();
+    delete [] _nstat;
+    _nstat = NULL;
+  }else{
+  }
+  if (_vdc) {untested();
+    delete [] _vdc;
+    _vdc = NULL;
+  }else{
+  }
+  //assert(_eq.empty()); //BUG// should be empty here
+  assert(_loadq.empty());
+  assert(_acceptq.empty());
+  assert(_evalq1.empty());
+  assert(_evalq2.empty());
+  assert(_late_evalq.empty());
+  if (_evalq) {
+    _evalq = NULL;
+  }else{untested();
+  }
+  if (_evalq_uc) {
+    _evalq_uc = NULL;
+  }else{untested();
+  }
+  if (_waves) {
+    delete [] _waves;
+    _waves = NULL;
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 void SIM_DATA::set_limit()
 {

@@ -1,0 +1,65 @@
+#$Id: Make1,v 26.138 2013/04/24 03:32:53 al Exp $ -*- Makefile -*-
+# Copyright (C) 2001 Albert Davis
+# Author: Albert Davis <aldavis@gnu.org>
+#
+# This file is part of "Gnucap", the Gnu Circuit Analysis Package
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#------------------------------------------------------------------------
+TARGET = gnucap
+#------------------------------------------------------------------------
+INSTALL_FILES = $(TARGET)$(TARGET_EXT)
+#------------------------------------------------------------------------
+INSTALL_DIR = $(PREFIX)/bin
+#------------------------------------------------------------------------
+DELETED =
+#------------------------------------------------------------------------
+RAW_SRCS = main.cc 
+#------------------------------------------------------------------------
+RAW_OTHER = Make1 Make2.g++ Make2.Debug Make2.mingw32 configure
+#------------------------------------------------------------------------
+RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+IMPORTED_SRCS =
+IMPORTED_HDRS =
+IMPORTED_OTHER =
+IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+GENERATED_SRCS =
+GENERATED_HDRS =
+GENERATED_OTHER = Make.aux
+GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+GENERATED_DIST = Make.depend
+IMPORTED_DIST = $(IMPORTED)
+DISTFILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+SRCS = $(IMPORTED_SRCS) $(GENERATED_SRCS) $(RAW_SRCS)
+HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
+OBJS = ${SRCS:.cc=.o}
+TARGET_DEPENDS = $(OBJS) $(RAW) 
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
+CLEANFILES = $(MOSTLYCLEANFILES)
+DISTCLEANFILES = $(CLEANFILES)
+MAINTAINERCLEANFILES = $(DISTCLEANFILES)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------

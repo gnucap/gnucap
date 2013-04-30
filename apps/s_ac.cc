@@ -1,4 +1,4 @@
-/*$Id: s_ac.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: s_ac.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,6 +22,7 @@
  * ac analysis top
  */
 //testing=script 2008.08.06
+#include "globals.h"
 #include "u_sim_data.h"
 #include "u_status.h"
 #include "u_parameter.h"
@@ -88,6 +89,7 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
   }
   _sim->_acx.unallocate();
   _sim->unalloc_vectors();
+  _scope = NULL;
   
   ::status.ac.stop();
   ::status.total.stop();

@@ -1,4 +1,4 @@
-/*$Id: c_delete.cc,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
+/*$Id: c_delete.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -27,6 +27,7 @@
 // element will reappear next time an elaboration occurs, which is 
 // usually before anything else.
 
+#include "globals.h"
 #include "d_subckt.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/

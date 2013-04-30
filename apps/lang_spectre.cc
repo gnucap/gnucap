@@ -1,4 +1,4 @@
-/*$Id: lang_spectre.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: lang_spectre.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+#include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
@@ -30,6 +31,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class LANG_SPECTRE : public LANGUAGE {
 public:
+  ~LANG_SPECTRE() {itested();}
   std::string name()const {return "spectre";}
   bool case_insensitive()const {return false;}
   UNITS units()const {return uSI;}

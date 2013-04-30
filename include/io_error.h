@@ -1,4 +1,4 @@
-/*$Id: io_error.h,v 26.130 2009/11/15 21:51:59 al Exp $ -*- C++ -*-
+/*$Id: io_error.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * data for error and exception handling
  *
  * Copyright (C) 2001 Albert Davis
@@ -98,6 +98,11 @@ struct Exception_Model_Type_Mismatch :public Exception{
 };
 struct Exception_End_Of_Input :public Exception{
   Exception_End_Of_Input(const std::string& Message) 
+    :Exception(Message) {
+  }
+};
+struct Exception_Quit :public Exception{
+  Exception_Quit(const std::string& Message) 
     :Exception(Message) {
   }
 };

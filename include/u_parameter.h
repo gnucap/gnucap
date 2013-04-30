@@ -1,4 +1,4 @@
-/*$Id: u_parameter.h,v 26.125 2009/10/15 20:58:21 al Exp $ -*- C++ -*-
+/*$Id: u_parameter.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2005 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -23,12 +23,12 @@
  * Used for spice compatible .param statements
  * and passing arguments to models and subcircuits
  */
-//testing=script 2006.07.14
+//testing=script 2010.02.07
 #ifndef U_PARAMETER_H
 #define U_PARAMETER_H
-#include "globals.h"
-#include "m_expression.h"
 #include "u_opt.h"
+#include "io_.h"
+#include "m_expression.h"
 #include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 class LANGUAGE;
@@ -40,7 +40,7 @@ private:
   std::string _s;
 public:
   explicit PARAMETER() :_v(NOT_INPUT), _s() {}
-  PARAMETER(const PARAMETER<double>& p) :_v(p._v), _s(p._s) {}
+  PARAMETER(const PARAMETER<T>& p) :_v(p._v), _s(p._s) {}
   explicit PARAMETER(T v) :_v(v), _s() {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}
@@ -192,7 +192,6 @@ void e_val(T* p, const T& def, const CARD_LIST*)
 class INTERFACE PARAM_LIST {
 private:
   mutable std::map<const std::string, PARAMETER<double> > _pl;
-public:
   PARAM_LIST* _try_again; // if you don't find it, also look here
 public:
   typedef std::map<const std::string, PARAMETER<double> >::const_iterator
@@ -200,15 +199,14 @@ public:
   typedef std::map<const std::string, PARAMETER<double> >::iterator
 		iterator;
   explicit PARAM_LIST() :_try_again(NULL) {}
-  explicit PARAM_LIST(const PARAM_LIST& p) 
-				:_pl(p._pl), _try_again(p._try_again) {}
+  explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl), _try_again(p._try_again) {}
   //explicit PARAM_LIST(PARAM_LIST* ta) :_try_again(ta) {untested();}
   ~PARAM_LIST() {}
   void	parse(CS& cmd);
   void	print(OMSTREAM&, LANGUAGE*)const;
   
   size_t size()const {return _pl.size();}
-  bool	 is_empty()const {return _pl.empty();}
+  //bool is_empty()const {untested();return _pl.empty();}
   bool	 is_printable(int)const;
   std::string name(int)const;
   std::string value(int)const;
@@ -252,7 +250,7 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
 #if 0
 template <class T>
 inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
-{
+{untested();
   const PARAM_LIST* pl = scope->params();
   return T(pl->deep_lookup(_s).e_val(def, scope));
 }
@@ -276,15 +274,18 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
     // blank string means to use default value
     _v = def;
     if (recursion > 1) {
-      error(bWARNING, "parameter " + *first_name + " has no value\n");
+      error(bWARNING, "parameter " + *first_name + " not specified, using default\n");
+      //BUG// needs to show scope
     }else{
     }
   }else if (_s != "#") {
     // anything else means look up the value
     if (recursion <= OPT::recursion) {
       _v = lookup_solve(def, scope);
-      if (_v == NOT_INPUT) {untested();itested();
-	error(bDANGER, "parameter " + *first_name + " has no value\n");
+      if (_v == NOT_INPUT) {itested();
+	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
+	//BUG// needs to show scope
+	//BUG// it is likely to have a numeric overflow resulting from the bad value
       }else{
       }
     }else{untested();
@@ -344,7 +345,7 @@ inline void PARAMETER<T>::parse(CS& cmd)
       }else{
 	_s = name;
       }
-      if (name == "NA") {
+      if (name == "NA") {untested();
         _s = "";
       }else{
       }

@@ -1,4 +1,4 @@
-/*$Id: e_cardlist.h,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -41,7 +41,6 @@ private:
   const CARD_LIST* _parent;
   mutable NODE_MAP* _nm;
   mutable PARAM_LIST* _params;
-  LANGUAGE* _language;
   std::list<CARD*> _cl;
 public:
   // internal types
@@ -77,7 +76,6 @@ public:
   // status queries
   bool is_empty()const			{return _cl.empty();}
   const CARD_LIST* parent()const	{return _parent;}
-  const LANGUAGE* language()const	{untested(); return _language;}
 
   // return an iterator
   iterator begin()			{return _cl.begin();}

@@ -1,4 +1,4 @@
-/*$Id: e_node.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
+/*$Id: e_node.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -73,7 +73,7 @@ inline LOGICVAL& LOGICVAL::set_in_transition(LOGICVAL newval)
 LOGIC_NODE::LOGIC_NODE()
   :NODE(),
    _family(0),
-   _d_iter(0),
+   _d_iter(-1), // initially d_iter is older than a_iter
    _a_iter(0),
    _final_time(0),
    _lastchange(0),

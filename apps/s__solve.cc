@@ -1,4 +1,4 @@
-/*$Id: s__solve.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: s__solve.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -41,6 +41,7 @@ static bool converged = false;
 /*--------------------------------------------------------------------------*/
 bool SIM::solve(OPT::ITL itl, TRACE trace)
 {
+  assert(_sim->_loadq.empty());
   converged = false;
   int convergedcount = 0;
   
@@ -77,12 +78,15 @@ bool SIM::solve(OPT::ITL itl, TRACE trace)
     }
     if (convergedcount <= OPT::itermin) {
       converged = false;
+    }else{
     }
       
     if (!converged || !OPT::fbbypass || _sim->_damp < .99) {
       set_damp();
       load_matrix();
       solve_equations();
+    }else{
+      _sim->_loadq.clear();
     }
   }while (!converged && !_sim->exceeds_iteration_limit(itl));
 
@@ -92,7 +96,7 @@ bool SIM::solve(OPT::ITL itl, TRACE trace)
 bool SIM::solve_with_homotopy(OPT::ITL itl, TRACE trace)
 {
   solve(itl, trace);
-  trace2("plain", ::status.iter[iSTEP], OPT::gmin);
+  trace2("plain", _sim->_iter[iSTEP], OPT::gmin);
   if (!converged && OPT::itl[OPT::SSTEP] > 0) {
     int save_itermin = OPT::itermin;
     OPT::itermin = 0;
@@ -195,8 +199,9 @@ void SIM::clear_arrays(void)
     _sim->_aa.zero();
     _sim->_aa.dezero(OPT::gmin);		/* gmin fudge */
     std::fill_n(_sim->_i, _sim->_aa.size()+1, 0);
+  }else{
   }
-  _sim->_loadq.clear();
+  assert(_sim->_loadq.empty());
 }
 /*--------------------------------------------------------------------------*/
 void SIM::evaluate_models()
@@ -246,6 +251,7 @@ void SIM::load_matrix()
     _sim->_loadq.clear();
     CARD_LIST::card_list.tr_load();
   }
+  assert(_sim->_loadq.empty());
   ::status.load.stop();
 }
 /*--------------------------------------------------------------------------*/

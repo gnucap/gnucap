@@ -1,4 +1,4 @@
-/*$Id: bm_pwl.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: bm_pwl.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,6 +22,7 @@
  * HSPICE compatible PWL
  */
 //testing=script 2005.10.06
+#include "globals.h"
 #include "u_lang.h"
 #include "e_elemnt.h"
 #include "m_interp.h"
@@ -51,7 +52,7 @@ private: // override virtual
   void		precalc_last(const CARD_LIST*);
 
   void		tr_eval(ELEMENT*)const;
-  TIME_PAIR	tr_review(COMPONENT*);
+  TIME_PAIR	tr_review(COMPONENT*)const;
   std::string	name()const		{return "pwl";}
   bool		ac_too()const		{return false;}
   bool		parse_numlist(CS&);
@@ -148,7 +149,7 @@ void EVAL_BM_PWL::tr_eval(ELEMENT* d)const
   tr_final_adjust(&(d->_y[0]), d->f_is_value());
 }
 /*--------------------------------------------------------------------------*/
-TIME_PAIR EVAL_BM_PWL::tr_review(COMPONENT* d)
+TIME_PAIR EVAL_BM_PWL::tr_review(COMPONENT* d)const
 {
   if (d->is_source()) {
     // index (x) is time
@@ -156,13 +157,13 @@ TIME_PAIR EVAL_BM_PWL::tr_review(COMPONENT* d)
     assert(dd);
     double x = dd->_y[0].x + d->_sim->_dtmin * .01;
     DPAIR here(x, BIGBIG);
-    std::vector<DPAIR>::iterator begin = _num_table.begin();
-    std::vector<DPAIR>::iterator end   = _num_table.end();
-    std::vector<DPAIR>::iterator upper = upper_bound(begin, end, here);
-    std::vector<DPAIR>::iterator lower = upper - 1;
+    std::vector<DPAIR>::const_iterator begin = _num_table.begin();
+    std::vector<DPAIR>::const_iterator end   = _num_table.end();
+    std::vector<DPAIR>::const_iterator upper = upper_bound(begin, end, here);
+    std::vector<DPAIR>::const_iterator lower = upper - 1;
     assert(x > lower->first);
     d->_time_by.min_event((x < upper->first) ? upper->first : NEVER);
-  }else{untested();
+  }else{itested();
     // index (x) is input
     // It's really needed here too, more work needed
   }

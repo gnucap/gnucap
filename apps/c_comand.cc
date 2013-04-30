@@ -1,4 +1,4 @@
-/*$Id: c_comand.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: c_comand.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -29,15 +29,6 @@
 extern std::string head;
 /*--------------------------------------------------------------------------*/
 namespace {
-/*--------------------------------------------------------------------------*/
-class CMD_OPT : public CMD {
-public:
-  void do_it(CS& cmd, CARD_LIST*) {
-    static OPT o;
-    o.command(cmd);
-  }
-} p5;
-DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "options|set|width", &p5);
 /*--------------------------------------------------------------------------*/
 class CMD_END : public CMD {
 public:
@@ -89,8 +80,8 @@ public:
   void do_it(CS&, CARD_LIST* Scope) {
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable(); break;
-    case rINTERACTIVE:	itested();
-    case rSCRIPT:
+    case rINTERACTIVE:	
+    case rSCRIPT:	
     case rBATCH:	command("clear", Scope); exit(0); break;
     case rPRESET:	untested(); /*nothing*/ break;
     }

@@ -1,4 +1,4 @@
-/*$Id: io_out.cc,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: io_out.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -39,6 +39,7 @@
 //	OMSTREAM & OMSTREAM::operator<<(const char *str)
 //	OMSTREAM & OMSTREAM::operator<<(char chr)
 /*--------------------------------------------------------------------------*/
+FILE* OMSTREAM::_stream[MAXHANDLE+1];
 unsigned OMSTREAM::_cpos[MAXHANDLE+1];         /* character counter    */
 /*--------------------------------------------------------------------------*/
 /* octal: make octal string for an int
@@ -190,10 +191,10 @@ OMSTREAM & OMSTREAM::operator<<(char chr)
   
   for (int ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
     if (_mask & mm) {
-      assert(IO::stream[ii]);
+      assert(_stream[ii]);
       if (chr=='\b') {untested();
 	--_cpos[ii];
-	fflush(IO::stream[ii]);
+	fflush(_stream[ii]);
       }else if (count) {
 	++_cpos[ii];
       }else{itested();
@@ -201,18 +202,18 @@ OMSTREAM & OMSTREAM::operator<<(char chr)
       
       if (chr=='\n') {
 	_cpos[ii] = 0;
-	fflush(IO::stream[ii]);
+	fflush(_stream[ii]);
       }else if (chr=='\r') {itested();
 	if (_cpos[ii] == 0) {untested();
 	  suppress = true;
 	}else{itested();
 	  _cpos[ii] = 0;
-	  fflush(IO::stream[ii]);
+	  fflush(_stream[ii]);
 	}
       }else{
       }
       if (!suppress) {
-	fputc(chr,IO::stream[ii]);
+	fputc(chr,_stream[ii]);
       }else{itested();
       }
     }else{

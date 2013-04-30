@@ -1,4 +1,4 @@
-/*$Id: u_lang.h,v 26.109 2009/02/02 06:39:10 al Exp $ -*- C++ -*-
+/*$Id: u_lang.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -38,7 +38,7 @@ public:
   void new__instance(CS& cmd, MODEL_SUBCKT* owner, CARD_LIST* Scope);
 
 public:
-  virtual ~LANGUAGE() {}
+  virtual ~LANGUAGE();
   virtual std::string name()const = 0;
   virtual bool case_insensitive()const = 0;
   virtual UNITS units()const = 0;

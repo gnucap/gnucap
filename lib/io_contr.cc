@@ -1,4 +1,4 @@
-/*$Id: io_contr.cc,v 26.110 2009/05/28 15:32:04 al Exp $ -*- C++ -*-
+/*$Id: io_contr.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -126,8 +126,6 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
       cmd >> command;
       to_pipe = popen(command.c_str(), "w");
       assert(to_pipe);
-
-      IO::stream[static_cast<int>(fileno(to_pipe))] = to_pipe;
       (*out).attach(to_pipe);
 
       IO::formaat = ftos_EXP;

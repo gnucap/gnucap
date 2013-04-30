@@ -1,4 +1,4 @@
-/*$Id: u_prblst.h,v 26.136 2009/12/07 23:20:42 al Exp $ -*- C++ -*-
+/*$Id: u_prblst.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -52,10 +52,6 @@ public:
   const_iterator end()const	{return bag.end();}
   iterator begin()		{return bag.begin();}
   iterator end()		{return bag.end();}
-
-  virtual void	open(CS&)	{incomplete();}
-  virtual void	send(OMSTREAM, double)	{incomplete();}
-  virtual void	close()		{incomplete();}
 private:
   void	  erase(iterator b, iterator e) {bag.erase(b,e);}
   void	  push_new_probe(const std::string& param, const CKT_BASE* object);
@@ -65,11 +61,11 @@ private:
 /*--------------------------------------------------------------------------*/
 class INTERFACE PROBE_LISTS {
 public:
- static PROBELIST alarm[sCOUNT]; // list of alarm probes
- static PROBELIST plot[sCOUNT];  // list of plot probes
- static PROBELIST print[sCOUNT]; // list of print probes
- static PROBELIST store[sCOUNT]; // list of probes to store for postproc
- static void purge(CKT_BASE*);
+  PROBELIST alarm[sCOUNT]; // list of alarm probes
+  PROBELIST plot[sCOUNT];  // list of plot probes
+  PROBELIST print[sCOUNT]; // list of print probes
+  PROBELIST store[sCOUNT]; // list of probes to store for postproc
+  void purge(CKT_BASE*);
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

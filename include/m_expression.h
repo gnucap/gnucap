@@ -1,4 +1,4 @@
-/*$Id: m_expression.h,v 26.127 2009/11/09 16:06:11 al Exp $ -*- C++ -*-
+/*$Id: m_expression.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2003 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -51,7 +51,7 @@ public:
   const std::string& aRgs()const {return _aRgs;}
   const std::string  full_name()const {return name() + aRgs();}
   virtual void	     stack_op(Expression*)const {unreachable();}
-  bool operator==(const Token& P) {untested();return (typeid(*this)==typeid(P))
+  bool operator==(const Token& P) {return (typeid(*this)==typeid(P))
       && (data()==P.data()) && (name()==P.name()) && (aRgs()==P.aRgs());}
 };
 /*--------------------------------------------------------------------------*/
@@ -64,6 +64,7 @@ public:
   Token* clone()const {untested();return new Token_SYMBOL(*this);}
   void stack_op(Expression*)const;
 };
+/*--------------------------------------------------------------------------*/
 class Token_BINOP : public Token
 {
 public:
@@ -74,6 +75,7 @@ public:
   Token* op(const Token* t1, const Token* t2)const;
   void stack_op(Expression*)const;
 };
+/*--------------------------------------------------------------------------*/
 class Token_STOP : public Token
 {
 public:
@@ -83,6 +85,7 @@ public:
   Token* clone()const {return new Token_STOP(*this);}
   void stack_op(Expression*)const;
 };
+/*--------------------------------------------------------------------------*/
 class Token_PARLIST : public Token
 {
 public:
@@ -92,6 +95,7 @@ public:
   Token* clone()const {untested();return new Token_PARLIST(*this);}
   void stack_op(Expression*)const;
 };
+/*--------------------------------------------------------------------------*/
 class Token_UNARY : public Token
 {
 public:
@@ -102,6 +106,7 @@ public:
   Token* op(const Token* t1)const;
   void stack_op(Expression*)const;
 };
+/*--------------------------------------------------------------------------*/
 class Token_CONSTANT : public Token
 {
 public:

@@ -1,4 +1,4 @@
-/*$Id: c_file.cc,v 26.86 2008/07/07 22:31:11 al Exp $ -*- C++ -*-
+/*$Id: c_file.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -44,7 +44,11 @@ public:
       cmd >> file_name;
       CS file(CS::_INC_FILE, file_name);
       for (;;) {
-	OPT::language->parse_top_item(file, Scope);
+	if (OPT::language) {
+	  OPT::language->parse_top_item(file, Scope);
+	}else{untested();
+	  CMD::cmdproc(file.get_line(""), Scope);
+	}
       }
     }catch (Exception_File_Open& e) {
       cmd.warn(bDANGER, here, e.message() + '\n');
