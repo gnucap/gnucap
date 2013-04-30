@@ -25,7 +25,7 @@ sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 
 #----------------------------------------------------------------
 echo "CCFLAGS = -fPIC \\" >Make.ccflags
-echo "LIBS =  \\" >Make.libs
+echo "LIBS = -ldl \\" >Make.libs
     
 rm -f a.out
 g++ -lreadline -ltermcap test_readline.cc
