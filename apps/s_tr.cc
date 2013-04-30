@@ -1,4 +1,4 @@
-/*$Id: s_tr.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: s_tr.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,12 +22,15 @@
  * tran and fourier commands -- top
  */
 //testing=script,complete 2007.11.22
+#include "globals.h"
 #include "u_sim_data.h"
 #include "u_status.h"
 #include "s_tr.h"
-static TRANSIENT p5;
-DISPATCHER<CMD>::INSTALL      d5(&command_dispatcher, "transient", &p5);
-DISPATCHER<CKT_BASE>::INSTALL d6(&status_dispatcher,  "transient", &p5);
+namespace {
+  TRANSIENT p5;
+  DISPATCHER<CMD>::INSTALL      d5(&command_dispatcher, "transient", &p5);
+  DISPATCHER<CKT_BASE>::INSTALL d6(&status_dispatcher,  "transient", &p5);
+}
 /*--------------------------------------------------------------------------*/
 int TRANSIENT::steps_accepted_;
 int TRANSIENT::steps_rejected_;
@@ -39,6 +42,7 @@ void TRANSIENT::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->set_command_tran();
   ::status.tran.reset().start();
   command_base(Cmd);
+  _scope = NULL;
   ::status.tran.stop();
 }
 /*--------------------------------------------------------------------------*/

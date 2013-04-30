@@ -1,4 +1,4 @@
-/*$Id: u_opt2.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
+/*$Id: u_opt2.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,6 +22,8 @@
  * command and functions to access OPT class
  */
 //testing=script,complete 2006.07.14
+#include "globals.h"
+#include "c_comand.h"
 #include "u_lang.h"
 #include "l_compar.h"
 #include "ap.h"
@@ -158,8 +160,8 @@ bool OPT::set_values(CS& cmd)
       || Get(cmd, "edit",	   &edit)
       || Get(cmd, "recur{sion}",   &recursion)
       || (Get(cmd, "lang{uage}",   &language)
-	  && ((case_insensitive = language->case_insensitive()),
-	      (units = language->units()), true))
+	  && ((case_insensitive = ((language) ? (language->case_insensitive()) : false)),
+	      (units = ((language) ? (language->units()) : uSI)), true))
       || Get(cmd, "insensitive",   &case_insensitive)
       || (cmd.umatch("units {=}") &&
 	  (ONE_OF
@@ -315,6 +317,17 @@ void OPT::print(OMSTREAM& o)
   //o << "  lvlcod=" << lvlcod;
   //o << "  lvltim=" << lvltim;
   //o << "  pivrel=" << pivrel;
+}
+/*--------------------------------------------------------------------------*/
+namespace {
+  class CMD_OPT : public CMD {
+  public:
+    void do_it(CS& cmd, CARD_LIST*) {
+      static OPT o;
+      o.command(cmd);
+    }
+  } p5;
+  DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "options|set|width", &p5);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

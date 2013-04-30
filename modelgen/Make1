@@ -1,4 +1,4 @@
-#$Id: Make1,v 26.81 2008/05/27 05:33:43 al Exp $ -*- Makefile -*-
+#$Id: Make1,v 26.138 2013/04/24 03:21:58 al Exp $ -*- Makefile -*-
 #
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
@@ -22,29 +22,27 @@
 #------------------------------------------------------------------------
 TARGET = gnucap-modelgen
 #------------------------------------------------------------------------
-DELETED =
+INSTALL_FILES = $(TARGET)$(TARGET_EXT)
 #------------------------------------------------------------------------
+INSTALL_DIR = $(PREFIX)/bin
+#------------------------------------------------------------------------
+DELETED =
 #------------------------------------------------------------------------
 RAW_SRCS = \
 mg_main.cc mg_error.cc mg_in.cc mg_out_h.cc mg_out_dump.cc \
 mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc
 #------------------------------------------------------------------------
-RAW_HDRS = mg_.h mg_out.h declare.h
+RAW_HDRS = mg_.h mg_out.h
 #------------------------------------------------------------------------
-RAW_OTHER = \
-configure.old Make1 \
-Makefile.am
+RAW_OTHER = Make1 Make2.g++ Make2.Debug Make2.mingw32 configure
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-IMPORTED_SRCS = \
-ap_construct.cc ap_convert.cc ap_get.cc ap_match.cc ap_skip.cc \
-l_trim.cc u_opt1.cc io_out.cc io.cc
-IMPORTED_HDRS = \
-ap.h io_.h io_error.h io_trace.h l_lib.h md.h patchlev.h u_opt.h mode.h
-IMPORTED_OTHER = Makefile.in \
-Make2.g++ Make2.Debug Make2.mingw32 Make3 Makefile.template
+IMPORTED_SRCS =
+IMPORTED_HDRS =
+NOT_IMPORTED_HDRS =
+IMPORTED_OTHER =
 IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
@@ -59,7 +57,7 @@ IMPORTED_DIST = $(IMPORTED)
 DISTFILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
+SRCS = $(RAW_SRCS) $(GENERATED_SRCS)
 HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
 OBJS = ${SRCS:.cc=.o}
 TARGET_DEPENDS = $(OBJS) $(RAW)

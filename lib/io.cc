@@ -1,4 +1,4 @@
-/*$Id: io.cc,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: io.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -30,4 +30,3 @@ OMSTREAM IO::plotout;
 bool	IO::plotset(false);
 int	IO::formaat(0);
 bool	IO::incipher(false);
-FILE*	IO::stream[MAXHANDLE+1] = {0, stdout, stderr};

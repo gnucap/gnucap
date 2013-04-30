@@ -1,4 +1,4 @@
-/*$Id: c__cmd.cc,v 26.130 2009/11/15 21:51:59 al Exp $ -*- C++ -*-
+/*$Id: c__cmd.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -53,7 +53,7 @@ void CMD::cmdproc(CS& cmd, CARD_LIST* scope)
   // Map possible short names to full ones.
   // If this if/else block is removed, the only loss is the short names.
   // Although it looks like it can be used to make aliases, don't.
-  if (cmd.umatch("'|*|#|//|\""))	{itested(); s = "xxxxcomment";}
+  if (cmd.umatch("'|*|#|//|\""))	{itested();  s = "xxxxcomment";}
   else if (cmd.umatch("b{uild} "))      {itested();  s = "build";}
   else if (cmd.umatch("del{ete} "))     {            s = "delete";}
   else if (cmd.umatch("fo{urier} "))    {            s = "fourier";}
@@ -69,8 +69,8 @@ void CMD::cmdproc(CS& cmd, CARD_LIST* scope)
   else if (cmd.umatch("te{mperature} ")){itested();  s = "temperature";}
   else if (cmd.umatch("tr{ansient} "))  {            s = "transient";}
   else if (cmd.umatch("!"))		{	     s = "system";}
-  else if (cmd.umatch("<"))		{untested(); s = "<";}
-  else if (cmd.umatch(">"))		{untested(); s = ">";}
+  else if (cmd.umatch("<"))		{itested();  s = "<";}
+  else if (cmd.umatch(">"))		{itested();  s = ">";}
   else{ /* no shortcut available */
     cmd >> s;
     didsomething = false;
@@ -114,8 +114,8 @@ void CMD::command(const std::string& cs, CARD_LIST* scope)
   CMD* c = command_dispatcher[s];
   if (c) {
     c->do_it(cmd, scope);
-  }else{itested();
-    throw Exception("bad internal command: " + s);
+  }else{
+    error(bDEBUG, "bad internal command: " + s + '\n');
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-/*$Id: bm.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
+/*$Id: bm.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,6 +22,7 @@
  * behavioral modeling action base
  */
 //testing=script 2006.07.13
+#include "globals.h"
 #include "u_lang.h"
 #include "e_elemnt.h"
 #include "bm.h"

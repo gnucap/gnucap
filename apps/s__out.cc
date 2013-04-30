@@ -1,4 +1,4 @@
-/*$Id: s__out.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: s__out.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -33,19 +33,19 @@
  */
 const PROBELIST& SIM::alarmlist()const
 {
-  return PROBE_LISTS::alarm[_sim->_mode];
+  return _probe_lists->alarm[_sim->_mode];
 }
 const PROBELIST& SIM::plotlist()const
 {
-  return PROBE_LISTS::plot[_sim->_mode];
+  return _probe_lists->plot[_sim->_mode];
 }
 const PROBELIST& SIM::printlist()const
 {
-  return PROBE_LISTS::print[_sim->_mode];
+  return _probe_lists->print[_sim->_mode];
 }
 const PROBELIST& SIM::storelist()const
 {
-  return PROBE_LISTS::store[_sim->_mode];
+  return _probe_lists->store[_sim->_mode];
 }
 /*--------------------------------------------------------------------------*/
 /* SIM::out: output the data, "keep" for ac reference

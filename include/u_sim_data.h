@@ -1,4 +1,4 @@
-/*$Id: u_sim_data.h,v 26.133 2009/11/26 05:02:28 al Exp $ -*- C++ -*-
+/*$Id: u_sim_data.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2009 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -80,10 +80,8 @@ struct INTERFACE SIM_DATA {
   std::deque<CARD*>* _evalq;   /* pointer to evalq to process */
   std::deque<CARD*>* _evalq_uc;/* pointer to evalq under construction */
   WAVE *_waves;		/* storage for waveforms "store" command*/
-  SIM_DATA() {
-    _evalq = &_evalq1;
-    _evalq_uc = &_evalq2;
-  }
+  SIM_DATA();
+  ~SIM_DATA();
   bool is_first_expand() {return !_nstat;}
   void alloc_hold_vectors(); /* s__init.cc */
   void alloc_vectors();

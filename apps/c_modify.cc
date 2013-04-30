@@ -1,4 +1,4 @@
-/*$Id: c_modify.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
+/*$Id: c_modify.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,6 +20,7 @@
  * 02110-1301, USA.
  */
 //testing=script,sparse 2006.07.17
+#include "globals.h"
 #include "e_elemnt.h"
 #include "u_cardst.h"
 #include "c_comand.h"

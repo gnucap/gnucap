@@ -1,4 +1,4 @@
-/*$Id: m_base.h,v 26.127 2009/11/09 16:06:11 al Exp $ -*- C++ -*-
+/*$Id: m_base.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2003 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -199,7 +199,7 @@ public:
   Base* geq(const String*)const 	{untested();return NULL;}
   Base* not_equal(const String*)const	{untested();return NULL;}
   Base* equal(const String*)const	{untested();return NULL;}
-  Base* add(const String*)const 	{untested();return NULL;}
+  Base* add(const String*)const 	{           return NULL;}
   Base* multiply(const String*)const	{untested();return NULL;}
   Base* subtract(const String*)const	{untested();return NULL;}
   Base* r_subtract(const String*)const	{untested();return NULL;}
@@ -235,7 +235,7 @@ public:
   Base* geq(const String* X)const	{untested();assert(X); return new Float((_data >= X->_data)?1.:0.);}
   Base* not_equal(const String* X)const	{untested();assert(X); return new Float((_data != X->_data)?1.:0.);}
   Base* equal(const String* X)const	{untested();assert(X); return new Float((_data == X->_data)?1.:0.);}
-  Base* add(const String* X)const	{untested();assert(X); return new String(_data + X->_data);}
+  Base* add(const String*)const		{	     return NULL;}
   Base* multiply(const String*)const	{untested(); return NULL;}
   Base* subtract(const String*)const	{untested(); return NULL;}
   Base* r_subtract(const String*)const	{untested(); return NULL;}
@@ -247,8 +247,8 @@ public:
   Base* leq(const Base* X)const		{untested();return ((X) ? (X->geq(this))       : (NULL));}
   Base* geq(const Base* X)const		{untested();return ((X) ? (X->leq(this))       : (NULL));}
   Base* not_equal(const Base* X)const	{untested();return ((X) ? (X->not_equal(this)) : (NULL));}
-  Base* equal(const Base* X)const	{untested();return ((X) ? (X->equal(this))	    : (NULL));}
-  Base* add(const Base* X)const 	{untested();return ((X) ? (X->add(this))       : (NULL));}
+  Base* equal(const Base* X)const	{untested();return ((X) ? (X->equal(this))     : (NULL));}
+  Base* add(const Base* X)const 	{	    return ((X) ? (X->add(this))       : (NULL));}
   Base* multiply(const Base* X)const	{untested();return ((X) ? (X->multiply(this))  : (NULL));}
   Base* subtract(const Base* X)const	{untested();return ((X) ? (X->r_subtract(this)): (NULL));}
   Base* r_subtract(const Base* X)const	{untested();return ((X) ? (X->subtract(this))  : (NULL));}
@@ -261,7 +261,7 @@ public:
   Base* geq(const Float*)const  	{untested();return NULL;}
   Base* not_equal(const Float*)const	{untested();return NULL;}
   Base* equal(const Float*)const	{untested();return NULL;}
-  Base* add(const Float*)const  	{untested();return NULL;}
+  Base* add(const Float*)const  	{           return NULL;}
   Base* multiply(const Float*)const	{untested();return NULL;}
   Base* subtract(const Float*)const	{untested();return NULL;}
   Base* r_subtract(const Float*)const	{untested();return NULL;}

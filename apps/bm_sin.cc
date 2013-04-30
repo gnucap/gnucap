@@ -1,4 +1,4 @@
-/*$Id: bm_sin.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: bm_sin.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,6 +22,7 @@
  * SPICE compatible SIN
  */
 //testing=script,complete 2005.10.07
+#include "globals.h"
 #include "e_elemnt.h"
 #include "u_lang.h"
 #include "l_denoise.h"
@@ -61,7 +62,7 @@ private: // override vitrual
 
   void		precalc_first(const CARD_LIST*);
   void		tr_eval(ELEMENT*)const;
-  TIME_PAIR	tr_review(COMPONENT*);
+  TIME_PAIR	tr_review(COMPONENT*)const;
   std::string	name()const		{return "sin";}
   bool		ac_too()const		{return false;}
   bool		parse_numlist(CS&);
@@ -169,7 +170,7 @@ void EVAL_BM_SIN::tr_eval(ELEMENT* d)const
   tr_finish_tdv(d, ev);
 }
 /*--------------------------------------------------------------------------*/
-TIME_PAIR EVAL_BM_SIN::tr_review(COMPONENT* d)
+TIME_PAIR EVAL_BM_SIN::tr_review(COMPONENT* d)const
 {
   double reltime = ioffset(d->_sim->_time0) + d->_sim->_dtmin * .01;
 

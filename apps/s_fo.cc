@@ -1,4 +1,4 @@
-/*$Id: s_fo.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: s_fo.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -24,6 +24,7 @@
  * outputs results of fft
  */
 //testing=script 2007.11.21
+#include "globals.h"
 #include "u_sim_data.h"
 #include "u_status.h"
 #include "m_phase.h"
@@ -105,7 +106,8 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->unalloc_vectors();
   _sim->_lu.unallocate();
   _sim->_aa.unallocate();
-  
+  _scope = NULL;
+
   ::status.four.stop();
   ::status.total.stop();
   

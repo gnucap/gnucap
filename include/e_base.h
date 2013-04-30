@@ -1,4 +1,4 @@
-/*$Id: e_base.h,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: e_base.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -31,6 +31,7 @@ class XPROBE;
 class WAVE;
 class OMSTREAM;
 class SIM_DATA;
+class PROBE_LISTS;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CKT_BASE {
 private:
@@ -38,6 +39,7 @@ private:
   std::string	_label;
 public:
   static SIM_DATA* _sim;
+  static PROBE_LISTS* _probe_lists;
   //--------------------------------------------------------------------
 protected: // create and destroy
   explicit CKT_BASE()			  :_probes(0), _label() {}

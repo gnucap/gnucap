@@ -1,4 +1,4 @@
-/*$Id: bm_value.cc,v 26.130 2009/11/15 21:51:59 al Exp $ -*- C++ -*-
+/*$Id: bm_value.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -23,6 +23,7 @@
  * used with tc, etc, and conditionals
  */
 //testing=script 2005.10.07
+#include "globals.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
 static EVAL_BM_VALUE p1(CC_STATIC);

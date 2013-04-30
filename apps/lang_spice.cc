@@ -1,4 +1,4 @@
-/*$Id: lang_spice.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: lang_spice.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,14 +20,13 @@
  * 02110-1301, USA.
  */
 //testing=script 2007.07.13
+#include "globals.h"
 #include "u_status.h"
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
 #include "d_subckt.h"
 #include "u_lang.h"
-
-// header hack
 #include "d_logic.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
@@ -77,6 +76,7 @@ private: // local
 /*--------------------------------------------------------------------------*/
 class LANG_SPICE : public LANG_SPICE_BASE {
 public:
+  ~LANG_SPICE() {itested();}
   std::string name()const {return "spice";}
   bool case_insensitive()const {return true;}
   UNITS units()const {return uSPICE;}
@@ -87,6 +87,7 @@ DISPATCHER<LANGUAGE>::INSTALL
 /*--------------------------------------------------------------------------*/
 class LANG_ACS : public LANG_SPICE_BASE {
 public:
+  ~LANG_ACS() {itested();}
   std::string name()const {return "acs";}
   bool case_insensitive()const {return true;}
   UNITS units()const {return uSPICE;}
@@ -577,6 +578,7 @@ void LANG_SPICE_BASE::parse_module_body(CS& cmd, MODEL_SUBCKT* x, CARD_LIST* Sco
     }
   }catch (Exception_End_Of_Input& e) {
   }
+  
 }
 /*--------------------------------------------------------------------------*/
 COMPONENT* LANG_SPICE_BASE::parse_instance(CS& cmd, COMPONENT* x)
@@ -753,7 +755,7 @@ void LANG_SPICE_BASE::print_type(OMSTREAM& o, const COMPONENT* x)
   assert(x);
   if (x->print_type_in_spice()) {
     o << "  " << x->dev_type();
-  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {itested();
+  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {untested();
     o << "  " << x->dev_type();
   }else{
     // don't print type
@@ -913,7 +915,7 @@ static void getmerge(CS& cmd, Skip_Header skip_header, CARD_LIST* Scope)
 	file.get_line("lib " + section_name + '>');
 	if (file.umatch(".lib " + section_name + ' ')) {
 	  lang_spice.parse_module_body(file, NULL, Scope, section_name,
-			lang_spice.NO_EXIT_ON_BLANK, ".endl {" + section_name + "}");
+			       lang_spice.NO_EXIT_ON_BLANK, ".endl {" + section_name + "}");
 	}else{
 	  // skip it
 	}
@@ -970,7 +972,9 @@ public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {untested();
     SET_RUN_MODE xx(rPRESET);
+      untested();
     getmerge(cmd, NO_HEADER, Scope);
+      untested();
   }
 } p4;
 DISPATCHER<CMD>::INSTALL d4(&command_dispatcher, ".merge|merge", &p4);

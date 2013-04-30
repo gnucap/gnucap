@@ -1,4 +1,4 @@
-/*$Id: d_cap.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: d_cap.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -30,6 +30,7 @@
  * m.x = volts, m.c0 = amps,    acg = m.c1 = mhos
  */
 //testing=script 2006.07.17
+#include "globals.h"
 #include "e_storag.h"
 /*--------------------------------------------------------------------------*/
 namespace {

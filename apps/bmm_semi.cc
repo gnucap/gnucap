@@ -1,4 +1,4 @@
-/*$Id: bmm_semi.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: bmm_semi.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -23,6 +23,7 @@
  * Spice3 compatible "semiconductor resistor and capacitor"
  */
 //testing=script 2006.07.13
+#include "globals.h"
 #include "u_lang.h"
 #include "e_model.h" 
 #include "bm.h"
@@ -214,7 +215,7 @@ void EVAL_BM_SEMI_BASE::expand(const COMPONENT* d)
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::precalc_first(const CARD_LIST* Scope)
-{
+{untested();
   assert(Scope);
   EVAL_BM_ACTION_BASE::precalc_first(Scope);
   _length.e_val(_default_length, Scope);
@@ -517,7 +518,7 @@ MODEL_SEMI_RESISTOR::MODEL_SEMI_RESISTOR()
 }
 /*--------------------------------------------------------------------------*/
 MODEL_SEMI_RESISTOR::MODEL_SEMI_RESISTOR(const MODEL_SEMI_RESISTOR& p)
-  :MODEL_SEMI_BASE(),
+  :MODEL_SEMI_BASE(p),
    _rsh(p._rsh)
 {
 }

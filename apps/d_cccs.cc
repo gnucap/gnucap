@@ -1,4 +1,4 @@
-/*$Id: d_cccs.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: d_cccs.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -24,6 +24,7 @@
  * Then adjust the gain to account for the sense element.
  */
 //testing=script,complete 2008.10.09
+#include "globals.h"
 #include "e_ccsrc.h"
 /*--------------------------------------------------------------------------*/
 namespace {

@@ -1,4 +1,4 @@
-/*$Id: measure_cross.cc,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
+/*$Id: measure_cross.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2008 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,6 +20,7 @@
  * 02110-1301, USA.
  *------------------------------------------------------------------
  */
+#include "globals.h"
 #include "u_parameter.h"
 #include "m_wave.h"
 #include "u_function.h"

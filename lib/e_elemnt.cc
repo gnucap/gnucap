@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -192,6 +192,7 @@ void ELEMENT::tr_iwant_matrix_passive()
 
   assert(_n[OUT1].m_() != INVALID_NODE);
   assert(_n[OUT2].m_() != INVALID_NODE);
+  //BUG// assert can fail as a result of some parse errors
 
   _sim->_aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
   _sim->_lu.iwant(_n[OUT1].m_(),_n[OUT2].m_());
@@ -207,6 +208,7 @@ void ELEMENT::tr_iwant_matrix_active()
   assert(_n[OUT2].m_() != INVALID_NODE);
   assert(_n[IN1].m_() != INVALID_NODE);
   assert(_n[IN2].m_() != INVALID_NODE);
+  //BUG// assert can fail as a result of some parse errors
 
   //_sim->_aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
   _sim->_aa.iwant(_n[OUT1].m_(),_n[IN1].m_());

@@ -1,0 +1,29 @@
+#!/bin/sh
+# configure for stuff that just needs to be installed
+
+#-------------  Stuff added to enable --prefix  --------------
+if test "x$1" != "x"; then
+    # echo Found input parameter -- $1
+    #  Now see if the parameter is --prefix=
+    if test "x${1#--prefix=}" != "x$1"; then
+        # echo "Found --prefix in input args.  Setting prefix directory."
+        prefix=${1#--prefix=}
+    else
+        # echo "Found unrecognized parameter in input args."
+        #  Just use the default prefix dir.
+        prefix=/usr/local
+    fi
+ 
+else
+    # echo "No input parameter found."
+    #  Just use the default prefix dir
+    prefix=/usr/local
+fi
+#----------------------------------------------------------------
+echo "" >Make2
+echo "PREFIX = " $prefix >>Make2
+echo "" >>Make2
+
+cat Make1 Make2 ../Make3 >Makefile
+
+exit 0

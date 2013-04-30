@@ -1,4 +1,4 @@
-/*$Id: e_base.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: e_base.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -36,13 +36,18 @@ static char fix_case(char c)
 double CKT_BASE::tr_probe_num(const std::string&)const {return NOT_VALID;}
 XPROBE CKT_BASE::ac_probe_ext(const std::string&)const {return XPROBE(NOT_VALID, mtNONE);}
 /*--------------------------------------------------------------------------*/
-SIM_DATA sim_data;
-SIM_DATA* CKT_BASE::_sim = &sim_data;
+SIM_DATA* CKT_BASE::_sim = NULL; 
+PROBE_LISTS* CKT_BASE::_probe_lists = NULL;
 /*--------------------------------------------------------------------------*/
 CKT_BASE::~CKT_BASE()
 {
   trace1("~CKT_BASE", _probes);
-  PROBE_LISTS::purge(this);
+  if (_probes == 0) {
+  }else if (!_probe_lists) {untested();
+  }else if (!_sim) {untested();
+  }else{
+    _probe_lists->purge(this);
+  }
   trace1("", _probes);
   assert(_probes==0);
 }
@@ -121,8 +126,8 @@ double CKT_BASE::ac_probe_num(const std::string& what)const
 {
   int ii = 0;
   for (PROBELIST::const_iterator
-       p  = PROBE_LISTS::store[_sim->_mode].begin();
-       p != PROBE_LISTS::store[_sim->_mode].end();
+       p  = _probe_lists->store[_sim->_mode].begin();
+       p != _probe_lists->store[_sim->_mode].end();
        ++p) {
     if (wmatch(p->label(), probe_name)) {
       return &(_sim->_waves[ii]);

@@ -1,4 +1,4 @@
-/*$Id: e_compon.h,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: e_compon.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -109,8 +109,8 @@ public:
 
   virtual void	tr_eval(ELEMENT*)const;
   virtual void	ac_eval(ELEMENT*)const;
-  virtual TIME_PAIR tr_review(COMPONENT*) {return TIME_PAIR(NEVER,NEVER);}
-  virtual void  tr_accept(COMPONENT*)	{}
+  virtual TIME_PAIR tr_review(COMPONENT*)const {return TIME_PAIR(NEVER,NEVER);}
+  virtual void  tr_accept(COMPONENT*)const	{}
   virtual bool	has_tr_eval()const	{untested(); return false;}
   virtual bool	has_ac_eval()const	{untested(); return false;}
 

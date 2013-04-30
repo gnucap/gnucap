@@ -1,4 +1,4 @@
-/*$Id: func_core.cc,v 26.127 2009/11/09 16:06:11 al Exp $ -*- C++ -*-
+/*$Id: func_core.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2008 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,6 +20,7 @@
  * 02110-1301, USA.
  *------------------------------------------------------------------
  */
+#include "globals.h"
 #include "u_parameter.h"
 #include "u_function.h"
 /*--------------------------------------------------------------------------*/
@@ -129,7 +130,7 @@ public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const
   {
     PARAMETER<double> x, y, z;
-    Cmd >> x >> y;
+    Cmd >> x >> y >> z;
     x.e_val(NOT_INPUT, Scope);
     y.e_val(NOT_INPUT, Scope);
     z.e_val(NOT_INPUT, Scope);

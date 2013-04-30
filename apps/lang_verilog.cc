@@ -1,4 +1,4 @@
-/*$Id: lang_verilog.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: lang_verilog.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+#include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
@@ -34,6 +35,7 @@ class LANG_VERILOG : public LANGUAGE {
   enum {INACTIVE = -1};
 public:
   LANG_VERILOG() : arg_count(INACTIVE) {}
+  ~LANG_VERILOG() {itested();}
   std::string name()const {return "verilog";}
   bool case_insensitive()const {return false;}
   UNITS units()const {return uSI;}
@@ -133,7 +135,7 @@ static void parse_args_instance(CS& cmd, CARD* x)
     }else{
       // by order
       int index = 1;
-      while (cmd.is_alnum()) {
+      while (cmd.is_alnum() || cmd.match1("+-.")) {
 	unsigned here = cmd.cursor();
 	try{
 	  std::string value = cmd.ctos(",)", "", "");
@@ -190,7 +192,7 @@ static void parse_ports(CS& cmd, COMPONENT* x)
     }
     cmd >> ')';
   }else{untested();
-    cmd.warn(bDANGER, "'(' required");
+    cmd.warn(bDANGER, "'(' required (parse ports)");
   }
 }
 /*--------------------------------------------------------------------------*/

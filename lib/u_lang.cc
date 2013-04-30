@@ -1,4 +1,4 @@
-/*$Id: u_lang.cc,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
+/*$Id: u_lang.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -19,12 +19,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+#include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
 #include "d_subckt.h"
 #include "e_model.h"
 #include "u_lang.h"
+/*--------------------------------------------------------------------------*/
+LANGUAGE::~LANGUAGE()
+{itested();
+  if (OPT::language == this) {itested();
+    OPT::language = NULL;
+  }else{itested();
+  }
+}
 /*--------------------------------------------------------------------------*/
 void LANGUAGE::parse_top_item(CS& cmd, CARD_LIST* Scope)
 {
@@ -174,6 +183,16 @@ bool Get(CS& cmd, const std::string& key, LANGUAGE** val)
     if (lang) {
       *val = lang;
     }else{
+      std::string choices;
+      for(DISPATCHER<LANGUAGE>::const_iterator
+	  i = language_dispatcher.begin(); i != language_dispatcher.end(); ++i) {
+	LANGUAGE* c = i->second;
+	if (c) {
+	  choices += c->name() + ' ';
+	}else{
+	}
+      }
+      cmd.warn(bWARNING, "need a language (" + choices + ")");
     }
     return true;
   }else{

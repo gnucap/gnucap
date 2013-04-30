@@ -1,0 +1,58 @@
+#!/bin/sh
+# configure for executable
+
+mkdir -p O
+
+#-------------  Stuff added to enable --prefix  --------------
+if test "x$1" != "x"; then
+    # echo Found input parameter -- $1
+    #  Now see if the parameter is --prefix=
+    if test "x${1#--prefix=}" != "x$1"; then
+        # echo "Found --prefix in input args.  Setting prefix directory."
+        prefix=${1#--prefix=}
+    else
+        # echo "Found unrecognized parameter in input args."
+        #  Just use the default prefix dir.
+        prefix=/usr/local
+    fi
+ 
+else
+    # echo "No input parameter found."
+    #  Just use the default prefix dir
+    prefix=/usr/local
+fi
+
+sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
+
+#----------------------------------------------------------------
+echo "CCFLAGS = \\" >Make.ccflags
+echo "LIBS = \\" >Make.libs
+echo "-lgnucap \\" >>Make.libs
+
+echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
+echo "" >>Make.libs
+echo "PREFIX = " $prefix >>Make.libs
+echo "" >>Make.libs
+
+cat <<CAT_EOF >Make.sys
+#------------------------------------------------------------------------
+VPATH = .:..
+CCC = g++
+TARGET_EXT =
+
+LDFLAGS = -rdynamic \
+-L../../lib/O
+
+.SUFFIXES : .o .cc
+.cc.o:; \$(CCC) \$(CCFLAGS) -c \$<
+#------------------------------------------------------------------------
+\$(TARGET): \$(OBJS)
+	rm -f \$@
+	\$(CCC) \$(CCFLAGS) \$(OBJS) -o \$@ \$(LIBS) \$(LDFLAGS)
+#------------------------------------------------------------------------
+CAT_EOF
+
+cat Make.ccflags Make.libs Make.sys >Make2
+cat Make1 Make2 ../Make3 Make.depend >O/Makefile
+
+exit 0

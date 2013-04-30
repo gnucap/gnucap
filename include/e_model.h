@@ -1,4 +1,4 @@
-/*$Id: e_model.h,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: e_model.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -29,6 +29,7 @@
 /*--------------------------------------------------------------------------*/
 // external
 class COMPONENT;
+class COMMON_COMPONENT;
 /*--------------------------------------------------------------------------*/
 class SDP_CARD {
 private:

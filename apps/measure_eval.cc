@@ -1,4 +1,4 @@
-/*$Id: measure_eval.cc,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
+/*$Id: measure_eval.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
  * Copyright (C) 2008 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,8 +21,7 @@
  *------------------------------------------------------------------
  */
 #include "u_parameter.h"
-//#include "globals.h"
-//#include "m_wave.h"
+#include "globals.h"
 #include "u_function.h"
 /*--------------------------------------------------------------------------*/
 namespace {

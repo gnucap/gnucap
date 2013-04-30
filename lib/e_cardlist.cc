@@ -1,4 +1,4 @@
-/*$Id: e_cardlist.cc,v 26.136 2009/12/08 02:03:49 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -33,8 +33,7 @@
 CARD_LIST::CARD_LIST()
   :_parent(NULL),
    _nm(new NODE_MAP),
-   _params(NULL),
-   _language(NULL)
+   _params(NULL)
 {
 }
 /*--------------------------------------------------------------------------*/
@@ -42,8 +41,7 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
 		     const CARD_LIST* scope, PARAM_LIST* p)
   :_parent(NULL),
    _nm(new NODE_MAP),
-   _params(NULL),
-   _language(NULL)
+   _params(NULL)
 {
   assert(model);
   assert(model->subckt());

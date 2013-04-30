@@ -1,4 +1,4 @@
-/*$Id: md.h,v 26.112 2009/07/24 00:10:32 al Exp $ -*- C++ -*-
+/*$Id: md.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -45,6 +45,7 @@
 #include <csignal>
 #include <cstring>
 #include <iostream>
+#include <ctime>
 // types
 #include <complex>
 #include <string>
@@ -76,6 +77,7 @@ enum {
 #if defined(__WIN32__)
 #define	ENDDIR		"/\\"
 #define PATHSEP		';'
+#define DEFAULT_PLUGINS "libgnucap-default-plugins.dll"
 #define SYSTEMSTARTFILE	"gnucap.rc"
 #define SYSTEMSTARTPATH	OS::getenv("PATH")
 #define USERSTARTFILE	"gnucap.rc"
@@ -86,6 +88,7 @@ enum {
 #else
 #define	ENDDIR		"/"
 #define PATHSEP		':'
+#define DEFAULT_PLUGINS "libgnucap-default-plugins.so"
 #define SYSTEMSTARTFILE	"gnucap.rc"
 #define SYSTEMSTARTPATH	OS::getenv("PATH")
 #define USERSTARTFILE	".gnucaprc"

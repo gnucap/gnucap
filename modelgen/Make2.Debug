@@ -1,4 +1,4 @@
-#$Id: Make2.Debug,v 26.97 2008/10/11 03:13:53 al Exp $ -*- Makefile -*-
+#$Id: Make2.Debug,v 26.138 2013/04/24 03:21:58 al Exp $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -21,14 +21,14 @@
 #------------------------------------------------------------------------
 VPATH = .:..
 
-# Standard base for g++, debugging, a little optimization
+# Standard base for g++, debugging, no optimization
 # Running the program will give a spew of line markers for debugging.
 
 CCC = g++
 
 CCFLAGS = \
 -DHAVE_LIBREADLINE \
--DUNIX  -g -O0 -I. -I.. -DTRACE_UNTESTED \
+-DUNIX  -g -O0 -I. -I../../include -DTRACE_UNTESTED \
 -Wall -Wextra \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
 -Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
@@ -38,9 +38,11 @@ CCFLAGS = \
 #last line not in 4.1
 
 LIBS = \
--lreadline -ltermcap \
+-lgnucap \
+-lreadline -ltermcap 
 
-LDFLAGS = -rdynamic
+LDFLAGS = -rdynamic  \
+-L../../lib/O-DEBUG
 
 %.SUFFIXES:
 .SUFFIXES: .o .cc
@@ -48,7 +50,7 @@ LDFLAGS = -rdynamic
 #------------------------------------------------------------------------
 $(TARGET): $(TARGET_DEPENDS)
 	rm -f $@
-	$(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+	$(CCC)  $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3

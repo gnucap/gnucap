@@ -1,4 +1,4 @@
-/*$Id: bm_cond.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: bm_cond.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -24,6 +24,7 @@
  * An array "_func" stores handles to commons specific to each mode.
  */
 //testing=script 2006.07.13
+#include "globals.h"
 #include "e_elemnt.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
@@ -54,9 +55,9 @@ private: // override virtual
 	{assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_eval(d);}
   void  ac_eval(ELEMENT*d)const
 	{assert(_func[s_AC]);	   _func[s_AC]->ac_eval(d);}
-  TIME_PAIR tr_review(COMPONENT*d)
+  TIME_PAIR tr_review(COMPONENT*d)const
 	{assert(_func[d->_sim->sim_mode()]); return _func[d->_sim->sim_mode()]->tr_review(d);}
-  void  tr_accept(COMPONENT*d)
+  void  tr_accept(COMPONENT*d)const
 	{assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_accept(d);}
   std::string name()const		{itested(); return "????";}
 };

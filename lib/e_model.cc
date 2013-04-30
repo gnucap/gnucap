@@ -1,4 +1,4 @@
-/*$Id: e_model.cc,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
+/*$Id: e_model.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -30,7 +30,10 @@ MODEL_CARD::MODEL_CARD(const COMPONENT* p)
    _component_proto(p),
    _tnom_c(NOT_INPUT)
 {
-  _sim->uninit();
+  if (_sim) {
+    _sim->uninit();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 MODEL_CARD::MODEL_CARD(const MODEL_CARD& p)
@@ -38,12 +41,18 @@ MODEL_CARD::MODEL_CARD(const MODEL_CARD& p)
    _component_proto(p._component_proto),
    _tnom_c(p._tnom_c)
 {
-  _sim->uninit();
+  if (_sim) {
+    _sim->uninit();
+  }else{untested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 MODEL_CARD::~MODEL_CARD()
 {
-  _sim->uninit(); // disconnect models from devices
+  if (_sim) {
+    _sim->uninit();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_CARD::set_param_by_index(int i, std::string& value, int offset)
