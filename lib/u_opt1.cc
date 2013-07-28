@@ -118,3 +118,4 @@ int	OPT::itl[OPT::ITL_COUNT] = {
 		1,	/* 7=worst case iteration limit */
 		99	/* 8=trace nonconvergence start iteration */
 };
+// vim:ts=8:sw=2:noet:

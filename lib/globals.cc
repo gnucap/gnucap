@@ -64,3 +64,4 @@ int swp_type[swp_nest_max];	/* type of sweep (log or linear)	*/
 int swp_nest;			/* sweep nesting (recursion) level	*/
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+// vim:ts=8:sw=2:noet:

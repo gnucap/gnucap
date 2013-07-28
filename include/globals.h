@@ -45,3 +45,4 @@ extern INTERFACE DISPATCHER<CKT_BASE> status_dispatcher;
 extern INTERFACE DISPATCHER<CKT_BASE> help_dispatcher;
 extern INTERFACE DISPATCHER<PROBELIST> probe_dispatcher;
 extern INTERFACE std::string head;
+// vim:ts=8:sw=2:noet:
