@@ -1,0 +1,20 @@
+#!/bin/sh
+if [ $# -eq 0 ] ; then
+    echo "usage: ./test gnucap \"testcases\" targetdir refdir"
+    echo "usual testcases is \"\", usual refdir is =="
+    echo "example: ./test gnucap \"\" myversion =="
+    exit 1
+else
+    \mkdir $3
+    \rm -f $3/$2.diffs
+    for ii in $2*.ckt
+    do
+	echo $ii
+	echo $ii >>$3/$2.diffs
+	$1 -b $ii |tail -n +12 >$3/$ii.out
+	diff -ui $4/$ii.out $3/$ii.out >>$3/$2.diffs || echo "**** $ii fails ****"
+    done
+    echo done with $1 $2 >>$3/$2.diffs
+    echo done with $1 $2
+    exit 0
+fi

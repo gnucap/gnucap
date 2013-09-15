@@ -1,0 +1,30 @@
+# semiconductor "resistor" test 
+@@#
+@@@:../../apps/bmm_semi.cc:327:precalc_last
+@@#
+@@@:../../apps/bmm_semi.cc:333:precalc_last
+r2: t1: effective width is negative or zero
+@@#
+@@@:../../apps/bmm_semi.cc:218:precalc_first
+r2: t1: effective length is negative or zero
+@@#
+@@@:../../apps/bmm_semi.cc:218:precalc_first
+r2: t1: effective length is negative or zero
+#           v(1)       v(2)       r(r1)      r(r2)     
+r2: short circuit
+r2: short circuit
+r2: short circuit
+r2: short circuit
+ 27.        2.         0.         1.K        10.u      
+@@#
+@@@:../../apps/bmm_semi.cc:218:precalc_first
+r2: t1: effective length is negative or zero
+#Freq       v(1)       v(2)      
+r2: short circuit
+ 0.         5.         50.n      
+@@#
+@@@:../../apps/bmm_semi.cc:218:precalc_first
+v1 ( 1 0 )  DC  2.  AC  5.
+r1 ( 1 2 )  1.K
+r2 ( 2 0 ) t1 l=pl w=pw
+.model t1 r ( rsh=1k narrow=1u defw=NA( 1.u) tc1=NA( 0.) tc2=NA( 0.) tnom=NA( 27.))

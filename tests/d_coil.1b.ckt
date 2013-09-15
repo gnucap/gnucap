@@ -1,0 +1,43 @@
+Mutual inductance test circuit
+.param L1 = .56
+.param L2 = .79
+.param K12 = .75
+.param Rsource = 22
+.param Rload = 75
+.param M12 = 'K12*sqrt(L1*L2)'
+.eval M12
+.eval M12/L2
+.eval M12/L1
+
+v1 1 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r1a 1 2 'Rsource'
+k1 l1a l1b 'K12'
+l1a 2 0 'L1'
+l1b 3 0 'L2'
+r1b 3 0 'Rload'
+
+v2 4 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r2a 4 5 'Rsource'
+l2a 5 6 'L1-M12'
+l2b 6 0 'M12'
+l2c 6 7 'L2-M12'
+r2b 7 0 'Rload'
+
+v3 8 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r3a 8 9 'Rsource'
+l3a 10 0 'L1'
+l3b 11 0 'L2'
+e3a 9 10 11 0 'M12/L2'
+e3b 12 11 10 0 'M12/L1'
+r3b 12 0 'Rload'
+
+.options nopage
+.list
+.width out=132
+.print ac v(2) v(3) v(5) v(7) v(9) v(12)
+.ac dec 2 .1 1k
+.print tran v(2) v(3) v(5) v(7) v(9) v(12)
+.tran .001 .01 0 .0001
+.list
+.status notime
+.end

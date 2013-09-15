@@ -1,0 +1,15 @@
+# expression test -- eval
+.option list
+.eval (1+3)
+.eval exp(1)
+.eval exp(1-1)
+.eval exp(-1)
+.eval exp(-1)*exp(1)
+.eval exp(2)
+.eval log(2)
+.eval exp(log(2))
+.eval log(exp(2))
+.eval log(exp(abs(-2)))
+.eval pow(abs(-3), abs(-2))
+.eval na()
+.eval na(3)

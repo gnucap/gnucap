@@ -1,0 +1,20 @@
+' a test of the fault and modify commands
+V1 1 0 1
+R1 1 2 1
+R2 2 0 1
+.option trace
+.print op v(nodes)
+.op
+.fault R1=10
+.op
+.modify R2=10
+.op
+.fault R2=100
+.op
+.fault V1=.001
+.op
+.list
+.unfault
+.list
+.op
+.end

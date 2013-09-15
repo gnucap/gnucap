@@ -1,0 +1,19 @@
+# PWL sources 
+v1 ( 1 0 ) pwl( 0., 0.  1., 1.  4., 2.  9., 0.  16., 4.  25., 0. )
+#Time       v(1)       next(v1)   event(v1) 
+ 0.         0.         0.         1.        
+ 0.3        0.3        0.6        1.        
+ 0.6        0.6        0.9        1.        
+ 0.9        0.9        1.2        1.        
+ 1.         1.         1.1        4.        
+ 1.1        1.0333     0.         4.        
+ 4.         2.         0.         9.        
+ 9.         0.         0.         16.       
+ 16.        4.         0.         25.       
+ 25.        0.         0.         0.        
+ 30.        0.         0.         0.        
+Gnucap   System status
+iterations: op=0, dc=0, tran=32, fourier=0, total=43
+transient timesteps: accepted=11, rejected=0, total=11
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%

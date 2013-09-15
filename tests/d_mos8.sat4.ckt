@@ -1,0 +1,31 @@
+nmos n gate, saturated
+M1   0  2  2  4  cmosn  l= .9u  w= .9u  nrd= 1.  nrs= 1. 
+Vds   3  0  5.
+Rds   2  3  100.K
+Vbs   4  0  -1.234875
+.model cmosn  nmos ( level=8  alpha0=.001)
+*>.print op v(nodes) iter(0)
+*>.op
+*>.print op i(v*) ps(v*)
+*>.op
+*>.print op id(m1) vgs(m1) vds(m1) vbs(m1) vth(m1) vdsat(m1)
+*>.op
+*>.print op gm(m1) gds(m1) gmb(m1) cbd(m1) cbs(m1)
+*>.op
+*>.print op cgsovl(m1) cgdovl(m1) cgbovl(m1) cgate(m1) region(m1)
+*>.op
+*>.print op cgs(m1) cgd(m1) cgb(m1) vgst(m1) von(m1)
+*>.op
+*>.print op cgst(m1) cgdt(m1) cgbt(m1) is(m1) ig(m1) ib(m1)
+*>.op
+*>.print op p(m1) pd(m1) ps(m1) ids(m1) idstray(m1) iderror(m1)
+*>.op
+*>.print op vdm(m1) vgm(m1) vbm(m1) vsm(m1)
+*>.op
+*>.print op vd(m1) vg(m1) vb(m1) vs(m1)
+*>.op
+*>.print op idbcpoly(m1) idb(m1) gdbds(m1) gdbgs(m1) gdbbs(m1)
+*>.op
+*>.print op isbcpoly(m1) isb(m1) gsbsd(m1) gsbgd(m1) gsbbd(m1)
+.op
+.end

@@ -1,0 +1,723 @@
+1lin.ckt
+ap_ctof.2.ckt
+ap_ctof.ckt
+basic.ckt
+bm_complex.1.ckt
+bm_complex.1a.ckt
+bm_complex.2.ckt
+bm_complex.3.ckt
+bm_complex.4.ckt
+bm_cond.1.ckt
+bm_cond.2.ckt
+bm_cond.3.ckt
+bm_exp.1.ckt
+bm_exp.1p.ckt
+bm_exp.2.ckt
+bm_exp.3.ckt
+bm_exp.3p.ckt
+bm_exp.4p.ckt
+bm_exp.5p.ckt
+bm_fit.0.1.ckt
+bm_fit.1.1.ckt
+bm_fit.2.1.ckt
+bm_fit.2.2.ckt
+bm_fit.2.3.ckt
+bm_fit.2.4.ckt
+bm_fit.3.1.ckt
+bm_fit.3.2.ckt
+bm_fit.3.3.ckt
+bm_poly.1.ckt
+bm_poly.2.ckt
+bm_posy.1.ckt
+bm_pulse.1.ckt
+bm_pulse.2.ckt
+bm_pulse.3.ckt
+bm_pwl.1.ckt
+bm_pwl.2.ckt
+bm_pwl.3.ckt
+bm_pwl.4.ckt
+bm_pwl.5.ckt
+bm_sffm.1.ckt
+bm_sffm.2.ckt
+bm_sffm.3.ckt
+--- ==/bm_sffm.3.ckt.out	2010-07-08 04:08:30.000000000 -0400
++++ 130913/bm_sffm.3.ckt.out	2013-09-14 01:56:59.000000000 -0400
+@@ -464,7 +464,7 @@
+ # v(3)      --------- actual ---------  -------- relative --------
+ #freq       value        dB      phase  value        dB      phase
+  5.K        2.717f    -291.32   13.266  2.717f    -291.32   13.266
+- 6.K        2.137f    -293.40  -20.748  2.137f    -293.40  -20.748
++ 6.K        2.137f    -293.40  -20.747  2.137f    -293.40  -20.747
+  7.K        3.7106f   -288.61   -9.558  3.7106f   -288.61   -9.558
+  8.K        3.6984f   -288.64   -4.956  3.6984f   -288.64   -4.956
+  9.K        10.005f   -280.00  -12.537  10.005f   -280.00  -12.537
+bm_sffm.4.ckt
+bm_sffm.5.ckt
+bm_sffm.6.ckt
+bm_sin.1.ckt
+bm_sin.2.ckt
+bm_sin.3.ckt
+bm_sin.4.ckt
+bm_sin.5.ckt
+bm_sin.6.ckt
+bm_sin.7.ckt
+bm_sin.8.ckt
+bm_sin.9.ckt
+bm_table.1.1.ckt
+bm_table.2.1.ckt
+bm_table.2.2.ckt
+bm_table.2.3.ckt
+bm_table.2.4.ckt
+bm_table.3.1.ckt
+bm_table.3.2.ckt
+bm_table.3.3.ckt
+bm_table.error1.ckt
+bm_tanh.1.ckt
+bm_tanh.2.ckt
+bmm_cap.1.ckt
+bmm_cap.2.ckt
+bmm_cap.3.ckt
+bmm_cap.4.ckt
+bmm_cap.5.ckt
+bmm_res.1.ckt
+bmm_res.1p.ckt
+bmm_res.2.ckt
+bmm_res.2p.ckt
+bmm_res.3.ckt
+bmm_res.3p.ckt
+bmm_res.4.ckt
+bmm_res.4p.ckt
+bmm_res.5.ckt
+bmm_res.5p.ckt
+c.ckt
+c_delete.2.ckt
+c_delete.3.ckt
+c_delete.4.ckt
+c_delete.5.ckt
+c_delete.6.ckt
+c_delete.7.ckt
+c_delete.ckt
+c_eval.1.ckt
+c_getckt.ckt
+c_lib.1.ckt
+c_list.ckt
+c_measure.1.ckt
+c_measure.2.ckt
+c_modify.ckt
+cc.ckt
+charge-cons.ckt
+--- ==/charge-cons.ckt.out	2010-07-08 04:08:30.000000000 -0400
++++ 130913/charge-cons.ckt.out	2013-09-14 01:57:00.000000000 -0400
+@@ -514,8 +514,8 @@
+ M1 ( 0 2 0 0 )  m  l=50.u w=50.u nrd=1. nrs=1.
+ .model m nmos2 ( level=2 kp=20.u nfs=0. neff=1. ucrit=49.K uexp=0.1 delta=0.
+ + phi=0.6 tox=110.n nsub=2.2E+15 nss=32.G xj=2.95u uo=575. tpg=1 tnom=NA( 27.)
+-+ fc=0.5 pb=0.8 cj=NA( 0.) mj=0.5 cjsw=0. mjsw=0.33 is=10.f rsh=0. cbd=4.5f
+-+ cbs=4.5f cgso=1.5n cgdo=1.5n cgbo=0. ld=2.4485u)
+++ fc=0.5 pb=0.8 cj=NA( 0.) mj=0.5 cjsw=0. mjsw=0.33 kf=NA( 0.) af=NA( 0.)
+++ is=10.f rsh=0. cbd=4.5f cbs=4.5f cgso=1.5n cgdo=1.5n cgbo=0. ld=2.4485u)
+ Gnucap   System status
+ iterations: op=3, dc=0, tran=2589, fourier=0, total=3099
+ transient timesteps: accepted=507, rejected=0, total=507
+charge-cons2.ckt
+charge-cons3.ckt
+current.ckt
+d_bjt-diffpair-ccs.ckt
+d_bjt-diffpair-cjc.ckt
+d_bjt-diffpair-dc.ckt
+d_bjt-diffpair-nocap.ckt
+d_bjt-diffpair-tf.ckt
+d_bjt-diffpair-tr.ckt
+d_bjt-diffpair-tran.ckt
+d_bjt-pnp.ckt
+d_bjt-rca3040.ckt
+d_bjt-rtlinv.ckt
+d_bjt-schmitt-bypass.ckt
+d_bjt-schmitt-nobypass.ckt
+d_bjt.2.ckt
+d_bjt.ckt
+d_bjt.error1.ckt
+d_cap.1.ckt
+d_cap.2.ckt
+d_cap.3.ckt
+d_cap.3a.ckt
+d_cap.4.ckt
+d_cap.5.ckt
+d_cap.6.ckt
+d_cap.ic1.ckt
+d_cap.ic2.ckt
+d_cap.ic4.ckt
+d_cccs.1.ckt
+d_cccs.2.ckt
+d_cccs.3.ckt
+d_cccs.4.ckt
+d_cccs.5.ckt
+d_cccs.6.ckt
+d_ccvs.1.ckt
+d_ccvs.2.ckt
+d_ccvs.3.ckt
+d_coil.1.ckt
+d_coil.1a.ckt
+d_coil.1b.ckt
+d_coil.1c.ckt
+d_coil.1d.ckt
+d_coil.1e.ckt
+d_coil.2.ckt
+d_coil.3.ckt
+d_coil.4.ckt
+d_coil.5.ckt
+d_coil.error1.ckt
+d_coil.error2.ckt
+d_coil.error3.ckt
+d_coil.error4.ckt
+d_coil.error5.ckt
+d_coil.m3.ckt
+d_coil.m3a.ckt
+d_diode.1.ckt
+d_diode.10.ckt
+d_diode.10a.ckt
+d_diode.11.ckt
+d_diode.11a.ckt
+d_diode.11b.ckt
+d_diode.11c.ckt
+d_diode.11d.ckt
+d_diode.12.ckt
+d_diode.2.ckt
+d_diode.3.ckt
+d_diode.4.ckt
+d_diode.5.ckt
+d_diode.6.ckt
+d_diode.7.ckt
+d_diode.8.ckt
+d_diode.9.ckt
+d_diode.error1.ckt
+d_logic.1.ckt
+d_logic.2.ckt
+d_logic.3.ckt
+--- ==/d_logic.3.ckt.out	2010-07-08 04:08:32.000000000 -0400
++++ 130913/d_logic.3.ckt.out	2013-09-14 01:57:01.000000000 -0400
+@@ -2,7 +2,7 @@
+ #           v(1)       v(2)       v(3)       v(4)       v(5)       v(6)       v(7)       v(8)       logic(1)   logic(2)   logic(3)   logic(4)   logic(5)   logic(6)   logic(7)   logic(8)  
+  27.        0.         5.         0.         5.         0.         5.         0.         5.         0.01       3.         0.         3.         0.         3.         0.         4.21      
+ Gnucap   System status
+-iterations: op=4, dc=0, tran=0, fourier=0, total=4
++iterations: op=3, dc=0, tran=0, fourier=0, total=3
+ transient timesteps: accepted=0, rejected=0, total=0
+ nodes: user=8, subckt=0, model=0, total=8
+ dctran density=53.1%, ac density=53.1%
+d_logic.4.ckt
+--- ==/d_logic.4.ckt.out	2010-07-08 04:08:32.000000000 -0400
++++ 130913/d_logic.4.ckt.out	2013-09-14 01:57:01.000000000 -0400
+@@ -8,7 +8,7 @@
+ #           v(1)       v(2)       v(3)       v(4)       v(5)       v(6)       v(7)       v(8)       logic(1)   logic(2)   logic(3)   logic(4)   logic(5)   logic(6)   logic(7)   logic(8)  
+  27.        0.         5.         0.         5.         0.         5.         0.         5.         0.01       3.         0.         3.         0.         3.         0.         4.21      
+ Gnucap   System status
+-iterations: op=4, dc=0, tran=0, fourier=0, total=4
++iterations: op=3, dc=0, tran=0, fourier=0, total=3
+ transient timesteps: accepted=0, rejected=0, total=0
+ nodes: user=8, subckt=0, model=0, total=8
+ dctran density=12.5%, ac density=12.5%
+d_logic.5.ckt
+--- ==/d_logic.5.ckt.out	2010-07-08 04:08:32.000000000 -0400
++++ 130913/d_logic.5.ckt.out	2013-09-14 01:57:01.000000000 -0400
+@@ -8,7 +8,7 @@
+ #           v(1)       v(2)       v(3)       v(4)       v(5)       v(6)       v(7)       v(8)       logic(1)   logic(2)   logic(3)   logic(4)   logic(5)   logic(6)   logic(7)   logic(8)  
+  27.        0.         5.         0.         5.         0.         5.         0.         5.         0.01       3.         0.         3.         0.         3.         0.         4.21      
+ Gnucap   System status
+-iterations: op=4, dc=0, tran=0, fourier=0, total=4
++iterations: op=3, dc=0, tran=0, fourier=0, total=3
+ transient timesteps: accepted=0, rejected=0, total=0
+ nodes: user=8, subckt=0, model=0, total=8
+ dctran density=12.5%, ac density=12.5%
+d_logic.6.ckt
+--- ==/d_logic.6.ckt.out	2010-07-08 04:08:32.000000000 -0400
++++ 130913/d_logic.6.ckt.out	2013-09-14 01:57:01.000000000 -0400
+@@ -8,7 +8,7 @@
+ #           v(1)       v(2)       v(3)       v(4)       v(5)       v(6)       v(7)       v(8)       logic(1)   logic(2)   logic(3)   logic(4)   logic(5)   logic(6)   logic(7)   logic(8)  
+  27.        0.         5.         0.         5.         0.         5.         0.         5.         0.01       3.         0.         3.         0.         3.         0.         4.21      
+ Gnucap   System status
+-iterations: op=4, dc=0, tran=0, fourier=0, total=4
++iterations: op=3, dc=0, tran=0, fourier=0, total=3
+ transient timesteps: accepted=0, rejected=0, total=0
+ nodes: user=8, subckt=0, model=0, total=8
+ dctran density=12.5%, ac density=12.5%
+d_logic.7.ckt
+--- ==/d_logic.7.ckt.out	2010-07-08 04:08:32.000000000 -0400
++++ 130913/d_logic.7.ckt.out	2013-09-14 01:57:01.000000000 -0400
+@@ -20,7 +20,7 @@
+ '.print tran v(nodes) l(nodes) 
+ '.tran 0 10 .05  watch 
+ Gnucap   System status
+-iterations: op=9, dc=0, tran=0, fourier=0, total=9
++iterations: op=8, dc=0, tran=0, fourier=0, total=8
+ transient timesteps: accepted=0, rejected=0, total=0
+ nodes: user=8, subckt=0, model=0, total=8
+ dctran density=12.5%, ac density=12.5%
+d_logic.error1.ckt
+d_logic_nand-dc.ckt
+d_logic_tr_ab1.ckt
+d_logic_tr_ab2.ckt
+d_logic_tr_an1.ckt
+d_logic_tr_an2.ckt
+d_logic_tr_db1.ckt
+--- ==/d_logic_tr_db1.ckt.out	2010-07-08 04:08:33.000000000 -0400
++++ 130913/d_logic_tr_db1.ckt.out	2013-09-14 01:57:02.000000000 -0400
+@@ -1,6 +1,6 @@
+ '1 inverters as gates 
+ #           v(1)       l(1)       v(2)       l(2)       iter(0)    control(0)
+- 27.        0.         0.01       5.         3.         4.         0.        
++ 27.        0.         0.01       5.         3.         3.         0.        
+ #Time       v(1)       l(1)       v(2)       l(2)       iter(0)    control(0)
+  0.         2.5        1.41       5.         3.         3.         1.        
+  500.n      2.5079     1.41       5.         3.         3.         9.        
+@@ -230,7 +230,7 @@
+  0.00995    1.7275     1.31       5.         3.         3.         1.        
+  0.01       2.5        1.41       5.         3.         3.         1.        
+ Gnucap   System status
+-iterations: op=4, dc=0, tran=681, fourier=0, total=912
++iterations: op=3, dc=0, tran=681, fourier=0, total=911
+ transient timesteps: accepted=227, rejected=0, total=227
+ nodes: user=3, subckt=0, model=0, total=3
+ dctran density=100.0%, ac density=100.0%
+d_logic_tr_db2.ckt
+--- ==/d_logic_tr_db2.ckt.out	2010-07-08 04:08:33.000000000 -0400
++++ 130913/d_logic_tr_db2.ckt.out	2013-09-14 01:57:02.000000000 -0400
+@@ -1,6 +1,6 @@
+ '1 inverters as gates 
+ #           v(1)       l(1)       v(2)       l(2)       v(3)       l(3)       iter(0)    control(0)
+- 27.        0.         0.01       5.         3.         0.         0.         4.         0.        
++ 27.        0.         0.01       5.         3.         0.         0.         3.         0.        
+ #Time       v(1)       l(1)       v(2)       l(2)       v(3)       l(3)       iter(0)    control(0)
+  0.         2.5        1.41       5.         3.         0.         0.         3.         1.        
+  500.n      2.5079     1.41       5.         3.         0.         0.         3.         9.        
+@@ -250,7 +250,7 @@
+  0.00995    1.7275     1.31       5.         3.         0.         0.         3.         1.        
+  0.01       2.5        1.41       5.         3.         0.         0.         3.         1.        
+ Gnucap   System status
+-iterations: op=4, dc=0, tran=741, fourier=0, total=992
++iterations: op=3, dc=0, tran=741, fourier=0, total=991
+ transient timesteps: accepted=247, rejected=0, total=247
+ nodes: user=4, subckt=0, model=0, total=4
+ dctran density=87.5%, ac density=87.5%
+d_logic_tr_dn1.ckt
+--- ==/d_logic_tr_dn1.ckt.out	2010-07-08 04:08:33.000000000 -0400
++++ 130913/d_logic_tr_dn1.ckt.out	2013-09-14 01:57:02.000000000 -0400
+@@ -1,6 +1,6 @@
+ '1 inverters as gates 
+ #           v(1)       l(1)       v(2)       l(2)       iter(0)    control(0)
+- 27.        0.         0.01       5.         3.         4.         0.        
++ 27.        0.         0.01       5.         3.         3.         0.        
+ #Time       v(1)       l(1)       v(2)       l(2)       iter(0)    control(0)
+  0.         2.5        1.41       5.         3.         3.         1.        
+  500.n      2.5079     1.41       5.         3.         3.         9.        
+@@ -230,7 +230,7 @@
+  0.00995    1.7275     1.31       5.         3.         3.         1.        
+  0.01       2.5        1.41       5.         3.         3.         1.        
+ Gnucap   System status
+-iterations: op=4, dc=0, tran=681, fourier=0, total=912
++iterations: op=3, dc=0, tran=681, fourier=0, total=911
+ transient timesteps: accepted=227, rejected=0, total=227
+ nodes: user=3, subckt=0, model=0, total=3
+ dctran density=100.0%, ac density=100.0%
+d_logic_tr_dn2.ckt
+--- ==/d_logic_tr_dn2.ckt.out	2010-07-08 04:08:33.000000000 -0400
++++ 130913/d_logic_tr_dn2.ckt.out	2013-09-14 01:57:02.000000000 -0400
+@@ -1,6 +1,6 @@
+ '1 inverters as gates 
+ #           v(1)       l(1)       v(2)       l(2)       v(3)       l(3)       iter(0)    control(0)
+- 27.        0.         0.01       5.         3.         0.         0.         4.         0.        
++ 27.        0.         0.01       5.         3.         0.         0.         3.         0.        
+ #Time       v(1)       l(1)       v(2)       l(2)       v(3)       l(3)       iter(0)    control(0)
+  0.         2.5        1.41       5.         3.         0.         0.         3.         1.        
+  500.n      2.5079     1.41       5.         3.         0.         0.         3.         9.        
+@@ -250,7 +250,7 @@
+  0.00995    1.7275     1.31       5.         3.         0.         0.         3.         1.        
+  0.01       2.5        1.41       5.         3.         0.         0.         3.         1.        
+ Gnucap   System status
+-iterations: op=4, dc=0, tran=741, fourier=0, total=992
++iterations: op=3, dc=0, tran=741, fourier=0, total=991
+ transient timesteps: accepted=247, rejected=0, total=247
+ nodes: user=4, subckt=0, model=0, total=4
+ dctran density=87.5%, ac density=87.5%
+d_logic_tr_mb1a.ckt
+d_logic_tr_mb1b.ckt
+d_logic_tr_mb2a.ckt
+d_logic_tr_mb2b.ckt
+d_logic_tr_mn1a.ckt
+d_logic_tr_mn1b.ckt
+d_logic_tr_mn2a.ckt
+d_logic_tr_mn2b.ckt
+d_macro.1.ckt
+d_mos.error1.ckt
+d_mos.error2.ckt
+d_mos.error3.ckt
+d_mos.error4.ckt
+d_mos1.bin1.ckt
+d_mos1.bin2.ckt
+d_mos1.bin3.ckt
+d_mos1.inv1.ckt
+d_mos1.inv2.ckt
+d_mos1.inv3.ckt
+d_mos1.lin1.ckt
+--- ==/d_mos1.lin1.ckt.out	2010-07-08 04:08:34.000000000 -0400
++++ 130913/d_mos1.lin1.ckt.out	2013-09-14 01:57:02.000000000 -0400
+@@ -50,7 +50,7 @@
+ Vbs ( 4 0 )  DC -1.234875
+ .model cmosn nmos1 ( level=1 kp=41.5964u vto=0.844345 gamma=0.863074 phi=0.6
+ + lambda=.01 tox=41.8n nsub=15.3142E+15 nss=1.E+12 xj=400.n uo=503.521 tpg=1
+-+ tnom=NA( 27.) fc=0.5 pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002 is=0
+-+ js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p cgbo=0.
+-+ ld=265.073n)
+++ tnom=NA( 27.) fc=0.5 pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002 kf=0.
+++ af=1. is=0 js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p
+++ cgbo=0. ld=265.073n)
+ *    vmax= 55.9035K 
+d_mos1.lin1.late.ckt
+d_mos1.lin1.none.ckt
+d_mos1.lin2.ckt
+d_mos1.lin3.ckt
+d_mos1.lin4.ckt
+d_mos1.lin5.ckt
+d_mos1.n+1.ckt
+d_mos1.n-1.ckt
+d_mos1.n0.ckt
+d_mos1.nand1.ckt
+d_mos1.nand2.ckt
+d_mos1.p+1.ckt
+d_mos1.p-1.ckt
+d_mos1.p0.ckt
+d_mos1.plin.ckt
+d_mos1.psat1.ckt
+d_mos1.psat2.ckt
+d_mos1.psat3.ckt
+d_mos1.sat1.ckt
+d_mos1.sat2.ckt
+d_mos1.sat3.ckt
+d_mos1.sat4.ckt
+d_mos1.sat5.ckt
+d_mos1.sat6.ckt
+d_mos1.sat7.ckt
+d_mos1.sts.ckt
+d_mos1.zero.ckt
+d_mos2.inv1.ckt
+d_mos2.lin1.ckt
+--- ==/d_mos2.lin1.ckt.out	2010-07-08 04:08:34.000000000 -0400
++++ 130913/d_mos2.lin1.ckt.out	2013-09-14 01:57:03.000000000 -0400
+@@ -52,6 +52,6 @@
+ + ucrit=161.166K uexp=0.163917 delta=0.36745 vto=0.844345 gamma=0.863074
+ + phi=0.6 lambda=.01 tox=41.8n nsub=15.3142E+15 nss=1.E+12 xj=400.n uo=503.521
+ + tpg=1 tnom=NA( 27.) fc=0.5 pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002
+-+ is=0 js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p
+-+ cgbo=0. ld=265.073n)
+++ kf=0. af=1. is=0 js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p
+++ cgdo=218.971p cgbo=0. ld=265.073n)
+ *    vmax= 55.9035K 
+d_mos2.lin1.late.ckt
+d_mos2.lin1r.ckt
+d_mos2.lin1z.ckt
+d_mos2.lin2.ckt
+d_mos2.lin3.ckt
+d_mos2.lin4.ckt
+d_mos2.lin5.ckt
+d_mos2.n+1.ckt
+d_mos2.n-1.ckt
+d_mos2.n0.ckt
+d_mos2.nand1.ckt
+d_mos2.p+1.ckt
+d_mos2.p-1.ckt
+d_mos2.p0.ckt
+d_mos2.plin.ckt
+d_mos2.psat1.ckt
+d_mos2.psat2.ckt
+d_mos2.psat3.ckt
+d_mos2.sat1.ckt
+d_mos2.sat2.ckt
+d_mos2.sat3.ckt
+d_mos2.sat4.ckt
+d_mos2.sat5.ckt
+d_mos2.sat6.ckt
+d_mos2.sat7.ckt
+d_mos2.sts.ckt
+d_mos2.zero.ckt
+d_mos3.inv1.ckt
+d_mos3.lin1.ckt
+--- ==/d_mos3.lin1.ckt.out	2010-07-08 04:08:35.000000000 -0400
++++ 130913/d_mos3.lin1.ckt.out	2013-09-14 01:57:03.000000000 -0400
+@@ -51,6 +51,7 @@
+ .model cmosn nmos3 ( level=3 kp=41.5964u nfs=3.5934E+12 theta=0. eta=0.
+ + kappa=0.2 delta=0.36745 vto=0.844345 gamma=0.863074 phi=0.6 tox=41.8n
+ + nsub=15.3142E+15 nss=1.E+12 xj=400.n uo=503.521 tpg=1 tnom=NA( 27.) fc=0.5
+-+ pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002 is=0 js=0. rsh=0. rd=0.
+-+ rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p cgbo=0. ld=265.073n)
+++ pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002 kf=0. af=1. is=0 js=0.
+++ rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p cgbo=0.
+++ ld=265.073n)
+ *    vmax= 55.9035K 
+d_mos3.lin1r.ckt
+d_mos3.lin1z.ckt
+d_mos3.lin2.ckt
+d_mos3.lin3.ckt
+d_mos3.lin4.ckt
+d_mos3.lin5.ckt
+d_mos3.n+1.ckt
+d_mos3.n-1.ckt
+d_mos3.n0.ckt
+d_mos3.nand1.ckt
+d_mos3.p+1.ckt
+d_mos3.p-1.ckt
+d_mos3.p0.ckt
+d_mos3.plin.ckt
+d_mos3.psat1.ckt
+d_mos3.psat2.ckt
+d_mos3.psat3.ckt
+d_mos3.sat000.ckt
+d_mos3.sat007.ckt
+d_mos3.sat1.ckt
+d_mos3.sat2.ckt
+d_mos3.sat3.ckt
+d_mos3.sat4.ckt
+d_mos3.sat5.ckt
+d_mos3.sat6.ckt
+d_mos3.sat7.ckt
+d_mos3.sts.ckt
+d_mos3.sts000.ckt
+d_mos3.zero.ckt
+d_mos4.1.ckt
+d_mos4.2.ckt
+d_mos4.3.ckt
+d_mos49.nand1.ckt
+d_mos5.1.ckt
+d_mos6.inv1.ckt
+d_mos6.lin1.ckt
+d_mos6.lin1r.ckt
+d_mos6.lin1z.ckt
+d_mos6.lin2.ckt
+d_mos6.lin2r.ckt
+d_mos6.lin2z.ckt
+d_mos6.n+1.ckt
+d_mos6.n-1.ckt
+d_mos6.n0.ckt
+d_mos6.nand1.ckt
+d_mos6.p+1.ckt
+d_mos6.p-1.ckt
+d_mos6.p0.ckt
+d_mos6.plin.ckt
+d_mos6.psat1.ckt
+d_mos6.psat2.ckt
+d_mos6.psat3.ckt
+d_mos6.sat1.ckt
+d_mos6.sat1r.ckt
+d_mos6.sat1s.ckt
+d_mos6.sat1v.ckt
+d_mos6.sat2.ckt
+d_mos6.sat2r.ckt
+d_mos6.sat3.ckt
+d_mos6.sat3r.ckt
+d_mos6.sts.ckt
+d_mos6.sts000.ckt
+d_mos6.zero.ckt
+d_mos7.alpha.ckt
+--- ==/d_mos7.alpha.ckt.out	2010-07-08 04:08:37.000000000 -0400
++++ 130913/d_mos7.alpha.ckt.out	2013-09-14 01:57:05.000000000 -0400
+@@ -65,5 +65,5 @@
+ + xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.)
+ + lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.)
+ + wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) tnom=NA( 27.) fc=NA( 0.5) pb= 1.
+-+ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f) cgso= 207.188p
+-+ cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+++ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 kf=NA( 0.) af=NA( 0.)
+++ is=NA( 10.f) cgso= 207.188p cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+d_mos7.inv1.ckt
+d_mos7.lin1.ckt
+--- ==/d_mos7.lin1.ckt.out	2010-07-08 04:08:37.000000000 -0400
++++ 130913/d_mos7.lin1.ckt.out	2013-09-14 01:57:05.000000000 -0400
+@@ -65,5 +65,5 @@
+ + xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.)
+ + lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.)
+ + wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) tnom=NA( 27.) fc=NA( 0.5) pb= 1.
+-+ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f) cgso= 207.188p
+-+ cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+++ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 kf=NA( 0.) af=NA( 0.)
+++ is=NA( 10.f) cgso= 207.188p cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+d_mos7.lin2.ckt
+--- ==/d_mos7.lin2.ckt.out	2010-07-08 04:08:37.000000000 -0400
++++ 130913/d_mos7.lin2.ckt.out	2013-09-14 01:57:05.000000000 -0400
+@@ -64,5 +64,5 @@
+ + xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.)
+ + lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.)
+ + wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) tnom=NA( 27.) fc=NA( 0.5) pb= 1.
+-+ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f) cgso= 207.188p
+-+ cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+++ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 kf=NA( 0.) af=NA( 0.)
+++ is=NA( 10.f) cgso= 207.188p cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+d_mos7.nand1.ckt
+d_mos7.nand1.nobypass.ckt
+d_mos7.plin.ckt
+d_mos7.psat.ckt
+d_mos7.sat1.ckt
+d_mos7.sat2.ckt
+d_mos7.sat3.ckt
+d_mos7.sts.ckt
+d_mos7.zero.ckt
+d_mos8.nand1.ckt
+d_mos8.sat2.ckt
+d_mos8.sat3.ckt
+d_mos8.sat4.ckt
+d_mos8c2.nand1.ckt
+d_mos8c2.nand1.nobypass.ckt
+d_subckt.1.ckt
+d_subckt.2.ckt
+d_subckt.3.ckt
+d_subckt.4.ckt
+d_subckt.5.ckt
+d_subckt.6.ckt
+d_subckt.7.ckt
+d_subckt.8.ckt
+d_subckt.error1.ckt
+d_subckt.error2.ckt
+d_switch.c0.ckt
+d_switch.c1.ckt
+d_switch.c1.inc.ckt
+d_switch.c1.noinc.ckt
+d_switch.c1a.ckt
+d_switch.c1r.ckt
+d_switch.c2.ckt
+d_switch.c2a.ckt
+d_switch.c2r.ckt
+d_switch.c3.ckt
+d_switch.error1.ckt
+d_switch.error2.ckt
+d_switch.error3.ckt
+d_switch.nro.1.ckt
+d_switch.nro.1e.ckt
+d_switch.nro.1g.ckt
+d_switch.nro.1gr.ckt
+d_switch.nro.2.ckt
+d_switch.nro.3.ckt
+d_switch.nro.3h.ckt
+d_switch.nro.4.ckt
+d_switch.v.ckt
+d_switch.vr.ckt
+d_tcap.1.ckt
+d_tcap.2.ckt
+d_tcap.3.ckt
+d_tcap.4.ckt
+d_trln.ac.ckt
+d_trln.tr.100.im.ckt
+d_trln.tr.100.nim.ckt
+d_trln.tr.300.im.ckt
+d_trln.tr.300.nim.ckt
+d_trln.tr.im.ckt
+d_trln.tr.m.ckt
+d_trln.tr.nim.ckt
+d_vccap.1.ckt
+d_vccap.2.ckt
+d_vcg.1.ckt
+d_vcg.2.ckt
+d_vcg.3.ckt
+d_vcg.4.ckt
+d_vcg.5.ckt
+d_vcr.1.ckt
+d_vcr.2.ckt
+d_vcr.3.ckt
+d_vcr.4.ckt
+d_vcr.5.ckt
+d_vcvs.1.ckt
+dcsweep.ckt
+e_ccsrc.1.ckt
+e_ccsrc.2.ckt
+e_node_probes.ckt
+e_storag.1.ckt
+eq3-1153.ckt
+eq3-1153.fg.ckt
+eq3-1153.fg2.ckt
+eq3-1153.tr-b.ckt
+eq3-1153.tr-nb.ckt
+eq3-1153.tr-ni.ckt
+eqb1.ckt
+eqboost.ckt
+eqflat.ckt
+eqmodify.ckt
+l.ckt
+l2.ckt
+ll.ckt
+ll1.ckt
+lll.ckt
+llll.ckt
+m_expression.1.ckt
+m_expression.2.ckt
+m_expression.3.ckt
+m_expression.error.1.ckt
+named_nodes.ckt
+nmos100.1.ckt
+nmos100.ckt
+nmos15.ckt
+--- ==/nmos15.ckt.out	2010-07-08 04:08:43.000000000 -0400
++++ 130913/nmos15.ckt.out	2013-09-14 01:57:09.000000000 -0400
+@@ -51,8 +51,10 @@
+ .model MODELD nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
+ + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
+ + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
+-+ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+++ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
+++ ld=NA( 0.))
+ .model MODELL nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
+ + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
+ + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
+-+ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+++ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
+++ ld=NA( 0.))
+nmos15a.ckt
+--- ==/nmos15a.ckt.out	2010-07-08 04:08:44.000000000 -0400
++++ 130913/nmos15a.ckt.out	2013-09-14 01:57:09.000000000 -0400
+@@ -51,8 +51,10 @@
+ .model MODELD nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
+ + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
+ + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
+-+ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+++ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
+++ ld=NA( 0.))
+ .model MODELL nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
+ + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
+ + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
+-+ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+++ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
+++ ld=NA( 0.))
+nmp100.ckt
+nothing.ckt
+opamp-ol-disto.2.ckt
+opamp-ol-disto.ckt
+opamp-ol.ckt
+opamp-vf.1.ckt
+opamp-vf.1d.ckt
+opamp-vf.2.ckt
+opamp-vf.3.ckt
+opamp-vf.ckt
+oscillator.1.ckt
+oscillator.2.ckt
+oscillator.3.ckt
+oscillator.4.ckt
+oscillator.5.ckt
+oscillator.6.ckt
+oscillator.7.ckt
+param.0.ckt
+param.0a.ckt
+param.1.ckt
+param.10.ckt
+param.11.ckt
+param.2.ckt
+param.2a.ckt
+param.2b.ckt
+param.3.ckt
+param.4.ckt
+param.5.ckt
+param.6.ckt
+param.7.ckt
+param.8.ckt
+param.9.ckt
+parse.1.ckt
+sl.ckt
+trcurve.ckt
+trcurve2.ckt
+trcurves.ckt
+done with gnucap

@@ -1,0 +1,17 @@
+more testing in d_mos, d_logic, opamp
+
+1. basic test
+
+3. unnamed area=1, gparallel
+4. unnamed area=2
+5. named area=2
+6. m=2
+7. m=2 area=2
+8. area=4
+9. m=4
+10. delete test
+11. rs=10k, rs=1k
+11a. params
+11b. params
+11c. params, big expressions
+12. ac/tran interaction

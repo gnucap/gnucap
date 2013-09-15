@@ -1,0 +1,57 @@
+rca3040 ckt - rca 3040 wideband amplifier
+* modified from Spice-3 examples
+*
+* The transient analysis shows higher gain (at 50 mHz) on Gnucap than Spice.
+* This is due to differences in step control.  Gnucap uses significantly
+* smaller time steps for this circuit than Spice does, leading to
+* supposedly improved accuracy.  There is also a significant difference
+* with the "method".  Stiffly stable methods give significantly lower
+* gain at that frequency.
+
+vin 1 0 sin(0 0.1 50meg 0.5ns) ac 1
+vcc     2       0       15.0
+vee     3       0       -15.0
+rs1     30      1       1k
+rs2     31      0       1k
+r1      5       3       4.8k
+r2      6       3       4.8k
+r3      9       3       811
+r4      8       3       2.17k
+r5      8       0       820
+r6      2       14      1.32k
+r7      2       12      4.5k
+r8      2       15      1.32k
+r9      16      0       5.25k
+r10     17      0       5.25k
+q1      2       30      5       0 qnl
+q2      2       31      6       0 qnl
+q3      10      5       7       0 qnl
+q4      11      6       7       0 qnl
+q5      14      12      10      0 qnl
+q6      15      12      11      0 qnl
+q7      12      12      13      0 qnl
+q8      13      13      0       0 qnl
+q9      7       8       9       0 qnl
+q10     2       15      16      0 qnl
+q11     2       14      17      0 qnl
+.model qnl npn bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf cjc=2pf va 50
+
+*>.width out=80
+*>.option rstray
+
+*>.print op v(1) v(2) v(3) v(5) v(6) v(7) v(8) v(9) v(10) v(11) v(12) v(13) v(14) v(15) v(16) v(17) v(30) v(31)  
+.op
+
+.plot ac vdb(17) vdb(16)
+*>.plot ac vdb(17)(-100,100) vdb(16)(-100,100)
+.ac dec 5 1Meg 10ghz
+
+.plot dc v(17) v(16)
+*>.plot dc v(17)(-20,20) v(16)(-20,20)
+.dc vin -0.2 0.2 0.02
+
+.plot tran v(17) v(16)
+*>.plot tran v(17)(2,10) v(16)(2,10)
+.tran 2.0ns 50ns 
+
+.end

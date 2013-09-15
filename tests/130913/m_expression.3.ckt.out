@@ -1,0 +1,27 @@
+# expression test -- eval 
+".eval (1+3) "
+(1 + 3)= 4.
+".eval exp(1) "
+exp(1)= 2.718282
+".eval exp(1-1) "
+exp((1 - 1))= 1.
+".eval exp(-1) "
+exp((- 1))= 0.3678794
+".eval exp(-1)*exp(1) "
+(exp((- 1)) * exp(1))= 0.999999951190801
+".eval exp(2) "
+exp(2)= 7.389056
+".eval log(2) "
+log(2)= 0.6931472
+".eval exp(log(2)) "
+exp(log(2))= 2.
+".eval log(exp(2)) "
+log(exp(2))= 2.
+".eval log(exp(abs(-2))) "
+log(exp(abs((- 2))))= 2.
+".eval pow(abs(-3), abs(-2)) "
+pow(abs((- 3)), abs((- 2)))= 9.
+".eval na() "
+na()=NA
+".eval na(3) "
+na(3)=NA

@@ -1,0 +1,13 @@
+'parameter test with subckt
+.subckt foo (a b c)
+v1 (a b) zzz
+v2 (b c) xxx
+.ends
+x1 (1 0 3) foo zzz=a  xxx=b
+x2 (2 0 4) foo xxx=a  zzz=83
+.param a=13 b=923 c=a
+.list
+.print op v(nodes)
+.op
+.list
+.end

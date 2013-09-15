@@ -1,0 +1,18 @@
+' cap with initial condition
+c1 1 0 1 ic=3
+r1 1 0 1
+c2 2 0 1 ic=3
+I2 2 0 0
+c3 3 0 1 ic=3
+I3 3 0 1
+c4 4 0 1 ic=3
+c4a 4 0 1
+c5 5 0 1 ic=3
+c5a 5 0 1
+I5 5 0 1
+.list
+.print tran v(1) v(2) v(3) v(4) v(5)
+.tran 1 10 0 uic
+.tran
+.status notime
+.end

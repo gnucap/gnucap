@@ -1,0 +1,26 @@
+'
+V1   1  0  dc 1. ac  1. 
+R1   1  2  1.K
+W1   2  0  Rprobe  sss 
+V2   3  0  dc 1. ac  1. 
+R2   3  4  1.K
+W2   4  0  Vprobe  sss 
+V3   5  0  dc 1. ac  1. 
+R3   5  6  1.K
+W3   6  0  Vsig  sss 
+Vsig   7  0  pwl( 0.  0.  5.  5.  15. -5.  25.  5. ) 
+Rprobe 7  8  1k
+Vprobe 8  0  0
+.model  sss  csw  ( it= 0.  ih= .002  ron= 1.K  roff= 1.E+12 )
+.width out=170
+.list
+.print dc v(nodes) ev(w*) i(?sig) i(?probe)
+.print tran v(nodes) ev(w*) i(?sig) i(?probe)
+.print ac v(nodes) ev(w*) i(?sig) i(?probe)
+.dc Vsig -5 5 1 loop
+.ac 1k
+.tran 0 25 1 
+.ac 1k 
+.list
+.status notime
+.end 

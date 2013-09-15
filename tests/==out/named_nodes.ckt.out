@@ -1,0 +1,13 @@
+'named nodes test 
+.option namednodes 
+        ^ ? what's this?
+#           v(2)       v(n1)     
+ 27.        0.5        1.        
+.subckt foo ( q w )
+R1 ( q w )  1.K
+.ends foo
+X1 ( 2 0 )  foo 
+X2 ( n1 2 )  foo 
+V1 ( n1 0 )  DC  1.
+.fanout 
+ ^ ? fanout: no match

@@ -1,0 +1,15 @@
+'play with the list command
+V1   1  0  generator(1)
+L3   1  2  1.
+R4   2  0  1.
+R5   1  3  .97
+C6   3  0  1.
+.option trace
+.list
+.list r*
+.list l3 r5
+.list l3 - r5
+.list l3 -
+.list l3
+.list c6 -
+.end

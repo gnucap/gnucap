@@ -1,0 +1,18 @@
+'
+.vsource Vcc   1 0     dc 20   ac 0
+.isource Iload 1 2     dc .001 ac 0
+.vsource Vin   3 0     sin freq=1k ampl=.1 offset=1 ac .2
+.vcr     Mamp  2 0 3 0 10k
+
+.print op v(nodes) iter(0)
+.op
+
+.print tran v(nodes) iter(0)
+.tran 0 .001 .00005
+
+.print ac v(nodes)
+.ac 1k
+.print ac vp(nodes)
+.ac 1k
+
+.end

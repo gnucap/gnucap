@@ -1,0 +1,5 @@
+
+.model foo d
+x1 (a b c) foo
+.op
+.end

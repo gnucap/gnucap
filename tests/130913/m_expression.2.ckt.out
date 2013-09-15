@@ -1,0 +1,37 @@
+# expression test 
+".param a={2+3*4} "
+".eval a "
+a= 14.
+".param b={(2+3)*4} "
+".eval b "
+b= 20.
+".param c={2+(3*4)} "
+".eval c "
+c= 14.
+".param d={2+(-3*4)} "
+".eval d "
+d=-10.
+".param e={2+(+3*4)} "
+".eval e "
+e= 14.
+".param f={2+(!3*4)} "
+".eval f "
+f= 2.
+".param g={abs(-3)} "
+".eval g "
+g= 3.
+".param h={abs(4-2)} "
+".eval h "
+h= 2.
+".param i={abs(2-4)} "
+".eval i "
+i= 2.
+".param j={pow(3,2)} "
+".eval j "
+j= 9.
+".param k={pow(3,-2)} "
+".eval k "
+k= 0.1111111
+".param l={pow(abs(3),abs(-2))} "
+".eval l "
+l= 9.

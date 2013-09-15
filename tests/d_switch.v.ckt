@@ -1,0 +1,15 @@
+'
+V1   1  0  dc 1. ac  1. 
+R1   1  2  1.K
+S1   2  0  3  0  sss 
+V2   3  0  pwl( 0.  0.  5.  5.  15. -5.  25.  5. ) 
+.model  sss  sw  ( vt= 0.  vh= 2.  ron= 1.K  roff= 1.E+12 )
+.print dc v(nodes) ev(s1) 
+.print tran v(nodes) ev(s1) 
+.print ac v(nodes) ev(s1) 
+.dc v2 -5 5 1 loop
+.ac 1k
+.tran 0 25 1 
+.ac 1k 
+.list
+.end 

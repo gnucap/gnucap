@@ -1,0 +1,17 @@
+'
+.subckt xx (1 2)
+Rx (1 2) {R}
+.ends
+
+V1 (1 0) dc 10
+R1 (1 2) 10k
+X1 (2 0) xx R=10k
+R2 (1 3) 10k m=2
+X2 (3 0) xx R=5k
+R3 (1 4) 10k
+X3 (4 0) xx R=20k m=2
+
+*>.print op v(nodes)
+.op
+*>.list
+.end

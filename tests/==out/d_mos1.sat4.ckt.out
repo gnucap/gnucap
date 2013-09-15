@@ -1,0 +1,26 @@
+nmos n gate, saturated, js specified (unreasonable value), +body 
+cmosn: rsh - rs - rd conflict: using rsh
+#           v(2)       v(3)       v(4)       iter(0)   
+ 27.        2.4225     5.        -1.2349     8.        
+#           i(Vds)     i(Vbs)     ps(Vds)    ps(Vbs)   
+ 27.       -25.775u    153.2n     128.88u    189.19n   
+#           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
+ 27.        25.775u    2.4225     2.4225    -1.2349     1.3449     1.0776    
+#           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
+ 27.        47.628u    0.         15.173u    0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 27.        1.9707f    0.         0.         62.973f    7.        
+#           cgs(M1)    cgd(M1)    cgb(M1)    vgst(M1)   von(M1)   
+ 27.        41.982f    0.         0.         1.0776     1.3449    
+#           cgst(M1)   cgdt(M1)   cgbt(M1)   is(M1)     ig(M1)     ib(M1)    
+ 27.        43.953f    0.         0.        -25.622u    0.         153.22n   
+#           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1) iderror(M1)
+ 27.        62.629u    62.629u    0.         25.661u   -114.54n    ??        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 27.        1.2112     1.2112    -2.4461    -1.2112    
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
+ 27.        2.4225     2.4225    -1.2349     0.        
+#           v(M1.Ddb)  i(M1.Ddb)  p(M1.Ddb)  cap(M1.Ddb) r(M1.Ddb)  region(M1.Ddb)
+ 27.       -3.6573    -114.54n    418.92n    0.         31.93Meg  -1.        
+#           v(M1.Dsb)  i(M1.Dsb)  p(M1.Dsb)  cap(M1.Dsb) r(M1.Dsb)  region(M1.Dsb)
+ 27.       -1.2349    -38.674n    47.758n    0.         31.93Meg  -1.        

@@ -1,0 +1,6 @@
+' bd sin test
+v1 (1 0) sin zero peak 10 10
+.print tran v(1)
+.tran 1e-4 1e-3 0 trace all
+.status notime
+.end

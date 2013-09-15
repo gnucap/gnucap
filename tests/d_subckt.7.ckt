@@ -1,0 +1,35 @@
+* subckt, param, diode test
+.model md1 d
+.model md2 d is=1e-12
+.model md3 d is=1e-9
+
+i1 (0 1) 1
+d1 (1 0) md1
+i2 (0 2) 1
+d2 (2 0) md2
+i3 (0 3) 1
+d3 (3 0) md3
+
+.subckt foo (a k)
+.param a=1
+.model dio d is={isat}
+d1 (a k) dio area={a}
+.ends
+
+i4 (0 4) 1
+x4 (4 0) foo
+i5 (0 5) 1
+x5 (5 0) foo isat=1e-12
+i6 (0 6) 1
+x6 (6 0) foo isat=1e-9
+
+i7 (0 7) 1
+x7 (7 0) foo a=1000 isat=1e-12
+i8 (0 8) 1
+d8 (8 0) md2 area=1000
+i9 (0 9) 1
+x9 (9 0) foo a=100
+
+.print op v(nodes)
+.op
+.end

@@ -1,0 +1,14 @@
+'vs test
+v1 1 0 5
+v2 2 0 pulse 4 7 1
+v3 3 0 5 ac 2 pulse 4 7 1
+v4 4 0 dc pulse 4 7 1  ac 2
+v5 5 0 1
+.print dc v(1) v(2) v(3) v(4)
+.print ac v(1) v(2) v(3) v(4)
+.print tran v(1) v(2) v(3) v(4)
+.op
+.dc v5 1 2 1
+.ac oct 1 10 20
+.tran 1 2 0
+.end

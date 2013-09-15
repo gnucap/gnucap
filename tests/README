@@ -1,0 +1,45 @@
+Here are circuits used for regressions.  Some of these will also run
+on Spice and can be used for comparison.  Most are designed to test
+partcular features in hopes of clearly identifying the defective
+module.  Some are more general.
+
+You can run any ".ckt" file in batch mode by typing "gnucap -b name" from
+the shell.  You can run them interactively by starting gnucap then "get
+name".  Then play, change probes, rerun, change values, etc.
+
+The file "test" is a script to automate the testing.  It takes 4
+arguments, which all must be supplied.  The diagnostics are poor to
+nonexistent.
+
+The arguments are:
+
+$0 "./test"  (its name)
+
+$1 the path name of the executable version of gnucap being tested.
+
+$2 the prefix of all .ckt files to test.  Probably, you want "", which
+tests everything.  Otherwise, "d_mos" will test anything beginning
+with "d_mos".  It does not use the usual globbing, although it should.
+
+$3 The directory to use for the results files.  Running the script
+makes an output file for every input file.  It will make the directory
+if it doesn't already exist.  It will overwrite files in that
+directory without warning.
+
+$4 The directory to use for comparison.  Usually this will be "==".
+It contains all of the reference results files.
+
+Example:
+
+./test ../src/O/gnucap "" 0001 ==
+
+.. places the results in 0001, and compares them to the old ones in "==".
+
+It creates a file ".diffs" in 0001 that contains the differences.
+Also, it prints a failure message to the console for any that don't
+match.  If you don't get any such messages, but do get a list of all
+the files, all pass.
+
+Any differences should be investigated.  It is normal to get a few
+minor differences due to differences in machine arithmetic.  Any
+results that are significantly different indicate a problem.

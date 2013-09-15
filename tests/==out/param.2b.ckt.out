@@ -1,0 +1,4 @@
+'parameter test 
+ a= 1. b=a+1 c=a+b d=c+1
+#           v(1)       v(2)      
+ 27.        1.         0.57143   

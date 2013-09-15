@@ -1,0 +1,5 @@
+nmos n gate 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+#          
+ 27.       

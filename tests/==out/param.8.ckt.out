@@ -1,0 +1,9 @@
+'parameter test 
+ a= 1. b= 2. c= 3.
+parameter d not specified, using default
+#           v(1)       v(2)      
+r2: short circuit
+r2: short circuit
+r2: short circuit
+r2: short circuit
+ 27.        1.         0.        

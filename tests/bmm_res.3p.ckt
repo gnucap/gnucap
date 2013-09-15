@@ -1,0 +1,12 @@
+# semiconductor "resistor" test
+.param pw=2u pl=1u pt=37
+v1 1 0 dc 2 ac 5
+r1 1 2 1k
+r2 2 0 t1 (w=pw l=pl temp=pt)
+.model t1 r rsh=1k tc2=.01
+.print op v(nodes) r(r*)
+.print ac v(nodes) 
+.op
+.ac
+.list
+.end

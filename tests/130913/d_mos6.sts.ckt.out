@@ -1,0 +1,23 @@
+nmos n gate, sub-threshold 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+#           v(1)       v(2)       v(3)       v(4)       iter(0)   
+ 27.        0.23673    4.9998     5.        -1.2349     5.        
+#           i(Vgs)     i(Vds)     i(Vbs)     ps(Vgs)    ps(Vds)    ps(Vbs)   
+ 27.        0.         0.         0.         0.         0.         0.        
+#           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
+ 27.        2.0729n    0.23673    4.9998    -1.2349     1.5384     0.18427   
+#           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
+ 27.        9.6704n    7.4992p    3.077n     0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 27.        1.9707f    1.9707f    0.         62.973f    5.        
+#           cgs(M1)    cgd(M1)    cgb(M1)    vgst(M1)   von(M1)   
+ 27.        0.         0.         62.973f   -1.3016     1.5384    
+#           cgst(M1)   cgdt(M1)   cgbt(M1)   is(M1)     ig(M1)     ib(M1)    
+ 27.        1.9707f    1.9707f    62.973f   -2.0729n    0.         0.        
+#           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1) iderror(M1)
+ 27.        10.364n    10.364n    0.         2.0729n    0.         ??        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 27.        2.4999    -2.2632    -3.7348    -2.4999    
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
+ 27.        4.9998     0.23673   -1.2349     0.        

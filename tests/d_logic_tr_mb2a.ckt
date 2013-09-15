@@ -1,0 +1,31 @@
+'1 inverters as gates
+.gen freq=1k offset=2.5 init=2.5 ampl=2.5 
+Vdd  8  0  dc 5.
+V1   1  0  generator( 1. ) 
+U2   2 0 8 8 1  mos inv
+U3   3 0 8 8 2  mos inv
+.model  mos logic ( delay= 100n  rise= 100n  fall= 100n  rs= 100.  rw= 1.G 
++ thh= 0.6  thl= 0.4  mr= 200000.  mf= 200000.  over=10k vmax= 5.  vmin= 0. )
+.subckt mosinv1  2  4  1  5  3 
+M1   2  3  4  4  nmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1. 
+M2   2  3  1  1  pmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1. 
+.ends
+*+ends mosinv1
+.model nmos  nmos ( level=2  vto= 0.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8 
++ cgso= 0.  cgdo= 0.  cgbo= 0.  rsh= 0.  cj= 0.  mj= 0.5  cjsw= 0.  mjsw= 0.33 
++ tox= 100.n  nfs= 0.  tpg=1  ld= 0.  uo= 600.  neff= 1.  fc= 0.5  delta= 0. 
++)
+*+(* vfb=-0.6 * kp= 20.71886u )
+.model pmos  pmos ( level=2  vto= 0.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8 
++ cgso= 0.  cgdo= 0.  cgbo= 0.  rsh= 0.  cj= 0.  mj= 0.5  cjsw= 0.  mjsw= 0.33 
++ tox= 100.n  nfs= 0.  tpg=1  ld= 0.  uo= 600.  neff= 1.  fc= 0.5  delta= 0. 
++)
+*+(* vfb=-0.6 * kp= 20.71886u )
+.options itl4=50 mode=mixed diodeflags=4 bypass method=euler transit=4
+.print op v(1) l(1) v(2) l(2) v(3) l(3) iter(0) control(0)
+.op
+.print tran v(1) l(1) v(2) l(2) v(3) l(3) iter(0) control(0)
+.alarm tran control(0)(1,9)
+.tran 0 .01 50u trace rejected
+.stat notime
+.end 

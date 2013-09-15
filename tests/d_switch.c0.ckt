@@ -1,0 +1,10 @@
+
+v1 2 0 sin freq=1k
+r1 2 0 1k
+w3 1 0 v1 foo
+r3 1 3 1k
+v3 3 0 dc 1
+.model foo csw
+.probe tran v(nodes)
+.tran 0 .002 100u
+.end

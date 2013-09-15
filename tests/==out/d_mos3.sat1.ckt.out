@@ -1,0 +1,23 @@
+nmos n gate, saturated, isat of bulk diode == 0 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+#           v(2)       v(3)       v(4)       iter(0)   
+ 27.        2.1176     5.         0.         7.        
+#           i(Vds)     i(Vbs)     ps(Vds)    ps(Vbs)   
+ 27.       -28.824u    0.         144.12u    0.        
+#           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
+ 27.        28.824u    2.1176     2.1176     0.         1.0559     1.0009    
+#           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
+ 27.        44.801u    212.71n    19.29u     0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 27.        1.9707f    0.         0.         62.973f    7.        
+#           cgs(M1)    cgd(M1)    cgb(M1)    vgst(M1)   von(M1)   
+ 27.        41.982f    0.         0.         1.0617     1.0559    
+#           cgst(M1)   cgdt(M1)   cgbt(M1)   is(M1)     ig(M1)     ib(M1)    
+ 27.        43.953f    0.         0.        -28.824u    0.         0.        
+#           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1) iderror(M1)
+ 27.        61.037u    61.037u    0.         28.824u    0.         ??        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 27.        1.0588     1.0588    -1.0588    -1.0588    
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
+ 27.        2.1176     2.1176     0.         0.        

@@ -1,0 +1,25 @@
+# HSPICE style POLY(1)
+.width out=120
+v1 1 0 dc 1 ac 1
+e2 2 0 POLY(1) 1 0  10 0 0 0
+r2 2 0 10k
+e3 3 0 POLY(1) 1 0  0 10 0 0
+r3 3 0 10k
+e4 4 0 POLY(1) 1 0  0 0 10 0
+r4 4 0 10k
+e5 5 0 POLY(1) 1 0  0 0 0 10
+r5 5 0 10k
+e6 6 0 POLY(1) 1 0  0 10
+r6 6 0 10k
+e7 7 0 1 0 10
+r7 7 0 10k
+g8 8 0 POLY(1) 1 0  0 0 10 0
+r8 8 0 10k
+.list
+.print op v(nodes)
+.op
+.print dc v(nodes)
+.dc v1 -10 10 1
+.dc v1 1 100 decade 5
+.dc v1 32 68 9
+.end

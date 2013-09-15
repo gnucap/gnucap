@@ -1,0 +1,12 @@
+'LC Oscillator Accuracy test
+C1 1 0 1
+L1 1 0 1
+I1 1 0 pulse 1 0 0 62.831853071795862  62.831853071795862 
+.width out=80
+.print tran v(1)
+.tran 0 80 1 trace all
+.plot tran v(1)(-40m,40m)
+.tran 0 80 1 trace all
+.status notime
+.end
+

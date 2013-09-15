@@ -1,0 +1,25 @@
+' test delete in subckts
+.subckt aa (a b c)
+r1 (a b) 1
+r2 (b 0) 1
+r3 (b c) 1
+x1 (a b) bb
+.ends aa
+.subckt bb (1 2)
+r1 (1 2) 1k
+.ends bb
+x1 (1 2 3) aa
+v1 (1 0) dc 1
+.list
+.print op v(nodes)
+.op
+.delete r1.x1
+.op
+.list
+.delete r1.aa
+.op
+.list
+.delete r1.v1
+.list
+.op
+.end

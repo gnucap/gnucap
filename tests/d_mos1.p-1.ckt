@@ -1,0 +1,11 @@
+pmos opp gate
+Vgs   1  0 -1.
+M1   2  1  0  0  ppp l=9.u w=9.u
+Vds   2  0 -1.
+.model ppp pmos ( level=1 lambda=0. rd=0. rs=0. cbd=0. cbs=0. is=10.E-15
++ pb=0.8 cgso=0. cgdo=0. cgbo=0. rsh=0. mj=0.5 cjsw=0. mjsw=0.33 js=0.
++ tox=100.n nsub=4.E+18 nss=0. tpg=-1. xj=1.E-15 ld=0. uo=600.
++ kf=0. af=1. fc=0.5)
+*+( vto=-35.52488 kp=20.71886u gamma=33.36995 phi=1.005362 cj=0.006441622)
+.op
+.end

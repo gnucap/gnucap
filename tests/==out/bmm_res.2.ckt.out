@@ -1,0 +1,9 @@
+# semiconductor "resistor" test 
+#           v(1)       v(2)       r(r1)      r(r2)     
+ 27.        2.         1.         1.K        1.K       
+#Freq       v(1)       v(2)      
+ 0.         5.         2.5       
+v1 ( 1 0 )  DC  2.  AC  5.
+r1 ( 1 2 )  1.K
+r2 ( 2 0 ) t1 l= 1.u w= 2.u temp= 37.
+.model t1 r ( rsh=1k narrow=NA( 0.) defw=NA( 1.u) tc1=.1 tc2=NA( 0.) tnom=NA( 27.))

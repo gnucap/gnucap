@@ -1,0 +1,15 @@
+'matrix probe test 
+#           v(1)       v(2)      
+ 27.        1.         0.5       
+#           mdy(1)     mdy(2)    
+ 27.        100.K      2.        
+#           mdz(1)     mdz(2)    
+ 27.        9.9999u    0.5       
+#           zero(1)    zero(2)   
+ 27.        0.         0.        
+#           ndz(1)     ndz(2)    
+ 27.       -Inf       -Inf       
+#           pdz(1)     pdz(2)    
+ 27.        Inf        Inf       
+#           nan(1)     nan(2)    
+ 27.        NaN        NaN       

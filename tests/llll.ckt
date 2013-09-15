@@ -1,0 +1,18 @@
+'trunc error check
+V1   1  0  generator(1)
+L3   1  2  .1
+R4   2  0  1.
+R5   1  3  1.
+C6   3  0  .1
+.options short=1p trtol=7 reltol=.001
+.width out=170
+.list
+.print tran iter(0)  v(nodes) z(c6) zraw(c6) z(3) control(0) timef(C6) timef(L3)
+.fanout
+.fanout 2
+.tran 0 1 .01 trace rejected
+.print ac v(2) v(3) vp(2) vp(3) z(c6) zraw(c6) z(3)
+.ac .001 100 decade 2
+.list
+.status notime
+.end

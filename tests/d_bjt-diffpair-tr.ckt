@@ -1,0 +1,43 @@
+difpair ckt - simple differential pair
+* modified from Spice-3 examples
+
+*.opt acct list node lvlcod=2 itermin=0 reltol=.01 abstol=1u vntol=.01
+*>.opt rstray cstray method=euler outwidth=80
+.option method=gear order=1
+*.tf v(5) vin
+*.dc vin -0.25 0.25 0.005
+
+vin 1 0 sin(0 0.1 5meg) ac 1 dc 0
+vcc 8 0 12
+vee 9 0 -12
+q1 4 2 6 0 qnl
+q2 5 3 6 0 qnl
+rs1 1 2 1k
+rs2 3 0 1k
+rc1 4 8 10k
+rc2 5 8 10k
+q3 6 7 9 0 qnl
+q4 7 7 9 0 qnl
+rbias 7 8 20k
+*.model qnl npn(bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf cjc=2pf
+*+   va=50)
+.model qnl npn(bf=80 rb=100 va=50 tr=.4)
+
+*>.print tran v(4) v(5)
+*>.print op ccs(q*)
+.op
+.plot tran v(5)
+*>.print tran qbc(q*)
+*>.tran 5ns 500ns
+*>.print tran cmu(q*)
+*>.tran 5ns 500ns
+*>.print tran vbc(q*)
+*>.tran 5ns 500ns
+*>.plot tran v(5)(2,10)
+.tran 5ns 500ns
+
+.plot ac vm(5) vp(5)
+*>.plot ac vm(5)(0,100) vp(5)(-180,180)
+.ac dec 5 1k 10ghz
+.status notime
+.end

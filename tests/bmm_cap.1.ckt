@@ -1,0 +1,15 @@
+# semiconductor "capacitor" test
+v1 1 0 dc 2 ac 1 tran pwl (0,0 1.999999n,0 2.000001n,1)
+r1 1 2 1k
+c2 2 0 t1 (w=2u l=1u)
+.model t1 c cj=5
+.print op v(nodes) c(c2)
+.print tran v(nodes)
+.print ac v(nodes) vp(2) vdb(2)
+.op
+.tran 0 20n 2n
+.ac 15.9meg
+.ac 1meg 1g dec 3
+.list
+.status notime
+.end

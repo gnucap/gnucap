@@ -1,0 +1,26 @@
+' bd sin test 
+#Time       v(1)      
+ 0.         10.       
+ 1.u        10.063    
+ 2.u        10.126    
+ 3.u        10.188    
+ 4.u        10.251    
+ 5.u        10.314    
+ 52.5u      13.239    
+ 100.u      15.878    
+ 200.u      19.511    
+ 250.u      20.       
+ 300.u      19.511    
+ 400.u      15.878    
+ 500.u      10.       
+ 600.u      4.1221    
+ 700.u      0.48943   
+ 750.u      1.f       
+ 800.u      0.48943   
+ 900.u      4.1221    
+ 0.001      10.       
+Gnucap   System status
+iterations: op=0, dc=0, tran=57, fourier=0, total=76
+transient timesteps: accepted=19, rejected=0, total=19
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%

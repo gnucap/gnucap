@@ -1,0 +1,8 @@
+implicitly tested by:
+charge-cons.ckt
+charge-cons2.ckt
+charge-cons3.ckt
+opamp-ol-disto.ckt
+
+.. as voltage source only.
+needs testing as xfer element

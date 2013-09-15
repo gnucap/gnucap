@@ -1,0 +1,7 @@
+' truncation error test test
+v1 1 0 sin freq=1 ampl=1
+c1 1 0 1
+.print tran v(1) i(c1)
+.tran 0 1 .05 trace all
+.status notime
+.end

@@ -1,0 +1,10 @@
+' sin test 
+.option out=170 
+V1  1  0  SFFM  offset= 0.  amplitude= 1.  carrier=10k  modindex=.1  signal=1k
+V2  2  0  SFFM  offset= 0.  amplitude= 1.  carrier=10k  modindex=1   signal=1k
+V3  3  0  SIN   freq=10k
+V4  4  0  SFFM  offset= 0.  amplitude= 1.  carrier=10k  modindex=2.4 signal=1k
+.print fourier v(nodes)
+.fourier 5k 15k 1k
+.list 
+.end 

@@ -1,0 +1,32 @@
+pmos p gate 
+cmosp: rsh - rs - rd conflict: using rsh
+cmosp: is - js conflict
+#           v(2)       v(3)       v(4)       iter(0)   
+ 0.         0.         0.         0.         0.        
+-1.        -5.        -5.         0.         1.        
+-2.        -1.6153    -5.         0.         2.        
+-3.        -1.6151    -5.         0.         3.        
+-4.        -1.6151    -5.         0.         4.        
+ 27.       -1.6151    -5.         0.         5.        
+#           i(Vds)     i(Vbs)     ps(Vds)    ps(Vbs)   
+ 27.        33.849u    0.         169.24u    0.        
+#           id(M1)     is(M1)     ig(M1)     ib(M1)     ibd(M1)    ibs(M1)   
+ 27.       -33.849u    33.849u    0.         0.         0.         0.        
+#           vgs(M1)    vds(M1)    vbs(M1)    vbd(M1)    von(M1)    vdsat(M1) 
+ 27.       -1.6151    -1.6151     0.         1.6151     0.84435    1.7559    
+#           gm(M1)     gds(M1)    gmb(M1)    gbd(M1)    gbs(M1)   
+ 27.        40.657u    3.1107u    22.65u     0.         0.        
+#           cbd(M1)    cbs(M1)    cgs(M1)    cgd(M1)    cgb(M1)   
+ 27.        0.         0.         41.751f    0.         0.        
+#           cqgs(M1)   cqgd(M1)   cqgb(M1)   cqbd(M1)   cqbs(M1)  
+ 27.        ??         ??         0.         ??         ??        
+#           qgs(M1)    qgd(M1)    qgb(M1)    qbd(M1)    qbs(M1)   
+ 27.        0.         0.         ??         0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 27.        1.9707f    0.         0.         62.973f    3.        
+#           cgst(M1)   cgdt(M1)   cgbt(M1)  
+ 27.        43.722f    0.         0.        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 27.       -0.80756   -0.80756    0.80756    0.80756   
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)     vth(M1)    vgst(M1)  
+ 27.       -1.6151    -1.6151     0.         0.        -0.84435    0.77077   

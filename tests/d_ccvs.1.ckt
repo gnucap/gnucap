@@ -1,0 +1,40 @@
+* ccvs test
+.options nopage
+.width out=132
+i1 1 0 dc 11 ac 11
+ri1 1 0 10
+e1 2 0 1 0 8
+re1 2 0 10
+* sense the voltage source (0 volts)
+i2 3 0 dc 11 ac 11
+ri2 4 0 10
+v2 3 4 0
+h2 5 0 v2 8
+rh2 5 0 10
+* sense a live voltage source
+v7 6 0 dc 11 ac 11
+rv7 6 0 10
+h7 7 0 v7 8
+rh7 7 0 10
+.width out=132
+.print op v(1) v(2) v(3) v(4) v(5) v(6) v(7)
+.op
+.print tran v(1) v(2) v(3) v(4) v(5) v(6) v(7)
+.tran .05 .1 0
+.print ac v(1) v(2) v(3) v(4) v(5) v(6) v(7)
+.ac oct 1 1k 2k
+.end
+
+* sense a live voltage source
+v7 19 0 11 ac 11
+rv7 19 0 10
+h7 20 0 v7 8
+rh7 20 0 10
+
+.print op v(nodes) i(v7)
+.op
+.print tran v(nodes) i(v7)
+.tran 0 .1 .05
+.print ac v(nodes) i(v7)
+.ac 1k
+.end

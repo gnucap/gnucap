@@ -1,0 +1,17 @@
+# FIT as quadratic
+Vs 1 0 dc 1u
+v1 2 0 dc 1 ac 1
+e2 6 0 2 0 t1
+e3 7 0 2 1 t1
+e0 5 0 2 0 posy(1,2) odd
+e1 3 0 5 0 t2
+e1 4 0 5 1 t2
+.model t1 table 0,0 1,1 2,4 3,9 4,16 5,25 order=2 above=10
+.model t2 table 0,0 1,1 4,2 9,3 16,4 25,5 order=2 above=.1
+.option out=120
+.list
+.print op v(1 2 3 4 5 6 7)
+.op
+.print dc v(1 2 3 4 5 6 7)
+.dc v1 -10 10 .25
+.end

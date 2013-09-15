@@ -1,0 +1,7 @@
+# coil errors
+l1 1 0 tanh(1,1)
+l2 2 0 tanh(1,1)
+k1 l1 l2 .9
+.print ac v(nodes)
+.ac 1k
+.end

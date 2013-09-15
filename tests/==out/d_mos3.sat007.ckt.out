@@ -1,0 +1,10 @@
+nmos n gate 
+>>>>>.print op v(nodes) iter(0) gm(m1) gds(m1) gmb(m1) 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+>>>>>.op 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+#           v(2)       v(3)       iter(0)    gm(M1)     gds(M1)    gmb(M1)   
+new max = 5, new limit = 5.5
+ 27.        2.1802     5.         7.         39.934u    55.086n    17.198u   

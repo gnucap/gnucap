@@ -1,0 +1,28 @@
+'parameter function call test 
+".param a='sin(1)' "
+".eval a "
+a= 0.841471
+".param b=sin(1) "
+".eval b "
+b= 0.841471
+".param c=pow(2,2) "
+".eval c "
+c= 4.
+".param d=pow(sqrt(2+2),2) "
+".eval d "
+d= 4.
+".param e='3+c' "
+".eval e "
+e= 7.
+".param f='c+3' "
+".eval f "
+f= 7.
+".param g=c+3 "
+".eval g "
+g= 7.
+".param h=3+c "
+.param h=3+c 
+          ^ ? syntax error
+".eval h "
+h= 3.
+".end "

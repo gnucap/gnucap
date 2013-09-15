@@ -1,0 +1,15 @@
+nmos n gate, saturated, js specified (unreasonable value) default bulk cap
+M1   2  2  0  4  cmosn  l= 9.u  w= 9.u  nrd= 1.  nrs= 1. as=81p ad=81p
+Vds   3  0  5.
+Rds   2  3  100.K
+Vbs   4  0  0.
+.model cmosn  nmos ( level=1  vto= 0.844345  kp= 41.5964u  gamma= 0.863074 
++ phi= 0.6  rd= 0.  rs= 0.  pb= 0.7  cgso= 218.971p 
++ cgdo= 218.971p  cgbo= 0.  rsh= 0.  cj= 384.4u  mj= 0.4884  cjsw= 527.2p 
++ mjsw= 0.3002  js= 10  tox= 41.8n  nsub= 15.3142E+15  nss= 1.E+12 
++ tpg=1  xj= 400.n  ld= 265.073n  uo= 503.521 
++ kf= 0.  af= 1.  fc= 0.5 )
+*+(* vfb=-0.4241892 )
+*    lambda= 0.00906241  vmax= 55.9035K
+.op
+.end

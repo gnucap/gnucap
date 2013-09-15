@@ -1,0 +1,11 @@
+# conditional test
+v1 1 0 dc 1 ac 10
+r1 1 2 ac 1k dc 2k
+r2 2 0 1k
+.print dc v 1 2
+.print ac v 1 2
+.dc
+.ac
+.dc
+.list
+.end

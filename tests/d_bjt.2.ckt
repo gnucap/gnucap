@@ -1,0 +1,27 @@
+' bjt test
+.model foo npn
+vcc 1 0 dc 30
+rb1 1 2 27k
+rb2 2 0 1.6k
+rc 3 1 10k
+re 4 0 1k
+q1 3 2 4 foo
+*>.width out=80
+*>.list
+*>.print op v(nodes)
+*>.op trace iter
+.op
+*>.print op ice(q1) ipi(q1) imu(q1) iceo(q1) ipio(q1) imuo(q1)
+.op
+*>.print op ic(q1) ib(q1) ie(q1) vbe(q1) vbc(q1)
+.op
+*>.print op gm(q1) gpi(q1) gmu(q1) gx(q1) go(q1)
+.op
+*>.print op cpi(q1) cmu(q1) cbx(q1) ccs(q1)
+.op
+*>.print op i(r*)
+.op
+*>.print op p(r*)
+.op
+*>.print op i(vcc) p(vcc)
+.op

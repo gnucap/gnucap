@@ -1,0 +1,47 @@
+15 cascaded NMOS inverters
+.param process=2u
+.param l=process
+.param wd=process*5
+.param wl=process
+md1  3 2 0 0  modeld w=wd l=l
+ml1  1 1 3 0  modell w=wl l=l
+md2  4 3 0 0  modeld w=wd l=l
+ml2  1 1 4 0  modell w=wl l=l
+md3  5 4 0 0  modeld w=wd l=l
+ml3  1 1 5 0  modell w=wl l=l
+md4  6 5 0 0  modeld w=wd l=l
+ml4  1 1 6 0  modell w=wl l=l
+md5  7 6 0 0  modeld w=wd l=l
+ml5  1 1 7 0  modell w=wl l=l
+md6  8 7 0 0  modeld w=wd l=l
+ml6  1 1 8 0  modell w=wl l=l
+md7  9 8 0 0  modeld w=wd l=l
+ml7  1 1 9 0  modell w=wl l=l
+md8  10 9 0 0  modeld w=wd l=l
+ml8  1 1 10 0  modell w=wl l=l
+md9  11 10 0 0  modeld w=wd l=l
+ml9  1 1 11 0  modell w=wl l=l
+md10  12 11 0 0  modeld w=wd l=l
+ml10  1 1 12 0  modell w=wl l=l
+md11  13 12 0 0  modeld w=wd l=l
+ml11  1 1 13 0  modell w=wl l=l
+md12  14 13 0 0  modeld w=wd l=l
+ml12  1 1 14 0  modell w=wl l=l
+md13  15 14 0 0  modeld w=wd l=l
+ml13  1 1 15 0  modell w=wl l=l
+md14  16 15 0 0  modeld w=wd l=l
+ml14  1 1 16 0  modell w=wl l=l
+md15  17 16 0 0  modeld w=wd l=l
+ml15  1 1 17 0  modell w=wl l=l
+vdd 1 0 5
+vin 2 0 .8
+.MODEL MODELD NMOS (level=2 KP=28U VTO=0.7 LAMBDA=0.01 GAMMA=0.9 PHI=0.5)
+.MODEL MODELL NMOS (level=2 KP=28U VTO=0.7 LAMBDA=0.01 GAMMA=0.9 PHI=0.5)
+.width out=80
+.PRINT OP iter(0) V(nodes)
+.op
+.options noacct
+.op
+.stat notime
+.list
+.end

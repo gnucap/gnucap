@@ -1,0 +1,38 @@
+nmos n gate, linear, lambda not specified
+Vgs   1  0  3.236734
+M1   2  1  0  4  cmosn  l= 9.u  w= 9.u  nrd= 1.  nrs= 1. 
+Vds   3  0  0.01
+Rds   2  3  1.
+Vbs   4  0 -1.234875
+.model cmosn  nmos ( level=2  vto= 0.844345  kp= 41.5964u  gamma= 0.863074 
++ phi= 0.6  rd= 0.  rs= 0.  cbd= 0.  cbs= 0.  is= 0  pb= 0.7 
++ cgso= 218.971p  cgdo= 218.971p  cgbo= 0.  rsh= 0.  cj= 384.4u  mj= 0.4884 
++ cjsw= 527.2p  mjsw= 0.3002  js= 0.  tox= 41.8n  nsub= 15.3142E+15 
++ nss= 1.E+12  nfs= 3.5934E+12  tpg=1  xj= 400.n  ld= 265.073n  uo= 503.521 
++ ucrit= 161.166K  uexp= 0.163917  utra= 0.  neff= 1.001  kf= 0.  af= 1. 
++ fc= 0.5  delta= 0.36745 )
+*+(* vfb=-0.4241892 )
+*    lambda= 0.00906241  vmax= 55.9035K
+.print op v(nodes) iter(0)
+.op
+.print op i(v*) ps(v*)
+.op
+.print op id(m1) vgs(m1) vds(m1) vbs(m1) vth(m1) vdsat(m1)
+.op
+.print op gm(m1) gds(m1) gmb(m1) cbd(m1) cbs(m1)
+.op
+.print op cgsovl(m1) cgdovl(m1) cgbovl(m1) cgate(m1) region(m1)
+.op
+.print op cgs(m1) cgd(m1) cgb(m1) vgst(m1) von(m1)
+.op
+.print op cgst(m1) cgdt(m1) cgbt(m1) is(m1) ig(m1) ib(m1)
+.op
+.print op p(m1) pd(m1) ps(m1) ids(m1) idstray(m1) iderror(m1)
+.op
+.print op vdm(m1) vgm(m1) vbm(m1) vsm(m1)
+.op
+.print op vd(m1) vg(m1) vb(m1) vs(m1)
+.op
+.print dc v(1) v(2) v(3) i(vds)
+.dc vgs -10 10 1
+.end

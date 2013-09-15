@@ -1,0 +1,48 @@
+'test of pwl, ac, dc combinations
+v1 1 0 pwl 0 0.1 1 1 2 2
+v2 2 0 pwl(0 0.1 1 1 2 2)
+v3 3 0 pwl(0 0.1 1 1 2 2) dc 7 ac 9
+v4 4 0 pwl(0 0.1 1 1 2 2) dc 7
+v5 5 0 dc 7 pwl(0 0.1 1 1 2 2)
+v6 6 0 pwl(0 0.1 1 1 2 2) ac 9
+v7 7 0 ac 9 pwl(0 0.1 1 1 2 2)
+v8 8 0 pwl(0 0.1 1 1 2 2) 7 ac 9
+v9 9 0 7 pwl(0 0.1 1 1 2 2) ac 9
+v10 10 0 7 pwl(0 0.1 1 1 2 2)
+v11 11 0 pwl(0 0.1 1 1 2 2) 7
+v12 12 0 pwl(0 0.1 1 1 2 2) 7
+v13 13 0 7
+v14 14 0 ac 9
+v15 15 0 dc 7 ac 9
+v16 16 0 7 ac 9
+r1 1 0 1k
+r2 2 0 1k
+r3 3 0 1k
+r4 4 0 1k
+r5 5 0 1k
+r6 6 0 1k
+r7 7 0 1k
+r8 8 0 1k
+r9 9 0 1k
+r10 10 0 1k
+r11 11 0 1k
+r12 12 0 1k
+r13 13 0 1k
+r14 14 0 1k
+r15 15 0 1k
+r16 16 0 1k
+.width out=132
+.op
+.print dc v(1) v(2) v(3) v(4) v(5) v(6) v(7) v(8)
+.dc v12 0 10 1
+.print dc v(9) v(10) v(11) v(12) v(13) v(14) v(15) v(16)
+.dc v12 0 10 1
+.print tran v(1) v(2) v(3) v(4) v(5) v(6) v(7) v(8)
+.tran .5 5 0
+.print tran v(9) v(10) v(11) v(12) v(13) v(14) v(15) v(16)
+.tran .5 5 0
+.print ac v(1) v(2) v(3) v(4) v(5) v(6) v(7) v(8)
+.ac oct 1 1k 8k
+.print ac v(9) v(10) v(11) v(12) v(13) v(14) v(15) v(16)
+.ac oct 1 1k 8k
+.end

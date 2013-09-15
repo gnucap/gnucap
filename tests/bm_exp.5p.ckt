@@ -1,0 +1,16 @@
+' exp test, periodic
+.option out=170 list
+.param ppp=50n
+.subckt esource (a b)
+*v1 (a b) exp  iv= 0.  pv= 1.  td1= 1.n  tau1= 5.n  td2= 10.n  tau2= 5.n  period= 20.n
+v1 (a b) exp  iv= 0.  pv= 1.  td1=p/20  tau1=p/4  td2=p/2  tau2=p/4  period=p
+.ends
+x1 (1 0) esource p=ppp
+*x2 (2 0) esource p=20n
+.print tran v(1)
+.param ppp=20n
+.tran 0 100n 100n trace all
+.param ppp=50n
+.tran  trace all
+.list
+.end

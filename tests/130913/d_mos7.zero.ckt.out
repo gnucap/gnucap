@@ -1,0 +1,21 @@
+nmos n gate, vds = 0 
+#           v(1)       v(2)       v(3)       v(4)       iter(0)   
+ 27.        3.2367     0.         0.         0.         5.        
+#           i(Vgs)     i(Vds)     i(Vbs)     ps(Vgs)    ps(Vds)    ps(Vbs)   
+ 27.        0.         0.         0.         0.         0.         0.        
+#           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
+ 27.        0.         3.2367     0.         0.         1.6986     0.77304   
+#           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
+ 27.        0.         129.84u    0.         0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 27.        1.8647f    1.8647f    0.         186.47f    3.        
+#           cgs(M1)    cgd(M1)    cgb(M1)    vgst(M1)   von(M1)   
+ 27.        0.         93.235f    186.47f    1.5381     1.6986    
+#           cgst(M1)   cgdt(M1)   cgbt(M1)   is(M1)     ig(M1)     ib(M1)    
+ 27.        1.8647f    95.099f    186.47f    0.         0.         0.        
+#           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1) iderror(M1)
+ 27.        0.         0.         0.         0.         0.         ??        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 27.        0.         3.2367     0.         0.        
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
+ 27.        0.         3.2367     0.         0.        

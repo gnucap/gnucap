@@ -1,0 +1,94 @@
+Mutual inductance test circuit
+.param L1 = .56
+.param L2 = .79
+.param K12 = .75
+.param Rsource = 22
+.param Rload = 75
+
+* using 'k' pseudo element
+.subckt trans2a (a1 a2 b1 b2)
+k1 (l1 l2) {K12}
+l1 (a1 a2) {L1}
+l2 (b1 b2) {L2}
+.ends
+
+* T model, requires a common terminal
+.subckt trans2b (a com b)
+.param M12 = {K12*sqrt(L1*L2)}
+l2a (a 6)   {L1-M12}
+l2b (6 com) {M12}
+l2c (6 b)   {L2-M12}
+.ends
+
+* series model, using VCVS
+.subckt trans2c (a1 a2 b1 b2)
+.param M12 = {K12*sqrt(L1*L2)}
+l3a (10 a2)       {L1}
+l3b (11 b2)       {L2}
+e3a (a1 10 11 b2) {M12/L2}
+e3b (b1 11 10 a2) {M12/L1}
+.ends
+
+* parallel model, using CCCS
+.subckt trans2d (a1 a2 b1 b2)
+.param M12 = {K12*sqrt(L1*L2)}
+l1 (a1 a2)  {(1-K12*K12)*L1}
+l2 (b1 b2)  {(1-K12*K12)*L2}
+f1 a1 a2 l2 {-M12/L1}
+f2 b1 b2 l1 {-M12/L2}
+.ends
+
+* parallel model, using CCCS, split apart
+.subckt trans2e (a1 a2 b1 b2)
+.param M12 = {K12*sqrt(L1*L2)}
+l1  (a1 a2)  {L1}
+l2  (b1 b2)  {L2}
+l1m (a1 a2)  {(1/(K12*K12)-1)*L1}
+l2m (b1 b2)  {(1/(K12*K12)-1)*L2}
+f1  a1 a2 l2 {-(M12/L1)}
+f2  b1 b2 l1 {-(M12/L2)}
+f1m a1 a2 l2m {-(M12/L1)}
+f2m b1 b2 l1m {-(M12/L2)}
+.ends
+
+* nullor model
+.subckt trans2f (a1 a2 b1 b2)
+.param M12 = {K12*sqrt(L1*L2)}
+r1l1 (a1 0)  1
+r2l1 (a1 a3) -1
+r3l1 (a3 a2) 1
+r4l1 (a2 0)  -1
+r1l2 (b1 0)  1
+r2l2 (b1 b3) -1
+r3l2 (b3 b2) 1
+r4l2 (b2 0)  -1
+c1   (a3 0)  {-L1-M12}
+c2   (b3 0)  {-L2-M12}
+c3   (a3 b3) {M12}
+.ends
+
+v1  (1 0)     pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r1a (1 2)     {Rsource}
+x1  (2 0 3 0) trans2a L1=L1 L2=L2 K12=K12
+r1b (3 0)     {Rload}
+
+v2 4 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r2a 4 5 {Rsource}
+x2 5 0 7 0 trans2f L1=L1 L2=L2 K12=K12
+r2b 7 0 {Rload}
+
+v3 8 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+r3a 8 9 {Rsource}
+x3 9 0 12 0 trans2e L1=L1 L2=L2 K12=K12
+r3b 12 0 {Rload}
+
+.options nopage
+.list
+.width out=132
+.print ac v(2) v(3) v(5) v(7) v(9) v(12)
+.ac dec 2 .1 1k
+.print tran v(2) v(3) v(5) v(7) v(9) v(12)
+.tran .001 .01 0 .0001
+.list
+.status notime
+.end

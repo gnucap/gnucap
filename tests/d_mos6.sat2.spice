@@ -1,0 +1,7 @@
+nmos n gate, saturated
+M1   2  2  0  0  cmosn  l= 9.u  w= 9.u  nrd= 1.  nrs= 1. 
+Vds   3  0  5.
+Rds   2  3  100.K
+.model cmosn  nmos (level=6 tox=1e-7)
+.op
+.end
