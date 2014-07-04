@@ -2,7 +2,6 @@
 # configure for executable
 
 mkdir -p O
-
 #-------------  Stuff added to enable --prefix  --------------
 if test "x$1" != "x"; then
     # echo Found input parameter -- $1
@@ -26,10 +25,10 @@ sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 
 #----------------------------------------------------------------
 echo "CCFLAGS = \\" >Make.ccflags
+echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
+
 echo "LIBS = \\" >Make.libs
 echo "-lgnucap \\" >>Make.libs
-
-echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
 echo "" >>Make.libs
 echo "PREFIX = " $prefix >>Make.libs
 echo "" >>Make.libs
@@ -53,6 +52,7 @@ LDFLAGS = -rdynamic \
 CAT_EOF
 
 cat Make.ccflags Make.libs Make.sys >Make2
-cat Make1 Make2 ../Make3 Make.depend >O/Makefile
+rm Make.ccflags Make.libs Make.sys
+#cat Make1 Make2 ../Make3 Make.depend >O/Makefile
 
 exit 0
