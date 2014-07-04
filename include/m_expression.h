@@ -1,4 +1,4 @@
-/*$Id: m_expression.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: m_expression.h 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2003 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -23,7 +23,7 @@
 //testing=script 2009.08.12
 #include "m_base.h"
 /*--------------------------------------------------------------------------*/
-class Symbol_Table;
+//class Symbol_Table;
 class CARD_LIST;
 class Expression;
 /*--------------------------------------------------------------------------*/

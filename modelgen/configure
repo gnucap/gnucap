@@ -53,6 +53,5 @@ CAT_EOF
 
 cat Make.ccflags Make.libs Make.sys >Make2
 rm Make.ccflags Make.libs Make.sys
-#cat Make1 Make2 ../Make3 Make.depend >O/Makefile
 
 exit 0
