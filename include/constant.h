@@ -1,4 +1,4 @@
-/*$Id: constant.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: constant.h,v  2014/05/16 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -84,11 +84,14 @@ double const ICM2M2 = 1e4;		/* inverse  ...........  squared */
 double const ICM2M3 = 1e6;		/* inverse  ...........  cubed   */
 double const MICRON2METER = 1e-6;	/*	microns to meters	 */
 
-#ifdef HAS_NUMERIC_LIMITS
-double const MAXDBL    = std::numeric_limits<double>::max();
-#else
-double const MAXDBL    = DBL_MAX;
-#endif
+//#ifdef HAS_NUMERIC_LIMITS
+//double const MAXDBL    = std::numeric_limits<double>::max();
+//#else
+//double const MAXDBL    = DBL_MAX;
+//#endif
+//BUG// construction order bug? .. use #define
+
+#define MAXDBL (DBL_MAX)
 
 double const BIGBIG    =  (MAXDBL)*(.9247958);	/* unlikely number	  */
 //double const OVERDUE   = -(MAXDBL)*(.9347958);/* unlikely number	  */
