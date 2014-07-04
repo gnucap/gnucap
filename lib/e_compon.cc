@@ -1,4 +1,4 @@
-/*$Id: e_compon.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*$Id: e_compon.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -441,29 +441,29 @@ void COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_port_by_index(int num, std::string& ext_name)
 {
-  if (num <= max_nodes()) {
+  if (num < max_nodes()) {
     _n[num].new_node(ext_name, this);
     if (num+1 > _net_nodes) {
       // make the list bigger
       _net_nodes = num+1;
-    }else{itested();
+    }else{untested();
       // it's already big enough, probably assigning out of order
     }
   }else{untested();
-    throw Exception_Too_Many(num, max_nodes(), 0/*offset*/);
+    throw Exception_Too_Many(num+1, max_nodes(), 0/*offset*/);
   }
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_port_to_ground(int num)
 {untested();
-  if (num <= max_nodes()) {untested();
+  if (num < max_nodes()) {untested();
     _n[num].set_to_ground(this);
     if (num+1 > _net_nodes) {untested();
       _net_nodes = num+1;
     }else{untested();
     }
   }else{untested();
-    throw Exception_Too_Many(num, max_nodes(), 0/*offset*/);
+    throw Exception_Too_Many(num+1, max_nodes(), 0/*offset*/);
   }
 }
 /*--------------------------------------------------------------------------*/
