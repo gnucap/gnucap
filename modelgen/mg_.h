@@ -20,24 +20,7 @@
  * 02110-1301, USA.
  */
 //testing=script 2006.10.31
-#include <stdexcept>
-#include "md.h"
 #include "ap.h"
-/*--------------------------------------------------------------------------*/
-// defined here
-class Base;
-class C_Comment;
-class Cxx_Comment;
-class Parameter;
-class Code_Block;
-class Parameter_Block;
-class String_Arg;
-class Model;
-class Head;
-class File;
-/*--------------------------------------------------------------------------*/
-// external
-class CS;
 /*--------------------------------------------------------------------------*/
 #ifdef PASS_TRACE_TAGS
 #define make_tag() (out << "//" << __func__ << ":" << __LINE__ << "\n")
