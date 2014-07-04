@@ -1,4 +1,4 @@
-/*$Id: e_card.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: e_card.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -59,7 +59,7 @@ CARD::~CARD()
 const std::string CARD::long_label()const
 {
   std::string buffer(short_label());
-  for (const CARD* brh = owner(); exists(brh); brh = brh->owner()) {
+  for (const CARD* brh = owner();  brh;  brh = brh->owner()) {
     buffer = brh->short_label() + '.' + buffer;
   }
   return buffer;
@@ -243,7 +243,7 @@ void CARD::set_param_by_name(std::string Name, std::string Value)
  */
 void CARD::set_dev_type(const std::string& New_Type)
 {
-  if (!Umatch(New_Type, dev_type() + ' ')) {itested();
+  if (!Umatch(New_Type, dev_type() + ' ')) {untested();
     //throw Exception_Cant_Set_Type(dev_type(), New_Type);
   }else{
     // it matches -- ok.

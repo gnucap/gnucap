@@ -1,4 +1,4 @@
-/*$Id: e_base.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*$Id: e_base.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -115,7 +115,7 @@ double CKT_BASE::ac_probe_num(const std::string& what)const
 /*--------------------------------------------------------------------------*/
 /*static*/ double CKT_BASE::probe(const CKT_BASE *This, const std::string& what)
 {
-  if (exists(This)) {
+  if (This) {
     return This->probe_num(what);
   }else{				/* return 0 if doesn't exist */
     return 0.0;				/* happens when optimized models */

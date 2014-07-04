@@ -1,4 +1,4 @@
-/*$Id: e_base.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: e_base.h 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -68,8 +68,6 @@ public: // label
   const std::string&  short_label()const {return _label;}
   void	set_label(const std::string& s) {_label = s;}
 };
-/*--------------------------------------------------------------------------*/
-inline bool exists(const CKT_BASE* c) {return c!=0;}
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

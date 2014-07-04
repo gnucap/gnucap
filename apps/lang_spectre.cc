@@ -1,4 +1,4 @@
-/*$Id: lang_spectre.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: lang_spectre.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -210,6 +210,7 @@ MODEL_SUBCKT* LANG_SPECTRE::parse_module(CS& cmd, MODEL_SUBCKT* x)
 /*--------------------------------------------------------------------------*/
 COMPONENT* LANG_SPECTRE::parse_instance(CS& cmd, COMPONENT* x)
 {
+  assert(x);
   cmd.reset();
   parse_label(cmd, x);
   parse_ports(cmd, x);
@@ -357,6 +358,10 @@ void LANG_SPECTRE::print_instance(OMSTREAM& o, const COMPONENT* x)
 void LANG_SPECTRE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 {
   assert(x);
+  if (x->comment()[0] != '*') {untested();
+    o << "*";
+  }else{untested();
+  }
   o << x->comment() << '\n';
 }
 /*--------------------------------------------------------------------------*/
@@ -380,11 +385,11 @@ class CMD_MODEL : public CMD {
     const CARD* p = lang_spectre.find_proto(base_name, NULL);
     if (p) {
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(p->clone());
-      if (exists(new_card)) {
+      if (new_card) {
 	assert(!new_card->owner());
 	lang_spectre.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
-      }else{	//BUG// memory leak
+      }else{
 	cmd.warn(bDANGER, here, "model: base has incorrect type");
       }
     }else{
