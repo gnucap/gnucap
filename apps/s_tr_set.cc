@@ -1,4 +1,4 @@
-/*$Id: s_tr_set.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: s_tr_set.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -128,10 +128,10 @@ void TRANSIENT::setup(CS& Cmd)
 
   if  (_cold || _tstart < _sim->_last_time  ||  _sim->_last_time <= 0.) {
     _cont = false;
-    time1 = _sim->_time0 = 0.;
+    _time1 = _sim->_time0 = 0.;
   }else{
     _cont = true;
-    time1 = _sim->_time0 = _sim->_last_time;
+    _time1 = _sim->_time0 = _sim->_last_time;
   }
   _sim->_freq = ((_tstop > _tstart) ? (1 / (_tstop - _tstart)) : (0.));
 

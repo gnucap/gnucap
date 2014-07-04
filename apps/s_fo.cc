@@ -1,4 +1,4 @@
-/*$Id: s_fo.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: s_fo.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -298,7 +298,7 @@ void FOURIER::setup(CS& Cmd)
   }
   _tstop = _tstart + 1. / _fstep;
   _tstep = 1. / _fstep / (_timesteps-1);
-  time1 = _sim->_time0 = _tstart;
+  _time1 = _sim->_time0 = _tstart;
 
   _sim->_freq = _fstep;
 

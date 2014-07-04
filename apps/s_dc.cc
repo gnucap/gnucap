@@ -1,4 +1,4 @@
-/*$Id: s_dc.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: s_dc.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -144,7 +144,7 @@ DCOP::DCOP()
 void DCOP::finish(void)
 {
   for (int ii = 0;  ii < _n_sweeps;  ++ii) {
-    if (exists(_zap[ii])) { // component
+    if (_zap[ii]) { // component
       _stash[ii].restore();
       _zap[ii]->dec_probes();
       _zap[ii]->precalc_first();
@@ -242,7 +242,7 @@ void DC::setup(CS& Cmd)
     _start[ii].e_val(0., _scope);
     fix_args(ii);
 
-    if (exists(_zap[ii])) { // component
+    if (_zap[ii]) { // component
       _stash[ii] = _zap[ii];			// stash the std value
       _zap[ii]->inc_probes();			// we need to keep track of it
       _zap[ii]->set_value(_zap[ii]->value(),0);	// zap out extensions
@@ -347,13 +347,13 @@ void DCOP::sweep()
   head(_start[0], _stop[0], " ");
   _sim->_bypass_ok = false;
   _sim->set_inc_mode_bad();
-  if (_cont) {untested();
+  if (_cont) {
     _sim->restore_voltages();
+    CARD_LIST::card_list.tr_restore();
   }else{
+    _sim->clear_limit();
+    CARD_LIST::card_list.tr_begin();
   }
-  
-  _sim->clear_limit();
-  CARD_LIST::card_list.tr_begin();
   sweep_recursive(_n_sweeps);
 }
 /*--------------------------------------------------------------------------*/
