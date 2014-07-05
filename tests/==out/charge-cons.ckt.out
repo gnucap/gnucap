@@ -514,8 +514,8 @@ C1 ( 1 2 )  1.p
 M1 ( 0 2 0 0 )  m  l=50.u w=50.u nrd=1. nrs=1.
 .model m nmos2 ( level=2 kp=20.u nfs=0. neff=1. ucrit=49.K uexp=0.1 delta=0.
 + phi=0.6 tox=110.n nsub=2.2E+15 nss=32.G xj=2.95u uo=575. tpg=1 tnom=NA( 27.)
-+ fc=0.5 pb=0.8 cj=NA( 0.) mj=0.5 cjsw=0. mjsw=0.33 kf=NA( 0.) af=NA( 0.)
-+ is=10.f rsh=0. cbd=4.5f cbs=4.5f cgso=1.5n cgdo=1.5n cgbo=0. ld=2.4485u)
++ fc=0.5 pb=0.8 cj=NA( 0.) mj=0.5 cjsw=0. mjsw=0.33 is=10.f rsh=0. cbd=4.5f
++ cbs=4.5f cgso=1.5n cgdo=1.5n cgbo=0. ld=2.4485u)
 Gnucap   System status
 iterations: op=3, dc=0, tran=2589, fourier=0, total=3099
 transient timesteps: accepted=507, rejected=0, total=507

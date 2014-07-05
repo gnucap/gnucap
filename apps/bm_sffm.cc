@@ -158,12 +158,10 @@ TIME_PAIR EVAL_BM_SFFM::tr_review(COMPONENT* d)const
   double time = d->_sim->_time0 + d->_sim->_dtmin * .01;
   double old_time;
   double N = 0;
-  double old_N;
   trace2("", time, N);
   do {
     // simple fixed point iteration to find peaks and zero crossings
     old_time = time;
-    old_N = N;
     double mod = (_modindex * sin(M_TWO_PI * _signal * time));
     double inst_freq = _carrier * (1 + mod / (M_TWO_PI * _carrier * time));
     if (N == 0) {

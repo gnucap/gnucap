@@ -23,7 +23,7 @@
  * Used for spice compatible .param statements
  * and passing arguments to models and subcircuits
  */
-//testing=script 2010.02.07
+//testing=script 2014.07.04
 #ifndef U_PARAMETER_H
 #define U_PARAMETER_H
 #include "u_opt.h"
@@ -279,7 +279,7 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
     // anything else means look up the value
     if (recursion <= OPT::recursion) {
       _v = lookup_solve(def, scope);
-      if (_v == NOT_INPUT) {itested();
+      if (_v == NOT_INPUT) {
 	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
 	//BUG// needs to show scope
 	//BUG// it is likely to have a numeric overflow resulting from the bad value

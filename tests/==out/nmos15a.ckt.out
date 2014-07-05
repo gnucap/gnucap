@@ -51,10 +51,8 @@ vin ( 2 0 )  DC  0.8
 .model MODELD nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
 + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
 + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
-+ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
-+ ld=NA( 0.))
++ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
 .model MODELL nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
 + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
 + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
-+ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
-+ ld=NA( 0.))
++ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))

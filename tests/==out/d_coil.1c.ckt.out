@@ -98,7 +98,7 @@ r3a ( 8 9 ) Rsource
 x3 ( 9 0 12 0 )  trans2c  k12=K12 l1=L1 l2=L2
 r3b ( 12 0 ) Rload
 Gnucap   System status
-iterations: op=0, dc=0, tran=381, fourier=0, total=520
-transient timesteps: accepted=127, rejected=3, total=130
+iterations: op=0, dc=0, tran=387, fourier=0, total=528
+transient timesteps: accepted=129, rejected=3, total=132
 nodes: user=9, subckt=2, model=3, total=14
 dctran density=42.9%, ac density=42.9%

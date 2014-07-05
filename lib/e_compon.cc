@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * Base class for elements of a circuit
  */
-//testing=script,noswitch 2009.07.13
+//testing=script 2014.07.04
 #include "u_lang.h"
 #include "e_model.h"
 #include "e_elemnt.h"
@@ -223,11 +223,11 @@ void COMMON_COMPONENT::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lan
 void COMMON_COMPONENT::set_param_by_index(int i, std::string& Value, int Offset)
 {
   switch (i) {
-  case 0:  _tnom_c = Value; break;
-  case 1:  _dtemp = Value; break;
-  case 2:  _temp_c = Value; break;
+  case 0:untested();  _tnom_c = Value; break;
+  case 1:untested();  _dtemp = Value; break;
+  case 2:untested();  _temp_c = Value; break;
   case 3:  _mfactor = Value; break;
-  default: throw Exception_Too_Many(i, 3, Offset); break;
+  default:untested(); throw Exception_Too_Many(i, 3, Offset); break;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -238,34 +238,34 @@ bool COMMON_COMPONENT::param_is_printable(int i)const
   case 1:  return _dtemp.has_hard_value();
   case 2:  return _temp_c.has_hard_value();
   case 3:  return _mfactor.has_hard_value();
-  default: return false;
+  default:untested(); return false;
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i)const
 {
   switch (i) {
-  case 0:  return "tnom";
-  case 1:  return "dtemp";
-  case 2:  return "temp";
+  case 0:untested();  return "tnom";
+  case 1:untested();  return "dtemp";
+  case 2:untested();  return "temp";
   case 3:  return "m";
-  default: return "";
+  default:untested(); return "";
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i, int j)const
-{
+{untested();
   return (j==0) ? param_name(i) : "";
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_value(int i)const
 {
   switch (i) {
-  case 0:  return _tnom_c.string();
-  case 1:  return _dtemp.string();
-  case 2:  return _temp_c.string();
+  case 0:untested();  return _tnom_c.string();
+  case 1:untested();  return _dtemp.string();
+  case 2:untested();  return _temp_c.string();
   case 3:  return _mfactor.string();
-  default: return "";
+  default:untested(); return "";
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -324,7 +324,7 @@ void COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 	}
       }
     }
-    itested();
+    untested();
     throw Exception_No_Match(Name);
   }
 }
@@ -333,16 +333,16 @@ void COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 // It is called during expansion only.
 
 void COMMON_COMPONENT::Set_param_by_name(std::string Name, std::string Value)
-{
+{untested();
   assert(!has_parse_params_obsolete_callback());
   
   //BUG// ugly linear search
-  for (int i = COMMON_COMPONENT::param_count() - 1;  i >= 0;  --i) {
-    for (int j = 0;  COMMON_COMPONENT::param_name(i,j) != "";  ++j) {
-      if (Umatch(Name, COMMON_COMPONENT::param_name(i,j) + ' ')) {
+  for (int i = COMMON_COMPONENT::param_count() - 1;  i >= 0;  --i) {untested();
+    for (int j = 0;  COMMON_COMPONENT::param_name(i,j) != "";  ++j) {untested();
+      if (Umatch(Name, COMMON_COMPONENT::param_name(i,j) + ' ')) {untested();
 	COMMON_COMPONENT::set_param_by_index(i, Value, 0/*offset*/);
 	return; //success
-      }else{
+      }else{untested();
 	//keep looking
       }
     }
@@ -427,12 +427,12 @@ bool COMPONENT::node_is_connected(int i)const
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
-{itested();
-  for (int i=0; i<max_nodes(); ++i) {itested();
-    if (int_name == port_name(i)) {itested();
+{untested();
+  for (int i=0; i<max_nodes(); ++i) {untested();
+    if (int_name == port_name(i)) {untested();
       set_port_by_index(i, ext_name);
       return;
-    }else{itested();
+    }else{untested();
     }
   }
   untested();
@@ -524,7 +524,7 @@ void COMPONENT::precalc_first()
   if (has_common()) {
     try {
       mutable_common()->precalc_first(scope());
-    }catch (Exception_Precalc& e) {
+    }catch (Exception_Precalc& e) {untested();
       error(bWARNING, long_label() + ": " + e.message());
     }
     _mfactor = common()->mfactor();
@@ -656,8 +656,8 @@ void COMPONENT::set_param_by_index(int i, std::string& Value, int offset)
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
     case 0: _value = Value; break;
-    case 1: _mfactor = Value; break;
-    default: CARD::set_param_by_index(i, Value, offset);
+    case 1:untested(); _mfactor = Value; break;
+    default:untested(); CARD::set_param_by_index(i, Value, offset);
     }
   }
 }
@@ -670,7 +670,7 @@ bool COMPONENT::param_is_printable(int i)const
     switch (COMPONENT::param_count() - 1 - i) {
     case 0:  return value().has_hard_value();
     case 1:  return _mfactor.has_hard_value();
-    default: return CARD::param_is_printable(i);
+    default:untested(); return CARD::param_is_printable(i);
     }
   }
 }
@@ -683,7 +683,7 @@ std::string COMPONENT::param_name(int i)const
     switch (COMPONENT::param_count() - 1 - i) {
     case 0:  return value_name();
     case 1:  return "m";
-    default: return CARD::param_name(i);
+    default:untested(); return CARD::param_name(i);
     }
   }
 }
@@ -711,7 +711,7 @@ std::string COMPONENT::param_value(int i)const
     switch (COMPONENT::param_count() - 1 - i) {
     case 0:  return value().string();
     case 1:  return _mfactor.string();
-    default: return CARD::param_value(i);
+    default:untested(); return CARD::param_value(i);
     }
   }
 }
@@ -802,7 +802,7 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
     const MODEL_CARD* model = dynamic_cast<const MODEL_CARD*>(c);
     if (!model) {untested();
       throw Exception_Type_Mismatch(long_label(), modelname, ".model");
-    }else if (!model->is_valid(this)) {itested();
+    }else if (!model->is_valid(this)) {untested();
       error(bWARNING, long_label() + ", " + modelname
 	   + "\nmodel and device parameters are incompatible, using anyway\n");
     }else{
@@ -820,7 +820,7 @@ void COMPONENT::q_eval()
   if(!is_q_for_eval()) {
     mark_q_for_eval();
     _sim->_evalq_uc->push_back(this);
-  }else{itested();
+  }else{untested();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -854,7 +854,7 @@ bool COMPONENT::use_obsolete_callback_parse()const
 {
   if (has_common()) {
     return common()->use_obsolete_callback_parse();
-  }else{
+  }else{untested();
     return false;
   }
 }

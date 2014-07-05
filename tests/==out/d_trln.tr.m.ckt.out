@@ -1,19 +1,19 @@
 #Transmission lines 
 V1 ( 1 0 ) generator scale= 1.
-# matched 
+*# matched 
 R1s ( 1 11 )  50.
 T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
 R1l ( 12 0 )  50.
-# really 2 in parallel 
+*# really 2 in parallel 
 R2s ( 1 21 )  50.
 T2a ( 21 0 22 0 )  z0=100 f=10meg nl=.25
 T2b ( 21 0 22 0 )  z0=100 f=10meg nl=.25
 R2l ( 22 0 )  50.
-# n=2 
+*# n=2 
 R3s ( 1 31 )  50.
 T3 ( 31 0 32 0 )  z0=100 f=10meg nl=.25 m=2
 R3l ( 32 0 )  50.
-# not 
+*# not 
 R4s ( 1 41 )  50.
 T4 ( 41 0 42 0 )  z0=100 f=10meg nl=.25
 R4l ( 42 0 )  50.

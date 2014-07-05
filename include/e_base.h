@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * real base for anything to do with a circuit
  */
-//testing=obsolete
+//testing=script 2014.07.04
 #ifndef E_BASE_H
 #define E_BASE_H
 #include "md.h"
@@ -49,7 +49,7 @@ protected: // create and destroy
   //--------------------------------------------------------------------
 public: // user stuff
   virtual void	      help(CS&, OMSTREAM&)const {untested();}
-  virtual std::string status()const {return "";}
+  virtual std::string status()const {untested();return "";}
   //--------------------------------------------------------------------
 public: // probes
 	  double      probe_num(const std::string&)const;

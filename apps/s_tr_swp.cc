@@ -22,7 +22,7 @@
  * sweep time and simulate.  output results.
  * manage event queue
  */
-//testing=script 2007.11.22
+//testing=script 2014.07.04
 #include "u_time_pair.h"
 #include "u_sim_data.h"
 #include "u_status.h"
@@ -74,7 +74,7 @@ void TRANSIENT::sweep()
     advance_time();
     _sim->zero_voltages();
     CARD_LIST::card_list.do_tr();    //evaluate_models
-    while (!_sim->_late_evalq.empty()) {itested(); //BUG// encapsulation violation
+    while (!_sim->_late_evalq.empty()) {untested();itested(); //BUG// encapsulation violation
       _sim->_late_evalq.front()->do_tr_last();
       _sim->_late_evalq.pop_front();
     }
@@ -149,18 +149,18 @@ void TRANSIENT::set_step_cause(STEP_CAUSE C)
   switch (C) {
   case scITER_A:untested();
   case scADT:untested();
-  case scITER_R:
-  case scINITIAL:
+  case scUSER:
+  case scEVENTQ:
   case scSKIP:
+  case scITER_R:
   case scTE:
   case scAMBEVENT:
-  case scEVENTQ:
-  case scUSER:
+  case scINITIAL:
     ::status.control = C;
     break;
   case scNO_ADVANCE:untested();
   case scZERO:untested();
-  case scSMALL:itested();
+  case scSMALL:untested();itested();
   case scREJECT:
     ::status.control += C;
     break;
@@ -180,7 +180,7 @@ void TRANSIENT::first()
   ::status.review.start();
   _time_by_user_request = _sim->_time0 + _tstep;	/* set next user step */
   //_eq.Clear();				/* empty the queue */
-  while (!_sim->_eq.empty()) {
+  while (!_sim->_eq.empty()) {untested();
     _sim->_eq.pop();
   }
   _stepno = 0;
@@ -264,7 +264,7 @@ bool TRANSIENT::next()
     if (!_sim->_eq.empty() && _sim->_eq.top() < newtime) {
       newtime = _sim->_eq.top();
       new_dt = newtime - reftime;
-      if (new_dt < _sim->_dtmin) {
+      if (new_dt < _sim->_dtmin) {untested();
 	//new_dt = _sim->_dtmin;
 	//newtime = reftime + new_dt;
       }else{
@@ -341,7 +341,7 @@ bool TRANSIENT::next()
     // quantize
     if (newtime < almost_fixed_time) {
       assert(new_dt >= 0);
-      if (newtime < _sim->_time0) {untested();
+      if (newtime < _sim->_time0) {
 	assert(reftime == _time1);
 	assert(reftime < _sim->_time0); // not moving forward
 	// try to pick a step that will end up repeating the rejected step
@@ -414,7 +414,7 @@ bool TRANSIENT::next()
   /* got it, I think */
   
   /* check to be sure */
-  if (newtime < _time1 + _sim->_dtmin) {itested();
+  if (newtime < _time1 + _sim->_dtmin) {untested();itested();
     /* It's really bad. */
     /* Reject the most recent step, back up as much as possible, */
     /* and creep along */
@@ -428,7 +428,7 @@ bool TRANSIENT::next()
     set_step_cause(scSMALL);
     //check_consistency2();
     throw Exception("tried everything, still doesn't work, giving up");
-    //}else if (newtime <= _sim->_time0 - _sim->_dtmin) {
+    //}else if (newtime <= _sim->_time0 - _sim->_dtmin) {untested();
   }else if (newtime < _sim->_time0) {
     /* Reject the most recent step. */
     /* We have faith that it will work with a smaller time step. */
@@ -475,7 +475,7 @@ bool TRANSIENT::next()
     trace1("eq", _sim->_eq.top());
     _sim->_eq.pop();
   }
-  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {itested();
+  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {untested();itested();
     trace1("eq-extra", _sim->_eq.top());
     _sim->_eq.pop();
   }
@@ -510,7 +510,7 @@ bool TRANSIENT::review()
   }else{
   }
 
-  if (time_by._error_estimate < _time1 + 2*_sim->_dtmin) {
+  if (time_by._error_estimate < _time1 + 2*_sim->_dtmin) {untested();
     _time_by_error_estimate = _time1 + 2*_sim->_dtmin;
   }else{
     _time_by_error_estimate = time_by._error_estimate;
@@ -534,7 +534,7 @@ void TRANSIENT::accept()
       _sim->_acceptq.back()->tr_accept();
       _sim->_acceptq.pop_back();
     }
-  }else{itested();
+  }else{untested();itested();
     _sim->_acceptq.clear();
     CARD_LIST::card_list.tr_accept();
   }

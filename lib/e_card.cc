@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * Base class for "cards" in the circuit description file
  */
-//testing=script 2006.07.12
+//testing=script 2014.07.04
 #include "u_time_pair.h"
 #include "e_cardlist.h"
 #include "e_node.h"
@@ -71,13 +71,11 @@ const std::string CARD::long_label()const
  * does not traverse subcircuits
  */
 int CARD::connects_to(const node_t& node)const
-{
-  untested();
+{untested();
   int count = 0;
-  if (is_device()) {
-    for (int ii = 0;  ii < net_nodes();  ++ii) {
-      untested();
-      if (node.n_() == _n[ii].n_()) {
+  if (is_device()) {untested();
+    for (int ii = 0;  ii < net_nodes();  ++ii) {untested();
+      if (node.n_() == _n[ii].n_()) {untested();
         ++count;
       }else{untested();
       }
@@ -176,7 +174,7 @@ const CARD* CARD::find_looking_out(const std::string& name)const
     }else if (makes_own_scope()) {
       // probably a subckt or "module"
       CARD_LIST::const_iterator i = CARD_LIST::card_list.find_(name);
-      if (i != CARD_LIST::card_list.end()) {itested();
+      if (i != CARD_LIST::card_list.end()) {untested();
 	return *i;
       }else{
 	throw;

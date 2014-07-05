@@ -1,22 +1,22 @@
 #Transmission lines 
 V1 ( 1 0 ) generator scale= 1.
-# matched 
+*# matched 
 R1s ( 1 11 )  50.
 T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
 R1l ( 12 0 )  50.
-# open stub 
+*# open stub 
 R2s ( 1 21 )  50.
 T2 ( 21 0 22 0 )  z0=50 f=10meg nl=.25
 R2l ( 22 0 )  1.E+99
-# shorted stub 
+*# shorted stub 
 R3s ( 1 31 )  50.
 T3 ( 31 0 32 0 )  z0=50 f=10meg nl=.25
 R3l ( 32 0 )  0.001
-# lo-z load 
+*# lo-z load 
 R4s ( 1 41 )  50.
 T4 ( 41 0 42 0 )  z0=50 f=10meg nl=.25
 R4l ( 42 0 )  25.
-# hi-z load 
+*# hi-z load 
 R5s ( 1 51 )  50.
 T5 ( 51 0 52 0 )  z0=50 f=10meg nl=.25
 R5l ( 52 0 )  100.

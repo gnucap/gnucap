@@ -52,6 +52,6 @@ Vbs ( 4 0 )  DC -1.234875
 + ucrit=161.166K uexp=0.163917 delta=0.36745 vto=0.844345 gamma=0.863074
 + phi=0.6 lambda=.01 tox=41.8n nsub=15.3142E+15 nss=1.E+12 xj=400.n uo=503.521
 + tpg=1 tnom=NA( 27.) fc=0.5 pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002
-+ kf=0. af=1. is=0 js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p
-+ cgdo=218.971p cgbo=0. ld=265.073n)
++ is=0 js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p
++ cgbo=0. ld=265.073n)
 *    vmax= 55.9035K 

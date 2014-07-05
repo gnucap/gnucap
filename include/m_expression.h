@@ -20,7 +20,7 @@
  * 02110-1301, USA.
  *------------------------------------------------------------------
  */
-//testing=script 2009.08.12
+//testing=script 2014.07.04
 #include "m_base.h"
 /*--------------------------------------------------------------------------*/
 //class Symbol_Table;
@@ -44,7 +44,9 @@ protected:
   explicit Token(const Token& P)
     : Base(), _name(P._name), _data(P._data), _aRgs(P._aRgs) {assert(!_data);}
 public:
-  virtual ~Token()   {if (_data) {delete _data;}else{}}
+  virtual ~Token()   {if (_data) {
+delete _data;}else{
+}}
   virtual Token*     clone()const = 0;
   const std::string& name()const {return _name;}
   const Base*	     data()const {return _data;}

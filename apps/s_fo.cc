@@ -23,7 +23,7 @@
  * performs transient analysis, silently, then fft.
  * outputs results of fft
  */
-//testing=script 2007.11.21
+//testing=script 2014.07.04
 #include "globals.h"
 #include "u_sim_data.h"
 #include "u_status.h"
@@ -44,12 +44,11 @@ public:
     _fstep(0.),
     _timesteps(0),
     _fdata(NULL)
-  {
-  }
+  {}
   ~FOURIER() {}
 private:
   explicit FOURIER(const FOURIER&): TRANSIENT() {unreachable(); incomplete();}
-  std::string status()const {return "";}
+  std::string status()const {untested();return "";}
   void	setup(CS&);	/* s_fo_set.cc */
   void	fftallocate();
   void	fftunallocate();
@@ -91,14 +90,14 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
     fftallocate();
     
     ::status.set_up.stop();
-    switch (ENV::run_mode) {untested();
+    switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();		break;
     case rBATCH:	untested();
     case rINTERACTIVE:  itested();
     case rSCRIPT:	sweep(); foout();	break;
     case rPRESET:	untested(); /*nothing*/ break;
     }
-  }catch (Exception& e) {itested();
+  }catch (Exception& e) {untested();
     error(bDANGER, e.message() + '\n');
   }
   
@@ -230,11 +229,11 @@ void FOURIER::setup(CS& Cmd)
     Cmd >> arg1;
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
       Cmd >> arg2;
-    }else{
+    }else{untested();
     }
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
       Cmd >> arg3;
-    }else{
+    }else{untested();
     }
     
     if (arg3.has_hard_value()) {	    /* 3 args: all */
@@ -256,7 +255,7 @@ void FOURIER::setup(CS& Cmd)
 	_fstop  = arg2;
 	_fstep  = arg1;
       }
-    }else{
+    }else{untested();
       assert(arg1.has_hard_value());
       arg1.e_val(0.,_scope);
       if (arg1 == 0.) {untested();	    /* 1 arg: start */
@@ -269,7 +268,7 @@ void FOURIER::setup(CS& Cmd)
 	_fstep  = arg1;
       }
     }
-  }else{itested();
+  }else{untested();
     /* else (no args) : no change */
   }
 
@@ -279,7 +278,7 @@ void FOURIER::setup(CS& Cmd)
   _fstep.e_val(0., _scope);
   _fstop.e_val(OPT::harmonics * _fstep, _scope);
   
-  if (_fstep == 0.) {itested();
+  if (_fstep == 0.) {untested();
     throw Exception("frequency step = 0");
   }else{
   }
@@ -303,9 +302,9 @@ void FOURIER::setup(CS& Cmd)
   _sim->_freq = _fstep;
 
   _dtmax = std::min(double(_dtmax_in), _tstep / double(_skip_in));
-  if (_dtmin_in.has_hard_value()) {
+  if (_dtmin_in.has_hard_value()) {untested();
     _sim->_dtmin = _dtmin_in;
-  }else if (_dtratio_in.has_hard_value()) {
+  }else if (_dtratio_in.has_hard_value()) {untested();
     _sim->_dtmin = _dtmax / _dtratio_in;
   }else{
     // use smaller of soft values
@@ -334,7 +333,7 @@ void FOURIER::fftunallocate()
     }
     delete [] _fdata;
     _fdata = NULL;
-  }else{itested();
+  }else{untested();
   }
 }
 /*--------------------------------------------------------------------------*/

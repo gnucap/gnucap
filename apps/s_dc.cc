@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * dc analysis top
  */
-//testing=script,complete 2006.07.14
+//testing=script 2014.07.04
 #include "globals.h"
 #include "u_status.h"
 #include "u_prblst.h"
@@ -171,7 +171,7 @@ void OP::setup(CS& Cmd)
     Cmd >> _start[0];
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
       Cmd >> _stop[0];
-    }else{
+    }else{untested();
       _stop[0] = _start[0];
     }
   }else{
@@ -280,16 +280,16 @@ void DCOP::fix_args(int Nest)
     }
     _linswp[Nest] = false;
     break;
-  case OCTAVE:
+  case OCTAVE:untested();
     if (_step[Nest] == 0.) {untested();
       _step[Nest] = 1.;
-    }else{
+    }else{untested();
     }
     _step[Nest] = pow(2.00000001, 1./_step[Nest]);
     _linswp[Nest] = false;
     break;
   case DECADE:
-    if (_step[Nest] == 0.) {
+    if (_step[Nest] == 0.) {untested();
       _step[Nest] = 1.;
     }else{
     }
@@ -347,7 +347,7 @@ void DCOP::sweep()
   head(_start[0], _stop[0], " ");
   _sim->_bypass_ok = false;
   _sim->set_inc_mode_bad();
-  if (_cont) {
+  if (_cont) {untested();
     _sim->restore_voltages();
     CARD_LIST::card_list.tr_restore();
   }else{
@@ -370,7 +370,7 @@ void DCOP::sweep_recursive(int Nest)
     _sim->_temp_c = temp_c_in;
     if (Nest == 0) {
       int converged = solve_with_homotopy(itl,_trace);
-      if (!converged) {itested();
+      if (!converged) {untested();
 	error(bWARNING, "did not converge\n");
       }else{
       }
@@ -397,8 +397,8 @@ void DCOP::first(int Nest)
 
   *_sweepval[Nest] = _start[Nest];
   _reverse[Nest] = false;
-  if (_reverse_in[Nest]) {itested();
-    while (next(Nest)) {itested();
+  if (_reverse_in[Nest]) {untested();
+    while (next(Nest)) {untested();
       /* nothing */;
     }
     _reverse[Nest] = true;
@@ -445,7 +445,7 @@ bool DCOP::next(int Nest)
 	  _reverse[Nest] = true;
 	}else{
 	}
-      }else{
+      }else{untested();
       }
       if (_reverse[Nest]) {untested();
 	*(_sweepval[Nest]) /= _step[Nest];

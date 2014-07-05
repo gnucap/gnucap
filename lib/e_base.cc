@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * Base class for "cards" in the circuit description file
  */
-//testing=script 2006.07.12
+//testing=script 2014.07.04
 #include "u_sim_data.h"
 #include "m_wave.h"
 #include "u_prblst.h"
@@ -45,7 +45,7 @@ CKT_BASE::~CKT_BASE()
   if (_probes == 0) {
   }else if (!_probe_lists) {untested();
   }else if (!_sim) {untested();
-  }else{
+  }else{untested();
     _probe_lists->purge(this);
   }
   trace1("", _probes);
@@ -56,7 +56,7 @@ const std::string CKT_BASE::long_label()const
 {
   //incomplete();
   std::string buffer(short_label());
-  //for (const CKT_BASE* brh = owner(); exists(brh); brh = brh->owner()) {
+  //for (const CKT_BASE* brh = owner(); exists(brh); brh = brh->owner()) {untested();
   //  buffer += '.' + brh->short_label();
   //}
   return buffer;
@@ -105,8 +105,7 @@ double CKT_BASE::ac_probe_num(const std::string& what)const
     xp = ac_probe_ext(what);
     if (!xp.exists()) {
       // Still didn't find anything.  Print "??".
-    }else{
-      untested();
+    }else{untested();
       // The second attempt worked.
     }
   }
