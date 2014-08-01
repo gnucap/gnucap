@@ -27,7 +27,7 @@
 class DEV_DOT : public CARD {
 private:
   std::string	_s;
-  explicit DEV_DOT(const DEV_DOT& p) :CARD(p) {set_constant(true);}
+  explicit DEV_DOT(const DEV_DOT& p) :CARD(p), _s(p._s) {untested(); set_constant(true);}
 public:
   explicit	DEV_DOT()		:CARD() {set_constant(true);}
 private: // override virtual
