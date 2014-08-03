@@ -1232,7 +1232,7 @@ bool DEV_SPICE::do_tr()
 
     for (int ii = 0; ii < matrix_nodes()+OFFSET; ++ii) {
       for (int jj = 0; jj < matrix_nodes()+OFFSET; ++jj) {
-	_matrix[ii][jj].real() = 0;
+	_matrix[ii][jj].real(0.);
       }
     }
   }
