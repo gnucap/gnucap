@@ -1,4 +1,4 @@
-/*$Id: m_matrix.h,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
+/*$Id: m_matrix.h 2014/11/23 al$ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -733,7 +733,8 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
     }
   }
   x[0] = 0.;
-  //BUG// some things don't work unless there is a zero here.
+  // index starts at 1, but node 0 is ground
+  // x[0]==0 eliminates a lot of "if" statements
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

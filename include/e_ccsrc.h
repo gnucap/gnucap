@@ -1,4 +1,4 @@
-/*$Id: e_ccsrc.h,v 26.126 2009/10/16 05:29:28 al Exp $ -*- C++ -*-
+/*$Id: e_ccsrc.h 2014/11/23 al$ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -60,7 +60,7 @@ public:
 		       COMMON_COMPONENT* Common, double Value,
 		       const node_t& N0, const node_t& N1,
 		       ELEMENT* Input);
-public: //BUG// for language plugin
+protected:
   std::string	 _input_label;
   const ELEMENT* _input;
 };

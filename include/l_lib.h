@@ -1,4 +1,4 @@
-/*$Id: l_lib.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: l_lib.h 2014/11/23$ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

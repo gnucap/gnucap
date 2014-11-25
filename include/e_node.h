@@ -1,4 +1,4 @@
-/*$Id: e_node.h,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: e_node.h 2014/11/23 al$ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -306,33 +306,23 @@ public:
 
 public:
   double      v0()const {
-    //assert(m_() >= 0);
-    if (m_() >= 0) {
-      assert(m_() <= NODE::_sim->_total_nodes);
-      assert(n_());
-      //assert(n_()->m_() == m_());
-      //assert(n_()->v0() == NODE::_sim->_v0[m_()]);
-      return NODE::_sim->_v0[m_()];
-    }else{
-      //BUG// in BJT model: should not get here but does.
-      return 0.;
-    }
+    assert(m_() >= 0);
+    assert(m_() <= NODE::_sim->_total_nodes);
+    assert(n_());
+    //assert(n_()->m_() == m_());
+    //assert(n_()->v0() == NODE::_sim->_v0[m_()]);
+    return NODE::_sim->_v0[m_()];
   }
-
+  
   COMPLEX     vac()const {
-    //assert(m_() >= 0);
-    if (m_() >= 0) {
-      assert(m_() <= NODE::_sim->_total_nodes);
-      assert(n_());
-      //assert(n_()->m_() == m_());
-      //assert(n_()->vac() == NODE::_ac[m_()]);
-      return NODE::_sim->_ac[m_()];
-    }else{untested();
-      //BUG// assume v0 BUG applies here too.
-      return 0.;
-    }
+    assert(m_() >= 0);
+    assert(m_() <= NODE::_sim->_total_nodes);
+    assert(n_());
+    //assert(n_()->m_() == m_());
+    //assert(n_()->vac() == NODE::_ac[m_()]);
+    return NODE::_sim->_ac[m_()];
   }
-
+  
   double&     i() {
     assert(m_() >= 0);
     assert(m_() <= NODE::_sim->_total_nodes);

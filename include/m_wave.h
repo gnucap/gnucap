@@ -1,4 +1,4 @@
-/*$Id: m_wave.h,v 26.86 2008/07/07 22:31:11 al Exp $ -*- C++ -*-
+/*$Id: m_wave.h 2014/11/23$ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

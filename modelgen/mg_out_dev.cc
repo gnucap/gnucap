@@ -1,4 +1,4 @@
-/*$Id: mg_out_dev.cc,v 26.134 2009/11/29 03:44:57 al Exp $ -*- C++ -*-
+/*$Id: mg_out_dev.cc 2014/11/23 al$ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -259,10 +259,13 @@ static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
 static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
 {
   make_tag();
-  if (p.short_if().empty()) {untested();
-    out << 
-      "  assert(!(_n[n_" << p.name() << "].n_()));\n"
-      "  _n[n_" << p.name() << "].new_model_node();\n";
+  if (p.short_if().empty()) {
+    out <<
+      "    if (!(_n[n_" << p.name() << "].n_())) {\n"
+      "      _n[n_" << p.name() << "] = _n[n_" << p.short_to() << "];\n"
+      "    }else{\n"
+      "    }\n";
+    //BUG// generates bad code if no short_to
   }else{
     out <<
       "    //assert(!(_n[n_" << p.name() << "].n_()));\n"
@@ -313,7 +316,14 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "  if (_sim->is_first_expand()) {\n"
     "    precalc_first();\n"
     "    precalc_last();\n"
-    "    // local nodes\n";
+    "    // optional nodes\n";
+  for (Port_List::const_iterator
+       p = d.circuit().opt_nodes().begin();
+       p != d.circuit().opt_nodes().end();
+       ++p) {
+    make_dev_allocate_local_nodes(out, **p);
+  }
+  out << "    // local nodes\n";
   for (Port_List::const_iterator
        p = d.circuit().local_nodes().begin();
        p != d.circuit().local_nodes().end();
