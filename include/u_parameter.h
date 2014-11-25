@@ -1,4 +1,4 @@
-/*$Id: u_parameter.h 2014/07/04 al $ -*- C++ -*-
+/*$Id: u_parameter.h 2014.11.25 $ -*- C++ -*-
  * Copyright (C) 2005 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -23,7 +23,7 @@
  * Used for spice compatible .param statements
  * and passing arguments to models and subcircuits
  */
-//testing=script 2014.07.04
+//testing=script 2014.11.25
 #ifndef U_PARAMETER_H
 #define U_PARAMETER_H
 #include "u_opt.h"
@@ -33,19 +33,34 @@
 /*--------------------------------------------------------------------------*/
 class LANGUAGE;
 /*--------------------------------------------------------------------------*/
+class PARA_BASE {
+protected:
+  std::string _s;
+  
+public:
+  PARA_BASE( ): _s(){}
+  PARA_BASE(const PARA_BASE& p): _s(p._s) {}
+  PARA_BASE(const std::string s): _s(s){untested();}
+  virtual ~PARA_BASE(){}
+
+	  bool	has_hard_value()const {return (_s != "");}
+  virtual bool	has_good_value()const = 0;
+
+  virtual void	parse(CS& cmd) = 0;
+  virtual void	operator=(const std::string& s) = 0;
+};
+/*--------------------------------------------------------------------------*/
 template <class T>
-class PARAMETER {
+class PARAMETER : public PARA_BASE {
 private:
   mutable T _v;
-  std::string _s;
 public:
-  explicit PARAMETER() :_v(NOT_INPUT), _s() {}
-  PARAMETER(const PARAMETER<T>& p) :_v(p._v), _s(p._s) {}
-  explicit PARAMETER(T v) :_v(v), _s() {}
+  explicit PARAMETER() : PARA_BASE(), _v(NOT_INPUT) {}
+  PARAMETER(const PARAMETER<double>& p): PARA_BASE(p), _v(p._v) {}
+  explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}
   
-  bool	has_hard_value()const {return (_s != "");}
   bool	has_good_value()const {return (_v != NOT_INPUT);}
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
@@ -112,32 +127,19 @@ inline bool operator==(const PARAMETER<int>& p, double v)
 }
 #endif
 
-template <class T>
-bool has_hard_value(const PARAMETER<T>& p)
+inline bool has_hard_value(const PARA_BASE& p)
 {
   return p.has_hard_value();
 }
 
-#if 0
-inline bool has_hard_value(double x)
-{untested();
-  return (x != NOT_INPUT);
-}
-inline bool has_good_value(double x)
-{untested();
-  return (x != NOT_INPUT);
-}
-#endif
-
-template <class T>
-bool has_good_value(const PARAMETER<T>& p)
+inline bool has_good_value(const PARA_BASE& p)
 {
   return p.has_good_value();
 }
 
 #if 0
 template <class T>
-bool has_soft_value(const PARAMETER<T>& p)
+bool has_soft_value(const PARA_BASE& p)
 {untested();
   return p.has_soft_value();
 }
@@ -220,6 +222,9 @@ public:
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
+private:
+  mutable int _index;
+  mutable const_iterator _previous;
 };
 /*--------------------------------------------------------------------------*/
 template <>
@@ -279,7 +284,7 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
     // anything else means look up the value
     if (recursion <= OPT::recursion) {
       _v = lookup_solve(def, scope);
-      if (_v == NOT_INPUT) {
+      if (_v == NOT_INPUT) {itested();
 	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
 	//BUG// needs to show scope
 	//BUG// it is likely to have a numeric overflow resulting from the bad value
