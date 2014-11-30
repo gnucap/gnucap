@@ -1,0 +1,69 @@
+nmos bsim3, linear, vbs=-123.. 
+#           v(1)       v(2)       v(3)       v(4)       iter(0)   
+ 27.        3.2367     0.0099995  0.01      -1.2349     6.        
+#           i(Vgs)     i(Vds)     i(Vbs)     ps(Vgs)    ps(Vds)    ps(Vbs)   
+ 27.        0.        -456.62n    0.         0.         4.5662n    0.        
+#           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
+ 27.        456.62n    3.2367     0.0099995 -1.2349     2.625      0.41991   
+#           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
+ 27.        726.94n    45.055u    263.37n    0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 27.        186.5E-18  186.5E-18  0.         1.8647f    3.        
+#           cgs(M1)    cgd(M1)    cgb(M1)    vgst(M1)   von(M1)   
+ 27.        0.         403.6E-18  1.8647f    0.61168    2.625     
+#           cgst(M1)   cgdt(M1)   cgbt(M1)   is(M1)     ig(M1)     ib(M1)    
+ 27.        186.5E-18  590.E-18   1.8647f   -456.62n    0.         2.4997p   
+#           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1) iderror(M1)
+ 27.        4.5691n    4.5691n    0.         456.62n   -1.2549p    ??        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 27.        0.0049998  3.2317    -1.2399    -0.0049998 
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
+ 27.        0.0099995  3.2367    -1.2349     0.        
+#           v(1)       v(2)       v(3)       i(Vds)    
+-10.       -10.        0.01       0.01       0.        
+-9.        -9.         0.01       0.01       0.        
+-8.        -8.         0.01       0.01       0.        
+-7.        -7.         0.01       0.01       0.        
+-6.        -6.         0.01       0.01       0.        
+-5.        -5.         0.01       0.01       0.        
+-4.        -4.         0.01       0.01       0.        
+-3.        -3.         0.01       0.01       0.        
+-2.        -2.         0.01       0.01       0.        
+-1.        -1.         0.01       0.01       0.        
+ 0.         0.         0.01       0.01       0.        
+ 1.         1.         0.01       0.01       0.        
+ 2.         2.         0.01       0.01       0.        
+ 3.         3.         0.0099997  0.01      -280.65n   
+ 4.         4.         0.009999   0.01      -974.88n   
+ 5.         5.         0.0099984  0.01      -1.5556u   
+ 6.         6.         0.009998   0.01      -2.0442u   
+ 7.         7.         0.0099975  0.01      -2.4579u   
+ 8.         8.         0.0099972  0.01      -2.8097u   
+ 9.         9.         0.0099969  0.01      -3.1101u   
+ 10.        10.        0.0099966  0.01      -3.3674u   
+Vgs ( 1 0 )  DC  3.236734
+M1 ( 2 1 0 4 )  cmosn  l=.9u w=.9u nrd=1. nrs=1.
+Vds ( 3 0 )  DC  0.01
+Rds ( 2 3 )  1.
+Vbs ( 4 0 )  DC -1.234875
+.model cmosn nmos7 ( level=7 cdsc=NA( 240.u) cdscb=NA( 0.) cdscd=NA( 0.)
++ cit=NA( 0.) nfactor=NA( 1.) xj=NA( 150.n) vsat=NA( 80.K) at=NA( 33.K)
++ a0=NA( 1.) ags=NA( 0.) a1=NA( 0.) a2=NA( 1.) keta=NA(-0.047)
++ nsub=NA( 60.E+15) ngate=NA( 0.) vbm=NA(-3.) xt=NA( 155.n) kt1=NA(-0.11)
++ kt1l=NA( 0.) kt2=NA( 0.022) k3=NA( 80.) k3b=NA( 0.) w0=NA( 2.5u)
++ nlx=NA( 174.n) dvt0=NA( 2.2) dvt1=NA( 0.53) dvt2=NA(-0.032) dvt0w=NA( 0.)
++ dvt1w=NA( 5.3Meg) dvt2w=NA(-0.032) drout=NA( 0.56) ua1=NA( 4.31n)
++ ua=NA( 2.25n) ub1=NA(-7.61E-18) ub=NA( 587.E-21) ute=NA(-1.5) voff=NA(-0.08)
++ delta=NA( 0.01) rdsw=NA( 0.) prwg=NA( 0.) prwb=NA( 0.) prt=NA( 0.)
++ eta0=NA( 0.08) etab=NA(-0.07) pclm=NA( 1.3) pdiblc1=NA( 0.39)
++ pdiblc2=NA( 0.0086) pdiblcb=NA( 0.) pscbe1=NA( 424.Meg) pscbe2=NA( 10.u)
++ pvag=NA( 0.) wr=NA( 1.) dwg=NA( 0.) dwb=NA( 0.) b0=NA( 0.) b1=NA( 0.)
++ alpha0=1e-6 beta0=NA( 30.) elm=NA( 5.) vfbcv=NA(-1.) cgsl=NA( 0.)
++ cgdl=NA( 0.) ckappa=NA( 0.6) clc=NA( 100.n) cle=NA( 0.6) capmod=NA(2)
++ nqsmod=NA(0) mobmod=NA(1) noimod=NA(1) paramchk=NA(0) binunit=NA(1)
++ version=NA( 3.1) tox=NA( 15.n) xpart=NA( 0.) jsw=NA( 0.) nj=NA( 1.)
++ xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.)
++ lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.)
++ wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) tnom=NA( 27.) fc=NA( 0.5) pb= 1.
++ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f) cgso= 207.188p
++ cgdo= 207.188p cgbo= 0. ld=NA( 0.))

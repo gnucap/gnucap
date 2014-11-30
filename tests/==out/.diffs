@@ -1,0 +1,1547 @@
+1lin.ckt
+ap_ctof.2.ckt
+ap_ctof.ckt
+basic.ckt
+bm_complex.1.ckt
+bm_complex.1a.ckt
+bm_complex.2.ckt
+bm_complex.3.ckt
+bm_complex.4.ckt
+bm_cond.1.ckt
+bm_cond.2.ckt
+bm_cond.3.ckt
+bm_exp.1.ckt
+bm_exp.1p.ckt
+bm_exp.2.ckt
+bm_exp.3.ckt
+bm_exp.3p.ckt
+bm_exp.4p.ckt
+bm_exp.5p.ckt
+bm_fit.0.1.ckt
+bm_fit.1.1.ckt
+bm_fit.2.1.ckt
+bm_fit.2.2.ckt
+bm_fit.2.3.ckt
+bm_fit.2.4.ckt
+bm_fit.3.1.ckt
+bm_fit.3.2.ckt
+bm_fit.3.3.ckt
+bm_poly.1.ckt
+bm_poly.2.ckt
+bm_posy.1.ckt
+bm_pulse.1.ckt
+bm_pulse.2.ckt
+bm_pulse.3.ckt
+bm_pwl.1.ckt
+bm_pwl.2.ckt
+bm_pwl.3.ckt
+bm_pwl.4.ckt
+bm_pwl.5.ckt
+bm_sffm.1.ckt
+bm_sffm.2.ckt
+bm_sffm.3.ckt
+--- ==out/bm_sffm.3.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/bm_sffm.3.ckt.out	2014-07-04 21:35:47.000000000 -0400
+@@ -464,7 +464,7 @@
+ # v(3)      --------- actual ---------  -------- relative --------
+ #freq       value        dB      phase  value        dB      phase
+  5.K        2.717f    -291.32   13.266  2.717f    -291.32   13.266
+- 6.K        2.137f    -293.40  -20.747  2.137f    -293.40  -20.747
++ 6.K        2.137f    -293.40  -20.748  2.137f    -293.40  -20.748
+  7.K        3.7106f   -288.61   -9.558  3.7106f   -288.61   -9.558
+  8.K        3.6984f   -288.64   -4.956  3.6984f   -288.64   -4.956
+  9.K        10.005f   -280.00  -12.537  10.005f   -280.00  -12.537
+bm_sffm.4.ckt
+bm_sffm.5.ckt
+bm_sffm.6.ckt
+bm_sin.1.ckt
+bm_sin.2.ckt
+bm_sin.3.ckt
+bm_sin.4.ckt
+bm_sin.5.ckt
+bm_sin.6.ckt
+bm_sin.7.ckt
+bm_sin.8.ckt
+bm_sin.9.ckt
+bm_table.1.1.ckt
+bm_table.2.1.ckt
+bm_table.2.2.ckt
+bm_table.2.3.ckt
+bm_table.2.4.ckt
+bm_table.3.1.ckt
+bm_table.3.2.ckt
+bm_table.3.3.ckt
+bm_table.error1.ckt
+bm_tanh.1.ckt
+bm_tanh.2.ckt
+bmm_cap.1.ckt
+bmm_cap.2.ckt
+bmm_cap.3.ckt
+bmm_cap.4.ckt
+bmm_cap.5.ckt
+bmm_res.1.ckt
+bmm_res.1p.ckt
+bmm_res.2.ckt
+bmm_res.2p.ckt
+bmm_res.3.ckt
+bmm_res.3p.ckt
+bmm_res.4.ckt
+bmm_res.4p.ckt
+bmm_res.5.ckt
+bmm_res.5p.ckt
+c.ckt
+c_delete.2.ckt
+c_delete.3.ckt
+c_delete.4.ckt
+c_delete.5.ckt
+c_delete.6.ckt
+c_delete.7.ckt
+c_delete.ckt
+c_eval.1.ckt
+c_getckt.ckt
+c_lib.1.ckt
+c_list.ckt
+c_measure.1.ckt
+c_measure.2.ckt
+c_modify.ckt
+cc.ckt
+charge-cons.ckt
+--- ==out/charge-cons.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/charge-cons.ckt.out	2014-07-04 21:35:48.000000000 -0400
+@@ -514,8 +514,8 @@
+ M1 ( 0 2 0 0 )  m  l=50.u w=50.u nrd=1. nrs=1.
+ .model m nmos2 ( level=2 kp=20.u nfs=0. neff=1. ucrit=49.K uexp=0.1 delta=0.
+ + phi=0.6 tox=110.n nsub=2.2E+15 nss=32.G xj=2.95u uo=575. tpg=1 tnom=NA( 27.)
+-+ fc=0.5 pb=0.8 cj=NA( 0.) mj=0.5 cjsw=0. mjsw=0.33 kf=NA( 0.) af=NA( 0.)
+-+ is=10.f rsh=0. cbd=4.5f cbs=4.5f cgso=1.5n cgdo=1.5n cgbo=0. ld=2.4485u)
+++ fc=0.5 pb=0.8 cj=NA( 0.) mj=0.5 cjsw=0. mjsw=0.33 is=10.f rsh=0. cbd=4.5f
+++ cbs=4.5f cgso=1.5n cgdo=1.5n cgbo=0. ld=2.4485u)
+ Gnucap   System status
+ iterations: op=3, dc=0, tran=2589, fourier=0, total=3099
+ transient timesteps: accepted=507, rejected=0, total=507
+charge-cons2.ckt
+charge-cons3.ckt
+current.ckt
+d_bjt-diffpair-ccs.ckt
+d_bjt-diffpair-cjc.ckt
+d_bjt-diffpair-dc.ckt
+d_bjt-diffpair-nocap.ckt
+d_bjt-diffpair-tf.ckt
+d_bjt-diffpair-tr.ckt
+d_bjt-diffpair-tran.ckt
+d_bjt-pnp.ckt
+d_bjt-rca3040.ckt
+d_bjt-rtlinv.ckt
+d_bjt-schmitt-bypass.ckt
+d_bjt-schmitt-nobypass.ckt
+d_bjt.2.ckt
+d_bjt.ckt
+d_bjt.error1.ckt
+d_cap.1.ckt
+d_cap.2.ckt
+d_cap.3.ckt
+d_cap.3a.ckt
+d_cap.4.ckt
+--- ==out/d_cap.4.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_cap.4.ckt.out	2014-07-04 21:35:50.000000000 -0400
+@@ -4,9 +4,9 @@
+ c2 ( 2 0 )  0.1
+ #Time       v(1)       v(2)       timef(c2)  dtr(c2)    dt(c2)    
+  0.         0.         0.         Inf        Inf        ??        
+- 0.001      0.99999    0.090691   0.0028166  0.0018166  686.87u   
+- 0.002      0.99999    0.17729    0.0046206  0.0026206  0.001     
+- 0.003      0.99999    0.25564    0.0059888  0.0029888  0.001     
++ 0.001      0.99999    0.090691   0.0028161  0.0018161  685.71u   
++ 0.002      0.99999    0.17729    0.0046201  0.0026201  0.001     
++ 0.003      0.99999    0.25564    0.0059891  0.0029891  0.001     
+  0.004      0.99999    0.32653    0.0072686  0.0032686  0.001     
+  0.005      0.99999    0.39067    0.0085876  0.0035876  0.001     
+  0.006      0.99999    0.4487     0.0098846  0.0038846  0.001     
+@@ -67,31 +67,32 @@
+  0.02       1.         0.83333    0.03       0.01       0.01      
+  0.03       1.         0.94444    0.04       0.01       0.01      
+  0.04       1.         0.98148    0.033818   0.0038179  0.01      
+- 0.033804   1.         0.9622     0.037482   0.0036783  0.0038039 
+- 0.037608   1.         0.97428    0.042068   0.0044602  0.0038039 
+- 0.041412   1.         0.9825     0.047715   0.0063035  0.0038039 
+- 0.047677   1.         0.99085    0.054896   0.0072192  0.0062653 
+- 0.053942   1.         0.99521    0.062912   0.0089693  0.0062653 
+- 0.060208   1.         0.9975     0.070482   0.010274   0.0062653 
+- 0.070423   1.         0.99919    0.083426   0.013004   0.010215  
+- 0.080638   1.         0.99974    0.098481   0.017843   0.010215  
+- 0.098318   1.         0.99998    0.12192    0.023602   0.01768   
+- 0.116      1.         1.         0.15526    0.039266   0.01768   
+- 0.15443    1.         1.         0.2207     0.066269   0.038435  
+- 0.21948    1.         1.         0.44765    0.22818    0.065044  
+- 0.41461    1.         1.         1.4016     0.98702    0.19513   
+- 1.         1.         1.         4.1784     3.1784     0.58539   
+- 2.         1.         1.         11.41      9.4101     1.        
+- 3.         1.         1.         20.449     17.449     1.        
+- 4.         1.         1.         24.658     20.658     1.        
+- 5.         1.         1.         25.935     20.935     1.        
+- 6.         1.         1.         27.216     21.216     1.        
+- 7.         1.         1.         28.501     21.501     1.        
+- 8.         1.         1.         29.789     21.789     1.        
+- 9.         1.         1.         31.082     22.082     1.        
+- 10.        1.         1.         32.378     22.378     1.        
++ 0.033333   1.         0.96032    0.037003   0.0036695  0.0033333 
++ 0.036667   1.         0.97165    0.041034   0.0043677  0.0033333 
++ 0.04       1.         0.97975    0.046173   0.0061731  0.0033333 
++ 0.046154   1.         0.98928    0.053104   0.0069506  0.0061538 
++ 0.052308   1.         0.99433    0.060953   0.0086452  0.0061538 
++ 0.058462   1.         0.997      0.068205   0.0097434  0.0061538 
++ 0.068168   1.         0.99896    0.080422   0.012254   0.0097066 
++ 0.077875   1.         0.99964    0.094491   0.016616   0.0097066 
++ 0.094341   1.         0.99997    0.11608    0.021743   0.016467  
++ 0.11081    1.         1.         0.14592    0.035109   0.016467  
++ 0.14501    1.         1.         0.20202    0.057013   0.0342    
++ 0.20201    1.         1.         0.36669    0.16469    0.057     
++ 0.36161    1.         1.         0.94686    0.58525    0.1596    
++ 0.6808     1.         1.         2.421      1.7402     0.3192    
++ 1.         1.         1.         4.8381     3.8381     0.3192    
++ 2.         1.         1.         8.7521     6.7521     1.        
++ 3.         1.         1.         14.41      11.41      1.        
++ 4.         1.         1.         20.288     16.288     1.        
++ 5.         1.         1.         21.506     16.506     1.        
++ 6.         1.         1.         22.728     16.728     1.        
++ 7.         1.         1.         23.953     16.953     1.        
++ 8.         1.         1.         25.18      17.18      1.        
++ 9.         1.         1.         26.411     17.411     1.        
++ 10.        1.         1.         27.645     17.645     1.        
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=97, fourier=0, total=562
+-transient timesteps: accepted=120, rejected=2, total=122
++iterations: op=0, dc=0, tran=100, fourier=0, total=566
++transient timesteps: accepted=121, rejected=2, total=123
+ nodes: user=2, subckt=0, model=0, total=2
+ dctran density=100.0%, ac density=100.0%
+d_cap.5.ckt
+d_cap.6.ckt
+d_cap.ic1.ckt
+d_cap.ic2.ckt
+d_cap.ic4.ckt
+d_cccs.1.ckt
+d_cccs.2.ckt
+d_cccs.3.ckt
+d_cccs.4.ckt
+d_cccs.5.ckt
+d_cccs.6.ckt
+d_ccvs.1.ckt
+d_ccvs.2.ckt
+d_ccvs.3.ckt
+d_coil.1.ckt
+--- ==out/d_coil.1.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.1.ckt.out	2014-07-04 21:35:50.000000000 -0400
+@@ -32,7 +32,7 @@
+  0.         0.         0.         0.         0.         0.         0.        
+  0.001      0.         0.         0.         0.         0.         0.        
+  0.002      0.         0.         0.         0.         0.         0.        
+- 0.003      0.47904    0.043696   0.47904    0.043696   0.47904    0.043696  
++ 0.003      0.47904    0.043698   0.47904    0.043698   0.47904    0.043698  
+  0.004      0.92137    0.1587     0.92137    0.1587     0.92137    0.1587    
+  0.005      0.85441    0.28164    0.85441    0.28164    0.85441    0.28164   
+  0.006      0.79887    0.37003    0.79887    0.37003    0.79887    0.37003   
+@@ -60,7 +60,7 @@
+ e3b ( 12 11 10 0 )  0.8908012
+ r3b ( 12 0 )  75.
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=360, fourier=0, total=492
+-transient timesteps: accepted=120, rejected=3, total=123
++iterations: op=0, dc=0, tran=375, fourier=0, total=512
++transient timesteps: accepted=125, rejected=3, total=128
+ nodes: user=12, subckt=0, model=3, total=15
+ dctran density=37.8%, ac density=37.8%
+d_coil.1a.ckt
+--- ==out/d_coil.1a.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.1a.ckt.out	2014-07-04 21:35:50.000000000 -0400
+@@ -32,7 +32,7 @@
+  0.         0.         0.         0.         0.         0.         0.        
+  0.001      0.         0.         0.         0.         0.         0.        
+  0.002      0.         0.         0.         0.         0.         0.        
+- 0.003      0.47904    0.043696   0.47904    0.043696   0.47904    0.043696  
++ 0.003      0.47904    0.043698   0.47904    0.043698   0.47904    0.043698  
+  0.004      0.92137    0.1587     0.92137    0.1587     0.92137    0.1587    
+  0.005      0.85441    0.28164    0.85441    0.28164    0.85441    0.28164   
+  0.006      0.79887    0.37003    0.79887    0.37003    0.79887    0.37003   
+@@ -60,7 +60,7 @@
+ e3b ( 12 11 10 0 )  0.8908012
+ r3b ( 12 0 )  75.
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=360, fourier=0, total=492
+-transient timesteps: accepted=120, rejected=3, total=123
++iterations: op=0, dc=0, tran=375, fourier=0, total=512
++transient timesteps: accepted=125, rejected=3, total=128
+ nodes: user=12, subckt=0, model=3, total=15
+ dctran density=36.0%, ac density=36.0%
+d_coil.1b.ckt
+--- ==out/d_coil.1b.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.1b.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -35,7 +35,7 @@
+  0.         0.         0.         0.         0.         0.         0.        
+  0.001      0.         0.         0.         0.         0.         0.        
+  0.002      0.         0.         0.         0.         0.         0.        
+- 0.003      0.47904    0.043696   0.47904    0.043696   0.47904    0.043696  
++ 0.003      0.47904    0.043698   0.47904    0.043698   0.47904    0.043698  
+  0.004      0.92137    0.1587     0.92137    0.1587     0.92137    0.1587    
+  0.005      0.85441    0.28164    0.85441    0.28164    0.85441    0.28164   
+  0.006      0.79887    0.37003    0.79887    0.37003    0.79887    0.37003   
+@@ -63,7 +63,7 @@
+ e3b ( 12 11 10 0 ) M12/L1
+ r3b ( 12 0 ) Rload
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=360, fourier=0, total=492
+-transient timesteps: accepted=120, rejected=3, total=123
++iterations: op=0, dc=0, tran=375, fourier=0, total=512
++transient timesteps: accepted=125, rejected=3, total=128
+ nodes: user=12, subckt=0, model=3, total=15
+ dctran density=37.8%, ac density=37.8%
+d_coil.1c.ckt
+--- ==out/d_coil.1c.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.1c.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -98,7 +98,7 @@
+ x3 ( 9 0 12 0 )  trans2c  k12=K12 l1=L1 l2=L2
+ r3b ( 12 0 ) Rload
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=381, fourier=0, total=520
+-transient timesteps: accepted=127, rejected=3, total=130
++iterations: op=0, dc=0, tran=387, fourier=0, total=528
++transient timesteps: accepted=129, rejected=3, total=132
+ nodes: user=9, subckt=2, model=3, total=14
+ dctran density=42.9%, ac density=42.9%
+d_coil.1d.ckt
+--- ==out/d_coil.1d.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.1d.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -148,7 +148,7 @@
+ x3 ( 9 0 12 0 )  trans2e  k12=K12 l1=L1 l2=L2
+ r3b ( 12 0 ) Rload
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=381, fourier=0, total=520
+-transient timesteps: accepted=127, rejected=3, total=130
++iterations: op=0, dc=0, tran=387, fourier=0, total=528
++transient timesteps: accepted=129, rejected=3, total=132
+ nodes: user=9, subckt=2, model=3, total=14
+ dctran density=48.0%, ac density=48.0%
+d_coil.1e.ckt
+--- ==out/d_coil.1e.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.1e.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -51,11 +51,11 @@
+  0.0075      0.25        0.0263526   0.364483    0.0263525   0.364483    0.0263526   0.364483   
+  0.008      -95.3844n   -0.209846    0.318561   -0.209846    0.318561   -0.209846    0.318561   
+  0.0085     -87.5036n   -0.192508    0.267333   -0.192508    0.267333   -0.192508    0.267333   
+- 0.00800469 -95.3057n   -0.209673    0.318046   -0.209673    0.318046   -0.209673    0.318046   
+- 0.00800814 -95.248n    -0.209546    0.317669   -0.209546    0.317669   -0.209546    0.317669   
+- 0.00801037 -95.2106n   -0.209463    0.317425   -0.209463    0.317425   -0.209463    0.317425   
+- 0.00801261 -95.1732n   -0.209381    0.317181   -0.209381    0.317181   -0.209381    0.317181   
+- 0.009      -80.5177n   -0.177139    0.22248    -0.177139    0.22248    -0.177139    0.222479   
++ 0.00800467 -95.306n    -0.209673    0.318049   -0.209673    0.318049   -0.209673    0.318049   
++ 0.00800812 -95.2483n   -0.209546    0.317672   -0.209546    0.317672   -0.209546    0.317672   
++ 0.00801035 -95.211n    -0.209464    0.317427   -0.209464    0.317427   -0.209464    0.317427   
++ 0.00801258 -95.1736n   -0.209382    0.317183   -0.209382    0.317183   -0.209382    0.317183   
++ 0.009      -80.5177n   -0.177139    0.222479   -0.177139    0.222479   -0.177139    0.222479   
+  0.01       -69.0013n   -0.151803    0.150246   -0.151803    0.150246   -0.151803    0.150246   
+ Gnucap   System status
+ iterations: op=0, dc=0, tran=83, fourier=0, total=138
+d_coil.2.ckt
+--- ==out/d_coil.2.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.2.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -32,7 +32,7 @@
+  0.009     -0.010984   0.33118   -0.010984   0.33118   -0.010984   0.33118   -0.010984   0.33118   
+  0.01      -0.010176   0.26474   -0.010176   0.26474   -0.010176   0.26474   -0.010176   0.26474   
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=381, fourier=0, total=529
+-transient timesteps: accepted=127, rejected=3, total=130
++iterations: op=0, dc=0, tran=387, fourier=0, total=537
++transient timesteps: accepted=129, rejected=3, total=132
+ nodes: user=15, subckt=0, model=3, total=18
+ dctran density=32.1%, ac density=32.1%
+d_coil.3.ckt
+--- ==out/d_coil.3.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.3.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -23,16 +23,16 @@
+  0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.        
+  0.001      0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.        
+  0.002      0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.        
+- 0.003      0.5        0.49902    0.044941   0.49902    0.044941   0.49902    0.044941   979.61u    979.61u    979.61u    979.61u    979.61u    979.61u   
++ 0.003      0.5        0.49902    0.04494    0.49902    0.04494    0.49902    0.04494    979.61u    979.61u    979.61u    979.61u    979.61u    979.6u    
+  0.004      1.         0.99623    0.16766    0.99623    0.16766    0.99623    0.16766    0.0037725  0.0037725  0.0037725  0.0037725  0.0037725  0.0037725 
+  0.005      1.         0.99279    0.30776    0.99279    0.30776    0.99279    0.30776    0.0072123  0.0072123  0.0072123  0.0072123  0.0072123  0.0072123 
+  0.006      1.         0.98968    0.41996    0.98968    0.41996    0.98968    0.41996    0.010315   0.010315   0.010315   0.010315   0.010315   0.010315  
+  0.007      0.5        0.48783    0.46482    0.48783    0.46482    0.48783    0.46482    0.012167   0.012167   0.012167   0.012167   0.012167   0.012167  
+  0.008     -119.87n   -0.011987   0.41391   -0.011987   0.41391   -0.011987   0.41391    0.011987   0.011987   0.011987   0.011987   0.011987   0.011987  
+- 0.009     -109.84n   -0.010984   0.33118   -0.010984   0.33118   -0.010984   0.33118    0.010984   0.010984   0.010984   0.010984   0.010984   0.010984  
++ 0.009     -109.83n   -0.010984   0.33118   -0.010984   0.33118   -0.010984   0.33118    0.010983   0.010983   0.010983   0.010983   0.010983   0.010983  
+  0.01      -101.76n   -0.010176   0.26474   -0.010176   0.26474   -0.010176   0.26474    0.010176   0.010176   0.010176   0.010176   0.010176   0.010176  
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=452, fourier=0, total=593
+-transient timesteps: accepted=120, rejected=3, total=123
++iterations: op=0, dc=0, tran=460, fourier=0, total=603
++transient timesteps: accepted=122, rejected=3, total=125
+ nodes: user=12, subckt=0, model=3, total=15
+ dctran density=37.8%, ac density=37.8%
+d_coil.4.ckt
+d_coil.5.ckt
+d_coil.error1.ckt
+d_coil.error2.ckt
+d_coil.error3.ckt
+d_coil.error4.ckt
+d_coil.error5.ckt
+d_coil.m3.ckt
+--- ==out/d_coil.m3.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_coil.m3.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -23,16 +23,16 @@
+  0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.        
+  0.001      0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.        
+  0.002      0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.         0.        
+- 0.003      0.47386    0.040876   0.036498   0.47386    0.040876   0.036498   0.47386    0.040876   0.036498   0.47386    0.040876   0.036498  
+- 0.004      0.90322    0.1482     0.13039    0.90322    0.1482     0.13039    0.90322    0.1482     0.13039    0.90322    0.1482     0.13039   
++ 0.003      0.47385    0.04088    0.036502   0.47385    0.04088    0.036502   0.47385    0.04088    0.036502   0.47385    0.04088    0.036502  
++ 0.004      0.90322    0.1482     0.1304     0.90322    0.1482     0.1304     0.90322    0.1482     0.1304     0.90322    0.1482     0.1304    
+  0.005      0.82366    0.26249    0.22684    0.82366    0.26249    0.22684    0.82366    0.26249    0.22684    0.82366    0.26249    0.22684   
+- 0.006      0.76054    0.34426    0.29187    0.76054    0.34426    0.29187    0.76054    0.34426    0.29187    0.76054    0.34426    0.29187   
+- 0.007      0.23582    0.36087    0.29801    0.23582    0.36087    0.29801    0.23582    0.36087    0.29801    0.23582    0.36087    0.29801   
++ 0.006      0.76054    0.34427    0.29187    0.76054    0.34427    0.29187    0.76054    0.34427    0.29187    0.76054    0.34427    0.29187   
++ 0.007      0.23582    0.36088    0.29802    0.23582    0.36088    0.29802    0.23582    0.36088    0.29802    0.23582    0.36088    0.29802   
+  0.008     -0.23525    0.29289    0.23087   -0.23525    0.29289    0.23087   -0.23525    0.29289    0.23087   -0.23525    0.29289    0.23087   
+- 0.009     -0.19052    0.2044     0.14991   -0.19052    0.2044     0.14991   -0.19052    0.2044     0.14991   -0.19052    0.2044     0.14991   
+- 0.01      -0.15703    0.13834    0.092475  -0.15703    0.13834    0.092475  -0.15703    0.13834    0.092475  -0.15703    0.13834    0.092475  
++ 0.009     -0.19052    0.2044     0.14992   -0.19052    0.2044     0.14991   -0.19052    0.2044     0.14992   -0.19052    0.2044     0.14991   
++ 0.01      -0.15703    0.13834    0.092476  -0.15703    0.13834    0.092476  -0.15703    0.13834    0.092476  -0.15703    0.13834    0.092476  
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=369, fourier=0, total=513
+-transient timesteps: accepted=123, rejected=3, total=126
++iterations: op=0, dc=0, tran=381, fourier=0, total=529
++transient timesteps: accepted=127, rejected=3, total=130
+ nodes: user=16, subckt=15, model=6, total=37
+ dctran density=41.9%, ac density=41.9%
+d_coil.m3a.ckt
+d_diode.1.ckt
+d_diode.10.ckt
+d_diode.10a.ckt
+d_diode.11.ckt
+d_diode.11a.ckt
+d_diode.11b.ckt
+d_diode.11c.ckt
+d_diode.11d.ckt
+d_diode.12.ckt
+--- ==out/d_diode.12.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_diode.12.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -131,7 +131,7 @@
+ #Freq       vr(2)      vi(2)     
+  10.        1.        -6.0368u   
+  100.       1.        -60.368u   
+- 1.K        1.        -603.68u   
++ 1.K        1.        -603.67u   
+  10.K       0.99996   -0.0060365 
+  100.K      0.99637   -0.060148  
+  1.Meg      0.73291   -0.44244   
+@@ -171,15 +171,15 @@
+  135.n  |                      .                     .  +                   .            *        |
+         +----------------------+---------------------+----------------------+---------------------+
+ #Freq       vr(2)      vi(2)     
+- 10.        0.0035701 -123.12p   
+- 100.       0.0035701 -1.2312n   
+- 1.K        0.0035701 -12.312n   
+- 10.K       0.0035701 -123.12n   
+- 100.K      0.0035701 -1.2312u   
+- 1.Meg      0.00357   -12.312u   
+- 10.Meg     0.0035658 -122.97u   
+- 100.Meg    0.0031906 -0.0011003 
+- 1.G        276.9u    -954.92u   
++ 10.        0.0035801 -123.81p   
++ 100.       0.0035801 -1.2381n   
++ 1.K        0.0035801 -12.381n   
++ 10.K       0.0035801 -123.81n   
++ 100.K      0.0035801 -1.2381u   
++ 1.Meg      0.0035801 -12.38u    
++ 10.Meg     0.0035759 -123.66u   
++ 100.Meg    0.0031977 -0.0011058 
++ 1.G        276.27u   -955.39u   
+ v(1)  -10.                   -5.                    0.                     5.                   10.
+ v(2)  -10.                   -5.                    0.                     5.                   10.
+         +----------------------+---------------------+----------------------+---------------------+
+@@ -211,17 +211,17 @@
+  125.n  |                      .                     +                      .                     *
+         +----------------------+---------------------+----------------------+---------------------+
+ #Freq       vr(2)      vi(2)     
+- 10.        1.        -6.3222u   
+- 100.       1.        -63.222u   
+- 1.K        1.        -632.22u   
+- 10.K       0.99996   -0.0063219 
+- 100.K      0.99602   -0.06297   
+- 1.Meg      0.71444   -0.45168   
+- 10.Meg     0.024408  -0.15431   
+- 100.Meg    250.13u   -0.015813  
+- 1.G        2.5019u   -0.0015817 
++ 10.        1.        -6.3201u   
++ 100.       1.        -63.201u   
++ 1.K        1.        -632.01u   
++ 10.K       0.99996   -0.0063198 
++ 100.K      0.99602   -0.062949  
++ 1.Meg      0.71458   -0.45162   
++ 10.Meg     0.024424  -0.15436   
++ 100.Meg    250.29u   -0.015819  
++ 1.G        2.5035u   -0.0015823 
+ Gnucap   System status
+-iterations: op=4, dc=24, tran=385, fourier=0, total=2414
+-transient timesteps: accepted=276, rejected=8, total=284
++iterations: op=4, dc=24, tran=378, fourier=0, total=2406
++transient timesteps: accepted=296, rejected=8, total=304
+ nodes: user=2, subckt=0, model=0, total=2
+ dctran density=100.0%, ac density=100.0%
+d_diode.2.ckt
+d_diode.3.ckt
+d_diode.4.ckt
+d_diode.5.ckt
+d_diode.6.ckt
+d_diode.7.ckt
+d_diode.8.ckt
+d_diode.9.ckt
+d_diode.error1.ckt
+d_logic.1.ckt
+d_logic.2.ckt
+d_logic.3.ckt
+d_logic.4.ckt
+d_logic.5.ckt
+d_logic.6.ckt
+d_logic.7.ckt
+--- ==out/d_logic.7.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_logic.7.ckt.out	2014-07-04 21:35:51.000000000 -0400
+@@ -16,9 +16,9 @@
+ U3 ( 3 0 8 8 2 )  mos inv 
+ U2 ( 2 0 8 8 1 )  mos inv 
+ .model mos logic ( delay=1n vmax=5. vmin=0. unknown=NA( 2.5) rise=1n fall=1n rs=100. rw=1.G thh=0.75 thl=0.25 mr=5. mf=5. over=10k tnom=NA( 27.))
+-'.option trace 
+-'.print tran v(nodes) l(nodes) 
+-'.tran 0 10 .05  watch 
++*'.option trace 
++*'.print tran v(nodes) l(nodes) 
++*'.tran 0 10 .05  watch 
+ Gnucap   System status
+ iterations: op=8, dc=0, tran=0, fourier=0, total=8
+ transient timesteps: accepted=0, rejected=0, total=0
+d_logic.error1.ckt
+d_logic_nand-dc.ckt
+d_logic_tr_ab1.ckt
+d_logic_tr_ab2.ckt
+d_logic_tr_an1.ckt
+d_logic_tr_an2.ckt
+d_logic_tr_db1.ckt
+d_logic_tr_db2.ckt
+d_logic_tr_dn1.ckt
+d_logic_tr_dn2.ckt
+d_logic_tr_mb1a.ckt
+d_logic_tr_mb1b.ckt
+d_logic_tr_mb2a.ckt
+d_logic_tr_mb2b.ckt
+d_logic_tr_mn1a.ckt
+d_logic_tr_mn1b.ckt
+d_logic_tr_mn2a.ckt
+d_logic_tr_mn2b.ckt
+d_macro.1.ckt
+d_mos.error1.ckt
+d_mos.error2.ckt
+d_mos.error3.ckt
+d_mos.error4.ckt
+d_mos1.bin1.ckt
+d_mos1.bin2.ckt
+d_mos1.bin3.ckt
+d_mos1.inv1.ckt
+d_mos1.inv2.ckt
+d_mos1.inv3.ckt
+d_mos1.lin1.ckt
+--- ==out/d_mos1.lin1.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_mos1.lin1.ckt.out	2014-07-04 21:35:53.000000000 -0400
+@@ -50,7 +50,7 @@
+ Vbs ( 4 0 )  DC -1.234875
+ .model cmosn nmos1 ( level=1 kp=41.5964u vto=0.844345 gamma=0.863074 phi=0.6
+ + lambda=.01 tox=41.8n nsub=15.3142E+15 nss=1.E+12 xj=400.n uo=503.521 tpg=1
+-+ tnom=NA( 27.) fc=0.5 pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002 kf=0.
+-+ af=1. is=0 js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p
+-+ cgbo=0. ld=265.073n)
+++ tnom=NA( 27.) fc=0.5 pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002 is=0
+++ js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p cgbo=0.
+++ ld=265.073n)
+ *    vmax= 55.9035K 
+d_mos1.lin1.late.ckt
+d_mos1.lin1.none.ckt
+d_mos1.lin2.ckt
+d_mos1.lin3.ckt
+d_mos1.lin4.ckt
+d_mos1.lin5.ckt
+d_mos1.n+1.ckt
+d_mos1.n-1.ckt
+d_mos1.n0.ckt
+d_mos1.nand1.ckt
+d_mos1.nand2.ckt
+d_mos1.p+1.ckt
+d_mos1.p-1.ckt
+d_mos1.p0.ckt
+d_mos1.plin.ckt
+d_mos1.psat1.ckt
+d_mos1.psat2.ckt
+d_mos1.psat3.ckt
+d_mos1.sat1.ckt
+d_mos1.sat2.ckt
+d_mos1.sat3.ckt
+d_mos1.sat4.ckt
+d_mos1.sat5.ckt
+d_mos1.sat6.ckt
+d_mos1.sat7.ckt
+d_mos1.sts.ckt
+d_mos1.zero.ckt
+d_mos2.inv1.ckt
+d_mos2.lin1.ckt
+--- ==out/d_mos2.lin1.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_mos2.lin1.ckt.out	2014-07-04 21:35:54.000000000 -0400
+@@ -52,6 +52,6 @@
+ + ucrit=161.166K uexp=0.163917 delta=0.36745 vto=0.844345 gamma=0.863074
+ + phi=0.6 lambda=.01 tox=41.8n nsub=15.3142E+15 nss=1.E+12 xj=400.n uo=503.521
+ + tpg=1 tnom=NA( 27.) fc=0.5 pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002
+-+ kf=0. af=1. is=0 js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p
+-+ cgdo=218.971p cgbo=0. ld=265.073n)
+++ is=0 js=0. rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p
+++ cgbo=0. ld=265.073n)
+ *    vmax= 55.9035K 
+d_mos2.lin1.late.ckt
+d_mos2.lin1r.ckt
+d_mos2.lin1z.ckt
+d_mos2.lin2.ckt
+d_mos2.lin3.ckt
+d_mos2.lin4.ckt
+d_mos2.lin5.ckt
+d_mos2.n+1.ckt
+d_mos2.n-1.ckt
+d_mos2.n0.ckt
+d_mos2.nand1.ckt
+d_mos2.p+1.ckt
+d_mos2.p-1.ckt
+d_mos2.p0.ckt
+d_mos2.plin.ckt
+d_mos2.psat1.ckt
+d_mos2.psat2.ckt
+d_mos2.psat3.ckt
+d_mos2.sat1.ckt
+d_mos2.sat2.ckt
+d_mos2.sat3.ckt
+d_mos2.sat4.ckt
+d_mos2.sat5.ckt
+d_mos2.sat6.ckt
+d_mos2.sat7.ckt
+d_mos2.sts.ckt
+d_mos2.zero.ckt
+d_mos3.inv1.ckt
+d_mos3.lin1.ckt
+--- ==out/d_mos3.lin1.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_mos3.lin1.ckt.out	2014-07-04 21:35:55.000000000 -0400
+@@ -51,7 +51,6 @@
+ .model cmosn nmos3 ( level=3 kp=41.5964u nfs=3.5934E+12 theta=0. eta=0.
+ + kappa=0.2 delta=0.36745 vto=0.844345 gamma=0.863074 phi=0.6 tox=41.8n
+ + nsub=15.3142E+15 nss=1.E+12 xj=400.n uo=503.521 tpg=1 tnom=NA( 27.) fc=0.5
+-+ pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002 kf=0. af=1. is=0 js=0.
+-+ rsh=0. rd=0. rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p cgbo=0.
+-+ ld=265.073n)
+++ pb=0.7 cj=384.4u mj=0.4884 cjsw=527.2p mjsw=0.3002 is=0 js=0. rsh=0. rd=0.
+++ rs=0. cbd=0. cbs=0. cgso=218.971p cgdo=218.971p cgbo=0. ld=265.073n)
+ *    vmax= 55.9035K 
+d_mos3.lin1r.ckt
+d_mos3.lin1z.ckt
+d_mos3.lin2.ckt
+d_mos3.lin3.ckt
+d_mos3.lin4.ckt
+d_mos3.lin5.ckt
+d_mos3.n+1.ckt
+d_mos3.n-1.ckt
+d_mos3.n0.ckt
+d_mos3.nand1.ckt
+d_mos3.p+1.ckt
+d_mos3.p-1.ckt
+d_mos3.p0.ckt
+d_mos3.plin.ckt
+d_mos3.psat1.ckt
+d_mos3.psat2.ckt
+d_mos3.psat3.ckt
+d_mos3.sat000.ckt
+d_mos3.sat007.ckt
+d_mos3.sat1.ckt
+d_mos3.sat2.ckt
+d_mos3.sat3.ckt
+d_mos3.sat4.ckt
+d_mos3.sat5.ckt
+d_mos3.sat6.ckt
+d_mos3.sat7.ckt
+d_mos3.sts.ckt
+d_mos3.sts000.ckt
+d_mos3.zero.ckt
+d_mos4.1.ckt
+d_mos4.2.ckt
+d_mos4.3.ckt
+d_mos49.nand1.ckt
+d_mos5.1.ckt
+d_mos6.inv1.ckt
+d_mos6.lin1.ckt
+d_mos6.lin1r.ckt
+d_mos6.lin1z.ckt
+d_mos6.lin2.ckt
+d_mos6.lin2r.ckt
+d_mos6.lin2z.ckt
+d_mos6.n+1.ckt
+d_mos6.n-1.ckt
+d_mos6.n0.ckt
+d_mos6.nand1.ckt
+d_mos6.p+1.ckt
+d_mos6.p-1.ckt
+d_mos6.p0.ckt
+d_mos6.plin.ckt
+d_mos6.psat1.ckt
+d_mos6.psat2.ckt
+d_mos6.psat3.ckt
+d_mos6.sat1.ckt
+d_mos6.sat1r.ckt
+d_mos6.sat1s.ckt
+d_mos6.sat1v.ckt
+d_mos6.sat2.ckt
+d_mos6.sat2r.ckt
+d_mos6.sat3.ckt
+d_mos6.sat3r.ckt
+d_mos6.sts.ckt
+d_mos6.sts000.ckt
+d_mos6.zero.ckt
+d_mos7.alpha.ckt
+--- ==out/d_mos7.alpha.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_mos7.alpha.ckt.out	2014-07-04 21:35:57.000000000 -0400
+@@ -65,5 +65,5 @@
+ + xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.)
+ + lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.)
+ + wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) tnom=NA( 27.) fc=NA( 0.5) pb= 1.
+-+ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 kf=NA( 0.) af=NA( 0.)
+-+ is=NA( 10.f) cgso= 207.188p cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+++ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f) cgso= 207.188p
+++ cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+d_mos7.inv1.ckt
+d_mos7.lin1.ckt
+--- ==out/d_mos7.lin1.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_mos7.lin1.ckt.out	2014-07-04 21:35:58.000000000 -0400
+@@ -65,5 +65,5 @@
+ + xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.)
+ + lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.)
+ + wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) tnom=NA( 27.) fc=NA( 0.5) pb= 1.
+-+ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 kf=NA( 0.) af=NA( 0.)
+-+ is=NA( 10.f) cgso= 207.188p cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+++ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f) cgso= 207.188p
+++ cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+d_mos7.lin2.ckt
+--- ==out/d_mos7.lin2.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_mos7.lin2.ckt.out	2014-07-04 21:35:58.000000000 -0400
+@@ -64,5 +64,5 @@
+ + xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.)
+ + lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.)
+ + wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) tnom=NA( 27.) fc=NA( 0.5) pb= 1.
+-+ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 kf=NA( 0.) af=NA( 0.)
+-+ is=NA( 10.f) cgso= 207.188p cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+++ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f) cgso= 207.188p
+++ cgdo= 207.188p cgbo= 0. ld=NA( 0.))
+d_mos7.nand1.ckt
+d_mos7.nand1.nobypass.ckt
+d_mos7.plin.ckt
+d_mos7.psat.ckt
+d_mos7.sat1.ckt
+d_mos7.sat2.ckt
+d_mos7.sat3.ckt
+d_mos7.sts.ckt
+d_mos7.zero.ckt
+d_mos8.nand1.ckt
+d_mos8.sat2.ckt
+d_mos8.sat3.ckt
+d_mos8.sat4.ckt
+d_mos8c2.nand1.ckt
+d_mos8c2.nand1.nobypass.ckt
+d_subckt.1.ckt
+d_subckt.2.ckt
+d_subckt.3.ckt
+d_subckt.4.ckt
+d_subckt.5.ckt
+d_subckt.6.ckt
+d_subckt.7.ckt
+d_subckt.8.ckt
+d_subckt.error1.ckt
+d_subckt.error2.ckt
+d_switch.c0.ckt
+d_switch.c1.ckt
+d_switch.c1.inc.ckt
+d_switch.c1.noinc.ckt
+d_switch.c1a.ckt
+d_switch.c1r.ckt
+d_switch.c2.ckt
+d_switch.c2a.ckt
+--- ==out/d_switch.c2a.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_switch.c2a.ckt.out	2014-07-04 21:35:59.000000000 -0400
+@@ -90,22 +90,22 @@
+ -1.         0.5        0.5        1.         2.0014     20.014n    1.K        1.K        1.E+12    -0.0020014  0.0020014  0.0020014  1.        
+  2.0014     0.5        0.5        1.         2.0014     20.014n    1.K        1.K        1.E+12    -0.0020014  0.0020014  0.0020014  2.        
+  0.         0.5        0.5        1.         2.         20.n       1.K        1.K        1.E+12    -0.0020014  0.002      0.002      0.        
+--1.         0.5        0.5        1.         2.0003     20.003n    1.K        1.K        1.E+12    -0.0020003  0.0020003  0.0020003  1.        
+- 2.0003     0.5        0.5        1.         2.0003     20.003n    1.K        1.K        1.E+12    -0.0020003  0.0020003  0.0020003  2.        
+- 0.         0.5        0.5        1.         2.0003     20.003n    1.K        1.K        1.E+12    -0.0020003  0.0020003  0.0020003  0.        
++-1.         0.5        0.5        1.         2.0002     20.002n    1.K        1.K        1.E+12    -0.0020002  0.0020002  0.0020002  1.        
++ 2.0002     0.5        0.5        1.         2.0002     20.002n    1.K        1.K        1.E+12    -0.0020002  0.0020002  0.0020002  2.        
++ 0.         0.5        0.5        1.         2.0002     20.002n    1.K        1.K        1.E+12    -0.0020002  0.0020002  0.0020002  0.        
+ -1.         0.5        0.5        1.         2.0004     20.004n    1.K        1.K        1.E+12    -0.0020004  0.0020004  0.0020004  1.        
+  2.0004     0.5        0.5        1.         2.0004     20.004n    1.K        1.K        1.E+12    -0.0020004  0.0020004  0.0020004  2.        
+  0.         0.5        0.5        1.         2.0004     20.004n    1.K        1.K        1.E+12    -0.0020004  0.0020004  0.0020004  0.        
+--1.         0.5        0.5        1.         2.0043     20.043n    1.K        1.K        1.E+12    -0.0020043  0.0020043  0.0020043  1.        
+--2.         0.5        0.5        1.         2.0043     20.043n    1.K        1.K        1.E+12    -0.0020043  0.0020043  0.0020043  2.        
+--3.         0.5        0.5        1.         2.0043     20.043n    1.K        1.K        1.E+12    -0.0020043  0.0020043  0.0020043  3.        
+- 2.0043     0.5        0.5        1.         2.0043     20.043n    1.K        1.K        1.E+12    -0.0020043  0.0020043  0.0020043  4.        
+- 0.         0.5        0.5        1.         2.0043     20.043n    1.K        1.K        1.E+12    -0.0020043  0.0020043  0.0020043  0.        
+--1.         0.5        0.5        1.         2.3362     23.362n    1.K        1.K        1.E+12    -0.0023362  0.0023362  0.0023362  1.        
+--2.         0.5        0.5        1.         2.3362     23.362n    1.K        1.K        1.E+12    -0.0023362  0.0023362  0.0023362  2.        
+--3.         0.5        0.5        1.         2.3362     23.362n    1.K        1.K        1.E+12    -0.0023362  0.0023362  0.0023362  3.        
+- 2.3362     0.5        0.5        1.         2.3362     23.362n    1.K        1.K        1.E+12    -0.0023362  0.0023362  0.0023362  4.        
+- 0.         0.5        0.5        1.         2.3362     23.362n    1.K        1.K        1.E+12    -0.0023362  0.0023362  0.0023362  0.        
++-1.         0.5        0.5        1.         2.0041     20.041n    1.K        1.K        1.E+12    -0.0020041  0.0020041  0.0020041  1.        
++-2.         0.5        0.5        1.         2.0041     20.041n    1.K        1.K        1.E+12    -0.0020041  0.0020041  0.0020041  2.        
++-3.         0.5        0.5        1.         2.0041     20.041n    1.K        1.K        1.E+12    -0.0020041  0.0020041  0.0020041  3.        
++ 2.0041     0.5        0.5        1.         2.0041     20.041n    1.K        1.K        1.E+12    -0.0020041  0.0020041  0.0020041  4.        
++ 0.         0.5        0.5        1.         2.0041     20.041n    1.K        1.K        1.E+12    -0.0020041  0.0020041  0.0020041  0.        
++-1.         0.5        0.5        1.         2.336      23.36n     1.K        1.K        1.E+12    -0.002336   0.002336   0.002336   1.        
++-2.         0.5        0.5        1.         2.336      23.36n     1.K        1.K        1.E+12    -0.002336   0.002336   0.002336   2.        
++-3.         0.5        0.5        1.         2.336      23.36n     1.K        1.K        1.E+12    -0.002336   0.002336   0.002336   3.        
++ 2.336      0.5        0.5        1.         2.336      23.36n     1.K        1.K        1.E+12    -0.002336   0.002336   0.002336   4.        
++ 0.         0.5        0.5        1.         2.336      23.36n     1.K        1.K        1.E+12    -0.002336   0.002336   0.002336   0.        
+ -1.         0.5        0.5        1.         3.         30.n       1.K        1.K        1.E+12    -0.003      0.003      0.003      1.        
+ -2.         0.5        0.5        1.         3.         30.n       1.K        1.K        1.E+12    -0.003      0.003      0.003      2.        
+ -3.         0.5        0.5        1.         3.         30.n       1.K        1.K        1.E+12    -0.003      0.003      0.003      3.        
+d_switch.c2r.ckt
+d_switch.c3.ckt
+d_switch.error1.ckt
+d_switch.error2.ckt
+d_switch.error3.ckt
+d_switch.nro.1.ckt
+d_switch.nro.1e.ckt
+d_switch.nro.1g.ckt
+d_switch.nro.1gr.ckt
+d_switch.nro.2.ckt
+d_switch.nro.3.ckt
+--- ==out/d_switch.nro.3.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_switch.nro.3.ckt.out	2014-07-04 21:35:59.000000000 -0400
+@@ -7,9 +7,9 @@
+  80.324n    100.3u     10.Meg     2.         100.1u     49.829u    6.        
+  80.326n    100.5u     10.Meg     2.         100.3u     49.829u    6.        
+  80.328n    100.7u     10.Meg     2.         100.5u     49.829u    6.        
+- 1.4974u    0.1418     10.Meg     6.         100.7u     49.833u    16.       
+- 2.206u     0.21264    10.Meg     3.         0.1418     49.838u    6.        
+- 10.u       0.99158    10.Meg     3.         0.21264    49.858u    1.        
++ 1.3203u    0.12409    10.Meg     6.         100.7u     49.832u    16.       
++ 1.988u     0.19085    10.Meg     3.         0.12409    49.837u    6.        
++ 10.u       0.99158    10.Meg     3.         0.19085    49.858u    1.        
+  20.u       1.9901     10.Meg     3.         0.99158    49.894u    1.        
+  30.u       2.9876     10.Meg     3.         1.9901     49.924u    1.        
+  40.u       3.9841     10.Meg     3.         2.9876     49.944u    1.        
+@@ -31,8 +31,8 @@
+  49.957u    0.15961    1.         2.         0.24407    49.958u    6.        
+  49.957u    0.10439    1.         2.         0.15961    49.958u    6.        
+  49.958u    0.068282   1.         2.         0.10439    49.958u    6.        
+- 49.958u    0.044678   1.         2.         0.068282   49.958u    6.        
+- 49.958u    0.031431   1.         2.         0.044678   49.959u    7.        
++ 49.958u    0.044677   1.         2.         0.068282   49.958u    6.        
++ 49.958u    0.031431   1.         2.         0.044677   49.959u    7.        
+  49.959u    0.026537   1.         2.         0.031431   49.959u    7.        
+  49.959u    0.025167   1.         2.         0.026537   49.959u    7.        
+  49.959u    0.025005   1.         2.         0.025167   49.959u    7.        
+@@ -42,9 +42,8 @@
+  49.959u    0.024933   10.Meg     2.         0.024931   99.461u    6.        
+  49.959u    0.024935   10.Meg     2.         0.024933   99.461u    6.        
+  50.u       0.029059   10.Meg     2.         0.024935   99.461u    1.        
+- 50.526u    0.081688   10.Meg     3.         0.029059   99.462u    6.        
+- 55.263u    0.55522    10.Meg     3.         0.081688   99.475u    6.        
+- 60.u       1.0285     10.Meg     3.         0.55522    99.496u    1.        
++ 50.769u    0.10598    10.Meg     3.         0.029059   99.463u    6.        
++ 60.u       1.0285     10.Meg     3.         0.10598    99.487u    1.        
+  70.u       2.027      10.Meg     3.         1.0285     99.525u    1.        
+  80.u       3.0245     10.Meg     3.         2.027      99.555u    1.        
+  90.u       4.021      10.Meg     3.         3.0245     99.574u    1.        
+@@ -76,10 +75,9 @@
+  99.589u    0.02493    10.Meg     2.         0.024929   149.09u    6.        
+  99.589u    0.024931   10.Meg     2.         0.02493    149.09u    6.        
+  99.589u    0.024933   10.Meg     2.         0.024931   149.09u    6.        
+- 99.648u    0.030807   10.Meg     2.         0.024933   149.09u    6.        
+- 100.u      0.066047   10.Meg     3.         0.030807   149.09u    1.        
+- 105.u      0.56589    10.Meg     3.         0.066047   149.11u    6.        
+- 110.u      1.0655     10.Meg     3.         0.56589    149.13u    1.        
++ 99.64u     0.030072   10.Meg     2.         0.024933   149.09u    6.        
++ 100.u      0.066047   10.Meg     3.         0.030072   149.09u    1.        
++ 110.u      1.0655     10.Meg     3.         0.066047   149.12u    1.        
+  120.u      2.0639     10.Meg     3.         1.0655     149.16u    1.        
+  130.u      3.0614     10.Meg     3.         2.0639     149.19u    1.        
+  140.u      4.0578     10.Meg     3.         3.0614     149.2u     1.        
+@@ -111,9 +109,10 @@
+  149.22u    0.02493    10.Meg     2.         0.024929   198.72u    6.        
+  149.22u    0.024931   10.Meg     2.         0.02493    198.72u    6.        
+  149.22u    0.024933   10.Meg     2.         0.024931   198.72u    6.        
+- 149.28u    0.031442   10.Meg     2.         0.024933   198.72u    6.        
+- 150.u      0.10303    10.Meg     3.         0.031442   198.72u    1.        
+- 160.u      1.1024     10.Meg     3.         0.10303    198.75u    1.        
++ 149.41u    0.044459   10.Meg     3.         0.024933   198.72u    6.        
++ 150.u      0.10303    10.Meg     3.         0.044459   198.72u    1.        
++ 155.u      0.60286    10.Meg     3.         0.10303    198.74u    6.        
++ 160.u      1.1024     10.Meg     3.         0.60286    198.76u    1.        
+  170.u      2.1008     10.Meg     3.         1.1024     198.79u    1.        
+  180.u      3.0982     10.Meg     3.         2.1008     198.82u    1.        
+  190.u      4.0946     10.Meg     3.         3.0982     198.84u    1.        
+@@ -145,11 +144,11 @@
+  198.85u    0.02493    10.Meg     2.         0.024929   248.35u    6.        
+  198.85u    0.024931   10.Meg     2.         0.02493    248.35u    6.        
+  198.85u    0.024933   10.Meg     2.         0.024931   248.35u    6.        
+- 198.92u    0.031703   10.Meg     2.         0.024933   248.35u    6.        
+- 199.46u    0.085863   10.Meg     3.         0.031703   248.35u    6.        
+- 200.u      0.14002    10.Meg     3.         0.085863   248.36u    1.        
++ 198.9u     0.029937   10.Meg     2.         0.024933   248.35u    6.        
++ 199.45u    0.08498    10.Meg     3.         0.029937   248.35u    6.        
++ 200.u      0.14002    10.Meg     3.         0.08498    248.36u    1.        
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=18028, fourier=0, total=26977
+-transient timesteps: accepted=147, rejected=8802, total=8949
++iterations: op=0, dc=0, tran=18026, fourier=0, total=26974
++transient timesteps: accepted=146, rejected=8802, total=8948
+ nodes: user=1, subckt=0, model=0, total=1
+ dctran density=100.0%, ac density=100.0%
+d_switch.nro.3h.ckt
+d_switch.nro.4.ckt
+--- ==out/d_switch.nro.4.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_switch.nro.4.ckt.out	2014-07-04 21:36:01.000000000 -0400
+@@ -26527,17 +26527,17 @@
+ -2.         0.49596    10.Meg     2.         100.7u     49.829u    6.        
+  5.0402u    0.49596    10.Meg     3.         100.7u     49.842u    6.        
+  0.         100.7u     10.Meg     0.         100.7u     49.842u    16.       
+--1.         0.1418     10.Meg     1.         100.7u     49.842u    16.       
+--2.         0.1418     10.Meg     2.         100.7u     49.842u    16.       
+- 1.4974u    0.1418     10.Meg     3.         100.7u     49.833u    16.       
+- 0.         0.1418     10.Meg     0.         0.1418     49.833u    6.        
+--1.         0.21264    10.Meg     1.         0.1418     49.833u    6.        
+--2.         0.21264    10.Meg     2.         0.1418     49.833u    6.        
+- 2.206u     0.21264    10.Meg     3.         0.1418     49.838u    6.        
+- 0.         0.21264    10.Meg     0.         0.21264    49.838u    1.        
+--1.         0.99158    10.Meg     1.         0.21264    49.838u    1.        
+--2.         0.99158    10.Meg     2.         0.21264    49.838u    1.        
+- 10.u       0.99158    10.Meg     3.         0.21264    49.858u    1.        
++-1.         0.12409    10.Meg     1.         100.7u     49.842u    16.       
++-2.         0.12409    10.Meg     2.         100.7u     49.842u    16.       
++ 1.3203u    0.12409    10.Meg     3.         100.7u     49.832u    16.       
++ 0.         0.12409    10.Meg     0.         0.12409    49.832u    6.        
++-1.         0.19085    10.Meg     1.         0.12409    49.832u    6.        
++-2.         0.19085    10.Meg     2.         0.12409    49.832u    6.        
++ 1.988u     0.19085    10.Meg     3.         0.12409    49.837u    6.        
++ 0.         0.19085    10.Meg     0.         0.19085    49.837u    1.        
++-1.         0.99158    10.Meg     1.         0.19085    49.837u    1.        
++-2.         0.99158    10.Meg     2.         0.19085    49.837u    1.        
++ 10.u       0.99158    10.Meg     3.         0.19085    49.858u    1.        
+  0.         0.99158    10.Meg     0.         0.99158    49.858u    1.        
+ -1.         1.9901     10.Meg     1.         0.99158    49.858u    1.        
+ -2.         1.9901     10.Meg     2.         0.99158    49.858u    1.        
+@@ -26606,11 +26606,11 @@
+ -1.         0.068282   1.         1.         0.10439    49.958u    6.        
+  49.958u    0.068282   1.         2.         0.10439    49.958u    6.        
+  0.         0.068282   1.         0.         0.068282   49.958u    6.        
+--1.         0.044678   1.         1.         0.068282   49.958u    6.        
+- 49.958u    0.044678   1.         2.         0.068282   49.958u    6.        
+- 0.         0.044678   1.         0.         0.044678   49.958u    7.        
+--1.         0.031431   1.         1.         0.044678   49.958u    7.        
+- 49.958u    0.031431   1.         2.         0.044678   49.959u    7.        
++-1.         0.044677   1.         1.         0.068282   49.958u    6.        
++ 49.958u    0.044677   1.         2.         0.068282   49.958u    6.        
++ 0.         0.044677   1.         0.         0.044677   49.958u    7.        
++-1.         0.031431   1.         1.         0.044677   49.958u    7.        
++ 49.958u    0.031431   1.         2.         0.044677   49.959u    7.        
+  0.         0.031431   1.         0.         0.031431   49.959u    7.        
+ -1.         0.026537   1.         1.         0.031431   49.959u    7.        
+  49.959u    0.026537   1.         2.         0.031431   49.959u    7.        
+@@ -26639,20 +26639,16 @@
+ -1.         0.029059   10.Meg     1.         0.024935   99.461u    1.        
+  50.u       0.029059   10.Meg     2.         0.024935   99.461u    1.        
+  0.         0.029059   10.Meg     0.         0.029059   99.461u    6.        
+--1.         0.081688   10.Meg     1.         0.029059   99.461u    6.        
+--2.         0.081688   10.Meg     2.         0.029059   99.461u    6.        
+- 50.526u    0.081688   10.Meg     3.         0.029059   99.462u    6.        
+- 0.         0.081688   10.Meg     0.         0.081688   99.462u    6.        
+--1.         0.55522    10.Meg     1.         0.081688   99.462u    6.        
+--2.         0.55522    10.Meg     2.         0.081688   99.462u    6.        
+- 55.263u    0.55522    10.Meg     3.         0.081688   99.475u    6.        
+- 0.         0.55522    10.Meg     0.         0.55522    99.475u    1.        
+--1.         1.0285     10.Meg     1.         0.55522    99.475u    1.        
+--2.         1.0285     10.Meg     2.         0.55522    99.475u    1.        
+- 60.u       1.0285     10.Meg     3.         0.55522    99.496u    1.        
+- 0.         1.0285     10.Meg     0.         1.0285     99.496u    1.        
+--1.         2.027      10.Meg     1.         1.0285     99.496u    1.        
+--2.         2.027      10.Meg     2.         1.0285     99.496u    1.        
++-1.         0.10598    10.Meg     1.         0.029059   99.461u    6.        
++-2.         0.10598    10.Meg     2.         0.029059   99.461u    6.        
++ 50.769u    0.10598    10.Meg     3.         0.029059   99.463u    6.        
++ 0.         0.10598    10.Meg     0.         0.10598    99.463u    1.        
++-1.         1.0285     10.Meg     1.         0.10598    99.463u    1.        
++-2.         1.0285     10.Meg     2.         0.10598    99.463u    1.        
++ 60.u       1.0285     10.Meg     3.         0.10598    99.487u    1.        
++ 0.         1.0285     10.Meg     0.         1.0285     99.487u    1.        
++-1.         2.027      10.Meg     1.         1.0285     99.487u    1.        
++-2.         2.027      10.Meg     2.         1.0285     99.487u    1.        
+  70.u       2.027      10.Meg     3.         1.0285     99.525u    1.        
+  0.         2.027      10.Meg     0.         2.027      99.525u    1.        
+ -1.         3.0245     10.Meg     1.         2.027      99.525u    1.        
+@@ -26748,23 +26744,19 @@
+ -1.         0.024933   10.Meg     1.         0.024931   149.09u    6.        
+  99.589u    0.024933   10.Meg     2.         0.024931   149.09u    6.        
+  0.         0.024933   10.Meg     0.         0.024933   149.09u    6.        
+--1.         0.030807   10.Meg     1.         0.024933   149.09u    6.        
+- 99.648u    0.030807   10.Meg     2.         0.024933   149.09u    6.        
+- 0.         0.030807   10.Meg     0.         0.030807   149.09u    1.        
+--1.         0.066047   10.Meg     1.         0.030807   149.09u    1.        
+--2.         0.066047   10.Meg     2.         0.030807   149.09u    1.        
+- 100.u      0.066047   10.Meg     3.         0.030807   149.09u    1.        
+- 0.         0.066047   10.Meg     0.         0.066047   149.09u    6.        
+--1.         0.56589    10.Meg     1.         0.066047   149.09u    6.        
+--2.         0.56589    10.Meg     2.         0.066047   149.09u    6.        
+- 105.u      0.56589    10.Meg     3.         0.066047   149.11u    6.        
+- 0.         0.56589    10.Meg     0.         0.56589    149.11u    1.        
+--1.         1.0655     10.Meg     1.         0.56589    149.11u    1.        
+--2.         1.0655     10.Meg     2.         0.56589    149.11u    1.        
+- 110.u      1.0655     10.Meg     3.         0.56589    149.13u    1.        
+- 0.         1.0655     10.Meg     0.         1.0655     149.13u    1.        
+--1.         2.0639     10.Meg     1.         1.0655     149.13u    1.        
+--2.         2.0639     10.Meg     2.         1.0655     149.13u    1.        
++-1.         0.030072   10.Meg     1.         0.024933   149.09u    6.        
++ 99.64u     0.030072   10.Meg     2.         0.024933   149.09u    6.        
++ 0.         0.030072   10.Meg     0.         0.030072   149.09u    1.        
++-1.         0.066047   10.Meg     1.         0.030072   149.09u    1.        
++-2.         0.066047   10.Meg     2.         0.030072   149.09u    1.        
++ 100.u      0.066047   10.Meg     3.         0.030072   149.09u    1.        
++ 0.         0.066047   10.Meg     0.         0.066047   149.09u    1.        
++-1.         1.0655     10.Meg     1.         0.066047   149.09u    1.        
++-2.         1.0655     10.Meg     2.         0.066047   149.09u    1.        
++ 110.u      1.0655     10.Meg     3.         0.066047   149.12u    1.        
++ 0.         1.0655     10.Meg     0.         1.0655     149.12u    1.        
++-1.         2.0639     10.Meg     1.         1.0655     149.12u    1.        
++-2.         2.0639     10.Meg     2.         1.0655     149.12u    1.        
+  120.u      2.0639     10.Meg     3.         1.0655     149.16u    1.        
+  0.         2.0639     10.Meg     0.         2.0639     149.16u    1.        
+ -1.         3.0614     10.Meg     1.         2.0639     149.16u    1.        
+@@ -26860,19 +26852,24 @@
+ -1.         0.024933   10.Meg     1.         0.024931   198.72u    6.        
+  149.22u    0.024933   10.Meg     2.         0.024931   198.72u    6.        
+  0.         0.024933   10.Meg     0.         0.024933   198.72u    6.        
+--1.         0.031442   10.Meg     1.         0.024933   198.72u    6.        
+- 149.28u    0.031442   10.Meg     2.         0.024933   198.72u    6.        
+- 0.         0.031442   10.Meg     0.         0.031442   198.72u    1.        
+--1.         0.10303    10.Meg     1.         0.031442   198.72u    1.        
+--2.         0.10303    10.Meg     2.         0.031442   198.72u    1.        
+- 150.u      0.10303    10.Meg     3.         0.031442   198.72u    1.        
+- 0.         0.10303    10.Meg     0.         0.10303    198.72u    1.        
+--1.         1.1024     10.Meg     1.         0.10303    198.72u    1.        
+--2.         1.1024     10.Meg     2.         0.10303    198.72u    1.        
+- 160.u      1.1024     10.Meg     3.         0.10303    198.75u    1.        
+- 0.         1.1024     10.Meg     0.         1.1024     198.75u    1.        
+--1.         2.1008     10.Meg     1.         1.1024     198.75u    1.        
+--2.         2.1008     10.Meg     2.         1.1024     198.75u    1.        
++-1.         0.044459   10.Meg     1.         0.024933   198.72u    6.        
++-2.         0.044459   10.Meg     2.         0.024933   198.72u    6.        
++ 149.41u    0.044459   10.Meg     3.         0.024933   198.72u    6.        
++ 0.         0.044459   10.Meg     0.         0.044459   198.72u    1.        
++-1.         0.10303    10.Meg     1.         0.044459   198.72u    1.        
++-2.         0.10303    10.Meg     2.         0.044459   198.72u    1.        
++ 150.u      0.10303    10.Meg     3.         0.044459   198.72u    1.        
++ 0.         0.10303    10.Meg     0.         0.10303    198.72u    6.        
++-1.         0.60286    10.Meg     1.         0.10303    198.72u    6.        
++-2.         0.60286    10.Meg     2.         0.10303    198.72u    6.        
++ 155.u      0.60286    10.Meg     3.         0.10303    198.74u    6.        
++ 0.         0.60286    10.Meg     0.         0.60286    198.74u    1.        
++-1.         1.1024     10.Meg     1.         0.60286    198.74u    1.        
++-2.         1.1024     10.Meg     2.         0.60286    198.74u    1.        
++ 160.u      1.1024     10.Meg     3.         0.60286    198.76u    1.        
++ 0.         1.1024     10.Meg     0.         1.1024     198.76u    1.        
++-1.         2.1008     10.Meg     1.         1.1024     198.76u    1.        
++-2.         2.1008     10.Meg     2.         1.1024     198.76u    1.        
+  170.u      2.1008     10.Meg     3.         1.1024     198.79u    1.        
+  0.         2.1008     10.Meg     0.         2.1008     198.79u    1.        
+ -1.         3.0982     10.Meg     1.         2.1008     198.79u    1.        
+@@ -26968,18 +26965,18 @@
+ -1.         0.024933   10.Meg     1.         0.024931   248.35u    6.        
+  198.85u    0.024933   10.Meg     2.         0.024931   248.35u    6.        
+  0.         0.024933   10.Meg     0.         0.024933   248.35u    6.        
+--1.         0.031703   10.Meg     1.         0.024933   248.35u    6.        
+- 198.92u    0.031703   10.Meg     2.         0.024933   248.35u    6.        
+- 0.         0.031703   10.Meg     0.         0.031703   248.35u    6.        
+--1.         0.085863   10.Meg     1.         0.031703   248.35u    6.        
+--2.         0.085863   10.Meg     2.         0.031703   248.35u    6.        
+- 199.46u    0.085863   10.Meg     3.         0.031703   248.35u    6.        
+- 0.         0.085863   10.Meg     0.         0.085863   248.35u    1.        
+--1.         0.14002    10.Meg     1.         0.085863   248.35u    1.        
+--2.         0.14002    10.Meg     2.         0.085863   248.35u    1.        
+- 200.u      0.14002    10.Meg     3.         0.085863   248.36u    1.        
++-1.         0.029937   10.Meg     1.         0.024933   248.35u    6.        
++ 198.9u     0.029937   10.Meg     2.         0.024933   248.35u    6.        
++ 0.         0.029937   10.Meg     0.         0.029937   248.35u    6.        
++-1.         0.08498    10.Meg     1.         0.029937   248.35u    6.        
++-2.         0.08498    10.Meg     2.         0.029937   248.35u    6.        
++ 199.45u    0.08498    10.Meg     3.         0.029937   248.35u    6.        
++ 0.         0.08498    10.Meg     0.         0.08498    248.35u    1.        
++-1.         0.14002    10.Meg     1.         0.08498    248.35u    1.        
++-2.         0.14002    10.Meg     2.         0.08498    248.35u    1.        
++ 200.u      0.14002    10.Meg     3.         0.08498    248.36u    1.        
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=18028, fourier=0, total=26977
+-transient timesteps: accepted=147, rejected=8802, total=8949
++iterations: op=0, dc=0, tran=18026, fourier=0, total=26974
++transient timesteps: accepted=146, rejected=8802, total=8948
+ nodes: user=1, subckt=0, model=0, total=1
+ dctran density=100.0%, ac density=100.0%
+d_switch.v.ckt
+d_switch.vr.ckt
+d_tcap.1.ckt
+d_tcap.2.ckt
+d_tcap.3.ckt
+d_tcap.4.ckt
+d_trln.ac.ckt
+--- ==out/d_trln.ac.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_trln.ac.ckt.out	2014-07-04 21:36:02.000000000 -0400
+@@ -1,22 +1,22 @@
+ #Transmission lines 
+ V1 ( 1 0 ) generator scale= 1.
+-# matched 
++*# matched 
+ R1s ( 1 11 )  50.
+ T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
+ R1l ( 12 0 )  50.
+-# open stub 
++*# open stub 
+ R2s ( 1 21 )  50.
+ T2 ( 21 0 22 0 )  z0=50 f=10meg nl=.25
+ R2l ( 22 0 )  1.E+99
+-# shorted stub 
++*# shorted stub 
+ R3s ( 1 31 )  50.
+ T3 ( 31 0 32 0 )  z0=50 f=10meg nl=.25
+ R3l ( 32 0 )  0.001
+-# lo-z load 
++*# lo-z load 
+ R4s ( 1 41 )  50.
+ T4 ( 41 0 42 0 )  z0=50 f=10meg nl=.25
+ R4l ( 42 0 )  25.
+-# hi-z load 
++*# hi-z load 
+ R5s ( 1 51 )  50.
+ T5 ( 51 0 52 0 )  z0=50 f=10meg nl=.25
+ R5l ( 52 0 )  100.
+d_trln.tr.100.im.ckt
+--- ==out/d_trln.tr.100.im.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_trln.tr.100.im.ckt.out	2014-07-04 21:36:02.000000000 -0400
+@@ -1,22 +1,22 @@
+ #Transmission lines 
+ V1 ( 1 0 ) generator scale= 1.
+-# matched 
++*# matched 
+ R1s ( 1 11 )  50.
+ T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
+ R1l ( 12 0 )  50.
+-# open stub 
++*# open stub 
+ R2s ( 1 21 )  50.
+ T2 ( 21 0 22 0 )  z0=50 f=10meg nl=.25
+ R2l ( 22 0 )  1.E+99
+-# shorted stub 
++*# shorted stub 
+ R3s ( 1 31 )  50.
+ T3 ( 31 0 32 0 )  z0=50 f=10meg nl=.25
+ R3l ( 32 0 )  0.001
+-# lo-z load 
++*# lo-z load 
+ R4s ( 1 41 )  50.
+ T4 ( 41 0 42 0 )  z0=50 f=10meg nl=.25
+ R4l ( 42 0 )  25.
+-# hi-z load 
++*# hi-z load 
+ R5s ( 1 51 )  50.
+ T5 ( 51 0 52 0 )  z0=50 f=10meg nl=.25
+ R5l ( 52 0 )  100.
+d_trln.tr.100.nim.ckt
+--- ==out/d_trln.tr.100.nim.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_trln.tr.100.nim.ckt.out	2014-07-04 21:36:02.000000000 -0400
+@@ -1,22 +1,22 @@
+ #Transmission lines 
+ V1 ( 1 0 ) generator scale= 1.
+-# matched 
++*# matched 
+ R1s ( 1 11 )  50.
+ T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
+ R1l ( 12 0 )  50.
+-# open stub 
++*# open stub 
+ R2s ( 1 21 )  50.
+ T2 ( 21 0 22 0 )  z0=50 f=10meg nl=.25
+ R2l ( 22 0 )  1.E+99
+-# shorted stub 
++*# shorted stub 
+ R3s ( 1 31 )  50.
+ T3 ( 31 0 32 0 )  z0=50 f=10meg nl=.25
+ R3l ( 32 0 )  0.001
+-# lo-z load 
++*# lo-z load 
+ R4s ( 1 41 )  50.
+ T4 ( 41 0 42 0 )  z0=50 f=10meg nl=.25
+ R4l ( 42 0 )  25.
+-# hi-z load 
++*# hi-z load 
+ R5s ( 1 51 )  50.
+ T5 ( 51 0 52 0 )  z0=50 f=10meg nl=.25
+ R5l ( 52 0 )  100.
+d_trln.tr.300.im.ckt
+--- ==out/d_trln.tr.300.im.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_trln.tr.300.im.ckt.out	2014-07-04 21:36:02.000000000 -0400
+@@ -1,22 +1,22 @@
+ #Transmission lines 
+ V1 ( 1 0 ) generator scale= 1.
+-# matched 
++*# matched 
+ R1s ( 1 11 )  50.
+ T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
+ R1l ( 12 0 )  50.
+-# open stub 
++*# open stub 
+ R2s ( 1 21 )  50.
+ T2 ( 21 0 22 0 )  z0=50 f=10meg nl=.25
+ R2l ( 22 0 )  1.E+99
+-# shorted stub 
++*# shorted stub 
+ R3s ( 1 31 )  50.
+ T3 ( 31 0 32 0 )  z0=50 f=10meg nl=.25
+ R3l ( 32 0 )  0.001
+-# lo-z load 
++*# lo-z load 
+ R4s ( 1 41 )  50.
+ T4 ( 41 0 42 0 )  z0=50 f=10meg nl=.25
+ R4l ( 42 0 )  25.
+-# hi-z load 
++*# hi-z load 
+ R5s ( 1 51 )  50.
+ T5 ( 51 0 52 0 )  z0=50 f=10meg nl=.25
+ R5l ( 52 0 )  100.
+d_trln.tr.300.nim.ckt
+--- ==out/d_trln.tr.300.nim.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_trln.tr.300.nim.ckt.out	2014-07-04 21:36:02.000000000 -0400
+@@ -1,22 +1,22 @@
+ #Transmission lines 
+ V1 ( 1 0 ) generator scale= 1.
+-# matched 
++*# matched 
+ R1s ( 1 11 )  50.
+ T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
+ R1l ( 12 0 )  50.
+-# open stub 
++*# open stub 
+ R2s ( 1 21 )  50.
+ T2 ( 21 0 22 0 )  z0=50 f=10meg nl=.25
+ R2l ( 22 0 )  1.E+99
+-# shorted stub 
++*# shorted stub 
+ R3s ( 1 31 )  50.
+ T3 ( 31 0 32 0 )  z0=50 f=10meg nl=.25
+ R3l ( 32 0 )  0.001
+-# lo-z load 
++*# lo-z load 
+ R4s ( 1 41 )  50.
+ T4 ( 41 0 42 0 )  z0=50 f=10meg nl=.25
+ R4l ( 42 0 )  25.
+-# hi-z load 
++*# hi-z load 
+ R5s ( 1 51 )  50.
+ T5 ( 51 0 52 0 )  z0=50 f=10meg nl=.25
+ R5l ( 52 0 )  100.
+d_trln.tr.im.ckt
+--- ==out/d_trln.tr.im.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_trln.tr.im.ckt.out	2014-07-04 21:36:02.000000000 -0400
+@@ -1,22 +1,22 @@
+ #Transmission lines 
+ V1 ( 1 0 ) generator scale= 1.
+-# matched 
++*# matched 
+ R1s ( 1 11 )  50.
+ T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
+ R1l ( 12 0 )  50.
+-# open stub 
++*# open stub 
+ R2s ( 1 21 )  50.
+ T2 ( 21 0 22 0 )  z0=50 f=10meg nl=.25
+ R2l ( 22 0 )  1.E+99
+-# shorted stub 
++*# shorted stub 
+ R3s ( 1 31 )  50.
+ T3 ( 31 0 32 0 )  z0=50 f=10meg nl=.25
+ R3l ( 32 0 )  0.001
+-# lo-z load 
++*# lo-z load 
+ R4s ( 1 41 )  50.
+ T4 ( 41 0 42 0 )  z0=50 f=10meg nl=.25
+ R4l ( 42 0 )  25.
+-# hi-z load 
++*# hi-z load 
+ R5s ( 1 51 )  50.
+ T5 ( 51 0 52 0 )  z0=50 f=10meg nl=.25
+ R5l ( 52 0 )  100.
+d_trln.tr.m.ckt
+--- ==out/d_trln.tr.m.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_trln.tr.m.ckt.out	2014-07-04 21:36:02.000000000 -0400
+@@ -1,19 +1,19 @@
+ #Transmission lines 
+ V1 ( 1 0 ) generator scale= 1.
+-# matched 
++*# matched 
+ R1s ( 1 11 )  50.
+ T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
+ R1l ( 12 0 )  50.
+-# really 2 in parallel 
++*# really 2 in parallel 
+ R2s ( 1 21 )  50.
+ T2a ( 21 0 22 0 )  z0=100 f=10meg nl=.25
+ T2b ( 21 0 22 0 )  z0=100 f=10meg nl=.25
+ R2l ( 22 0 )  50.
+-# n=2 
++*# n=2 
+ R3s ( 1 31 )  50.
+ T3 ( 31 0 32 0 )  z0=100 f=10meg nl=.25 m=2
+ R3l ( 32 0 )  50.
+-# not 
++*# not 
+ R4s ( 1 41 )  50.
+ T4 ( 41 0 42 0 )  z0=100 f=10meg nl=.25
+ R4l ( 42 0 )  50.
+d_trln.tr.nim.ckt
+--- ==out/d_trln.tr.nim.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/d_trln.tr.nim.ckt.out	2014-07-04 21:36:02.000000000 -0400
+@@ -1,22 +1,22 @@
+ #Transmission lines 
+ V1 ( 1 0 ) generator scale= 1.
+-# matched 
++*# matched 
+ R1s ( 1 11 )  50.
+ T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25
+ R1l ( 12 0 )  50.
+-# open stub 
++*# open stub 
+ R2s ( 1 21 )  50.
+ T2 ( 21 0 22 0 )  z0=50 f=10meg nl=.25
+ R2l ( 22 0 )  1.E+99
+-# shorted stub 
++*# shorted stub 
+ R3s ( 1 31 )  50.
+ T3 ( 31 0 32 0 )  z0=50 f=10meg nl=.25
+ R3l ( 32 0 )  0.001
+-# lo-z load 
++*# lo-z load 
+ R4s ( 1 41 )  50.
+ T4 ( 41 0 42 0 )  z0=50 f=10meg nl=.25
+ R4l ( 42 0 )  25.
+-# hi-z load 
++*# hi-z load 
+ R5s ( 1 51 )  50.
+ T5 ( 51 0 52 0 )  z0=50 f=10meg nl=.25
+ R5l ( 52 0 )  100.
+d_vccap.1.ckt
+d_vccap.2.ckt
+d_vcg.1.ckt
+d_vcg.2.ckt
+d_vcg.3.ckt
+d_vcg.4.ckt
+d_vcg.5.ckt
+d_vcr.1.ckt
+d_vcr.2.ckt
+d_vcr.3.ckt
+d_vcr.4.ckt
+d_vcr.5.ckt
+d_vcvs.1.ckt
+dcsweep.ckt
+e_ccsrc.1.ckt
+e_ccsrc.2.ckt
+e_node_probes.ckt
+e_storag.1.ckt
+eq3-1153.ckt
+eq3-1153.fg.ckt
+eq3-1153.fg2.ckt
+eq3-1153.tr-b.ckt
+eq3-1153.tr-nb.ckt
+eq3-1153.tr-ni.ckt
+eqb1.ckt
+eqboost.ckt
+eqflat.ckt
+eqmodify.ckt
+l.ckt
+l2.ckt
+ll.ckt
+ll1.ckt
+lll.ckt
+llll.ckt
+m_expression.1.ckt
+m_expression.2.ckt
+m_expression.3.ckt
+m_expression.error.1.ckt
+named_nodes.ckt
+nmos100.1.ckt
+nmos100.ckt
+nmos15.ckt
+--- ==out/nmos15.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/nmos15.ckt.out	2014-07-04 21:36:08.000000000 -0400
+@@ -51,10 +51,8 @@
+ .model MODELD nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
+ + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
+ + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
+-+ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
+-+ ld=NA( 0.))
+++ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+ .model MODELL nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
+ + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
+ + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
+-+ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
+-+ ld=NA( 0.))
+++ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+nmos15a.ckt
+--- ==out/nmos15a.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/nmos15a.ckt.out	2014-07-04 21:36:08.000000000 -0400
+@@ -51,10 +51,8 @@
+ .model MODELD nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
+ + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
+ + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
+-+ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
+-+ ld=NA( 0.))
+++ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+ .model MODELL nmos2 ( level=2 kp=28U nfs=NA( 0.) delta=NA( 0.) vto=0.7
+ + gamma=0.9 phi=0.5 lambda=0.01 tox= 100.n uo=NA( 600.) tpg=1 tnom=NA( 27.)
+ + fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.33)
+-+ kf=NA( 0.) af=NA( 0.) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.)
+-+ ld=NA( 0.))
+++ is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+nmp100.ckt
+nothing.ckt
+opamp-ol-disto.2.ckt
+opamp-ol-disto.ckt
+opamp-ol.ckt
+opamp-vf.1.ckt
+--- ==out/opamp-vf.1.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/opamp-vf.1.ckt.out	2014-07-04 21:36:09.000000000 -0400
+@@ -234,7 +234,7 @@
+  0.001  |                 .                .        *        .                |
+         +-----------------+----------------+-----------------+----------------+
+ Gnucap   System status
+-iterations: op=23, dc=348, tran=1007, fourier=0, total=1579
+-transient timesteps: accepted=158, rejected=7, total=165
++iterations: op=23, dc=348, tran=987, fourier=0, total=1557
++transient timesteps: accepted=157, rejected=6, total=163
+ nodes: user=8, subckt=0, model=16, total=24
+ dctran density=47.9%, ac density=47.9%
+opamp-vf.1d.ckt
+--- ==out/opamp-vf.1d.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/opamp-vf.1d.ckt.out	2014-07-04 21:36:10.000000000 -0400
+@@ -234,7 +234,7 @@
+  0.001  |                 .                .        *        .                |
+         +-----------------+----------------+-----------------+----------------+
+ Gnucap   System status
+-iterations: op=93, dc=322, tran=935, fourier=0, total=1549
+-transient timesteps: accepted=157, rejected=6, total=163
++iterations: op=93, dc=322, tran=923, fourier=0, total=1536
++transient timesteps: accepted=156, rejected=6, total=162
+ nodes: user=8, subckt=0, model=16, total=24
+ dctran density=47.9%, ac density=47.9%
+opamp-vf.2.ckt
+opamp-vf.3.ckt
+opamp-vf.ckt
+oscillator.1.ckt
+--- ==out/oscillator.1.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/oscillator.1.ckt.out	2014-07-04 21:36:10.000000000 -0400
+@@ -12,7 +12,7 @@
+  4.     |         *       .                .                 .                |
+  4.5    |*                .                .                 .                |
+  5.     |*                .                .                 .                |
+- 5.5    |       *         .                .                 .                |
++ 5.5    |        *        .                .                 .                |
+  6.     |                 .    *           .                 .                |
+  6.5    |                 .                .    *            .                |
+  7.     |                 .                .                 .  *             |
+@@ -62,7 +62,7 @@
+  29.    |                *.                .                 .                |
+  29.5   |    *            .                .                 .                |
+  30.    *                 .                .                 .                |
+- 30.5   |  *              .                .                 .                |
++ 30.5   |   *             .                .                 .                |
+  31.    |              *  .                .                 .                |
+  31.5   |                 .            *   .                 .                |
+  32.    |                 .                .            *    .                |
+@@ -83,7 +83,7 @@
+  39.5   |                 .                .                 .                *
+  40.    |                 .                .                 .            *   |
+  40.5   |                 .                .                 . *              |
+- 41.    |                 .                .   *             .                |
++ 41.    |                 .                .  *              .                |
+  41.5   |                 .  *             .                 .                |
+  42.    |       *         .                .                 .                |
+  42.5   |*                .                .                 .                |
+@@ -132,7 +132,7 @@
+  64.    |                 .                .                 .      *         |
+  64.5   |                 .                .                 .               *|
+  65.    |                 .                .                 .               *|
+- 65.5   |                 .                .                 .        *       |
++ 65.5   |                 .                .                 .       *        |
+  66.    |                 .                .           *     .                |
+  66.5   |                 .           *    .                 .                |
+  67.    |             *   .                .                 .                |
+@@ -182,7 +182,7 @@
+  89.    |                 .                .                 *                |
+  89.5   |                 .                .                 .           *    |
+  90.    |                 .                .                 .                *
+- 90.5   |                 .                .                 .             *  |
++ 90.5   |                 .                .                 .            *   |
+  91.    |                 .                .                 . *              |
+  91.5   |                 .                .   *             .                |
+  92.    |                 .   *            .                 .                |
+@@ -204,7 +204,7 @@
+  100.   |   *             .                .                 .                |
+         +-----------------+----------------+-----------------+----------------+
+ Gnucap   System status
+-iterations: op=0, dc=0, tran=1230, fourier=0, total=1640
+-transient timesteps: accepted=409, rejected=1, total=410
++iterations: op=0, dc=0, tran=1233, fourier=0, total=1644
++transient timesteps: accepted=410, rejected=1, total=411
+ nodes: user=1, subckt=0, model=0, total=1
+ dctran density=100.0%, ac density=100.0%
+oscillator.2.ckt
+oscillator.3.ckt
+oscillator.4.ckt
+oscillator.5.ckt
+oscillator.6.ckt
+--- ==out/oscillator.6.ckt.out	2014-07-03 18:25:15.000000000 -0400
++++ 140704/oscillator.6.ckt.out	2014-07-04 21:36:11.000000000 -0400
+@@ -28,7 +28,7 @@
+  12.    |             *   .                .                 .                |
+  12.5   |                 .           *    .                 .                |
+  13.    |                 .                .           *     .                |
+- 13.5   |                 .                .                 .        *       |
++ 13.5   |                 .                .                 .       *        |
+  14.    |                 .                .                 .               *|
+  14.5   |                 .                .                 .               *|
+  15.    |                 .                .                 .      *         |
+oscillator.7.ckt
+param.0.ckt
+param.0a.ckt
+param.1.ckt
+param.10.ckt
+param.11.ckt
+param.2.ckt
+param.2a.ckt
+param.2b.ckt
+param.3.ckt
+param.4.ckt
+param.5.ckt
+param.6.ckt
+param.7.ckt
+param.8.ckt
+param.9.ckt
+parse.1.ckt
+sl.ckt
+trcurve.ckt
+trcurve2.ckt
+trcurves.ckt
+done with gnucap

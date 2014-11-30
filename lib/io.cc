@@ -30,4 +30,3 @@ OMSTREAM IO::plotout;
 bool	IO::plotset(false);
 int	IO::formaat(0);
 bool	IO::incipher(false);
-// vim:ts=8:sw=2:noet:

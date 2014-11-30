@@ -1,0 +1,30 @@
+simple diode test
+V1   1  0  sin(ampl=10, freq=10meg) DC -10. AC 1 
+R1   1  2  100.K
+D1   2  0  ddd  area= 1. 
+.model  ddd  d  ( is= 10.f  rs= 0.  n= 1.  tt= 0.  cjo= 1.p  vj= 1.  m= 0.5 
++ eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5  bv= 50  ibv= 0.001  )
+*>.list
+*>.print op v(1) v(2) i(v1) 
+*>.print op + i(r1) id(d1) vd(d1) req(d1) cd(d1) z(d1) zraw(d1) gd(d1) z(2)
+.print dc v(1) v(2) i(v1) 
+*>.print dc + i(r1) id(d1) vd(d1) req(d1) cd(d1) z(d1) zraw(d1) gd(d1) z(2) iter(0)
+.print ac vr(2) vi(2)
+.plot tran v(2)
+*>.plot tran v(1)(-10,10) v(2)(-10,10)
+*>.op trace iter
+.ac dec 1 10 1g
+.dc v1 -10 0 2
+.ac dec 1 10 1g
+*>.width out=100
+.tran 5n 195n 0
+.ac dec 1 10 1g
+.tran 5n 165n 0
+.ac dec 1 10 1g
+.tran 5n 135n 0
+.ac dec 1 10 1g
+.tran 5n 125n 0
+.ac dec 1 10 1g
+
+*>.stat notime
+.end

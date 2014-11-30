@@ -1,0 +1,27 @@
+'
+.option nobypass
+V1   1  0  dc 1. ac  1. 
+R1   1  2  1.K
+W1   2  0  Rprobe  sss 
+V2   3  0  dc 1. ac  1. 
+R2   3  4  1.K
+W2   4  0  Vprobe  sss 
+V3   5  0  dc 1. ac  1. 
+R3   5  6  1.K
+W3   6  0  Isig  sss 
+Isig   7  0  pwl( 0.  0.  5.  -.005  15. .005  25.  -.005 ) 
+Rprobe 7  8  1k
+Vprobe 8  0  0
+.model  sss  csw  ( it= 0.  ih= .002  ron= 1.K  roff= 1.E+12 )
+.width out=170
+.list
+.print dc v(2,4,6,7,8) ev(w*) i(?sig) i(?probe) iter(0)
+.print tran v(2,4,6,7,8) ev(w*) i(?sig) i(?probe) iter(0)
+.print ac v(2,4,6,7,8) ev(w*) i(?sig) i(?probe) iter(0)
+.dc Isig .005 -.005 -.001 loop
+.ac 1k
+.tran 0 25 1 trace iter
+.ac 1k 
+.list
+.stat notime
+.end 

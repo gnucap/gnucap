@@ -1,0 +1,13 @@
+# test "basic" formatting
+v1 1 0 1
+v2 2 0 10k
+v3 3 0 1e30
+v4 4 0 .001
+r4 4 0 10000k
+v5 5 0 1n
+r5 5 0 10000k
+.print op v(nodes) i(r4) i(r5) v(1)
+.op
+.op basic
+.list
+.end

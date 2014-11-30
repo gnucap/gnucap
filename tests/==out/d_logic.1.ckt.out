@@ -1,0 +1,8 @@
+'6 inverters as gates 
+#           v(1)       v(2)       v(3)       v(4)       v(5)       v(6)       v(7)       v(8)       logic(1)   logic(2)   logic(3)   logic(4)   logic(5)   logic(6)   logic(7)   logic(8)  
+ 27.        0.         5.         66.926n    5.         66.926n    5.         66.926n    5.         0.01       3.01       0.01       3.01       0.01       3.01       0.01       4.21      
+Gnucap   System status
+iterations: op=13, dc=0, tran=0, fourier=0, total=13
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=8, subckt=0, model=0, total=8
+dctran density=53.1%, ac density=53.1%

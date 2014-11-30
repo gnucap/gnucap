@@ -1,0 +1,17 @@
+'
+.vsource Vcc   1 0     dc 10   ac 0
+.vsource Vin   2 0     sin freq=1k ampl=.1 offset=1 ac .2
+.vcg     Mamp  1 0 2 0 complex(.001 .001)
+
+.print op v(v*) i(V*) i(Mamp) iter(0)
+.op
+
+.print tran v(v*) i(V*) i(Mamp) iter(0)
+.tran 0 .001 .00005
+
+.print ac v(v*) i(V*) i(Mamp)
+.ac 1k
+.print ac vp(v*) ip(V*) ip(Mamp)
+.ac 1k
+
+.end

@@ -1,0 +1,20 @@
+'parameter function call test
+.option list
+.param a='sin(1)'
+.eval a
+.param b=sin(1)
+.eval b
+.param c=pow(2,2)
+.eval c
+.param d=pow(sqrt(2+2),2)
+.eval d
+.param e='3+c'
+.eval e
+.param f='c+3'
+.eval f
+.param g=c+3
+.eval g
+.param h=3+c
+.eval h
+.end
+

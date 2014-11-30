@@ -6,4 +6,3 @@ int main()
   char* line_read = readline("xx");
   add_history(line_read);
 }
-// vim:ts=8:sw=2:noet:

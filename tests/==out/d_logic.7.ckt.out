@@ -1,0 +1,26 @@
+'6 inverters as gates 
+U7: can't find subckt: mosinv1, forcing digital
+U6: can't find subckt: mosinv1, forcing digital
+U5: can't find subckt: mosinv1, forcing digital
+U4: can't find subckt: mosinv1, forcing digital
+U3: can't find subckt: mosinv1, forcing digital
+U2: can't find subckt: mosinv1, forcing digital
+#           v(1)       v(2)       v(3)       v(4)       v(5)       v(6)       v(7)       v(8)       logic(1)   logic(2)   logic(3)   logic(4)   logic(5)   logic(6)   logic(7)   logic(8)  
+ 27.        0.         5.         0.         5.         0.         5.         0.         5.         0.01       3.         0.         3.         0.         3.         0.         4.21      
+Vdd ( 8 0 )  DC  5.
+V1 ( 1 0 ) generator scale= 1.
+U7 ( 7 0 8 8 6 )  mos inv 
+U6 ( 6 0 8 8 5 )  mos inv 
+U5 ( 5 0 8 8 4 )  mos inv 
+U4 ( 4 0 8 8 3 )  mos inv 
+U3 ( 3 0 8 8 2 )  mos inv 
+U2 ( 2 0 8 8 1 )  mos inv 
+.model mos logic ( delay=1n vmax=5. vmin=0. unknown=NA( 2.5) rise=1n fall=1n rs=100. rw=1.G thh=0.75 thl=0.25 mr=5. mf=5. over=10k tnom=NA( 27.))
+*'.option trace 
+*'.print tran v(nodes) l(nodes) 
+*'.tran 0 10 .05  watch 
+Gnucap   System status
+iterations: op=8, dc=0, tran=0, fourier=0, total=8
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=8, subckt=0, model=0, total=8
+dctran density=12.5%, ac density=12.5%

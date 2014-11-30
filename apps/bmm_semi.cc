@@ -215,7 +215,7 @@ void EVAL_BM_SEMI_BASE::expand(const COMPONENT* d)
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::precalc_first(const CARD_LIST* Scope)
-{untested();
+{itested();
   assert(Scope);
   EVAL_BM_ACTION_BASE::precalc_first(Scope);
   _length.e_val(_default_length, Scope);
@@ -324,13 +324,13 @@ void EVAL_BM_SEMI_RESISTOR::precalc_last(const CARD_LIST* Scope)
 
   if (eff_width != 0.) {
     _value = m->_rsh * eff_length / eff_width;
-  }else{untested();
+  }else{itested();
     _value = BIGBIG;
   }
   double tempdiff = (_temp_c - m->_tnom_c);
   _value *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
-  if (eff_width <= 0.) {untested();
+  if (eff_width <= 0.) {itested();
     throw Exception_Precalc(modelname() + ": effective width is negative or zero\n");
   }else{
   }

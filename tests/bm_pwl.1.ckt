@@ -1,0 +1,16 @@
+# HSPICE style PWL
+v1 1 0 dc 1 ac 1
+r1 1 2 1k
+r2 2 0 1k
+e1 3 0 PWL(1) 2 0  0,0 1,1 4,2 9,3 16,4 25,5
+r3 3 0 10k
+g1 4 0 PWL(1) 2 0  0,0 1,1 4,2 9,3 16,4 25,5
+r4 4 0 10k
+.list
+.print op v(nodes)
+.op
+.print dc v(nodes)
+.dc v1 -10 10 1
+.dc v1 1 100 decade 5
+.dc v1 32 68 9
+.end

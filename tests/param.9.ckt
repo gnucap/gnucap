@@ -1,0 +1,5 @@
+'
+v1 1 0 d
+.probe op v(1)
+.op
+.end

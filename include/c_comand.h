@@ -1,4 +1,4 @@
-/*$Id: c_comand.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: c_comand.h 2014.11.25 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -28,7 +28,7 @@
 /*--------------------------------------------------------------------------*/
 class CS;
 /*--------------------------------------------------------------------------*/
-class INTERFACE CMD : public CARD {
+class INTERFACE CMD : public CKT_BASE {
 public:
   std::string value_name()const {return "";}
   virtual void do_it(CS&, CARD_LIST*) = 0;

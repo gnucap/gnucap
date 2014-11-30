@@ -1,0 +1,16 @@
+simple diode test
+V1   1  0  10.
+R1   1  2  100.K
+D1   2  0  ddd   m=2. 
+.model  ddd  d  ( is= 10.f  rs= 0.  n= 1.  tt= 0.  cjo= 1.p  vj= 1.  m= 0.5 
++ eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5 )
+.list
+.print op v(1) v(2) i(v1) i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2)
+.op
+.print dc v(1) v(2) i(v1) i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2) iter(0)
+.dc v1 -10 10 2
+.stat notime
+.dc v1 9.999 10.001 .001
+.op
+.stat notime
+.end

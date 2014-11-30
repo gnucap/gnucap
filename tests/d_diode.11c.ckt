@@ -1,0 +1,17 @@
+simple diode test
+.param aa=10k
+.param bb=aa/10
+.param one=1
+.param ten='(2+3)*4*.5'
+V1   1  0  10.
+R1   1  2  50.K
+D1   2  0  ddd   1. 
+R1   1  3  50.K
+D2   3  0  dddd  1.
+.model  ddd  d  ( is= 10.f  rs= 10k  n= 1.  tt= 0.  cjo= 0.  vj= 1.  m= 0.5 
++ eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5 )
+.model  dddd  d  ( is= 10.f  rs= '10k/ten'  n= 1.  tt= 0.  cjo= 0.  vj= 1.  m= 0.5 
++ eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5 )
+.print op v(nodes)
+.op
+.end

@@ -1,0 +1,32 @@
+rtlinv ckt - cascaded rtl inverters
+* modified from Spice-3 examples
+
+.width out=80
+*>.option rstray
+
+vcc 6 0 5
+vin 1 0 pulse(0 5 2ns 2ns 2ns 80ns)
+rb1 1 2 10k
+rc1 6 3 1k
+q1 3 2 0 0 qnd
+rb2 3 4 10k
+q2 5 4 0 0 qnd
+rc2 6 5 1k
+.model qnd npn(bf=50 rb=70 rc=40 ccs=2pf tf=0.1ns tr=10ns cje=0.9pf
++   cjc=1.5pf pc=0.85 va=50)
+
+*>.print op v 1 2 3 4 5 6
+.op
+
+*.print dc v(3) v(5)
+.plot dc v(3) v(5)
+*>.plot dc v(3)(-2,6) v(5)(-2,6)
+.dc vin 0.0 2.5 0.05
+
+*.print tran v(3) v(5)
+*.plot tran v(3) v(5) v(1)
+.plot tran v(3) v(5) v(1)
+*>.plot tran v(3)(-2,6) v(5)(-2,6)
+.tran 5ns 200ns
+
+.end

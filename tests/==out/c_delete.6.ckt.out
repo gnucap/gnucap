@@ -1,0 +1,55 @@
+' test delete in subckts 
+.subckt aa ( a b c )
+r1 ( a b )  1.
+r2 ( b 0 )  1.
+r3 ( b c )  1.
+x1 ( a b )  bb 
+.ends aa
+.subckt bb ( 1 2 )
+r1 ( 1 2 )  1.K
+.ends bb
+x1 ( 1 2 3 )  aa 
+v1 ( 1 0 )  DC  1.
+#           v(1)       v(2)       v(3)      
+ 27.        0.99999    0.50025    0.50025   
+.delete r1.x1 
+        ^ ? no match
+#           v(1)       v(2)       v(3)      
+ 27.        0.99999    0.50025    0.50025   
+.subckt aa ( a b c )
+r1 ( a b )  1.
+r2 ( b 0 )  1.
+r3 ( b c )  1.
+x1 ( a b )  bb 
+.ends aa
+.subckt bb ( 1 2 )
+r1 ( 1 2 )  1.K
+.ends bb
+x1 ( 1 2 3 )  aa 
+v1 ( 1 0 )  DC  1.
+#           v(1)       v(2)       v(3)      
+ 27.        1.         999.u      999.u     
+.subckt aa ( a b c )
+r2 ( b 0 )  1.
+r3 ( b c )  1.
+x1 ( a b )  bb 
+.ends aa
+.subckt bb ( 1 2 )
+r1 ( 1 2 )  1.K
+.ends bb
+x1 ( 1 2 3 )  aa 
+v1 ( 1 0 )  DC  1.
+.delete r1.v1 
+        ^ ? no match
+.subckt aa ( a b c )
+r2 ( b 0 )  1.
+r3 ( b c )  1.
+x1 ( a b )  bb 
+.ends aa
+.subckt bb ( 1 2 )
+r1 ( 1 2 )  1.K
+.ends bb
+x1 ( 1 2 3 )  aa 
+v1 ( 1 0 )  DC  1.
+#           v(1)       v(2)       v(3)      
+ 27.        1.         999.u      999.u     

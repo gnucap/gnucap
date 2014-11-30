@@ -1,0 +1,18 @@
+* unknown parameter check
+.param  x='3+a+1+1'
+.eval x
+.eval 3+a+1+1
+.eval a+b
+.eval 2+a+b+3
+.eval a+2+b+3
+.eval a+2+3+b
+.eval 2+a+3+b
+.param a=2
+.eval x
+.eval 3+a+1+1
+.eval a+b
+.eval 2+a+b+3
+.eval a+2+b+3
+.eval a+2+3+b
+.eval 2+a+3+b
+.end

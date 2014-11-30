@@ -1,0 +1,10 @@
+' sin test 
+.option out=170 
+V1  1  0  SFFM  offset= 0.  amplitude= 1.  carrier=10k  modindex=2  signal=1k samples=0
+V3  3  0  SIN   freq=10k samples=0
+V4  4  0  SIN   freq=1k samples=0
+.print tran v(nodes) next(v1) event(v1) next(v3) event(v3)
+.tran 0 .002 .002 trace all
+.list 
+.status notime
+.end 

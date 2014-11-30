@@ -1,0 +1,40 @@
+#parser args check
+e0 5 0 2 0 posy (1,2) odd
+e1 5 0 2 0 posy 1,2 odd
+e2 5 0 2 0 posy (1,2 odd)
+e3 5 0 2 0 posy ((1,2) odd)
+e4 5 0 2 0 posy odd (1,2)
+e5 5 0 2 0 posy (odd 1,2)
+e6 5 0 2 0 posy (odd(1,2))
+e7 5 0 2 0 posy odd 1,2
+
+e10 5 0 2 0 posy (1,2) odd=1
+e11 5 0 2 0 posy 1,2 odd=1
+e12 5 0 2 0 posy (1,2 odd=1)
+e13 5 0 2 0 posy ((1,2) odd=1)
+e14 5 0 2 0 posy odd=1 (1,2)
+e15 5 0 2 0 posy (odd=1 1,2)
+e16 5 0 2 0 posy (odd=1 (1,2))
+e17 5 0 2 0 posy odd=1 1,2
+
+e00 5 0 2 0 posy (1,2) odd=0
+e01 5 0 2 0 posy 1,2 odd=0
+e02 5 0 2 0 posy (1,2 odd=0)
+e03 5 0 2 0 posy ((1,2) odd=0)
+e04 5 0 2 0 posy odd=0 (1,2)
+e05 5 0 2 0 posy (odd=0 1,2)
+e06 5 0 2 0 posy (odd=0 (1,2))
+e07 5 0 2 0 posy odd=0 1,2
+
+e20 5 0 2 0 posy (1,2) noodd
+e21 5 0 2 0 posy 1,2 noodd
+e22 5 0 2 0 posy (1,2 noodd)
+e23 5 0 2 0 posy ((1,2) noodd)
+e24 5 0 2 0 posy noodd (1,2)
+e25 5 0 2 0 posy (noodd 1,2)
+e26 5 0 2 0 posy (noodd (1,2))
+e27 5 0 2 0 posy noodd 1,2
+
+.list
+.end
+

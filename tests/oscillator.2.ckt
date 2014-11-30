@@ -1,0 +1,16 @@
+*oscillator, .159 Hz.
+C1 1 0 1 ic=5
+L1 1 0 1
+
+C2 2 0 1
+L2 2 0 1 ic=5
+
+.width out=80
+.plot tran v(1) v(2)
+.tran .1 100 0 uic
+.tran
+.tran
+.tran .1 100 0
+.tran .1 100 0 uic
+.status notime
+.end

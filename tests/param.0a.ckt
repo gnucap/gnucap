@@ -1,0 +1,6 @@
+'
+.param d=3
+v1 1 0 d
+.print dc v(1)
+.dc
+.end

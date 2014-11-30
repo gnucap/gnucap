@@ -1,0 +1,6 @@
+square root circuit??
+v1      1   0  1.
+e1    2 0   1   0  posy (1. .5)
+.print dc v(1) v(2)
+.dc v1 -10 10 1
+.end

@@ -1,4 +1,4 @@
-/*$Id: e_card.cc,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: e_card.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * Base class for "cards" in the circuit description file
  */
-//testing=script 2006.07.12
+//testing=script 2014.07.04
 #include "u_time_pair.h"
 #include "e_cardlist.h"
 #include "e_node.h"
@@ -59,7 +59,7 @@ CARD::~CARD()
 const std::string CARD::long_label()const
 {
   std::string buffer(short_label());
-  for (const CARD* brh = owner(); exists(brh); brh = brh->owner()) {
+  for (const CARD* brh = owner();  brh;  brh = brh->owner()) {
     buffer = brh->short_label() + '.' + buffer;
   }
   return buffer;
@@ -71,13 +71,11 @@ const std::string CARD::long_label()const
  * does not traverse subcircuits
  */
 int CARD::connects_to(const node_t& node)const
-{
-  untested();
+{untested();
   int count = 0;
-  if (is_device()) {
-    for (int ii = 0;  ii < net_nodes();  ++ii) {
-      untested();
-      if (node.n_() == _n[ii].n_()) {
+  if (is_device()) {untested();
+    for (int ii = 0;  ii < net_nodes();  ++ii) {untested();
+      if (node.n_() == _n[ii].n_()) {untested();
         ++count;
       }else{untested();
       }
@@ -176,7 +174,7 @@ const CARD* CARD::find_looking_out(const std::string& name)const
     }else if (makes_own_scope()) {
       // probably a subckt or "module"
       CARD_LIST::const_iterator i = CARD_LIST::card_list.find_(name);
-      if (i != CARD_LIST::card_list.end()) {itested();
+      if (i != CARD_LIST::card_list.end()) {untested();
 	return *i;
       }else{
 	throw;
@@ -243,7 +241,7 @@ void CARD::set_param_by_name(std::string Name, std::string Value)
  */
 void CARD::set_dev_type(const std::string& New_Type)
 {
-  if (!Umatch(New_Type, dev_type() + ' ')) {itested();
+  if (!Umatch(New_Type, dev_type() + ' ')) {untested();
     //throw Exception_Cant_Set_Type(dev_type(), New_Type);
   }else{
     // it matches -- ok.

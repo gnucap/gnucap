@@ -1,4 +1,4 @@
-/* $Id: d_bjt.model,v 26.136 2009/12/08 02:03:49 al Exp $ -*- C++ -*-
+/* $Id: d_bjt.model 2014/11/23 al$ -*- C++ -*-
  * Copyright (C) 2002 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -47,7 +47,7 @@ device BUILT_IN_BJT {
   id_letter Q;
   circuit {
     sync;
-    ports {c b e} {s};
+    ports {c b e} {s short_to=e};
     local_nodes {
       ic  short_to=c   short_if="!OPT::rstray || m->rc == 0.";
       ib short_to=b

@@ -1,0 +1,12 @@
+nmos n gate, linear, lambda specified
+.width out=90
+Vgs   1  0  3.236734
+M1   2  1  0  4  cmosn  l= 9.u  w= 9.u  nrd= 1.  nrs= 1. 
+Vds   3  0  0.01
+Rds   2  3  1.
+Vbs   4  0 -1.234875
+.model cmosn  nmos (level=6 tox=1e-7)
+.op
+.print dc v(1) v(2) v(3) i(vds)
+.dc vgs -10 10 1
+.end

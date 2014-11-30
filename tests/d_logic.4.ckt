@@ -1,0 +1,20 @@
+'6 inverters as gates
+.gen freq=1 offset=2.5 init=2.5 ampl=2.5 
+Vdd  8  0  dc 5.
+V1   1  0  generator( 1. ) 
+U2   2 0 8 8 1  mos inv
+U3   3 0 8 8 2  mos inv
+U4   4 0 8 8 3  mos inv
+U5   5 0 8 8 4  mos inv
+U6   6 0 8 8 5  mos inv
+U7   7 0 8 8 6  mos inv
+.model  mos logic ( delay= 1n  rise= 1n  fall= 1n  rs= 100.  rw= 1.G 
++ thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
+.option mode=mixed vmax=5.1 vmin=-.1
+.print op v(1 2 3 4 5 6 7 8) logic(1 2 3 4 5 6 7 8)
+.op
+'.option trace
+'.print tran v(nodes) l(nodes)
+'.tran 0 10 .05 
+.stat notime
+.end 

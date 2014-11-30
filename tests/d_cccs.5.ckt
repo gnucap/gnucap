@@ -1,0 +1,58 @@
+# cccs test
+i1 1 0 dc 11 ac 11
+ri1 1 0 10
+e1 2 0 1 0 8
+re1 2 0 10
+# sense the voltage source (0 volts)
+i2 3 0 dc 11 ac 11
+ri2 4 0 10
+v2 3 4 0
+f2 5 0 v2 8
+rf2 5 0 10
+# sense the resistor
+i3 6 0 dc 11 ac 11
+ri3 7 0 10
+v3 6 7 0
+f3 8 0 ri3 8
+rf3 8 0 10
+# sense the current source
+i4 9 0 dc 11 ac 11
+ri4 10 0 10
+v4 9 10 0
+f4 11 0 i4 8
+rf4 11 0 10
+# sense a conductance
+i5 12 0 dc 11 ac 11
+yi5 13 0 10
+v5 12 13 0
+f5 14 0 yi5 8
+rf5 14 0 10
+# sense a vccs
+v6 15 0 dc 1.1 ac 1.1
+g6 16 0 15 0 10
+yi6 17 0 10
+v6 16 17 0
+f6 18 0 yi6 8
+rf6 18 0 10
+f6b 23 0 g6 -8
+rf6b 23 0 10
+# sense a live voltage source
+v7 19 0 dc 11 ac 11
+rv7 19 0 10
+f7 20 0 v7 8
+rf7 20 0 10
+# sense the resistor in series
+v8 21 0 dc 11 ac 11
+rv8 21 0 10
+f8 22 0 rv8 8
+rf8 22 0 10
+
+
+.opt out 170
+.print op v(nodes) i(v7) i(v8)
+.op
+.print tran v(nodes) i(v7) i(v8)
+.tran 0 .1 .05
+.print ac v(nodes) i(v7) i(v8)
+.ac 1k
+.end

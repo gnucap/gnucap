@@ -1,0 +1,9 @@
+'parameter test
+v1 1 0 dc _a ac _b
+r1 1 2 _c
+r2 2 0 _d
+.param _a=1 _b=2 _c=3 _d=4
+.param
+.print op v(nodes)
+.op
+.end

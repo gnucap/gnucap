@@ -1,4 +1,4 @@
-/*$Id: lang_spice.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
+/*$Id: lang_spice.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -720,6 +720,10 @@ void LANG_SPICE_BASE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 {
   assert(x);
   if (x->comment()[1] != '+') {
+    if (x->comment()[0] != '*') {
+      o << "*";
+    }else{
+    }
     o << x->comment() << '\n';
   }else{
   }
@@ -837,7 +841,7 @@ class CMD_MODEL : public CMD {
 
     if (p) {
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(p->clone());
-      if (exists(new_card)) {
+      if (new_card) {
 	assert(!new_card->owner());
 	lang_spice.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);

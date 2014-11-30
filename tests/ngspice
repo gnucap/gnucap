@@ -1,0 +1,28 @@
+NGspice requires a real title.  A blank line won't do.
+
+.model zz npn bf=150
+
+.subckt foo (vcc in out)
+q1 (c b e 0) zz
+Rc (c vcc) 10k
+Re (e 0) 1k
+Rb1 (b vcc) 100k
+Rb2 (b 0) 10k
+Cin (b in) 1u
+Cout (c out) 1u
+Rin (in 0) 100k
+Rout (out 0) 100k
+.ends
+
+Vcc (V_cc 0) dc 20
+Vin (in 0) ac .1
+X1 (V_cc in out) foo
+
+
+*>.print op v(nodes) vbc(q1.*)
+.op
+
+.print ac v(in) v(out)
+.ac dec 1 1k 10k
+
+.end

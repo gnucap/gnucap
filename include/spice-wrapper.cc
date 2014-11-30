@@ -1,4 +1,4 @@
-/* $Id: spice-wrapper.cc,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/* $Id: spice-wrapper.cc 2014/11/23$ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -1232,7 +1232,7 @@ bool DEV_SPICE::do_tr()
 
     for (int ii = 0; ii < matrix_nodes()+OFFSET; ++ii) {
       for (int jj = 0; jj < matrix_nodes()+OFFSET; ++jj) {
-	_matrix[ii][jj].real() = 0;
+	_matrix[ii][jj].real(0.);
       }
     }
   }

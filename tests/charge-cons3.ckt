@@ -1,0 +1,19 @@
+'
+Vin   1  0  sin( 1.  1.  10.Meg  0.  0. )
+Vbias 3 0 1
+R1   1  0  1.Meg
+R2 2 0 10meg
+C1   1  2  1.p
+M1   3  2  0  0  m  l= 50.u  w= 50.u  nrd= 1.  nrs= 1. 
+.model m  nmos ( level=2  kp= 20.u  phi= 0.6  cbd= 4.5f  cbs= 4.5f  is= 10.f 
++ pb= 0.8  cgso= 1.5n  cgdo= 1.5n  cgbo= 0.  rsh= 0.  mj= 0.5  cjsw= 0. 
++ mjsw= 0.33  tox= 110.n  nsub= 2.2E+15  nss= 32.G  nfs= 0.  tpg=1  xj= 2.95u 
++ ld= 2.4485u  uo= 575.  ucrit= 49.K  uexp= 0.1  neff= 1.  fc= 0.5  delta= 0. 
++)
+.options limpts=2000 itl5=10000 nobypass outwidth=80
+.print op v(1,2,3)
+.plot tran v(1)(-2,2) v(2)(-2,2) 
+.op 
+.tran 10n 5000n 0 
+.stat notime
+.end 

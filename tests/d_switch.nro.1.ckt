@@ -1,0 +1,25 @@
+* switch as negative resistance oscillator
+* Spice netlister for gnetlist
+SW1 1 0 1 0 SWITCH1
+C1 1 0 1n
+I1 0 1 100u
+.MODEL SWITCH1 SW VT=2.5 VH=2.475 RON=1 ROFF=10MEG
+.print tran V(1)
+*>.print tran + r(SW1) iter(0) input(sw1) timef(sw1) control(0)
+*>.store tran v(1)
+.option method=trap
+.tran 10e-6 200e-6 uic trace all
+*>.measure t2=cross("v(1)" cross=2 fall last)
+*>.measure t1=cross("v(1)" cross=2 fall last before=t2)
+*>.measure t0=cross("v(1)" cross=2 fall last before=t1)
+*>.measure tmin0=min("v(1)" arg last after=t0 before=t1)
+*>.measure tmin1=min("v(1)" arg last after=t1 before=t2)
+*>.measure tmax1=max("v(1)" arg last before=t1 after=t0)
+*>.param falltime=tmin1-tmax1
+*>.param risetime=tmax1-tmin0
+*>.param dt=t2-t1
+*>.eval falltime
+*>.eval risetime
+*>.eval dt
+*>.status notime
+.END

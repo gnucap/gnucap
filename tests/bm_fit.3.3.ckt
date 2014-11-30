@@ -1,0 +1,6 @@
+# FIT, vsrc test, with BC mismatch at start
+v1 1 0 fit 1n,3  2n,3.5  3n,4  4n,4.5  5n,5  6n,5  7n,5  8n,5  9n,5
++ order=3 below=0 above=0
+.print tran v(nodes)
+.tran 0 10n .1n trace all
+.end

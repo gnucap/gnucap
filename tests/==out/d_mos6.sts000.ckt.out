@@ -1,0 +1,10 @@
+nmos n gate, sub-threshold 
+>>>>>.print op v(nodes) iter(0) 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+>>>>>.op 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+#           v(1)       v(2)       v(3)       v(4)       iter(0)   
+new max = 5, new limit = 5.5
+ 27.        0.23673    4.9998     5.        -1.2349     5.        

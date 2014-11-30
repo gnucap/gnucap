@@ -1,0 +1,9 @@
+' sin test 
+.option out=170 
+V1  1  0  SIN  offset= 0.  amplitude= 1.  frequency= 100meg  delay= 0.  damping= 0.
+V2  2  0  SIN  offset= 0.  amplitude= 1.  frequency= 100meg  delay=10n  damping= 20meg
+.print tran v nodes
+.tran 0 100n .5n
+.list 
+.status notime
+.end 

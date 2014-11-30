@@ -1,4 +1,4 @@
-/*$Id: lang_verilog.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
+/*$Id: lang_verilog.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -271,6 +271,7 @@ MODEL_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, MODEL_SUBCKT* x)
 /*--------------------------------------------------------------------------*/
 COMPONENT* LANG_VERILOG::parse_instance(CS& cmd, COMPONENT* x)
 {
+  assert(x);
   cmd.reset();
   parse_type(cmd, x);
   parse_args_instance(cmd, x);
@@ -428,6 +429,10 @@ void LANG_VERILOG::print_instance(OMSTREAM& o, const COMPONENT* x)
 void LANG_VERILOG::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 {
   assert(x);
+  if ((x->comment().compare(0, 2, "//")) != 0) {untested();
+    o << "//";
+  }else{untested();
+  }
   o << x->comment() << '\n';
 }
 /*--------------------------------------------------------------------------*/
@@ -452,11 +457,11 @@ class CMD_PARAMSET : public CMD {
     const CARD* p = lang_verilog.find_proto(base_name, NULL);
     if (p) {
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(p->clone());
-      if (exists(new_card)) {
+      if (new_card) {
 	assert(!new_card->owner());
 	lang_verilog.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
-      }else{	//BUG// memory leak
+      }else{
 	cmd.warn(bDANGER, here, "paramset: base has incorrect type");
       }
     }else{

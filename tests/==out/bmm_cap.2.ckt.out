@@ -1,0 +1,37 @@
+# semiconductor "capacitor" test 
+#           v(1)       v(2)       c(c2)     
+ 27.        2.         2.         16.p      
+#Time       v(1)       v(2)      
+ 0.         0.         0.        
+ 2.n        0.5        0.028024  
+ 4.n        1.         0.12804   
+ 6.n        1.         0.23062   
+ 8.n        1.         0.32105   
+ 10.n       1.         0.40093   
+ 12.n       1.         0.47141   
+ 14.n       1.         0.53359   
+ 16.n       1.         0.58847   
+ 18.n       1.         0.63688   
+ 20.n       1.         0.6796    
+#Freq       v(1)       v(2)       vp(2)      vdb(2)    
+ 15.9Meg    1.         0.53037   -57.97     -5.5084    
+#Freq       v(1)       v(2)       vp(2)      vdb(2)    
+ 1.Meg      1.         0.99498   -5.7407    -0.043672  
+ 2.1544Meg  1.         0.97734   -12.221    -0.19909   
+ 4.6416Meg  1.         0.9062    -25.015    -0.85554   
+ 10.Meg     1.         0.70523   -45.152    -3.0334    
+ 21.544Meg  1.         0.41918   -65.217    -7.5519    
+ 46.416Meg  1.         0.20955   -77.904    -13.574    
+ 100.Meg    1.         0.098983  -84.319    -20.089    
+ 215.44Meg  1.         0.046122  -87.356    -26.722    
+ 464.16Meg  1.         0.021426  -88.772    -33.381    
+ 1.G        1.         0.0099467 -89.43     -40.046    
+v1 ( 1 0 )  TRAN pwl( 0., 0.  1.999999n, 0.  2.000001n, 1. )  DC  2.  AC  1.
+r1 ( 1 2 )  1.K
+c2 ( 2 0 ) t1 l= 1.u w= 2.u
+.model t1 c ( cj=5 cjsw=1u narrow=NA( 0.) defw=NA( 1.u) tc1=NA( 0.) tc2=NA( 0.) tnom=NA( 27.))
+Gnucap   System status
+iterations: op=4, dc=0, tran=61, fourier=0, total=94
+transient timesteps: accepted=18, rejected=0, total=18
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=100.0%, ac density=100.0%

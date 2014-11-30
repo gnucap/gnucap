@@ -1,0 +1,35 @@
+pmos p gate
+M1   2  2  0  4  cmosp  l= 9.u  w= 9.u  nrd= 1.  nrs= 1. 
+Vds   3  0 -5.
+Rds   2  3  100.K
+Vbs   4  0  0.
+.model cmosp  pmos ( level=6  vto=-0.844345  kc= 41.5964u  gamma= 0.863074 
++ phi= 0.6  rd= 0.  rs= 0.  cbd= 0.  cbs= 0.  is= 0.  pb= 0.7  cgso= 218.971p 
++ cgdo= 218.971p  cgbo= 0.  rsh= 0.  cj= 384.4u  mj= 0.4884  cjsw= 527.2p 
++ mjsw= 0.3002  js= 0.  tox= 41.8n  nsub= 15.3142E+15  nss= 1.E+12 
++ tpg=1  ld= 265.073n  uo= 503.521  fc= 0.5 )
+*>.print op v(nodes) iter(0)
+*>.op trace iter
+*>.print op i(v*) ps(v*)
+*>.op
+*>.print op id(m1) is(m1) ig(m1) ib(m1) ibd(m1) ibs(m1)
+*>.op
+*>.print op vgs(m1) vds(m1) vbs(m1) vbd(m1) von(m1) vdsat(m1)
+*>.op
+*>.print op gm(m1) gds(m1) gmb(m1) gbd(m1) gbs(m1)
+*>.op
+*>.print op cbd(m1) cbs(m1) cgs(m1) cgd(m1) cgb(m1)
+*>.op
+*>.print op cqgs(m1) cqgd(m1) cqgb(m1) cqbd(m1) cqbs(m1)
+*>.op
+*>.print op qgs(m1) qgd(m1) qgb(m1) qbd(m1) qbs(m1)
+*>.op
+*>.print op cgsovl(m1) cgdovl(m1) cgbovl(m1) cgate(m1) region(m1)
+*>.op
+*>.print op cgst(m1) cgdt(m1) cgbt(m1)
+*>.op
+*>.print op vdm(m1) vgm(m1) vbm(m1) vsm(m1)
+*>.op
+*>.print op vd(m1) vg(m1) vb(m1) vs(m1) vth(m1) vgst(m1)
+.op
+.end

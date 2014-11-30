@@ -1,0 +1,43 @@
+
+simulator lang=spice
+
+.model zz npn bf=150
+
+.subckt dumb_resistor (a b)
+.param r=10k
+R1 (a b) 'r'
+.ends
+
+.subckt foo (vcc in out)
+.param Z=10k
+.param r
+Rc   (c vcc) 'z'
+q1   (c b e) Zz off=1
+XRe  (e 0)   dumb_resistor r='abs(-z)/10'
+Rb1  (b vcc) '100k'
+XRb2 (b 0)   dumb_resistor r=r
+Cin  (b in)  1u
+Cout (c out) 1u
+Rin  (in 0)  100k
+Rout (out 0) 100k
+.ends
+
+X1   (V_cc amp_in out) foo r=10k
+Rin1 (in amp_in)   '10*(1-gain)'
+Rin2 (amp_in 0)    '10*gain'
+
+Vcc (V_CC 0) dc 20
+Vin (in 0) ac .2
+
+.param gain=.5
+.list
+.print op v(V_cc) v(in) v(out) iter(0) vc(X1.q1) vce(X1.q1)
+.op
+.print ac v(V_cc) v(in) v(amp_in) v(out)
+.ac 1k
+
+Rload (out 0) 100k
+.op
+.ac
+
+.end

@@ -1,0 +1,62 @@
+Mutual inductance test circuit
+*param L1 = .56
+*param L2 = .79
+*param L3 = .58
+*param K12 = .75
+*param K23 = .54
+*param K13 = .66
+*param Rsource = 22
+*param Rload1 = 75
+*param Rload2 = 90
+
+* using 'k' pseudo element
+.subckt trans3a (a1 a2 b1 b2 c1 c2)
+k1 (l1 l2) .75
+k2 (l2 l3) .54
+k3 (l1 l3) .66
+l1 (a1 a2) .56
+l2 (b1 b2) .79
+l3 (c1 c2) .58
+.ends
+
+
+* series model, using VCVS
+.subckt trans3b (a1 a2 b1 b2 c1 c2)
+**param M12 = 'K12*sqrt(L1*L2)'0.49885
+**param M23 = 'K23*sqrt(L2*L3)'0.36553
+**param M13 = 'K13*sqrt(L1*L3)'0.37614
+l1 (a3 a2)        .56
+l2 (b3 b2)        .79
+l3 (c3 c2)        .58
+e21 (a4 a3 b3 b2) .63145 
+e31 (a1 a4 c3 c2) .64852
+e12 (b4 b3 a3 a2) .89080
+e32 (b1 b4 c3 c2) .63022
+e13 (c4 c3 a3 a2) .67168
+e23 (c1 c4 b3 b2) .46269
+.ends
+
+
+
+va1 (a1 0)           pulse(0 1 .002 .002 .002 .002 .01) ac 1
+ra1 (a1 a2)          22
+xa1 (a2 0 a3 0 a4 0) trans3a
+ra2 (a3 0)           75
+ra3 (a4 0)           90
+
+vb1 (b1 0)           pulse(0 1 .002 .002 .002 .002 .01) ac 1
+rb1 (b1 b2)          22
+xb1 (b2 0 b3 0 b4 0) trans3b
+rb2 (b3 0)           75
+rb3 (b4 0)           90
+
+
+.options nopage
+.width out=200
+.print ac vm(a2) vm(a3) vm(a4) vm(b2) vm(b3) vm(b4)
+.ac dec 2 .1 1k
+.print ac vp(a2) vp(a3) vp(a4) vp(b2) vp(b3) vp(b4)
+.ac dec 2 .1 1k
+.print tran  v(a2) v(a3) v(a4) v(b2) v(b3) v(b4)
+.tran .001 .01 0
+.end

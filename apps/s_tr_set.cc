@@ -1,4 +1,4 @@
-/*$Id: s_tr_set.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: s_tr_set.cc 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * set up transient and fourier analysis
  */
-//testing=script 2007.11.21
+//testing=script 2014.07.04
 #include "u_sim_data.h"
 #include "u_prblst.h"
 #include "ap.h"
@@ -45,7 +45,7 @@ void TRANSIENT::setup(CS& Cmd)
     Cmd >> arg1;
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
       Cmd >> arg2;
-    }else{itested();
+    }else{untested();
     }
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
       Cmd >> arg3;
@@ -91,14 +91,14 @@ void TRANSIENT::setup(CS& Cmd)
 	_tstop  = arg2;
 	_tstep  = arg1;
       }
-    }else{itested();
+    }else{untested();itested();
       assert(arg1.has_hard_value());
       arg1.e_val(0.,_scope);
       if (arg1 > _sim->_last_time) {untested();	    /* 1 arg: _tstop */
 	_tstart = _sim->_last_time;
 	_tstop  = arg1;
 	/* _tstep unchanged */
-      }else if (arg1 == 0.) {itested();	    /* 1 arg: _tstart */
+      }else if (arg1 == 0.) {untested();itested();	    /* 1 arg: _tstart */
 	double oldrange = _tstop - _tstart;
 	_tstart = 0.;
 	_tstop  = oldrange;
@@ -128,16 +128,16 @@ void TRANSIENT::setup(CS& Cmd)
 
   if  (_cold || _tstart < _sim->_last_time  ||  _sim->_last_time <= 0.) {
     _cont = false;
-    time1 = _sim->_time0 = 0.;
+    _time1 = _sim->_time0 = 0.;
   }else{
     _cont = true;
-    time1 = _sim->_time0 = _sim->_last_time;
+    _time1 = _sim->_time0 = _sim->_last_time;
   }
   _sim->_freq = ((_tstop > _tstart) ? (1 / (_tstop - _tstart)) : (0.));
 
-  if (!_tstep.has_good_value()) {
+  if (!_tstep.has_good_value()) {untested();
     throw Exception("transient: time step is required");
-  }else if (_tstep==0.) {itested();
+  }else if (_tstep==0.) {untested();itested();
     throw Exception("time step = 0");
   }else{
   }
@@ -150,9 +150,9 @@ void TRANSIENT::setup(CS& Cmd)
     _dtmax = std::min(_dtmax_in, _tstep);
   }
 
-  if (_dtmin_in.has_hard_value()) {
+  if (_dtmin_in.has_hard_value()) {untested();
     _sim->_dtmin = _dtmin_in;
-  }else if (_dtratio_in.has_hard_value()) {
+  }else if (_dtratio_in.has_hard_value()) {untested();
     _sim->_dtmin = _dtmax / _dtratio_in;
   }else{
     // use larger of soft values

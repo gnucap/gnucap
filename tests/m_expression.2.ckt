@@ -1,0 +1,26 @@
+# expression test
+.option list
+.param a={2+3*4}
+.eval a
+.param b={(2+3)*4}
+.eval b
+.param c={2+(3*4)}
+.eval c
+.param d={2+(-3*4)}
+.eval d
+.param e={2+(+3*4)}
+.eval e
+.param f={2+(!3*4)}
+.eval f
+.param g={abs(-3)}
+.eval g
+.param h={abs(4-2)}
+.eval h
+.param i={abs(2-4)}
+.eval i
+.param j={pow(3,2)}
+.eval j
+.param k={pow(3,-2)}
+.eval k
+.param l={pow(abs(3),abs(-2))}
+.eval l

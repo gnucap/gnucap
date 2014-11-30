@@ -1,0 +1,13 @@
+'named nodes test
+.option namednodes
+.subckt foo q w
+R1 (q w) 1k
+.ends
+X1 (2 0) foo
+X2 (n1 2) foo
+V1 (n1 0) DC 1
+.print op v(nodes)
+.op
+.list
+.fanout
+.end

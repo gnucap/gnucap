@@ -1,0 +1,8 @@
+' sin test 
+.option out=170 
+V1  1  0  SIN  offset= 0.  amplitude= 1.  frequency= 100meg  delay= 0.  damping= 0.
+.print tran v(1) next(v1) event(v1)
+.tran 0 20n 20n trace all
+.list 
+.status notime
+.end 

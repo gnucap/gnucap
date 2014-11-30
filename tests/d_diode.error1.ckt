@@ -1,0 +1,5 @@
+
+d1 1 0 foo
+.model foo sw
+.op
+.end

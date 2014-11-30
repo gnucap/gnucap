@@ -1,4 +1,4 @@
-/*$Id: e_model.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: e_model.h 2014/07/04 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * base class for all models
  */
-//testing=script 2007.07.13
+//testing=script 2014.07.04
 #ifndef E_MODEL_H
 #define E_MODEL_H
 #include "u_parameter.h"
@@ -42,6 +42,8 @@ public:
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE MODEL_CARD : public CARD{
+private:
+  explicit	MODEL_CARD() {unreachable();}
 protected:
   explicit	MODEL_CARD(const MODEL_CARD& p);
 public:
@@ -51,11 +53,11 @@ public:
 public: // override virtuals
   char	id_letter()const	{untested();return '\0';}
   CARD*	clone_instance()const   
-		{itested(); assert(_component_proto); return _component_proto->clone();}
+		{untested(); assert(_component_proto); return _component_proto->clone();}
   void	precalc_first();
   void	set_param_by_index(int, std::string&, int);
   bool  param_is_printable(int)const;
-  std::string value_name()const {return "";}
+  std::string value_name()const {untested();return "";}
   std::string param_name(int)const;
   std::string param_name(int,int)const;
   std::string param_value(int)const;
@@ -67,7 +69,7 @@ public:
   virtual SDP_CARD* new_sdp(COMMON_COMPONENT*)const {unreachable();return 0;};
   virtual bool parse_params_obsolete_callback(CS&) {unreachable(); return false;}
   virtual bool is_valid(const COMPONENT*)const {return true;}
-  const CARD* component_proto()const {itested(); return _component_proto;}
+  const CARD* component_proto()const {untested(); return _component_proto;}
 protected:
   const CARD* _component_proto;
 public:

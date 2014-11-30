@@ -1,0 +1,7 @@
+# PWL sources
+v1 1 0 PWL  0,0 1,1 4,2 9,0 16,4 25,0
+.list
+.print tran v(1) next(v1) event(v1)
+.tran 0 30 30 trace all
+.status notime
+.end

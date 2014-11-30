@@ -1,0 +1,18 @@
+'matrix probe test
+v1 (1 0) 1
+r1 (1 2) 1
+r2 (2 0) 1
+.print op v(nodes)
+.op
+.print op mdy(nodes)
+.op
+.print op mdz(nodes)
+.op
+.print op zero(nodes)
+.op
+.print op ndz(nodes)
+.op
+.print op pdz(nodes)
+.op
+.print op nan(nodes)
+.op

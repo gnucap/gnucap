@@ -1,0 +1,15 @@
+simple diode test
+.param aa=10k
+.param bb=aa/10
+V1   1  0  10.
+R1   1  2  50.K
+D1   2  0  ddd   1. 
+R1   1  3  50.K
+D2   3  0  dddd  1.
+.model  ddd  d  ( is= 10.f  rs= aa  n= 1.  tt= 0.  cjo= 0.  vj= 1.  m= 0.5 
++ eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5 )
+.model  dddd  d  ( is= 10.f  rs= bb  n= 1.  tt= 0.  cjo= 0.  vj= 1.  m= 0.5 
++ eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5 )
+.print op v(nodes)
+.op
+.end

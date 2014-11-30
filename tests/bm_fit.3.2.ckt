@@ -1,0 +1,14 @@
+# FIT as cubic
+v1 2 0 dc 1 ac 1
+e1 3 0 2 0 FIT 0,0 1,1 4,2 9,3 16,4 25,5 order=3 below=0
+r3 3 0 10k
+e2 4 0 2 0 FIT 0,0 1,1 2,4 3,9 4,16 5,25 order=3 above=0
+r4 4 0 10k
+.list
+.print op v(nodes)
+.op
+.print dc v(nodes)
+.dc v1 -10 10 .5
+.dc v1 1 1000 decade 5
+.dc v1 16 68 4.5
+.end

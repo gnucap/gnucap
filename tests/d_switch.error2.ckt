@@ -1,0 +1,6 @@
+
+v1 2 0 sin freq=1k
+s3 1 0 v1 foo
+.model foo csw
+.op
+.end

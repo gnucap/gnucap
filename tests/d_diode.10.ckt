@@ -1,0 +1,10 @@
+'
+i1 (0 1) dc 1
+d1 (1 0) my_diode
+.model my_diode d
+.probe op v(1)
+.op
+.delete my_diode
+.model my_diode d
+.op
+.end

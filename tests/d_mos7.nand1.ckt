@@ -1,0 +1,36 @@
+.title na2
+
+.model nmos nmos level=7 vth0=0.7
+.model pmos pmos level=7 vth0=-0.7
+
+.SUBCKT nand2 2 3 1 4 11
+Mp1 4 2 1 1 PMOS W=8e-6 L=600e-9 
+Mp2 4 3 1 1 PMOS W=8e-6 L=600e-9 
+Mn1 4 2 11 0 NMOS W=8e-6 L=600e-9 
+Mn2 11 3 0 0 NMOS W=8e-6 L=600e-9 
+Rleak 11 0 1000meg
+.ENDS
+
+XI10 2 2 1 4 5 nand2 
+C1 4 0 1p
+
+vdd 1 0 5
+vin 2 0 PWL (0 0, 1n 0, 3n 5, 10n 5, 12n 0, 20n 0)
+
+.print op v(nodes) z(5) iter(0)
+.op trace iter
+
+.print op region(Ddb.Mp1.XI10) region(Ddb.Mp2.XI10) region(Ddb.Mn1.XI10) region(Ddb.Mn2.XI10) region(Dsb.Mn1.XI10)
+.op trace iter
+
+.print op V(Ddb.Mp1.XI10) V(Ddb.Mp2.XI10) V(Ddb.Mn1.XI10) V(Ddb.Mn2.XI10) V(Dsb.Mn1.XI10)
+.op trace iter
+
+.print op I(Ddb.Mp1.XI10) I(Ddb.Mp2.XI10) I(Ddb.Mn1.XI10) I(Ddb.Mn2.XI10) I(Dsb.Mn1.XI10)
+.op trace iter
+
+.print tran v(2) v(4) v(5) iter(0)
+.tran 0.1n 10n trace all
+
+.stat notime
+.end

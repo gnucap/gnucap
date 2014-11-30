@@ -1,0 +1,14 @@
+'
+V1  1  0  GENERATOR
+R1  1  2  1.Meg
+C1  2  0  1.u
+Vc2  3  0  1.
+R2  1  4  1.Meg
+.vccap C2  4  0  3  0  1.u
+Vc3  5  0  2.
+R3  1  6  .5Meg
+.vccap C3  6  0  5  0  1.u
+.print tran v(nodes)
+.tran 0 1 .1
+.status notime
+.end

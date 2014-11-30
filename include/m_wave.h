@@ -1,4 +1,4 @@
-/*$Id: m_wave.h,v 26.86 2008/07/07 22:31:11 al Exp $ -*- C++ -*-
+/*$Id: m_wave.h 2014/11/23$ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -29,12 +29,12 @@ class WAVE {
 private:
   std::deque<DPAIR> _w;
   double _delay;
-  explicit WAVE(const WAVE&) {unreachable();}
 public:
   typedef std::deque<DPAIR>::iterator iterator;
   typedef std::deque<DPAIR>::const_iterator const_iterator;
 
   explicit WAVE(double d=0);
+  explicit WAVE(const WAVE&);
 	  ~WAVE() {}
   WAVE&	   set_delay(double d);
   WAVE&	   initialize();
@@ -66,6 +66,12 @@ inline WAVE& WAVE::initialize()
 {
   _w.clear();
   return *this;
+}
+/*--------------------------------------------------------------------------*/
+inline WAVE::WAVE(const WAVE& w)
+  :_w(w._w),
+   _delay(w._delay)
+{ untested();
 }
 /*--------------------------------------------------------------------------*/
 // constructor -- argument is the delay
