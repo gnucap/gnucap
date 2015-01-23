@@ -1,4 +1,4 @@
-/*$Id: u_probe.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: u_probe.h 2015/01/21 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -24,15 +24,15 @@
 //testing=script,complete 2006.07.14
 #ifndef U_PROBE_H
 #define U_PROBE_H
+#include "e_base.h"
 #include "l_compar.h" // inorder
 /*--------------------------------------------------------------------------*/
-class CKT_BASE;
-/*--------------------------------------------------------------------------*/
-class INTERFACE PROBE {
+class INTERFACE PROBE : public CKT_BASE {
 private:
   std::string	_what;    
   const CKT_BASE* _brh;
   double	_lo,_hi;
+  explicit  PROBE() {unreachable(); incomplete();}
 public:
   explicit  PROBE(const std::string& what, const CKT_BASE *brh);
 	    PROBE(const PROBE& p);

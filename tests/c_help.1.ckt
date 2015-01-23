@@ -1,0 +1,11 @@
+#help
+.help
+.help help
+.help fregegiirei
+.help help_error_test_with_no_help
+.help ?
+.help help ?
+.help help dasd
+.help help subtopic
+.help help test
+.end

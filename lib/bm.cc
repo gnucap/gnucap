@@ -1,4 +1,4 @@
-/*$Id: bm.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*$Id: bm.cc 2015/01/21 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -93,7 +93,7 @@ void EVAL_BM_ACTION_BASE::ac_final_adjust(COMPLEX* y)const
 {
   if (_bandwidth != NOT_INPUT && _bandwidth != 0.) {untested();
     assert(y->imag() == 0);
-    double ratio = CKT_BASE::_sim->_freq / _bandwidth;
+    double ratio = _sim->_freq / _bandwidth;
     double coeff = y->real() / (1.+(ratio*ratio));
     *y = COMPLEX(coeff, -coeff * ratio);
   }else{
@@ -105,7 +105,7 @@ void EVAL_BM_ACTION_BASE::ac_final_adjust(COMPLEX* y)const
   }
 
   if (_delay != 0.) {untested();
-    double ratio = CKT_BASE::_sim->_freq * _delay;
+    double ratio = _sim->_freq * _delay;
     if (ratio > 100000.) {untested();
       error(bPICKY, "delay too long\n");
       ratio = 0.;

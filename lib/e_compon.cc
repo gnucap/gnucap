@@ -1,4 +1,4 @@
-/*$Id: e_compon.cc 2014/07/04 al $ -*- C++ -*-
+/*$Id: e_compon.cc 2015/01/21 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -27,7 +27,8 @@
 #include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
-  :_tnom_c(p._tnom_c),
+  :CKT_BASE(p),
+   _tnom_c(p._tnom_c),
    _dtemp(p._dtemp),
    _temp_c(p._temp_c),
    _mfactor(p._mfactor),
@@ -39,7 +40,8 @@ COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
 }
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(int c)
-  :_tnom_c(NOT_INPUT),
+  :CKT_BASE(),
+   _tnom_c(NOT_INPUT),
    _dtemp(0),
    _temp_c(NOT_INPUT),
    _mfactor(1),
@@ -274,7 +276,7 @@ void COMMON_COMPONENT::precalc_first(const CARD_LIST* Scope)
   assert(Scope);
   _tnom_c.e_val(OPT::tnom_c, Scope);
   _dtemp.e_val(0., Scope);
-  _temp_c.e_val(CKT_BASE::_sim->_temp_c + _dtemp, Scope);
+  _temp_c.e_val(_sim->_temp_c + _dtemp, Scope);
   _mfactor.e_val(1, Scope);
   _value.e_val(0, Scope);
 }

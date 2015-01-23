@@ -1,4 +1,4 @@
-/*$Id: lang_spice.cc 2014/07/04 al $ -*- C++ -*-
+/*$Id: lang_spice.cc 2015/01/21 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -790,8 +790,7 @@ void LANG_SPICE_BASE::print_args(OMSTREAM& o, const COMPONENT* x)
 void LANG_SPICE_BASE::print_label(OMSTREAM& o, const COMPONENT* x)
 {
   assert(x);
-  std::string label = x->short_label();
-  o << label;
+  o << x->short_label();
 }
 /*--------------------------------------------------------------------------*/
 void LANG_SPICE_BASE::print_ports(OMSTREAM& o, const COMPONENT* x)

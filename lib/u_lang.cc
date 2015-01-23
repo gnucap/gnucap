@@ -1,4 +1,4 @@
-/*$Id: u_lang.cc 2014.11.25 $ -*- C++ -*-
+/*$Id: u_lang.cc 2015/01/21 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -187,9 +187,8 @@ bool Get(CS& cmd, const std::string& key, LANGUAGE** val)
       std::string choices;
       for(DISPATCHER<LANGUAGE>::const_iterator
 	  i = language_dispatcher.begin(); i != language_dispatcher.end(); ++i) {untested();
-	LANGUAGE* c = i->second;
-	if (c) {untested();
-	  choices += c->name() + ' ';
+	if (i->second) {untested();
+	  choices += i->first + ' ';
 	}else{untested();
 	}
       }

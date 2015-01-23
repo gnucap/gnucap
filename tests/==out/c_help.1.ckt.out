@@ -1,0 +1,25 @@
+#help 
+.help 
+      ^ ? no help on topic 
+help command
+Provides help on a variety of topics
+Syntax: help topic
+In some cases, help on subtopics is available
+Syntax: help topic subtopic
+For a list of subtopics: help topic ?
+
+.help fregegiirei 
+      ^ ? no help on topic fregegiirei 
+.help help_error_test_with_no_help 
+      ^ ? no help on topic help_error_test_with_no_help 
+.help ? 
+      ^ ? no help on topic ? 
+  subtopic
+  test
+.help help dasd 
+           ^ ? no help on subtopic dasd 
+help subtopic
+subtopics give you more detailed information
+
+help test
+

@@ -1,4 +1,4 @@
-/*$Id: u_function.h,v 26.131 2009/11/20 08:22:10 al Exp $ -*- C++ -*-
+/*$Id: u_function.h 2015/01/21 al $ -*- C++ -*-
  * Copyright (C) 2008 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,17 +21,15 @@
  *------------------------------------------------------------------
  */
 //testing=none
-#include "md.h"
+#include "e_base.h"
 /*--------------------------------------------------------------------------*/
-class CS;
 class CARD_LIST;
-class WAVE;
 /*--------------------------------------------------------------------------*/
-class FUNCTION {
+class FUNCTION : public CKT_BASE {
+  //BUG//needs constructors
+  //BUG//need label support
 public:
   virtual std::string eval(CS&, const CARD_LIST*)const = 0;
-protected:
-  WAVE* find_wave(const std::string& probe_name)const;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

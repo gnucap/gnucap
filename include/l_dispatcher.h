@@ -1,4 +1,4 @@
-/*$Id: l_dispatcher.h,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: l_dispatcher.h 2015/01/21 03:47:06 al Exp $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,35 +21,66 @@
  *------------------------------------------------------------------
  * dispatcher -- for dynamically loaded modules
  */
-//testing=informal
+//testing=script 2015.01.21
 #ifndef L_DISPATCHER_H
 #define L_DISPATCHER_H
+#include "e_base.h"
 #include "l_stlextra.h"
 #include "u_opt.h"
 #include "ap.h"
 /*--------------------------------------------------------------------------*/
-template <class T>
-class INTERFACE DISPATCHER {
+class DISPATCHER_BASE {
+protected:
+  std::map<std::string, CKT_BASE*> * _map;
 private:
-  std::map<std::string, T*> * _map;
+  explicit DISPATCHER_BASE(DISPATCHER_BASE*) {unreachable();incomplete();}
 public:
-  DISPATCHER() {
+  DISPATCHER_BASE() /*: _map(new std::map<std::string, CKT_BASE*>)*/ {
     if (!_map) {
-      _map = new std::map<std::string, T*>;
-    }else{
+      _map = new std::map<std::string, CKT_BASE*>;
+    }else{unreachable();
+      puts("build error: link order: constructing dispatcher that already has contents\n");
+    }    
+  }
+  ~DISPATCHER_BASE() {
+#if !defined(NDEBUG)
+    for (typename std::map<std::string, CKT_BASE*>::iterator
+	 ii = _map->begin();
+	 ii != _map->end();
+	 ++ii) {
+      assert(!(ii->second));
     }
+#endif
+    delete _map;
+    _map = NULL;
   }
 
-  typedef typename std::map<std::string, T*>::const_iterator const_iterator;
-  //class const_iterator : public std::map<std::string, T*>::const_iterator {};
+  typedef typename std::map<std::string, CKT_BASE*>::const_iterator const_iterator;
+  //class const_iterator : public std::map<std::string, CKT_BASE*>::const_iterator {};
 
   const_iterator begin()const		{assert(_map); return _map->begin();}
   const_iterator end()const		{assert(_map); return _map->end();}
 
-  void install(const std::string& s, T* p) {
+  CKT_BASE* operator[](std::string s) {
+    assert(_map);
+    CKT_BASE* rv = (*_map)[s];
+    if (!rv && OPT::case_insensitive) {
+      notstd::to_lower(&s);
+      rv = (*_map)[s];
+    }else{
+    }
+    return rv;
+  }
+};
+/*--------------------------------------------------------------------------*/
+template <class TT>
+class INTERFACE DISPATCHER : public DISPATCHER_BASE {
+public:
+  void install(const std::string& s, TT* p) {
     assert(s.find(',', 0) == std::string::npos);
-    if (!_map) {
-      _map = new std::map<std::string, T*>;
+    if (!_map) {unreachable();
+      puts("build error: link order: dispatcher not yet constructed\n");
+      _map = new std::map<std::string, CKT_BASE*>;
     }else{
     }
     trace0(s.c_str());
@@ -62,13 +93,13 @@ public:
       std::string name = s.substr(bss, 
 		(ess != std::string::npos) ? ess-bss : std::string::npos);
       trace2(name.c_str(), bss, ess);
-      if (name == "") {
+      if (name == "") {untested();
 	// quietly ignore empty string
-      }else if ((*_map)[name]) {
+      }else if ((*_map)[name]) {untested();
 	// duplicate .. stash the old one so we can get it back
 	error(bWARNING, name + ": already installed, replacing\n");
 	std::string save_name = name + ":0";
-	for (int ii = 0; (*_map)[save_name]; ++ii) {
+	for (int ii = 0; (*_map)[save_name]; ++ii) {untested();
 	  save_name = name + ":" + to_string(ii);
 	}
 	(*_map)[save_name] = (*_map)[name];	
@@ -80,9 +111,9 @@ public:
     }
   }
   
-  void uninstall(T* p) {
+  void uninstall(TT* p) {
     assert(_map);
-    for (typename std::map<std::string, T*>::iterator
+    for (typename std::map<std::string, CKT_BASE*>::iterator
 	 ii = _map->begin();
 	 ii != _map->end();
 	 ++ii) {
@@ -92,7 +123,7 @@ public:
       }
     }
 #if !defined(NDEBUG)
-    for (typename std::map<std::string, T*>::iterator
+    for (typename std::map<std::string, CKT_BASE*>::iterator
 	 ii = _map->begin();
 	 ii != _map->end();
 	 ++ii) {
@@ -101,56 +132,56 @@ public:
 #endif
   }
   
-  void uninstall(const std::string& s) {
+  void uninstall(const std::string& s) {untested();
     assert(_map);
     // loop over all keys, separated by '|'
     for (std::string::size_type			// bss: begin sub-string
 	 bss = 0, ess = s.find('|', bss);	// ess: end sub-string
 	 bss != std::string::npos;
 	 bss = (ess != std::string::npos) ? ess+1 : std::string::npos,
-	   ess = s.find('|', bss)) {
+	   ess = s.find('|', bss)) {untested();
       std::string name = s.substr(bss,
 		(ess != std::string::npos) ? ess-bss : std::string::npos);
-      if (name == "") {
+      if (name == "") {untested();
 	// quietly ignore empty string
-      }else if ((*_map)[name]) {
+      }else if ((*_map)[name]) {untested();
 	// delete, try to get back the old one
 	int ii = 0;
 	std::string save_name = name + ":0";
-	for (ii = 0; (*_map)[save_name]; ++ii) {
+	for (ii = 0; (*_map)[save_name]; ++ii) {untested();
 	  save_name = name + ":" + to_string(ii);
 	}
-	if (ii > 1) {
+	if (ii > 1) {untested();
 	  save_name = name + ":" + to_string(ii-2);
 	  (*_map)[name] = (*_map)[save_name];
 	  (*_map)[save_name] = NULL;
 	  error(bWARNING, "restoring " + save_name + " as " + name + "\n");
-	}else{
+	}else{untested();
 	  (*_map)[name] = NULL;
 	}
-      }else{
+      }else{untested();
 	error(bWARNING, name + ": not installed, doing nothing\n");
       }
     }
   }
 
-  T* operator[](std::string s) {
+  TT* operator[](std::string s) {
     assert(_map);
-    T* rv = (*_map)[s];
+    CKT_BASE* rv = (*_map)[s];
     if (!rv && OPT::case_insensitive) {
       notstd::to_lower(&s);
       rv = (*_map)[s];
     }else{
     }
-    return rv;
+    return prechecked_cast<TT*>(rv);
   }
 
-  T* operator[](CS& cmd) {
+  TT* operator[](CS& cmd) {
     unsigned here = cmd.cursor();
     std::string s;
     cmd >> s;
     //------------------------
-    T* p = (*this)[s];
+    TT* p = (*this)[s];
     //------------------------
     if (!p) {
       cmd.reset(here);
@@ -159,11 +190,11 @@ public:
     return p;
   }
 
-  T* clone(std::string s) {
-    T* proto = (*this)[s];
+  TT* clone(std::string s) {
+    TT* proto = (*this)[s];
     if (proto) {
       return proto->clone();
-    }else{itested();
+    }else{untested();
       return NULL;
     }
   }
@@ -171,10 +202,10 @@ public:
   class INSTALL {
   private:
     const std::string _name;
-    DISPATCHER<T>* _d;
-    T* _p;
+    DISPATCHER<TT>* _d;
+    TT* _p;
   public:
-    INSTALL(DISPATCHER<T>* d, const std::string& name, T* p) :
+    INSTALL(DISPATCHER<TT>* d, const std::string& name, TT* p) :
       _name(name),
       _d(d),
       _p(p)

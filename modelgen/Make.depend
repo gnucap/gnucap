@@ -1,27 +1,22 @@
 mg_main.o: mg_main.cc ../include/u_opt.h ../include/mode.h \
  ../include/io_.h ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h mg_out.h mg_.h \
- ../include/md.h ../include/ap.h ../include/patchlev.h
+ ../include/ap.h ../include/patchlev.h
 mg_error.o: mg_error.cc ../include/ap.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h
-mg_in.o: mg_in.cc mg_.h ../include/md.h ../include/io_trace.h \
- ../include/io_error.h ../include/ap.h ../include/md.h
-mg_out_h.o: mg_out_h.cc mg_out.h mg_.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/ap.h \
- ../include/md.h
+mg_in.o: mg_in.cc mg_.h ../include/ap.h ../include/md.h \
+ ../include/io_trace.h ../include/io_error.h
+mg_out_h.o: mg_out_h.cc mg_out.h mg_.h ../include/ap.h ../include/md.h \
+ ../include/io_trace.h ../include/io_error.h
 mg_out_dump.o: mg_out_dump.cc ../include/md.h ../include/io_trace.h \
  ../include/io_error.h mg_out.h mg_.h ../include/ap.h ../include/md.h
-mg_out_common.o: mg_out_common.cc mg_out.h mg_.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/ap.h \
- ../include/md.h
-mg_out_dev.o: mg_out_dev.cc mg_out.h mg_.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/ap.h \
- ../include/md.h
-mg_out_lib.o: mg_out_lib.cc mg_out.h mg_.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/ap.h \
- ../include/md.h
-mg_out_model.o: mg_out_model.cc mg_out.h mg_.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/ap.h \
- ../include/md.h
+mg_out_common.o: mg_out_common.cc mg_out.h mg_.h ../include/ap.h \
+ ../include/md.h ../include/io_trace.h ../include/io_error.h
+mg_out_dev.o: mg_out_dev.cc mg_out.h mg_.h ../include/ap.h \
+ ../include/md.h ../include/io_trace.h ../include/io_error.h
+mg_out_lib.o: mg_out_lib.cc mg_out.h mg_.h ../include/ap.h \
+ ../include/md.h ../include/io_trace.h ../include/io_error.h
+mg_out_model.o: mg_out_model.cc mg_out.h mg_.h ../include/ap.h \
+ ../include/md.h ../include/io_trace.h ../include/io_error.h
 mg_out_root.o: mg_out_root.cc ../include/md.h ../include/io_trace.h \
  ../include/io_error.h mg_out.h mg_.h ../include/ap.h ../include/md.h

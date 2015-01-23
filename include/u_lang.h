@@ -1,4 +1,4 @@
-/*$Id: u_lang.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: u_lang.h 2015/01/21 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,6 +21,7 @@
  */
 #ifndef U_LANG_H
 #define U_LANG_H
+#include "e_base.h"
 #include "u_opt.h"
 /*--------------------------------------------------------------------------*/
 class COMPONENT;
@@ -31,13 +32,14 @@ class DEV_COMMENT;
 class DEV_DOT;
 class CARD_LIST;
 /*--------------------------------------------------------------------------*/
-class INTERFACE LANGUAGE {
+class INTERFACE LANGUAGE : public CKT_BASE {
 public:
   const CARD* find_proto(const std::string&, const CARD*);
 public:
   void new__instance(CS& cmd, MODEL_SUBCKT* owner, CARD_LIST* Scope);
 
 public:
+  //BUG//need constructors
   virtual ~LANGUAGE();
   virtual std::string name()const = 0;
   virtual bool case_insensitive()const = 0;

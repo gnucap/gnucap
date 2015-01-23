@@ -1,4 +1,4 @@
-/*$Id: main.cc,v 26.138 2013/04/24 03:32:53 al Exp $ -*- C++ -*-
+/*$Id: main.cc 2015/01/21 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -74,8 +74,8 @@ static void read_startup_files(void)
     OPT::language = language_dispatcher[DEFAULT_LANGUAGE];
     
     for(DISPATCHER<LANGUAGE>::const_iterator
-	  i=language_dispatcher.begin(); !OPT::language && i!=language_dispatcher.end(); ++i) {
-      OPT::language = i->second;
+	  i=language_dispatcher.begin(); !OPT::language && i!=language_dispatcher.end(); ++i) {untested();
+      OPT::language = prechecked_cast<LANGUAGE*>(i->second);
     }
   }else{untested();
     // already have a language specified in a startup file
