@@ -1,4 +1,4 @@
-/*$Id: e_card.cc 2014/07/04 al $ -*- C++ -*-
+/*$Id: e_card.cc 2015/01/27 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -174,7 +174,7 @@ const CARD* CARD::find_looking_out(const std::string& name)const
     }else if (makes_own_scope()) {
       // probably a subckt or "module"
       CARD_LIST::const_iterator i = CARD_LIST::card_list.find_(name);
-      if (i != CARD_LIST::card_list.end()) {untested();
+      if (i != CARD_LIST::card_list.end()) {
 	return *i;
       }else{
 	throw;

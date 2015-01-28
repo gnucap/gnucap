@@ -1,4 +1,4 @@
-/*$Id: e_base.cc 2014/07/04 al $ -*- C++ -*-
+/*$Id: e_base.cc 2015/01/27 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -45,7 +45,7 @@ CKT_BASE::~CKT_BASE()
   if (_probes == 0) {
   }else if (!_probe_lists) {untested();
   }else if (!_sim) {untested();
-  }else{untested();
+  }else{
     _probe_lists->purge(this);
   }
   trace1("", _probes);

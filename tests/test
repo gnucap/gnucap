@@ -14,6 +14,13 @@ else
 	$1 -b $ii |tail -n +12 >$3/$ii.out
 	diff -u $4/$ii.out $3/$ii.out >>$3/$2.diffs || echo "**** $ii fails ****"
     done
+    for ii in $2*.gc
+    do
+	echo $ii
+	echo $ii >>$3/$2.diffs
+	$1 $ii |tail -n +12 >$3/$ii.out
+	diff -u $4/$ii.out $3/$ii.out >>$3/$2.diffs || echo "**** $ii fails ****"
+    done
     echo done with $1 $2 >>$3/$2.diffs
     echo done with $1 $2
     exit 0

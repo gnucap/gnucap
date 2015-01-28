@@ -11,15 +11,15 @@ ends
 subckt foo (vcc in out)
 boo parameters z=10k
 parameters r
-Rc   (c vcc) resistor      r=z
-q1   (c b e) zz		   off=1
-Re   (e 0)   dumb_resistor r=abs(-z)/10
+Rc    c vcc  resistor      r=z
+q1    c b e  zz		   off=1
+Re   (e 0 vcc)   dumb_resistor r=abs(-z)/10
 Rb1  (b vcc) resistor      r=100k
 Rb2  (b 0)   dumb_resistor r=r
-Cin  (b in)  capacitor     c=1u
-Cout (c out) capacitor     c=1u
-Rin  (in 0)  resistor      r=100k
-Rout (out 0) resistor      r=100k
+Cin  (b in vcc)  capacitor     c=1u
+Cout (c) capacitor     c=1u
+Rin   in 0 vcc  resistor      r=100k
+Rout out resistor      r=100k
 ends
 
 X1   (V_cc amp_in out) foo      r=10k

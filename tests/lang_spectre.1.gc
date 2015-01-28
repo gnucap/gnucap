@@ -1,0 +1,45 @@
+
+simulator lang=spectre
+
+model zz npn bf=150
+
+subckt dumb_resistor (a b)
+//parameters r=10k
+R1 (a b) resistor r=r
+ends
+
+subckt foo (vcc in out)
+- parameters z=10k
+parameters r
+Rc   (c vcc) resistor      r=z
+q1   (c b e) zz		   off=1
+Re   (e 0)   dumb_resistor r=abs(-z)/10
+Rb1  (b vcc) resistor      r=100k
+Rb2  (b 0)   dumb_resistor r=r
+Cin  (b in)  capacitor     c=1u
+Cout (c out) capacitor     c=1u
+Rin  (in 0)  resistor      r=100k
+Rout (out 0) resistor      r=100k
+ends
+
+X1   (V_cc amp_in out) foo      r=10k
+Rin1 (in amp_in)       resistor r=10*(1-gain)
+Rin2 (amp_in 0)        resistor r=10*gain
+
+simulator lang=spice insensitive=no
+Vin (in 0) vsource ac .2
+Vcc (V_cc 0) vsource  dc=20.
+.simulator lang=spectre
+
+parameters gain=.5
+- list
+- probe op v(V_cc) v(in) v(out) iter(0) vc(X1.q1) vce(X1.q1)
+- op
+- probe ac v(V_cc) v(in) v(amp_in) v(out)
+- ac 1k
+
+Rload (out 0) resistor r=100k
+- op
+- ac
+
+- end

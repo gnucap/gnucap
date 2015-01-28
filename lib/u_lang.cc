@@ -1,4 +1,4 @@
-/*$Id: u_lang.cc 2014.11.25 $ -*- C++ -*-
+/*$Id: u_lang.cc 2015/01/27 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
-// testing=failed 2014.11.25
+// testing=script 2015.01.27
 #include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
@@ -37,7 +37,7 @@ LANGUAGE::~LANGUAGE()
 }
 /*--------------------------------------------------------------------------*/
 void LANGUAGE::parse_top_item(CS& cmd, CARD_LIST* Scope)
-{itested();
+{
   cmd.get_line(I_PROMPT);
   CMD::cmdproc(cmd, Scope);
 }
@@ -53,20 +53,20 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
     }
   }else{
     CARD_LIST::const_iterator i = CARD_LIST::card_list.find_(Name);
-    if (i != CARD_LIST::card_list.end()) {untested();
+    if (i != CARD_LIST::card_list.end()) {
       p = *i;
     }else{
       assert(!p);
     }
   }
   
-  if (p) {untested();
+  if (p) {
     return p;
   }else if ((command_dispatcher[Name])) {
     return new DEV_DOT;	//BUG// memory leak
   }else if ((p = device_dispatcher[Name])) {
     return p;
-  }else if ((p = model_dispatcher[Name])) {untested();
+  }else if ((p = model_dispatcher[Name])) {
     return p;
   }else{
     assert(!p);
@@ -179,9 +179,9 @@ OMSTREAM& operator<<(OMSTREAM& o, LANGUAGE* x)
 /*--------------------------------------------------------------------------*/
 bool Get(CS& cmd, const std::string& key, LANGUAGE** val)
 {
-  if (cmd.umatch(key + " {=}")) {untested();
+  if (cmd.umatch(key + " {=}")) {
     LANGUAGE* lang = language_dispatcher[cmd];
-    if (lang) {untested();
+    if (lang) {
       *val = lang;
     }else{untested();
       std::string choices;

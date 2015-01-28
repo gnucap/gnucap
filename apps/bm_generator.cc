@@ -1,4 +1,4 @@
-/*$Id: bm_generator.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: bm_generator.cc 2015.01.08 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,7 +22,9 @@
  * behavioral modeling simple value
  * used with tc, etc, and conditionals
  */
-//testing=script,complete 2005.10.06
+//testing=script 2015.01.08
+//BUG// no step control
+//BUG// encapsulation violation: _sim->_genout
 #include "globals.h"
 #include "e_elemnt.h"
 #include "bm.h"
@@ -60,11 +62,12 @@ EVAL_BM_GENERATOR::EVAL_BM_GENERATOR(const EVAL_BM_GENERATOR& p)
 bool EVAL_BM_GENERATOR::operator==(const COMMON_COMPONENT& x)const
 {
   const EVAL_BM_GENERATOR* p = dynamic_cast<const EVAL_BM_GENERATOR*>(&x);
-  bool rv = p
-    && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
-    incomplete();
-    untested();
+  if (p) {
+  }else{untested();
+  }
+  bool rv = p && EVAL_BM_ACTION_BASE::operator==(x);
+  if (rv) {untested();
+  }else{
   }
   return rv;
 }
