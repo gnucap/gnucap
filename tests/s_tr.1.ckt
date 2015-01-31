@@ -1,0 +1,13 @@
+'c check
+v1 1 0 dc pulse(0 1 0 .01 .01 1k 1k) ac 1
+r1 1 2 1
+c2 2 0 1
+.list
+.print tran v(1) v(2)
+.tran .1 1 0 trace all
+.tran trace all
+.tran .1 5 4
+.tran .1 9 8 trace all
+.tran trace all
+.status notime
+.end

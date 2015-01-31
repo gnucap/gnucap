@@ -432,7 +432,7 @@ DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "simulator", &p3);
 class CMD_SPECTRE : public CMD {
 public:
   void do_it(CS&, CARD_LIST* Scope)
-  {untested();
+  {
     command("options lang=spectre", Scope);
   }
 } p8;
