@@ -196,18 +196,16 @@ void CARD::new_subckt()
   _subckt = new CARD_LIST;
 }
 /*--------------------------------------------------------------------------*/
-void CARD::new_subckt(const CARD* Model, CARD* Owner,
-		      const CARD_LIST* Scope, PARAM_LIST* Params)
+void CARD::new_subckt(const CARD* Model, PARAM_LIST* Params)
 {
   delete _subckt;
-  _subckt = new CARD_LIST(Model, Owner, Scope, Params);
+  _subckt = new CARD_LIST(Model, this, scope(), Params);
 }
 /*--------------------------------------------------------------------------*/
-void CARD::renew_subckt(const CARD* Model, CARD* Owner,
-		      const CARD_LIST* Scope, PARAM_LIST* Params)
+void CARD::renew_subckt(const CARD* Model, PARAM_LIST* Params)
 {
   if (_sim->is_first_expand()) {
-    new_subckt(Model, Owner, Scope, Params);
+    new_subckt(Model, Params);
   }else{untested();
     assert(subckt());
     subckt()->attach_params(Params, scope());

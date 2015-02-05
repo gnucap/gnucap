@@ -189,7 +189,7 @@ void DEV_SUBCKT::expand()
   assert(pl);
   c->_params.set_try_again(pl);
 
-  renew_subckt(_parent, this, scope(), &(c->_params));
+  renew_subckt(_parent, &(c->_params));
   subckt()->expand();
 }
 /*--------------------------------------------------------------------------*/
