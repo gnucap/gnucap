@@ -1,4 +1,4 @@
-/*$Id: io_error.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: io_error.h 2015/01/27 al $ -*- C++ -*-
  * data for error and exception handling
  *
  * Copyright (C) 2001 Albert Davis
@@ -77,7 +77,7 @@ struct Exception_Too_Many :public Exception{
   Exception_Too_Many(int requested, int max, int offset)
     :Exception("too many: requested=" + to_string(requested+offset)
 	       + " max=" + to_string(max+offset)),
-     _requested(requested), _max(max), _offset(offset) {untested();
+     _requested(requested), _max(max), _offset(offset) {
   }
 };
 struct Exception_Type_Mismatch :public Exception{

@@ -1,4 +1,4 @@
-/*$Id: lang_spectre.cc 2014/07/04 al $ -*- C++ -*-
+/*$Id: lang_spectre.cc 2015/01/27 al $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+//testing=script 2015.01.27
 #include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
@@ -31,15 +32,16 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class LANG_SPECTRE : public LANGUAGE {
 public:
-  ~LANG_SPECTRE() {itested();}
+  LANG_SPECTRE()  {}
+  ~LANG_SPECTRE() {}
   std::string name()const {return "spectre";}
   bool case_insensitive()const {return false;}
   UNITS units()const {return uSI;}
 
 public: // override virtual, used by callback
-  std::string arg_front()const {return " ";}
-  std::string arg_mid()const {return "=";}
-  std::string arg_back()const {return "";}
+  std::string arg_front()const {unreachable();return " ";}
+  std::string arg_mid()const {unreachable();return "=";}
+  std::string arg_back()const {unreachable();return "";}
 
 public: // override virtual, called by commands
   void		parse_top_item(CS&, CARD_LIST*);
@@ -101,15 +103,15 @@ static void parse_ports(CS& cmd, COMPONENT* x)
 {
   assert(x);
 
+  int index = 0;
   if (cmd >> '(') {
-    int index = 0;
     while (cmd.is_alnum()) {
       unsigned here = cmd.cursor();
       try{
 	std::string value;
 	cmd >> value;
 	x->set_port_by_index(index++, value);
-      }catch (Exception_Too_Many& e) {untested();
+      }catch (Exception_Too_Many& e) {
 	cmd.warn(bDANGER, here, e.message());
       }
     }
@@ -120,17 +122,23 @@ static void parse_ports(CS& cmd, COMPONENT* x)
     unsigned stop = cmd.cursor();
     cmd.reset(here);
 
-    int index = 0;
     while (cmd.cursor() < stop) {
       here = cmd.cursor();
       try{
 	std::string value;
 	cmd >> value;
 	x->set_port_by_index(index++, value);
-      }catch (Exception_Too_Many& e) {untested();
+      }catch (Exception_Too_Many& e) {
 	cmd.warn(bDANGER, here, e.message());
       }
     }
+  }
+  if (index < x->min_nodes()) {
+    cmd.warn(bDANGER, "need " + to_string(x->min_nodes()-index) +" more nodes, grounding");
+    for (int iii = index;  iii < x->min_nodes();  ++iii) {
+      x->set_port_to_ground(iii);
+    }
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -227,7 +235,7 @@ std::string LANG_SPECTRE::find_type_in_string(CS& cmd)
   cmd.reset().skipbl();
   unsigned here = 0;
   std::string type;
-  if ((cmd >> "*|//")) {itested();
+  if ((cmd >> "*|//")) {
     assert(here == 0);
     type = "dev_comment";
   }else if ((cmd >> "model |simulator |parameters |subckt ")) {
@@ -239,7 +247,7 @@ std::string LANG_SPECTRE::find_type_in_string(CS& cmd)
     here = cmd.cursor();
     cmd.reset(here);
     cmd >> type;
-  }else if (cmd.reset().scan("=")) {itested();
+  }else if (cmd.reset().scan("=")) {
     // back up two, by starting over
     cmd.reset().skiparg();
     unsigned here1 = cmd.cursor();
@@ -313,7 +321,7 @@ static void print_ports(OMSTREAM& o, const COMPONENT* x)
     o << sep << x->port_value(ii);
     sep = " ";
   }
-  for (int ii = 0;  x->current_port_exists(ii);  ++ii) {
+  for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
     o << sep << x->current_port_value(ii);
     sep = " ";
   }
@@ -358,7 +366,7 @@ void LANG_SPECTRE::print_instance(OMSTREAM& o, const COMPONENT* x)
 void LANG_SPECTRE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 {
   assert(x);
-  if (x->comment()[0] != '*') {untested();
+  if (x->comment()[0] != '*') {
     o << "*";
   }else{untested();
   }
@@ -366,7 +374,7 @@ void LANG_SPECTRE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 }
 /*--------------------------------------------------------------------------*/
 void LANG_SPECTRE::print_command(OMSTREAM& o, const DEV_DOT* x)
-{
+{untested();
   assert(x);
   o << x->s() << '\n';
 }
@@ -389,10 +397,10 @@ class CMD_MODEL : public CMD {
 	assert(!new_card->owner());
 	lang_spectre.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
-      }else{
+      }else{untested();
 	cmd.warn(bDANGER, here, "model: base has incorrect type");
       }
-    }else{
+    }else{untested();
       cmd.warn(bDANGER, here, "model: no match");
     }
   }

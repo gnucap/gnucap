@@ -1,4 +1,4 @@
-/*$Id: d_vs.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: d_vs.cc 2015/01/28 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -89,9 +89,9 @@ void DEV_VS::tr_begin()
   if (!using_tr_eval()) {
     if (_n[OUT2].m_() == 0) {
       _sim->set_limit(value());
-    }else if (_n[OUT1].m_() == 0) {untested();
+    }else if (_n[OUT1].m_() == 0) {
       _sim->set_limit(-value());
-    }else{untested();
+    }else{
       //BUG// don't set limit
     }
   }else{

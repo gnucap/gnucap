@@ -1,0 +1,28 @@
+.model zz npn ( level=1 kf=NA( 0.) af=NA( 1.) bf=150 br=NA( 1.) is=NA( 100.E-18) nf=NA( 1.) nr=NA( 1.) c4=NA( 0.) nc=NA( 2.) c2=NA( 0.) ne=NA( 1.5) rb=NA( 0.) re=NA( 0.) rc=NA( 0.) cjc=NA( 0.) cje=NA( 0.) cjs=NA( 0.) mjc=NA( 0.33) mje=NA( 0.33) mjs=NA( 0.) vjc=NA( 0.75) vje=NA( 0.75) vjs=NA( 0.75) xcjc=NA( 1.) itf=NA( 0.) ptf=NA( 0.) tf=NA( 0.) tr=NA( 0.) xtf=NA( 0.) xtb=NA( 0.) xti=NA( 3.) eg=NA( 1.11))
+.subckt dumb_resistor ( a b )
+R1 ( a b ) r
+.ends dumb_resistor
+.subckt foo ( vcc in out )
+Rc ( c vcc ) z
+q1 ( c b e )  Zz NA( 1.)
+XRe ( e 0 )  dumb_resistor  r=abs(-z)/10
+Rb1 ( b vcc ) 100k
+XRb2 ( b 0 )  dumb_resistor  r=r
+Cin ( b in )  1.u
+Cout ( c out )  1.u
+Rin ( in 0 )  100.K
+Rout ( out 0 )  100.K
+.ends foo
+X1 ( v_cc amp_in out )  foo  r=10k
+Rin1 ( in amp_in ) 10*(1-gain)
+Rin2 ( amp_in 0 ) 10*gain
+Vcc ( v_cc 0 )  DC  20.
+Vin ( in 0 )  AC  0.2
+#           v(v_cc)    v(in)      v(out)     iter(0)    vc(X1.q1)  vce(X1.q1)
+ 27.        20.        0.         0.         16.        10.213     9.2279    
+#Freq       v(v_cc)    v(in)      v(amp_in)  v(out)    
+ 1.K        869.54p    0.2        0.099968   0.87954   
+#           v(v_cc)    v(in)      v(out)     iter(0)   
+ 27.        20.        0.         0.         16.       
+#Freq       v(v_cc)    v(in)      v(amp_in)  v(out)    
+ 1.K        796.25p    0.2        0.099968   0.80624   

@@ -1,0 +1,12 @@
+'
+spectre
+v1 (1 0) vsource dc=2
+v2 (0 2) vsource dc=5
+v3 (3 4) vsource dc=3
+v4 (4 0) vsource dc=9
+- list
+- print op v(nodes)
+- op
+- end
+
+

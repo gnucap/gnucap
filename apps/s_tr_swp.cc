@@ -1,4 +1,4 @@
-/*$Id: s_tr_swp.cc 2014/07/04 al $ -*- C++ -*-
+/*$Id: s_tr_swp.cc 2015/01/28 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -74,7 +74,7 @@ void TRANSIENT::sweep()
     advance_time();
     _sim->zero_voltages();
     CARD_LIST::card_list.do_tr();    //evaluate_models
-    while (!_sim->_late_evalq.empty()) {untested();itested(); //BUG// encapsulation violation
+    while (!_sim->_late_evalq.empty()) {untested(); //BUG// encapsulation violation
       _sim->_late_evalq.front()->do_tr_last();
       _sim->_late_evalq.pop_front();
     }
@@ -97,7 +97,7 @@ void TRANSIENT::sweep()
     if (printnow) {
       _sim->keep_voltages();
       outdata(_sim->_time0);
-    }else{untested();
+    }else{
     }
   }
   
@@ -160,7 +160,7 @@ void TRANSIENT::set_step_cause(STEP_CAUSE C)
     break;
   case scNO_ADVANCE:untested();
   case scZERO:untested();
-  case scSMALL:untested();itested();
+  case scSMALL:untested();
   case scREJECT:
     ::status.control += C;
     break;
@@ -414,7 +414,7 @@ bool TRANSIENT::next()
   /* got it, I think */
   
   /* check to be sure */
-  if (newtime < _time1 + _sim->_dtmin) {untested();itested();
+  if (newtime < _time1 + _sim->_dtmin) {untested();
     /* It's really bad. */
     /* Reject the most recent step, back up as much as possible, */
     /* and creep along */
@@ -475,7 +475,7 @@ bool TRANSIENT::next()
     trace1("eq", _sim->_eq.top());
     _sim->_eq.pop();
   }
-  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {untested();itested();
+  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {untested();
     trace1("eq-extra", _sim->_eq.top());
     _sim->_eq.pop();
   }
@@ -534,7 +534,7 @@ void TRANSIENT::accept()
       _sim->_acceptq.back()->tr_accept();
       _sim->_acceptq.pop_back();
     }
-  }else{untested();itested();
+  }else{untested();
     _sim->_acceptq.clear();
     CARD_LIST::card_list.tr_accept();
   }

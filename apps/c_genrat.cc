@@ -1,4 +1,4 @@
-/*$Id: c_genrat.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: c_genrat.cc 2015.01.08 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,7 +21,9 @@
  *------------------------------------------------------------------
  * set up generator for transient analysis
  */
-//testing=script,sparse 2006.07.16
+//testing=script,complete 2015.01.08
+//BUG// no step control
+//BUG// encapsulation violation: gen() is global
 #include "u_sim_data.h"
 #include "globals.h"
 #include "c_comand.h"
@@ -88,26 +90,29 @@ double gen()
 {
   if (CKT_BASE::_sim->_time0 <= delay) {
     return init_;
+  }else{
   }
   double loctime = CKT_BASE::_sim->_time0 - delay;
   if (period > 0.) {
-    untested();
+    
     loctime = fmod(loctime, period);
+  }else{
+    // not periodic
   }
 
   double level;
   if (CKT_BASE::_sim->_time0 <= delay + rise) {			/* initial rise */
     level = (maxv - 0) * (loctime/rise) + 0;
   }else if (loctime <= rise) {				/* rising       */
-    untested();
+    
     level = (maxv - minv) * (loctime/rise) + minv;
   }else if (width==0.  ||  (loctime-=rise) <= width) {	/* pulse on     */
     level = maxv;
   }else if ((loctime-=width) <= fall) {			/* falling      */
-    untested();
+    
     level = (minv - maxv) * (loctime/fall) + maxv;
   }else{						/* pulse off    */
-    untested();
+    
     level = minv;
   }
   level *= (freq == 0.) 
