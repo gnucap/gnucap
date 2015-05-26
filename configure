@@ -25,6 +25,16 @@ fi
 
 args="--prefix=$prefix"
 
+# BUG: install plugins to libdir.
+pkglibdir=$prefix/lib
+
+sed -e "s#@prefix@#$prefix#" \
+    -e "s#@libdir@#$prefix/lib#" \
+    -e "s#@pkglibdir@#$pkglibdir#" \
+    -e "s#@CXXFLAGS@#$CCFLAGS#" \
+    -e "s#@LIBS@#-lgnucap#" \
+    -e "s#@CXX@#$CCC#" < gnucap-conf.in > gnucap-conf
+
 echo "Configuring gnucap using $args"
 #---------------------------------------------------
 echo include
