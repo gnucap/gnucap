@@ -509,6 +509,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       assert(dynamic_cast<MODEL_CARD*>(*ci));
     }
   }
+  delete[] map;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
