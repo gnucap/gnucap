@@ -537,7 +537,7 @@ bool SWITCH_BASE::do_tr()
       _y[0].f1 = (new_state == _ON) ? m->ron : m->roff;	/* unknown is off */
       _state[0] = new_state;
       _m0.c1 = 1./_y[0].f1;
-      trace4("change", new_state, old_state, _y[0].f1, _m0.c1);
+      trace4("change", new_state, _state[1], _y[0].f1, _m0.c1);
       q_load();
       store_values();
       set_not_converged();

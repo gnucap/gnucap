@@ -249,7 +249,7 @@ bool TRANSIENT::next()
       trace0("rejected");
     }
     trace2("", step_cause(), old_dt);
-    trace3("", time1, _sim->_time0, reftime);
+    trace3("", _time1, _sim->_time0, reftime);
 
     newtime = _time_by_user_request;
     new_dt = newtime - reftime;

@@ -392,7 +392,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
 				/* a transition state.		   */
     set_d_iter();
     set_last_change_time();
-    trace3(_failure_mode, _lastchange, _quality, _lv);
+    trace3(_failure_mode.c_str(), _lastchange, _quality, _lv);
   }
 }
 /*--------------------------------------------------------------------------*/

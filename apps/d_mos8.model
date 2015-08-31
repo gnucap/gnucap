@@ -1573,7 +1573,6 @@ model BUILT_IN_MOS8 {
       }
       //double d__csub = Isub - (Gbb * Vbseff + Gbd * d->vds + Gbg * d->vgs);
     }
-    trace4("", d->isub, d->gbbs, d->gbgs, d->gbds);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /* Calculate Qinv for Noise analysis */
     {
@@ -2805,7 +2804,7 @@ model BUILT_IN_MOS8 {
 
     trace2("", d->ids, d->gds);
     trace4("", d->gmf, d->gmr, d->gmbf, d->gmbr);
-    trace4("", d->isub, d->gbbs, d->gbgs, d->gbds);
+    //trace4("", d->isub, d->gbbs, d->gbgs, d->gbds);
     trace4("", d->qgate, d->cggb, d->cgsb, d->cgdb);
     trace4("", d->qdrn, d->cdgb, d->cdsb, d->cddb);
     trace4("", d->qbulk, d->cbgb, d->cbsb, d->cbdb);

@@ -209,7 +209,7 @@ model BUILT_IN_MOS5 {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     d->reverse_if_needed();
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-    trace4("", c->lo, m->dl, c->wo, m->dw);
+    trace2("", m->dl, m->dw);
     
     double Vbs = std::max(m->vbb2, d->vbs);
     double Vgs = std::min(m->vgg2, d->vgs);

@@ -147,7 +147,7 @@ model BUILT_IN_MOS4 {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     d->reverse_if_needed();
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-    trace4("", c->lo, m->dl, c->wo, m->dw);
+    trace2("", m->dl, m->dw);
     trace3("", s->ugs, s->ugsB, d->vbs);
     double Ugs = s->ugs + s->ugsB * d->vbs;
     double dUgsdVbs;

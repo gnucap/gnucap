@@ -136,7 +136,7 @@ model BUILT_IN_MOS3 {
     #define do_subthreshold	(m->nfs != 0.)
     #define use_vmax		(m->vmax != NOT_INPUT)
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
-    trace1(d->long_label().c_str(), d->evaliter());
+    trace0(d->long_label().c_str());
     trace3("", d->vds, d->vgs, d->vbs);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     d->reverse_if_needed();
