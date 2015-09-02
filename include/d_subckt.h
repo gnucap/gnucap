@@ -31,7 +31,7 @@
 //BUG// fixed limit on number of ports
 /*--------------------------------------------------------------------------*/
 class INTERFACE MODEL_SUBCKT : public COMPONENT {
-private:
+protected:
   explicit	MODEL_SUBCKT(const MODEL_SUBCKT&p);
 public:
   explicit	MODEL_SUBCKT();
@@ -69,7 +69,7 @@ private:
 /*--------------------------------------------------------------------------*/
 class DEV_SUBCKT : public BASE_SUBCKT {
   friend class MODEL_SUBCKT;
-private:
+protected:
   explicit	DEV_SUBCKT(const DEV_SUBCKT&);
 public:
   explicit	DEV_SUBCKT();
@@ -84,7 +84,9 @@ private: // override virtual
   int		net_nodes()const	{return _net_nodes;}
   CARD*		clone()const		{return new DEV_SUBCKT(*this);}
   void		precalc_first();
+protected:
   void		expand();
+private:
   void		precalc_last();
   double	tr_probe_num(const std::string&)const;
   int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
@@ -98,8 +100,9 @@ private: // override virtual
   }
 public:
   static int	count()			{return _count;}
-private:
+protected:
   const MODEL_SUBCKT* _parent;
+private:
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
 };
