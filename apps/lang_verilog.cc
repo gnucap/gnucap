@@ -490,7 +490,9 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "paramset", &p1);
 class CMD_MODULE : public CMD {
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
-    MODEL_SUBCKT* new_module = new MODEL_SUBCKT;
+    CARD const* sckt = device_dispatcher["subckt"];
+    assert(sckt);
+    MODEL_SUBCKT* new_module = dynamic_cast<MODEL_SUBCKT*>(sckt->clone());
     assert(new_module);
     assert(!new_module->owner());
     assert(new_module->subckt());
