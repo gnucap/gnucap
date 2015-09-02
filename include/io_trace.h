@@ -31,6 +31,7 @@
 #undef trace4
 #undef trace5
 #undef untested
+#undef itested
 #undef unreachable
 #undef incomplete
 /*--------------------------------------------------------------------------*/
