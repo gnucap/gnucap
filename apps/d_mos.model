@@ -573,7 +573,7 @@ bool DEV_BUILT_IN_MOS::do_tr()
     }else{
     }
     #if defined(DO_TRACE)
-      error(bTRACE,"%s:%d: region change\n", long_label().c_str(), evaliter());
+      error(bTRACE,"%s: region change\n", long_label().c_str());
     #endif
   }else{
   }

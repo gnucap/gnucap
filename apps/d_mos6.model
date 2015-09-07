@@ -127,7 +127,7 @@ model BUILT_IN_MOS6 {
   /*-----------------------------------------------------------------------*/
   tr_eval {
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-    // trace1(d->long_label().c_str(), d->evaliter());
+    trace0(d->long_label().c_str());
     trace3("", d->vds, d->vgs, d->vbs);
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
     d->reverse_if_needed();

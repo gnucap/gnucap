@@ -2196,8 +2196,8 @@ model BUILT_IN_MOS7 {
     trace1("", d->gtau);
     trace4("", d->cqgb, d->cqsb, d->cqdb, d->cqbb);
     //trace1("", d->tconst);
-    trace2("", d->cgb, d->qgb);
-    trace2("", d->qgd, d->cgd);
+    //trace2("", d->cgb, d->qgb);
+    //trace2("", d->qgd, d->cgd);
     trace2("", d->qgs, d->cgs);
     trace3("", d->vgs, d->vds, d->vbs);
     trace3("", d->vdsat, d->vgst, d->von);

@@ -420,7 +420,7 @@ model BUILT_IN_BJT {
   tr_eval {
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     trace0("--------------------------");
-    // trace1(d->long_label().c_str(), d->evaliter());
+    trace0(d->long_label().c_str());
     trace4("", d->vbe, d->vbc, d->vbx, d->vcs);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     double cbe, gbe;
