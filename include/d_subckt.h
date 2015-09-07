@@ -69,7 +69,7 @@ private:
 /*--------------------------------------------------------------------------*/
 class DEV_SUBCKT : public BASE_SUBCKT {
   friend class MODEL_SUBCKT;
-protected:
+private:
   explicit	DEV_SUBCKT(const DEV_SUBCKT&);
 public:
   explicit	DEV_SUBCKT();
@@ -84,9 +84,7 @@ private: // override virtual
   int		net_nodes()const	{return _net_nodes;}
   CARD*		clone()const		{return new DEV_SUBCKT(*this);}
   void		precalc_first();
-protected:
   void		expand();
-private:
   void		precalc_last();
   double	tr_probe_num(const std::string&)const;
   int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
