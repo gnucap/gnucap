@@ -99,7 +99,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-void LANGUAGE::new__instance(CS& cmd, MODEL_SUBCKT* owner, CARD_LIST* Scope)
+void LANGUAGE::new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope)
 {
   if (cmd.is_end()) {untested();
     // nothing
@@ -127,8 +127,12 @@ CARD* LANGUAGE::parse_item(CS& cmd, CARD* c)
   // If you can think of a better way, tell me.
   // It must be in the LANGUAGE class, not CARD.
 
-  if (dynamic_cast<MODEL_SUBCKT*>(c)) {untested();
-    return parse_module(cmd, prechecked_cast<MODEL_SUBCKT*>(c));
+  if (BASE_SUBCKT* s=dynamic_cast<BASE_SUBCKT*>(c)) { untested();
+    if (c->is_device()){ untested();
+      return parse_instance(cmd, s);
+    }else{ untested();
+      return parse_module(cmd, s);
+    }
   }else if (dynamic_cast<COMPONENT*>(c)) {
     return parse_instance(cmd, prechecked_cast<COMPONENT*>(c));
   }else if (dynamic_cast<MODEL_CARD*>(c)) {untested();
@@ -152,8 +156,12 @@ void LANGUAGE::print_item(OMSTREAM& o, const CARD* c)
   assert(c);
   assert(dynamic_cast<const CARD*>(c));
 
-  if (dynamic_cast<const MODEL_SUBCKT*>(c)) {
-    print_module(o, prechecked_cast<const MODEL_SUBCKT*>(c));
+  if (const BASE_SUBCKT* s=dynamic_cast<const BASE_SUBCKT*>(c)) { untested();
+    if (s->is_device()){ untested();
+      print_instance(o, s);
+    }else{ untested();
+      print_module(o, s);
+    }
   }else if (dynamic_cast<const COMPONENT*>(c)) {
     print_instance(o, prechecked_cast<const COMPONENT*>(c));
   }else if (dynamic_cast<const MODEL_CARD*>(c)) {

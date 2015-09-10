@@ -90,7 +90,7 @@ void DEV_LOGIC::expand()
   try {
     const CARD* model = find_looking_out(subckt_name);
     
-    if(!dynamic_cast<const MODEL_SUBCKT*>(model)) {untested();
+    if(!dynamic_cast<const BASE_SUBCKT*>(model)) {untested();
       error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
 	    long_label() + ": " + subckt_name + " is not a subckt, forcing digital\n");
     }else{

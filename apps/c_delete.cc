@@ -62,7 +62,7 @@ private:
       if (i == Scope->end()) {
 	// can't find "container" (probably .subckt) - no match
 	return false;
-      }else if (!dynamic_cast<MODEL_SUBCKT*>(*i)) {
+      }else if (!dynamic_cast<BASE_SUBCKT*>(*i)) {
 	// found a match, but it isn't a container (subckt)
 	return false;
       }else{

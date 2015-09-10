@@ -30,60 +30,30 @@
 #define PORTS_PER_SUBCKT 100
 //BUG// fixed limit on number of ports
 /*--------------------------------------------------------------------------*/
-class INTERFACE MODEL_SUBCKT : public COMPONENT {
-protected:
-  explicit	MODEL_SUBCKT(const MODEL_SUBCKT&p);
-public:
-  explicit	MODEL_SUBCKT();
-		~MODEL_SUBCKT();
-public: // override virtual
-  char		id_letter()const	{untested();return '\0';}
-  CARD*	clone_instance()const;
-  bool		print_type_in_spice()const {unreachable(); return false;}
-  std::string   value_name()const	{incomplete(); return "";}
-  std::string   dev_type()const		{untested(); return "";}
-  int		max_nodes()const	{return PORTS_PER_SUBCKT;}
-  int		min_nodes()const	{return 0;}
-  int		matrix_nodes()const	{untested();return 0;}
-  int		net_nodes()const	{return _net_nodes;}
-  CARD*		clone()const		{return new MODEL_SUBCKT(*this);}
-  bool		is_device()const	{return false;}
-  void		precalc_first()		{}
-  void		expand()		{}
-  void		precalc_last()		{}
-  bool		makes_own_scope()const  {return true;}
-  void		map_nodes()		{}
-  CARD_LIST*	   scope()		{return subckt();}
-  const CARD_LIST* scope()const		{return subckt();}
-
-  std::string port_name(int)const {
-    return "";
-  }
-public:
-  static int	count()			{return _count;}
-
-private:
-  node_t	_nodes[PORTS_PER_SUBCKT];
-  static int	_count;
-};
 /*--------------------------------------------------------------------------*/
 class DEV_SUBCKT : public BASE_SUBCKT {
-  friend class MODEL_SUBCKT;
-private:
+  friend class DEV_SUBCKT_PROTO;
+protected:
   explicit	DEV_SUBCKT(const DEV_SUBCKT&);
 public:
   explicit	DEV_SUBCKT();
 		~DEV_SUBCKT()	{--_count;}
+  CARD*		clone()const		{untested(); return new DEV_SUBCKT(*this);}
 private: // override virtual
   char		id_letter()const	{return 'X';}
   bool		print_type_in_spice()const {return true;}
   std::string   value_name()const	{return "#";}
+//  std::string   dev_type()const         {untested(); return BASE_SUBCKT::dev_type();}
   int		max_nodes()const	{return PORTS_PER_SUBCKT;}
   int		min_nodes()const	{return 0;}
   int		matrix_nodes()const	{return 0;}
   int		net_nodes()const	{return _net_nodes;}
-  CARD*		clone()const		{return new DEV_SUBCKT(*this);}
+protected:
+//  CARD*		clone_instance()const;
+private:
   void		precalc_first();
+  bool		makes_own_scope()const  {itested(); return false;}
+
   void		expand();
   void		precalc_last();
   double	tr_probe_num(const std::string&)const;
@@ -98,9 +68,8 @@ private: // override virtual
   }
 public:
   static int	count()			{return _count;}
-protected:
-  const MODEL_SUBCKT* _parent;
 private:
+  const BASE_SUBCKT* _parent;
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
 };

@@ -48,13 +48,13 @@ public: // override virtual, called by commands
   DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*);
   DEV_DOT*	parse_command(CS&, DEV_DOT*);
   MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*);
-  MODEL_SUBCKT* parse_module(CS&, MODEL_SUBCKT*);
+  BASE_SUBCKT* parse_module(CS&, BASE_SUBCKT*);
   COMPONENT*	parse_instance(CS&, COMPONENT*);
   std::string	find_type_in_string(CS&);
 
 private: // override virtual, called by print_item
   void print_paramset(OMSTREAM&, const MODEL_CARD*);
-  void print_module(OMSTREAM&, const MODEL_SUBCKT*);
+  void print_module(OMSTREAM&, const BASE_SUBCKT*);
   void print_instance(OMSTREAM&, const COMPONENT*);
   void print_comment(OMSTREAM&, const DEV_COMMENT*);
   void print_command(OMSTREAM& o, const DEV_DOT* c);
@@ -193,7 +193,7 @@ MODEL_CARD* LANG_SPECTRE::parse_paramset(CS& cmd, MODEL_CARD* x)
   return x;
 }
 /*--------------------------------------------------------------------------*/
-MODEL_SUBCKT* LANG_SPECTRE::parse_module(CS& cmd, MODEL_SUBCKT* x)
+BASE_SUBCKT* LANG_SPECTRE::parse_module(CS& cmd, BASE_SUBCKT* x)
 {
   assert(x);
 
@@ -337,7 +337,7 @@ void LANG_SPECTRE::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
   o << "\n\n";
 }
 /*--------------------------------------------------------------------------*/
-void LANG_SPECTRE::print_module(OMSTREAM& o, const MODEL_SUBCKT* x)
+void LANG_SPECTRE::print_module(OMSTREAM& o, const BASE_SUBCKT* x)
 {
   assert(x);
   assert(x->subckt());
@@ -410,7 +410,9 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "model", &p1);
 class CMD_SUBCKT : public CMD {
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
-    MODEL_SUBCKT* new_module = new MODEL_SUBCKT;
+    const CARD* s = device_dispatcher["subckt"];
+    assert(s); // for now
+    BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(s->clone());
     assert(new_module);
     assert(!new_module->owner());
     assert(new_module->subckt());
