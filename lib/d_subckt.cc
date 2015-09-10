@@ -34,7 +34,6 @@
 #include "globals.h"
 #include "d_subckt.h"
 /*--------------------------------------------------------------------------*/
-int DEV_SUBCKT::_count = -1;
 int COMMON_SUBCKT::_count = -1;
 static COMMON_SUBCKT Default_SUBCKT(CC_STATIC);
 /*--------------------------------------------------------------------------*/
@@ -108,11 +107,60 @@ void COMMON_SUBCKT::precalc_last(const CARD_LIST* Scope)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+namespace{
+/*--------------------------------------------------------------------------*/
+#define PORTS_PER_SUBCKT 100
+//BUG// fixed limit on number of ports
+/*--------------------------------------------------------------------------*/
+class DEV_SUBCKT : public BASE_SUBCKT {
+  friend class DEV_SUBCKT_PROTO;
+private:
+  explicit	DEV_SUBCKT(const DEV_SUBCKT&);
+public:
+  explicit	DEV_SUBCKT();
+		~DEV_SUBCKT()	{--_count;}
+  CARD*		clone()const		{untested(); return new DEV_SUBCKT(*this);}
+private: // override virtual
+  char		id_letter()const	{return 'X';}
+  bool		print_type_in_spice()const {return true;}
+  std::string   value_name()const	{return "#";}
+  // std::string   dev_type()const
+  int		max_nodes()const	{return PORTS_PER_SUBCKT;}
+  int		min_nodes()const	{return 0;}
+  int		matrix_nodes()const	{return 0;}
+  int		net_nodes()const	{return _net_nodes;}
+//  CARD*		clone_instance()const;
+  void		precalc_first();
+  bool		makes_own_scope()const  {itested(); return false;}
+
+  void		expand();
+private:
+  void		precalc_last();
+  double	tr_probe_num(const std::string&)const;
+  int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
+
+  std::string port_name(int i)const {itested();
+    if (_parent) {itested();
+      return _parent->port_value(i);
+    }else{itested();
+      return "";
+    }
+  }
+public:
+  static int	count()			{return _count;}
+protected:
+  const BASE_SUBCKT* _parent;
+private:
+  node_t	_nodes[PORTS_PER_SUBCKT];
+  static int	_count;
+};
+int DEV_SUBCKT::_count = -1;
+/*--------------------------------------------------------------------------*/
 class INTERFACE DEV_SUBCKT_PROTO : public DEV_SUBCKT {
 private:
-  explicit	DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO&p) : DEV_SUBCKT(p) {untested();}
+  explicit	DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO&p);
 public:
-  explicit	DEV_SUBCKT_PROTO() : DEV_SUBCKT() {untested();}
+  explicit	DEV_SUBCKT_PROTO();
 		~DEV_SUBCKT_PROTO(){}
 public: // override virtual
   char		id_letter()const	{untested();return '\0';}
@@ -159,17 +207,26 @@ static DEV_SUBCKT   p1;
 static DISPATCHER<CARD>::INSTALL
   d1(&device_dispatcher, "X|subckt", &pp);
 /*--------------------------------------------------------------------------*/
-CARD* DEV_SUBCKT_PROTO::clone()const
+DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO& p)
+  :DEV_SUBCKT(p)
 { untested();
-  return new DEV_SUBCKT_PROTO(*this);
+  new_subckt();
+}
+/*--------------------------------------------------------------------------*/
+DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO()
+  :DEV_SUBCKT()
+{ untested();
+  new_subckt();
 }
 /*--------------------------------------------------------------------------*/
 CARD* DEV_SUBCKT_PROTO::clone_instance()const
 {untested();
   DEV_SUBCKT* new_instance = dynamic_cast<DEV_SUBCKT*>(p1.clone());
+  assert(!new_instance->subckt());
 
   if (this == &pp){ untested();
     // cloning from static, empty model
+    // look out for _parent in expand
   }else{ untested();
     new_instance->_parent = this;
   }
@@ -184,7 +241,6 @@ DEV_SUBCKT::DEV_SUBCKT()
 { untested();
   attach_common(&Default_SUBCKT);
   _n = _nodes;
-  new_subckt();
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
@@ -197,11 +253,7 @@ DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
     _nodes[ii] = p._nodes[ii];
   }
   _n = _nodes;
-  assert(p.subckt()->is_empty());
-  if(subckt()){ untested();
-  }else{untested();
-    new_subckt();
-  }
+  assert(!subckt());
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
@@ -291,6 +343,7 @@ double DEV_SUBCKT::tr_probe_num(const std::string& x)const
   }
   /*NOTREACHED*/
 }
+} // namespace
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

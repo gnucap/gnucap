@@ -27,52 +27,6 @@
 #include "e_node.h"
 #include "e_subckt.h"
 /*--------------------------------------------------------------------------*/
-#define PORTS_PER_SUBCKT 100
-//BUG// fixed limit on number of ports
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-class DEV_SUBCKT : public BASE_SUBCKT {
-  friend class DEV_SUBCKT_PROTO;
-protected:
-  explicit	DEV_SUBCKT(const DEV_SUBCKT&);
-public:
-  explicit	DEV_SUBCKT();
-		~DEV_SUBCKT()	{--_count;}
-  CARD*		clone()const		{untested(); return new DEV_SUBCKT(*this);}
-private: // override virtual
-  char		id_letter()const	{return 'X';}
-  bool		print_type_in_spice()const {return true;}
-  std::string   value_name()const	{return "#";}
-//  std::string   dev_type()const         {untested(); return BASE_SUBCKT::dev_type();}
-  int		max_nodes()const	{return PORTS_PER_SUBCKT;}
-  int		min_nodes()const	{return 0;}
-  int		matrix_nodes()const	{return 0;}
-  int		net_nodes()const	{return _net_nodes;}
-protected:
-//  CARD*		clone_instance()const;
-private:
-  void		precalc_first();
-  bool		makes_own_scope()const  {itested(); return false;}
-
-  void		expand();
-  void		precalc_last();
-  double	tr_probe_num(const std::string&)const;
-  int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
-
-  std::string port_name(int i)const {
-    if (_parent) {
-      return _parent->port_value(i);
-    }else{itested();
-      return "";
-    }
-  }
-public:
-  static int	count()			{return _count;}
-private:
-  const BASE_SUBCKT* _parent;
-  node_t	_nodes[PORTS_PER_SUBCKT];
-  static int	_count;
-};
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMMON_SUBCKT : public COMMON_COMPONENT {
 private:
