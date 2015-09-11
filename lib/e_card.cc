@@ -197,9 +197,16 @@ void CARD::new_subckt()
 }
 /*--------------------------------------------------------------------------*/
 void CARD::new_subckt(const CARD* Model, PARAM_LIST* Params)
-{
+{ itested();
   delete _subckt;
-  _subckt = new CARD_LIST(Model, this, scope(), Params);
+  try{ itested();
+    _subckt = new CARD_LIST(Model, this, scope(), Params);
+  }catch(...){ itested();
+    // BUG?
+    // new CARD_LIST must not throw if it has been successful previously.
+    assert(!_subckt);
+    throw;
+  }
 }
 /*--------------------------------------------------------------------------*/
 void CARD::renew_subckt(const CARD* Model, PARAM_LIST* Params)
