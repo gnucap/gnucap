@@ -184,6 +184,7 @@ private: // no-ops for prototype
   void map_nodes(){untested();}
   void tr_begin(){untested();}
   void tr_load(){untested();}
+  TIME_PAIR tr_review(){untested(); return TIME_PAIR(NEVER, NEVER);}
   void tr_accept(){untested();}
   void tr_advance(){untested();}
   void tr_restore(){untested();}
