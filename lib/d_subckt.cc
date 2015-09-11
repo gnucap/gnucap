@@ -141,7 +141,11 @@ private:
 
   std::string port_name(int i)const {itested();
     if (_parent) {itested();
-      return _parent->port_value(i);
+      if (i<_parent->net_nodes()){ untested();
+        return _parent->port_value(i);
+      }else{ untested();
+        return "";
+      }
     }else{itested();
       return "";
     }
@@ -345,6 +349,5 @@ double DEV_SUBCKT::tr_probe_num(const std::string& x)const
   /*NOTREACHED*/
 }
 } // namespace
-/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:
