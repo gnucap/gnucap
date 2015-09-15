@@ -139,17 +139,7 @@ private:
   double	tr_probe_num(const std::string&)const;
   int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
 
-  std::string port_name(int i)const {itested();
-    if (_parent) {itested();
-      if (i<_parent->net_nodes()){ untested();
-        return _parent->port_value(i);
-      }else{ untested();
-        return "";
-      }
-    }else{itested();
-      return "";
-    }
-  }
+  std::string port_name(int i)const;
 public:
   static int	count()			{return _count;}
 protected:
@@ -260,6 +250,22 @@ DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
   _n = _nodes;
   assert(!subckt());
   ++_count;
+}
+/*--------------------------------------------------------------------------*/
+std::string DEV_SUBCKT::port_name(int i)const
+{itested();
+  if (const DEV_SUBCKT* p=dynamic_cast<const DEV_SUBCKT*>(_parent)) {itested();
+    if (i<p->net_nodes()){ untested();
+      return p->port_value(i);
+    }else{ untested();
+      return "";
+    }
+  }else if(_parent){ untested();
+    // reachable?
+    return "";
+  }else{itested();
+    return "";
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_SUBCKT::expand()
