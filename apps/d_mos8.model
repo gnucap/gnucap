@@ -1924,7 +1924,7 @@ model BUILT_IN_MOS8 {
 
 	  double T0 = t->vtm * nnoff;
 	  double Vgst = Vgs_eff - d->von;
-	  double VgstNVt = (Vgst - s->voffcv) / (2*T0);
+	  double VgstNVt = (Vgst - s->voffcv) / T0;
 	  
 	  trace3("", d->vgst, Vgst, VgstNVt);
 	  trace2("", n, t->vtm);
@@ -2792,6 +2792,14 @@ model BUILT_IN_MOS8 {
       d->cbdgb = 0.;
       d->cbdsb = 0.;
       d->cbddb = 0.;
+    }
+    if (polarity == -1){
+       d->qgs *= -1;
+       d->qbd *= -1;
+       d->qbs *= -1;
+       d->qgd *= -1;
+       d->qdrn *= -1;
+       // d->qbulk *= -1;
     }
     
     assert(d->qbulk == d->qbulk);
