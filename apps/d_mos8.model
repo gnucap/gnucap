@@ -1,4 +1,4 @@
-/* $Id: d_mos8.model,v 26.132 2009/11/24 04:26:37 al Exp $ -*- C++ -*-
+/* $Id: d_mos8.model $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -2793,15 +2793,15 @@ model BUILT_IN_MOS8 {
       d->cbdsb = 0.;
       d->cbddb = 0.;
     }
-    if (polarity == -1){
-       d->qgs *= -1;
-       d->qbd *= -1;
-       d->qbs *= -1;
-       d->qgd *= -1;
-       d->qdrn *= -1;
-       // d->qbulk *= -1;
+    if (m->polarity == pP){
+      d->qgs *= -1;
+      d->qbd *= -1;
+      d->qbs *= -1;
+      d->qgd *= -1;
+      d->qdrn *= -1;
+      //d->qbulk *= -1;
+    }else{
     }
-    
     assert(d->qbulk == d->qbulk);
     assert(d->qdrn == d->qdrn);
     assert(d->qgate == d->qgate);
