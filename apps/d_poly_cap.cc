@@ -1,4 +1,4 @@
-/*$Id: d_poly_cap.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: d_poly_cap.cc $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -139,7 +139,7 @@ DEV_CPOLY_CAP::~DEV_CPOLY_CAP()
   delete [] _vy1;
   delete [] _vi0;
   delete [] _vi1;
-  if (net_nodes() > NODES_PER_BRANCH) {untested();
+  if (net_nodes() > NODES_PER_BRANCH) {
     delete [] _n;
   }else{
     // it is part of a base class
@@ -266,7 +266,7 @@ void DEV_CPOLY_CAP::set_parameters(const std::string& Label, CARD *Owner,
     _vi0 = new double[n_states];
     _vi1 = new double[n_states];
 
-    if (net_nodes() > NODES_PER_BRANCH) {untested();
+    if (net_nodes() > NODES_PER_BRANCH) {
       // allocate a bigger node list
       _n = new node_t[net_nodes()];
     }else{
