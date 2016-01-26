@@ -22,7 +22,19 @@ else
 fi
 
 sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
+#----------------------------------------------------------------
+# BUG: install plugins to libdir.
+pkglibdir=$prefix/lib
 
+# bug. this is not implemented consistently.
+CXX=${CXX-g++}
+
+sed -e "s#@prefix@#$prefix#" \
+    -e "s#@libdir@#$prefix/lib#" \
+    -e "s#@pkglibdir@#$pkglibdir#" \
+    -e "s#@CXXFLAGS@#$CCFLAGS#" \
+    -e "s#@LIBS@#-lgnucap#" \
+    -e "s#@CXX@#$CXX#" < gnucap-conf.in > gnucap-conf
 #----------------------------------------------------------------
 echo "CCFLAGS = \\" >Make.ccflags
 echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
