@@ -61,7 +61,9 @@ LDFLAGS = -shared
 #------------------------------------------------------------------------
 CAT_EOF
 
-cat Make.ccflags Make.libs Make.sys >Make2
+echo \# created by lib/configure. do not edit >Make2
+echo \#------------------------------------------------------------------------ >>Make2
+cat Make.ccflags Make.libs Make.sys >>Make2
 rm  Make.ccflags Make.libs Make.sys
 
 exit 0
