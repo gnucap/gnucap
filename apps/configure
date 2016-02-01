@@ -42,15 +42,17 @@ LDFLAGS = -shared
 
 .SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; \$(CCC) \$(CCFLAGS) -c \$<
+.cc.o:; \$(CCC) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
 #------------------------------------------------------------------------
 \$(TARGET)\$(TARGET_EXT): \$(TARGET_DEPENDS)
 	rm -f \$@
-	\$(CCC) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@
+	\$(CCC) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@
 #------------------------------------------------------------------------
 CAT_EOF
 
-cat Make.ccflags Make.libs Make.sys >Make2
+echo \# created by apps/configure. do not edit >Make2
+echo \#------------------------------------------------------------------------ >>Make2
+cat Make.ccflags Make.libs Make.sys >>Make2
 rm  Make.ccflags Make.libs Make.sys
 
 exit 0

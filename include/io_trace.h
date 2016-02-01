@@ -60,21 +60,21 @@
 #define trace5(s,v,w,x,y,z)
 #endif
 
-#define unreachable() (printf("@@#\n@@@unreachable:%s:%u:%s\n", \
+#define unreachable() (fprintf(stderr,"@@#\n@@@unreachable:%s:%u:%s\n", \
 			   __FILE__, __LINE__, __func__))
 
-#define incomplete() (printf("@@#\n@@@incomplete:%s:%u:%s\n", \
+#define incomplete() (fprintf(stderr,"@@#\n@@@incomplete:%s:%u:%s\n", \
 			   __FILE__, __LINE__, __func__))
 
 #ifdef TRACE_UNTESTED
-#define untested() (printf("@@#\n@@@:%s:%u:%s\n", \
+#define untested() (fprintf(stderr,"@@#\n@@@:%s:%u:%s\n", \
 			   __FILE__, __LINE__, __func__))
 #else
 #define untested()
 #endif
 
 #ifdef TRACE_ITESTED
-#define itested() (printf("@@#\n@@@:%s:%u:%s\n", \
+#define itested() (fprintf(stderr,"@@#\n@@@:%s:%u:%s\n", \
 			   __FILE__, __LINE__, __func__))
 #else
 #define itested()
