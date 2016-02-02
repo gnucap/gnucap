@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET = libgnucap-default-plugins
+TARGET = gnucap-default-plugins
 #------------------------------------------------------------------------
 INSTALL_FILES = $(TARGET)$(TARGET_EXT)
 #------------------------------------------------------------------------
