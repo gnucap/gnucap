@@ -43,7 +43,7 @@ LDFLAGS = -rdynamic \
 -L../../lib/O
 
 .SUFFIXES : .o .cc
-.cc.o:; \$(CCC) $\(CPPFLAGS) \$(CCFLAGS) -c \$<
+.cc.o:; \$(CCC) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
 #------------------------------------------------------------------------
 \$(TARGET): \$(OBJS)
 	rm -f \$@
