@@ -43,11 +43,11 @@ LDFLAGS = -rdynamic \
 -L../../lib/O
 
 .SUFFIXES : .o .cc
-.cc.o:; \$(CCC) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
 #------------------------------------------------------------------------
 \$(TARGET): \$(OBJS)
 	rm -f \$@
-	\$(CCC) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) -o \$@ \$(LIBS) \$(LDFLAGS)
+	\$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) -o \$@ \$(LIBS) \$(LDFLAGS)
 #------------------------------------------------------------------------
 CAT_EOF
 
