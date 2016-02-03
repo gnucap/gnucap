@@ -53,11 +53,11 @@ LDFLAGS = -shared
 
 .SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; \$(CCC) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
 #------------------------------------------------------------------------
 \$(TARGET)\$(TARGET_EXT): \$(TARGET_DEPENDS)
 	rm -f \$@
-	\$(CCC) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@
+	\$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@
 #------------------------------------------------------------------------
 CAT_EOF
 
