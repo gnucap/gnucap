@@ -36,11 +36,11 @@ checkout:
 #------------------------------------------------------------------------
 install : $(INSTALL_FILES)
 	echo ==================
-	mkdir -p $(INSTALL_DIR)
-	cp $(INSTALL_FILES) $(INSTALL_DIR)
+	mkdir -p $(DESTDIR)$(INSTALL_DIR)
+	cp $(INSTALL_FILES) $(DESTDIR)$(INSTALL_DIR)
 #------------------------------------------------------------------------
-uninstall : 
-	(cd $(INSTALL_DIR) ; rm $(INSTALL_FILES))
+uninstall :
+	(cd $(DESTDIR)$(INSTALL_DIR) ; rm $(INSTALL_FILES))
 #------------------------------------------------------------------------
 #unclean:
 #	rm $(ALL)
