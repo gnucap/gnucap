@@ -77,24 +77,48 @@ enum {
 #if defined(__WIN32__)
 #define	ENDDIR		"/\\"
 #define PATHSEP		';'
-#define DEFAULT_PLUGINS "gnucap-default-plugins.dll"
-#define SYSTEMSTARTFILE	"gnucap.rc"
-#define SYSTEMSTARTPATH	OS::getenv("PATH")
-#define USERSTARTFILE	"gnucap.rc"
-#define	USERSTARTPATH	OS::getenv("HOME")
-#define STEPFILE   	"/tmp/SXXXXXX"
+#if !defined(DEFAULT_PLUGINS)
+  #define DEFAULT_PLUGINS "gnucap-default-plugins.dll"
+#endif
+#if !defined(SYSTEMSTARTFILE)
+  #define SYSTEMSTARTFILE "gnucap.rc"
+#endif
+#if !defined(SYSTEMSTARTPATH)
+  #define SYSTEMSTARTPATH OS::getenv("PATH")
+#endif
+#if !defined(USERSTARTFILE)
+  #define USERSTARTFILE "gnucap.rc"
+#endif
+#if !defined(USERSTARTPATH)
+  #define USERSTARTPATH OS::getenv("HOME")
+#endif
+#if !defined(STEPFILE)
+  #define STEPFILE "/tmp/SXXXXXX"
+#endif
 #define SHELL		OS::getenv("COMSPEC")
 /*--------------------------------------------------------------------------*/
 #else
 #define	ENDDIR		"/"
 #define PATHSEP		':'
-#define DEFAULT_PLUGINS "gnucap-default-plugins.so"
-#define SYSTEMSTARTFILE	"gnucap.rc"
-#define SYSTEMSTARTPATH	OS::getenv("PATH")
-#define USERSTARTFILE	".gnucaprc"
-#define	USERSTARTPATH	OS::getenv("HOME")
-#define STEPFILE   	"/tmp/SXXXXXX"
-#define SHELL		OS::getenv("SHELL")
+#if !defined(DEFAULT_PLUGINS)
+  #define DEFAULT_PLUGINS "gnucap-default-plugins.so"
+#endif
+#if !defined(SYSTEMSTARTFILE)
+  #define SYSTEMSTARTFILE "gnucap.rc"
+#endif
+#if !defined(SYSTEMSTARTPATH)
+  #define SYSTEMSTARTPATH OS::getenv("PATH")
+#endif
+#if !defined(USERSTARTFILE)
+  #define USERSTARTFILE ".gnucaprc"
+#endif
+#if !defined(USERSTARTPATH)
+  #define USERSTARTPATH OS::getenv("HOME")
+#endif
+#if !defined(STEPFILE)
+  #define STEPFILE "/tmp/SXXXXXX"
+#endif
+#define SHELL OS::getenv("SHELL")
 #endif
 /*--------------------------------------------------------------------------*/
 /* machine and compiler patches */
