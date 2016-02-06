@@ -39,8 +39,8 @@ install : $(INSTALL_FILES)
 	mkdir -p $(DESTDIR)$(INSTALL_DIR)
 	cp $(INSTALL_FILES) $(DESTDIR)$(INSTALL_DIR)
 #------------------------------------------------------------------------
-uninstall : 
-	(cd $(INSTALL_DIR) ; rm $(INSTALL_FILES))
+uninstall :
+	(cd $(DESTDIR)$(INSTALL_DIR) ; rm $(INSTALL_FILES))
 #------------------------------------------------------------------------
 #unclean:
 #	rm $(ALL)
