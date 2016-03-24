@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

@@ -1,4 +1,4 @@
-/*$Id: bmm_semi.cc $ -*- C++ -*-
+/*$Id: bmm_semi.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -46,7 +46,7 @@ protected: // override virtual
   COMMON_COMPONENT* clone()const = 0;
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
 
-  void		precalc_first(const CARD_LIST*);
+  void		precalc_last(const CARD_LIST*);
   void  	expand(const COMPONENT*);
   void		tr_eval(ELEMENT*)const;
   std::string	name()const	{untested();return modelname().c_str();}
@@ -219,10 +219,10 @@ void EVAL_BM_SEMI_BASE::expand(const COMPONENT* d)
   attach_model(d);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_BASE::precalc_first(const CARD_LIST* Scope)
-{itested();
+void EVAL_BM_SEMI_BASE::precalc_last(const CARD_LIST* Scope)
+{
   assert(Scope);
-  EVAL_BM_ACTION_BASE::precalc_first(Scope);
+  EVAL_BM_ACTION_BASE::precalc_last(Scope);
   _length.e_val(_default_length, Scope);
   _width.e_val(_default_width, Scope);
 }

@@ -1,4 +1,4 @@
-/*$Id: bm_fit.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: bm_fit.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -54,9 +54,7 @@ private: // override virtual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_FIT(*this);}
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
 
-  void		precalc_first(const CARD_LIST*);
   void		precalc_last(const CARD_LIST*);
-
   void		tr_eval(ELEMENT*)const;
   std::string	name()const		{return "fit";}
   bool		ac_too()const		{return false;}
@@ -128,10 +126,11 @@ void EVAL_BM_FIT::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)con
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_FIT::precalc_first(const CARD_LIST* Scope)
+void EVAL_BM_FIT::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
-  EVAL_BM_ACTION_BASE::precalc_first(Scope);
+  EVAL_BM_ACTION_BASE::precalc_last(Scope);
+
   _order.e_val(_default_order, Scope);
   _below.e_val(_default_below, Scope);
   _above.e_val(_default_above, Scope);
@@ -143,12 +142,6 @@ void EVAL_BM_FIT::precalc_first(const CARD_LIST* Scope)
     p->first.e_val(0, Scope);
     p->second.e_val(0, Scope);
   }
-}
-/*--------------------------------------------------------------------------*/
-void EVAL_BM_FIT::precalc_last(const CARD_LIST* Scope)
-{
-  assert(Scope);
-  EVAL_BM_ACTION_BASE::precalc_last(Scope);
   
   double last = -BIGBIG;
   for (std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > >::
@@ -160,6 +153,7 @@ void EVAL_BM_FIT::precalc_last(const CARD_LIST* Scope)
     }
     last = p->first;
   }
+
   delete _spline;
   double below = _below.has_hard_value() ? _below : NOT_INPUT;
   double above = _above.has_hard_value() ? _above : NOT_INPUT;

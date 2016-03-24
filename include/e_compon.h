@@ -1,4 +1,4 @@
-/*$Id: e_compon.h 2015/01/21 al $ -*- C++ -*-
+/*$Id: e_compon.h 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

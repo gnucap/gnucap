@@ -1,4 +1,4 @@
-/*$Id: e_compon.cc 2015/02/05 al $ -*- C++ -*-
+/*$Id: e_compon.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -533,6 +533,8 @@ void COMPONENT::precalc_first()
   }else{
   }
   
+  //BUG//  _mfactor must be in precalc_first
+
   _mfactor.e_val(1, scope());
   _value.e_val(0.,scope());
   trace1(long_label().c_str(), double(_mfactor));

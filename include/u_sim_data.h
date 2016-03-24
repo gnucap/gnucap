@@ -1,4 +1,4 @@
-/*$Id: u_sim_data.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: u_sim_data.h 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2009 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

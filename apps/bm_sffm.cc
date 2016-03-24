@@ -1,4 +1,4 @@
-/*$Id: bm_sffm.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
+/*$Id: bm_sffm.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -59,7 +59,7 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_SFFM(*this);}
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
 
-  void		precalc_first(const CARD_LIST*);
+  void		precalc_last(const CARD_LIST*);
   void		tr_eval(ELEMENT*)const;
   TIME_PAIR	tr_review(COMPONENT*)const;
   std::string	name()const		{return "sffm";}
@@ -131,10 +131,10 @@ void EVAL_BM_SFFM::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)co
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SFFM::precalc_first(const CARD_LIST* Scope)
+void EVAL_BM_SFFM::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
-  EVAL_BM_ACTION_BASE::precalc_first(Scope);
+  EVAL_BM_ACTION_BASE::precalc_last(Scope);
   _offset.e_val(_default_offset, Scope);
   _amplitude.e_val(_default_amplitude, Scope);
   _carrier.e_val(_default_carrier, Scope);
