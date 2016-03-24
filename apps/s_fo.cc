@@ -105,6 +105,7 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->unalloc_vectors();
   _sim->_lu.unallocate();
   _sim->_aa.unallocate();
+  _sim->_has_op = s_FOURIER;
   _scope = NULL;
 
   ::status.four.stop();

@@ -79,6 +79,8 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_acx.set_min_pivot(OPT::pivtol);
   
   setup(Cmd);
+  CARD_LIST::card_list.precalc_last();
+
   ::status.set_up.stop();
   switch (ENV::run_mode) {
   case rPRE_MAIN:	unreachable();	break;
@@ -89,6 +91,7 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
   }
   _sim->_acx.unallocate();
   _sim->unalloc_vectors();
+  _sim->_has_op = s_AC;
   _scope = NULL;
   
   ::status.ac.stop();

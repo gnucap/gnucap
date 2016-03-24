@@ -83,7 +83,7 @@ void ELEMENT::precalc_last()
 
   //BUG// This is needed for AC analysis without doing op (or dc or tran ...) first.
   // Something like it should be moved to ac_begin.
-  if (_sim->is_first_expand()) {
+  if (_sim->has_op() == s_NONE) {
     _y[0].x  = 0.;
     _y[0].f0 = LINEAR;
     _y[0].f1 = value();

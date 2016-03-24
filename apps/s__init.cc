@@ -22,6 +22,7 @@
  * initialization (allocation, node mapping, etc)
  */
 //testing=obsolete
+#include "e_cardlist.h"
 #include "u_status.h"
 #include "u_sim_data.h"
 #include "s__.h"
@@ -45,7 +46,9 @@ void SIM::command_base(CS& cmd)
   assert(_sim->_nstat);
   try {
     setup(cmd);
+    CARD_LIST::card_list.precalc_last();
     ::status.set_up.stop();
+
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();	break;
     case rBATCH:	itested();
@@ -53,7 +56,7 @@ void SIM::command_base(CS& cmd)
     case rSCRIPT:	sweep();	break;
     case rPRESET:	/*nothing*/	break;
     }
-   }catch (Exception& e) {untested();
+   }catch (Exception& e) {
     error(bDANGER, e.message() + '\n');
     _sim->count_iterations(iTOTAL);
     _sim->_lu.unallocate();

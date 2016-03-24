@@ -80,6 +80,7 @@ struct INTERFACE SIM_DATA {
   std::deque<CARD*>* _evalq;   /* pointer to evalq to process */
   std::deque<CARD*>* _evalq_uc;/* pointer to evalq under construction */
   WAVE *_waves;		/* storage for waveforms "store" command*/
+  SIM_MODE _has_op;
   SIM_DATA();
   ~SIM_DATA();
   bool is_first_expand() {return !_nstat;}
@@ -155,6 +156,7 @@ struct INTERFACE SIM_DATA {
   bool is_iteration_number(int n)const    {return (_iter[iSTEP] == n);}
   bool exceeds_iteration_limit(OPT::ITL itlnum)const {return(_iter[iSTEP] > OPT::itl[itlnum]);}
   bool uic_now() {return _uic && analysis_is_static() && _time0==0.;}
+  SIM_MODE has_op()const {return _has_op;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

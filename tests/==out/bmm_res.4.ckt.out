@@ -1,7 +1,5 @@
 # semiconductor "resistor" test 
 r2: t1: effective length is negative or zero
-r2: t1: effective length is negative or zero
-r2: t1: effective length is negative or zero
 #           v(1)       v(2)       r(r1)      r(r2)     
 r2: short circuit
 r2: short circuit

@@ -1042,7 +1042,7 @@ DISPATCHER<CMD>::INSTALL d7(&command_dispatcher, ".build|build", &p7);
 class CMD_SPICE : public CMD {
 public:
   void do_it(CS&, CARD_LIST* Scope)
-  {untested();
+  {
     command("options lang=spice", Scope);
   }
 } p8;

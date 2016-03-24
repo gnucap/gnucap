@@ -1,4 +1,4 @@
-/*$Id: bmm_semi.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
+/*$Id: bmm_semi.cc $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -32,7 +32,7 @@ class EVAL_BM_SEMI_BASE : public EVAL_BM_ACTION_BASE {
 protected:
   PARAMETER<double> _length;
   PARAMETER<double> _width;
-  double _value;
+  double _va_lue;
 private:
   static double const _default_length;
   static double const _default_width;
@@ -52,6 +52,7 @@ protected: // override virtual
   std::string	name()const	{untested();return modelname().c_str();}
   bool		ac_too()const		{untested();return false;}
   bool  	parse_params_obsolete_callback(CS&);
+  bool		parse_numlist(CS& cmd);
 };
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_CAPACITOR : public EVAL_BM_SEMI_BASE {
@@ -173,7 +174,7 @@ EVAL_BM_SEMI_BASE::EVAL_BM_SEMI_BASE(int c)
   :EVAL_BM_ACTION_BASE(c),
    _length(_default_length),
    _width(_default_width),
-   _value(_default_value)
+   _va_lue(_default_value)
 {
 }
 /*--------------------------------------------------------------------------*/
@@ -181,7 +182,7 @@ EVAL_BM_SEMI_BASE::EVAL_BM_SEMI_BASE(const EVAL_BM_SEMI_BASE& p)
   :EVAL_BM_ACTION_BASE(p),
    _length(p._length),
    _width(p._width),
-   _value(p._value)
+   _va_lue(p._va_lue)
 {
 }
 /*--------------------------------------------------------------------------*/
@@ -203,7 +204,11 @@ void EVAL_BM_SEMI_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* la
 {
   assert(lang);
   o << modelname();
-  print_pair(o, lang, "l", _length);
+  if (_value.has_hard_value()) {
+    o << " " << _value;
+  }else{
+  }
+  print_pair(o, lang, "l", _length, _length.has_hard_value());
   print_pair(o, lang, "w", _width, _width.has_hard_value());
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
@@ -224,7 +229,20 @@ void EVAL_BM_SEMI_BASE::precalc_first(const CARD_LIST* Scope)
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::tr_eval(ELEMENT* d)const
 {
-  tr_finish_tdv(d, _value);
+  tr_finish_tdv(d, _va_lue);
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_SEMI_BASE::parse_numlist(CS& cmd)
+{
+  unsigned here = cmd.cursor();
+  PARAMETER<double> val(NOT_VALID);
+  cmd >> val;
+  if (cmd.gotit(here)) {
+    _value = val;
+    return true;
+  }else{
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_SEMI_BASE::parse_params_obsolete_callback(CS& cmd)
@@ -272,9 +290,9 @@ void EVAL_BM_SEMI_CAPACITOR::precalc_last(const CARD_LIST* Scope)
   double width = (_width == NOT_INPUT) ? m->_defw : _width;
   double eff_width = width - m->_narrow;
   double eff_length = _length - m->_narrow;
-  _value = m->_cj * eff_length * eff_width + 2. * m->_cjsw * (eff_length + eff_width);
+  _va_lue = m->_cj * eff_length * eff_width + 2. * m->_cjsw * (eff_length + eff_width);
   double tempdiff = (_temp_c - m->_tnom_c);
-  _value *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
+  _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (eff_width <= 0.) {untested();
     throw Exception_Precalc(modelname() + ": effective width is negative or zero\n");
@@ -322,22 +340,29 @@ void EVAL_BM_SEMI_RESISTOR::precalc_last(const CARD_LIST* Scope)
   double eff_width = width - m->_narrow;
   double eff_length = _length - m->_narrow;
 
-  if (eff_width != 0.) {
-    _value = m->_rsh * eff_length / eff_width;
+  trace4("EVAL_BM_SEMI_RESISTOR::precalc_last", value(), eff_width, eff_length, m->_rsh);
+  if (!has_hard_value(m->_rsh)) {
+    _va_lue = (value());
+  }else if (eff_width != 0.) {
+    _va_lue = m->_rsh * eff_length / eff_width;
   }else{itested();
-    _value = BIGBIG;
+    _va_lue = BIGBIG;
   }
   double tempdiff = (_temp_c - m->_tnom_c);
-  _value *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
+  _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
-  if (eff_width <= 0.) {itested();
-    throw Exception_Precalc(modelname() + ": effective width is negative or zero\n");
+  if (has_hard_value(m->_rsh)) {
+    if (eff_width <= 0.) {itested();
+      throw Exception_Precalc(modelname() + ": effective width is negative or zero\n");
+    }else{
+    }
+    if (eff_length <= 0.) {
+      throw Exception_Precalc(modelname() + ": effective length is negative or zero\n");
+    }else{
+    }
   }else{
   }
-  if (eff_length <= 0.) {
-    throw Exception_Precalc(modelname() + ": effective length is negative or zero\n");
-  }else{
-  }
+  trace4("EVAL_BM_SEMI_RESISTOR::precalc_last done", value(), eff_width, m->_rsh, _va_lue);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

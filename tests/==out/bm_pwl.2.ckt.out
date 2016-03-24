@@ -5,10 +5,8 @@ r2 ( 2 0 )  1.K
 e1 ( 3 0 2 0 ) pwl( 0., 0.  1., 1.  4., 2.  9., 3.  160., 4.  25., 5. )
 r3 ( 3 0 )  10.K
 e1: PWL is out of order: ( 160.,  25.)
-e1: PWL is out of order: ( 160.,  25.)
 #           v(1)       v(2)       v(3)      
  27.        1.         0.5        0.5       
-e1: PWL is out of order: ( 160.,  25.)
 e1: PWL is out of order: ( 160.,  25.)
 #           v(1)       v(2)       v(3)      
 -10.       -10.       -5.        -5.        

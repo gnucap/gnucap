@@ -271,7 +271,7 @@ std::string COMMON_COMPONENT::param_value(int i)const
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::precalc_first(const CARD_LIST* Scope)
+void COMMON_COMPONENT::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
   _tnom_c.e_val(OPT::tnom_c, Scope);

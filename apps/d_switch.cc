@@ -414,7 +414,8 @@ void SWITCH_BASE::precalc_last()
 {
   ELEMENT::precalc_last();
     
-  if (_sim->is_first_expand()) {
+  //if (_sim->is_first_expand()) {
+  if (_sim->has_op() == s_NONE) {
     const COMMON_SWITCH* c = prechecked_cast<const COMMON_SWITCH*>(common());
     assert(c);
     const MODEL_SWITCH* m = prechecked_cast<const MODEL_SWITCH*>(c->model());
