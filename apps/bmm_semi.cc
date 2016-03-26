@@ -1,4 +1,4 @@
-/*$Id: bmm_semi.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: bmm_semi.cc 2016/03/25 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -22,7 +22,7 @@
  * behavioral modeling
  * Spice3 compatible "semiconductor resistor and capacitor"
  */
-//testing=script 2006.07.13
+//testing=script 2016.03.25
 #include "globals.h"
 #include "u_lang.h"
 #include "e_model.h" 
@@ -40,7 +40,7 @@ private:
 protected:
   explicit EVAL_BM_SEMI_BASE(const EVAL_BM_SEMI_BASE& p);
   explicit EVAL_BM_SEMI_BASE(int c=0);
-  ~EVAL_BM_SEMI_BASE() {}
+  ~EVAL_BM_SEMI_BASE() {untested();}
 protected: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const;
   COMMON_COMPONENT* clone()const = 0;
@@ -50,7 +50,7 @@ protected: // override virtual
   void  	expand(const COMPONENT*);
   void		tr_eval(ELEMENT*)const;
   std::string	name()const	{untested();return modelname().c_str();}
-  bool		ac_too()const		{untested();return false;}
+  bool		ac_too()const	{untested();return false;}
   bool  	parse_params_obsolete_callback(CS&);
   bool		parse_numlist(CS& cmd);
 };
@@ -58,14 +58,14 @@ protected: // override virtual
 class EVAL_BM_SEMI_CAPACITOR : public EVAL_BM_SEMI_BASE {
 private:
   explicit EVAL_BM_SEMI_CAPACITOR(const EVAL_BM_SEMI_CAPACITOR& p)
-    :EVAL_BM_SEMI_BASE(p) {}
+    :EVAL_BM_SEMI_BASE(p) {untested();}
 public:
   explicit EVAL_BM_SEMI_CAPACITOR(int c=0)
     :EVAL_BM_SEMI_BASE(c) {}
-  ~EVAL_BM_SEMI_CAPACITOR() {}
+  ~EVAL_BM_SEMI_CAPACITOR() {untested();}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {return new EVAL_BM_SEMI_CAPACITOR(*this);}
+  COMMON_COMPONENT* clone()const {untested();return new EVAL_BM_SEMI_CAPACITOR(*this);}
   void  	expand(const COMPONENT*);
   void		precalc_last(const CARD_LIST*);
 };
@@ -73,14 +73,14 @@ private: // override virtual
 class EVAL_BM_SEMI_RESISTOR : public EVAL_BM_SEMI_BASE {
 private:
   explicit EVAL_BM_SEMI_RESISTOR(const EVAL_BM_SEMI_RESISTOR& p)
-    :EVAL_BM_SEMI_BASE(p) {}
+    :EVAL_BM_SEMI_BASE(p) {untested();}
 public:
   explicit EVAL_BM_SEMI_RESISTOR(int c=0)
     :EVAL_BM_SEMI_BASE(c) {}
-  ~EVAL_BM_SEMI_RESISTOR() {}
+  ~EVAL_BM_SEMI_RESISTOR() {untested();}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {return new EVAL_BM_SEMI_RESISTOR(*this);}
+  COMMON_COMPONENT* clone()const {untested();return new EVAL_BM_SEMI_RESISTOR(*this);}
   void  	expand(const COMPONENT*);
   void		precalc_last(const CARD_LIST*);
 };
@@ -183,19 +183,18 @@ EVAL_BM_SEMI_BASE::EVAL_BM_SEMI_BASE(const EVAL_BM_SEMI_BASE& p)
    _length(p._length),
    _width(p._width),
    _va_lue(p._va_lue)
-{
+{untested();
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_SEMI_BASE::operator==(const COMMON_COMPONENT& x)const
-{
+{untested();
   const EVAL_BM_SEMI_BASE* p = dynamic_cast<const EVAL_BM_SEMI_BASE*>(&x);
   bool rv = p
     && _length == p->_length
     && _width == p->_width
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
-    untested();
-  }else{
+  if (rv) {untested();
+  }else{untested();
   }
   return rv;
 }
@@ -261,8 +260,7 @@ bool EVAL_BM_SEMI_CAPACITOR::operator==(const COMMON_COMPONENT& x)const
     p = dynamic_cast<const EVAL_BM_SEMI_CAPACITOR*>(&x);
   bool rv = p
     && EVAL_BM_SEMI_BASE::operator==(x);
-  if (rv) {
-    untested();
+  if (rv) {untested();
   }else{
   }
   return rv;
@@ -310,8 +308,7 @@ bool EVAL_BM_SEMI_RESISTOR::operator==(const COMMON_COMPONENT& x)const
     p = dynamic_cast<const EVAL_BM_SEMI_RESISTOR*>(&x);
   bool rv = p
     && EVAL_BM_SEMI_BASE::operator==(x);
-  if (rv) {
-    untested();
+  if (rv) {untested();
   }else{
   }
   return rv;
@@ -345,14 +342,14 @@ void EVAL_BM_SEMI_RESISTOR::precalc_last(const CARD_LIST* Scope)
     _va_lue = (value());
   }else if (eff_width != 0.) {
     _va_lue = m->_rsh * eff_length / eff_width;
-  }else{itested();
+  }else{untested();
     _va_lue = BIGBIG;
   }
   double tempdiff = (_temp_c - m->_tnom_c);
   _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (has_hard_value(m->_rsh)) {
-    if (eff_width <= 0.) {itested();
+    if (eff_width <= 0.) {untested();
       throw Exception_Precalc(modelname() + ": effective width is negative or zero\n");
     }else{
     }
@@ -403,9 +400,9 @@ void MODEL_SEMI_BASE::set_param_by_index(int i, std::string& value, int offset)
 bool MODEL_SEMI_BASE::param_is_printable(int i)const
 {
   switch (MODEL_SEMI_BASE::param_count() - 1 - i) {
-  case 0: 
-  case 1: 
-  case 2: 
+  case 0: return true;
+  case 1: return true;
+  case 2: return true;
   case 3: return true;
   default: return MODEL_CARD::param_is_printable(i);
   }
@@ -428,7 +425,7 @@ std::string MODEL_SEMI_BASE::param_name(int i, int j)const
     return param_name(i);
   }else if (i >= MODEL_CARD::param_count()) {
     return "";
-  }else{
+  }else{untested();
     return MODEL_CARD::param_name(i, j);
   }
 }
@@ -480,14 +477,14 @@ void MODEL_SEMI_CAPACITOR::set_param_by_index(int i, std::string& value, int off
   switch (MODEL_SEMI_CAPACITOR::param_count() - 1 - i) {
   case 0: _cj = value; break;
   case 1: _cjsw = value; break;
-  default: MODEL_SEMI_BASE::set_param_by_index(i, value, offset); break;
+  default:untested(); MODEL_SEMI_BASE::set_param_by_index(i, value, offset); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool MODEL_SEMI_CAPACITOR::param_is_printable(int i)const
 {
   switch (MODEL_SEMI_CAPACITOR::param_count() - 1 - i) {
-  case 0: 
+  case 0: return true;
   case 1: return true;
   default: return MODEL_SEMI_BASE::param_is_printable(i);
   }
@@ -508,7 +505,7 @@ std::string MODEL_SEMI_CAPACITOR::param_name(int i, int j)const
     return param_name(i);
   }else if (i >= MODEL_SEMI_BASE::param_count()) {
     return "";
-  }else{
+  }else{untested();
     return MODEL_SEMI_BASE::param_name(i, j);
   }
 }

@@ -1,4 +1,4 @@
-/*$Id: e_card.cc 2015/01/27 al $ -*- C++ -*-
+/*$Id: e_card.cc 2016/03/25 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -239,7 +239,7 @@ void CARD::set_param_by_name(std::string Name, std::string Value)
  */
 void CARD::set_dev_type(const std::string& New_Type)
 {
-  if (!Umatch(New_Type, dev_type() + ' ')) {untested();
+  if (!Umatch(New_Type, dev_type() + ' ')) {
     //throw Exception_Cant_Set_Type(dev_type(), New_Type);
   }else{
     // it matches -- ok.

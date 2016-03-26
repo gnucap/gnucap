@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: e_elemnt.cc 2016/03/25 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -381,7 +381,7 @@ XPROBE ELEMENT::ac_probe_ext(const std::string& x)const
   }else if (Umatch(x, "r ")) {			/* complex "resistance" */
     if (admittance == 0.) {untested();
       return XPROBE(MAXDBL);
-    }else{untested();
+    }else{
       return XPROBE(1. / admittance);
     }
   }else if (Umatch(x, "z ")) {			/* port impedance */

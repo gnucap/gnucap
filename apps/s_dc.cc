@@ -1,4 +1,4 @@
-/*$Id: s_dc.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: s_dc.cc 2016/03/25 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * dc analysis top
  */
-//testing=script 2014.07.04
+//testing=script 2016.03.25
 #include "globals.h"
 #include "u_status.h"
 #include "u_prblst.h"
@@ -64,10 +64,7 @@ protected:
   bool _cont;			/* flag: continue from previous run */
   TRACE _trace;			/* enum: show extended diagnostics */
   enum {ONE_PT, LIN_STEP, LIN_PTS, TIMES, OCTAVE, DECADE} _stepmode[DCNEST];
-  static double temp_c_in;	/* ambient temperature, input and sweep variable */
 };
-/*--------------------------------------------------------------------------*/
-double	DCOP::temp_c_in = 0.;
 /*--------------------------------------------------------------------------*/
 class DC : public DCOP {
 public:
@@ -97,7 +94,6 @@ void DC::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->set_command_dc();
   _sim->_phase = p_INIT_DC;
   ::status.dc.reset().start();
-  _sim->_temp_c = temp_c_in;
   command_base(Cmd);
   _sim->_has_op = s_DC;
   _scope = NULL;
@@ -111,7 +107,6 @@ void OP::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->set_command_op();
   _sim->_phase = p_INIT_DC;
   ::status.op.reset().start();
-  _sim->_temp_c = temp_c_in;
   command_base(Cmd);
   _sim->_has_op = s_OP;
   _scope = NULL;
@@ -138,7 +133,6 @@ DCOP::DCOP()
   
   //BUG// in SIM.  should be initialized there.
   //_sim->_genout=0.;
-  temp_c_in=OPT::temp_c;
   _out=IO::mstdout;
   //_sim->_uic=false;
 }
@@ -159,7 +153,7 @@ void DCOP::finish(void)
 /*--------------------------------------------------------------------------*/
 void OP::setup(CS& Cmd)
 {
-  _sim->_temp_c = temp_c_in;
+  _sim->_temp_c = OPT::temp_c;
   _cont = false;
   _trace = tNONE;
   _out = IO::mstdout;
@@ -167,13 +161,13 @@ void OP::setup(CS& Cmd)
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
 
   _zap[0] = NULL;
-  _sweepval[0] = &temp_c_in;
+  _sweepval[0] = &(_sim->_temp_c);
 
   if (Cmd.match1("'\"({") || Cmd.is_float()) {
     Cmd >> _start[0];
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
       Cmd >> _stop[0];
-    }else{untested();
+    }else{
       _stop[0] = _start[0];
     }
   }else{
@@ -197,6 +191,7 @@ void OP::setup(CS& Cmd)
 /*--------------------------------------------------------------------------*/
 void DC::setup(CS& Cmd)
 {
+  _sim->_temp_c = OPT::temp_c;
   _cont = false;
   _trace = tNONE;
   _out = IO::mstdout;
@@ -228,8 +223,6 @@ void DC::setup(CS& Cmd)
       }
       
       _sim->_genout = 0.;
-      temp_c_in = OPT::temp_c;
-      _sim->_temp_c = temp_c_in;
       options(Cmd,_n_sweeps);
     }
   }else{ 
@@ -324,10 +317,10 @@ void DCOP::options(CS& Cmd, int Nest)
       || (Get(Cmd, "lin",	  &_step_in[Nest]) && (_stepmode[Nest] = LIN_PTS))
       || (Get(Cmd, "o{ctave}",	  &_step_in[Nest]) && (_stepmode[Nest] = OCTAVE))
       || Get(Cmd, "c{ontinue}",   &_cont)
-      || Get(Cmd, "dt{emp}",	  &temp_c_in,   mOFFSET, OPT::temp_c)
+      || Get(Cmd, "dt{emp}",	  &(_sim->_temp_c),   mOFFSET, OPT::temp_c)
       || Get(Cmd, "lo{op}", 	  &_loop[Nest])
       || Get(Cmd, "re{verse}",	  &_reverse_in[Nest])
-      || Get(Cmd, "te{mperature}",&temp_c_in)
+      || Get(Cmd, "te{mperature}",&(_sim->_temp_c))
       || (Cmd.umatch("tr{ace} {=}") &&
 	  (ONE_OF
 	   || Set(Cmd, "n{one}",      &_trace, tNONE)
@@ -342,7 +335,6 @@ void DCOP::options(CS& Cmd, int Nest)
       || outset(Cmd,&_out)
       ;
   }while (Cmd.more() && !Cmd.stuck(&here));
-  _sim->_temp_c = temp_c_in;
 }
 /*--------------------------------------------------------------------------*/
 void DCOP::sweep()
@@ -370,8 +362,11 @@ void DCOP::sweep_recursive(int Nest)
   
   first(Nest);
   do {
-    _sim->_temp_c = temp_c_in;
     if (Nest == 0) {
+      if (_sim->command_is_op()) {
+	CARD_LIST::card_list.precalc_last();
+      }else{
+      }
       int converged = solve_with_homotopy(itl,_trace);
       if (!converged) {untested();
 	error(bWARNING, "did not converge\n");
@@ -381,6 +376,7 @@ void DCOP::sweep_recursive(int Nest)
       _sim->set_limit();
       CARD_LIST::card_list.tr_accept();
       ::status.accept.stop();
+      _sim->_has_op = _sim->_mode;
       _sim->keep_voltages();
       outdata(*_sweepval[Nest]);
       itl = OPT::DCXFER;
@@ -401,7 +397,7 @@ void DCOP::first(int Nest)
   if (ELEMENT* c = dynamic_cast<ELEMENT*>(_zap[Nest])) {
     c->set_constant(false); 
     // because of extra precalc_last could set constant to true
-    // obsolete, once pointer hack is fixed
+    // will be obsolete, once pointer hack is fixed
   }else{
     // not needed if not sweeping an element
   }
@@ -421,52 +417,83 @@ void DCOP::first(int Nest)
 /*--------------------------------------------------------------------------*/
 bool DCOP::next(int Nest)
 {
+  double sweepval = NOT_VALID;
   bool ok = false;
+
   if (_linswp[Nest]) {
     double fudge = _step[Nest] / 10.;
     if (_step[Nest] == 0.) {
-      ok = false;
+      // not stepping
+      assert(!ok);
+      assert(sweepval == NOT_VALID);
     }else{
+      // stepping
       if (!_reverse[Nest]) {
-	*(_sweepval[Nest]) += _step[Nest];
-	fixzero(_sweepval[Nest], _step[Nest]);
-	ok=in_order(_start[Nest]-fudge,*(_sweepval[Nest]),_stop[Nest]+fudge);
+	sweepval = *(_sweepval[Nest]) + _step[Nest];
+	fixzero(&sweepval, _step[Nest]);
+	ok = in_order(_start[Nest]-fudge, sweepval, _stop[Nest]+fudge);
 	if (!ok  &&  _loop[Nest]) {
+	  // turn around
 	  _reverse[Nest] = true;
 	}else{
+	  // forward
 	}
       }else{
+	assert(_reverse[Nest]);
+	assert(!ok);
+	assert(sweepval == NOT_VALID);
       }
       if (_reverse[Nest]) {
-	*(_sweepval[Nest]) -= _step[Nest];
-	fixzero(_sweepval[Nest], _step[Nest]);
-	ok=in_order(_start[Nest]-fudge,*(_sweepval[Nest]),_stop[Nest]+fudge);
+	assert(!ok);
+	//assert(sweepval == NOT_VALID);
+	sweepval = *(_sweepval[Nest]) - _step[Nest];
+	fixzero(&sweepval, _step[Nest]);
+	ok = in_order(_start[Nest]-fudge, sweepval, _stop[Nest]+fudge);
       }else{
+	// not sure of status
       }
     }
   }else{
+    // not linswp
     double fudge = pow(_step[Nest], .1);
     if (_step[Nest] == 1.) {untested();
-      ok = false;
+      // not stepping
+      assert(!ok);
+      assert(sweepval == NOT_VALID);
     }else{
       if (!_reverse[Nest]) {
-	*(_sweepval[Nest]) *= _step[Nest];
-	ok=in_order(_start[Nest]/fudge,*(_sweepval[Nest]),_stop[Nest]*fudge);
+	sweepval = *(_sweepval[Nest]) * _step[Nest];
+	ok = in_order(_start[Nest]/fudge, sweepval, _stop[Nest]*fudge);
 	if (!ok  &&  _loop[Nest]) {untested();
+	  // turn around
 	  _reverse[Nest] = true;
 	}else{
+	  // forward
 	}
       }else{untested();
+	assert(_reverse[Nest]);
+	assert(!ok);
+	assert(sweepval == NOT_VALID);
       }
       if (_reverse[Nest]) {untested();
-	*(_sweepval[Nest]) /= _step[Nest];
-	ok=in_order(_start[Nest]/fudge,*(_sweepval[Nest]),_stop[Nest]*fudge);
+	assert(!ok);
+	assert(sweepval == NOT_VALID);
+	sweepval = *(_sweepval[Nest]) / _step[Nest];
+	ok = in_order(_start[Nest]/fudge, sweepval, _stop[Nest]*fudge);
       }else{
+	// not sure of status
       }
     }
   }
   _sim->_phase = p_DC_SWEEP;
-  return ok;
+  if (ok) {
+    assert(sweepval != NOT_VALID);
+    *(_sweepval[Nest]) = sweepval;
+    return true;
+  }else{
+    //assert(sweepval == NOT_VALID);
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 static DC p2;

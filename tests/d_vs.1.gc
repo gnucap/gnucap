@@ -8,5 +8,3 @@ v4 (4 0) vsource dc=9
 - print op v(nodes)
 - op
 - end
-
-

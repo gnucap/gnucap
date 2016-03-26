@@ -1,0 +1,42 @@
+spice
+.MODEL TESTR RES (TC1=1m TC2=0 DEFW=1 RSH=1)
+.options temperature=37 list
+R1 1 0 TESTR(w=2, l=4)
+.print tran r(R1) temp(0)
+.print ac r(R1) temp(0)
+.print op r(R1) temp(0)
+.print dc r(R1) temp(0)
+.ac 1
+.dc
+.dc temp=400
+.ac 1
+.tran 0 1 .5 temp=1342
+.ac 1
+.dc
+.ac 1
+.tran 2
+.ac 1
+.dc 1000
+.ac 1
+.dc 0 1000 100
+.ac 1 temp=10000
+.ac 1
+.dc
+.ac 1
+.op
+.op temp=400
+.ac 1
+.tran 0 1 .5 temp=1342
+.ac 1
+.op
+.ac 1
+.tran 2
+.ac 1
+.op 1000
+.ac 1
+.op 0 1000 100
+.ac 1 temp=10000
+.ac 1
+.op
+.ac 1
+.end
