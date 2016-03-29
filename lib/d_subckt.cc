@@ -101,17 +101,18 @@ void COMMON_SUBCKT::precalc_first(const CARD_LIST* Scope)
 {
   assert(Scope);
   COMMON_COMPONENT::precalc_first(Scope);
-
-  for (PARAM_LIST::iterator i = _params.begin(); i != _params.end(); ++i) {
-    i->second.e_val(NOT_INPUT,Scope);
-  }
   _mfactor = _params.deep_lookup("m");
+  //BUG//  _mfactor must be in precalc_first
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_SUBCKT::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
   COMMON_COMPONENT::precalc_last(Scope);
+
+  for (PARAM_LIST::iterator i = _params.begin(); i != _params.end(); ++i) {
+    i->second.e_val(NOT_INPUT,Scope);
+  }
 }
 /*--------------------------------------------------------------------------*/
 MODEL_SUBCKT::MODEL_SUBCKT()

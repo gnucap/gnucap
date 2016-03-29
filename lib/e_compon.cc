@@ -532,11 +532,10 @@ void COMPONENT::precalc_first()
     _mfactor = common()->mfactor();
   }else{
   }
-  
+
   //BUG//  _mfactor must be in precalc_first
 
   _mfactor.e_val(1, scope());
-  _value.e_val(0.,scope());
   trace1(long_label().c_str(), double(_mfactor));
   if (const COMPONENT* o = prechecked_cast<const COMPONENT*>(owner())) {
     _mfactor_fixed = o->mfactor() * _mfactor;
@@ -557,6 +556,8 @@ void COMPONENT::precalc_last()
     }
   }else{
   }
+
+  _value.e_val(0.,scope());
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::map_nodes()
