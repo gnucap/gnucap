@@ -1,4 +1,4 @@
-/*$Id: d_trln.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: d_trln.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -60,7 +60,6 @@ public:
   std::string	param_value(int)const;
   int param_count()const {return (9 + COMMON_COMPONENT::param_count());}
 public:
-  void		precalc_first(const CARD_LIST*);
   void		precalc_last(const CARD_LIST*);
   std::string	name()const		{untested(); return "transline";}
 };
@@ -311,10 +310,11 @@ std::string COMMON_TRANSLINE::param_value(int I)const
   //BUG// does not print IC
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_TRANSLINE::precalc_first(const CARD_LIST* Scope)
+void COMMON_TRANSLINE::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
-  COMMON_COMPONENT::precalc_first(Scope);
+  COMMON_COMPONENT::precalc_last(Scope);
+
   len.e_val(_default_len, Scope);
   R.e_val(_default_R, Scope);
   L.e_val(_default_L, Scope);
@@ -324,12 +324,7 @@ void COMMON_TRANSLINE::precalc_first(const CARD_LIST* Scope)
   td.e_val(_default_td, Scope);
   f.e_val(_default_f, Scope);
   nl.e_val(_default_nl, Scope);
-}
-/*--------------------------------------------------------------------------*/
-void COMMON_TRANSLINE::precalc_last(const CARD_LIST* Scope)
-{
-  assert(Scope);
-  COMMON_COMPONENT::precalc_last(Scope);
+
   { // real_td
     if (td.has_hard_value()) {untested();
       real_td = len * td;

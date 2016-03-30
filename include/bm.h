@@ -1,4 +1,4 @@
-/*$Id: bm.h 2015/01/21 al $ -*- C++ -*-
+/*$Id: bm.h 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -72,7 +72,7 @@ public: // override virtual
   //COMPONENT_COMMON* clone()const;	//COMPONENT_COMMON=0
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
 
-  void		precalc_first(const CARD_LIST*);
+  void		precalc_last(const CARD_LIST*);
   void		ac_eval(ELEMENT*)const;
   virtual bool	ac_too()const = 0;
 protected: // override virtual

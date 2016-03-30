@@ -1,4 +1,4 @@
-/*$Id: e_compon.h 2015/01/21 al $ -*- C++ -*-
+/*$Id: e_compon.h 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -102,10 +102,10 @@ public:
   virtual void set_param_by_index(int, std::string&, int);
   virtual int param_count()const {return 4;}
 public:
-  virtual void precalc_first(const CARD_LIST*);
+  virtual void precalc_first(const CARD_LIST*)	{}
   virtual void expand(const COMPONENT*)		{}
   virtual COMMON_COMPONENT* deflate()		{return this;}
-  virtual void precalc_last(const CARD_LIST*)	{}
+  virtual void precalc_last(const CARD_LIST*);
 
   virtual void	tr_eval(ELEMENT*)const;
   virtual void	ac_eval(ELEMENT*)const;

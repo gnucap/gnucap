@@ -1,4 +1,4 @@
-/*$Id: e_compon.cc 2015/02/05 al $ -*- C++ -*-
+/*$Id: e_compon.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -271,7 +271,7 @@ std::string COMMON_COMPONENT::param_value(int i)const
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::precalc_first(const CARD_LIST* Scope)
+void COMMON_COMPONENT::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
   _tnom_c.e_val(OPT::tnom_c, Scope);
@@ -532,9 +532,10 @@ void COMPONENT::precalc_first()
     _mfactor = common()->mfactor();
   }else{
   }
-  
+
+  //BUG//  _mfactor must be in precalc_first
+
   _mfactor.e_val(1, scope());
-  _value.e_val(0.,scope());
   trace1(long_label().c_str(), double(_mfactor));
   if (const COMPONENT* o = prechecked_cast<const COMPONENT*>(owner())) {
     _mfactor_fixed = o->mfactor() * _mfactor;
@@ -555,6 +556,8 @@ void COMPONENT::precalc_last()
     }
   }else{
   }
+
+  _value.e_val(0.,scope());
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::map_nodes()

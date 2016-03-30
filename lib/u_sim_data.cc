@@ -1,4 +1,4 @@
-/*$Id: u_sim_data.cc 2015/01/28 al Exp $ -*- C++ -*-
+/*$Id: u_sim_data.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -39,7 +39,7 @@ SIM_DATA::SIM_DATA()
    _fulldamp(false),
    _last_time(0.),
    _freezetime(false),
-   //_iter(),
+   //_iter(),		//BUG// does not init non-static instances
    _user_nodes(0),
    _subckt_nodes(0),
    _model_nodes(0),
@@ -70,7 +70,8 @@ SIM_DATA::SIM_DATA()
    _late_evalq(),
    _evalq(NULL),
    _evalq_uc(NULL),
-   _waves(NULL)
+   _waves(NULL),
+   _has_op(s_NONE)
 {
   _evalq = &_evalq1;
   _evalq_uc = &_evalq2;
@@ -245,7 +246,6 @@ void SIM_DATA::init()
     uninit();
     init_node_count(CARD_LIST::card_list.nodes()->how_many(), 0, 0);
     CARD_LIST::card_list.expand();
-    CARD_LIST::card_list.precalc_last();
     map__nodes();
     CARD_LIST::card_list.map_nodes();
     alloc_hold_vectors();
@@ -257,7 +257,6 @@ void SIM_DATA::init()
     _last_time = 0;
   }else{
     CARD_LIST::card_list.precalc_first();
-    CARD_LIST::card_list.precalc_last();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -347,6 +346,7 @@ void SIM_DATA::uninit()
     assert(!_nstat);
     assert(!_nm);
   }
+  _has_op = s_NONE;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

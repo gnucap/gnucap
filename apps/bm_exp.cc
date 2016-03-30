@@ -1,4 +1,4 @@
-/*$Id: bm_exp.cc,v 26.138 2013/04/24 02:44:30 al Exp $ -*- C++ -*-
+/*$Id: bm_exp.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -56,7 +56,7 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_EXP(*this);}
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
 
-  void		precalc_first(const CARD_LIST*);
+  void		precalc_last(const CARD_LIST*);
   void		tr_eval(ELEMENT*)const;
   TIME_PAIR	tr_review(COMPONENT*)const;
   std::string	name()const		{return "exp";}
@@ -124,10 +124,10 @@ void EVAL_BM_EXP::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)con
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_EXP::precalc_first(const CARD_LIST* Scope)
+void EVAL_BM_EXP::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
-  EVAL_BM_ACTION_BASE::precalc_first(Scope);
+  EVAL_BM_ACTION_BASE::precalc_last(Scope);
   _iv.e_val(_default_iv, Scope);
   _pv.e_val(_default_pv, Scope);
   _td1.e_val(_default_td1, Scope);

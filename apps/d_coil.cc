@@ -1,4 +1,4 @@
-/*$Id: d_coil.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: d_coil.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -266,7 +266,7 @@ void DEV_MUTUAL_L::precalc_last()
   _lm = value() * sqrt(l1 * l2);
   trace3(long_label().c_str(), l1, l2, _lm);
 
-  if (_sim->is_first_expand()) {
+  if (_sim->has_op() == s_NONE) {
     assert(_y[0].x  == 0.);
     assert(_y[0].f0 == LINEAR);
     _y[0].f1 = -_lm; // override

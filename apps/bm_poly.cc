@@ -1,4 +1,4 @@
-/*$Id: bm_poly.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: bm_poly.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -48,7 +48,7 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const	{return new EVAL_BM_POLY(*this);}
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
 
-  void		precalc_first(const CARD_LIST*);
+  void		precalc_last(const CARD_LIST*);
   void		tr_eval(ELEMENT*)const;
   std::string	name()const		{return "poly";}
   bool		ac_too()const		{untested();return false;}
@@ -106,10 +106,11 @@ void EVAL_BM_POLY::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)co
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_POLY::precalc_first(const CARD_LIST* Scope)
+void EVAL_BM_POLY::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
-  EVAL_BM_ACTION_BASE::precalc_first(Scope);
+  EVAL_BM_ACTION_BASE::precalc_last(Scope);
+
   for (std::vector<PARAMETER<double> >::const_iterator
 	 p = _c.begin();  p != _c.end();  ++p) {
     (*p).e_val(0, Scope);
