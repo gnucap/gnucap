@@ -51,7 +51,7 @@ LDFLAGS = -rdynamic \
 #------------------------------------------------------------------------
 CAT_EOF
 
-echo \# created by main/configure. do not edit >Make2
+echo \# created by $PWD/$0. do not edit >Make2
 echo \#------------------------------------------------------------------------ >>Make2
 cat Make.ccflags Make.libs Make.sys >>Make2
 rm Make.ccflags Make.libs Make.sys
