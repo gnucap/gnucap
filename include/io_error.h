@@ -1,4 +1,4 @@
-/*$Id: io_error.h 2015/01/27 al $ -*- C++ -*-
+/*$Id: io_error.h 2016/04/19 al $ -*- C++ -*-
  * data for error and exception handling
  *
  * Copyright (C) 2001 Albert Davis
@@ -22,9 +22,11 @@
  * 02110-1301, USA.
  */
 //testing=trivial 2006.07.17
-#ifndef bDANGER
-//#include "md.h"  included by
-//#include "io_trace.h"
+#ifndef IO_ERROR_H_INCLUDED
+#define IO_ERROR_H_INCLUDED
+#ifndef MD_H_INCLUDED
+#include "md.h"
+#endif
 /*--------------------------------------------------------------------------*/
 /* arg to error() (badness) to decide severity of exception */
 #define	bNOERROR	0

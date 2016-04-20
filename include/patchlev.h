@@ -1,1 +1,1 @@
-#define PATCHLEVEL "configure 2016.04.19"
+#define PATCHLEVEL "configure 2016.04.20"
