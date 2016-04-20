@@ -78,5 +78,11 @@ manifest:
 	(cd main; ${MAKE} manifest)
 	(cd apps; ${MAKE} manifest)
 
+date:
+	(cd include; ${MAKE} date)
+
+checkin:
+	(cd include; ${MAKE} checkin)
+
 nothing:
 

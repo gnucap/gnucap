@@ -25,10 +25,8 @@ tags: $(HDRS) $(SRCS)
 	etags --c++ $(HDRS) $(SRCS)
 #------------------------------------------------------------------------
 checkin:
-	date "+#define PATCHLEVEL \"%Y.%m.%d RCS `cat rcsversion`\"" \
-		>patchlev.h
-	-ci -u`cat rcsversion` -m. -t/dev/null $(RAW)
-	-ci -r`cat rcsversion` -m. -t/dev/null $(DELETED) $(GENERATED)
+	$(MAKE) date
+	-git commit -a
 	touch patchlev.h
 #------------------------------------------------------------------------
 checkout:
@@ -54,7 +52,7 @@ Make.depend: $(SRCS) $(HDRS)
 	$(CCC) -MM $(CCFLAGS) $(SRCS) > Make.depend
 #-----------------------------------------------------------------------------
 date:
-	date "+#define PATCHLEVEL \"%Y.%m.%d RCS `cat rcsversion` +\"" \
+	date "+#define PATCHLEVEL \"`git branch | awk '/\*/ { print $$2; }'` %Y.%m.%d\"" \
 		>patchlev.h
 #-----------------------------------------------------------------------------
 header-check:
