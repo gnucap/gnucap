@@ -49,8 +49,8 @@ struct Exception {
   virtual ~Exception() {}
 };
 class CS;
-struct Exception_CS :public Exception {
-  std::string _cmd;
+struct INTERFACE Exception_CS :public Exception { 
+ std::string _cmd;
   unsigned _cursor;
   const std::string message()const;
   //Exception_CS(const std::string& Message, const CS& cmd, unsigned cursor);

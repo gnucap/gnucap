@@ -1,4 +1,4 @@
-/*$Id: io_findf.cc,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: io_findf.cc 2016/05/15 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -34,8 +34,7 @@
 //testing=script,sparse 2006.07.17
 #include "l_lib.h"
 /*--------------------------------------------------------------------------*/
-std::string findfile(const std::string& filename, const std::string& path,
-		     int mode)
+INTERFACE std::string findfile(const std::string& filename, const std::string& path, int mode)
 {
 #ifdef CHECK_LOCAL_FIRST
   if (OS::access_ok(filename, mode)) {

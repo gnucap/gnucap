@@ -58,10 +58,10 @@ std::string head;
 /*--------------------------------------------------------------------------*/
 /* sweep command.  This will go away with a rewrite of looping */
 const int swp_nest_max = 1;	/* no loop, "future" expansion		*/
-int swp_count[swp_nest_max];	/* sweep counter			*/
-int swp_steps[swp_nest_max];	/* sweep number of steps		*/
-int swp_type[swp_nest_max];	/* type of sweep (log or linear)	*/
-int swp_nest;			/* sweep nesting (recursion) level	*/
+INTERFACE int swp_count[swp_nest_max];	/* sweep counter			*/
+INTERFACE int swp_steps[swp_nest_max];	/* sweep number of steps		*/
+INTERFACE int swp_type[swp_nest_max];	/* type of sweep (log or linear)	*/
+INTERFACE int swp_nest;			/* sweep nesting (recursion) level	*/
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:
