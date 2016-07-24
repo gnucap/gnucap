@@ -1,4 +1,4 @@
-/*$Id: lang_spice.cc 2015/02/05 al $ -*- C++ -*-
+/*$Id: lang_spice.cc  2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -1042,7 +1042,7 @@ DISPATCHER<CMD>::INSTALL d7(&command_dispatcher, ".build|build", &p7);
 class CMD_SPICE : public CMD {
 public:
   void do_it(CS&, CARD_LIST* Scope)
-  {untested();
+  {
     command("options lang=spice", Scope);
   }
 } p8;

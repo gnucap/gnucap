@@ -1,4 +1,4 @@
-/*$Id: md.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: md.h 2016/05/15 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -77,7 +77,7 @@ enum {
 #if defined(__WIN32__)
 #define	ENDDIR		"/\\"
 #define PATHSEP		';'
-#define DEFAULT_PLUGINS "libgnucap-default-plugins.dll"
+#define DEFAULT_PLUGINS "gnucap-default-plugins.dll"
 #define SYSTEMSTARTFILE	"gnucap.rc"
 #define SYSTEMSTARTPATH	OS::getenv("PATH")
 #define USERSTARTFILE	"gnucap.rc"
@@ -88,7 +88,7 @@ enum {
 #else
 #define	ENDDIR		"/"
 #define PATHSEP		':'
-#define DEFAULT_PLUGINS "libgnucap-default-plugins.so"
+#define DEFAULT_PLUGINS "gnucap-default-plugins.so"
 #define SYSTEMSTARTFILE	"gnucap.rc"
 #define SYSTEMSTARTPATH	OS::getenv("PATH")
 #define USERSTARTFILE	".gnucaprc"
@@ -132,9 +132,9 @@ typedef std::pair<double,double> DPAIR;
 #undef max
 #undef INTERFACE
   #ifdef MAKE_DLL
-    #define INTERFACE __declspec(dllimport)
-  #else
     #define INTERFACE __declspec(dllexport)
+  #else
+    #define INTERFACE 
   #endif
 
 inline void* dlopen(const char* f, int)

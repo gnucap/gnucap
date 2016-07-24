@@ -1,4 +1,4 @@
-/*$Id: s_tr.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: s_tr.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -42,6 +42,7 @@ void TRANSIENT::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->set_command_tran();
   ::status.tran.reset().start();
   command_base(Cmd);
+  _sim->_has_op = s_TRAN;
   _scope = NULL;
   ::status.tran.stop();
 }

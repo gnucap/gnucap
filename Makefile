@@ -78,5 +78,19 @@ manifest:
 	(cd main; ${MAKE} manifest)
 	(cd apps; ${MAKE} manifest)
 
+header-check:
+	(cd include; ${MAKE} header-check)
+	(cd lib; ${MAKE} header-check)
+	(cd modelgen; ${MAKE} header-check)
+	(cd main; ${MAKE} header-check)
+	(cd apps; ${MAKE} header-check)
+
+date:
+	(cd include; ${MAKE} date)
+
+checkin:
+	$(MAKE) date
+	-git commit -a
+
 nothing:
 

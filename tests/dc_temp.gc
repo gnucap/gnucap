@@ -1,0 +1,33 @@
+spice
+.options temp=1
+rtemp1 2 0 t1 (w=1 l=1)
+.model t1 r tnom=0 rsh=1 tc2=0 tc1=1
+
+* skipping L=
+.model t2 r tnom=0 tc1=10
+rtemp2 2 0 t1 (l=2 w=1)
+rtemp3 2 0 t2 (.5) 
+
+.list
+
+.print dc r(rtemp*) temp(0)
+.store dc r(rtemp*) temp(0)
+
+.list
+
+.dc temp=2
+.dc
+.dc temp=3
+.measure rt1 at(probe="r(rtemp1)")
+.measure rt2 at(probe="r(rtemp2)")
+.measure rt3 at(probe="r(rtemp3)")
+.dc
+.dc dtemp=10
+
+.options temperature=20
+.dc dtemp=0
+.measure rt1 at(probe="r(rtemp1)")
+.measure rt2 at(probe="r(rtemp2)")
+.measure rt3 at(probe="r(rtemp3)")
+
+.end

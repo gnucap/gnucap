@@ -1,4 +1,4 @@
-/*$Id: u_probe.cc 2015/01/21 al $ -*- C++ -*-
+/*$Id: u_probe.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -126,7 +126,7 @@ double PROBE::probe_node(void)const
     return _sim->_genout;
   }else if (Umatch(_what, "hidden ")) {untested();
     return ::status.hidden_steps;
-  }else if (Umatch(_what, "temp{erature} ")) {untested();
+  }else if (Umatch(_what, "temp{erature} ")) {
     return _sim->_temp_c;
   }else if (Umatch(_what, "time ")) {untested();
     return _sim->_time0;

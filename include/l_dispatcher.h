@@ -1,4 +1,4 @@
-/*$Id: l_dispatcher.h 2015/01/21 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: l_dispatcher.h 2016/03/29 al -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -95,7 +95,7 @@ public:
       trace2(name.c_str(), bss, ess);
       if (name == "") {untested();
 	// quietly ignore empty string
-      }else if ((*_map)[name]) {untested();
+      }else if ((*_map)[name]) {
 	// duplicate .. stash the old one so we can get it back
 	error(bWARNING, name + ": already installed, replacing\n");
 	std::string save_name = name + ":0";

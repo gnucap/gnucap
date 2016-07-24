@@ -1,4 +1,4 @@
-/*$Id: mg_main.cc,v 26.81 2008/05/27 05:33:43 al Exp $ -*- C++ -*-
+/*$Id: mg_main.cc 2016/05/15 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -24,7 +24,6 @@
 #include "mg_out.h"
 #include "patchlev.h"
 /*global*/ int errorcount = 0;
-RUN_MODE ENV::run_mode = rPRE_MAIN;
 /*--------------------------------------------------------------------------*/
 int main(int argc, char** argv)
 {

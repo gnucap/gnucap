@@ -34,7 +34,7 @@ class PROBELIST;
 class COMPONENT;
 class WAVE;
 /*--------------------------------------------------------------------------*/
-class INTERFACE SIM : public CMD {
+class SIM : public CMD {
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:
   enum TRACE { // how much diagnostics to show

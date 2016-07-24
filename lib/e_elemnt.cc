@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.cc 2016/03/25 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -83,7 +83,7 @@ void ELEMENT::precalc_last()
 
   //BUG// This is needed for AC analysis without doing op (or dc or tran ...) first.
   // Something like it should be moved to ac_begin.
-  if (_sim->is_first_expand()) {
+  if (_sim->has_op() == s_NONE) {
     _y[0].x  = 0.;
     _y[0].f0 = LINEAR;
     _y[0].f1 = value();
@@ -381,7 +381,7 @@ XPROBE ELEMENT::ac_probe_ext(const std::string& x)const
   }else if (Umatch(x, "r ")) {			/* complex "resistance" */
     if (admittance == 0.) {untested();
       return XPROBE(MAXDBL);
-    }else{untested();
+    }else{
       return XPROBE(1. / admittance);
     }
   }else if (Umatch(x, "z ")) {			/* port impedance */

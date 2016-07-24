@@ -20,7 +20,9 @@ else
     prefix=/usr/local
 fi
 #----------------------------------------------------------------
-echo "" >Make2
+echo \# created by $PWD/$0. do not edit >Make2
+echo \#------------------------------------------------------------------------ >>Make2
+echo "CCC = g++" >>Make2
 echo "PREFIX = " $prefix >>Make2
 echo "" >>Make2
 

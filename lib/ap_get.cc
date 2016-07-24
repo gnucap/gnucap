@@ -1,4 +1,4 @@
-/*$Id: ap_get.cc,v 26.85 2008/06/19 05:01:15 al Exp $ -*- C++ -*-
+/*$Id: ap_get.cc 2016/03/23 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -68,7 +68,7 @@ bool Get(CS& cmd, const std::string& key, double* val, AP_MOD mod, double scale)
     switch(mod) {
     case mNONE:	    untested();	*val = cmd.ctof();		break;
     case mSCALE:    untested(); *val = cmd.ctof()*scale;	break;
-    case mOFFSET:   untested(); *val = cmd.ctof()+scale;	break;
+    case mOFFSET:		*val = cmd.ctof()+scale;	break;
     case mINVERT:   untested(); *val = 1 / cmd.ctof();		break;
     case mPOSITIVE:		*val = std::abs(cmd.ctof());	break;
     case mOCTAL:    untested();	*val = cmd.ctoo();		break;

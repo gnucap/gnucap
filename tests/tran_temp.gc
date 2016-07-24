@@ -1,0 +1,13 @@
+spice
+.options temp=1
+rtemp 2 0 t1 (w=1 l=1)
+.model t1 r tnom=0 rsh=1 tc2=0 tc1=1
+
+.print tran r(rtemp) temp(0)
+
+.tran 0 1 1 temp=2
+.tran 0 1 1
+.tran 0 1 1 temp=3
+.tran 0 1 1
+.tran 0 1 1 dtemp=10
+.end

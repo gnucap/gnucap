@@ -1,1 +1,1 @@
-#define PATCHLEVEL "master 2016-02-02a"
+#define PATCHLEVEL "configure-1 2016.05.15"

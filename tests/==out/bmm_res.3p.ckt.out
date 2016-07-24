@@ -1,5 +1,4 @@
 # semiconductor "resistor" test 
-r2: t1: effective length is negative or zero
 #           v(1)       v(2)       r(r1)      r(r2)     
  27.        2.         1.         1.K        1.K       
 #Freq       v(1)       v(2)      

@@ -41,7 +41,6 @@ FPOLY1 interpolate(Iterator begin, Iterator end, double x,
   }
   --end;
   if (begin == end) { // only 1 entry -- constant
-    untested();
     f1 = (x < (*begin).first)
       ? ((below != NOT_INPUT) ? below : 0.)
       : ((above != NOT_INPUT) ? above : 0.);

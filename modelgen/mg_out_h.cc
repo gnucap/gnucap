@@ -178,7 +178,6 @@ static void make_common(std::ofstream& out, const Device& d)
     "  int param_count()const {return (" 
 	     << d.common().override().size() + d.common().raw().size()
 	     << " + COMMON_COMPONENT::param_count());}\n"
-    "  void     precalc_first(const CARD_LIST*);\n"
     "  void     expand(const COMPONENT*);\n"
     "  void     precalc_last(const CARD_LIST*);\n"
     "  std::string name()const {itested();return \"" << d.parse_name() << "\";}\n"

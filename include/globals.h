@@ -1,4 +1,4 @@
-/*$Id: globals.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: globals.h 2016/05/15 al $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -23,7 +23,7 @@
  */
 #include "l_dispatcher.h"
 
-extern const char*  lib_version();
+extern INTERFACE const char*  lib_version();
 
 class CMD;
 class COMMON_COMPONENT;

@@ -1,4 +1,4 @@
-/*$Id: d_cs.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: d_cs.cc 2016/03/25 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -72,15 +72,19 @@ private: // override virtual
 /*--------------------------------------------------------------------------*/
 void DEV_CS::precalc_last()
 {
-  ELEMENT::precalc_last();
+  //ELEMENT::precalc_last();	//BUG// skip
+  COMPONENT::precalc_last();
   set_constant(!has_tr_eval());
   set_converged(!has_tr_eval());
+  set_constant(false);
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CS::tr_begin()
 {
   ELEMENT::tr_begin();
-  _y1.f0 = _y[0].f0 = 0.; // override
+  _y[0].x  = 0.;
+  _y[0].f1 = value();
+  _y1.f0 = _y[0].f0 = 0.;	//BUG// override
   _m0.x  = 0.;
   _m0.c0 = _y[0].f1;
   _m0.c1 = 0.;

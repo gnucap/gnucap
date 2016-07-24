@@ -43,15 +43,15 @@ LDFLAGS = -rdynamic \
 -L../../lib/O
 
 .SUFFIXES : .o .cc
-.cc.o:; \$(CCC) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
 #------------------------------------------------------------------------
 \$(TARGET): \$(OBJS)
 	rm -f \$@
-	\$(CCC) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) -o \$@ \$(LIBS) \$(LDFLAGS)
+	\$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) -o \$@ \$(LIBS) \$(LDFLAGS)
 #------------------------------------------------------------------------
 CAT_EOF
 
-echo \# created by modelgen/configure. do not edit >Make2
+echo \# created by $PWD/$0. do not edit >Make2
 echo \#------------------------------------------------------------------------ >>Make2
 cat Make.ccflags Make.libs Make.sys >>Make2
 rm Make.ccflags Make.libs Make.sys

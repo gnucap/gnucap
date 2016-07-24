@@ -1,4 +1,4 @@
-/* $Id: spice-wrapper.cc 2014/11/23$ -*- C++ -*-
+/* $Id: spice-wrapper.cc 2016/03/29 al $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -217,7 +217,7 @@ protected: // override virtual
   int	  net_nodes()const	{return _net_nodes;}
   int	  int_nodes()const	{return INTERNAL_NODES;}
   CARD*	  clone()const		{return new DEV_SPICE(*this);}
-  void	  precalc_first();
+  //void  precalc_first();	//ELEMENT
   void	  expand();
   void	  precalc_last();
   //void  map_nodes();		//ELEMENT
@@ -1003,9 +1003,14 @@ void DEV_SPICE::expand()
   assert_instance();
 }
 /*--------------------------------------------------------------------------*/
-void DEV_SPICE::precalc_first()
+void DEV_SPICE::precalc_last()
 {
-  STORAGE::precalc_first();
+  assert(_model);
+  assert_instance();
+  assert(info.DEVsetup);
+
+  STORAGE::precalc_last();
+  init_ckt();
 
   // push down parameters into spice data
   COMMON_SUBCKT* c = dynamic_cast<COMMON_SUBCKT*>(mutable_common());
@@ -1020,16 +1025,6 @@ void DEV_SPICE::precalc_first()
     }else{
     }
   }
-}
-/*--------------------------------------------------------------------------*/
-void DEV_SPICE::precalc_last()
-{
-  assert(_model);
-  assert_instance();
-  assert(info.DEVsetup);
-
-  STORAGE::precalc_last();
-  init_ckt();
 
   int* node = spice_nodes(); // treat as array	//
   int  node_stash[MATRIX_NODES];			//

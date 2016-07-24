@@ -1,4 +1,4 @@
-/*$Id: io_.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: io_.h 2016/05/15 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -111,9 +111,9 @@ public:
 };
 /*--------------------------------------------------------------------------*/
 /* contrl */ INTERFACE void	   initio(OMSTREAM&);
-		       void	   outreset();
+	     INTERFACE void	   outreset();
 	     INTERFACE OMSTREAM*   outset(CS&,OMSTREAM*);
-/* findf */	       std::string findfile(const std::string&,const std::string&,int);
+/* findf */  INTERFACE std::string findfile(std::string const&,std::string const&,int);
 /* xopen */	       void	   xclose(FILE**);
 		       FILE*	   xopen(CS&,const char*,const char*);
 /*--------------------------------------------------------------------------*/

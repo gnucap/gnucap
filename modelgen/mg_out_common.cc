@@ -368,16 +368,6 @@ static void make_common_expand(std::ofstream& out, const Device& d)
     "  assert(c == this);\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n"
-    "void COMMON_" << d.name() << "::precalc_first(const CARD_LIST* par_scope)\n"
-    "{\n"
-    "  assert(par_scope);\n"
-    "  COMMON_COMPONENT::precalc_first(par_scope);\n";
-
-  make_final_adjust_eval_parameter_list(out, d.common().raw());
-
-  out <<
-    "}\n"
-    "/*--------------------------------------------------------------------------*/\n"
     "void COMMON_" << d.name() << "::precalc_last(const CARD_LIST* par_scope)\n"
     "{\n"
     "  assert(par_scope);\n"

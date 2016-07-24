@@ -1,4 +1,4 @@
-#$Id: Make3,v 26.133 2009/11/26 04:58:04 al Exp $ -*- Makefile -*-
+#$Id: Make3 2016/04/19 al $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -24,23 +24,16 @@
 tags: $(HDRS) $(SRCS)
 	etags --c++ $(HDRS) $(SRCS)
 #------------------------------------------------------------------------
-checkin:
-	date "+#define PATCHLEVEL \"%Y.%m.%d RCS `cat rcsversion`\"" \
-		>patchlev.h
-	-ci -u`cat rcsversion` -m. -t/dev/null $(RAW)
-	-ci -r`cat rcsversion` -m. -t/dev/null $(DELETED) $(GENERATED)
-	touch patchlev.h
-#------------------------------------------------------------------------
 checkout:
 	co $(RAW)
 #------------------------------------------------------------------------
 install : $(INSTALL_FILES)
 	echo ==================
-	mkdir -p $(INSTALL_DIR)
-	cp $(INSTALL_FILES) $(INSTALL_DIR)
+	mkdir -p $(DESTDIR)$(INSTALL_DIR)
+	cp $(INSTALL_FILES) $(DESTDIR)$(INSTALL_DIR)
 #------------------------------------------------------------------------
-uninstall : 
-	(cd $(INSTALL_DIR) ; rm $(INSTALL_FILES))
+uninstall :
+	(cd $(DESTDIR)$(INSTALL_DIR) ; rm $(INSTALL_FILES))
 #------------------------------------------------------------------------
 #unclean:
 #	rm $(ALL)
@@ -54,11 +47,11 @@ Make.depend: $(SRCS) $(HDRS)
 	$(CCC) -MM $(CCFLAGS) $(SRCS) > Make.depend
 #-----------------------------------------------------------------------------
 date:
-	date "+#define PATCHLEVEL \"%Y.%m.%d RCS `cat rcsversion` +\"" \
+	date "+#define PATCHLEVEL \"`git branch | awk '/\*/ { print $$2; }'` %Y.%m.%d\"" \
 		>patchlev.h
 #-----------------------------------------------------------------------------
 header-check:
-	$(CCC) -o /dev/null $(RAW_HDRS)
+	-$(CCC) -I../include -o /dev/null $(RAW_HDRS)
 #-----------------------------------------------------------------------------
 manifest: MANIFEST
 MANIFEST: $(DISTFILES)
