@@ -1,1 +1,1 @@
-#define PATCHLEVEL "master 2016.07.24"
+#define PATCHLEVEL "gnucap-conf-5 2016.08.02"

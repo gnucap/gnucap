@@ -1,0 +1,54 @@
+#!/bin/bash
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+includedir="@includedir@"
+libdir="@libdir@"
+pkglibdir="@pkglibdir@"
+LIBS="@LIBS@"
+CXX="@CXX@"
+CXXFLAGS="@CXXFLAGS@"
+datarootdir="@datarootdir@"
+
+case $1 in
+	--cppflags)
+		echo "-I$includedir/gnucap"
+	;;
+	--cxxflags)
+		echo "$CXXFLAGS"
+	;;
+	--cxx)
+		echo "$CXX"
+	;;
+	--ldflags)
+		echo "-L$libdir"
+	;;
+	--includedir)
+		echo $includedir/gnucap
+	;;
+	--pkglibdir)
+		echo "$pkglibdir"
+	;;
+	--libdir)
+		echo "$libdir"
+	;;
+	--libs)
+		echo "$LIBS"
+	;;
+	--exec-prefix)
+		echo "$exec_prefix"
+	;;
+	--data)
+		echo "$datarootdir"
+	;;
+	*)
+	echo $0 --cppflags
+	echo $0 --cxxflags
+	echo $0 --cxx
+	echo $0 --ldflags
+	echo $0 --pkglibdir
+	echo $0 --libdir
+	echo $0 --libs
+	echo $0 --exec-prefix
+	echo $0 --data
+esac
