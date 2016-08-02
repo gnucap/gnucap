@@ -38,6 +38,7 @@ sed -e "s#@prefix@#$prefix#" \
     -e "s#@CXXFLAGS@#$CCFLAGS#" \
     -e "s#@LIBS@#-lgnucap#" \
     -e "s#@CXX@#$CXX#" < gnucap-conf.in > gnucap-conf
+chmod +x gnucap-conf
 #----------------------------------------------------------------
 echo "CCFLAGS = \\" >Make.ccflags
 echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
