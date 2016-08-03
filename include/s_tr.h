@@ -93,7 +93,7 @@ private:
 protected:
   PARAMETER<double> _tstart;	// sweep start time
   PARAMETER<double> _tstop;	// sweep stop time
-  PARAMETER<double> _tstep;	// printed step size
+  PARAMETER<double> _tstrobe;	// printed step size
   PARAMETER<double> _dtratio_in;// ratio of max/min dt
   PARAMETER<double> _dtmin_in;	// min internal step size
   PARAMETER<double> _dtmax_in;	// max internal step size (user)

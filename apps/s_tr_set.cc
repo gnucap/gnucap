@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * set up transient and fourier analysis
  */
-//testing=script 2016.03.25
+//testing=script 2016.08.01
 #include "u_sim_data.h"
 #include "u_prblst.h"
 #include "ap.h"
@@ -37,17 +37,17 @@ void TRANSIENT::setup(CS& Cmd)
 {
   _tstart.e_val(NOT_INPUT, _scope);
   _tstop.e_val(NOT_INPUT, _scope);
-  _tstep.e_val(NOT_INPUT, _scope);
+  _tstrobe.e_val(NOT_INPUT, _scope);
 
   _cont = true;
   if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
     PARAMETER<double> arg1, arg2, arg3;
     Cmd >> arg1;
-    if (Cmd.match1("'\"({") || Cmd.is_float()) {
+    if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
       Cmd >> arg2;
     }else{
     }
-    if (Cmd.match1("'\"({") || Cmd.is_float()) {
+    if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
       Cmd >> arg3;
     }else{
     }
@@ -58,38 +58,39 @@ void TRANSIENT::setup(CS& Cmd)
       arg1.e_val(0.,_scope);
       arg3.e_val(0.,_scope);
       if (arg3 == 0.) {			    /* spice (illogical) order */
-	_tstart = arg3;		    	    /* _tstep _tstop _tstart */
+	_tstart = arg3;		    	    /* _tstrobe _tstop _tstart */
 	_tstop  = arg2;
-	_tstep  = arg1;
+	_tstrobe  = arg1;
       }else if (arg1 == 0.) {		    /* eca (logical) order: */
-	_tstart = arg1;			    /* _tstart _tstop _tstep */
+	_tstart = arg1;			    /* _tstart _tstop _tstrobe */
 	_tstop  = arg2;				
-	_tstep  = arg3;
+	_tstrobe  = arg3;
       }else if (arg1 > arg3) {untested();   /* eca (logical) order: */
-	_tstart = arg1;			    /* _tstart _tstop _tstep */
+	_tstart = arg1;			    /* _tstart _tstop _tstrobe */
 	_tstop  = arg2;				
-	_tstep  = arg3;
+	_tstrobe  = arg3;
       }else{				    /* spice (illogical) order */
-	_tstart = arg3;		    	    /* _tstep _tstop _tstart */
+	_tstart = arg3;		    	    /* _tstrobe _tstop _tstart */
 	_tstop  = arg2;
-	_tstep  = arg1;
+	_tstrobe  = arg1;
       }
     }else if (arg2.has_hard_value()) {	    /* 2 args */
       assert(arg1.has_hard_value());
       arg1.e_val(0.,_scope);
       arg2.e_val(0.,_scope);
-      if (arg1 == 0.) {untested(); 	    /* 2 args: _tstart, _tstop */
+      if (arg1 == 0.) {		 	    /* 2 args: _tstart, _tstop */
 	_tstart = arg1;
 	_tstop  = arg2;
-	/* _tstep unchanged */
-      }else if (arg1 >= arg2) {		    /* 2 args: _tstop, _tstep */
+	/* _tstrobe unchanged */
+      }else if (arg1 >= arg2) {		    /* 2 args: _tstop, _tstrobe */
 	_tstart = _sim->_last_time;
 	_tstop  = arg1;
-	_tstep  = arg2;
-      }else{ /* arg1 < arg2 */		    /* 2 args: _tstep, _tstop */
-	_tstart = "NA"; /* 0 */	   	    /* spice order */
+	_tstrobe  = arg2;
+      }else{				    /* 2 args: _tstrobe, _tstop */
+	assert(arg1 < arg2);	   	    /* spice order */
+	_tstart = "NA"; /* 0 */
 	_tstop  = arg2;
-	_tstep  = arg1;
+	_tstrobe  = arg1;
       }
     }else{				    /* 1 arg */
       assert(arg1.has_hard_value());
@@ -97,34 +98,47 @@ void TRANSIENT::setup(CS& Cmd)
       if (arg1 > _sim->_last_time) {	    /* 1 arg: _tstop */
 	_tstart = _sim->_last_time;
 	_tstop  = arg1;
-	/* _tstep unchanged */
+	/* _tstrobe unchanged */
       }else if (arg1 == 0.) {untested();    /* 1 arg: _tstart */
 	double oldrange = _tstop - _tstart;
 	_tstart = 0.;
 	_tstop  = oldrange;
-	/* _tstep unchanged */
-      }else{untested(); /* arg1 < _sim->_last_time, but not 0 */  /* 1 arg: _tstep */
+	/* _tstrobe unchanged */
+      }else{untested();			     /* 1 arg: _tstrobe */
+	assert(arg1 <= _sim->_last_time);
+	assert(arg1 > 0.);
 	double oldrange = _tstop - _tstart;
 	_tstart = _sim->_last_time;
 	_tstop  = _sim->_last_time + oldrange;
-	_tstep  = arg1;
+	_tstrobe  = arg1;
       }
     }
   }else{ /* no args */
     double oldrange = _tstop - _tstart;
     _tstart = _sim->_last_time;
     _tstop  = _sim->_last_time + oldrange;
-    /* _tstep unchanged */
+    /* _tstrobe unchanged */
   }
   if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
     Cmd >> _dtmax_in;
   }else{
   }
+
   options(Cmd);
 
   _tstart.e_val(0., _scope);
   _tstop.e_val(NOT_INPUT, _scope);
-  _tstep.e_val(NOT_INPUT, _scope);
+  if (_tstart < 0 || _tstop <= _tstart) {untested();
+    throw Exception("transient: bad time args");
+  }else{
+  }
+
+  _tstrobe.e_val(NOT_INPUT, _scope);
+  if (_tstrobe <= 0.) {
+    _tstrobe.set_default(NOT_INPUT);
+  }else{
+  }
+  _tstrobe.e_val(_tstop-_tstart, _scope);
 
   if  (_cold || _tstart < _sim->_last_time  ||  _sim->_last_time <= 0.) {
     _cont = false;
@@ -135,19 +149,12 @@ void TRANSIENT::setup(CS& Cmd)
   }
   _sim->_freq = ((_tstop > _tstart) ? (1 / (_tstop - _tstart)) : (0.));
 
-  if (!_tstep.has_good_value()) {untested();
-    throw Exception("transient: time step is required");
-  }else if (_tstep==0.) {untested();
-    throw Exception("time step = 0");
-  }else{
-  }
-
   if (_dtmax_in.has_hard_value()) {
     _dtmax = _dtmax_in;
   }else if (_skip_in.has_hard_value()) {
-    _dtmax = _tstep / double(_skip_in);
+    _dtmax = _tstrobe / double(_skip_in);
   }else{
-    _dtmax = std::min(_dtmax_in, _tstep);
+    _dtmax = std::min(_dtmax_in, _tstrobe);
   }
 
   if (_dtmin_in.has_hard_value()) {untested();
@@ -180,6 +187,9 @@ void TRANSIENT::options(CS& Cmd)
       || Get(Cmd, "dtr{atio}",	   &_dtratio_in)
       || Get(Cmd, "pl{ot}",	   &ploton)
       || Get(Cmd, "sk{ip}",	   &_skip_in)
+      || Get(Cmd, "sta{rt}",	   &_tstart)
+      || Get(Cmd, "sto{p}",	   &_tstop)
+      || Get(Cmd, "str{obeperiod}",&_tstrobe)
       || Get(Cmd, "te{mperature}", &_sim->_temp_c)
       || Get(Cmd, "uic",	   &_sim->_uic)
       || (Cmd.umatch("tr{ace} {=}") &&

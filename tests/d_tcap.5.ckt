@@ -1,0 +1,14 @@
+' 
+V1  1  0  SIN  offset= 0.  amplitude= 1.  frequency= 1.  delay= 0.
++  damping= 0.
+C1  1  0  1.
+F1  2  0  C1  1.
+R1  2  0  1.
+R2  3  0  1.
+.tcap C2  3  0  1  0  1.
+.print tran v nodes
+.tran 0 1
+.option trtol=1 reltol=.00001
+.tran 0 1
+.status notime
+.end

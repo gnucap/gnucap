@@ -22,7 +22,7 @@
  * sweep time and simulate.  output results.
  * manage event queue
  */
-//testing=script 2014.07.04
+//testing=script 2016.08.01
 #include "u_time_pair.h"
 #include "u_sim_data.h"
 #include "u_status.h"
@@ -116,7 +116,7 @@ void TRANSIENT::sweep()
       if (step_cause() == scUSER) {
 	assert(up_order(_sim->_time0-_sim->_dtmin, _time_by_user_request, _sim->_time0+_sim->_dtmin));
 	++_stepno;
-	_time_by_user_request += _tstep;	/* advance user time */
+	_time_by_user_request += _tstrobe;	/* advance user time */
       }else{
       }
       assert(_sim->_time0 < _time_by_user_request);
@@ -127,8 +127,9 @@ void TRANSIENT::sweep()
     {
       bool printnow =
 	(_trace >= tREJECTED)
-	|| (_accepted && ((_trace >= tALLTIME) 
-			  || (step_cause() == scUSER && _sim->_time0+_sim->_dtmin > _tstart)));
+	|| (_accepted && (_trace >= tALLTIME
+			  || step_cause() == scUSER
+			  || (!_tstrobe.has_hard_value() && _sim->_time0+_sim->_dtmin > _tstart)));
       if (printnow) {
 	_sim->keep_voltages();
 	outdata(_sim->_time0);
@@ -178,13 +179,24 @@ void TRANSIENT::first()
   assert(_sim->_time0 == _time1);
   assert(_sim->_time0 <= _tstart);
   ::status.review.start();
-  _time_by_user_request = _sim->_time0 + _tstep;	/* set next user step */
-  //_eq.Clear();				/* empty the queue */
+
+  //_eq.Clear();					/* empty the queue */
   while (!_sim->_eq.empty()) {untested();
     _sim->_eq.pop();
   }
   _stepno = 0;
-  set_step_cause(scUSER);
+
+  //_time_by_user_request = _sim->_time0 + _tstrobe;	/* set next user step */
+  //set_step_cause(scUSER);
+
+  if (_sim->_time0 < _tstart) {			// skip until _tstart
+    set_step_cause(scINITIAL);				// suppressed 
+    _time_by_user_request = _tstart;			// set first strobe
+  }else{					// no skip
+    set_step_cause(scUSER);				// strobe here
+    _time_by_user_request = _sim->_time0 + _tstrobe;	// set next strobe
+  }
+
   ++::status.hidden_steps;
   ::status.review.stop();
 }
@@ -428,7 +440,6 @@ bool TRANSIENT::next()
     set_step_cause(scSMALL);
     //check_consistency2();
     throw Exception("tried everything, still doesn't work, giving up");
-    //}else if (newtime <= _sim->_time0 - _sim->_dtmin) {untested();
   }else if (newtime < _sim->_time0) {
     /* Reject the most recent step. */
     /* We have faith that it will work with a smaller time step. */
