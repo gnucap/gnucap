@@ -49,29 +49,29 @@
 #define trace0(s) ( std::cerr << "@#@" << (s) << "\n")
 #define trace1(s,x) ( \
 	   std::cerr <<  "@#@" << (s) << "  " << #x << "=" << (x)  \
-		     << std::endl )
+		     << "\n" )
 #define trace2(s,x,y) ( \
 	   std::cerr <<  "@#@" << (s) << "  " << #x << "=" << (x)  \
 		     << "  " << #y << "=" << (y)  \
-		     << std::endl )
+		     << "\n" )
 #define trace3(s,x,y,z) ( \
 	   std::cerr <<  "@#@" << (s) << "  " << #x << "=" << (x)  \
 		     << "  " << #y << "=" << (y)  \
 		     << "  " << #z << "=" << (z)  \
-		     << std::endl )
+		     << "\n" )
 #define trace4(s,w,x,y,z) ( \
 	   std::cerr <<  "@#@" << (s) << "  " << #w << "=" << (w)  \
 		     << "  " << #x << "=" << (x)  \
 		     << "  " << #y << "=" << (y)  \
 		     << "  " << #z << "=" << (z)  \
-		     << std::endl )
+		     << "\n" )
 #define trace5(s,v,w,x,y,z) ( \
 	   std::cerr <<  "@#@" << (s) << "  " << #v << "=" << (v)  \
 		     << "  " << #w << "=" << (w)  \
 		     << "  " << #x << "=" << (x)  \
 		     << "  " << #y << "=" << (y)  \
 		     << "  " << #z << "=" << (z)  \
-		     << std::endl )
+		     << "\n" )
 #define trace6(s,u,v,w,x,y,z) ( \
 	   std::cerr <<  "@#@" << (s) \
 		     << "  " << #u << "=" << (u)  \
@@ -80,7 +80,7 @@
 		     << "  " << #x << "=" << (x)  \
 		     << "  " << #y << "=" << (y)  \
 		     << "  " << #z << "=" << (z)  \
-		     << std::endl )
+		     << "\n" )
 #define trace7(s,t,u,v,w,x,y,z) ( \
            std::cerr <<  "@#@" << (s)  \
 		     << "  " << #t << "=" << (t)  \
@@ -90,7 +90,7 @@
 		     << "  " << #x << "=" << (x)  \
 		     << "  " << #y << "=" << (y)  \
 		     << "  " << #z << "=" << (z)  \
-		     << std::endl )
+		     << "\n" )
 #define trace8(s,r,t,u,v,w,x,y,z) ( \
 		std::cerr <<  "@#@" << (s)  \
 		     << "  " << #r << "=" << (r)  \
@@ -101,7 +101,7 @@
 		     << "  " << #x << "=" << (x)  \
 		     << "  " << #y << "=" << (y)  \
 		     << "  " << #z << "=" << (z)  \
-		     << std::endl )
+		     << "\n" )
 #else
 #define USE(x) (1)?(void)(0):(void)(x)
 #define trace_line()
