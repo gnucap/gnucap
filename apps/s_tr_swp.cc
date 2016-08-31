@@ -98,6 +98,7 @@ void TRANSIENT::sweep()
       _sim->keep_voltages();
       outdata(_sim->_time0);
     }else{
+      ++::status.hidden_steps;
     }
   }
   
@@ -134,6 +135,7 @@ void TRANSIENT::sweep()
 	_sim->keep_voltages();
 	outdata(_sim->_time0);
       }else{
+	++::status.hidden_steps;
       }
     }
     
@@ -197,7 +199,7 @@ void TRANSIENT::first()
     _time_by_user_request = _sim->_time0 + _tstrobe;	// set next strobe
   }
 
-  ++::status.hidden_steps;
+  ::status.hidden_steps = 0;
   ::status.review.stop();
 }
 /*--------------------------------------------------------------------------*/
@@ -493,7 +495,6 @@ bool TRANSIENT::next()
   //BUG// what if it is later rejected?  It's lost!
 
   check_consistency2();
-  ++::status.hidden_steps;
   ++steps_total_;
   ::status.review.stop();
   trace0("next");

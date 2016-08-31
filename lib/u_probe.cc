@@ -124,7 +124,7 @@ double PROBE::probe_node(void)const
     return _sim->_damp;
   }else if (Umatch(_what, "gen{erator} ")) {untested();
     return _sim->_genout;
-  }else if (Umatch(_what, "hidden ")) {untested();
+  }else if (Umatch(_what, "hidden ")) {
     return ::status.hidden_steps;
   }else if (Umatch(_what, "temp{erature} ")) {
     return _sim->_temp_c;
