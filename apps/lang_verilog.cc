@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+//testing=script 2016.09.10
 #include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
@@ -229,7 +230,6 @@ DEV_DOT* LANG_VERILOG::parse_command(CS& cmd, DEV_DOT* x)
  *  "endparamset"
  */
 //BUG// no paramset_item_declaration, falls back to spice mode
-//BUG// must be on single line
 
 MODEL_CARD* LANG_VERILOG::parse_paramset(CS& cmd, MODEL_CARD* x)
 {
@@ -239,9 +239,18 @@ MODEL_CARD* LANG_VERILOG::parse_paramset(CS& cmd, MODEL_CARD* x)
   parse_label(cmd, x);
   parse_type(cmd, x);
   cmd >> ';';
-  parse_args_paramset(cmd, x);
-  cmd >> "endparamset ";
-  cmd.check(bWARNING, "what's this?");
+
+  for (;;) {
+    parse_args_paramset(cmd, x);
+    if (cmd >> "endparamset ") {
+      break;
+    }else if (!cmd.more()) {
+      cmd.get_line("verilog-paramset>");
+    }else{untested();
+      cmd.check(bWARNING, "what's this?");
+      break;
+    }
+  }
   return x;
 }
 /*--------------------------------------------------------------------------*/
