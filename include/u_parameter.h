@@ -1,4 +1,4 @@
-/*$Id: u_parameter.h 2014.11.25 $ -*- C++ -*-
+/*$Id: u_parameter.h 2016.09.11 $ -*- C++ -*-
  * Copyright (C) 2005 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -284,7 +284,7 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
     // anything else means look up the value
     if (recursion <= OPT::recursion) {
       _v = lookup_solve(def, scope);
-      if (_v == NOT_INPUT) {itested();
+      if (_v == NOT_INPUT) {
 	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
 	//BUG// needs to show scope
 	//BUG// it is likely to have a numeric overflow resulting from the bad value

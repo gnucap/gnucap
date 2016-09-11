@@ -1,4 +1,4 @@
-/*$Id: ap_error.cc,v 26.122 2009/09/23 11:23:50 al Exp $ -*- C++ -*-
+/*$Id: ap_error.cc  2016/09/11 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -38,10 +38,10 @@ CS & CS::check(int badness, const std::string& message)
 {
   skipbl();
   switch (peek()) {
-  case '/': _ok = umatch("//"); skip(); break;
+  case '/':	_ok = umatch("//"); skip(); break;
   case ';':
-  case '\'':	itested(); _ok = true;  skip();     break;
-  case '\0':		    _ok = true;		     break;
+  case '\'':	_ok = true;  skip(); break;
+  case '\0':	_ok = true; break;
   default:	_ok = false; warn(badness, message); break;
   }
   return *this;

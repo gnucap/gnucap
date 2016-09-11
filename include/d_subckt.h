@@ -1,4 +1,4 @@
-/*$Id: d_subckt.h,v 26.134 2009/11/29 03:47:06 al Exp $ -*- C++ -*-
+/*$Id: d_subckt.h  2016/09/11 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -89,8 +89,8 @@ private: // override virtual
   double	tr_probe_num(const std::string&)const;
   int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
 
-  std::string port_name(int i)const {itested();
-    if (_parent) {itested();
+  std::string port_name(int i)const {
+    if (_parent) {
       return _parent->port_value(i);
     }else{itested();
       return "";

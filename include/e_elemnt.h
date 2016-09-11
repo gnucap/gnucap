@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.h,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: e_elemnt.h 2016/09/11 04:58:04 al Exp $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -265,7 +265,7 @@ inline void ELEMENT::ac_load_source()
   }
   if (_n[OUT1].m_() != 0) {
     _n[OUT1]->iac() -= mfactor() * _acg;
-  }else{itested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/

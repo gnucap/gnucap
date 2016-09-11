@@ -1,4 +1,4 @@
-/*$Id: u_probe.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: u_probe.cc 2016/09/11 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -65,7 +65,7 @@ PROBE& PROBE::operator=(const PROBE& p)
   _hi   = p._hi;
   if (_brh) {
     _brh->inc_probes();
-  }else{itested();
+  }else{
   }
   return *this;
 }

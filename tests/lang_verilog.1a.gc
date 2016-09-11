@@ -1,0 +1,47 @@
+
+simulator lang=verilog
+
+paramset zz npn;
+ .bf=150;
+endparamset
+
+module dumb_resistor (a b);
+parameter real r=10k;
+resistor #(r) R1 (a b);
+endmodule
+
+module foo (vcc in out);
+parameter real z=10k;
+parameter real r;
+resistor      #(.r(z))         Rc   (.p(c), .n(vcc));
+zz            #(.off(1))       q1   (.b(b), .c(c), .e(e));
+dumb_resistor #(.r(abs(-z)/10) Re   (e 0);
+resistor      #(.r(100k))      Rb1  (b vcc);
+dumb_resistor #(.r(r))         Rb2  (b 0);
+capacitor     #(.c(1u))        Cin  (b in);
+capacitor     #(.c(1u))        Cout (c out);
+resistor      #(.r(100k))      Rin  (in 0);
+resistor      #(.r(100k))      Rout (out 0);
+endmodule
+
+foo      #(.r(10k))         X1   (V_cc amp_in out);
+resistor #(.r(10*(1-gain))) Rin1 (in amp_in);
+resistor #(.r(10*gain))     Rin2 (amp_in 0);
+
+simulator lang=spice insensitive=no
+Vcc (V_cc 0) dc 20
+Vin (in 0) ac .2
+.simulator lang=verilog
+
+parameter gain=.5;
+list
+print op v(V_cc) v(in) v(out) iter(0) vc(X1.q1) vce(X1.q1)
+op
+print ac v(V_cc) v(in) v(amp_in) v(out)
+ac 1k
+
+resistor #(100k) Rload (out 0);
+op
+ac
+
+end

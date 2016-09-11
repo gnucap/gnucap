@@ -51,8 +51,8 @@ void SIM::command_base(CS& cmd)
 
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();	break;
-    case rBATCH:	itested();
-    case rINTERACTIVE:	itested();
+    case rBATCH:
+    case rINTERACTIVE:
     case rSCRIPT:	sweep();	break;
     case rPRESET:	/*nothing*/	break;
     }
@@ -73,7 +73,7 @@ SIM::~SIM()
   //assert(!_scope);
   if (_sim) {
     _sim->uninit();
-  }else{itested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/

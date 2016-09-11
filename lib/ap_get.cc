@@ -1,4 +1,4 @@
-/*$Id: ap_get.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: ap_get.cc 2016/09/11 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -30,7 +30,7 @@
 bool Get(CS& cmd, const std::string& key, bool* val)
 {
   if (cmd.umatch(key + ' ')) {
-    if (cmd.skip1b('=')) {itested();
+    if (cmd.skip1b('=')) {
       cmd >> *val;
     }else{
       *val = true;
