@@ -1,4 +1,4 @@
-/*$Id: d_vs.cc 2016/03/25 al $ -*- C++ -*-
+/*$Id: d_vs.cc 2016/09/11 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -119,7 +119,7 @@ bool DEV_VS::do_tr()
     q_load();
     _m0.c0 = -_loss0 * _y[0].f1;
     assert(_m0.c1 == 0.);
-  }else{itested();
+  }else{
     assert(conchk(_loss0, 1./OPT::shortckt));
     assert(_y[0].x == 0.);
     assert(_y[0].f0 == 0.);

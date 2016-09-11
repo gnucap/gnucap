@@ -1,4 +1,4 @@
-/*$Id: c_list.cc,v 26.133 2009/11/26 04:58:04 al Exp $ -*- C++ -*-
+/*$Id: c_list.cc  2016/09/11 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -42,8 +42,8 @@ void list_save(CS& cmd, OMSTREAM out, CARD_LIST* scope)
   case rPRESET:
     /* do nothing */
     return;
-  case rBATCH:		itested();
-  case rINTERACTIVE:	itested();
+  case rBATCH:
+  case rINTERACTIVE:
   case rSCRIPT:
     /* keep going */
     break;

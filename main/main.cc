@@ -1,4 +1,4 @@
-/*$Id: main.cc 2015/01/21 al $ -*- C++ -*-
+/*$Id: main.cc 2016/09/11 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -196,7 +196,7 @@ static void process_cmd_line(int argc, const char *argv[])
 	  CMD::command(std::string("attach ") + argv[ii++], &CARD_LIST::card_list);
 	}else{untested();
 	}
-      }else{itested();
+      }else{
 	CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
       }
     }catch (Exception_Quit& e) {
