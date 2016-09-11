@@ -188,9 +188,10 @@
 #define untested3(s,x,y,z)
 #endif
 
+#ifdef TRACE_ITESTED
+
 #ifdef __cplusplus
 
-#ifdef TRACE_ITESTED
 #define itested() ( std::cerr << "@@#\n@@@:" \
      << __FILE__ << ":" << __LINE__ << ":" << __func__ << "\n" )
 
