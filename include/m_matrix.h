@@ -149,12 +149,12 @@ public:
   void		dezero(T& o);
   int		size()const		{return _size;}
   double 	density();
-  T 	d(int r, int  )const	{return *(_diaptr[r]);}
-  T const& s(int r, int c)const;
+  T 	d(int r, int  )const;
+  T     s(int r, int c)const;
 private:
-  T 	u(int r, int c)const	{return _colptr[c][r];}
-  T 	l(int r, int c)const	{return _rowptr[r][-c];}
-  T&	d(int r, int c);
+  T 	u(int r, int c)const;
+  T 	l(int r, int c)const;
+  T&	d(int r, int  );
   T&	u(int r, int c);
   T&	l(int r, int c);
   T&	m(int r, int c);
@@ -388,12 +388,26 @@ double BSMATRIX<T>::density()
   }
 }
 /*--------------------------------------------------------------------------*/
-/* d: fast matrix entry access, lvalue
+/* d: fast matrix entry access
  * It is known that the entry is valid and on the diagonal
  */
 template <class T>
+T BSMATRIX<T>::d(int r, int c) const
+{untested();
+  USE(c);
+  assert(_diaptr);
+  assert(r == c);
+  assert(0 <= r);
+  assert(r <= _size);
+
+  return *(_diaptr[r]);
+}
+/*--------------------------------------------------------------------------*/
+/* d: as above, but lvalue */
+template <class T>
 T& BSMATRIX<T>::d(int r, int c)
-{
+{untested();
+  USE(c);
   assert(_diaptr);
   assert(r == c);
   assert(0 <= r);
@@ -406,8 +420,23 @@ T& BSMATRIX<T>::d(int r, int c)
  * It is known that the entry is valid and in the upper triangle
  */
 template <class T>
+T BSMATRIX<T>::u(int r, int c) const
+{untested();
+  assert(_colptr);
+  assert(_lownode);
+  assert(0 < r);
+  assert(r <= c);
+  assert(c <= _size);
+  assert(1 <= _lownode[c]);
+  assert(_lownode[c] <= r);
+
+  return _colptr[c][r];
+}
+/*--------------------------------------------------------------------------*/
+/* u: as above, but lvalue */
+template <class T>
 T& BSMATRIX<T>::u(int r, int c)
-{
+{untested();
   assert(_colptr);
   assert(_lownode);
   assert(0 < r);
@@ -423,8 +452,23 @@ T& BSMATRIX<T>::u(int r, int c)
  * It is known that the entry is valid and in the lower triangle
  */
 template <class T>
+T BSMATRIX<T>::l(int r, int c) const
+{untested();
+  assert(_rowptr);
+  assert(_lownode);
+  assert(0 < c);
+  assert(c <= r);
+  assert(r <= _size);
+  assert(1 <= _lownode[r]);
+  assert(_lownode[r] <= c);
+
+  return _rowptr[r][-c];
+}
+/*--------------------------------------------------------------------------*/
+/* l: as above, but lvalue */
+template <class T>
 T& BSMATRIX<T>::l(int r, int c)
-{
+{untested();
   assert(_rowptr);
   assert(_lownode);
   assert(0 < c);
@@ -459,7 +503,7 @@ T& BSMATRIX<T>::m(int r, int c)
  *   but reading it gives a number not useful for anything.
  */
 template <class T>
-T const& BSMATRIX<T>::s(int row, int col)const
+T BSMATRIX<T>::s(int row, int col)const
 {untested();
   assert(_lownode);
   assert(0 <= col);
