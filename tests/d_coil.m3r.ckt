@@ -1,0 +1,112 @@
+Mutual inductance test circuit
+.param L1 = .56
+.param L2 = .79
+.param L3 = .58
+.param K12 = .75
+.param K23 = .54
+.param K13 = .66
+.param Rsource = 22
+.param Rload1 = 75
+.param Rload2 = 90
+
+* using 'k' pseudo element
+.subckt trans3a (a1 a2 b1 b2 c1 c2)
+k1 (l2 l1) {K12}
+k2 (l3 l2) {K23}
+k3 (l1 l3) {K13}
+l1 (a1 a2) {L1}
+l2 (b1 b2) {L2}
+l3 (c1 c2) {L3}
+.ends
+
+.subckt trans3ss (a1 a2 b1 b2 c1 c2)
+.param M12 = {K12*sqrt(L1*L2)}
+l1 (a3 a2)       {L1}
+l2 (b3 b2)       {L2}
+l3 (c3 c2)        {L3}
+e21 (a1 a3 b3 b2) {M12/L2}
+e12 (b1 b3 a3 a2) {M12/L1}
+e13 (c1 c3 a3 a2) {M13/L1}
+.ends
+
+
+* series model, using VCVS
+.subckt trans3b (a1 a2 b1 b2 c1 c2)
+.param M12 = {K12*sqrt(L1*L2)}
+.param M23 = {K23*sqrt(L2*L3)}
+.param M13 = {K13*sqrt(L1*L3)}
+l1 (a3 a2)       {L1}
+l2 (b3 b2)       {L2}
+l3 (c3 c2)        {L3}
+e21 (a4 a3 b3 b2) {M12/L2}
+e31 (a1 a4 c3 c2) {M13/L3}
+e12 (b4 b3 a3 a2) {M12/L1}
+e32 (b1 b4 c3 c2) {M23/L3}
+e13 (c4 c3 a3 a2) {M13/L1}
+e23 (c1 c4 b3 b2) {M23/L2}
+.ends
+
+* nullor model
+.subckt trans3c (a1 a2 b1 b2 c1 c2)
+.param M12 = {K12*sqrt(L1*L2)}
+.param M23 = {K23*sqrt(L2*L3)}
+.param M13 = {K13*sqrt(L1*L3)}
+r1l1 (a1 0)  1
+r2l1 (a1 a3) -1
+r3l1 (a3 a2) 1
+r4l1 (a2 0)  -1
+r1l2 (b1 0)  1
+r2l2 (b1 b3) -1
+r3l2 (b3 b2) 1
+r4l2 (b2 0)  -1
+r1l3 (c1 0)  1
+r2l3 (c1 c3) -1
+r3l3 (c3 c2) 1
+r4l3 (c2 0)  -1
+c1   (a3 0)  {-L1-M12-M13}
+c2   (b3 0)  {-L2-M12-M23}
+c3   (c3 0)  {-L3-M13-M23}
+c12  (a3 b3) {M12}
+c23  (b3 c3) {M23}
+c13  (a3 c3) {M13}
+.ends
+
+
+
+
+
+va1 (a1 0)           pulse(0 1 .002 .002 .002 .002 .01) ac 1
+ra1 (a2 a1)          {Rsource}
+xa1 (0 a2 0 a3 0 a4) trans3a L1=L1 L2=L2 L3=L3 K12=K12 K23=K23 K13=K13
+ra2 (0 a3)           {Rload1}
+ra3 (0 a4)           {Rload2}
+
+vb1 (b1 0)           pulse(0 1 .002 .002 .002 .002 .01) ac 1
+rb1 (b2 b1)          {Rsource}
+xb1 (0 b2 0 b3 0 b4) trans3b L1=L1 L2=L2 L3=L3 K12=K12 K23=K23 K13=K13
+rb2 (0 b3)           {Rload1}
+rb3 (0 b4)           {Rload2}
+
+vc1 (c1 0)           pulse(0 1 .002 .002 .002 .002 .01) ac 1
+rc1 (c2 c1)          {Rsource}
+xc1 (0 c2 0 c3 0 c4) trans3c L1=L1 L2=L2 L3=L3 K12=K12 K23=K23 K13=K13
+rc2 (0 c3)           {Rload1}
+rc3 (0 c4)           {Rload2}
+
+vd1 (d1 0)           pulse(0 1 .002 .002 .002 .002 .01) ac 1
+rd1 (d2 d1)          {Rsource}
+xd1 (0 d2 0 d3 0 d4) trans3b L1=L1 L2=L2 L3=L3 K12=K12 K23=K23 K13=K13
+rd2 (0 d3)           {Rload1}
+rd3 (0 d4)           {Rload2}
+
+
+.options nopage
+.width out=200
+.print ac vm(a2) vm(a3) vm(a4) vm(b2) vm(b3) vm(b4) vm(c2) vm(c3) vm(c4) vm(d2) vm(d3) vm(d4)
+.ac dec 2 .1 1k
+.print ac vp(a2) vp(a3) vp(a4) vp(b2) vp(b3) vp(b4) vp(c2) vp(c3) vp(c4) vp(d2) vp(d3) vp(d4)
+.ac dec 2 .1 1k
+.print tran  v(a2) v(a3) v(a4) v(b2) v(b3) v(b4) v(c2) v(c3) v(c4) v(d2) v(d3) v(d4)
+.tran .001 .01 0 .0001
+.status notime
+.end

@@ -1,0 +1,10 @@
+* pulse test with 0 rise and fall time in subckt
+.subckt foo (1 2)
+v1 (1 2) pulse (iv=0 pv=10 width=0 period=0)
+.ends
+x1 (1 0) foo
+x2 (0 2) foo
+
+.print tran v(1) v(2)
+.tran 0 10 1
+.end

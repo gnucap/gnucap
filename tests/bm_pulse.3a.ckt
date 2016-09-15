@@ -1,0 +1,12 @@
+'switch capacitor filter.  Use tr 0 50u .1u.  Gen freq 100k
+Vin   1  0  generator( 1. ) 
+C1   1  2  1.p
+Y1   2  3  pulse iv=20u pv=0 delay=500n period=1u width=500n
+Y2   3  0  pulse iv=0 pv=20u delay=500n period=1u width=500n
+C2   3  0  1.p ic=0.
+.gen freq=100k
+.print tran v(nodes) stepcause(0)
+.tran 0 50u .1u trace all
+.status notime
+.end
+
