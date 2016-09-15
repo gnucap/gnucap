@@ -1,4 +1,4 @@
-/*$Id: m_matrix.h 2014/11/23 al$ -*- C++ -*-
+/*$Id: m_matrix.h 2016/09/14 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -106,7 +106,7 @@
  * "s" will let you change the value of zero,
  *   but you will find out about it later.
  */
-//testing=script 2008.09.19
+//testing=script 2016.09.14
 #ifndef M_MATRIX_H
 #define M_MATRIX_H
 /*--------------------------------------------------------------------------*/
@@ -393,7 +393,7 @@ double BSMATRIX<T>::density()
  */
 template <class T>
 T BSMATRIX<T>::d(int r, int c) const
-{untested();
+{
   USE(c);
   assert(_diaptr);
   assert(r == c);
@@ -406,7 +406,7 @@ T BSMATRIX<T>::d(int r, int c) const
 /* d: as above, but lvalue */
 template <class T>
 T& BSMATRIX<T>::d(int r, int c)
-{untested();
+{
   USE(c);
   assert(_diaptr);
   assert(r == c);
@@ -421,7 +421,7 @@ T& BSMATRIX<T>::d(int r, int c)
  */
 template <class T>
 T BSMATRIX<T>::u(int r, int c) const
-{untested();
+{
   assert(_colptr);
   assert(_lownode);
   assert(0 < r);
@@ -436,7 +436,7 @@ T BSMATRIX<T>::u(int r, int c) const
 /* u: as above, but lvalue */
 template <class T>
 T& BSMATRIX<T>::u(int r, int c)
-{untested();
+{
   assert(_colptr);
   assert(_lownode);
   assert(0 < r);
@@ -453,7 +453,7 @@ T& BSMATRIX<T>::u(int r, int c)
  */
 template <class T>
 T BSMATRIX<T>::l(int r, int c) const
-{untested();
+{
   assert(_rowptr);
   assert(_lownode);
   assert(0 < c);
@@ -468,7 +468,7 @@ T BSMATRIX<T>::l(int r, int c) const
 /* l: as above, but lvalue */
 template <class T>
 T& BSMATRIX<T>::l(int r, int c)
-{untested();
+{
   assert(_rowptr);
   assert(_lownode);
   assert(0 < c);
@@ -537,12 +537,12 @@ T BSMATRIX<T>::s(int row, int col)const
 /*--------------------------------------------------------------------------*/
 template <class T>
 void BSMATRIX<T>::load_point(int i, int j, T value)
-{
-  if (i > 0 && j > 0) {
+{untested();
+  if (i > 0 && j > 0) {untested();
     set_changed(j);
     set_changed(i);
     m(i,j) += value;
-  }else{
+  }else{untested();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -758,7 +758,7 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
     }
 
     int first_nz = ii;
-    for (   ; ii <= size(); ++ii) {            /* forward substitution */
+    for (   ; ii <= size(); ++ii) {		/* forward substitution */
       int low_node = std::max(_lownode[ii], first_nz);
       c[ii] = b[ii];
       for (int jj = low_node; jj < ii; ++jj) {
@@ -770,7 +770,7 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
 
   notstd::copy_n(c, size()+1, x);
 
-  for (int jj = size(); jj > 1; --jj) {         /* back substitution    */
+  for (int jj = size(); jj > 1; --jj) {		/* back substitution    */
     for (int ii = _lownode[jj]; ii < jj; ++ii) {
       x[ii] -= u(ii,jj) * x[jj];
     }
@@ -790,21 +790,21 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
  */
 template <class T>
 void BSMATRIX<T>::fbsubt(T* v) const
-{ untested();
+{untested();
   assert(_lownode);
   assert(v);
 
   // forward substitution
-  for (unsigned ii = 1; ii <= size(); ++ii) { untested();
-    for (unsigned jj = _lownode[ii]; jj < ii; ++jj) { untested();
+  for (int ii = 1; ii <= size(); ++ii) {untested();
+    for (int jj = _lownode[ii]; jj < ii; ++jj) {untested();
       v[ii] -= u(jj,ii) * v [jj];
     }
   }
 
   // back substitution
-  for (unsigned jj = size(); jj > 1; --jj) { untested();
+  for (int jj = size(); jj > 1; --jj) {untested();
     v[jj] /= d(jj,jj);
-    for (unsigned ii = _lownode[jj]; ii < jj; ++ii) { untested();
+    for (int ii = _lownode[jj]; ii < jj; ++ii) {untested();
       v[ii] -= l(jj,ii) * v[jj];
     }
   }
