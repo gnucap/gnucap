@@ -31,8 +31,10 @@
  * the expansion (attact to the X) has all comments removed
  *	- need to process the entire ring - for doesn't work
  */
+#include "e_node.h"
 #include "globals.h"
 #include "d_subckt.h"
+#include "e_subckt.h"
 /*--------------------------------------------------------------------------*/
 int COMMON_SUBCKT::_count = -1;
 static COMMON_SUBCKT Default_SUBCKT(CC_STATIC);
@@ -119,7 +121,7 @@ private:
 public:
   explicit	DEV_SUBCKT();
 		~DEV_SUBCKT()	{--_count;}
-  CARD*		clone()const		{untested(); return new DEV_SUBCKT(*this);}
+  CARD*		clone()const		{return new DEV_SUBCKT(*this);}
 private: // override virtual
   char		id_letter()const	{return 'X';}
   bool		print_type_in_spice()const {return true;}
@@ -166,30 +168,30 @@ public: // override virtual
   int		min_nodes()const	{return 0;}
   int		matrix_nodes()const	{untested();return 0;}
   int		net_nodes()const	{return _net_nodes;}
-  CARD*		clone()const		{untested(); return new DEV_SUBCKT_PROTO(*this);}
+  CARD*		clone()const		{return new DEV_SUBCKT_PROTO(*this);}
   bool		is_device()const	{return false;}
   bool		makes_own_scope()const  {return true;}
   CARD_LIST*	   scope()		{return subckt();}
   const CARD_LIST* scope()const		{return subckt();}
 private: // no-ops for prototype
-  void precalc_first(){untested();}
-  void expand(){untested();}
-  void precalc_last(){untested();}
-  void map_nodes(){untested();}
-  void tr_begin(){untested();}
-  void tr_load(){untested();}
-  TIME_PAIR tr_review(){untested(); return TIME_PAIR(NEVER, NEVER);}
-  void tr_accept(){untested();}
-  void tr_advance(){untested();}
-  void tr_restore(){untested();}
-  void tr_regress(){untested();}
-  void dc_advance(){untested();}
-  void ac_begin(){untested();}
-  void do_ac(){untested();}
-  void ac_load(){untested();}
-  bool do_tr(){untested(); return true;}
+  void precalc_first(){}
+  void expand(){}
+  void precalc_last(){}
+  void map_nodes(){}
+  void tr_begin(){}
+  void tr_load(){}
+  TIME_PAIR tr_review(){ return TIME_PAIR(NEVER, NEVER);}
+  void tr_accept(){}
+  void tr_advance(){}
+  void tr_restore(){}
+  void tr_regress(){}
+  void dc_advance(){}
+  void ac_begin(){}
+  void do_ac(){}
+  void ac_load(){}
+  bool do_tr(){ return true;}
   bool tr_needs_eval()const{untested(); return false;}
-  void tr_queue_eval(){untested();}
+  void tr_queue_eval(){}
   std::string port_name(int)const {return "";}
 public:
   static int	count()			{return _count;}
@@ -204,25 +206,25 @@ static DISPATCHER<CARD>::INSTALL
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO& p)
   :DEV_SUBCKT(p)
-{ untested();
+{
   new_subckt();
 }
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO()
   :DEV_SUBCKT()
-{ untested();
+{
   new_subckt();
 }
 /*--------------------------------------------------------------------------*/
 CARD* DEV_SUBCKT_PROTO::clone_instance()const
-{untested();
+{
   DEV_SUBCKT* new_instance = dynamic_cast<DEV_SUBCKT*>(p1.clone());
   assert(!new_instance->subckt());
 
-  if (this == &pp){ untested();
+  if (this == &pp){
     // cloning from static, empty model
     // look out for _parent in expand
-  }else{ untested();
+  }else{
     new_instance->_parent = this;
   }
 
@@ -233,7 +235,7 @@ CARD* DEV_SUBCKT_PROTO::clone_instance()const
 DEV_SUBCKT::DEV_SUBCKT()
   :BASE_SUBCKT(),
    _parent(NULL)
-{ untested();
+{
   attach_common(&Default_SUBCKT);
   _n = _nodes;
   ++_count;
@@ -242,7 +244,7 @@ DEV_SUBCKT::DEV_SUBCKT()
 DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
   :BASE_SUBCKT(p),
    _parent(p._parent)
-{ untested();
+{
   //strcpy(modelname, p.modelname); in common
   for (int ii = 0;  ii < max_nodes();  ++ii) {
     _nodes[ii] = p._nodes[ii];
@@ -255,7 +257,7 @@ DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
 std::string DEV_SUBCKT::port_name(int i)const
 {itested();
   if (const DEV_SUBCKT* p=dynamic_cast<const DEV_SUBCKT*>(_parent)) {itested();
-    if (i<p->net_nodes()){ untested();
+    if (i<p->net_nodes()){
       return p->port_value(i);
     }else{ untested();
       return "";
@@ -269,20 +271,20 @@ std::string DEV_SUBCKT::port_name(int i)const
 }
 /*--------------------------------------------------------------------------*/
 void DEV_SUBCKT::expand()
-{ untested();
+{
   BASE_SUBCKT::expand();
   COMMON_SUBCKT* c = prechecked_cast<COMMON_SUBCKT*>(mutable_common());
   assert(c);
-  if (!_parent) { untested();
+  if (!_parent) {
     // get here when instanciating X, then set modelname
     assert(c->modelname()!="");
     const CARD* model = find_looking_out(c->modelname());
-    if(!dynamic_cast<const BASE_SUBCKT*>(model)) { untested();
+    if(!dynamic_cast<const BASE_SUBCKT*>(model)) {
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
-    }else{ untested();
+    }else{
       _parent = prechecked_cast<const BASE_SUBCKT*>(model);
     }
-  }else{ untested();
+  }else{
     // possible after clone_instance.
     assert(find_looking_out(c->modelname()) == _parent);
   }
@@ -301,12 +303,12 @@ void DEV_SUBCKT::precalc_first()
 {
   BASE_SUBCKT::precalc_first();
 
-  if (subckt()) { untested();
+  if (subckt()) {
     COMMON_SUBCKT* c = prechecked_cast<COMMON_SUBCKT*>(mutable_common());
     assert(c);
     subckt()->attach_params(&(c->_params), scope());
     subckt()->precalc_first();
-  }else{ untested();
+  }else{
   }
   assert(!is_constant()); /* because I have more work to do */
 }

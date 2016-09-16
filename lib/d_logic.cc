@@ -26,7 +26,7 @@
  */
 //testing=script,sparse 2006.07.17
 #include "globals.h"
-#include "d_subckt.h"
+#include "e_subckt.h"
 #include "u_xprobe.h"
 #include "d_logic.h"
 /*--------------------------------------------------------------------------*/

@@ -504,7 +504,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
-	try{ untested();
+	try{
 	  (**ci).n_(ii).map_subckt_node(map, owner);
 	}catch(...){ untested();
 	  delete[] map;

@@ -24,8 +24,7 @@
 //testing=script,sparse 2006.07.17
 #ifndef D_SUBCKT_H
 #define D_SUBCKT_H
-#include "e_node.h"
-#include "e_subckt.h"
+#include "e_compon.h"
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMMON_SUBCKT : public COMMON_COMPONENT {

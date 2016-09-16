@@ -24,7 +24,7 @@
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
-#include "d_subckt.h"
+#include "e_subckt.h"
 #include "e_model.h"
 #include "u_lang.h"
 /*--------------------------------------------------------------------------*/
@@ -418,6 +418,7 @@ class CMD_SUBCKT : public CMD {
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
     lang_spectre.parse_module(cmd, new_module);
+    assert(!new_module->is_device());
     Scope->push_back(new_module);
   }
 } p2;
