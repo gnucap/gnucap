@@ -21,23 +21,23 @@
  *------------------------------------------------------------------
  * data structures for subcircuits
  */
-//testing=script,sparse 2006.07.17
+//testing=script 2016.09.16
 #ifndef D_SUBCKT_H
 #define D_SUBCKT_H
 #include "e_compon.h"
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-class INTERFACE COMMON_SUBCKT : public COMMON_COMPONENT {
+class INTERFACE COMMON_PARAMLIST : public COMMON_COMPONENT {
 private:
-  explicit COMMON_SUBCKT(const COMMON_SUBCKT& p)
+  explicit COMMON_PARAMLIST(const COMMON_PARAMLIST& p)
     :COMMON_COMPONENT(p), _params(p._params) {++_count;}
 public:
-  explicit COMMON_SUBCKT(int c=0)	:COMMON_COMPONENT(c) {++_count;}
-	   ~COMMON_SUBCKT()		{--_count;}
+  explicit COMMON_PARAMLIST(int c=0)	:COMMON_COMPONENT(c) {++_count;}
+	   ~COMMON_PARAMLIST()		{--_count;}
   bool operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const	{return new COMMON_SUBCKT(*this);}
-  std::string	name()const		{itested(); return "subckt";}
-  static int	count()			{return _count;}
+  COMMON_COMPONENT* clone()const	{return new COMMON_PARAMLIST(*this);}
+  std::string	name()const		{untested();return "";}
+  static int	count()			{untested();return _count;}
 
   void set_param_by_name(std::string Name, std::string Value) {_params.set(Name, Value);}
   bool		param_is_printable(int)const;
