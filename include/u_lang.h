@@ -1,4 +1,4 @@
-/*$Id: u_lang.h 2015/01/21 al $ -*- C++ -*-
+/*$Id: u_lang.h 2016/09/17 $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

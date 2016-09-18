@@ -230,8 +230,7 @@ public: // matrix
 class INTERFACE node_t {
 private:
   static bool node_is_valid(int i) {
-    if (i == INVALID_NODE) {untested();
-      itested();
+    if (i == INVALID_NODE) {
     }else if (i < 0) {
       unreachable();
     }else if (i > NODE::_sim->_total_nodes) {

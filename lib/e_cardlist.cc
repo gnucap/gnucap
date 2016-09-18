@@ -1,4 +1,4 @@
-/*$Id: e_cardlist.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.cc  2016/09/17 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -506,7 +506,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 	// for each connection node in card
 	try{
 	  (**ci).n_(ii).map_subckt_node(map, owner);
-	}catch(...){ untested();
+	}catch(...){
 	  delete[] map;
 	  throw;
 	}

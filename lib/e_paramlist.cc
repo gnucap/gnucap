@@ -21,10 +21,8 @@
  *------------------------------------------------------------------
  */
 //testing=script 2016.09.16
-#include "e_node.h"
-#include "globals.h"
 #include "e_paramlist.h"
-#include "e_subckt.h"
+/*--------------------------------------------------------------------------*/
 int COMMON_PARAMLIST::_count = -1;
 /*--------------------------------------------------------------------------*/
 bool COMMON_PARAMLIST::operator==(const COMMON_COMPONENT& x)const

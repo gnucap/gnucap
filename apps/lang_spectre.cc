@@ -1,4 +1,4 @@
-/*$Id: lang_spectre.cc 2015/01/27 al $ -*- C++ -*-
+/*$Id: lang_spectre.cc 2016/09/17  $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -48,7 +48,7 @@ public: // override virtual, called by commands
   DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*);
   DEV_DOT*	parse_command(CS&, DEV_DOT*);
   MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*);
-  BASE_SUBCKT* parse_module(CS&, BASE_SUBCKT*);
+  BASE_SUBCKT*	parse_module(CS&, BASE_SUBCKT*);
   COMPONENT*	parse_instance(CS&, COMPONENT*);
   std::string	find_type_in_string(CS&);
 
@@ -417,8 +417,8 @@ class CMD_SUBCKT : public CMD {
     assert(!new_module->owner());
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
-    lang_spectre.parse_module(cmd, new_module);
     assert(!new_module->is_device());
+    lang_spectre.parse_module(cmd, new_module);
     Scope->push_back(new_module);
   }
 } p2;

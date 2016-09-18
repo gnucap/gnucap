@@ -1,0 +1,9 @@
+
+.subckt foo (1 2 3 4)
+e1 (1 2 3 4) 1
+.ends
+v1 (1 0) 1
+x1 (1 2) foo
+.op
+.list
+.end

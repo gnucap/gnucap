@@ -1,4 +1,4 @@
-/*$Id: lang_spice.cc  2016/03/23 al $ -*- C++ -*-
+/*$Id: lang_spice.cc  2016/09/17 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -47,7 +47,7 @@ public: // override virtual, called by commands
   DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*);
   DEV_DOT*	parse_command(CS&, DEV_DOT*);
   MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*);
-  BASE_SUBCKT* parse_module(CS&, BASE_SUBCKT*);
+  BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*);
   COMPONENT*	parse_instance(CS&, COMPONENT*);
   std::string	find_type_in_string(CS&);
 public: // "local?", called by own commands
@@ -763,7 +763,7 @@ void LANG_SPICE_BASE::print_type(OMSTREAM& o, const COMPONENT* x)
   assert(x);
   if (x->print_type_in_spice()) {
     o << "  " << x->dev_type();
-  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {itested();
+  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {untested();
     o << "  " << x->dev_type();
   }else{
     // don't print type
@@ -868,8 +868,8 @@ class CMD_SUBCKT : public CMD {
     assert(!new_module->owner());
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
-    lang_spice.parse_module(cmd, new_module);
     assert(!new_module->is_device());
+    lang_spice.parse_module(cmd, new_module);
     Scope->push_back(new_module);
   }
 } p2;

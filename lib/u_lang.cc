@@ -1,4 +1,4 @@
-/*$Id: u_lang.cc 2015/02/05 al $ -*- C++ -*-
+/*$Id: u_lang.cc 2016/09/17 $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

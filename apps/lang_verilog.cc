@@ -1,4 +1,4 @@
-/*$Id: lang_verilog.cc 2014/07/04 al $ -*- C++ -*-
+/*$Id: lang_verilog.cc  2016/09/17 al $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

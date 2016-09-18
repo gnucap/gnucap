@@ -1,4 +1,4 @@
-/*$Id: d_subckt.cc  2016/09/11  $ -*- C++ -*-
+/*$Id: d_subckt.cc  2016/09/17  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -37,8 +37,8 @@
 #include "e_paramlist.h"
 #include "e_subckt.h"
 /*--------------------------------------------------------------------------*/
-int COMMON_PARAMLIST::_count = -1;
 namespace{
+/*--------------------------------------------------------------------------*/
 static COMMON_PARAMLIST Default_SUBCKT(CC_STATIC);
 #define PORTS_PER_SUBCKT 100
 //BUG// fixed limit on number of ports
@@ -55,12 +55,10 @@ private: // override virtual
   char		id_letter()const	{untested();return 'X';}
   bool		print_type_in_spice()const {return true;}
   std::string   value_name()const	{return "#";}
-  // std::string   dev_type()const
   int		max_nodes()const	{return PORTS_PER_SUBCKT;}
   int		min_nodes()const	{return 0;}
   int		matrix_nodes()const	{return 0;}
   int		net_nodes()const	{return _net_nodes;}
-//  CARD*		clone_instance()const;
   void		precalc_first();
   bool		makes_own_scope()const  {return false;}
 
@@ -78,7 +76,7 @@ protected:
 private:
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
-};
+} p1;
 int DEV_SUBCKT::_count = -1;
 /*--------------------------------------------------------------------------*/
 class INTERFACE DEV_SUBCKT_PROTO : public DEV_SUBCKT {
@@ -129,9 +127,7 @@ private:
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
 } pp;
-static DEV_SUBCKT   p1;
-static DISPATCHER<CARD>::INSTALL
-  d1(&device_dispatcher, "X|subckt", &pp);
+DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt", &pp);
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO& p)
   :DEV_SUBCKT(p)
