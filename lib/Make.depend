@@ -134,6 +134,15 @@ u_xprobe.o: u_xprobe.cc ../include/m_phase.h ../include/constant.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \
  ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/u_xprobe.h
+d_subckt.o: d_subckt.cc ../include/e_node.h ../include/u_sim_data.h \
+ ../include/constant.h ../include/md.h ../include/io_trace.h \
+ ../include/io_error.h ../include/l_compar.h ../include/u_opt.h \
+ ../include/mode.h ../include/io_.h ../include/l_lib.h \
+ ../include/m_matrix.h ../include/l_stlextra.h ../include/e_base.h \
+ ../include/globals.h ../include/l_dispatcher.h ../include/ap.h \
+ ../include/e_paramlist.h ../include/e_compon.h ../include/u_time_pair.h \
+ ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
+ ../include/e_cardlist.h ../include/e_card.h ../include/e_subckt.h
 d_logic.o: d_logic.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/md.h ../include/io_trace.h \
  ../include/io_error.h ../include/l_stlextra.h ../include/u_opt.h \
