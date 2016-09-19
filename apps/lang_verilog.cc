@@ -1,4 +1,4 @@
-/*$Id: lang_verilog.cc 2014/07/04 al $ -*- C++ -*-
+/*$Id: lang_verilog.cc  2016/09/17 al $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -24,7 +24,7 @@
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
-#include "d_subckt.h"
+#include "e_subckt.h"
 #include "e_model.h"
 #include "u_lang.h"
 /*--------------------------------------------------------------------------*/
@@ -72,13 +72,13 @@ public: // override virtual, called by commands
   DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*);
   DEV_DOT*	parse_command(CS&, DEV_DOT*);
   MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*);
-  MODEL_SUBCKT* parse_module(CS&, MODEL_SUBCKT*);
+  BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*);
   COMPONENT*	parse_instance(CS&, COMPONENT*);
   std::string	find_type_in_string(CS&);
 
 private: // override virtual, called by print_item
   void print_paramset(OMSTREAM&, const MODEL_CARD*);
-  void print_module(OMSTREAM&, const MODEL_SUBCKT*);
+  void print_module(OMSTREAM&, const BASE_SUBCKT*);
   void print_instance(OMSTREAM&, const COMPONENT*);
   void print_comment(OMSTREAM&, const DEV_COMMENT*);
   void print_command(OMSTREAM& o, const DEV_DOT* c);
@@ -261,7 +261,7 @@ MODEL_CARD* LANG_VERILOG::parse_paramset(CS& cmd, MODEL_CARD* x)
  */
 //BUG// strictly one device per line
 
-MODEL_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, MODEL_SUBCKT* x)
+BASE_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, BASE_SUBCKT* x)
 {
   assert(x);
 
@@ -416,7 +416,7 @@ void LANG_VERILOG::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
   _mode = mDEFAULT;
 }
 /*--------------------------------------------------------------------------*/
-void LANG_VERILOG::print_module(OMSTREAM& o, const MODEL_SUBCKT* x)
+void LANG_VERILOG::print_module(OMSTREAM& o, const BASE_SUBCKT* x)
 {
   assert(x);
   assert(x->subckt());
@@ -490,11 +490,12 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "paramset", &p1);
 class CMD_MODULE : public CMD {
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
-    MODEL_SUBCKT* new_module = new MODEL_SUBCKT;
+    BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("subckt"));
     assert(new_module);
     assert(!new_module->owner());
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
+    assert(!new_module->is_device());
     lang_verilog.parse_module(cmd, new_module);
     Scope->push_back(new_module);
   }

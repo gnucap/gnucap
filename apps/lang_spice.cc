@@ -1,4 +1,4 @@
-/*$Id: lang_spice.cc  2016/03/23 al $ -*- C++ -*-
+/*$Id: lang_spice.cc  2016/09/17 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -25,7 +25,7 @@
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
-#include "d_subckt.h"
+#include "e_subckt.h"
 #include "u_lang.h"
 #include "d_logic.h"
 #include "bm.h"
@@ -47,11 +47,11 @@ public: // override virtual, called by commands
   DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*);
   DEV_DOT*	parse_command(CS&, DEV_DOT*);
   MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*);
-  MODEL_SUBCKT* parse_module(CS&, MODEL_SUBCKT*);
+  BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*);
   COMPONENT*	parse_instance(CS&, COMPONENT*);
   std::string	find_type_in_string(CS&);
 public: // "local?", called by own commands
-  void parse_module_body(CS&, MODEL_SUBCKT*, CARD_LIST*, const std::string&,
+  void parse_module_body(CS&, BASE_SUBCKT*, CARD_LIST*, const std::string&,
 			 EOB, const std::string&);
 private: // local
   void parse_type(CS&, CARD*);
@@ -64,7 +64,7 @@ private: // compatibility hacks
 
 private: // override virtual, called by print_item
   void print_paramset(OMSTREAM&, const MODEL_CARD*);
-  void print_module(OMSTREAM&, const MODEL_SUBCKT*);
+  void print_module(OMSTREAM&, const BASE_SUBCKT*);
   void print_instance(OMSTREAM&, const COMPONENT*);
   void print_comment(OMSTREAM&, const DEV_COMMENT*);
   void print_command(OMSTREAM&, const DEV_DOT*);
@@ -543,7 +543,7 @@ MODEL_CARD* LANG_SPICE_BASE::parse_paramset(CS& cmd, MODEL_CARD* x)
   return x;
 }
 /*--------------------------------------------------------------------------*/
-MODEL_SUBCKT* LANG_SPICE_BASE::parse_module(CS& cmd, MODEL_SUBCKT* x)
+BASE_SUBCKT* LANG_SPICE_BASE::parse_module(CS& cmd, BASE_SUBCKT* x)
 {
   assert(x);
 
@@ -565,7 +565,7 @@ MODEL_SUBCKT* LANG_SPICE_BASE::parse_module(CS& cmd, MODEL_SUBCKT* x)
   return x;
 }
 /*--------------------------------------------------------------------------*/
-void LANG_SPICE_BASE::parse_module_body(CS& cmd, MODEL_SUBCKT* x, CARD_LIST* Scope,
+void LANG_SPICE_BASE::parse_module_body(CS& cmd, BASE_SUBCKT* x, CARD_LIST* Scope,
 		const std::string& prompt, EOB exit_on_blank, const std::string& exit_key)
 {
   try {
@@ -694,7 +694,7 @@ void LANG_SPICE_BASE::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
   o << ")\n";
 }
 /*--------------------------------------------------------------------------*/
-void LANG_SPICE_BASE::print_module(OMSTREAM& o, const MODEL_SUBCKT* x)
+void LANG_SPICE_BASE::print_module(OMSTREAM& o, const BASE_SUBCKT* x)
 {
   assert(x);
   assert(x->subckt());
@@ -861,11 +861,12 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, ".model", &p1);
 class CMD_SUBCKT : public CMD {
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
-    MODEL_SUBCKT* new_module = new MODEL_SUBCKT;
+    BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("subckt"));
     assert(new_module);
     assert(!new_module->owner());
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
+    assert(!new_module->is_device());
     lang_spice.parse_module(cmd, new_module);
     Scope->push_back(new_module);
   }

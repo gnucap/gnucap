@@ -536,7 +536,7 @@ void node_t::map_subckt_node(int* m, const CARD* d)
   assert(e_() >= 0);
   if (node_is_valid(m[e_()])) {
     _ttt = m[e_()];
-  }else{untested();
+  }else{
     throw Exception(d->long_label() + ": need more nodes");
   }
   //_nnn->set_flat_number(_ttt);

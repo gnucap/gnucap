@@ -1,4 +1,4 @@
-/*$Id: e_card.cc 2016/03/25 al $ -*- C++ -*-
+/*$Id: e_card.cc 2016/09/17 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -192,13 +192,16 @@ TIME_PAIR CARD::tr_review()
 /*--------------------------------------------------------------------------*/
 void CARD::new_subckt()
 {
+  assert(!_subckt);
   delete _subckt;
+  _subckt = NULL;
   _subckt = new CARD_LIST;
 }
 /*--------------------------------------------------------------------------*/
 void CARD::new_subckt(const CARD* Model, PARAM_LIST* Params)
 {
   delete _subckt;
+  _subckt = NULL;
   _subckt = new CARD_LIST(Model, this, scope(), Params);
 }
 /*--------------------------------------------------------------------------*/
