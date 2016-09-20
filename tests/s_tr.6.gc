@@ -1,0 +1,8 @@
+spice
+.option list trsteporder=9
+v1 (1 0) pulse (0 1)
+.print tran v(1)
+.tran 0 1
+r1 (2 0) 1
+.tran
+.end

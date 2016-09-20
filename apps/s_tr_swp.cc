@@ -1,4 +1,4 @@
-/*$Id: s_tr_swp.cc 2015/01/28 al $ -*- C++ -*-
+/*$Id: s_tr_swp.cc 2016/09/20 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -254,6 +254,8 @@ bool TRANSIENT::next()
     newtime = _time_by_iteration_count = _time1 + new_dt;
     new_control = scITER_R;
   }else{
+  }
+  {
     double reftime;
     if (_accepted) {
       reftime = _sim->_time0;
@@ -265,12 +267,16 @@ bool TRANSIENT::next()
     trace2("", step_cause(), old_dt);
     trace3("", _time1, _sim->_time0, reftime);
 
-    newtime = _time_by_user_request;
-    new_dt = newtime - reftime;
-    new_control = scUSER;
+    if (_time_by_user_request < newtime) {
+      newtime = _time_by_user_request;
+      new_dt = newtime - reftime;
+      new_control = scUSER;
+    }else{
+    }
     double fixed_time = newtime;
     double almost_fixed_time = newtime;
     check_consistency();
+
     
     // event queue, events that absolutely will happen
     // exact time.  NOT ok to move or omit, even by _sim->_dtmin
