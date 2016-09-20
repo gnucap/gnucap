@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc 2016/03/25 al $ -*- C++ -*-
+/*$Id: e_elemnt.cc 2016/09/20 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -395,7 +395,15 @@ XPROBE ELEMENT::ac_probe_ext(const std::string& x)const
 /*--------------------------------------------------------------------------*/
 double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
 {
-  int error_deriv = order()+1;
+  int error_deriv;
+  if (order() >= OPT::_keep_time_steps - 2) {
+    error_deriv = OPT::_keep_time_steps - 1;
+  }else if (order() < 0) {untested();
+    error_deriv = 1;
+  }else{
+    error_deriv = order()+1;
+  }
+
   double timestep;
   if (_time[0] <= 0.) {
     // DC, I know nothing
