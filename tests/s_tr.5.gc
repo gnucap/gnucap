@@ -1,0 +1,8 @@
+spice
+.option list
+v1 (1 0) pulse (0 1)
+.print tran v(1)
+.tran 0 1 .1
+r1 (2 0) 1
+.tran
+.end
