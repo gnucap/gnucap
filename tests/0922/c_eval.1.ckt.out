@@ -1,0 +1,17 @@
+* unknown parameter check 
+parameter 3+a+1+1 not specified, using default
+parameter 3+a+1+1 value is "NOT_INPUT"
+x= NA
+(((3 + a) + 1) + 1)=(a +  5.)
+(a + b)=(b + a)
+(((2 + a) + b) + 3)=(((a + 2) + b) + 3)
+(((a + 2) + b) + 3)=(((a + 2) + b) + 3)
+(((a + 2) + 3) + b)=((a +  5.) + b)
+(((2 + a) + 3) + b)=((a +  5.) + b)
+x= 7.
+(((3 + a) + 1) + 1)= 7.
+(a + b)=(b +  2.)
+(((2 + a) + b) + 3)=(b +  7.)
+(((a + 2) + b) + 3)=(b +  7.)
+(((a + 2) + 3) + b)=(b +  7.)
+(((2 + a) + 3) + b)=(b +  7.)

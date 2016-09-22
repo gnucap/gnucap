@@ -1,0 +1,19 @@
+' test nested subckts 
+>>>>>.subckt aa (a b c) 
+>>>>>.subckt bb (1 2) 
+>>>>>.list 
+.subckt aa ( a b c )
+.subckt bb ( 1 2 )
+r1 ( 1 2 )  1.K
+.ends bb
+r1 ( a b )  1.
+r2 ( b 0 )  1.
+r3 ( b c )  1.
+xh ( a b )  bb 
+.ends aa
+x1 ( 1 2 3 )  aa 
+v1 ( 1 0 )  DC  1.
+>>>>>.print op v(nodes) 
+>>>>>.op 
+#           v(1)       v(2)       v(3)      
+ 27.        0.99999    0.50025    0.50025   

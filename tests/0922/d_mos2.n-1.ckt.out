@@ -1,0 +1,5 @@
+nmos opp gate 
+nnn: rsh - rs - rd conflict: using rsh
+nnn: is - js conflict
+#          
+ 27.       

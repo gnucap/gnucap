@@ -1,0 +1,45 @@
+nmos n gate, linear, lambda specified 
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
+#           v(1)       v(2)       v(3)       v(4)       iter(0)   
+ 27.        3.2367     0.         0.        -1.2349     5.        
+#           i(Vgs)     i(Vds)     i(Vbs)     ps(Vgs)    ps(Vds)    ps(Vbs)   
+ 27.        0.         0.         0.         0.         0.         0.        
+#           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
+ 27.        0.         3.2367     0.        -1.2349     1.5263     1.5205    
+#           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
+ 27.        0.         85.056u    0.         0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 27.        1.9707f    1.9707f    0.         62.973f    3.        
+#           cgs(M1)    cgd(M1)    cgb(M1)    vgst(M1)   von(M1)   
+ 27.        31.487f    31.487f    0.         1.7104     1.5263    
+#           cgst(M1)   cgdt(M1)   cgbt(M1)   is(M1)     ig(M1)     ib(M1)    
+ 27.        33.457f    33.457f    0.         0.         0.         0.        
+#           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1) iderror(M1)
+ 27.        0.         0.         0.         0.         0.         ??        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 27.        0.         3.2367    -1.2349     0.        
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
+ 27.        0.         3.2367    -1.2349     0.        
+#           v(1)       v(2)       v(3)       i(Vds)    
+-10.       -10.        0.         0.         0.        
+-9.        -9.         0.         0.         0.        
+-8.        -8.         0.         0.         0.        
+-7.        -7.         0.         0.         0.        
+-6.        -6.         0.         0.         0.        
+-5.        -5.         0.         0.         0.        
+-4.        -4.         0.         0.         0.        
+-3.        -3.         0.         0.         0.        
+-2.        -2.         0.         0.         0.        
+-1.        -1.         0.         0.         0.        
+ 0.         0.         0.         0.         0.        
+ 1.         1.         0.         0.         0.        
+ 2.         2.         0.         0.         0.        
+ 3.         3.         0.         0.         0.        
+ 4.         4.         0.         0.         0.        
+ 5.         5.         0.         0.         0.        
+ 6.         6.         0.         0.         0.        
+ 7.         7.         0.         0.         0.        
+ 8.         8.         0.         0.         0.        
+ 9.         9.         0.         0.         0.        
+ 10.        10.        0.         0.         0.        

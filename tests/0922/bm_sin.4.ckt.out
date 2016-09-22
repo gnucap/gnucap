@@ -1,0 +1,28 @@
+' sin test 
+#Time       v(1)       next(V1)   event(V1) 
+ 0.         0.         0.         5.n       
+ 200.p      0.12533    468.8p     5.n       
+ 400.p      0.24869    729.21p    5.n       
+ 726.67p    0.44088    1.826n     5.n       
+ 1.7974n    0.90413    3.0589n    5.n       
+ 2.8681n    0.97337    4.472n     5.n       
+ 3.9389n    0.61841    6.995n     5.n       
+ 5.n        0.         6.525n     10.n      
+ 6.0611n   -0.61841    7.542n     10.n      
+ 7.1222n   -0.97196    8.9218n    10.n      
+ 8.7319n   -0.71508    12.339n    10.n      
+ 10.n       0.         11.717n    15.n      
+ 11.268n    0.71508    12.922n    15.n      
+ 12.536n    0.99974    14.625n    15.n      
+ 14.402n    0.36691    16.647n    15.n      
+ 15.n       0.         16.405n    20.n      
+ 16.25n    -0.70711    17.938n    20.n      
+ 17.5n     -1.         19.934n    20.n      
+ 18.75n    -0.70711    20.845n    20.n      
+ 20.n       0.         21.641n    25.n      
+V1 ( 1 0 ) sin offset= 0. amplitude= 1. frequency= 100.Meg delay=NA( 0.) damping=NA( 0.) samples= 0. zero=1
+Gnucap   System status
+iterations: op=0, dc=0, tran=59, fourier=0, total=79
+transient timesteps: accepted=20, rejected=0, total=20
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%

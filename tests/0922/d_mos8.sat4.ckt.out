@@ -1,0 +1,25 @@
+nmos n gate, saturated 
+#           v(2)       v(3)       v(4)       iter(0)   
+ 27.        3.3635     5.        -1.2349     7.        
+#           i(Vds)     i(Vbs)     ps(Vds)    ps(Vbs)   
+ 27.       -16.365u    0.         81.827u    0.        
+#           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
+ 27.       -16.365u    0.        -3.3635    -4.5983     2.6164     0.49631   
+#           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   
+ 27.        37.2u      581.85n    10.952u    0.         0.        
+#           cgsovl(M1) cgdovl(M1) cgbovl(M1) cgate(M1)  region(M1)
+ 27.        0.         252.2E-18  0.         1.8647f   -7.        
+#           cgs(M1)    cgd(M1)    cgb(M1)    vgst(M1)   von(M1)   
+ 27.        0.         0.         0.         0.74708    2.6164    
+#           cgst(M1)   cgdt(M1)   cgbt(M1)   is(M1)     ig(M1)     ib(M1)    
+ 27.        0.         252.2E-18  0.         16.365u    0.         5.8532p   
+#           p(M1)      pd(M1)     ps(M1)     ids(M1)    idstray(M1) iderror(M1)
+ 27.        55.044u    55.044u    0.         16.365u   -1.2449p    ??        
+#           vdm(M1)    vgm(M1)    vbm(M1)    vsm(M1)   
+ 27.       -1.6817     1.6817    -2.9166     1.6817    
+#           vd(M1)     vg(M1)     vb(M1)     vs(M1)    
+ 27.        0.         3.3635    -1.2349     3.3635    
+#           idbcpoly(M1) idb(M1)    gdbds(M1)  gdbgs(M1)  gdbbs(M1) 
+ 27.        ??         0.         0.         0.         0.        
+#           isbcpoly(M1) isb(M1)    gsbsd(M1)  gsbgd(M1)  gsbbd(M1) 
+ 27.        ??         1.4993u    6.0279u    97.223n    325.59n   

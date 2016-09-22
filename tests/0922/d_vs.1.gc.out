@@ -1,0 +1,6 @@
+v1 (1 0) vsource  dc=2
+v2 (0 2) vsource  dc=5
+v3 (3 4) vsource  dc=3
+v4 (4 0) vsource  dc=9
+#           v(1)       v(2)       v(3)       v(4)      
+ 27.        2.        -5.         12.        9.        

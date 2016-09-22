@@ -1,0 +1,21 @@
+'c check 
+v1 ( 1 0 ) pulse iv= 0. pv= 1. delay= 0. rise= 0.01 fall= 0.01 width= 1.K period= 1.K  AC  1.
+r1 ( 1 2 )  100.
+c2 ( 2 0 )  0.01
+#Time       v(1)       v(2)      
+ 0.         0.         0.        
+ 1.         1.         0.63258   
+ 2.         1.         0.86611   
+ 3.         1.         0.9518    
+ 4.         1.         0.98265   
+ 5.         1.         0.99422   
+ 6.         1.         0.99807   
+ 7.         1.         0.99936   
+ 8.         1.         0.99979   
+ 9.         1.         0.99993   
+ 10.        1.         0.99998   
+Gnucap   System status
+iterations: op=0, dc=0, tran=104, fourier=0, total=139
+transient timesteps: accepted=30, rejected=5, total=35
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=100.0%, ac density=100.0%
