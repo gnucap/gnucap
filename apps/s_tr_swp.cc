@@ -1,4 +1,4 @@
-/*$Id: s_tr_swp.cc 2016/09/20 al $ -*- C++ -*-
+/*$Id: s_tr_swp.cc 2016/09/21 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -394,7 +394,7 @@ bool TRANSIENT::next()
 	// Try to choose one that we will keep for a while.
 	// Choose new_dt to be in integer fraction of target_dt.
 	assert(reftime == _sim->_time0); // moving forward
-	assert(reftime > _time1);
+	//assert(reftime > _time1); // _time1==_time0 on restart, ok
 	double target_dt = fixed_time - reftime;
 	assert(target_dt >= new_dt);
 	double steps = 1 + floor((target_dt - _sim->_dtmin) / new_dt);
@@ -528,7 +528,7 @@ bool TRANSIENT::review()
   }else{
   }
 
-  if (time_by._error_estimate < _time1 + 2*_sim->_dtmin) {untested();
+  if (time_by._error_estimate < _time1 + 2*_sim->_dtmin) {itested();
     _time_by_error_estimate = _time1 + 2*_sim->_dtmin;
   }else{
     _time_by_error_estimate = time_by._error_estimate;
