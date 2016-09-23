@@ -1,4 +1,4 @@
-/*$Id: s_fo.cc 2016/03/28 al $ -*- C++ -*-
+/*$Id: s_fo.cc 2016/09/22 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

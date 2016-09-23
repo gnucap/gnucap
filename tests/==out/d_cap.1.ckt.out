@@ -4,18 +4,18 @@ r1 ( 1 2 )  1.
 c2 ( 2 0 )  1.
 #Time       v(1)       v(2)      
  0.         0.         0.        
- 1.         1.         0.63431   
- 2.         1.         0.86674   
- 3.         1.         0.95202   
- 4.         1.         0.98273   
- 5.         1.         0.99424   
- 6.         1.         0.99808   
+ 1.         1.         0.63154   
+ 2.         1.         0.86572   
+ 3.         1.         0.95166   
+ 4.         1.         0.9826    
+ 5.         1.         0.9942    
+ 6.         1.         0.99807   
  7.         1.         0.99936   
  8.         1.         0.99979   
  9.         1.         0.99993   
  10.        1.         0.99998   
 Gnucap   System status
-iterations: op=0, dc=0, tran=68, fourier=0, total=91
-transient timesteps: accepted=23, rejected=0, total=23
+iterations: op=0, dc=0, tran=116, fourier=0, total=155
+transient timesteps: accepted=32, rejected=7, total=39
 nodes: user=2, subckt=0, model=0, total=2
 dctran density=100.0%, ac density=100.0%

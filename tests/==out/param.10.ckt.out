@@ -1,10 +1,10 @@
 'parameter function call test 
 ".param a='sin(1)' "
 ".eval a "
-a= 0.841471
+a= 0.841470984807898
 ".param b=sin(1) "
 ".eval b "
-b= 0.841471
+b= 0.841470984807898
 ".param c=pow(2,2) "
 ".eval c "
 c= 4.

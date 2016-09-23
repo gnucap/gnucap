@@ -64,5 +64,5 @@ Rds ( 2 3 )  1.
 + xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.)
 + lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.)
 + wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) tnom=NA( 27.) fc=NA( 0.5) pb= 1.
-+ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f) cgso= 207.188p
-+ cgdo= 207.188p cgbo= 0. ld=NA( 0.))
++ cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=NA( 10.f)
++ cgso= 207.18798p cgdo= 207.18798p cgbo= 0. ld=NA( 0.))

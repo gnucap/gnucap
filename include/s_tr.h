@@ -1,4 +1,4 @@
-/*$Id: s_tr.h 2014/07/04 al $ -*- C++ -*-
+/*$Id: s_tr.h 2016/09/22 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

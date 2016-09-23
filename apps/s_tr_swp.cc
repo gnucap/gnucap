@@ -98,7 +98,7 @@ void TRANSIENT::sweep()
     if (printnow) {
       outflags = ofPRINT | ofSTORE | ofKEEP;
     }else{
-      //outflags = ofSTORE;
+      outflags = ofSTORE;
     }
     outdata(_sim->_time0, outflags);
   }
@@ -136,7 +136,7 @@ void TRANSIENT::sweep()
       if (printnow) {
 	outflags = ofPRINT | ofSTORE | ofKEEP;
       }else if (_accepted) {untested();
-	//outflags = ofSTORE;
+	outflags = ofSTORE;
       }else{untested();
       }
       outdata(_sim->_time0, outflags);

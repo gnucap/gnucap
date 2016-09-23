@@ -1,4 +1,0 @@
- 
-.model foo dsdaf 
-           ^ ? model: "dsdaf" no match
-m1: can't find: foo

@@ -415,7 +415,7 @@ double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
     assert(error_deriv > 0);
     assert(error_deriv < OPT::_keep_time_steps);
     for (int i=error_deriv; i>0; --i) {
-      assert(_time[i] < _time[i-1]); // || _time[i] == 0.);
+      assert(_time[i] < _time[i-1]);
     }
     
     double c[OPT::_keep_time_steps];
