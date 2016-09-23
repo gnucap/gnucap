@@ -60,7 +60,7 @@ v(1)  -5.               -2.5              0.                2.5              5.
  28.    |                 .                .            *    .                |
  28.5   |                 .            *   .                 .                |
  29.    |              *  .                .                 .                |
- 29.5   |  *              .                .                 .                |
+ 29.5   |   *             .                .                 .                |
  30.    *                 .                .                 .                |
  30.5   |    *            .                .                 .                |
  31.    |                 *                .                 .                |
@@ -204,7 +204,7 @@ v(1)  -5.               -2.5              0.                2.5              5.
  100.   |          *      .                .                 .                |
         +-----------------+----------------+-----------------+----------------+
 Gnucap   System status
-iterations: op=0, dc=0, tran=2176, fourier=0, total=2905
-transient timesteps: accepted=728, rejected=1, total=729
+iterations: op=0, dc=0, tran=2173, fourier=0, total=2901
+transient timesteps: accepted=726, rejected=2, total=728
 nodes: user=1, subckt=0, model=0, total=1
 dctran density=100.0%, ac density=100.0%

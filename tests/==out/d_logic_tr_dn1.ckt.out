@@ -5,10 +5,7 @@
  0.         2.5        1.41       5.         3.         3.         1.        
  500.n      2.5079     1.41       5.         3.         3.         9.        
  1.u        2.5157     1.41       5.         3.         3.         6.        
- 1.5u       2.5236     1.41       5.         3.         3.         6.        
- 2.u        2.5314     1.41       5.         3.         3.         6.        
- 2.5u       2.5393     1.41       5.         3.         3.         6.        
- 26.25u     2.9105     1.41       5.         3.         3.         6.        
+ 10.8u      2.6695     1.41       5.         3.         3.         6.        
  50.u       3.2725     1.41       5.         3.         3.         1.        
  100.u      3.9695     3.31       5.         2.         3.         1.        
  100.1u     3.9707     3.31       0.         0.         3.         2.        
@@ -230,7 +227,7 @@
  0.00995    1.7275     1.31       5.         3.         3.         1.        
  0.01       2.5        1.41       5.         3.         3.         1.        
 Gnucap   System status
-iterations: op=3, dc=0, tran=681, fourier=0, total=911
-transient timesteps: accepted=227, rejected=0, total=227
+iterations: op=3, dc=0, tran=672, fourier=0, total=899
+transient timesteps: accepted=224, rejected=0, total=224
 nodes: user=3, subckt=0, model=0, total=3
 dctran density=100.0%, ac density=100.0%

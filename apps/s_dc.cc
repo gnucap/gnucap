@@ -1,4 +1,4 @@
-/*$Id: s_dc.cc 2016/03/25 al $ -*- C++ -*-
+/*$Id: s_dc.cc 2016/09/22 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -377,8 +377,7 @@ void DCOP::sweep_recursive(int Nest)
       CARD_LIST::card_list.tr_accept();
       ::status.accept.stop();
       _sim->_has_op = _sim->_mode;
-      _sim->keep_voltages();
-      outdata(*_sweepval[Nest]);
+      outdata(*_sweepval[Nest], ofPRINT | ofSTORE | ofKEEP);
       itl = OPT::DCXFER;
     }else{
       sweep_recursive(Nest);

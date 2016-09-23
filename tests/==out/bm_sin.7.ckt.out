@@ -1,19 +1,17 @@
 ' sin test 
 #Time       v(1)       next(V1)   event(V1) 
  0.         0.         2.n        2.5n      
- 200.p      0.12533    400.p      2.5n      
- 400.p      0.24869    600.p      2.5n      
- 600.p      0.36812    800.p      2.5n      
- 800.p      0.48175    1.n        2.5n      
- 1.n        0.58779    1.9721n    2.5n      
- 1.95n      0.94088    3.3071n    2.5n      
- 2.5n       1.         4.134n     5.n       
- 4.0909n    0.54064    6.0909n    5.n       
- 5.n        0.         6.4715n    7.5n      
- 6.3636n   -0.75575    7.9434n    7.5n      
- 7.5n      -1.         9.3785n    10.n      
- 9.2857n   -0.43388    11.286n    10.n      
- 10.n       0.         11.48n     12.5n     
+ 200.p      0.12533    468.8p     2.5n      
+ 400.p      0.24869    729.21p    2.5n      
+ 726.67p    0.44088    1.826n     2.5n      
+ 1.7974n    0.90413    3.0589n    2.5n      
+ 2.5n       1.         4.0283n    5.n       
+ 3.9583n    0.60876    5.9583n    5.n       
+ 5.n        0.         6.5514n    7.5n      
+ 6.0417n   -0.60876    7.5229n    7.5n      
+ 7.5n      -1.         9.352n     10.n      
+ 8.9583n   -0.60876    10.958n    10.n      
+ 10.n       0.         11.627n    12.5n     
  11.429n    0.78183    13.127n    12.5n     
  12.5n      1.         14.5n      15.n      
  14.375n    0.38268    16.375n    15.n      
@@ -24,7 +22,7 @@
  20.n       0.         21.641n    22.5n     
 V1 ( 1 0 ) sin offset= 0. amplitude= 1. frequency= 100.Meg delay=NA( 0.) damping=NA( 0.) samples= 5. zero=1 peak=1
 Gnucap   System status
-iterations: op=0, dc=0, tran=65, fourier=0, total=87
-transient timesteps: accepted=22, rejected=0, total=22
+iterations: op=0, dc=0, tran=59, fourier=0, total=79
+transient timesteps: accepted=20, rejected=0, total=20
 nodes: user=1, subckt=0, model=0, total=1
 dctran density=100.0%, ac density=100.0%

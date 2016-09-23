@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc 2016/03/25 al $ -*- C++ -*-
+/*$Id: e_elemnt.cc 2016/09/22 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -395,25 +395,33 @@ XPROBE ELEMENT::ac_probe_ext(const std::string& x)const
 /*--------------------------------------------------------------------------*/
 double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
 {
-  int error_deriv = order()+1;
   double timestep;
   if (_time[0] <= 0.) {
     // DC, I know nothing
     timestep = NEVER;
-  }else if (_time[error_deriv] <= 0.) {
-    // first few steps, I still know nothing
-    // repeat whatever step was used the first time
-    timestep = _dt;
   }else{
-    for (int i=error_deriv; i>0; --i) {
-      assert(_time[i] < _time[i-1]); // || _time[i] == 0.);
+    int error_deriv; // which derivative to use for error estimate
+    if (order() >= OPT::_keep_time_steps - 2) {
+      error_deriv = OPT::_keep_time_steps - 1;
+    }else if (order() < 0) {untested();
+      error_deriv = 1;
+    }else{
+      error_deriv = order()+1;
     }
-
+    while (_time[error_deriv-1] <= 0.) {
+      // not enough info to use that derivative, use a lower order derivative
+      --error_deriv;
+    }
+    assert(error_deriv > 0);
+    assert(error_deriv < OPT::_keep_time_steps);
+    for (int i=error_deriv; i>0; --i) {
+      assert(_time[i] < _time[i-1]);
+    }
+    
     double c[OPT::_keep_time_steps];
     for (int i=0; i<OPT::_keep_time_steps; ++i) {
       c[i] = q[i].f0;
     }
-    assert(error_deriv < OPT::_keep_time_steps);
     derivatives(c, OPT::_keep_time_steps, _time);
     // now c[i] is i'th derivative
     
@@ -424,19 +432,20 @@ double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
     trace5("deriv", c[0], c[1], c[2], c[3], c[4]);
     
     if (c[error_deriv] == 0) {
+      // avoid divide by zero
       timestep = NEVER;
     }else{
       double chargetol = std::max(OPT::chgtol,
-	OPT::reltol * std::max(std::abs(q[0].f0), std::abs(q[1].f0)));
+				  OPT::reltol * std::max(std::abs(q[0].f0), std::abs(q[1].f0)));
       double tol = OPT::trtol * chargetol;
       double denom = error_factor() * std::abs(c[error_deriv]);
       assert(tol > 0.);
       assert(denom > 0.);
       switch (error_deriv) { // pow is slow.
-      case 1:	timestep = tol / denom;		break;
-      case 2:	timestep = sqrt(tol / denom);	break;
-      case 3:	timestep = cbrt(tol / denom);	break;
-      default:	timestep = pow((tol / denom), 1./(error_deriv)); break;
+      case 1:  timestep = tol / denom; break;
+      case 2:  timestep = sqrt(tol / denom); break;
+      case 3:  timestep = cbrt(tol / denom); break;
+      default: timestep = pow((tol / denom), 1./(error_deriv)); break;
       }
       trace4("", chargetol, tol, denom, timestep);
     }
@@ -458,8 +467,8 @@ double ELEMENT::tr_review_check_and_convert(double timestep)
 
     if (timestep < _dt * OPT::trreject) {
       if (_time[order()] == 0) {
-	error(bWARNING, "initial step rejected:" + long_label() + '\n');
-	error(bWARNING, "new=%g  old=%g  required=%g\n",
+	error(bTRACE, "initial step rejected:" + long_label() + '\n');
+	error(bTRACE, "new=%g  old=%g  required=%g\n",
 	      timestep, _dt, _dt * OPT::trreject);
       }else{
 	error(bTRACE, "step rejected:" + long_label() + '\n');

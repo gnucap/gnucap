@@ -1,4 +1,4 @@
-/*$Id: s_fo.cc 2016/03/28 al $ -*- C++ -*-
+/*$Id: s_fo.cc 2016/09/22 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -298,12 +298,12 @@ void FOURIER::setup(CS& Cmd)
     _tstart = _sim->_last_time;
   }
   _tstop = _tstart + 1. / _fstep;
-  _tstep = 1. / _fstep / (_timesteps-1);
+  _tstrobe = 1. / _fstep / (_timesteps-1);
   _time1 = _sim->_time0 = _tstart;
 
   _sim->_freq = _fstep;
 
-  _dtmax = std::min(double(_dtmax_in), _tstep / double(_skip_in));
+  _dtmax = std::min(double(_dtmax_in), _tstrobe / double(_skip_in));
   if (_dtmin_in.has_hard_value()) {untested();
     _sim->_dtmin = _dtmin_in;
   }else if (_dtratio_in.has_hard_value()) {untested();

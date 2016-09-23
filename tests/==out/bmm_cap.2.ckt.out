@@ -3,16 +3,16 @@
  27.        2.         2.         16.p      
 #Time       v(1)       v(2)      
  0.         0.         0.        
- 2.n        0.5        0.028024  
- 4.n        1.         0.12804   
- 6.n        1.         0.23062   
- 8.n        1.         0.32105   
- 10.n       1.         0.40093   
- 12.n       1.         0.47141   
- 14.n       1.         0.53359   
- 16.n       1.         0.58847   
- 18.n       1.         0.63688   
- 20.n       1.         0.6796    
+ 2.n        0.5        0.029135  
+ 4.n        1.         0.11425   
+ 6.n        1.         0.21846   
+ 8.n        1.         0.31032   
+ 10.n       1.         0.39146   
+ 12.n       1.         0.46305   
+ 14.n       1.         0.52622   
+ 16.n       1.         0.58196   
+ 18.n       1.         0.63114   
+ 20.n       1.         0.67454   
 #Freq       v(1)       v(2)       vp(2)      vdb(2)    
  15.9Meg    1.         0.53037   -57.97     -5.5084    
 #Freq       v(1)       v(2)       vp(2)      vdb(2)    
@@ -31,7 +31,7 @@ r1 ( 1 2 )  1.K
 c2 ( 2 0 ) t1 l= 1.u w= 2.u
 .model t1 c ( cj=5 cjsw=1u narrow=NA( 0.) defw=NA( 1.u) tc1=NA( 0.) tc2=NA( 0.) tnom=NA( 27.))
 Gnucap   System status
-iterations: op=4, dc=0, tran=61, fourier=0, total=94
-transient timesteps: accepted=18, rejected=0, total=18
+iterations: op=4, dc=0, tran=53, fourier=0, total=82
+transient timesteps: accepted=14, rejected=0, total=14
 nodes: user=2, subckt=0, model=0, total=2
 dctran density=100.0%, ac density=100.0%

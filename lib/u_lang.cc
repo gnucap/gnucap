@@ -1,4 +1,4 @@
-/*$Id: u_lang.cc 2016/09/17 $ -*- C++ -*-
+/*$Id: u_lang.cc 2016/09/22 $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -72,7 +72,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
     assert(!p);
     std::string s;
     /* */if (Umatch(Name, "b{uild} "))      {untested(); s = "build";}
-    else if (Umatch(Name, "del{ete} "))     {untested(); s = "delete";}
+    else if (Umatch(Name, "del{ete} "))     {		 s = "delete";}
     else if (Umatch(Name, "fo{urier} "))    {untested(); s = "fourier";}
     else if (Umatch(Name, "gen{erator} "))  {		 s = "generator";}
     else if (Umatch(Name, "inc{lude} "))    {untested(); s = "include";}
