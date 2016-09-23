@@ -1,4 +1,4 @@
-/*$Id: s_tr_swp.cc 2016/09/21 al $ -*- C++ -*-
+/*$Id: s_tr_swp.cc 2016/09/22 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -94,12 +94,13 @@ void TRANSIENT::sweep()
   
   {
     bool printnow = (_sim->_time0 == _tstart || _trace >= tALLTIME);
+    int outflags = ofNONE;
     if (printnow) {
-      _sim->keep_voltages();
-      outdata(_sim->_time0);
+      outflags = ofPRINT | ofSTORE | ofKEEP;
     }else{
-      ++::status.hidden_steps;
+      //outflags = ofSTORE;
     }
+    outdata(_sim->_time0, outflags);
   }
   
   while (next()) {
@@ -131,16 +132,18 @@ void TRANSIENT::sweep()
 	|| (_accepted && (_trace >= tALLTIME
 			  || step_cause() == scUSER
 			  || (!_tstrobe.has_hard_value() && _sim->_time0+_sim->_dtmin > _tstart)));
+      int outflags = ofNONE;
       if (printnow) {
-	_sim->keep_voltages();
-	outdata(_sim->_time0);
-      }else{
-	++::status.hidden_steps;
+	outflags = ofPRINT | ofSTORE | ofKEEP;
+      }else if (_accepted) {untested();
+	//outflags = ofSTORE;
+      }else{untested();
       }
+      outdata(_sim->_time0, outflags);
     }
     
     if (!_converged && OPT::quitconvfail) {untested();
-      outdata(_sim->_time0);
+      outdata(_sim->_time0, ofPRINT);
       throw Exception("convergence failure, giving up");
     }else{
     }

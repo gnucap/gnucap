@@ -1,4 +1,4 @@
-/*$Id: s_ac.cc 2016/09/11 al $ -*- C++ -*-
+/*$Id: s_ac.cc 2016/09/22 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -254,7 +254,7 @@ void AC::sweep()
   do {
     _sim->_jomega = COMPLEX(0., _sim->_freq * M_TWO_PI);
     solve();
-    outdata(_sim->_freq);
+    outdata(_sim->_freq, ofPRINT | ofSTORE);
   } while (next());
 }
 /*--------------------------------------------------------------------------*/

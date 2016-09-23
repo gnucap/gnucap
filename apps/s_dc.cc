@@ -377,8 +377,7 @@ void DCOP::sweep_recursive(int Nest)
       CARD_LIST::card_list.tr_accept();
       ::status.accept.stop();
       _sim->_has_op = _sim->_mode;
-      _sim->keep_voltages();
-      outdata(*_sweepval[Nest]);
+      outdata(*_sweepval[Nest], ofPRINT | ofSTORE | ofKEEP);
       itl = OPT::DCXFER;
     }else{
       sweep_recursive(Nest);
