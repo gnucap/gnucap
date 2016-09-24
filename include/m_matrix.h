@@ -394,7 +394,7 @@ double BSMATRIX<T>::density()
 template <class T>
 T BSMATRIX<T>::d(int r, int c) const
 {
-  USE(c);
+  (void)c;
   assert(_diaptr);
   assert(r == c);
   assert(0 <= r);
@@ -407,7 +407,7 @@ T BSMATRIX<T>::d(int r, int c) const
 template <class T>
 T& BSMATRIX<T>::d(int r, int c)
 {
-  USE(c);
+  (void)c;
   assert(_diaptr);
   assert(r == c);
   assert(0 <= r);
