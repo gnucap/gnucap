@@ -1,4 +1,4 @@
-/*$Id: s_fo.cc 2016/09/22 al $ -*- C++ -*-
+/*$Id: s_fo.cc 2016/09/26 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -129,7 +129,7 @@ void FOURIER::store_results(double X)
       _fdata[ii][_stepno] = p->value();
       ++ii;
     }
-  }else{untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -1,0 +1,12 @@
+'measures
+V1 (1 0) sin(freq=1k ampl=1 peak zero)
+.print tran v(1)
+.store tran v(1)
+.tran 0 .003 .0001
+.measure a1=integral("v(1)")
+.measure m1=mean("v(1)")
+.measure r1=rms("v(1)")
+.measure a2=integral("v(1)", begin=0 end=.0015)
+.measure m2=mean("v(1)", begin=0 end=.0015)
+.measure r2=rms("v(1)", begin=0 end=.0015)
+.end

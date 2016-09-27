@@ -1,0 +1,9 @@
+spice
+.option list trsteporder=9
+v1 (1 0) pulse (0 1)
+.print tran v(1) timef(v1) errort(v1) eventt(v1) dtr(v1)
+.tran 0 1 1 trace rejected
+r1 (2 0) 1
+.tran trace rejected
+.status notime
+.end

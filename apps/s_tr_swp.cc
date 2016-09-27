@@ -1,4 +1,4 @@
-/*$Id: s_tr_swp.cc 2016/09/22 al $ -*- C++ -*-
+/*$Id: s_tr_swp.cc 2016/09/26 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -135,9 +135,9 @@ void TRANSIENT::sweep()
       int outflags = ofNONE;
       if (printnow) {
 	outflags = ofPRINT | ofSTORE | ofKEEP;
-      }else if (_accepted) {untested();
+      }else if (_accepted) {
 	outflags = ofSTORE;
-      }else{untested();
+      }else{
       }
       outdata(_sim->_time0, outflags);
     }

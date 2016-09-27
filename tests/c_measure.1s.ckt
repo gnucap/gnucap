@@ -1,0 +1,48 @@
+'''''
+R1 1 2 1
+C1 2 0 {cap*10}
+Vv1 1 0 dc=0 ac=0 pulse(2 0 0 100p 100p 400p 1n)
+
+s1 0 0 1 0 s01
+.model s01 sw vt="svt*1.3"
+s2 0 0 1 0 s02
+.model s02 sw vt="svt*0.9"
+
+.param cap=100f
+.param svt=1
+
+.store tran v(2) v(1)
+.print tran v(1) control(0) eventtime(s?) nexttime(C*) eventtime(C*) nexttime(V*) eventtime(V*) dt(C1)
+.tran 0 2n 100p
+
+.param vol2=vmax*0.8
+.param vol1=vmax*0.2
+.param midpoint={(vol1+vol2)/2}
+.param frequency={1/(t4-t3)}
+
+.measure vmax=max(probe="v(1)" end=900p begin=0)
+.measure t1=cross(probe="v(1)" end=1n  cross=1.3 rise)
+.measure t2=cross(probe="v(1)" end=1n  cross=.9 fall)
+.exp vol2
+.exp vol1
+.exp vmax
+.exp midpoint
+.measure t3=cross(probe="v(1)" end=1n  cross=midpoint rise)
+.measure t4=cross(probe="v(1)" begin=t3   cross=midpoint rise)
+.measure t5=cross(probe="v(1)" begin=t3   cross={(vol1+vol2)/2} rise)
+.measure tmin=min(probe="v(1)" end=1n arg)
+.measure vmin=min(probe="v(1)" end=1n begin=0)
+.measure slew=slewrate(probe="v(1)" initial={vmax*0.2} final={vmax*0.8} expression)
+.exp slew
+.measure slew=slewrate(probe="v(1)" initial={vmax*0.2} final={vmax*0.8} expression last)
+.exp slew
+.measure slew=slewrate(probe="v(1)" initial={vmax*0.2} final={vmax*0.8})
+.exp frequency
+.measure t4=cross(probe="v(1)" cross=midpoint rise)
+.measure t3=cross(probe="v(1)" cross=midpoint rise last)
+.exp frequency
+.measure tvmax = max(probe="v(1)" arg)
+.measure tvmax = max(probe="v(1)" last arg)
+
+
+.end

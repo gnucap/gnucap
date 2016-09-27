@@ -1,4 +1,4 @@
-/*$Id: e_elemnt.cc 2016/09/22 al $ -*- C++ -*-
+/*$Id: e_elemnt.cc 2016/09/26 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -426,7 +426,8 @@ double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
     // now c[i] is i'th derivative
     
     assert(OPT::_keep_time_steps >= 5);
-    trace0(("ts" + long_label()).c_str());
+    trace4(("ts " + long_label()).c_str(), error_deriv, error_factor(),
+	   OPT::trsteporder, OPT::trstepcoef[OPT::trsteporder] );
     trace5("time", _time[0], _time[1], _time[2], _time[3], _time[4]);
     trace5("charge", q[0].f0, q[1].f0, q[2].f0, q[3].f0, q[4].f0);
     trace5("deriv", c[0], c[1], c[2], c[3], c[4]);
