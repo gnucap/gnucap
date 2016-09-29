@@ -1,1 +1,1 @@
-#define PATCHLEVEL "unstable 2017.04.18"
+#define PATCHLEVEL "gnucap.conf-1 2017.04.23"
