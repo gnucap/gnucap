@@ -29,6 +29,16 @@ namespace {
 /*--------------------------------------------------------------------------*/
 std::map<const std::string, void*> attach_list;
 /*--------------------------------------------------------------------------*/
+std::string conf()
+{untested();
+  FILE* f = popen("gnucap-conf --pkglibdir", "r");
+  char s[200];
+  fgets(s, 200, f);
+  *strchr(s, '\n') = '\0';
+  std::cout << s << '\n';
+  return std::string(s);
+}  
+/*--------------------------------------------------------------------------*/
 class CMD_ATTACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*)
@@ -52,24 +62,36 @@ public:
       }
     } while (cmd.more() && !cmd.stuck(&here));
 
-    std::string file_name;
-    cmd >> file_name;
+    std::string short_file_name;
+    cmd >> short_file_name;
     
-    void* handle = attach_list[file_name];
+    void* handle = attach_list[short_file_name];
     if (handle) {
       if (CARD_LIST::card_list.is_empty()) {
-	cmd.warn(bDANGER, here, "\"" + file_name + "\": already loaded, replacing");
+	cmd.warn(bDANGER, here, "\"" + short_file_name + "\": already loaded, replacing");
 	dlclose(handle);
-	attach_list[file_name] = NULL;
+	attach_list[short_file_name] = NULL;
       }else{untested();
 	cmd.reset(here);
 	throw Exception_CS("already loaded, cannot replace when there is a circuit", cmd);
       }
     }else{
     }
-    handle = dlopen(file_name.c_str(), check | dl_scope);
+
+    std::string full_file_name;
+    if (short_file_name.find('/') == std::string::npos) {untested();
+      full_file_name = findfile(short_file_name, conf(), R_OK);
+      if (full_file_name == "") {untested();
+	full_file_name = short_file_name;
+      }else{untested();
+      }
+    }else{untested();
+      full_file_name = short_file_name;
+    }
+
+    handle = dlopen(full_file_name.c_str(), check | dl_scope);
     if (handle) {
-      attach_list[file_name] = handle;
+      attach_list[short_file_name] = handle;
     }else{itested();
       cmd.reset(here);
       throw Exception_CS(dlerror(), cmd);
