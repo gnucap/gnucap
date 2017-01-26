@@ -29,14 +29,20 @@ namespace {
 /*--------------------------------------------------------------------------*/
 std::map<const std::string, void*> attach_list;
 /*--------------------------------------------------------------------------*/
-std::string conf()
+std::string plug_path()
 {untested();
-  FILE* f = popen("gnucap-conf --pkglibdir", "r");
-  char s[200];
-  fgets(s, 200, f);
-  *strchr(s, '\n') = '\0';
-  std::cout << s << '\n';
-  return std::string(s);
+  std::string path = OS::getenv("GNUCAP_PLUGPATH");
+  if (path == "") {
+    // not spec in environment, use gnucap-conf
+    FILE* f = popen("gnucap-conf --pkglibdir", "r");
+    char s[200];
+    fgets(s, 200, f);
+    *strchr(s, '\n') = '\0';
+    path = s;
+  }else{
+    // from environment
+  }
+  return path;
 }  
 /*--------------------------------------------------------------------------*/
 class CMD_ATTACH : public CMD {
@@ -78,18 +84,20 @@ public:
     }else{
     }
 
-    std::string full_file_name;
     if (short_file_name.find('/') == std::string::npos) {untested();
-      full_file_name = findfile(short_file_name, conf(), R_OK);
-      if (full_file_name == "") {untested();
-	full_file_name = short_file_name;
+      // no '/' in name
+      std::string full_file_name = findfile(short_file_name, plug_path(), R_OK);
+      if (full_file_name != "") {untested();
+	handle = dlopen(full_file_name.c_str(), check | dl_scope);
       }else{untested();
+	cmd.reset(here);
+	throw Exception_CS("plugin not found in " + plug_path(), cmd);
       }
     }else{untested();
-      full_file_name = short_file_name;
+      // has '/' in name
+      handle = dlopen(short_file_name.c_str(), check | dl_scope);
     }
 
-    handle = dlopen(full_file_name.c_str(), check | dl_scope);
     if (handle) {
       attach_list[short_file_name] = handle;
     }else{itested();
