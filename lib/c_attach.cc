@@ -20,7 +20,7 @@
  * 02110-1301, USA.
  *------------------------------------------------------------------
  */
-//testing=informal
+//testing=script 2017.03.12
 #include "e_cardlist.h"
 #include "c_comand.h"
 #include "globals.h"
@@ -30,17 +30,13 @@ namespace {
 std::map<const std::string, void*> attach_list;
 /*--------------------------------------------------------------------------*/
 std::string plug_path()
-{untested();
-  std::string path = OS::getenv("GNUCAP_PLUGPATH");
-  if (path == "") {
-    // not spec in environment, use gnucap-conf
-    FILE* f = popen("gnucap-conf --pkglibdir", "r");
-    char s[200];
-    fgets(s, 200, f);
-    *strchr(s, '\n') = '\0';
-    path = s;
-  }else{
-    // from environment
+{
+  std::string path = OS::getenv("GNUCAP_PLUGPATH") + ':' + OS::getenv("LD_LIBRARY_PATH") + ':';
+  if (FILE* f = popen("gnucap-conf --pkglibdir", "r")) {
+    char s[200] = "";	// no gnucap_conf still opens pipe, but nothing in it
+    fgets(s, 200, f);	// so fgets leaves whatever is in s there.
+    path += trim(s);
+  }else{unreachable();
   }
   return path;
 }  
@@ -55,11 +51,11 @@ public:
     // RTLD_NOW means to resolve symbols on loading
     // RTLD_LOCAL means symbols defined in a plugin are local
     do {
-      if (cmd.umatch("public ")) {
+      if (cmd.umatch("public ")) {untested();
 	dl_scope = RTLD_GLOBAL;
 	// RTLD_GLOBAL means symbols defined in a plugin are global
 	// Use this when a plugin depends on another.
-      }else if (cmd.umatch("lazy ")) {
+      }else if (cmd.umatch("lazy ")) {untested();
 	check = RTLD_LAZY;
 	// RTLD_LAZY means to defer resolving symbols until needed
 	// Use when a plugin will not load because of unresolved symbols,
@@ -72,29 +68,31 @@ public:
     cmd >> short_file_name;
     
     void* handle = attach_list[short_file_name];
-    if (handle) {
-      if (CARD_LIST::card_list.is_empty()) {
+    if (handle) {itested();
+      if (CARD_LIST::card_list.is_empty()) {itested();
 	cmd.warn(bDANGER, here, "\"" + short_file_name + "\": already loaded, replacing");
 	dlclose(handle);
 	attach_list[short_file_name] = NULL;
-      }else{untested();
+      }else{itested();
 	cmd.reset(here);
 	throw Exception_CS("already loaded, cannot replace when there is a circuit", cmd);
       }
     }else{
     }
 
-    if (short_file_name.find('/') == std::string::npos) {untested();
-      // no '/' in name
-      std::string full_file_name = findfile(short_file_name, plug_path(), R_OK);
-      if (full_file_name != "") {untested();
+    if (short_file_name.find('/') == std::string::npos) {
+      // no '/' in name, search for it
+      std::string path = plug_path();
+      std::string full_file_name = findfile(short_file_name, path, R_OK);
+      if (full_file_name != "") {
+	// found it in path
 	handle = dlopen(full_file_name.c_str(), check | dl_scope);
-      }else{untested();
+      }else{itested();
 	cmd.reset(here);
-	throw Exception_CS("plugin not found in " + plug_path(), cmd);
+	throw Exception_CS("plugin not found in " + path, cmd);
       }
-    }else{untested();
-      // has '/' in name
+    }else{itested();
+      // has '/' in name, don't search, we have full name
       handle = dlopen(short_file_name.c_str(), check | dl_scope);
     }
 
@@ -111,21 +109,21 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
 class CMD_DETACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*)
-  {
-    if (CARD_LIST::card_list.is_empty()) {
+  {untested();
+    if (CARD_LIST::card_list.is_empty()) {untested();
       unsigned here = cmd.cursor();
       std::string file_name;
       cmd >> file_name;
       
       void* handle = attach_list[file_name];
-      if (handle) {
+      if (handle) {untested();
 	dlclose(handle);
 	attach_list[file_name] = NULL;
-      }else{itested();
+      }else{untested();
 	cmd.reset(here);
 	throw Exception_CS("plugin not attached", cmd);
       }
-    }else{itested();
+    }else{untested();
       throw Exception_CS("detach prohibited when there is a circuit", cmd);
     }
   }
@@ -143,13 +141,13 @@ public:
 	if (handle) {
 	  dlclose(handle);
 	  ii->second = NULL;
-	}else{itested();
-	  throw Exception_CS("plugin not attached", cmd);
-	untested();}
+	}else{untested();
+	  // name still in list, but has been detached already
+	}
       }
     }else{untested();
       throw Exception_CS("detach prohibited when there is a circuit", cmd);
-    untested();}
+    }
   }
 } p3;
 DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "detach_all", &p3);
