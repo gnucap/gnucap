@@ -60,7 +60,8 @@ static void prepare_env()
   static std::string plugpath("PLUGPATH=" STRINGIZE_VALUE_OF(GNUCAP_PLUGPATH)
                               "\0         (reserved space)                 ");
 
-  OS::setenv("GNUCAP_PLUGPATH", plugpath.substr(9), false);
+  std::string ldlpath = OS::getenv("LD_LIBRARY_PATH");
+  OS::setenv("GNUCAP_PLUGPATH", ldlpath + ':' + plugpath.substr(9), false);
 }
 /*--------------------------------------------------------------------------*/
 static void read_startup_files(void)

@@ -34,11 +34,7 @@ std::string plug_path()
   std::string path = OS::getenv("GNUCAP_PLUGPATH");
   if(path==""){ unreachable();
   }else{ untested();
-    path += ':';
   }
-
-  path += OS::getenv("LD_LIBRARY_PATH") + ':';
-
   return path;
 }  
 /*--------------------------------------------------------------------------*/
