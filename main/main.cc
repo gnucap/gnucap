@@ -33,6 +33,9 @@
 #include "c_comand.h"
 #include "declare.h"	/* plclose */
 /*--------------------------------------------------------------------------*/
+#define STRINGIZE(x) #x
+#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
+/*--------------------------------------------------------------------------*/
 struct JMP_BUF{
   sigjmp_buf p;
 } env;
@@ -50,6 +53,14 @@ static void sign_on(void)
     "See the file \"COPYING\" for details.\n"
     "main version: " PATCHLEVEL "\n"
     "core-lib version: " << lib_version() << "\n";  
+}
+/*--------------------------------------------------------------------------*/
+static void prepare_env()
+{
+  static std::string plugpath("PLUGPATH=" STRINGIZE_VALUE_OF(GNUCAP_PLUGPATH)
+                              "\0         (reserved space)                 ");
+
+  OS::setenv("GNUCAP_PLUGPATH", plugpath.substr(9), false);
 }
 /*--------------------------------------------------------------------------*/
 static void read_startup_files(void)
@@ -211,6 +222,7 @@ static void process_cmd_line(int argc, const char *argv[])
 /*--------------------------------------------------------------------------*/
 int main(int argc, const char *argv[])
 {
+  prepare_env();
   CKT_BASE::_sim = new SIM_DATA;
   CKT_BASE::_probe_lists = new PROBE_LISTS;
   try {

@@ -53,9 +53,7 @@ LDFLAGS = -shared
 
 .SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CONF_CPPFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
-#------------------------------------------------------------------------
-c_attach.o: CONF_CPPFLAGS=-DGNUCAP_PLUGPATH="\$(PREFIX)/lib/gnucap"
+.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
 #------------------------------------------------------------------------
 \$(TARGET)\$(TARGET_EXT): \$(TARGET_DEPENDS)
 	rm -f \$@

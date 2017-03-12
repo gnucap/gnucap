@@ -25,26 +25,19 @@
 #include "c_comand.h"
 #include "globals.h"
 /*--------------------------------------------------------------------------*/
-#define STRINGIZE(x) #x
-#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
-/*--------------------------------------------------------------------------*/
 namespace {
-/*--------------------------------------------------------------------------*/
-// DTAGS substitute
-const std::string plugpath("PLUGPATH=" STRINGIZE_VALUE_OF(GNUCAP_PLUGPATH)
-                           "\0         (reserved space)                 ");
 /*--------------------------------------------------------------------------*/
 std::map<const std::string, void*> attach_list;
 /*--------------------------------------------------------------------------*/
 std::string plug_path()
 { untested();
   std::string path = OS::getenv("GNUCAP_PLUGPATH");
-  if(path==""){ untested();
-    path = plugpath.substr(9);
+  if(path==""){ unreachable();
   }else{ untested();
+    path += ':';
   }
 
-  path += ':' + OS::getenv("LD_LIBRARY_PATH") + ':';
+  path += OS::getenv("LD_LIBRARY_PATH") + ':';
 
   return path;
 }  

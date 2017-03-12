@@ -76,6 +76,10 @@ namespace OS {
       return "";
     }
   }
+
+  inline void setenv(const std::string& s, const std::string& v, bool overwrite=true) {
+    ::setenv(s.c_str(), v.c_str(), overwrite);
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
