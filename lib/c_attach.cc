@@ -25,32 +25,40 @@
 #include "c_comand.h"
 #include "globals.h"
 /*--------------------------------------------------------------------------*/
+#define STRINGIZE(x) #x
+#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
+/*--------------------------------------------------------------------------*/
 namespace {
+/*--------------------------------------------------------------------------*/
+// DTAGS substitute
+const std::string plugpath("PLUGPATH=" STRINGIZE_VALUE_OF(GNUCAP_PLUGPATH)
+                           "\0         (reserved space)                 ");
 /*--------------------------------------------------------------------------*/
 std::map<const std::string, void*> attach_list;
 /*--------------------------------------------------------------------------*/
 std::string plug_path()
-{
-  std::string path = OS::getenv("GNUCAP_PLUGPATH") + ':' + OS::getenv("LD_LIBRARY_PATH") + ':';
-  if (FILE* f = popen("gnucap-conf --pkglibdir", "r")) {
-    char s[200] = "";	// no gnucap_conf still opens pipe, but nothing in it
-    fgets(s, 200, f);	// so fgets leaves whatever is in s there.
-    path += trim(s);
-  }else{unreachable();
+{ untested();
+  std::string path = OS::getenv("GNUCAP_PLUGPATH");
+  if(path==""){ untested();
+    path = plugpath.substr(9);
+  }else{ untested();
   }
+
+  path += ':' + OS::getenv("LD_LIBRARY_PATH") + ':';
+
   return path;
 }  
 /*--------------------------------------------------------------------------*/
 class CMD_ATTACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*)
-  {
+  { untested();
     unsigned here = cmd.cursor();
     int dl_scope = RTLD_LOCAL;
     int check = RTLD_NOW;
     // RTLD_NOW means to resolve symbols on loading
     // RTLD_LOCAL means symbols defined in a plugin are local
-    do {
+    do { untested();
       if (cmd.umatch("public ")) {untested();
 	dl_scope = RTLD_GLOBAL;
 	// RTLD_GLOBAL means symbols defined in a plugin are global
@@ -60,7 +68,7 @@ public:
 	// RTLD_LAZY means to defer resolving symbols until needed
 	// Use when a plugin will not load because of unresolved symbols,
 	// but it may work without it.
-      }else{
+      }else{ untested();
       }
     } while (cmd.more() && !cmd.stuck(&here));
 
@@ -77,26 +85,26 @@ public:
 	cmd.reset(here);
 	throw Exception_CS("already loaded, cannot replace when there is a circuit", cmd);
       }
-    }else{
+    }else{ untested();
     }
 
-    if (short_file_name.find('/') == std::string::npos) {
+    if (short_file_name.find('/') == std::string::npos) { untested();
       // no '/' in name, search for it
       std::string path = plug_path();
       std::string full_file_name = findfile(short_file_name, path, R_OK);
-      if (full_file_name != "") {
+      if (full_file_name != "") { untested();
 	// found it in path
 	handle = dlopen(full_file_name.c_str(), check | dl_scope);
       }else{itested();
 	cmd.reset(here);
 	throw Exception_CS("plugin not found in " + path, cmd);
       }
-    }else{itested();
+    }else{untested();
       // has '/' in name, don't search, we have full name
       handle = dlopen(short_file_name.c_str(), check | dl_scope);
     }
 
-    if (handle) {
+    if (handle) { untested();
       attach_list[short_file_name] = handle;
     }else{itested();
       cmd.reset(here);
@@ -133,12 +141,12 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "detach|unload", &p2);
 class CMD_DETACH_ALL : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*)
-  {
-    if (CARD_LIST::card_list.is_empty()) {
+  { untested();
+    if (CARD_LIST::card_list.is_empty()) { untested();
       for (std::map<std::string, void*>::iterator
-	     ii = attach_list.begin(); ii != attach_list.end(); ++ii) {
+	     ii = attach_list.begin(); ii != attach_list.end(); ++ii) { untested();
 	void* handle = ii->second;
-	if (handle) {
+	if (handle) { untested();
 	  dlclose(handle);
 	  ii->second = NULL;
 	}else{untested();
