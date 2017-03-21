@@ -33,6 +33,10 @@
 #include "c_comand.h"
 #include "declare.h"	/* plclose */
 /*--------------------------------------------------------------------------*/
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+/*--------------------------------------------------------------------------*/
 #ifndef GNUCAP_PLUGPATH
 # define GNUCAP_PLUGPATH "/usr/local/lib/gnucap"
 #endif
