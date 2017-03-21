@@ -33,8 +33,9 @@
 #include "c_comand.h"
 #include "declare.h"	/* plclose */
 /*--------------------------------------------------------------------------*/
-#define STRINGIZE(x) #x
-#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
+#ifndef GNUCAP_PLUGPATH
+# define GNUCAP_PLUGPATH "/usr/local/lib/gnucap"
+#endif
 /*--------------------------------------------------------------------------*/
 struct JMP_BUF{
   sigjmp_buf p;
@@ -57,7 +58,7 @@ static void sign_on(void)
 /*--------------------------------------------------------------------------*/
 static void prepare_env()
 {
-  static std::string plugpath("PLUGPATH=" STRINGIZE_VALUE_OF(GNUCAP_PLUGPATH)
+  static std::string plugpath("PLUGPATH=" GNUCAP_PLUGPATH
                               "\0         (reserved space)                 ");
 
   std::string ldlpath = OS::getenv("LD_LIBRARY_PATH");

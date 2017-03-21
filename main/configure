@@ -58,7 +58,7 @@ TARGET_EXT =
 LDFLAGS = -rdynamic \
 -L../../lib/O
 
-CONF_CPPFLAGS=-DGNUCAP_PLUGPATH="\$(PREFIX)/lib/gnucap"
+CONF_CPPFLAGS=-DGNUCAP_PLUGPATH="\"\$(PREFIX)/lib/gnucap\""
 
 .SUFFIXES : .o .cc
 .cc.o:; \$(CCC) \$(CXXFLAGS) \$(CONF_CPPFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
