@@ -34,9 +34,11 @@ LIBS = \
 LDFLAGS = -rdynamic \
 -L../../lib/O
 
+CONF_CPPFLAGS=-DGNUCAP_PLUGPATH=\"$(PREFIX)/lib/gnucap\"
+
 .SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; $(CCC) $(CCFLAGS) -c $<
+.cc.o:; $(CCC) $(CXXFLAGS) $(CONF_CPPFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
 $(TARGET): $(TARGET_DEPENDS)
 	rm -f $@

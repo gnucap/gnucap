@@ -32,9 +32,11 @@ LIBS = -lgnucap
 
 LDFLAGS = -L../../lib/MSW
 
+CONF_CPPFLAGS=-DGNUCAP_PLUGPATH=\"$(PREFIX)/lib/gnucap\"
+
 .SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; $(CCC) $(CCFLAGS) -c $<
+.cc.o:; $(CCC) $(CXXFLAGS) $(CONF_CPPFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
 $(TARGET): $(TARGET)$(TARGET_EXT)
 #------------------------------------------------------------------------

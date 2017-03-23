@@ -42,13 +42,15 @@ LIBS = \
 LDFLAGS = -rdynamic  \
 -L../../lib/O-DEBUG
 
-%.SUFFIXES:
+CONF_CPPFLAGS=-DGNUCAP_PLUGPATH=\"$(PREFIX)/lib/gnucap\"
+
+.SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; $(CCC) $(CCFLAGS) -c $<
+.cc.o:; $(CCC) $(CXXFLAGS) $(CONF_CPPFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
 $(TARGET): $(TARGET_DEPENDS)
 	rm -f $@
-	$(CCC)  $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@
+	$(CCC) $(CXXFLAGS) $(CPPFLAGS) $(CCFLAGS) $(OBJS) -o $@ $(LIBS) $(LDFLAGS)
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3

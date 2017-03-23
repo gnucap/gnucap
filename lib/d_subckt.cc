@@ -79,7 +79,7 @@ private:
 } p1;
 int DEV_SUBCKT::_count = -1;
 /*--------------------------------------------------------------------------*/
-class INTERFACE DEV_SUBCKT_PROTO : public DEV_SUBCKT {
+class DEV_SUBCKT_PROTO : public DEV_SUBCKT {
 private:
   explicit	DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO&p);
 public:
