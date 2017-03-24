@@ -1,0 +1,6 @@
+#ifndef GNUCAP_MAIN_CONFIG_H
+#define GNUCAP_MAIN_CONFIG_H
+
+#define GNUCAP_PLUGPATH "@pkglibdir@"
+
+#endif

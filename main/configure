@@ -29,6 +29,7 @@ pkglibdir=$prefix/lib
 # bug. this is not implemented consistently.
 CXX=${CXX-g++}
 
+fill_template() {
 sed -e "s#@prefix@#$prefix#" \
     -e "s#@exec_prefix@#$prefix#" \
     -e "s#@libdir@#$prefix/lib#" \
@@ -37,11 +38,16 @@ sed -e "s#@prefix@#$prefix#" \
     -e "s#@pkglibdir@#$pkglibdir#" \
     -e "s#@CXXFLAGS@#$CCFLAGS#" \
     -e "s#@LIBS@#-lgnucap#" \
-    -e "s#@CXX@#$CXX#" < gnucap-conf.in > gnucap-conf
+    -e "s#@CXX@#$CXX#" < $1.in > $1
+}
+
+fill_template config.h
+fill_template gnucap-conf
+
 chmod +x gnucap-conf
 #----------------------------------------------------------------
 echo "CCFLAGS = \\" >Make.ccflags
-echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
+echo "-DUNIX -O2 -DNDEBUG -I. -I.. -I../include -I../../include -W" >>Make.ccflags
 
 echo "LIBS = \\" >Make.libs
 echo "-lgnucap \\" >>Make.libs
@@ -58,7 +64,7 @@ TARGET_EXT =
 LDFLAGS = -rdynamic \
 -L../../lib/O
 
-CONF_CPPFLAGS=-DGNUCAP_PLUGPATH="\"\$(PREFIX)/lib/gnucap\""
+CONF_CPPFLAGS=-DHAVE_CONFIG_H
 
 .SUFFIXES : .o .cc
 .cc.o:; \$(CCC) \$(CXXFLAGS) \$(CONF_CPPFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<

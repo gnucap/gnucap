@@ -1,4 +1,4 @@
-main.o: main.cc ../include/globals.h ../include/l_dispatcher.h \
+main.o: main.cc ../config.h ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/md.h ../include/io_trace.h \
  ../include/io_error.h ../include/l_stlextra.h ../include/u_opt.h \
  ../include/mode.h ../include/io_.h ../include/l_lib.h ../include/ap.h \
