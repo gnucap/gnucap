@@ -72,53 +72,17 @@ enum {
 #define I_PROMPT "gnucap> "
 #define CKT_PROMPT ">"
 #define ANTI_COMMENT "*>"
-#define DEFAULT_LANGUAGE "acs"
 /*--------------------------------------------------------------------------*/
 #if defined(__WIN32__)
 #define	ENDDIR		"/\\"
 #define PATHSEP		';'
-#if !defined(DEFAULT_PLUGINS)
-  #define DEFAULT_PLUGINS "gnucap-default-plugins.dll"
-#endif
-#if !defined(SYSTEMSTARTFILE)
-  #define SYSTEMSTARTFILE "gnucap.rc"
-#endif
-#if !defined(SYSTEMSTARTPATH)
-  #define SYSTEMSTARTPATH OS::getenv("PATH")
-#endif
-#if !defined(USERSTARTFILE)
-  #define USERSTARTFILE "gnucap.rc"
-#endif
-#if !defined(USERSTARTPATH)
-  #define USERSTARTPATH OS::getenv("HOME")
-#endif
-#if !defined(STEPFILE)
-  #define STEPFILE "/tmp/SXXXXXX"
-#endif
 #define SHELL		OS::getenv("COMSPEC")
-/*--------------------------------------------------------------------------*/
+#define STEPFILE "/tmp/SXXXXXX"
 #else
 #define	ENDDIR		"/"
 #define PATHSEP		':'
-#if !defined(DEFAULT_PLUGINS)
-  #define DEFAULT_PLUGINS "gnucap-default-plugins.so"
-#endif
-#if !defined(SYSTEMSTARTFILE)
-  #define SYSTEMSTARTFILE "gnucap.rc"
-#endif
-#if !defined(SYSTEMSTARTPATH)
-  #define SYSTEMSTARTPATH OS::getenv("PATH")
-#endif
-#if !defined(USERSTARTFILE)
-  #define USERSTARTFILE ".gnucaprc"
-#endif
-#if !defined(USERSTARTPATH)
-  #define USERSTARTPATH OS::getenv("HOME")
-#endif
-#if !defined(STEPFILE)
-  #define STEPFILE "/tmp/SXXXXXX"
-#endif
 #define SHELL OS::getenv("SHELL")
+#define STEPFILE "/tmp/SXXXXXX"
 #endif
 /*--------------------------------------------------------------------------*/
 /* machine and compiler patches */
