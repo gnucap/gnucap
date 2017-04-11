@@ -62,11 +62,11 @@ static void sign_on(void)
 /*--------------------------------------------------------------------------*/
 static void prepare_env()
 {
-  static std::string plugpath("PLUGPATH=" GNUCAP_PLUGPATH
-                              "\0         (reserved space)                 ");
+  static const char* plugpath="PLUGPATH=" GNUCAP_PLUGPATH
+                              "\0         (reserved space)                 ";
 
   std::string ldlpath = OS::getenv("LD_LIBRARY_PATH");
-  OS::setenv("GNUCAP_PLUGPATH", ldlpath + ':' + plugpath.substr(9), false);
+  OS::setenv("GNUCAP_PLUGPATH", ldlpath + ':' + (plugpath+9), false);
 }
 /*--------------------------------------------------------------------------*/
 static void read_startup_files(void)
