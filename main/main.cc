@@ -38,7 +38,7 @@
 #endif
 /*--------------------------------------------------------------------------*/
 #ifndef GNUCAP_PLUGPATH
-# define GNUCAP_PLUGPATH "/usr/local/lib/gnucap"
+//# define GNUCAP_PLUGPATH "/usr/local/lib/gnucap"
 #endif
 /*--------------------------------------------------------------------------*/
 struct JMP_BUF{
