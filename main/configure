@@ -26,7 +26,7 @@ sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 pkglibdir=$prefix/lib/gnucap
 
 # bug. this is not implemented consistently.
-CXX=${CXX-g++}
+CXX=${CXX-c++}
 
 fill_template() {
 sed -e "s#@prefix@#$prefix#" \
@@ -57,7 +57,7 @@ echo "" >>Make.libs
 cat <<CAT_EOF >Make.sys
 #------------------------------------------------------------------------
 VPATH = .:..
-CCC = g++
+CCC = c++
 TARGET_EXT =
 
 LDFLAGS = -rdynamic \

@@ -28,7 +28,7 @@ echo "CCFLAGS = -fPIC \\" >Make.ccflags
 echo "LIBS = -ldl \\" >Make.libs
     
 rm -f a.out
-g++ -lreadline -ltermcap test_readline.cc
+c++ test_readline.cc -lreadline -ltermcap
 if [ -f a.out ] ; then
     echo "using readline"
     echo "-DHAVE_LIBREADLINE \\" >>Make.ccflags
@@ -46,7 +46,7 @@ echo "" >>Make.libs
 cat <<CAT_EOF >Make.sys
 #------------------------------------------------------------------------
 VPATH = .:..
-CCC = g++
+CCC = c++
 TARGET_EXT = .so
 
 LDFLAGS = -shared

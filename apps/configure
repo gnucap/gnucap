@@ -35,7 +35,7 @@ echo "" >>Make.libs
 cat <<CAT_EOF >Make.sys
 #------------------------------------------------------------------------
 VPATH = .:..
-CCC = g++
+CCC = c++
 TARGET_EXT = .so
 
 LDFLAGS = -shared
