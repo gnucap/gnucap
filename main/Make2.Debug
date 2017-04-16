@@ -27,7 +27,7 @@ VPATH = .:..
 CCC = g++
 
 CCFLAGS = \
--DUNIX  -g -O0 -I. -I.. -I../../include -DTRACE_UNTESTED \
+-DUNIX  -g -O0 -I. -I../../include -DTRACE_UNTESTED \
 -Wall -Wextra \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
 -Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
@@ -42,15 +42,13 @@ LIBS = \
 LDFLAGS = -rdynamic  \
 -L../../lib/O-DEBUG
 
-CONF_CPPFLAGS=-DHAVE_CONFIG_H
-
-.SUFFIXES:
+%.SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; $(CCC) $(CXXFLAGS) $(CONF_CPPFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
+.cc.o:; $(CCC) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
 $(TARGET): $(TARGET_DEPENDS)
 	rm -f $@
-	$(CCC) $(CXXFLAGS) $(CPPFLAGS) $(CCFLAGS) $(OBJS) -o $@ $(LIBS) $(LDFLAGS)
+	$(CCC)  $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3

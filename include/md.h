@@ -27,7 +27,7 @@
 /*--------------------------------------------------------------------------*/
 /* autoconf stuff */
 #ifdef HAVE_CONFIG_H
-//#include "config.h"
+#include "config.h"
 #endif
 /*--------------------------------------------------------------------------*/
 /* std collection of includes */
@@ -76,13 +76,13 @@ enum {
 #if defined(__WIN32__)
 #define	ENDDIR		"/\\"
 #define PATHSEP		';'
+#define STEPFILE   	"/tmp/SXXXXXX"
 #define SHELL		OS::getenv("COMSPEC")
-#define STEPFILE "/tmp/SXXXXXX"
 #else
 #define	ENDDIR		"/"
 #define PATHSEP		':'
-#define SHELL OS::getenv("SHELL")
-#define STEPFILE "/tmp/SXXXXXX"
+#define STEPFILE   	"/tmp/SXXXXXX"
+#define SHELL		OS::getenv("SHELL")
 #endif
 /*--------------------------------------------------------------------------*/
 /* machine and compiler patches */

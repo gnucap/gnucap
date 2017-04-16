@@ -46,7 +46,7 @@ fill_template gnucap-conf
 chmod +x gnucap-conf
 #----------------------------------------------------------------
 echo "CCFLAGS = \\" >Make.ccflags
-echo "-DUNIX -O2 -DNDEBUG -I. -I.. -I../include -I../../include -W" >>Make.ccflags
+echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
 
 echo "LIBS = \\" >Make.libs
 echo "-lgnucap \\" >>Make.libs
@@ -63,10 +63,8 @@ TARGET_EXT =
 LDFLAGS = -rdynamic \
 -L../../lib/O
 
-CONF_CPPFLAGS=-DHAVE_CONFIG_H
-
 .SUFFIXES : .o .cc
-.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CONF_CPPFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
 #------------------------------------------------------------------------
 \$(TARGET): \$(OBJS)
 	rm -f \$@

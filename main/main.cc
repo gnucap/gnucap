@@ -23,6 +23,7 @@
  * it all starts here
  */
 //testing=script 2006.07.14
+#include "config.h"
 #include "globals.h"
 #include "u_prblst.h"
 #include "u_sim_data.h"
@@ -32,14 +33,6 @@
 #include "patchlev.h"
 #include "c_comand.h"
 #include "declare.h"	/* plclose */
-/*--------------------------------------------------------------------------*/
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
-/*--------------------------------------------------------------------------*/
-#ifndef GNUCAP_PLUGPATH
-//# define GNUCAP_PLUGPATH "/usr/local/lib/gnucap"
-#endif
 /*--------------------------------------------------------------------------*/
 struct JMP_BUF{
   sigjmp_buf p;
