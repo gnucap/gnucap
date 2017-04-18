@@ -86,10 +86,10 @@ public:
   explicit	DEV_SUBCKT_PROTO();
 		~DEV_SUBCKT_PROTO(){}
 public: // override virtual
-  char		id_letter()const	{untested();untested();return '\0';}
+  char		id_letter()const	{untested();return '\0';}
   CARD*		clone_instance()const;
   bool		print_type_in_spice()const {unreachable(); return false;}
-  std::string   value_name()const	{incomplete(); return "";}
+  std::string   value_name()const	{untested();incomplete(); return "";}
   std::string   dev_type()const		{untested(); return "";}
   int		max_nodes()const	{return PORTS_PER_SUBCKT;}
   int		min_nodes()const	{return 0;}
@@ -119,13 +119,7 @@ private: // no-ops for prototype
   bool do_tr(){ return true;}
   bool tr_needs_eval()const{untested(); return false;}
   void tr_queue_eval(){}
-  std::string port_name(int)const {return "";}
-public:
-  static int	count()			{return _count;}
-
-private:
-  node_t	_nodes[PORTS_PER_SUBCKT];
-  static int	_count;
+  std::string port_name(int)const {untested();return "";}
 } pp;
 DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt", &pp);
 /*--------------------------------------------------------------------------*/
@@ -184,7 +178,7 @@ std::string DEV_SUBCKT::port_name(int i)const
   if (const DEV_SUBCKT* p=dynamic_cast<const DEV_SUBCKT*>(_parent)) {
     if (i<p->net_nodes()){
       return p->port_value(i);
-    }else{ 
+    }else{untested(); 
       return "";
     }
   }else if(_parent){untested(); untested();

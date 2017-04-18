@@ -1,1 +1,1 @@
-#define PATCHLEVEL "clang-bsd 2017.04.16"
+#define PATCHLEVEL "clang 2017.04.18"
