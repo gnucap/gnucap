@@ -23,12 +23,12 @@ fi
 
 sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 #----------------------------------------------------------------
-# BUG: install plugins to libdir.
-pkglibdir=$prefix/lib
+pkglibdir=$prefix/lib/gnucap
 
 # bug. this is not implemented consistently.
-CXX=${CXX-g++}
+CXX=${CXX-c++}
 
+fill_template() {
 sed -e "s#@prefix@#$prefix#" \
     -e "s#@exec_prefix@#$prefix#" \
     -e "s#@libdir@#$prefix/lib#" \
@@ -37,7 +37,12 @@ sed -e "s#@prefix@#$prefix#" \
     -e "s#@pkglibdir@#$pkglibdir#" \
     -e "s#@CXXFLAGS@#$CCFLAGS#" \
     -e "s#@LIBS@#-lgnucap#" \
-    -e "s#@CXX@#$CXX#" < gnucap-conf.in > gnucap-conf
+    -e "s#@CXX@#$CXX#" < $1.in > $1
+}
+
+fill_template config.h
+fill_template gnucap-conf
+
 chmod +x gnucap-conf
 #----------------------------------------------------------------
 echo "CCFLAGS = \\" >Make.ccflags
@@ -52,7 +57,7 @@ echo "" >>Make.libs
 cat <<CAT_EOF >Make.sys
 #------------------------------------------------------------------------
 VPATH = .:..
-CCC = g++
+CCC = c++
 TARGET_EXT =
 
 LDFLAGS = -rdynamic \

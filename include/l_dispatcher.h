@@ -55,7 +55,7 @@ public:
     _map = NULL;
   }
 
-  typedef typename std::map<std::string, CKT_BASE*>::const_iterator const_iterator;
+  typedef std::map<std::string, CKT_BASE*>::const_iterator const_iterator;
   //class const_iterator : public std::map<std::string, CKT_BASE*>::const_iterator {};
 
   const_iterator begin()const		{assert(_map); return _map->begin();}

@@ -1,4 +1,5 @@
 //testing=trivial 2006.07.17
+#include <stdio.h> //BUG// sometimes required by readline.h and history.h
 #include <readline/readline.h>
 #include <readline/history.h>
 int main()
