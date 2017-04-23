@@ -31,10 +31,16 @@ install : $(INSTALL_FILES) $(DATA_FILES)
 	echo ==================
 	mkdir -p $(DESTDIR)$(INSTALL_DIR)
 	cp $(INSTALL_FILES) $(DESTDIR)$(INSTALL_DIR)
+
 	[ -z "$(INSTALL_DATA_DIR)" ] || \
 	mkdir -p $(DESTDIR)$(INSTALL_DATA_DIR)
 	[ -z "$(INSTALL_DATA_FILES)" ] || \
-        cp $(INSTALL_DATA_FILES) $(DESTDIR)$(INSTALL_DATA_DIR)
+	cp $(INSTALL_DATA_FILES) $(DESTDIR)$(INSTALL_DATA_DIR)
+
+	[ -z "$(INSTALL_SYSCONF_DIR)" ] || \
+	mkdir -p $(DESTDIR)$(INSTALL_SYSCONF_DIR)
+	[ -z "$(INSTALL_SYSCONF_FILES)" ] || \
+	cp $(INSTALL_SYSCONF_FILES) $(DESTDIR)$(INSTALL_SYSCONF_DIR)
 #------------------------------------------------------------------------
 uninstall :
 	(cd $(DESTDIR)$(INSTALL_DIR) ; rm $(INSTALL_FILES))
