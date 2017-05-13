@@ -1,4 +1,4 @@
-/*$Id: c_attach.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*$Id: c_attach.cc $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,7 +20,7 @@
  * 02110-1301, USA.
  *------------------------------------------------------------------
  */
-//testing=script 2017.03.12
+//testing=script 2017.05.13
 #include "e_cardlist.h"
 #include "c_comand.h"
 #include "globals.h"
@@ -33,6 +33,18 @@ std::string plug_path()
 {
   return OS::getenv("GNUCAP_PLUGPATH");
 }  
+/*--------------------------------------------------------------------------*/
+void list()
+{
+  for (std::map<std::string, void*>::iterator
+	 ii = attach_list.begin(); ii != attach_list.end(); ++ii) {
+    if (ii->second) {
+      IO::mstdout << ii->first << '\n';
+    }else{untested();
+      error(bTRACE,  ii->first + " (unloaded)\n");
+    }
+  }
+}
 /*--------------------------------------------------------------------------*/
 class CMD_ATTACH : public CMD {
 public:
@@ -60,41 +72,66 @@ public:
     std::string short_file_name;
     cmd >> short_file_name;
     
-    void* handle = attach_list[short_file_name];
-    if (handle) {itested();
-      if (CARD_LIST::card_list.is_empty()) {itested();
-	cmd.warn(bDANGER, here, "\"" + short_file_name + "\": already loaded, replacing");
-	dlclose(handle);
-	attach_list[short_file_name] = NULL;
-      }else{itested();
-	cmd.reset(here);
-	throw Exception_CS("already loaded, cannot replace when there is a circuit", cmd);
-      }
+    if (short_file_name == "") {
+      // nothing, list what we have
+      list();
     }else{
-    }
-
-    if (short_file_name.find('/') == std::string::npos) {
-      // no '/' in name, search for it
-      std::string path = plug_path();
-      std::string full_file_name = findfile(short_file_name, path, R_OK);
-      if (full_file_name != "") {
-	// found it in path
-	handle = dlopen(full_file_name.c_str(), check | dl_scope);
-      }else{itested();
-	cmd.reset(here);
-	throw Exception_CS("plugin not found in " + path, cmd);
+      // a name to look for
+      // check if already loaded
+      void* handle = attach_list[short_file_name];
+      if (handle) {itested();
+	if (CARD_LIST::card_list.is_empty()) {itested();
+	  cmd.warn(bDANGER, here, "\"" + short_file_name + "\": already loaded, replacing");
+	  dlclose(handle);
+	  handle = NULL;
+	  attach_list[short_file_name] = NULL;
+	}else{untested();itested();
+	  cmd.reset(here);
+	  throw Exception_CS("already loaded, cannot replace when there is a circuit", cmd);
+	}
+      }else{
       }
-    }else{itested();
-      // has '/' in name, don't search, we have full name
-      handle = dlopen(short_file_name.c_str(), check | dl_scope);
+      
+      // '/' in name, try local search
+      if (short_file_name.find('/') != std::string::npos) {itested();
+	handle = dlopen(short_file_name.c_str(), check | dl_scope);
+      }else{
+	assert(!handle);
+      }
+      
+      if (!handle) {
+	// didn't find locally, try plug_path(), even if '/' in name
+	std::string path = plug_path();
+	std::string full_file_name = findfile(short_file_name, path, R_OK);
+	if (full_file_name != "") {
+	  // found it in path
+	  handle = dlopen(full_file_name.c_str(), check | dl_scope);
+	}else{itested();
+	  cmd.reset(here);
+	  throw Exception_CS("plugin not found in " + path, cmd);
+	}
+      }else{itested();
+	// already got it ('/' in name)
+      }
+      
+      if (handle) {
+	attach_list[short_file_name] = handle;
+      }else{untested();itested();
+	cmd.reset(here);
+	throw Exception_CS(dlerror(), cmd);
+      }
     }
+  }
 
-    if (handle) {
-      attach_list[short_file_name] = handle;
-    }else{itested();
-      cmd.reset(here);
-      throw Exception_CS(dlerror(), cmd);
-    }
+  std::string help_text()const
+  {
+    return 
+      "load command\n"
+      "Loads plugins\n"
+      "Syntax: load plugin\n"
+      "Plugin search path is: " + plug_path() + " \n"
+      "Path is set by GNUCAP_PLUGPATH environment variable\n"
+      "With no arg, it lists plugins already loaded\n\n";
   }
 } p1;
 DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
@@ -102,23 +139,39 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
 class CMD_DETACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*)
-  {untested();
-    if (CARD_LIST::card_list.is_empty()) {untested();
-      unsigned here = cmd.cursor();
-      std::string file_name;
-      cmd >> file_name;
-      
-      void* handle = attach_list[file_name];
-      if (handle) {untested();
-	dlclose(handle);
-	attach_list[file_name] = NULL;
-      }else{untested();
-	cmd.reset(here);
-	throw Exception_CS("plugin not attached", cmd);
-      }
+  {
+    unsigned here = cmd.cursor();	//BUG// due to the way dlopen and dlclose work
+    std::string file_name;		// it doesn't really work.
+    cmd >> file_name;			// the dispatcher's active instance blocks unload
+    
+    if (file_name == "") {
+      // nothing, list what we have
+      list();
     }else{untested();
-      throw Exception_CS("detach prohibited when there is a circuit", cmd);
+      if (CARD_LIST::card_list.is_empty()) {untested();
+	void* handle = attach_list[file_name];
+	if (handle) {untested();
+	  dlclose(handle);
+	  attach_list[file_name] = NULL;
+	}else{untested();
+	  cmd.reset(here);
+	  throw Exception_CS("plugin not attached", cmd);
+	}
+      }else{untested();
+	throw Exception_CS("detach prohibited when there is a circuit", cmd);
+      }
     }
+  }
+
+  std::string help_text()const
+  {
+    return 
+      "unload command\n"
+      "Unloads plugins\n"
+      "Syntax: unload plugin\n"
+      "The name must match the name you loaded it with.\n"
+      "Prohibited when there is a circuit\n"
+      "With no arg, it lists plugins already loaded\n\n";
   }
 } p2;
 DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "detach|unload", &p2);

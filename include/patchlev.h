@@ -1,1 +1,1 @@
-#define PATCHLEVEL "plugpath-bug 2017.05.11"
+#define PATCHLEVEL "plugpath-bug 2017.05.13"
