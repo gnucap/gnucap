@@ -1,0 +1,12 @@
+# a shell/make fragment
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+includedir="@includedir@"
+libdir="@libdir@"
+pkglibdir="@pkglibdir@"
+LIBS="@LIBS@"
+CXX="@CXX@"
+CXXFLAGS="@CXXFLAGS@"
+datarootdir="@datarootdir@"
+sysconfdir="@sysconfdir@"

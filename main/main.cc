@@ -1,4 +1,4 @@
-/*$Id: main.cc 2016/09/11 al $ -*- C++ -*-
+/*$Id: main.cc  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -59,7 +59,12 @@ static void prepare_env()
                               "\0         (reserved space)                 ";
 
   std::string ldlpath = OS::getenv("LD_LIBRARY_PATH");
-  OS::setenv("GNUCAP_PLUGPATH", ldlpath + ':' + (plugpath+9), false);
+  if (ldlpath != "") {untested();
+    ldlpath += ":";
+  }else{
+  }
+  assert(strlen("PLUGPATH=") == 9);
+  OS::setenv("GNUCAP_PLUGPATH", ldlpath + (plugpath+9), false);
 }
 /*--------------------------------------------------------------------------*/
 static void read_startup_files(void)

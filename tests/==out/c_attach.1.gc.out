@@ -1,0 +1,16 @@
+load command
+Loads plugins
+Syntax: load plugin
+Plugin search path is: /usr/local/lib/gnucap 
+Path is set by GNUCAP_PLUGPATH environment variable
+With no arg, it lists plugins already loaded
+
+gnucap-default-plugins.so
+unload command
+Unloads plugins
+Syntax: unload plugin
+The name must match the name you loaded it with.
+Prohibited when there is a circuit
+With no arg, it lists plugins already loaded
+
+gnucap-default-plugins.so
