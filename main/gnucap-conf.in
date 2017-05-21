@@ -44,6 +44,7 @@ case $1 in
 	echo $0 --cxxflags
 	echo $0 --cxx
 	echo $0 --ldflags
+	echo $0 --includedir
 	echo $0 --pkglibdir
 	echo $0 --libdir
 	echo $0 --libs
