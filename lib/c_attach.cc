@@ -99,7 +99,11 @@ public:
 	assert(!handle);
       }
       
-      if (!handle) {
+      if(short_file_name[0]=='/'){ untested();
+	// don't try fancy stuff.
+      }else if(short_file_name[0]=='.'){ untested();
+	// don't try fancy stuff.
+      }else if (!handle) {
 	// didn't find locally, try plug_path(), even if '/' in name
 	std::string path = plug_path();
 	std::string full_file_name = findfile(short_file_name, path, R_OK);
