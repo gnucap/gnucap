@@ -74,10 +74,7 @@ SIM_DATA::SIM_DATA()
 {
   _evalq = &_evalq1;
   _evalq_uc = &_evalq2;
-
-  for(unsigned i=0; i<iCOUNT; ++i){ untested();
-    _iter[i]=0;
-  }
+  std::fill_n(_iter, iCOUNT, 0);
 }
 /*--------------------------------------------------------------------------*/
 SIM_DATA::~SIM_DATA()
