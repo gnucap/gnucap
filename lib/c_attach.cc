@@ -20,7 +20,7 @@
  * 02110-1301, USA.
  *------------------------------------------------------------------
  */
-//testing=script 2017.05.13
+//testing=script 2017.06.22
 #include "e_cardlist.h"
 #include "c_comand.h"
 #include "globals.h"
@@ -40,7 +40,7 @@ void list()
 	 ii = attach_list.begin(); ii != attach_list.end(); ++ii) {
     if (ii->second) {
       IO::mstdout << ii->first << '\n';
-    }else{untested();
+    }else{itested();
       error(bTRACE,  ii->first + " (unloaded)\n");
     }
   }
@@ -78,49 +78,43 @@ public:
     }else{
       // a name to look for
       // check if already loaded
-      void* handle = attach_list[short_file_name];
-      if (handle) {itested();
+      if (void* handle = attach_list[short_file_name]) {itested();
 	if (CARD_LIST::card_list.is_empty()) {itested();
 	  cmd.warn(bDANGER, here, "\"" + short_file_name + "\": already loaded, replacing");
 	  dlclose(handle);
-	  handle = NULL;
 	  attach_list[short_file_name] = NULL;
-	}else{untested();itested();
+	}else{itested();
 	  cmd.reset(here);
 	  throw Exception_CS("already loaded, cannot replace when there is a circuit", cmd);
 	}
       }else{
       }
       
-      // '/' in name, try local search
-      if (short_file_name.find('/') != std::string::npos) {itested();
-	handle = dlopen(short_file_name.c_str(), check | dl_scope);
+      std::string full_file_name;
+      if (short_file_name[0]=='/' || short_file_name[0]=='.'){untested();
+	if (OS::access_ok(short_file_name, R_OK)) {untested();
+	  // found it, local or root
+	  full_file_name = short_file_name;
+	}else{untested();
+	  cmd.reset(here);
+	  throw Exception_CS("plugin not found in " + short_file_name[0], cmd);
+	}
       }else{
-	assert(!handle);
-      }
-      
-      if(short_file_name[0]=='/'){ untested();
-	// don't try fancy stuff.
-      }else if(short_file_name[0]=='.'){ untested();
-	// don't try fancy stuff.
-      }else if (!handle) {
-	// didn't find locally, try plug_path(), even if '/' in name
 	std::string path = plug_path();
-	std::string full_file_name = findfile(short_file_name, path, R_OK);
+	full_file_name = findfile(short_file_name, path, R_OK);
 	if (full_file_name != "") {
-	  // found it in path
-	  handle = dlopen(full_file_name.c_str(), check | dl_scope);
-	}else{itested();
+	  // found it, with search
+	}else{untested();
 	  cmd.reset(here);
 	  throw Exception_CS("plugin not found in " + path, cmd);
 	}
-      }else{itested();
-	// already got it ('/' in name)
       }
-      
-      if (handle) {
+	  
+      assert(OS::access_ok(full_file_name, R_OK));
+
+      if (void* handle = dlopen(full_file_name.c_str(), check | dl_scope)) {
 	attach_list[short_file_name] = handle;
-      }else{untested();itested();
+      }else{untested();
 	cmd.reset(here);
 	throw Exception_CS(dlerror(), cmd);
       }
