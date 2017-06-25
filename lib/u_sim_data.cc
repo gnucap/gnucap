@@ -39,7 +39,6 @@ SIM_DATA::SIM_DATA()
    _fulldamp(false),
    _last_time(0.),
    _freezetime(false),
-   //_iter(),		//BUG// does not init non-static instances
    _user_nodes(0),
    _subckt_nodes(0),
    _model_nodes(0),
@@ -75,6 +74,7 @@ SIM_DATA::SIM_DATA()
 {
   _evalq = &_evalq1;
   _evalq_uc = &_evalq2;
+  std::fill_n(_iter, iCOUNT, 0);
 }
 /*--------------------------------------------------------------------------*/
 SIM_DATA::~SIM_DATA()

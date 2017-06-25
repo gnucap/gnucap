@@ -1,4 +1,4 @@
-/*$Id: m_matrix.h 2016/09/14 $ -*- C++ -*-
+/*$Id: m_matrix.h 2017/06/07 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -537,12 +537,12 @@ T BSMATRIX<T>::s(int row, int col)const
 /*--------------------------------------------------------------------------*/
 template <class T>
 void BSMATRIX<T>::load_point(int i, int j, T value)
-{untested();
-  if (i > 0 && j > 0) {untested();
+{
+  if (i > 0 && j > 0) {
     set_changed(j);
     set_changed(i);
     m(i,j) += value;
-  }else{untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
