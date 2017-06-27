@@ -27,6 +27,8 @@ tags: $(HDRS) $(SRCS)
 checkout:
 	co $(RAW)
 #------------------------------------------------------------------------
+install-debug : install
+
 install : $(INSTALL_FILES) $(DATA_FILES)
 	echo ==================
 	mkdir -p $(DESTDIR)$(INSTALL_DIR)
