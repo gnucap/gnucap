@@ -1,4 +1,4 @@
-#$Id: Makefile.template,v 26.133 2009/11/26 04:58:04 al Exp $ -*- Makefile -*-
+#$Id: Makefile.template $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -77,6 +77,10 @@ checkout: nothing
 install: nothing
 	${MAKE} default
 	(cd O; ${MAKE} install)
+#-----------------------------------------------------------------------------
+install-debug: nothing
+	${MAKE} debug
+	(cd O-DEBUG; ${MAKE} install)
 #-----------------------------------------------------------------------------
 uninstall: nothing
 	cat Make1 Make2 ../Make3 >Make.aux
