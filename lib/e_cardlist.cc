@@ -465,6 +465,8 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   trace0(owner->long_label().c_str());
 
   int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
+  std::cerr << "nn " << model->net_nodes() << "\n";;
+  std::cerr << "scktn " << num_nodes_in_subckt << "\n";;
   assert(model->net_nodes() <= num_nodes_in_subckt);
   int* map = new int[num_nodes_in_subckt+1];
   {
@@ -480,12 +482,14 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       // map them to what the calling circuit wants
       int i=0;
       for (i=1; i <= model->net_nodes(); ++i) {
+	assert(i <= num_nodes_in_subckt);
 	map[i] = owner->n_(i-1).t_();
 	trace3("ports", i, map[i], owner->n_(i-1).t_());
       }
     
       // get new node numbers, and assign them to the remaining
-      for (assert(i==model->net_nodes() + 1); i <= num_nodes_in_subckt; ++i) {
+      assert(i==model->net_nodes() + 1);
+      for (; i <= num_nodes_in_subckt; ++i) {
 	// for each remaining node in card_list
 	map[i] = CKT_BASE::_sim->newnode_subckt();
 	trace2("internal", i, map[i]);
