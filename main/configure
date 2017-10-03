@@ -22,7 +22,30 @@ else
 fi
 
 sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
+#----------------------------------------------------------------
+pkglibdir=$prefix/lib/gnucap
 
+# bug. this is not implemented consistently.
+CXX=${CXX-c++}
+
+fill_template() {
+sed -e "s#@prefix@#$prefix#" \
+    -e "s#@exec_prefix@#$prefix#" \
+    -e "s#@libdir@#$prefix/lib#" \
+    -e "s#@includedir@#$\{prefix\}/include#" \
+    -e "s#@datarootdir@#$\{prefix\}/share/gnucap#" \
+    -e "s#@sysconfdir@#$\{prefix\}/etc#" \
+    -e "s#@pkglibdir@#$pkglibdir#" \
+    -e "s#@CXXFLAGS@#$CCFLAGS#" \
+    -e "s#@LIBS@#-lgnucap#" \
+    -e "s#@CXX@#$CXX#" < $1.in > $1
+}
+
+fill_template config.h
+fill_template gnucap-conf
+fill_template gnucap.conf
+
+chmod +x gnucap-conf
 #----------------------------------------------------------------
 echo "CCFLAGS = \\" >Make.ccflags
 echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
@@ -36,7 +59,7 @@ echo "" >>Make.libs
 cat <<CAT_EOF >Make.sys
 #------------------------------------------------------------------------
 VPATH = .:..
-CCC = g++
+CCC = c++
 TARGET_EXT =
 
 LDFLAGS = -rdynamic \

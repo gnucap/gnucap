@@ -40,10 +40,7 @@ Vprobe ( 8 0 )  DC  0.
  0.         1.         1.         1.         1.E+12     1.E+12     1.E+12     0.         0.         0.         Inf        Inf        Inf        0.         0.         0.         1.        
  0.01       1.         1.         1.         1.E+12     1.E+12     1.E+12    -10.u       10.u       10.u       2.         2.         2.         0.         0.         0.         9.        
  0.02       1.         1.         1.         1.E+12     1.E+12     1.E+12    -20.u       20.u       20.u       2.         2.         2.         10.u       10.u      -10.u       6.        
- 0.03       1.         1.         1.         1.E+12     1.E+12     1.E+12    -30.u       30.u       30.u       2.         2.         2.         20.u       20.u      -20.u       6.        
- 0.04       1.         1.         1.         1.E+12     1.E+12     1.E+12    -40.u       40.u       40.u       2.         2.         2.         30.u       30.u      -30.u       6.        
- 0.05       1.         1.         1.         1.E+12     1.E+12     1.E+12    -50.u       50.u       50.u       2.         2.         2.         40.u       40.u      -40.u       6.        
- 1.         1.         1.         1.         1.E+12     1.E+12     1.E+12    -0.001      0.001      0.001      2.         2.         2.         50.u       50.u      -50.u       1.        
+ 1.         1.         1.         1.         1.E+12     1.E+12     1.E+12    -0.001      0.001      0.001      2.         2.         2.         20.u       20.u      -20.u       1.        
  2.         1.         1.         1.         1.E+12     1.E+12     1.E+12    -0.002      0.002      0.002      2.         2.         2.         0.001      0.001     -0.001      1.        
  2.         1.         1.         1.         1.E+12     1.E+12     1.E+12    -0.002      0.002      0.002      2.         2.         Inf        0.002      0.002     -0.002      7.        
  2.         1.         1.         1.         1.E+12     1.E+12     1.E+12    -0.002      0.002      0.002      2.         2.         2.         0.002      0.002     -0.002      17.       
@@ -114,7 +111,7 @@ Rprobe ( 7 8 )  1.K
 Vprobe ( 8 0 )  DC  0.
 .model sss csw ( it=0. ih=.002 ion=NA( 0.002) ioff=NA(-0.002) ron=1.K roff=1.E+12 tnom=NA( 27.))
 Gnucap   System status
-iterations: op=0, dc=84, tran=207, fourier=0, total=363
-transient timesteps: accepted=61, rejected=9, total=70
+iterations: op=0, dc=84, tran=195, fourier=0, total=348
+transient timesteps: accepted=58, rejected=9, total=67
 nodes: user=8, subckt=0, model=0, total=8
 dctran density=25.0%, ac density=25.0%

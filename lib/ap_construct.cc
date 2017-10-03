@@ -1,4 +1,4 @@
-/*$Id: ap_construct.cc,v 26.130 2009/11/15 21:51:59 al Exp $ -*- C++ -*-
+/*$Id: ap_construct.cc  2016/09/11 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -243,7 +243,7 @@ static std::string getlines(FILE *fileptr)
     }else{
       trim(buffer);
       size_t count = strlen(buffer);
-      if (buffer[count-1] == '\\') {itested();
+      if (buffer[count-1] == '\\') {
 	buffer[count-1] = '\0';
       }else{
 	// look ahead at next line

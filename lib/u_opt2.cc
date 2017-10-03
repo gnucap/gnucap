@@ -1,4 +1,4 @@
-/*$Id: u_opt2.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*$Id: u_opt2.cc  2016/09/26 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -148,7 +148,7 @@ bool OPT::set_values(CS& cmd)
       || Get(cmd, "trstephold",    &trstephold,  mPOSITIVE)
       || Get(cmd, "trstepshrink",  &trstepshrink,mPOSITIVE)
       || Get(cmd, "trreject",      &trreject,	mPOSITIVE)
-      || Get(cmd, "trsteporder",   &trsteporder)
+      || (Get(cmd, "trsteporder",   &trsteporder) && (trsteporder = to_range(1,trsteporder,3)))
       || Get(cmd, "trstepcoef1",   &trstepcoef[1])
       || Get(cmd, "trstepcoef2",   &trstepcoef[2])
       || Get(cmd, "trstepcoef3",   &trstepcoef[3])

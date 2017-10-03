@@ -1,4 +1,4 @@
-#$Id: Make1,v 26.138 2013/04/24 02:44:30 al Exp $ -*- Makefile -*-
+#$Id: Make1 2016/09/17 $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -23,7 +23,7 @@ TARGET = gnucap-default-plugins
 #------------------------------------------------------------------------
 INSTALL_FILES = $(TARGET)$(TARGET_EXT)
 #------------------------------------------------------------------------
-INSTALL_DIR = $(PREFIX)/lib
+INSTALL_DIR = $(PREFIX)/lib/gnucap
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------

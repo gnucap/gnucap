@@ -1,4 +1,4 @@
-/*$Id: c__cmd.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*$Id: c__cmd.cc  2016/09/11 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -53,7 +53,7 @@ void CMD::cmdproc(CS& cmd, CARD_LIST* scope)
   // Map possible short names to full ones.
   // If this if/else block is removed, the only loss is the short names.
   // Although it looks like it can be used to make aliases, don't.
-  if (cmd.umatch("'|*|#|//|\""))	{itested();  s = "xxxxcomment";}
+  if (cmd.umatch("'|*|#|//|\""))	{	     s = "xxxxcomment";}
   else if (cmd.umatch("b{uild} "))      {itested();  s = "build";}
   else if (cmd.umatch("del{ete} "))     {            s = "delete";}
   else if (cmd.umatch("fo{urier} "))    {            s = "fourier";}
@@ -76,7 +76,7 @@ void CMD::cmdproc(CS& cmd, CARD_LIST* scope)
     didsomething = false;
   }
 
-  if (s == "xxxxcomment") {itested();
+  if (s == "xxxxcomment") {
     // nothing
   }else if (s != "") {
     CMD* c = command_dispatcher[s];
@@ -86,7 +86,7 @@ void CMD::cmdproc(CS& cmd, CARD_LIST* scope)
     }else{itested();
       cmd.warn(bWARNING, here, "what's this?");
     }
-  }else if (!didsomething) {itested();
+  }else if (!didsomething) {
     cmd.check(bWARNING, "bad command");
     didsomething = false;
   }else{itested();

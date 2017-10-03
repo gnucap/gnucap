@@ -64,6 +64,13 @@ install: nothing
 	(cd main; ${MAKE} install)
 	(cd apps; ${MAKE} install)
 
+install-debug: nothing
+	(cd include; ${MAKE} install-debug)
+	(cd lib; ${MAKE} install-debug)
+	(cd modelgen; ${MAKE} install-debug)
+	(cd main; ${MAKE} install-debug)
+	(cd apps; ${MAKE} install-debug)
+
 uninstall: nothing
 	(cd include; ${MAKE} uninstall)
 	(cd lib; ${MAKE} uninstall)

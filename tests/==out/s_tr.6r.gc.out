@@ -1,0 +1,22 @@
+"v1 (1 0) pulse (0 1) "
+".print tran v(1) timef(v1) errort(v1) eventt(v1) dtr(v1) "
+".tran 0 1 1 trace rejected "
+#Time       v(1)       timef(v1)  errort(v1) eventt(v1) dtr(v1)   
+ 0.         0.         Inf        0.         0.         Inf       
+ 0.01       1.         0.02344    0.02344    0.         0.01344   
+ 0.02       1.         Inf        0.         0.         Inf       
+ 1.         1.         Inf        0.         0.         Inf       
+"r1 (2 0) 1 "
+".tran trace rejected "
+#Time       v(1)       timef(v1)  errort(v1) eventt(v1) dtr(v1)   
+ 0.         0.         Inf        0.         0.         Inf       
+ 0.01       1.         0.02344    0.02344    0.         0.01344   
+ 0.02       1.         Inf        0.         0.         Inf       
+ 1.         1.         Inf        0.         0.         Inf       
+".status notime "
+Gnucap   System status
+iterations: op=0, dc=0, tran=11, fourier=0, total=30
+transient timesteps: accepted=8, rejected=0, total=8
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=50.0%, ac density=50.0%
+".end "

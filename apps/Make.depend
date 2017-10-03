@@ -469,11 +469,7 @@ c_delete.o: c_delete.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/md.h ../include/io_trace.h \
  ../include/io_error.h ../include/l_stlextra.h ../include/u_opt.h \
  ../include/mode.h ../include/io_.h ../include/l_lib.h ../include/ap.h \
- ../include/d_subckt.h ../include/e_node.h ../include/u_sim_data.h \
- ../include/constant.h ../include/l_compar.h ../include/m_matrix.h \
- ../include/e_subckt.h ../include/e_compon.h ../include/u_time_pair.h \
- ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h ../include/c_comand.h
+ ../include/e_cardlist.h ../include/c_comand.h ../include/e_card.h
 c_exp.o: c_exp.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/md.h ../include/io_trace.h \
  ../include/io_error.h ../include/l_stlextra.h ../include/u_opt.h \
@@ -641,36 +637,33 @@ lang_spice.o: lang_spice.cc ../include/globals.h \
  ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/ap.h ../include/u_status.h ../include/l_timer.h \
  ../include/c_comand.h ../include/e_card.h ../include/d_dot.h \
- ../include/d_coment.h ../include/d_subckt.h ../include/e_node.h \
+ ../include/d_coment.h ../include/e_subckt.h ../include/e_compon.h \
  ../include/u_sim_data.h ../include/constant.h ../include/l_compar.h \
- ../include/m_matrix.h ../include/e_subckt.h ../include/e_compon.h \
- ../include/u_time_pair.h ../include/u_parameter.h \
+ ../include/m_matrix.h ../include/u_time_pair.h ../include/u_parameter.h \
  ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
  ../include/u_lang.h ../include/d_logic.h ../include/e_model.h \
- ../include/e_elemnt.h ../include/m_cpoly.h ../include/l_denoise.h \
- ../include/bm.h
+ ../include/e_elemnt.h ../include/e_node.h ../include/m_cpoly.h \
+ ../include/l_denoise.h ../include/bm.h
 lang_spectre.o: lang_spectre.cc ../include/globals.h \
  ../include/l_dispatcher.h ../include/e_base.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/l_stlextra.h \
  ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/ap.h ../include/c_comand.h ../include/e_card.h \
- ../include/d_dot.h ../include/d_coment.h ../include/d_subckt.h \
- ../include/e_node.h ../include/u_sim_data.h ../include/constant.h \
- ../include/l_compar.h ../include/m_matrix.h ../include/e_subckt.h \
- ../include/e_compon.h ../include/u_time_pair.h ../include/u_parameter.h \
- ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
- ../include/e_model.h ../include/u_lang.h
+ ../include/d_dot.h ../include/d_coment.h ../include/e_subckt.h \
+ ../include/e_compon.h ../include/u_sim_data.h ../include/constant.h \
+ ../include/l_compar.h ../include/m_matrix.h ../include/u_time_pair.h \
+ ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
+ ../include/e_cardlist.h ../include/e_model.h ../include/u_lang.h
 lang_verilog.o: lang_verilog.cc ../include/globals.h \
  ../include/l_dispatcher.h ../include/e_base.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/l_stlextra.h \
  ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/ap.h ../include/c_comand.h ../include/e_card.h \
- ../include/d_dot.h ../include/d_coment.h ../include/d_subckt.h \
- ../include/e_node.h ../include/u_sim_data.h ../include/constant.h \
- ../include/l_compar.h ../include/m_matrix.h ../include/e_subckt.h \
- ../include/e_compon.h ../include/u_time_pair.h ../include/u_parameter.h \
- ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
- ../include/e_model.h ../include/u_lang.h
+ ../include/d_dot.h ../include/d_coment.h ../include/e_subckt.h \
+ ../include/e_compon.h ../include/u_sim_data.h ../include/constant.h \
+ ../include/l_compar.h ../include/m_matrix.h ../include/u_time_pair.h \
+ ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
+ ../include/e_cardlist.h ../include/e_model.h ../include/u_lang.h
 func_core.o: func_core.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/md.h ../include/io_trace.h \
  ../include/io_error.h ../include/l_stlextra.h ../include/u_opt.h \

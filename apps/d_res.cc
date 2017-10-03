@@ -1,4 +1,4 @@
-/*$Id: d_res.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: d_res.cc  2016/09/11  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -61,7 +61,7 @@ private: // override virtual
   void	   ac_load()		{ac_load_passive();}
   COMPLEX  ac_involts()const	{return ac_outvolts();}
 
-  std::string port_name(int i)const {itested();
+  std::string port_name(int i)const {
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};

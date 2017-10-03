@@ -76,6 +76,24 @@ namespace OS {
       return "";
     }
   }
+
+  inline void setenv(const std::string& Name, const std::string& Value, bool Overwrite=true) {
+    if (Name == "") {untested();
+      throw Exception("setenv: bad name " + Name);
+    }else if (Value == "") {untested();
+      throw Exception("setenv: bad value " + Value);
+    }else if (!Overwrite && getenv(Name) != "") {untested();
+      error(bDEBUG, "setenv: " + Name + " overwrite prohibited");
+    }else{
+      std::string ev = Name + "=" + Value;
+      char *es = ::strdup(ev.c_str());	//BUG// memory leak
+      assert(es);
+      if (::putenv(es) != 0) {untested();
+	throw Exception("");
+      }else{
+      }
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

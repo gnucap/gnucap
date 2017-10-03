@@ -1,4 +1,4 @@
-/*$Id: l_ftos.cc,v 26.96 2008/10/09 05:36:27 al Exp $ -*- C++ -*-
+/*$Id: l_ftos.cc  2016/09/21  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -62,7 +62,7 @@ std::string to_string(int n)
 /*--------------------------------------------------------------------------*/
 std::string to_string(double n)
 {
-  return ftos(n, 0, 7, 0);
+  return ftos(n, 0, 15, 0);
 }
 /*--------------------------------------------------------------------------*/
 char* ftos(double num, int fieldwidth, int len, int fmt)

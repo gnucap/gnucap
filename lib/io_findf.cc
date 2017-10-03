@@ -31,17 +31,15 @@
  *
  * PATHSEP, ENDDIR are system dependent, defined in md.h
  */
-//testing=script,sparse 2006.07.17
+//testing=script,complete 2017.03.12
 #include "l_lib.h"
 /*--------------------------------------------------------------------------*/
 INTERFACE std::string findfile(const std::string& filename, const std::string& path, int mode)
 {
 #ifdef CHECK_LOCAL_FIRST
-  if (OS::access_ok(filename, mode)) {
-    untested(); 
+  if (OS::access_ok(filename, mode)) {untested();
     return filename;
-  }else{
-    untested(); 
+  }else{untested();
   }
 #endif
 					// for each item in the path
@@ -54,11 +52,11 @@ INTERFACE std::string findfile(const std::string& filename, const std::string& p
     }
     if (!target.empty() &&  !strchr(ENDDIR,p_ptr[-1])) {
       target += *ENDDIR;		// append '/' if needed
-    }else{untested();
+    }else{
     }
     
     target += filename;
-    if (OS::access_ok(target, mode)) {untested();	// found it
+    if (OS::access_ok(target, mode)) {	// found it
       return target;
     }else if (p_ptr==path.end()) {	// ran out of path, didn't find it
       return "";

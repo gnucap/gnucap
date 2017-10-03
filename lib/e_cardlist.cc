@@ -1,4 +1,4 @@
-/*$Id: e_cardlist.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.cc  2016/09/17 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -87,6 +87,7 @@ PARAM_LIST* CARD_LIST::params()const
 CARD_LIST::iterator CARD_LIST::find_again(const std::string& short_name,
 					  CARD_LIST::iterator Begin)
 {
+  trace0(("CARD_LIST::find_ name=" + short_name).c_str());
   return notstd::find_ptr(Begin, end(), short_name);
 }
 /*--------------------------------------------------------------------------*/
@@ -503,7 +504,12 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
-	(**ci).n_(ii).map_subckt_node(map, owner);
+	try{
+	  (**ci).n_(ii).map_subckt_node(map, owner);
+	}catch(...){
+	  delete[] map;
+	  throw;
+	}
       }
     }else{
       assert(dynamic_cast<MODEL_CARD*>(*ci));

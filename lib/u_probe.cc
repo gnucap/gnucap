@@ -1,4 +1,4 @@
-/*$Id: u_probe.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: u_probe.cc 2016/09/22 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -65,7 +65,7 @@ PROBE& PROBE::operator=(const PROBE& p)
   _hi   = p._hi;
   if (_brh) {
     _brh->inc_probes();
-  }else{itested();
+  }else{
   }
   return *this;
 }
@@ -124,7 +124,7 @@ double PROBE::probe_node(void)const
     return _sim->_damp;
   }else if (Umatch(_what, "gen{erator} ")) {untested();
     return _sim->_genout;
-  }else if (Umatch(_what, "hidden ")) {untested();
+  }else if (Umatch(_what, "hidden ")) {
     return ::status.hidden_steps;
   }else if (Umatch(_what, "temp{erature} ")) {
     return _sim->_temp_c;

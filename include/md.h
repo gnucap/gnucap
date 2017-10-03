@@ -72,27 +72,15 @@ enum {
 #define I_PROMPT "gnucap> "
 #define CKT_PROMPT ">"
 #define ANTI_COMMENT "*>"
-#define DEFAULT_LANGUAGE "acs"
 /*--------------------------------------------------------------------------*/
 #if defined(__WIN32__)
 #define	ENDDIR		"/\\"
 #define PATHSEP		';'
-#define DEFAULT_PLUGINS "gnucap-default-plugins.dll"
-#define SYSTEMSTARTFILE	"gnucap.rc"
-#define SYSTEMSTARTPATH	OS::getenv("PATH")
-#define USERSTARTFILE	"gnucap.rc"
-#define	USERSTARTPATH	OS::getenv("HOME")
 #define STEPFILE   	"/tmp/SXXXXXX"
 #define SHELL		OS::getenv("COMSPEC")
-/*--------------------------------------------------------------------------*/
 #else
 #define	ENDDIR		"/"
 #define PATHSEP		':'
-#define DEFAULT_PLUGINS "gnucap-default-plugins.so"
-#define SYSTEMSTARTFILE	"gnucap.rc"
-#define SYSTEMSTARTPATH	OS::getenv("PATH")
-#define USERSTARTFILE	".gnucaprc"
-#define	USERSTARTPATH	OS::getenv("HOME")
 #define STEPFILE   	"/tmp/SXXXXXX"
 #define SHELL		OS::getenv("SHELL")
 #endif

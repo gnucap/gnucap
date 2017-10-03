@@ -1,4 +1,4 @@
-/*$Id: s__out.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: s__out.cc 2016/09/22 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -49,16 +49,31 @@ const PROBELIST& SIM::storelist()const
 }
 /*--------------------------------------------------------------------------*/
 /* SIM::out: output the data, "keep" for ac reference
+ * x = the x coordinate
+ * print = selected points, "print" to screen, files, etc.
+ * store = all points, for internal postprocessing, measure
+ * keep = after the command is done, dcop for ac
  */
-void SIM::outdata(double x)
+void SIM::outdata(double x, int outflags)
 {
   ::status.output.start();
-  plottr(x, plotlist());
-  print_results(x);
-  alarm();
-  store_results(x);
-  _sim->reset_iteration_counter(iPRINTSTEP);
-  ::status.hidden_steps = 0;
+  if (outflags & ofKEEP) {
+    _sim->keep_voltages();
+  }else{
+  }
+  if (outflags & ofPRINT) {
+    plottr(x, plotlist());
+    print_results(x);
+    _sim->reset_iteration_counter(iPRINTSTEP);
+    ::status.hidden_steps = 0;
+  }else{
+    ++::status.hidden_steps;
+  }
+  if (outflags & ofSTORE) {
+    alarm();
+    store_results(x);
+  }else{
+  }
   ::status.output.stop();
 }
 /*--------------------------------------------------------------------------*/

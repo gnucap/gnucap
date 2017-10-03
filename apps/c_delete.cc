@@ -1,4 +1,4 @@
-/*$Id: c_delete.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: c_delete.cc 2016/09/17 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -28,7 +28,7 @@
 // usually before anything else.
 
 #include "globals.h"
-#include "d_subckt.h"
+#include "e_cardlist.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 namespace {
@@ -62,7 +62,7 @@ private:
       if (i == Scope->end()) {
 	// can't find "container" (probably .subckt) - no match
 	return false;
-      }else if (!dynamic_cast<MODEL_SUBCKT*>(*i)) {
+      }else if ((**i).is_device()) {
 	// found a match, but it isn't a container (subckt)
 	return false;
       }else{

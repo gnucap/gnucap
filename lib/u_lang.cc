@@ -1,4 +1,4 @@
-/*$Id: u_lang.cc 2015/02/05 al $ -*- C++ -*-
+/*$Id: u_lang.cc 2016/09/22 $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -24,7 +24,7 @@
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
-#include "d_subckt.h"
+#include "e_subckt.h"
 #include "e_model.h"
 #include "u_lang.h"
 /*--------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
     assert(!p);
     std::string s;
     /* */if (Umatch(Name, "b{uild} "))      {untested(); s = "build";}
-    else if (Umatch(Name, "del{ete} "))     {untested(); s = "delete";}
+    else if (Umatch(Name, "del{ete} "))     {		 s = "delete";}
     else if (Umatch(Name, "fo{urier} "))    {untested(); s = "fourier";}
     else if (Umatch(Name, "gen{erator} "))  {		 s = "generator";}
     else if (Umatch(Name, "inc{lude} "))    {untested(); s = "include";}
@@ -99,7 +99,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-void LANGUAGE::new__instance(CS& cmd, MODEL_SUBCKT* owner, CARD_LIST* Scope)
+void LANGUAGE::new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope)
 {
   if (cmd.is_end()) {untested();
     // nothing
@@ -127,16 +127,18 @@ CARD* LANGUAGE::parse_item(CS& cmd, CARD* c)
   // If you can think of a better way, tell me.
   // It must be in the LANGUAGE class, not CARD.
 
-  if (dynamic_cast<MODEL_SUBCKT*>(c)) {untested();
-    return parse_module(cmd, prechecked_cast<MODEL_SUBCKT*>(c));
-  }else if (dynamic_cast<COMPONENT*>(c)) {
+  assert(c);
+  if (c->is_device()){
+    assert(dynamic_cast<COMPONENT*>(c));
     return parse_instance(cmd, prechecked_cast<COMPONENT*>(c));
-  }else if (dynamic_cast<MODEL_CARD*>(c)) {untested();
-    return parse_paramset(cmd, prechecked_cast<MODEL_CARD*>(c));
-  }else if (dynamic_cast< DEV_COMMENT*>(c)) {
-    return parse_comment(cmd, prechecked_cast<DEV_COMMENT*>(c));
-  }else if (dynamic_cast<DEV_DOT*>(c)) {
-    return parse_command(cmd, prechecked_cast<DEV_DOT*>(c));
+  }else if (BASE_SUBCKT* s = dynamic_cast<BASE_SUBCKT*>(c)) {
+    return parse_module(cmd, s);
+  }else if (MODEL_CARD* m = dynamic_cast<MODEL_CARD*>(c)) {untested();
+    return parse_paramset(cmd, m);
+  }else if (DEV_COMMENT* com = dynamic_cast<DEV_COMMENT*>(c)) {
+    return parse_comment(cmd, com);
+  }else if (DEV_DOT* d = dynamic_cast<DEV_DOT*>(c)) {
+    return parse_command(cmd, d);
   }else{untested();
     incomplete();
     unreachable();
@@ -149,19 +151,19 @@ void LANGUAGE::print_item(OMSTREAM& o, const CARD* c)
   // See Stroustrup 15.4.5
   // If you can think of a better way, tell me.
   // It must be in the LANGUAGE class, not CARD.
-  assert(c);
-  assert(dynamic_cast<const CARD*>(c));
 
-  if (dynamic_cast<const MODEL_SUBCKT*>(c)) {
-    print_module(o, prechecked_cast<const MODEL_SUBCKT*>(c));
-  }else if (dynamic_cast<const COMPONENT*>(c)) {
+  assert(c);
+  if (c->is_device()){
+    assert(dynamic_cast<const COMPONENT*>(c));
     print_instance(o, prechecked_cast<const COMPONENT*>(c));
-  }else if (dynamic_cast<const MODEL_CARD*>(c)) {
-    print_paramset(o, prechecked_cast<const MODEL_CARD*>(c));
-  }else if (dynamic_cast<const DEV_COMMENT*>(c)) {
-    print_comment(o, prechecked_cast<const DEV_COMMENT*>(c));
-  }else if (dynamic_cast<const DEV_DOT*>(c)) {untested();
-    print_command(o, prechecked_cast<const DEV_DOT*>(c));
+  }else if (const BASE_SUBCKT* s = dynamic_cast<const BASE_SUBCKT*>(c)) {
+    print_module(o, s);
+  }else if (const MODEL_CARD* m = dynamic_cast<const MODEL_CARD*>(c)) {
+    print_paramset(o, m);
+  }else if (const DEV_COMMENT* com = dynamic_cast<const DEV_COMMENT*>(c)) {
+    print_comment(o, com);
+  }else if (const DEV_DOT* d = dynamic_cast<const DEV_DOT*>(c)) {untested();
+    print_command(o, d);
   }else{untested();
     incomplete();
     unreachable();

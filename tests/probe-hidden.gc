@@ -1,0 +1,10 @@
+"""
+spice
+.print tran hidden(0)
+.tran 0 2 1 trace=all
+.tran 0 2 1 trace=all
+.tran 0 2 1
+.tran 0 2 1 skip=10
+.tran 0 2 1 skip=10 trace=all
+.end
+"""

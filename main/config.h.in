@@ -1,0 +1,47 @@
+#ifndef GNUCAP_MAIN_CONFIG_H
+#define GNUCAP_MAIN_CONFIG_H
+/*--------------------------------------------------------------------------*/
+/* configuration */
+#define GNUCAP_PLUGPATH "@pkglibdir@"
+/*--------------------------------------------------------------------------*/
+/* user interface preferences */
+#define DEFAULT_LANGUAGE "acs"
+/*--------------------------------------------------------------------------*/
+/* installation setup */
+#if defined(__WIN32__)
+#if !defined(DEFAULT_PLUGINS)
+  #define DEFAULT_PLUGINS "gnucap-default-plugins.dll"
+#endif
+#if !defined(SYSTEMSTARTFILE)
+  #define SYSTEMSTARTFILE "gnucap.rc"
+#endif
+#if !defined(SYSTEMSTARTPATH)
+  #define SYSTEMSTARTPATH OS::getenv("PATH")
+#endif
+#if !defined(USERSTARTFILE)
+  #define USERSTARTFILE "gnucap.rc"
+#endif
+#if !defined(USERSTARTPATH)
+  #define USERSTARTPATH OS::getenv("HOME")
+#endif
+/*--------------------------------------------------------------------------*/
+#else
+#if !defined(DEFAULT_PLUGINS)
+  #define DEFAULT_PLUGINS "gnucap-default-plugins.so"
+#endif
+#if !defined(SYSTEMSTARTFILE)
+  #define SYSTEMSTARTFILE "gnucap.rc"
+#endif
+#if !defined(SYSTEMSTARTPATH)
+  #define SYSTEMSTARTPATH OS::getenv("PATH")
+#endif
+#if !defined(USERSTARTFILE)
+  #define USERSTARTFILE ".gnucaprc"
+#endif
+#if !defined(USERSTARTPATH)
+  #define USERSTARTPATH OS::getenv("HOME")
+#endif
+#endif
+/*--------------------------------------------------------------------------*/
+
+#endif

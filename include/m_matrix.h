@@ -1,4 +1,4 @@
-/*$Id: m_matrix.h 2014/11/23 al$ -*- C++ -*-
+/*$Id: m_matrix.h 2017/06/07 $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -106,7 +106,7 @@
  * "s" will let you change the value of zero,
  *   but you will find out about it later.
  */
-//testing=script 2008.09.19
+//testing=script 2016.09.14
 #ifndef M_MATRIX_H
 #define M_MATRIX_H
 /*--------------------------------------------------------------------------*/
@@ -149,15 +149,15 @@ public:
   void		dezero(T& o);
   int		size()const		{return _size;}
   double 	density();
-  T 	d(int r, int  )const	{return *(_diaptr[r]);}
+  T 	d(int r, int  )const;
+  T     s(int r, int c)const;
 private:
-  T 	u(int r, int c)const	{return _colptr[c][r];}
-  T 	l(int r, int c)const	{return _rowptr[r][-c];}
-  T&	d(int r, int c);
+  T 	u(int r, int c)const;
+  T 	l(int r, int c)const;
+  T&	d(int r, int  );
   T&	u(int r, int c);
   T&	l(int r, int c);
   T&	m(int r, int c);
-  //T&	s(int r, int c);
 public:
   void		load_diagonal_point(int i, T value);
   void		load_point(int i, int j, T value);
@@ -169,6 +169,7 @@ public:
   void		lu_decomp();
   void		fbsub(T* v) const;
   void		fbsub(T* x, const T* b, T* c = NULL) const;
+  void		fbsubt(T* v) const;
 };
 /*--------------------------------------------------------------------------*/
 // private implementations
@@ -387,12 +388,26 @@ double BSMATRIX<T>::density()
   }
 }
 /*--------------------------------------------------------------------------*/
-/* d: fast matrix entry access, lvalue
+/* d: fast matrix entry access
  * It is known that the entry is valid and on the diagonal
  */
 template <class T>
+T BSMATRIX<T>::d(int r, int c) const
+{
+  (void)c;
+  assert(_diaptr);
+  assert(r == c);
+  assert(0 <= r);
+  assert(r <= _size);
+
+  return *(_diaptr[r]);
+}
+/*--------------------------------------------------------------------------*/
+/* d: as above, but lvalue */
+template <class T>
 T& BSMATRIX<T>::d(int r, int c)
 {
+  (void)c;
   assert(_diaptr);
   assert(r == c);
   assert(0 <= r);
@@ -404,6 +419,21 @@ T& BSMATRIX<T>::d(int r, int c)
 /* u: fast matrix entry access
  * It is known that the entry is valid and in the upper triangle
  */
+template <class T>
+T BSMATRIX<T>::u(int r, int c) const
+{
+  assert(_colptr);
+  assert(_lownode);
+  assert(0 < r);
+  assert(r <= c);
+  assert(c <= _size);
+  assert(1 <= _lownode[c]);
+  assert(_lownode[c] <= r);
+
+  return _colptr[c][r];
+}
+/*--------------------------------------------------------------------------*/
+/* u: as above, but lvalue */
 template <class T>
 T& BSMATRIX<T>::u(int r, int c)
 {
@@ -421,6 +451,21 @@ T& BSMATRIX<T>::u(int r, int c)
 /* l: fast matrix entry access
  * It is known that the entry is valid and in the lower triangle
  */
+template <class T>
+T BSMATRIX<T>::l(int r, int c) const
+{
+  assert(_rowptr);
+  assert(_lownode);
+  assert(0 < c);
+  assert(c <= r);
+  assert(r <= _size);
+  assert(1 <= _lownode[r]);
+  assert(_lownode[r] <= c);
+
+  return _rowptr[r][-c];
+}
+/*--------------------------------------------------------------------------*/
+/* l: as above, but lvalue */
 template <class T>
 T& BSMATRIX<T>::l(int r, int c)
 {
@@ -445,10 +490,10 @@ T& BSMATRIX<T>::m(int r, int c)
   return (c>=r) ? u(r,c) : l(r,c);
 }
 /*--------------------------------------------------------------------------*/
-/* s: general matrix entry access.
+/* s: general matrix entry access (read-only)
  * It is known that the location is strictly in bounds,
  *   but it is not known whether the location actually exists.
- * If access is attempted to a non-allocated location, 
+ * If access is attempted to a non-allocated location,
  *   it returns a reference to a shared zero variable.
  *   Writing to this zero is not prohibited,
  *   but will corrupt the matrix in a known and testable way.
@@ -457,9 +502,8 @@ T& BSMATRIX<T>::m(int r, int c)
  *   Writing to trash is allowed and encouraged,
  *   but reading it gives a number not useful for anything.
  */
-#if 0
 template <class T>
-T& BSMATRIX<T>::s(int row, int col)
+T BSMATRIX<T>::s(int row, int col)const
 {untested();
   assert(_lownode);
   assert(0 <= col);
@@ -469,28 +513,27 @@ T& BSMATRIX<T>::s(int row, int col)
   assert(_zero == 0.);
 
   if (col == row) {untested();
-    return d(row,col);
-  }else if (col > row) {untested();	/* above the diagonal */
+    return d(row, col);
+  }else if (col > row) {untested();    /* above the diagonal */
     if (row == 0) {untested();
       return _trash;
     }else if (row < _lownode[col]) {untested();
       return _zero;
     }else{untested();
-      return u(row,col);
+      return u(row, col);
     }
-  }else{untested();			/* below the diagonal */
+  }else{untested();                    /* below the diagonal */
     assert(col < row);
     if (col == 0) {untested();
       return _trash;
     }else if (col < _lownode[row]) {untested();
       return _zero;
     }else{untested();
-      return l(row,col);
+      return l(row, col);
     }
   }
   unreachable();
 }
-#endif
 /*--------------------------------------------------------------------------*/
 template <class T>
 void BSMATRIX<T>::load_point(int i, int j, T value)
@@ -735,6 +778,37 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
   x[0] = 0.;
   // index starts at 1, but node 0 is ground
   // x[0]==0 eliminates a lot of "if" statements
+}
+/*--------------------------------------------------------------------------*/
+/* fbsubt: forward and back substitution with implicitly transposed matrix Ut Lt x = v
+ * v = right side vector, changed in place to solution vector
+ * GS:
+ * this method s used to solve system A_t X = B (_t - transposed)
+ * which corresponds to adjoint system
+ * (LU)_t then transforms to U_t L_t
+ *  added: Gennadiy Serdyuk <gserdyuk@gserdyuk.com>
+ */
+template <class T>
+void BSMATRIX<T>::fbsubt(T* v) const
+{untested();
+  assert(_lownode);
+  assert(v);
+
+  // forward substitution
+  for (int ii = 1; ii <= size(); ++ii) {untested();
+    for (int jj = _lownode[ii]; jj < ii; ++jj) {untested();
+      v[ii] -= u(jj,ii) * v [jj];
+    }
+  }
+
+  // back substitution
+  for (int jj = size(); jj > 1; --jj) {untested();
+    v[jj] /= d(jj,jj);
+    for (int ii = _lownode[jj]; ii < jj; ++ii) {untested();
+      v[ii] -= l(jj,ii) * v[jj];
+    }
+  }
+  v[1]/=d(1,1);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

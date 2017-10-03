@@ -1,4 +1,4 @@
-/* $Id: spice-wrapper.cc 2016/03/29 al $ -*- C++ -*-
+/* $Id: spice-wrapper.cc 2017/06/07 $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -28,6 +28,7 @@ extern "C" {
   #define public PubliC
   #define bool BooL
   #define main MaiN
+  #define setenv SetenV
   #include "capabil.h"
   #include "const.h"
   #include "iferrmsg.h"
@@ -39,6 +40,7 @@ extern "C" {
   #include "inpdefs.h"
   #include "tskdefs.h"
 #endif
+  #undef setenv
   #undef main
   #undef bool
   #undef public
@@ -61,7 +63,7 @@ extern "C" {
 // gnucap includes
 #include "globals.h"
 #include "u_xprobe.h"
-#include "d_subckt.h"
+#include "e_paramlist.h"
 #include "e_storag.h"
 #include "e_model.h"
 /*--------------------------------------------------------------------------*/
@@ -91,7 +93,7 @@ enum {uGROUND=1, uFLOAT=2, uDISALLOW=3};
 const int MATRIX_NODES = (MAX_NET_NODES + INTERNAL_NODES);
 class DEV_SPICE;
 class MODEL_SPICE;
-static COMMON_SUBCKT Default_Params(CC_STATIC);
+static COMMON_PARAMLIST Default_Params(CC_STATIC);
 /*--------------------------------------------------------------------------*/
 /* function mapping: see devdefs.h
  * DEVparam	DEV_SPICE::parse_spice
@@ -192,8 +194,8 @@ private:
   const MODEL_SPICE* _model;
   const SPICE_MODEL_DATA* _spice_model;
   node_t _nodes[MATRIX_NODES];
-  COMPLEX* _matrix[MATRIX_NODES+OFFSET];	// For tran, real is now, imag is saved.
-  COMPLEX _matrix_core[MATRIX_NODES+OFFSET][MATRIX_NODES+OFFSET];
+  DPAIR* _matrix[MATRIX_NODES+OFFSET];	// For tran, real is now, imag is saved.
+  DPAIR _matrix_core[MATRIX_NODES+OFFSET][MATRIX_NODES+OFFSET];
 public:
   double _i0[MATRIX_NODES+OFFSET];	// right side - current offsets or ac real part
   double _i1[MATRIX_NODES+OFFSET];	// right side - saved ......... or ac imag part
@@ -838,7 +840,7 @@ void DEV_SPICE::set_param_by_name(std::string Name, std::string Value)
   }else{
   }
   COMPONENT::set_param_by_name(Name, Value);
-  COMMON_SUBCKT* c = dynamic_cast<COMMON_SUBCKT*>(mutable_common());
+  COMMON_PARAMLIST* c = dynamic_cast<COMMON_PARAMLIST*>(mutable_common());
   assert(c);
   Set_param_by_name(Name, to_string(c->_params[Name].e_val(1,scope())));
 }
@@ -1013,7 +1015,7 @@ void DEV_SPICE::precalc_last()
   init_ckt();
 
   // push down parameters into spice data
-  COMMON_SUBCKT* c = dynamic_cast<COMMON_SUBCKT*>(mutable_common());
+  COMMON_PARAMLIST* c = dynamic_cast<COMMON_PARAMLIST*>(mutable_common());
   assert(c);
   for (PARAM_LIST::iterator i = c->_params.begin(); i != c->_params.end(); ++i) {
     if (i->second.has_hard_value()) {
@@ -1068,7 +1070,7 @@ void DEV_SPICE::precalc_last()
 
     assert(ok == OK);
     assert(num_states_garbage == _num_states);
-    trace3("precalc", maxEqNum_stash, ckt()->CKTmaxEqNum, (maxEqNum_stash == ckt()->CKTmaxEqNum));
+    trace3("precalc", _maxEqNum, ckt()->CKTmaxEqNum, (_maxEqNum == ckt()->CKTmaxEqNum));
     assert(_maxEqNum == ckt()->CKTmaxEqNum);
     notstd::copy_n(node_stash, matrix_nodes(), node); // put back real nodes
     // hopefully, the matrix pointers are the same as last time!
@@ -1227,7 +1229,7 @@ bool DEV_SPICE::do_tr()
 
     for (int ii = 0; ii < matrix_nodes()+OFFSET; ++ii) {
       for (int jj = 0; jj < matrix_nodes()+OFFSET; ++jj) {
-	_matrix[ii][jj].real(0.);
+	_matrix[ii][jj].first = 0.;
       }
     }
   }
@@ -1248,7 +1250,7 @@ bool DEV_SPICE::do_tr()
   }
   for (int ii = 0; converged() && ii < matrix_nodes()+OFFSET; ++ii) {
     for (int jj = 0; converged() && jj < matrix_nodes()+OFFSET; ++jj) {
-      set_converged(conchk(_matrix[ii][jj].real(), _matrix[ii][jj].imag()));
+      set_converged(conchk(_matrix[ii][jj].first, _matrix[ii][jj].second));
     }
   }
 
@@ -1269,7 +1271,7 @@ bool DEV_SPICE::do_tr()
   }
   for (int ii = 0; !needs_load && ii < matrix_nodes()+OFFSET; ++ii) {
     for (int jj = 0; !needs_load && jj < matrix_nodes()+OFFSET; ++jj) {
-      needs_load = !conchk(_matrix[ii][jj].real(), _matrix[ii][jj].imag(),
+      needs_load = !conchk(_matrix[ii][jj].first, _matrix[ii][jj].second,
 			   0, OPT::reltol*OPT::loadtol);
     }
   }
@@ -1314,8 +1316,8 @@ void DEV_SPICE::tr_load()
 	  jhit[nj] = ni;
 	  int njj = nj-OFFSET;
 	  trace2("", jj, nj);
-	  trace2("", _matrix[nii][njj].real(), _matrix[nii][njj].imag());
-	  tr_load_point(_n[ii], _n[jj], &(_matrix[nii][njj].real()), &(_matrix[nii][njj].imag()));
+	  trace2("", _matrix[nii][njj].first, _matrix[nii][njj].second);
+	  tr_load_point(_n[ii], _n[jj], &(_matrix[nii][njj].first), &(_matrix[nii][njj].second));
 	}else{
 	  trace2("skip", jj, nj);
 	}
@@ -1331,7 +1333,7 @@ void DEV_SPICE::tr_unload()
 
   for (int ii = 0; ii < matrix_nodes(); ++ii) {untested();
     for (int jj = 0; jj < matrix_nodes(); ++jj) {untested();
-      _matrix[ii][jj].real() = 0;
+      _matrix[ii][jj].first = 0.;
     }
   }
   _sim->mark_inc_mode_bad();
@@ -1479,7 +1481,7 @@ void DEV_SPICE::do_ac()
     std::fill_n(_i1, matrix_nodes()+OFFSET, 0);
     for (int ii = 0; ii < matrix_nodes()+OFFSET; ++ii) {
       for (int jj = 0; jj < matrix_nodes()+OFFSET; ++jj) {
-	_matrix[ii][jj] = 0;
+	_matrix[ii][jj] = DPAIR(0.,0.);
       }
     }
     
@@ -1524,8 +1526,10 @@ void DEV_SPICE::ac_load()
 	    jhit[nj] = ni;
 	    int njj = nj-OFFSET;
 	    trace3("", jj, nj, njj);
-	    trace2("", _matrix[nii][njj].real(), _matrix[nii][njj].imag());
-	    ac_load_point(_n[ii], _n[jj], _matrix[nii][njj]);
+	    trace2("", _matrix[nii][njj].first, _matrix[nii][njj].second);
+	    //ac_load_point(_n[ii], _n[jj], _matrix[nii][njj]);
+	    DPAIR& dp = _matrix[nii][njj];
+	    ac_load_point(_n[ii], _n[jj], COMPLEX(dp.first, dp.second));
 	  }else{
 	    trace2("skip", jj, nj);
 	  }
@@ -1840,7 +1844,7 @@ extern "C" {
       assert(r < MATRIX_NODES+OFFSET);
       assert(c >= 0+OFFSET);
       assert(c < MATRIX_NODES+OFFSET);
-      COMPLEX** m = reinterpret_cast<COMPLEX**>(mm);
+      DPAIR** m = reinterpret_cast<DPAIR**>(mm);
       assert(m);
       assert(m[r-OFFSET]);
       return reinterpret_cast<double*>(&(m[r-OFFSET][c-OFFSET]));
@@ -1873,10 +1877,10 @@ extern "C" {
 // This is not guaranteed by the standard, but is believed to always be true.
 static struct COMPLEX_TEST {
   COMPLEX_TEST() {
-    COMPLEX x;
-    COMPLEX* px = &x;
-    double* prx = &x.real();
-    double* pix = &x.imag();
+    DPAIR x;
+    DPAIR* px = &x;
+    double* prx = &x.first;
+    double* pix = &x.second;
     assert(reinterpret_cast<void*>(prx) == reinterpret_cast<void*>(px));
     assert(reinterpret_cast<void*>(pix-1) == reinterpret_cast<void*>(px));
   }

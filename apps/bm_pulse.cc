@@ -1,4 +1,4 @@
-/*$Id: bm_pulse.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: bm_pulse.cc 2016/09/15 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * SPICE compatible PULSE
  */
-//testing=script 2005.10.06
+//testing=script 2016.09.15
 #include "globals.h"
 #include "e_elemnt.h"
 #include "u_lang.h"
@@ -104,8 +104,8 @@ bool EVAL_BM_PULSE::operator==(const COMMON_COMPONENT& x)const
     && _width == p->_width
     && _period == p->_period
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
-    untested();
+  if (rv) {untested();
+  }else{
   }
   return rv;
 }
@@ -136,11 +136,11 @@ void EVAL_BM_PULSE::precalc_last(const CARD_LIST* Scope)
   _width.e_val(_default_width, Scope);
   _period.e_val(_default_period, Scope);
 
-  if (_width == 0.) {untested();
+  if (_width == 0.) {
     _width = _default_width;
   }else{
   }
-  if (_period == 0.) {untested();
+  if (_period == 0.) {
     _period = _default_period;
   }else{
   }
@@ -148,58 +148,62 @@ void EVAL_BM_PULSE::precalc_last(const CARD_LIST* Scope)
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_PULSE::tr_eval(ELEMENT* d)const
 {
-  double time = d->_sim->_time0;
-  if (0 < _period && _period < BIGBIG) {
-    //time = fmod(time,_period);
-    if (time > _delay) {
-      time = fmod(time - _delay, _period) + _delay;
-    }else{
-    }
-  }else{
-  }
   double ev = 0; // effective value
-  if (time >= _delay+_rise+_width+_fall) {	/* past pulse	*/
+
+  double raw_time = d->_sim->_time0;
+
+  if (raw_time <= _delay) {			/* init val	*/
     ev = _iv;
-  }else if (time >= _delay+_rise+_width) {	/* falling 	*/
-    double interp = (time - (_delay+_rise+_width)) / _fall;
-    ev = _pv + interp * (_iv - _pv);
-  }else if (time >= _delay + _rise) {		/* pulse val 	*/
-    ev = _pv;
-  }else if (time >= _delay) {			/* rising 	*/
-    double interp = (time - _delay) / _rise;
-    ev = _iv + interp * (_pv - _iv);
-  }else{					/* init val	*/
-    ev = _iv;
+  }else{
+    double reltime;
+    if (0 < _period  &&  _period < BIGBIG) {
+      reltime = fmod(raw_time - _delay, _period);
+    }else{
+      reltime = raw_time - _delay;
+    }
+
+    if (reltime < _rise) {				/* rising 	*/
+      double interp = reltime / _rise;
+      ev = _iv + interp * (_pv - _iv);
+    }else if (reltime <= _rise + _width) {		/* pulse val 	*/
+      ev = _pv;
+    }else if (reltime <  _rise + _width + _fall) {	/* falling 	*/
+      double interp = (reltime - (_rise+_width)) / _fall;
+      ev = _pv + interp * (_iv - _pv);
+    }else{						/* past pulse	*/
+      ev = _iv;
+    }
   }
+
   //d->q_accept();
   tr_finish_tdv(d, ev);
 }
 /*--------------------------------------------------------------------------*/
 TIME_PAIR EVAL_BM_PULSE::tr_review(COMPONENT* d)const
 {
-  double time = d->_sim->_time0;
-  time += d->_sim->_dtmin * .01;  // hack to avoid duplicate events from numerical noise
-  double raw_time = time;
+  double raw_time = d->_sim->_time0 + d->_sim->_dtmin * .01;
+				    // hack to avoid duplicate events from numerical noise
 
-  if (0 < _period && _period < BIGBIG) {
-    if (time > _delay) {
-      time = fmod(time - _delay, _period) + _delay;
-    }else{
-    }
+  if (raw_time <= _delay) {
+    d->_time_by.min_event(_delay);
   }else{
-  }
-  double time_offset = raw_time - time;
-
-  if (time >= _delay+_rise+_width+_fall) {		/* past pulse	*/
-    d->_time_by.min_event(_delay + _period + time_offset);
-  }else if (time >= _delay+_rise+_width) {		/* falling 	*/
-    d->_time_by.min_event(_delay + _rise + _width + _fall + time_offset);
-  }else if (time >= _delay + _rise) {			/* pulse val 	*/
-    d->_time_by.min_event(_delay + _rise + _width + time_offset);
-  }else if (time >= _delay) {				/* rising 	*/
-    d->_time_by.min_event(_delay + _rise + time_offset);
-  }else{						/* init val	*/
-    d->_time_by.min_event(_delay + time_offset);
+    double reltime;
+    if (0 < _period && _period < BIGBIG) {
+      reltime = fmod(raw_time - _delay, _period);
+    }else{
+      reltime = raw_time - _delay;
+    }
+    double time_offset = raw_time - reltime;
+    
+    if (reltime < _rise) {				/* rising 	*/
+      d->_time_by.min_event(_rise + time_offset);
+    }else if (reltime < _rise + _width) {		/* pulse val 	*/
+      d->_time_by.min_event(_rise + _width + time_offset);
+    }else if (reltime < _rise + _width + _fall) {	/* falling 	*/
+      d->_time_by.min_event(_rise + _width + _fall + time_offset);
+    }else{						/* past pulse	*/
+      d->_time_by.min_event(_period + time_offset);
+    }
   }
 
   return d->_time_by;

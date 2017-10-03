@@ -191,11 +191,13 @@ public:	// state, aux data
 
   double mfactor()const {
     assert(_mfactor_fixed != NOT_VALID);
+#ifndef NDEBUG
     if (const COMPONENT* o = prechecked_cast<const COMPONENT*>(owner())) {
       assert(_mfactor_fixed == o->mfactor() * _mfactor);
     }else{
       assert(_mfactor_fixed == _mfactor);
     }
+#endif
     return _mfactor_fixed;
   }
   //--------------------------------------------------------------------

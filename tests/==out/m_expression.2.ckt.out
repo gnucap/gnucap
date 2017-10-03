@@ -31,7 +31,7 @@ i= 2.
 j= 9.
 ".param k={pow(3,-2)} "
 ".eval k "
-k= 0.1111111
+k= 0.111111111111111
 ".param l={pow(abs(3),abs(-2))} "
 ".eval l "
 l= 9.
