@@ -34,7 +34,7 @@ if [ -f a.out ] ; then
     echo "-DHAVE_LIBREADLINE \\" >>Make.ccflags
     echo "-lreadline -ltermcap \\" >>Make.libs
 else
-    echo "either libtermcap or libreadline is missing - not using readline"
+    echo "warning: either libtermcap or libreadline is missing - building without readline"
 fi
 rm -f a.out
 
