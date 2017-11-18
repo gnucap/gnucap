@@ -1,1 +1,1 @@
-#define PATCHLEVEL "master 2017.10.03"
+#define PATCHLEVEL "develop 2017.11.18"
