@@ -29,12 +29,12 @@
 /*--------------------------------------------------------------------------*/
 class CARD_LIST;
 /*--------------------------------------------------------------------------*/
-class INTERFACE PROBELIST {
+class INTERFACE PROBELIST : public CKT_BASE {
 private:
   typedef std::vector<PROBE> _container;
   _container bag;
 
-  explicit PROBELIST(const PROBELIST&) {unreachable();incomplete();}
+  explicit PROBELIST(const PROBELIST&p) : CKT_BASE(p) {unreachable();incomplete();}
 public:
   explicit PROBELIST() {}
   ~PROBELIST() {}
