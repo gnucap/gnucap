@@ -27,6 +27,9 @@ case $1 in
 	--libdir)
 		echo "$libdir"
 	;;
+	--plugin-libs)
+		: # not needed on posix
+	;;
 	--libs)
 		echo "$LIBS"
 	;;
