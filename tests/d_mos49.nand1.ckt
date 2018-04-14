@@ -1,7 +1,7 @@
 .title na2
 
-.model nmos nmos level=8 vth0=0.7
-.model pmos pmos level=8 vth0=-0.7
+.model nmos nmos level=49 vth0=0.7
+.model pmos pmos level=49 vth0=-0.7
 
 .SUBCKT nand2 2 3 1 4 11
 Mp1 4 2 1 1 PMOS W=8e-6 L=600e-9 
