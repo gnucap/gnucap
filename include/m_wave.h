@@ -22,6 +22,8 @@
  * "wave" class, for transmission lines and delays
  */
 //testing=script 2006.07.13
+#ifndef M_WAVE_H
+#define M_WAVE_H
 #include "l_denoise.h"
 #include "m_interp.h"
 /*--------------------------------------------------------------------------*/
@@ -153,4 +155,6 @@ inline WAVE& WAVE::operator*=(double x)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+#endif
+
 // vim:ts=8:sw=2:noet:
