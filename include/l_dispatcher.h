@@ -40,7 +40,7 @@ public:
       _map = new std::map<std::string, CKT_BASE*>;
     }else{unreachable();
       puts("build error: link order: constructing dispatcher that already has contents\n");
-    }    
+    }
   }
   ~DISPATCHER_BASE() {
 #if !defined(NDEBUG)
@@ -71,47 +71,8 @@ public:
     }
     return rv;
   }
-};
-/*--------------------------------------------------------------------------*/
-template <class TT>
-class INTERFACE DISPATCHER : public DISPATCHER_BASE {
-public:
-  void install(const std::string& s, TT* p) {
-    assert(s.find(',', 0) == std::string::npos);
-    if (!_map) {unreachable();
-      puts("build error: link order: dispatcher not yet constructed\n");
-      _map = new std::map<std::string, CKT_BASE*>;
-    }else{
-    }
-    trace0(s.c_str());
-    // loop over all keys, separated by '|'
-    for (std::string::size_type			// bss: begin sub-string
-	 bss = 0, ess = s.find('|', bss);	// ess: end sub-string
-	 bss != std::string::npos;
-	 bss = (ess != std::string::npos) ? ess+1 : std::string::npos,
-	   ess = s.find('|', bss)) {
-      std::string name = s.substr(bss, 
-		(ess != std::string::npos) ? ess-bss : std::string::npos);
-      trace2(name.c_str(), bss, ess);
-      if (name == "") {untested();
-	// quietly ignore empty string
-      }else if ((*_map)[name]) {
-	// duplicate .. stash the old one so we can get it back
-	error(bWARNING, name + ": already installed, replacing\n");
-	std::string save_name = name + ":0";
-	for (int ii = 0; (*_map)[save_name]; ++ii) {untested();
-	  save_name = name + ":" + to_string(ii);
-	}
-	(*_map)[save_name] = (*_map)[name];	
-	error(bWARNING, "stashing as " + save_name + "\n");
-      }else{
-	// it's new, just put it in
-      }
-      (*_map)[name] = p;
-    }
-  }
-  
-  void uninstall(TT* p) {
+
+  void uninstall(CKT_BASE* p) {
     assert(_map);
     for (typename std::map<std::string, CKT_BASE*>::iterator
 	 ii = _map->begin();
@@ -131,7 +92,7 @@ public:
     }
 #endif
   }
-  
+
   void uninstall(const std::string& s) {untested();
     assert(_map);
     // loop over all keys, separated by '|'
@@ -162,6 +123,45 @@ public:
       }else{untested();
 	error(bWARNING, name + ": not installed, doing nothing\n");
       }
+    }
+  }
+};
+/*--------------------------------------------------------------------------*/
+template <class TT>
+class INTERFACE DISPATCHER : public DISPATCHER_BASE {
+public:
+  void install(const std::string& s, TT* p) {
+    assert(s.find(',', 0) == std::string::npos);
+    if (!_map) {unreachable();
+      puts("build error: link order: dispatcher not yet constructed\n");
+      _map = new std::map<std::string, CKT_BASE*>;
+    }else{
+    }
+    trace0(s.c_str());
+    // loop over all keys, separated by '|'
+    for (std::string::size_type			// bss: begin sub-string
+	 bss = 0, ess = s.find('|', bss);	// ess: end sub-string
+	 bss != std::string::npos;
+	 bss = (ess != std::string::npos) ? ess+1 : std::string::npos,
+	   ess = s.find('|', bss)) {
+      std::string name = s.substr(bss,
+		(ess != std::string::npos) ? ess-bss : std::string::npos);
+      trace2(name.c_str(), bss, ess);
+      if (name == "") {untested();
+	// quietly ignore empty string
+      }else if ((*_map)[name]) {
+	// duplicate .. stash the old one so we can get it back
+	error(bWARNING, name + ": already installed, replacing\n");
+	std::string save_name = name + ":0";
+	for (int ii = 0; (*_map)[save_name]; ++ii) {untested();
+	  save_name = name + ":" + to_string(ii);
+	}
+	(*_map)[save_name] = (*_map)[name];
+	error(bWARNING, "stashing as " + save_name + "\n");
+      }else{
+	// it's new, just put it in
+      }
+      (*_map)[name] = p;
     }
   }
 
@@ -214,7 +214,7 @@ public:
       assert(p);
       _d->install(_name, p);
     }
-    
+
     ~INSTALL() {
       //_d->uninstall(_name);
       _d->uninstall(_p);
