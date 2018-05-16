@@ -1,0 +1,11 @@
+verilog
+
+module crash(iout, nC);
+vccs #(.gm({alpha*adap}))) iF(0 f cd 0);
+endmodule //E
+
+crash(x, y);
+
+list
+
+print tran v(x) v(y)
