@@ -39,6 +39,9 @@ case $1 in
 	--data)
 		echo "$datarootdir"
 	;;
+	--docdir)
+		echo "$docdir"
+	;;
 	--sysconfdir)
 		echo "$sysconfdir"
 	;;
