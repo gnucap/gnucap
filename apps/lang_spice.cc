@@ -494,8 +494,11 @@ void LANG_SPICE_BASE::parse_label(CS& cmd, CARD* x)
 {
   assert(x);
   std::string my_name;
-  cmd >> my_name;
-  x->set_label(my_name);
+  if (cmd >> my_name) {
+    x->set_label(my_name);
+  }else{untested();
+    cmd.warn(bDANGER, "label required");
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

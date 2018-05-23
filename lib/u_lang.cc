@@ -106,14 +106,16 @@ void LANGUAGE::new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope)
   }else{
     std::string type = find_type_in_string(cmd);
     if (const CARD* proto = find_proto(type, owner)) {
-      CARD* new_instance = proto->clone_instance();
-      assert(new_instance);
-      new_instance->set_owner(owner);
-      CARD* x = parse_item(cmd, new_instance);
-      if (x) {
-	assert(Scope);
-	Scope->push_back(x);
+      if (CARD* new_instance = proto->clone_instance()) {
+	new_instance->set_owner(owner);
+	CARD* x = parse_item(cmd, new_instance);
+	if (x) {
+	  assert(Scope);
+	  Scope->push_back(x);
+	}else{
+	}
       }else{
+	cmd.warn(bDANGER, type + ": incomplete prototype");
       }
     }else{
       cmd.warn(bDANGER, type + ": no match");

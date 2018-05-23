@@ -95,8 +95,11 @@ static void parse_label(CS& cmd, CARD* x)
 {
   assert(x);
   std::string my_name;
-  cmd >> my_name;
-  x->set_label(my_name);
+  if (cmd >> my_name) {
+    x->set_label(my_name);
+  }else{untested();
+    cmd.warn(bDANGER, "label required");
+  }
 }
 /*--------------------------------------------------------------------------*/
 static void parse_ports(CS& cmd, COMPONENT* x)

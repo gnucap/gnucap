@@ -156,8 +156,11 @@ static void parse_label(CS& cmd, CARD* x)
 {
   assert(x);
   std::string my_name;
-  cmd >> my_name;
-  x->set_label(my_name);
+  if (cmd >> my_name) {
+    x->set_label(my_name);
+  }else{untested();
+    cmd.warn(bDANGER, "label required");
+  }
 }
 /*--------------------------------------------------------------------------*/
 static void parse_ports(CS& cmd, COMPONENT* x)
@@ -174,10 +177,6 @@ static void parse_ports(CS& cmd, COMPONENT* x)
 	  std::string value;
 	  cmd >> value;
 	  x->set_port_by_index(index++, value);
-	  std::cerr << "index " << index << " "<< value << "\n";
-	  std::cerr << "nn " << x->net_nodes() << "\n";
-//	  inaccessible
-//	  std::cerr << x->subckt()->nodes()->how_many() << "\n";
 	}catch (Exception_Too_Many& e) {
 	  cmd.warn(bDANGER, here, e.message());
 	}
