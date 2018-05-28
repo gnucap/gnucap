@@ -1,4 +1,4 @@
-/*$Id: e_model.h 2015/01/27 al $ -*- C++ -*-
+/*$Id: e_model.h 2018/05/27 al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *

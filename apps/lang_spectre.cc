@@ -1,4 +1,4 @@
-/*$Id: lang_spectre.cc 2016/09/17  $ -*- C++ -*-
+/*$Id: lang_spectre.cc 2018/05/27  $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -98,6 +98,7 @@ static void parse_label(CS& cmd, CARD* x)
   if (cmd >> my_name) {
     x->set_label(my_name);
   }else{untested();
+    x->set_label(x->id_letter() + std::string("_unnamed")); //BUG// not unique
     cmd.warn(bDANGER, "label required");
   }
 }

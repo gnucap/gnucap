@@ -1,4 +1,4 @@
-/*$Id: lang_spice.cc  2016/09/17 al $ -*- C++ -*-
+/*$Id: lang_spice.cc  2018/05/27 al $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -497,6 +497,7 @@ void LANG_SPICE_BASE::parse_label(CS& cmd, CARD* x)
   if (cmd >> my_name) {
     x->set_label(my_name);
   }else{untested();
+    x->set_label(x->id_letter() + std::string("_unnamed")); //BUG// not unique
     cmd.warn(bDANGER, "label required");
   }
 }

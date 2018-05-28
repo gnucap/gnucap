@@ -1,4 +1,4 @@
-/*$Id: lang_verilog.cc  2016/09/17 al $ -*- C++ -*-
+/*$Id: lang_verilog.cc  2018/05/27 al $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -147,7 +147,7 @@ static void parse_args_instance(CS& cmd, CARD* x)
       }
     }
     cmd >> ')';
-  }else{untested();
+  }else{
     // no args
   }
 }
@@ -158,7 +158,8 @@ static void parse_label(CS& cmd, CARD* x)
   std::string my_name;
   if (cmd >> my_name) {
     x->set_label(my_name);
-  }else{untested();
+  }else{
+    x->set_label(x->id_letter() + std::string("_unnamed")); //BUG// not unique
     cmd.warn(bDANGER, "label required");
   }
 }
@@ -200,16 +201,31 @@ static void parse_ports(CS& cmd, COMPONENT* x)
 	  cmd.warn(bDANGER, here, "mismatch, ignored");
 	}
       }
+      for (int iii = 0;  iii < x->min_nodes();  ++iii) {
+	if (!(x->node_is_connected(iii))) {untested();
+	  cmd.warn(bDANGER, x->port_name(iii) + ": port unconnected, grounding");
+	  x->set_port_to_ground(iii);
+	}else{
+	}
+      }
     }
     cmd >> ')';
-  }else{untested();
-    cmd.warn(bDANGER, "'(' required (parse ports)");
+  }else{
+    cmd.warn(bDANGER, "'(' required (parse ports) (grounding)");
+    for (int iii = 0;  iii < x->min_nodes();  ++iii) {
+      if (!(x->node_is_connected(iii))) {
+	cmd.warn(bDANGER, x->port_name(iii) + ": port unconnected, grounding");
+	x->set_port_to_ground(iii);
+      }else{
+	unreachable();
+      }
+    }
   }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 DEV_COMMENT* LANG_VERILOG::parse_comment(CS& cmd, DEV_COMMENT* x)
-{untested();
+{
   assert(x);
   x->set(cmd.fullstring());
   return x;
@@ -305,7 +321,7 @@ std::string LANG_VERILOG::find_type_in_string(CS& cmd)
 {
   unsigned here = cmd.cursor();
   std::string type;
-  if ((cmd >> "//")) {untested();
+  if ((cmd >> "//")) {
     assert(here == 0);
     type = "dev_comment";
   }else{
@@ -508,7 +524,7 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "module|macromodule", &p2);
 class CMD_VERILOG : public CMD {
 public:
   void do_it(CS&, CARD_LIST* Scope)
-  {untested();
+  {
     command("options lang=verilog", Scope);
   }
 } p8;

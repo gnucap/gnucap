@@ -1,4 +1,4 @@
-/*$Id: d_subckt.cc  2016/09/17  $ -*- C++ -*-
+/*$Id: d_subckt.cc  2018/05/27  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -52,7 +52,7 @@ public:
 		~DEV_SUBCKT()		{--_count;}
   CARD*		clone()const		{return new DEV_SUBCKT(*this);}
 private: // override virtual
-  char		id_letter()const	{untested();return 'X';}
+  char		id_letter()const	{return 'X';}
   bool		print_type_in_spice()const {return true;}
   std::string   value_name()const	{return "#";}
   int		max_nodes()const	{return PORTS_PER_SUBCKT;}
