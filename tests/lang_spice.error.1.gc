@@ -1,6 +1,7 @@
 
 spice
 .options noinsensitive
+* "R" is a resistor, 'r' is a model
 
 r1 2 3 4
 

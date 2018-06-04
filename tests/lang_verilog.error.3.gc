@@ -1,10 +1,7 @@
 verilog
 
-module crash(iout, nC);
+// error .. extra paren, rest of line not parsed
 vccs #(.gm({alpha*adap}))) iF(0 f cd 0);
-endmodule //E
-
-crash(x, y);
 
 list
 

@@ -1,7 +1,0 @@
-verilog
-
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0);
-
-list
-
-print tran v(x) v(y)

@@ -1,4 +1,4 @@
-/*$Id: lang_verilog.cc  2018/05/27 al $ -*- C++ -*-
+/*$Id: lang_verilog.cc $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,6 +20,7 @@
  * 02110-1301, USA.
  */
 //testing=script 2016.09.10
+#include "u_nodemap.h"
 #include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
@@ -164,7 +165,7 @@ static void parse_label(CS& cmd, CARD* x)
   }
 }
 /*--------------------------------------------------------------------------*/
-static void parse_ports(CS& cmd, COMPONENT* x)
+static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 {
   assert(x);
 
@@ -177,7 +178,18 @@ static void parse_ports(CS& cmd, COMPONENT* x)
 	try{
 	  std::string value;
 	  cmd >> value;
-	  x->set_port_by_index(index++, value);
+	  x->set_port_by_index(index, value);
+	  if (all_new) {
+	    if (x->node_is_grounded(index)) {
+	      cmd.warn(bDANGER, here, "node 0 not allowed here");
+	    }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {
+	      cmd.warn(bDANGER, here, "duplicate port name, skipping");
+	    }else{
+	      ++index;
+	    }
+	  }else{
+	    ++index;
+	  }
 	}catch (Exception_Too_Many& e) {
 	  cmd.warn(bDANGER, here, e.message());
 	}
@@ -288,7 +300,7 @@ BASE_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, BASE_SUBCKT* x)
   cmd.reset();
   (cmd >> "module |macromodule ");
   parse_label(cmd, x);
-  parse_ports(cmd, x);
+  parse_ports(cmd, x, true/*all new*/);
   cmd >> ';';
 
   // body
@@ -311,7 +323,7 @@ COMPONENT* LANG_VERILOG::parse_instance(CS& cmd, COMPONENT* x)
   parse_type(cmd, x);
   parse_args_instance(cmd, x);
   parse_label(cmd, x);
-  parse_ports(cmd, x);
+  parse_ports(cmd, x, false/*allow dups*/);
   cmd >> ';';
   cmd.check(bWARNING, "what's this?");
   return x;
@@ -462,11 +474,11 @@ void LANG_VERILOG::print_instance(OMSTREAM& o, const COMPONENT* x)
 }
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
-{untested();
+{
   assert(x);
   if ((x->comment().compare(0, 2, "//")) != 0) {untested();
     o << "//";
-  }else{untested();
+  }else{
   }
   o << x->comment() << '\n';
 }

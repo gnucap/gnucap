@@ -1,4 +1,4 @@
-/*$Id: e_cardlist.cc  2016/09/17 $ -*- C++ -*-
+/*$Id: e_cardlist.cc $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -465,8 +465,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   trace0(owner->long_label().c_str());
 
   int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
-  //std::cerr << "nn " << model->net_nodes() << "\n";;
-  //std::cerr << "scktn " << num_nodes_in_subckt << "\n";;
+  trace2("",  model->net_nodes(),  num_nodes_in_subckt);
   assert(model->net_nodes() <= num_nodes_in_subckt);
   int* map = new int[num_nodes_in_subckt+1];
   {

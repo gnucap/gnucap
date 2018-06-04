@@ -1,0 +1,14 @@
+subckt crash (n0 n1 n2 n3 n0 n4) 
+                          ^ ? duplicate port name, skipping
+subckt zero (n0 n1 n2 n3 0 n4) 
+                         ^ ? node 0 not allowed here
+// duplicate label error 
+subckt crash (n0 n1 n2 n3 n4)
+ends crash
+
+subckt zero (n0 n1 n2 n3 n4)
+ends zero
+
+X1 (1 2) crash 
+#          
+ 27.       
