@@ -1,0 +1,8 @@
+X1 1 2 crash 
+   ^ ? 1: no match
+// duplicate label error 
+subckt crash ()
+ends crash
+
+#          
+ 27.       

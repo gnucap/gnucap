@@ -1,4 +1,4 @@
-/*$Id: e_node.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
+/*$Id: e_node.cc 2018/05/27  al $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -203,7 +203,7 @@ double NODE::tr_probe_num(const std::string& x)const
     double z1 = tr_probe_num("zero ");
     double z2 = tr_probe_num("zero ");
     return z1/z2;
-  }else{itested();
+  }else{untested();
     return CKT_BASE::tr_probe_num(x);
   }
 }
@@ -232,7 +232,7 @@ XPROBE NODE::ac_probe_ext(const std::string& x)const
   }else if (Umatch(x, "z ")) {
     return XPROBE(port_impedance(node_t(const_cast<NODE*>(this)),
 				 node_t(&ground_node), _sim->_acx, COMPLEX(0.)));
-  }else{itested();
+  }else{untested();
     return CKT_BASE::ac_probe_ext(x);
   }
 }
@@ -533,11 +533,14 @@ void node_t::new_model_node(const std::string& node_name, CARD* d)
 void node_t::map_subckt_node(int* m, const CARD* d)
 {
   assert(m);
-  assert(e_() >= 0);
-  if (node_is_valid(m[e_()])) {
-    _ttt = m[e_()];
-  }else{
-    throw Exception(d->long_label() + ": need more nodes");
+  if (e_() != INVALID_NODE) {
+    if (node_is_valid(m[e_()])) {
+      _ttt = m[e_()];
+    }else{
+      throw Exception(d->long_label() + ": need more nodes");
+    }
+  }else{untested();
+    throw Exception(d->long_label() + ": invalid nodes");
   }
   //_nnn->set_flat_number(_ttt);
   assert(node_is_valid(_ttt));

@@ -1,4 +1,4 @@
-/*$Id: lang_spectre.cc 2016/09/17  $ -*- C++ -*-
+/*$Id: lang_spectre.cc $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,6 +20,7 @@
  * 02110-1301, USA.
  */
 //testing=script 2015.01.27
+#include "u_nodemap.h"
 #include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
@@ -95,11 +96,15 @@ static void parse_label(CS& cmd, CARD* x)
 {
   assert(x);
   std::string my_name;
-  cmd >> my_name;
-  x->set_label(my_name);
+  if (cmd >> my_name) {
+    x->set_label(my_name);
+  }else{untested();
+    x->set_label(x->id_letter() + std::string("_unnamed")); //BUG// not unique
+    cmd.warn(bDANGER, "label required");
+  }
 }
 /*--------------------------------------------------------------------------*/
-static void parse_ports(CS& cmd, COMPONENT* x)
+static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 {
   assert(x);
 
@@ -110,7 +115,18 @@ static void parse_ports(CS& cmd, COMPONENT* x)
       try{
 	std::string value;
 	cmd >> value;
-	x->set_port_by_index(index++, value);
+	x->set_port_by_index(index, value);
+	if (all_new) {
+	  if (x->node_is_grounded(index)) {
+	    cmd.warn(bDANGER, here, "node 0 not allowed here");
+	  }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {
+	    cmd.warn(bDANGER, here, "duplicate port name, skipping");
+	  }else{
+	    ++index;
+	  }
+	}else{
+	  ++index;
+	}
       }catch (Exception_Too_Many& e) {
 	cmd.warn(bDANGER, here, e.message());
       }
@@ -127,7 +143,18 @@ static void parse_ports(CS& cmd, COMPONENT* x)
       try{
 	std::string value;
 	cmd >> value;
-	x->set_port_by_index(index++, value);
+	x->set_port_by_index(index, value);
+	if (all_new) {untested();
+	  if (x->node_is_grounded(index)) {untested();
+	    cmd.warn(bDANGER, here, "node 0 not allowed here");
+	  }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {untested();
+	    cmd.warn(bDANGER, here, "duplicate port name, skipping");
+	  }else{untested();
+	    ++index;
+	  }
+	}else{
+	  ++index;
+	}
       }catch (Exception_Too_Many& e) {
 	cmd.warn(bDANGER, here, e.message());
       }
@@ -201,7 +228,7 @@ BASE_SUBCKT* LANG_SPECTRE::parse_module(CS& cmd, BASE_SUBCKT* x)
   cmd.reset().skipbl();
   cmd >> "subckt ";
   parse_label(cmd, x);
-  parse_ports(cmd, x);
+  parse_ports(cmd, x, true/*all new*/);
 
   // body
   for (;;) {
@@ -221,7 +248,7 @@ COMPONENT* LANG_SPECTRE::parse_instance(CS& cmd, COMPONENT* x)
   assert(x);
   cmd.reset();
   parse_label(cmd, x);
-  parse_ports(cmd, x);
+  parse_ports(cmd, x, false/*allow dups*/);
   parse_type(cmd, x);
   parse_args(cmd, x);
   cmd.check(bWARNING, "what's this?");
@@ -366,9 +393,9 @@ void LANG_SPECTRE::print_instance(OMSTREAM& o, const COMPONENT* x)
 void LANG_SPECTRE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 {
   assert(x);
-  if (x->comment()[0] != '*') {
-    o << "*";
-  }else{untested();
+  if ((x->comment().compare(0, 2, "//")) != 0) {untested();
+    o << "//";
+  }else{
   }
   o << x->comment() << '\n';
 }

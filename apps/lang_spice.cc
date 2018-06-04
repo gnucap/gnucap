@@ -1,4 +1,4 @@
-/*$Id: lang_spice.cc  2016/09/17 al $ -*- C++ -*-
+/*$Id: lang_spice.cc $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,6 +20,7 @@
  * 02110-1301, USA.
  */
 //testing=script 2015.01.27
+#include "u_nodemap.h"
 #include "globals.h"
 #include "u_status.h"
 #include "c_comand.h"
@@ -225,7 +226,7 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
   assert(x);
 
   int paren = cmd.skip1b('(');
-  int ii = start;
+  int index = start;
   unsigned here1 = cmd.cursor();
   try{
     for (;;) {
@@ -233,7 +234,7 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
       if (paren && cmd.skip1b(')')) {
 	--paren;
 	break; // done.  have closing paren.
-      }else if (ii >= num_nodes) {
+      }else if (index >= num_nodes) {
 	break; // done.  have maxnodes.
       }else if (!cmd.more()) {untested();
 	break; // done.  premature end of line.
@@ -256,41 +257,44 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 	  throw Exception("bad node name");
 	}else{
 	  // legal node name, store it.
-	  x->set_port_by_index(ii, node_name);
+	  x->set_port_by_index(index, node_name);
 	}
 	//----------------------
-	if (!(x->node_is_connected(ii))) {untested();
+	if (!(x->node_is_connected(index))) {untested();
 	  break; // illegal node name, might be proper exit.
 	}else{
 	  if (all_new) {
-	    if (x->node_is_grounded(ii)) {untested();
+	    if (x->node_is_grounded(index)) {
 	      cmd.warn(bDANGER, here1, "node 0 not allowed here");
+	    }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {
+	      cmd.warn(bDANGER, here1, "duplicate port name, skipping");
 	    }else{
+	      ++index;
 	    }
 	  }else{
+	    ++index;
 	  }
-	  ++ii;
 	}
       }
     }
   }catch (Exception& e) {untested();
     cmd.warn(bDANGER, here1, e.message());
   }
-  if (ii < minnodes) {untested();
-    cmd.warn(bDANGER, "need " + to_string(minnodes-ii) +" more nodes");
+  if (index < minnodes) {untested();
+    cmd.warn(bDANGER, "need " + to_string(minnodes-index) +" more nodes");
   }else{
   }
   if (paren != 0) {untested();
     cmd.warn(bWARNING, "need )");
   }else{
   }
-  //assert(x->_net_nodes == ii);
+  //assert(x->_net_nodes == index);
   
   // ground unused input nodes
-  for (int iii = ii;  iii < minnodes;  ++iii) {untested();
+  for (int iii = index;  iii < minnodes;  ++iii) {untested();
     x->set_port_to_ground(iii);
   }
-  //assert(x->_net_nodes >= ii);
+  //assert(x->_net_nodes >= index);
 }
 /*--------------------------------------------------------------------------*/
 void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* x)
@@ -494,8 +498,12 @@ void LANG_SPICE_BASE::parse_label(CS& cmd, CARD* x)
 {
   assert(x);
   std::string my_name;
-  cmd >> my_name;
-  x->set_label(my_name);
+  if (cmd >> my_name) {
+    x->set_label(my_name);
+  }else{untested();
+    x->set_label(x->id_letter() + std::string("_unnamed")); //BUG// not unique
+    cmd.warn(bDANGER, "label required");
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

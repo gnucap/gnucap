@@ -1,4 +1,4 @@
-/*$Id: e_node.h 2014/11/23 al$ -*- C++ -*-
+/*$Id: e_node.h 2018/05/27 al$ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -261,7 +261,6 @@ public:
 	// e_node.h:node_t::map:263,265 only
 
   int	      e_()const {
-    assert(_nnn);
     return ((_nnn) ? _nnn->user_number() : INVALID_NODE);
   }
   const NODE* n_()const {return _nnn;}

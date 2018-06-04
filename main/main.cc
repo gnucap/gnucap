@@ -212,7 +212,17 @@ static void process_cmd_line(int argc, const char *argv[])
 	}else{untested();
 	}
       }else{
-	CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+	try {
+	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+	}catch (Exception& e) {itested();
+	  error(bDANGER, e.message() + '\n');
+	  finish();
+	}
+	if (ii >= argc) {itested();
+	  //CMD::command("end", &CARD_LIST::card_list);
+	  throw Exception_Quit("");
+	}else{untested();
+	}	
       }
     }catch (Exception_Quit& e) {
       throw;
