@@ -641,7 +641,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
     id_letter = static_cast<char>(toupper(id_letter));
   }else{
   }
-  switch (id_letter) {untested();
+  switch (id_letter) {
   case '\0':untested();
     s = "";
     break;

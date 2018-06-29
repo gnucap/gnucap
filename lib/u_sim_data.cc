@@ -195,7 +195,9 @@ void SIM_DATA::map__nodes()
   _nm = new int[_total_nodes+1];
   ::status.order.reset().start();
   switch (OPT::order) {
-  default:       unreachable(); error(bWARNING, "invalid order spec: %d\n", OPT::order);
+  default:       unreachable();
+    error(bWARNING, "invalid order spec: %d\n", OPT::order);
+    // fall through
   case oAUTO:    order_auto();    break;
   case oREVERSE: order_reverse(); break;
   case oFORWARD: order_forward(); break;

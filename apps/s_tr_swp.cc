@@ -154,19 +154,30 @@ void TRANSIENT::set_step_cause(STEP_CAUSE C)
 {
   switch (C) {
   case scITER_A:untested();
+      // fall through
   case scADT:untested();
+      // fall through
   case scUSER:
+      // fall through
   case scEVENTQ:
+      // fall through
   case scSKIP:
+      // fall through
   case scITER_R:
+      // fall through
   case scTE:
+      // fall through
   case scAMBEVENT:
+      // fall through
   case scINITIAL:
     ::status.control = C;
     break;
   case scNO_ADVANCE:untested();
+      // fall through
   case scZERO:untested();
+      // fall through
   case scSMALL:untested();
+      // fall through
   case scREJECT:
     ::status.control += C;
     break;
