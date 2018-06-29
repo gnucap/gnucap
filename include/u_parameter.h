@@ -222,6 +222,8 @@ public:
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
+  const_iterator begin()const {untested(); return _pl.begin();}
+  const_iterator end()const {untested(); return _pl.end();}
 private:
   mutable int _index;
   mutable const_iterator _previous;
