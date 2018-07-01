@@ -1,0 +1,30 @@
+paramset mos logic; 
+             ^ ? paramset: base has incorrect type
+.delay= 1n; 
+^ ? .delay: no match
+.rise= 1n; 
+^ ? .rise: no match
+.fall= 1n; 
+^ ? .fall: no match
+.rs= 100.; 
+^ ? .rs: no match
+.rw= 1.G ; 
+^ ? .rw: no match
+.thh= 0.75; 
+^ ? .thh: no match
+.thl= 0.25; 
+^ ? .thl: no match
+.mr= 5.; 
+^ ? .mr: no match
+.mf= 5.; 
+^ ? .mf: no match
+.over=10k; 
+^ ? .over: no match
+.vmax= 5.; 
+^ ? .vmax: no match
+.vmin= 0.; 
+^ ? .vmin: no match
+endparamset 
+^ ? endparamset: no match
+// does not work yet. logic "model" is inaccessible from verilog 
+// paramset must support COMPONENTS... 
