@@ -497,7 +497,8 @@ bool TRANSIENT::next()
     trace1("eq", _sim->_eq.top());
     _sim->_eq.pop();
   }
-  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {untested();
+  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {
+    // duplicate events in the queue.  overclocked?
     trace1("eq-extra", _sim->_eq.top());
     _sim->_eq.pop();
   }
