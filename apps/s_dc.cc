@@ -55,8 +55,8 @@ protected:
   PARAMETER<double> _step_in[DCNEST];
   double _step[DCNEST];
   bool _linswp[DCNEST];
-  double* (_sweepval[DCNEST]);	/* pointer to thing to sweep, dc command */
-  ELEMENT* (_zap[DCNEST]);	/* to branch to zap, for re-expand */
+  double* _sweepval[DCNEST];	/* pointer to thing to sweep, dc command */
+  ELEMENT* _zap[DCNEST];	/* to branch to zap, for re-expand */
   CARDSTASH _stash[DCNEST];	/* store std values of elements being swept */
   bool _loop[DCNEST];		/* flag: do it again backwards */
   bool _reverse_in[DCNEST];	/* flag: sweep backwards, input */
