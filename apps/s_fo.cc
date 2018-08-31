@@ -94,7 +94,9 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();		break;
     case rBATCH:	untested();
+      // fall through
     case rINTERACTIVE:  itested();
+      // fall through
     case rSCRIPT:	sweep(); foout();	break;
     case rPRESET:	untested(); /*nothing*/ break;
     }

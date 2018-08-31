@@ -145,6 +145,7 @@ FPOLY1 differentiate(const FPOLY1* q, const FPOLY1* i, double* time, METHOD meth
     switch (method) {
     case mTRAPGEAR:
       incomplete();
+      // fall through
     case mGEAR:
       assert(OPT::_keep_time_steps >= 3);
       return FPOLY1(q[0].x,
@@ -153,6 +154,7 @@ FPOLY1 differentiate(const FPOLY1* q, const FPOLY1* i, double* time, METHOD meth
 		    q[0].f1 * (3./2.) / dt);
     case mTRAPEULER:
       incomplete();
+      // fall through
     case mEULER:
       assert(OPT::_keep_time_steps >= 2);
       return FPOLY1(q[0].x,
@@ -190,8 +192,10 @@ double STORAGE::tr_c_to_g(double c, double g)const
     g = c / _dt;
     switch (method) {
     case mTRAPGEAR: incomplete();
+      // fall through
     case mGEAR:	 g *= 3./2.;	break;
     case mTRAPEULER: incomplete();
+      // fall through
     case mEULER: /* g *= 1 */	break;
     case mTRAP:	 g *= 2;	break;
     }

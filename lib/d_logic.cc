@@ -193,7 +193,8 @@ void DEV_LOGIC::tr_advance()
       q_eval();
       if (_sim->_time0 >= _n[OUTNODE]->final_time()) {
 	_n[OUTNODE]->propagate();
-      }else{untested();
+      }else{
+	// not ready to propagate. overclocked?
       }
     }else{
     }

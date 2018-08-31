@@ -57,8 +57,8 @@ const _LOGICVAL LOGICVAL::not_truth[lvNUM_STATES] = {
 /*--------------------------------------------------------------------------*/
 static _LOGICVAL prop_truth[lvNUM_STATES][lvNUM_STATES] = {
   {lvSTABLE0, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
-  {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN},
-  {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN},
+  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
+  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
   {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvSTABLE1, lvUNKNOWN},
   {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN}
 };
@@ -413,7 +413,6 @@ double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)
   case lvSTABLE0:
     return process()->vmin;
   case lvRISING:
-    untested(); 
     start = process()->vmin;
     end = process()->vmax;
     risefall = process()->rise;
@@ -438,7 +437,6 @@ double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)
     untested();
     return end;
   }else{
-    untested();
     return end - ((end-start) * (final_time()-_sim->_time0) / risefall);
   }
 }
@@ -479,8 +477,11 @@ void LOGIC_NODE::force_initial_value(LOGICVAL v)
 void LOGIC_NODE::set_event(double delay, LOGICVAL v)
 {
   _lv.set_in_transition(v);
-  if (_sim->analysis_is_tran_dynamic()  &&  in_transit()) {untested();
+  if (_sim->analysis_is_tran_dynamic()  &&  in_transit()) {
     set_bad_quality("race");
+  }else{
+    // normal good quality event
+    // leaving quality as it was
   }
   set_d_iter();
   set_final_time(_sim->_time0 + delay);
