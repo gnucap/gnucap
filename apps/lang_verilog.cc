@@ -503,7 +503,7 @@ class CMD_PARAMSET : public CMD {
     //const MODEL_CARD* p = model_dispatcher[base_name];
     const CARD* p = lang_verilog.find_proto(base_name, NULL);
     if (p) {
-      CARD* cl=p->clone();
+      CARD* cl = p->clone();
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);
       if (new_card) {
 	assert(!new_card->owner());

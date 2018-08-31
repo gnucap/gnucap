@@ -851,12 +851,14 @@ class CMD_MODEL : public CMD {
     const MODEL_CARD* p = model_dispatcher[base_name];
 
     if (p) {
-      MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(p->clone());
+      CARD* cl = p->clone();
+      MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);
       if (new_card) {
 	assert(!new_card->owner());
 	lang_spice.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
       }else{untested();
+	delete(cl);
 	cmd.warn(bDANGER, here1, "model: base has incorrect type");
       }
     }else{
