@@ -323,7 +323,7 @@ template <class T>
 void List<T>::parse(CS& File)
 {untested();
   //skip_comment(File);
-  unsigned here = File.cursor();
+  size_t here = File.cursor();
   for (;;) {untested();
     if (File.match1('[')) {untested();
       break;
@@ -345,7 +345,7 @@ void List<T>::parse(CS& File)
 template <class T>
 void Collection<T>::parse(CS& File)
 {untested();
-  unsigned here = File.cursor();
+  size_t here = File.cursor();
   T* m = new T(File);
   if (!File.stuck(&here)) {untested();
     push(m);

@@ -105,7 +105,7 @@ static void parse_args_paramset(CS& cmd, MODEL_CARD* x)
   assert(x);
 
   while (cmd >> '.') {
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     std::string name, value;
     try{
       cmd >> name >> '=' >> value >> ';';
@@ -124,7 +124,7 @@ static void parse_args_instance(CS& cmd, CARD* x)
     if (cmd.match1('.')) {
       // by name
       while (cmd >> '.') {
-	unsigned here = cmd.cursor();
+	size_t here = cmd.cursor();
 	std::string name  = cmd.ctos("(", "", "");
 	std::string value = cmd.ctos(",)", "(", ")");
 	cmd >> ',';
@@ -138,7 +138,7 @@ static void parse_args_instance(CS& cmd, CARD* x)
       // by order
       int index = 1;
       while (cmd.is_alnum() || cmd.match1("+-.")) {
-	unsigned here = cmd.cursor();
+	size_t here = cmd.cursor();
 	try{
 	  std::string value = cmd.ctos(",)", "", "");
 	  x->set_param_by_index(x->param_count() - index++, value, 0/*offset*/);
@@ -174,7 +174,7 @@ static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
       // by order
       int index = 0;
       while (cmd.is_alnum()) {
-	unsigned here = cmd.cursor();
+	size_t here = cmd.cursor();
 	try{
 	  std::string value;
 	  cmd >> value;
@@ -204,7 +204,7 @@ static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
     }else{
       // by name
       while (cmd >> '.') {
-	unsigned here = cmd.cursor();
+	size_t here = cmd.cursor();
 	try{
 	  std::string name, value;
 	  cmd >> name >> '(' >> value >> ')' >> ',';
@@ -331,7 +331,7 @@ COMPONENT* LANG_VERILOG::parse_instance(CS& cmd, COMPONENT* x)
 /*--------------------------------------------------------------------------*/
 std::string LANG_VERILOG::find_type_in_string(CS& cmd)
 {
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   std::string type;
   if ((cmd >> "//")) {
     assert(here == 0);
@@ -497,7 +497,7 @@ class CMD_PARAMSET : public CMD {
     // already got "paramset"
     std::string my_name, base_name;
     cmd >> my_name;
-    unsigned here = cmd.cursor();    
+    size_t here = cmd.cursor();
     cmd >> base_name;
 
     //const MODEL_CARD* p = model_dispatcher[base_name];

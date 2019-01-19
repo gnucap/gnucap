@@ -93,7 +93,7 @@ void EVAL_BM_COMPLEX::ac_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_COMPLEX::parse_numlist(CS& cmd)
 {
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   double real = NOT_VALID;
   double imag = 0.;
   cmd >> real >> imag;

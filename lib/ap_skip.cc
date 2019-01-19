@@ -95,7 +95,7 @@ CS& CS::skip1(const std::string& t)
  */
 CS& CS::skiparg()
 {
-  unsigned here = cursor();
+  size_t here = cursor();
   if (!skipcom()) {
     if (peek()) {
       skip();
@@ -117,7 +117,7 @@ CS& CS::skiparg()
  */
 CS& CS::skipto1(const std::string& t)
 {untested();
-  unsigned here = cursor();
+  size_t here = cursor();
   while (ns_more() && !match1(t)) {untested();
     skip();
   }
@@ -134,7 +134,7 @@ CS& CS::skipto1(const std::string& t)
  */
 CS& CS::skipto1(char c)
 {
-  unsigned here = cursor();
+  size_t here = cursor();
   while (ns_more() && !match1(c)) {
     skip();
   }

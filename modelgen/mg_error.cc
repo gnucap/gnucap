@@ -25,7 +25,7 @@
 #include "ap.h"
 extern int errorcount;
 /*--------------------------------------------------------------------------*/
-static void tab(unsigned n)
+static void tab(size_t n)
 {
   for (unsigned i=0; i<n; ++i) {
     std::cout << ' ';
@@ -39,12 +39,12 @@ static void tab(unsigned n)
 // this missing means to use the library function, which is incomplete,
 // losing the error messages
 #if !defined(__WIN32__)
-CS & CS::warn(int badness, unsigned spot, const std::string& message)
+CS & CS::warn(int badness, size_t spot, const std::string& message)
 {
   if (badness >= 0) {
     ++errorcount;
 
-    unsigned linestart = spot;
+    size_t linestart = spot;
     for (;;) {
       if (linestart == 0) {untested();
 	break;
@@ -57,7 +57,7 @@ CS & CS::warn(int badness, unsigned spot, const std::string& message)
     }
 
     int lineno = 1;
-    for (unsigned i=0; i<linestart; ++i) {
+    for (size_t i=0; i<linestart; ++i) {
       if (_cmd[i] == '\n') {
 	++lineno;
       }else{
@@ -66,14 +66,14 @@ CS & CS::warn(int badness, unsigned spot, const std::string& message)
 
     std::cout << _name << ':' << lineno << ":\n";
     if (spot-linestart < 20) {
-      for (unsigned i=linestart; _cmd[i] && _cmd[i]!='\n'; ++i) {
+      for (size_t i=linestart; _cmd[i] && _cmd[i]!='\n'; ++i) {
 	std::cout << _cmd[i];
       }
       std::cout << '\n';
       tab(spot-linestart);
     }else{untested();
       std::cout << "..";
-      for (unsigned i=spot-15; _cmd[i] && _cmd[i]!='\n'; ++i) {untested();
+      for (size_t i=spot-15; _cmd[i] && _cmd[i]!='\n'; ++i) {untested();
 	std::cout << _cmd[i];
       }
       std::cout << '\n';

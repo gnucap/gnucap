@@ -124,7 +124,7 @@ static int count_ports(CS& cmd, int maxnodes, int minnodes, int leave_tail, int 
   assert(minnodes <= maxnodes);
 
   int num_nodes = 0;
-  std::vector<unsigned> spots;
+  std::vector<size_t> spots;
   int paren = cmd.skip1b('(');
   int i = start;
   // loop over the tokens to try to guess where the nodes end
@@ -177,7 +177,7 @@ static int count_ports(CS& cmd, int maxnodes, int minnodes, int leave_tail, int 
   }else{
   }
 
-  cmd.reset(spots[static_cast<unsigned>(num_nodes-start)]);
+  cmd.reset(spots[static_cast<size_t>(num_nodes-start)]);
 
   //cmd.warn(bDANGER, "past-nodes?");
   //BUG// assert fails on current controlled sources with (node node dev) syntax
@@ -227,7 +227,7 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 
   int paren = cmd.skip1b('(');
   int index = start;
-  unsigned here1 = cmd.cursor();
+  size_t here1 = cmd.cursor();
   try{
     for (;;) {
       here1 = cmd.cursor();
@@ -249,7 +249,7 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 	break; // done, found reserved word between nodes
       }else{
 	//----------------------
-	unsigned here = cmd.cursor();
+	size_t here = cmd.cursor();
 	std::string node_name;
 	cmd >> node_name;
 	if (cmd.stuck(&here)) {untested();
@@ -304,7 +304,7 @@ void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* 
   assert(xx);
 
   {
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     int stop_nodes = x->max_nodes() - x->num_current_ports();
     int num_nodes = count_ports(cmd, stop_nodes, 0,  0,   0);
     //				     max	 min tail already_got
@@ -321,7 +321,7 @@ void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* 
     xx->skip_dev_type(cmd); // (redundant)
     c = EVAL_BM_ACTION_BASE::parse_func_type(cmd);
     {
-      unsigned here = cmd.cursor();
+      size_t here = cmd.cursor();
       int num_nodes = count_ports(cmd, x->max_nodes(), x->min_nodes(), 0, gotnodes);
       cmd.reset(here);
       parse_ports(cmd, x, x->min_nodes(), gotnodes, num_nodes, false);
@@ -345,7 +345,7 @@ void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* 
   // (or HSPICE kluge)
   // let it continue parsing
 
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   c->parse_common_obsolete_callback(cmd); //BUG//callback
   if (cmd.stuck(&here)) {untested();
     cmd.warn(bDANGER, "needs a value");
@@ -381,7 +381,7 @@ void LANG_SPICE_BASE::parse_logic_using_obsolete_callback(CS& cmd, COMPONENT* x)
 {
   assert(x);
   {
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     int num_nodes = count_ports(cmd, x->max_nodes(), x->min_nodes(), x->tail_size(), 0/*start*/);
     cmd.reset(here);
     parse_ports(cmd, x, x->min_nodes(), 0/*start*/, num_nodes, false);
@@ -438,7 +438,7 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
       x->set_param_by_name(xx->value_name(), value);
     }else{				// only name=value pairs
     }
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     for (int i=0; ; ++i) {
       if (paren && cmd.skip1b(')')) {
 	break;
@@ -448,7 +448,7 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
 	std::string Name  = cmd.ctos("=", "", "");
 	cmd >> '=';
 	std::string value = cmd.ctos(",=;)", "\"'{(", "\"'})");
-	unsigned there = here;
+	size_t there = here;
 	if (cmd.stuck(&here)) {untested();
 	  break;
 	}else{
@@ -469,7 +469,7 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
     int paren = cmd.skip1b('(');
     bool in_error = false;
     for (;;) {
-      unsigned here = cmd.cursor();
+      size_t here = cmd.cursor();
       pp->parse_params_obsolete_callback(cmd);  //BUG//callback//
       if (!cmd.more()) {
 	break;
@@ -523,7 +523,7 @@ DEV_DOT* LANG_SPICE_BASE::parse_command(CS& cmd, DEV_DOT* x)
   cmd.reset();
   skip_pre_stuff(cmd);
 
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
 
   std::string s;
   cmd >> s;
@@ -560,7 +560,7 @@ BASE_SUBCKT* LANG_SPICE_BASE::parse_module(CS& cmd, BASE_SUBCKT* x)
   (cmd >> ".subckt |.macro ");
   parse_label(cmd, x);
   {
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     int num_nodes = count_ports(cmd, x->max_nodes(), x->min_nodes(), 
 				0/*no unnamed par*/, 0/*start*/);
     cmd.reset(here);
@@ -613,7 +613,7 @@ COMPONENT* LANG_SPICE_BASE::parse_instance(CS& cmd, COMPONENT* x)
       parse_logic_using_obsolete_callback(cmd, xx);
     }else{
       {
-	unsigned here = cmd.cursor();
+	size_t here = cmd.cursor();
 	int num_nodes = count_ports(cmd, x->max_nodes(), x->min_nodes(), x->tail_size(), 0);
 	cmd.reset(here);
 	parse_ports(cmd, x, x->min_nodes(), 0/*start*/, num_nodes, false);
@@ -634,7 +634,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
 {
   cmd.umatch(ANTI_COMMENT); /* skip mark so spice ignores but gnucap reads */
 
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   std::string s;
   char id_letter = cmd.peek();
   if (OPT::case_insensitive) {
@@ -829,7 +829,7 @@ class CMD_MODEL : public CMD {
     // already got "model"
     std::string my_name, base_name;
     cmd >> my_name;
-    unsigned here1 = cmd.cursor();    
+    size_t here1 = cmd.cursor();
     cmd >> base_name;
     
     // "level" kluge ....
@@ -838,7 +838,7 @@ class CMD_MODEL : public CMD {
     cmd.skip1b('(');
     int level = 0;
     {
-      unsigned here = cmd.cursor();
+      size_t here = cmd.cursor();
       scan_get(cmd, "level ", &level);
       if (!cmd.stuck(&here)) {
 	char buf[20];
@@ -898,7 +898,7 @@ static void getmerge(CS& cmd, Skip_Header skip_header, CARD_LIST* Scope)
   bool  echoon = false;		/* echo on/off flag (echo as read from file) */
   bool  liston = false;		/* list on/off flag (list actual values) */
   bool  quiet = false;		/* don't echo title */
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   do{
     ONE_OF
       || Get(cmd, "echo",  &echoon)
@@ -950,7 +950,7 @@ class CMD_LIB : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     std::string section_name, more_stuff;
     cmd >> section_name >> more_stuff;
     if (more_stuff != "") {

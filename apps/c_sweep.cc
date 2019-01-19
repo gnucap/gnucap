@@ -102,7 +102,7 @@ static void doit(CARD_LIST* scope)
       }else{
 	throw Exception("bad file format: " + tempfile);
       }
-      unsigned ind = cmd.cursor();
+      size_t ind = cmd.cursor();
       strncpy(buffer, "fault                              ", ind);
       buffer[ind-1] = ' ';		/* make sure there is a delimiter   */
     }					/* in case the words run together   */

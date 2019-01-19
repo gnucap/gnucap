@@ -40,7 +40,7 @@ public:
     bool last = false;
     bool expression = false;
 
-    unsigned here = Cmd.cursor();
+    size_t here = Cmd.cursor();
     Cmd >> probe_name;
     WAVE* w = find_wave(probe_name);
 

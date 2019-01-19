@@ -50,7 +50,7 @@ CS & CS::check(int badness, const std::string& message)
 /* syntax_msg: print syntax error message
  * echo a portion of the input with an arrow pointing to the current place
  */
-CS & CS::warn(int badness, unsigned spot, const std::string& message)
+CS & CS::warn(int badness, size_t spot, const std::string& message)
 {
   if (badness >= OPT::picky) {
     if (spot < 40) {

@@ -42,8 +42,8 @@ SPLINE::SPLINE(const std::vector<DPAIR>& table,
   }
 
   for (int i=0; i<=_n; ++i) {untested();
-    _x[i]  = table[static_cast<unsigned>(i)].first;
-    _f0[i] = table[static_cast<unsigned>(i)].second;
+    _x[i]  = table[static_cast<size_t>(i)].first;
+    _f0[i] = table[static_cast<size_t>(i)].second;
   }
 
   // set up h --------------------------------------------------
@@ -86,8 +86,8 @@ SPLINE::SPLINE(const std::vector<std::pair<PARAMETER<double>, PARAMETER<double> 
   }
 
   for (int i=0; i<=_n; ++i) {
-    _x[i]  = table[static_cast<unsigned>(i)].first;
-    _f0[i] = table[static_cast<unsigned>(i)].second;
+    _x[i]  = table[static_cast<size_t>(i)].first;
+    _f0[i] = table[static_cast<size_t>(i)].second;
   }
 
   // set up h --------------------------------------------------

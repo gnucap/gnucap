@@ -73,7 +73,7 @@ void EVAL_BM_VALUE::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_VALUE::parse_numlist(CS& cmd)
 {
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   PARAMETER<double> new_value(NOT_VALID);
   cmd >> new_value;
   if (cmd.gotit(here)) {

@@ -80,7 +80,7 @@ CS::CS(CS::WHOLE_FILE, const std::string& name)
     throw Exception_File_Open(name + ':' + strerror(errno));
   }else{
   }
-  _length = static_cast<unsigned>(lseek(f, off_t(0), SEEK_END));
+  _length = static_cast<size_t>(lseek(f, off_t(0), SEEK_END));
   lseek(f, off_t(0), SEEK_SET);
 
   char* cmd = new char[_length+2];
@@ -96,7 +96,7 @@ CS::CS(CS::STRING, const std::string& s)
    _name(),
    _cmd(s),
    _cnt(0),
-   _length(static_cast<unsigned>(s.length())),
+   _length(s.length()),
    _begin_match(0),
    _end_match(0),
    _ok(true),
@@ -126,7 +126,7 @@ CS& CS::operator=(const std::string& s)
   _cmd = s;
   _cnt = 0;
   _ok = true;
-  _length = static_cast<unsigned>(s.length());
+  _length = s.length();
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -150,7 +150,7 @@ CS& CS::get_line(const std::string& prompt)
   if (is_file()) {
     _cmd = getlines(_file);
     _cnt = 0;
-    _length = static_cast<unsigned>(_cmd.length());
+    _length = _cmd.length();
     _ok = true;
   }else{itested();
     assert(_file == stdin);
@@ -158,7 +158,7 @@ CS& CS::get_line(const std::string& prompt)
     getcmd(prompt.c_str(), cmdbuf, BUFLEN);
     _cmd = cmdbuf;
     _cnt = 0;
-    _length = static_cast<unsigned>(_cmd.length());
+    _length = _cmd.length();
     _ok = true;
   }
 

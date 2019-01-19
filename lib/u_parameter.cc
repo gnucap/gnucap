@@ -31,7 +31,7 @@
 void PARAM_LIST::parse(CS& cmd)
 {
   (cmd >> "real |integer "); // ignore type
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   for (;;) {
     if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
       break;

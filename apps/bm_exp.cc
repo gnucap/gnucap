@@ -186,8 +186,8 @@ TIME_PAIR EVAL_BM_EXP::tr_review(COMPONENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_EXP::parse_numlist(CS& cmd)
 {
-  unsigned start = cmd.cursor();
-  unsigned here = cmd.cursor();
+  size_t start = cmd.cursor();
+  size_t here = cmd.cursor();
   for (PARAMETER<double>* i = &_iv;  i < &_end;  ++i) {
     PARAMETER<double> val(NOT_VALID);
     cmd >> val;
