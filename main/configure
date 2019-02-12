@@ -23,7 +23,8 @@ fi
 
 sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 #----------------------------------------------------------------
-pkglibdir=$prefix/lib/gnucap
+pkglibdir='${prefix}/lib/gnucap'
+pkglibdir_expanded="${prefix}/lib/gnucap"
 
 # bug. this is not implemented consistently.
 CXX=${CXX-c++}
@@ -37,6 +38,7 @@ sed -e "s#@prefix@#$prefix#" \
     -e "s#@docdir@#$\{prefix\}/share/doc/gnucap#" \
     -e "s#@sysconfdir@#$\{prefix\}/etc#" \
     -e "s#@pkglibdir@#$pkglibdir#" \
+    -e "s#@pkglibdir_expanded@#$pkglibdir_expanded#" \
     -e "s#@CXXFLAGS@#$CCFLAGS#" \
     -e "s#@LIBS@#-lgnucap#" \
     -e "s#@CXX@#$CXX#" < $1.in > $1

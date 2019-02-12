@@ -66,12 +66,12 @@ header-check:
 	-$(CCC) -I../include -o /dev/null $(RAW_HDRS)
 #-----------------------------------------------------------------------------
 manifest: MANIFEST
-MANIFEST: $(DISTFILES)
-	echo $(DISTFILES) | sed 's/ /\n/g' >MANIFEST
+MANIFEST: $(DIST_FILES)
+	echo $(DIST_FILES) | sed 's/ /\n/g' >MANIFEST
 #-----------------------------------------------------------------------------
 md5sums: MD5SUMS
-MD5SUMS: $(DISTFILES)
-	md5sum $(DISTFILES) | grep -v MD5SUMS >MD5SUMS
+MD5SUMS: $(DIST_FILES)
+	md5sum $(DIST_FILES) | grep -v MD5SUMS >MD5SUMS
 #-----------------------------------------------------------------------------
 mostlyclean:
 	rm -rf $(MOSTLYCLEANFILES)
