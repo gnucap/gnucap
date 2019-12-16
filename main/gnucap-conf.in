@@ -31,7 +31,7 @@ case $1 in
 		: # not needed on posix
 	;;
 	--libs)
-		echo "$LIBS"
+		echo "$GNUCAP_LIBS"
 	;;
 	--exec-prefix)
 		echo "$exec_prefix"
