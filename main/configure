@@ -40,7 +40,7 @@ sed -e "s#@prefix@#$prefix#" \
     -e "s#@pkglibdir@#$pkglibdir#" \
     -e "s#@pkglibdir_expanded@#$pkglibdir_expanded#" \
     -e "s#@CXXFLAGS@#$CCFLAGS#" \
-    -e "s#@LIBS@#-lgnucap#" \
+    -e "s#@GNUCAP_LIBS@#-lgnucap#" \
     -e "s#@CXX@#$CXX#" < $1.in > $1
 }
 
