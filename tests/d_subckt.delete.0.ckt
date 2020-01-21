@@ -1,0 +1,22 @@
+spice
+.options trace
+.subckt a 1 2
+  .parameter v=0;
+  .parameter d=0;
+  V1 1 2 {v+d}
+.ends
+
+X1 0 1 a v=1.1
+X2 0 2 X1 d=1
+
+.print op v(nodes)
+.op
+.list
+
+.del X1
+
+X1 0 1 a v=1.2
+
+.print op v(nodes)
+.op
+.list
