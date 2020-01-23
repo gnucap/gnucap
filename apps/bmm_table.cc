@@ -149,7 +149,7 @@ MODEL_TABLE::MODEL_TABLE(const MODEL_TABLE& p)
    _below(p._below),
    _above(p._above),
    _table(p._table),
-   _spline(p._spline)
+   _spline(NULL)
 {
 }
 /*--------------------------------------------------------------------------*/
