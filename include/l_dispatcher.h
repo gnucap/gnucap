@@ -32,29 +32,7 @@
 class DISPATCHER_BASE {
 protected:
   std::map<std::string, CKT_BASE*> * _map;
-private:
-  explicit DISPATCHER_BASE(DISPATCHER_BASE*) {unreachable();incomplete();}
 public:
-  DISPATCHER_BASE() /*: _map(new std::map<std::string, CKT_BASE*>)*/ {
-    if (!_map) {
-      _map = new std::map<std::string, CKT_BASE*>;
-    }else{unreachable();
-      puts("build error: link order: constructing dispatcher that already has contents\n");
-    }
-  }
-  ~DISPATCHER_BASE() {
-#if !defined(NDEBUG)
-    for (typename std::map<std::string, CKT_BASE*>::iterator
-	 ii = _map->begin();
-	 ii != _map->end();
-	 ++ii) {
-      assert(!(ii->second));
-    }
-#endif
-    delete _map;
-    _map = NULL;
-  }
-
   typedef std::map<std::string, CKT_BASE*>::const_iterator const_iterator;
   //class const_iterator : public std::map<std::string, CKT_BASE*>::const_iterator {};
 
@@ -62,14 +40,17 @@ public:
   const_iterator end()const		{assert(_map); return _map->end();}
 
   CKT_BASE* operator[](std::string s) {
-    assert(_map);
-    CKT_BASE* rv = (*_map)[s];
-    if (!rv && OPT::case_insensitive) {
-      notstd::to_lower(&s);
-      rv = (*_map)[s];
+    if (_map) {
+      CKT_BASE* rv = (*_map)[s];
+      if (!rv && OPT::case_insensitive) {
+	notstd::to_lower(&s);
+	rv = (*_map)[s];
+      }else{
+      }
+      return rv;
     }else{
+      return NULL;
     }
-    return rv;
   }
 
   void uninstall(CKT_BASE* p) {
@@ -125,18 +106,21 @@ public:
       }
     }
   }
+
+  void check_init() {
+    if (!_map) {
+      _map = new std::map<std::string, CKT_BASE*>;
+    }else{
+    }
+  }
 };
 /*--------------------------------------------------------------------------*/
 template <class TT>
 class INTERFACE DISPATCHER : public DISPATCHER_BASE {
 public:
   void install(const std::string& s, TT* p) {
+    check_init();
     assert(s.find(',', 0) == std::string::npos);
-    if (!_map) {unreachable();
-      puts("build error: link order: dispatcher not yet constructed\n");
-      _map = new std::map<std::string, CKT_BASE*>;
-    }else{
-    }
     trace0(s.c_str());
     // loop over all keys, separated by '|'
     for (std::string::size_type			// bss: begin sub-string
