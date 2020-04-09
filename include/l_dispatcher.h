@@ -20,8 +20,15 @@
  * 02110-1301, USA.
  *------------------------------------------------------------------
  * dispatcher -- for dynamically loaded modules
+ *
+ * To address the issue of unknown static construction order:
+ * Must not have a constructor or destructor, or any parts that do.
+ * Also must not have any virtual functions, because the v-table has a constructor.
+ * "construction" will be done on demand by check_init.
+ *
+ * This is suitable for static objects only!
  */
-//testing=script 2015.01.21
+//testing=script 2020.04.06
 #ifndef L_DISPATCHER_H
 #define L_DISPATCHER_H
 #include "e_base.h"
@@ -37,30 +44,21 @@ public:
 
   const_iterator begin()const		{assert(_map); return _map->begin();}
   const_iterator end()const		{assert(_map); return _map->end();}
-
-  CKT_BASE* operator[](std::string s);
-  void      uninstall(CKT_BASE* p);
-  void      uninstall(const std::string& s);
-protected:
-  void      check_init();
-};
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-template <class TT>
-class INTERFACE DISPATCHER : public DISPATCHER_BASE {
 public:
-  void install(const std::string& s, TT* p);
-  TT* operator[](std::string s);
-  TT* operator[](CS& cmd);
-  TT* clone(std::string s);
-
+  CKT_BASE* operator[](std::string s);
+private:
+  void      uninstall(CKT_BASE* p);
+  //void      uninstall(const std::string& s);
+  void	    install(const std::string& s, CKT_BASE* p);
+  void      check_init();
+public:
   class INSTALL {
   private:
     const std::string _name;
-    DISPATCHER<TT>* _d;
-    TT* _p;
+    DISPATCHER_BASE* _d;
+    CKT_BASE* _p;
   public:
-    INSTALL(DISPATCHER<TT>* d, const std::string& name, TT* p) :
+    INSTALL(DISPATCHER_BASE* d, const std::string& name, CKT_BASE* p) :
       _name(name),
       _d(d),
       _p(p)
@@ -74,6 +72,15 @@ public:
       _d->uninstall(_p);
     }
   };
+};
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+template <class TT>
+class INTERFACE DISPATCHER : public DISPATCHER_BASE {
+public:
+  TT* operator[](std::string s);
+  TT* operator[](CS& cmd);
+  TT* clone(std::string s);
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -114,6 +121,7 @@ inline void DISPATCHER_BASE::uninstall(CKT_BASE* p)
 #endif
 }
 /*--------------------------------------------------------------------------*/
+#if 0
 inline void DISPATCHER_BASE::uninstall(const std::string& s)
 {untested();
   assert(_map);
@@ -147,6 +155,7 @@ inline void DISPATCHER_BASE::uninstall(const std::string& s)
     }
   }
 }
+#endif
 /*--------------------------------------------------------------------------*/
 inline void DISPATCHER_BASE::check_init()
 {
@@ -156,9 +165,7 @@ inline void DISPATCHER_BASE::check_init()
   }
 }
 /*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-template <class TT>
-void DISPATCHER<TT>::install(const std::string& s, TT* p)
+inline void DISPATCHER_BASE::install(const std::string& s, CKT_BASE* p)
 {
   check_init();
   assert(s.find(',', 0) == std::string::npos);
@@ -173,7 +180,7 @@ void DISPATCHER<TT>::install(const std::string& s, TT* p)
     trace2(name.c_str(), bss, ess);
     if (name == "") {untested();
       // quietly ignore empty string
-    }else if ((*_map)[name]) {
+    }else if ((*_map)[name]) {untested();
       // duplicate .. stash the old one so we can get it back
       error(bWARNING, name + ": already installed, replacing\n");
       std::string save_name = name + ":0";
