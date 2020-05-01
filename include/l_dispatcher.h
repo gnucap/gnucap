@@ -48,7 +48,6 @@ public:
   CKT_BASE* operator[](std::string s);
 private:
   void      uninstall(CKT_BASE* p);
-  //void      uninstall(const std::string& s);
   void	    install(const std::string& s, CKT_BASE* p);
   void      check_init();
 public:
@@ -103,9 +102,7 @@ inline void DISPATCHER_BASE::uninstall(CKT_BASE* p)
 {
   assert(_map);
   for (typename std::map<std::string, CKT_BASE*>::iterator
-	 ii = _map->begin();
-       ii != _map->end();
-       ++ii) {
+	 ii = _map->begin();  ii != _map->end();  ++ii) {
     if (ii->second == p) {
       ii->second = NULL;
     }else{
@@ -113,49 +110,11 @@ inline void DISPATCHER_BASE::uninstall(CKT_BASE* p)
   }
 #if !defined(NDEBUG)
   for (typename std::map<std::string, CKT_BASE*>::iterator
-	 ii = _map->begin();
-       ii != _map->end();
-       ++ii) {
+	 ii = _map->begin();  ii != _map->end();  ++ii) {
     assert(ii->second != p);
   }
 #endif
 }
-/*--------------------------------------------------------------------------*/
-#if 0
-inline void DISPATCHER_BASE::uninstall(const std::string& s)
-{untested();
-  assert(_map);
-  // loop over all keys, separated by '|'
-  for (std::string::size_type			// bss: begin sub-string
-	 bss = 0, ess = s.find('|', bss);	// ess: end sub-string
-       bss != std::string::npos;
-       bss = (ess != std::string::npos) ? ess+1 : std::string::npos,
-	 ess = s.find('|', bss)) {untested();
-    std::string name = s.substr(bss,
-				(ess != std::string::npos) ? ess-bss : std::string::npos);
-    if (name == "") {untested();
-      // quietly ignore empty string
-    }else if ((*_map)[name]) {untested();
-      // delete, try to get back the old one
-      int ii = 0;
-      std::string save_name = name + ":0";
-      for (ii = 0; (*_map)[save_name]; ++ii) {untested();
-	save_name = name + ":" + to_string(ii);
-      }
-      if (ii > 1) {untested();
-	save_name = name + ":" + to_string(ii-2);
-	(*_map)[name] = (*_map)[save_name];
-	(*_map)[save_name] = NULL;
-	error(bWARNING, "restoring " + save_name + " as " + name + "\n");
-      }else{untested();
-	(*_map)[name] = NULL;
-      }
-    }else{untested();
-      error(bWARNING, name + ": not installed, doing nothing\n");
-    }
-  }
-}
-#endif
 /*--------------------------------------------------------------------------*/
 inline void DISPATCHER_BASE::check_init()
 {
