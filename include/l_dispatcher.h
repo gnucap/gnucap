@@ -63,7 +63,6 @@ public:
       _p(p)
     {
       assert(_d);
-      assert(p);
       _d->install(_name, p);
     }
 
