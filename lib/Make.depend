@@ -50,6 +50,10 @@ ap_match.o: ap_match.cc ../include/u_opt.h ../include/mode.h \
  ../include/io_trace.h ../include/io_error.h ../include/ap.h
 ap_skip.o: ap_skip.cc ../include/ap.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h
+l_dispatcher.o: l_dispatcher.cc ../include/l_dispatcher.h \
+ ../include/e_base.h ../include/md.h ../include/io_trace.h \
+ ../include/io_error.h ../include/l_stlextra.h ../include/u_opt.h \
+ ../include/mode.h ../include/io_.h ../include/l_lib.h ../include/ap.h
 l_ftos.o: l_ftos.cc ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/constant.h
 l_pmatch.o: l_pmatch.cc ../include/ap.h ../include/md.h \
