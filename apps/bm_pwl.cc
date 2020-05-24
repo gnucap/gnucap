@@ -155,8 +155,8 @@ TIME_PAIR EVAL_BM_PWL::tr_review(COMPONENT* d)const
     std::vector<DPAIR>::const_iterator upper = upper_bound(begin, end, here);
     std::vector<DPAIR>::const_iterator lower = upper - 1;
     assert(x > lower->first);
-    if(upper==end){ untested();
-    }else if(x < upper->first){ untested();
+    if(upper==end){
+    }else if(x < upper->first){
       d->_time_by.min_event(upper->first);
     }else{ untested();
       // this is a no-op.

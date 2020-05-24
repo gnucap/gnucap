@@ -59,7 +59,7 @@ static void prepare_env()
                               "\0         (reserved space)                 ";
 
   std::string ldlpath = OS::getenv("LD_LIBRARY_PATH");
-  if (ldlpath != "") {untested();
+  if (ldlpath != "") {
     ldlpath += ":";
   }else{
   }
