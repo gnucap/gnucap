@@ -1,1 +1,1 @@
-#define PATCHLEVEL "develop 2020.06.25"
+#define PATCHLEVEL "bugfix 2020.05.24"
