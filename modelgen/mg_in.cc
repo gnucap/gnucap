@@ -28,7 +28,7 @@ static Cxx_Comment dummy_cxx_comment;
 void Parameter::parse(CS& file)
 {
   file >> _type >> _code_name >> _comment;
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   for (;;) {
     ONE_OF
       || Set(file, "positive",	     &_positive,	true)
@@ -94,9 +94,9 @@ void Code_Block::parse(CS& file)
     file.warn(0, "need {");
   }else{
   }
-  unsigned here = file.cursor();
-  unsigned begin = here;
-  unsigned end = here;
+  size_t here = file.cursor();
+  size_t begin = here;
+  size_t end = here;
   for (;;) {
     paren -= file.skip1b("])");
     if (paren == 0) {untested();
@@ -107,7 +107,7 @@ void Code_Block::parse(CS& file)
     end = file.cursor();
     paren -= file.skip1b("}");
     if (paren == 0) {
-      unsigned ihere = file.cursor();
+      size_t ihere = file.cursor();
       while (file.reset(--end).peek() != '\n' && end >= begin) {
       }
       ++end;
@@ -141,7 +141,7 @@ static void fill_in_default_names(Parameter_List& pl)
 void Parameter_Block::parse(CS& file)
 { 
   int paren = file.skip1b("{");
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   for (;;) {
     ONE_OF
       || ((file >> "unnamed ")		    && (file >> _unnamed_value))
@@ -216,7 +216,7 @@ void Function::print(std::ostream& out)const
 void Element::parse(CS& file)
 {
   file >> _dev_type >> _name >> _port_list;
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   for (;;) {
     ONE_OF
       || ((file >> "eval =")	&& (file >> _eval))
@@ -281,7 +281,7 @@ void Circuit::parse(CS& file)
   (file >> "ports ") && ((file >> _required_nodes >> _optional_nodes >> ';')
 			 || file.warn(0, "need ports"));
   (file >> "local_nodes ") && (file >> _local_nodes >> ';');
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   do {
     (file >> "args ") && (file >> _args_list);
   } while (file.more() && !file.stuck(&here));
@@ -325,7 +325,7 @@ void Model::parse(CS& file)
 {
   file >> _name;
   int paren = file.skip1b("{");
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   for (;;) {
     ONE_OF
       || ((file >> "hide_base ")	     && (file >> _hide_base))
@@ -380,7 +380,7 @@ void Device::parse(CS& file)
 {
   file >> _name;
   int paren = file.skip1b("{");
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   for (;;) {
     ONE_OF
       || ((file >> "parse_name ") && (file >> _parse_name))
@@ -429,7 +429,7 @@ void Device::print(std::ostream& out)const
 /*--------------------------------------------------------------------------*/
 void C_Comment::parse(CS& file)
 {
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   for (;;) {
     file.skipto1('*');
     if (file.umatch("*/")) {
@@ -445,7 +445,7 @@ void C_Comment::parse(CS& file)
 /*--------------------------------------------------------------------------*/
 void Cxx_Comment::parse(CS& file)
 {
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   file.skipto1('\n');
   if (file.stuck(&here)) {untested();
     file.warn(0, "unterminated C++ comment");
@@ -456,7 +456,7 @@ void Cxx_Comment::parse(CS& file)
 void Port::parse(CS& file)
 {
   file >> _name;
-  unsigned here = file.cursor();
+  size_t here = file.cursor();
   for (;;) {
     ONE_OF
       || ((file >> "short_to =") && (file >> _short_to))
@@ -486,9 +486,9 @@ void Port::print(std::ostream& out)const
 /*--------------------------------------------------------------------------*/
 void Head::parse(CS& file)
 {
-  unsigned here = file.cursor();
-  unsigned begin = 0;
-  unsigned end = here;
+  size_t here = file.cursor();
+  size_t begin = 0;
+  size_t end = here;
   for (;;) {
     file.skipto1('*');
     if (file.umatch("*/")) {
@@ -509,7 +509,7 @@ File::File(const std::string& file_name)
    _file(CS::_WHOLE_FILE, file_name)
 {
   (_file >>  "/*") && (_file >> _head);
-  unsigned here = _file.cursor();
+  size_t here = _file.cursor();
   for (;;) {
     ONE_OF
       || ((_file >> "/*")	  && (_file >> dummy_c_comment))

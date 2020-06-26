@@ -303,7 +303,7 @@ void DCOP::fix_args(int Nest)
 void DCOP::options(CS& Cmd, int Nest)
 {
   _sim->_uic = _loop[Nest] = _reverse_in[Nest] = false;
-  unsigned here = Cmd.cursor();
+  size_t here = Cmd.cursor();
   do{
     ONE_OF
       || (Cmd.match1("'\"({")	&& ((Cmd >> _step_in[Nest]), (_stepmode[Nest] = LIN_STEP)))

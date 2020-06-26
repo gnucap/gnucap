@@ -50,10 +50,10 @@ struct Exception {
 };
 class CS;
 struct INTERFACE Exception_CS :public Exception { 
- std::string _cmd;
-  unsigned _cursor;
+  std::string _cmd;
+  size_t _cursor;
   const std::string message()const;
-  //Exception_CS(const std::string& Message, const CS& cmd, unsigned cursor);
+  //Exception_CS(const std::string& Message, const CS& cmd, size_t cursor);
   Exception_CS(const std::string& Message, const CS& cmd);
 };
 struct Exception_No_Match :public Exception{

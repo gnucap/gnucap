@@ -28,7 +28,7 @@ void Float::parse(CS& File)
   if (File >> "NA") {
     _data = NOT_INPUT;
   }else{
-    unsigned here = File.cursor();
+    size_t here = File.cursor();
     File >> _data;
     if (File.stuck(&here)) {untested();
       _data = NOT_INPUT;
@@ -70,7 +70,7 @@ void Name_String::parse(CS& File)
 void Quoted_String::parse(CS& File)
 {untested();
   File.skipbl();
-  unsigned here = File.cursor();
+  size_t here = File.cursor();
   char quote = File.ctoc();
   _data = "";
   for (;;) {untested();

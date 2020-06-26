@@ -79,7 +79,7 @@ static void parse_args(CS& cmd, CARD* x)
 {
   assert(x);
   
-  unsigned here = 0;
+  size_t here = 0;
   while (cmd.more() && !cmd.stuck(&here)) {
     std::string name  = cmd.ctos("=", "", "");
     cmd >> '=';
@@ -111,7 +111,7 @@ static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
   int index = 0;
   if (cmd >> '(') {
     while (cmd.is_alnum()) {
-      unsigned here = cmd.cursor();
+      size_t here = cmd.cursor();
       try{
 	std::string value;
 	cmd >> value;
@@ -133,9 +133,9 @@ static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
     }
     cmd >> ')';
   }else{
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     OPT::language->find_type_in_string(cmd);
-    unsigned stop = cmd.cursor();
+    size_t stop = cmd.cursor();
     cmd.reset(here);
 
     while (cmd.cursor() < stop) {
@@ -192,7 +192,7 @@ DEV_DOT* LANG_SPECTRE::parse_command(CS& cmd, DEV_DOT* x)
     cmd >> label;
     
     if (label != "-") {
-      unsigned here = cmd.cursor();
+      size_t here = cmd.cursor();
       std::string command;
       cmd >> command;
       cmd.reset(here);
@@ -260,7 +260,7 @@ std::string LANG_SPECTRE::find_type_in_string(CS& cmd)
   // known to be not always correct
 
   cmd.reset().skipbl();
-  unsigned here = 0;
+  size_t here = 0;
   std::string type;
   if ((cmd >> "*|//")) {
     assert(here == 0);
@@ -277,11 +277,11 @@ std::string LANG_SPECTRE::find_type_in_string(CS& cmd)
   }else if (cmd.reset().scan("=")) {
     // back up two, by starting over
     cmd.reset().skiparg();
-    unsigned here1 = cmd.cursor();
+    size_t here1 = cmd.cursor();
     cmd.skiparg();
-    unsigned here2 = cmd.cursor();
+    size_t here2 = cmd.cursor();
     cmd.skiparg();
-    unsigned here3 = cmd.cursor();
+    size_t here3 = cmd.cursor();
     while (here2 != here3 && !cmd.match1('=')) {
       cmd.skiparg();
       here1 = here2;
@@ -413,7 +413,7 @@ class CMD_MODEL : public CMD {
     // already got "model"
     std::string my_name, base_name;
     cmd >> my_name;
-    unsigned here = cmd.cursor();    
+    size_t here = cmd.cursor();
     cmd >> base_name;
 
     //const MODEL_CARD* p = model_dispatcher[base_name];

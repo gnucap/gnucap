@@ -94,7 +94,7 @@ void Expression::leaf(CS& File)
     // do not put constants in symbol table
   } // else 
 #endif
-  unsigned here = File.cursor();
+  size_t here = File.cursor();
   Name_String name(File);
   if (!File.stuck(&here)) {
     arglist(File);

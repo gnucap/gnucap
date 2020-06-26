@@ -92,8 +92,8 @@ void modify_fault(CS& cmd, WHATTODO command, CARD_LIST* scope)
 {
   CKT_BASE::_sim->uninit();
   while (cmd.is_alpha()) {
-    unsigned mark = cmd.cursor();
-    unsigned cmax = cmd.cursor();
+    size_t mark = cmd.cursor();
+    size_t cmax = cmd.cursor();
     CARD_LIST::fat_iterator ci(scope, scope->begin());
     for (;;) {
       cmd.reset(mark);

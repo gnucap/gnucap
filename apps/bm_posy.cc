@@ -198,10 +198,10 @@ void EVAL_BM_POSY::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_POSY::parse_numlist(CS& cmd)
 {
-  unsigned start = cmd.cursor();
-  unsigned here = cmd.cursor();
+  size_t start = cmd.cursor();
+  size_t here = cmd.cursor();
   for (;;) {
-    unsigned start_of_pair = here;
+    size_t start_of_pair = here;
     std::pair<PARAMETER<double>, PARAMETER<double> > p;
     cmd >> p.second; // value
     if (cmd.stuck(&here)) {

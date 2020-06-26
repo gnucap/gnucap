@@ -123,8 +123,8 @@ void COMMON_COMPONENT::parse_modelname(CS& cmd)
 // called only by COMMON_COMPONENT::parse_obsolete
 bool COMMON_COMPONENT::parse_param_list(CS& cmd)
 {
-  unsigned start = cmd.cursor();
-  unsigned here = cmd.cursor();
+  size_t start = cmd.cursor();
+  size_t here = cmd.cursor();
   do{
     parse_params_obsolete_callback(cmd); //BUG//callback
   }while (cmd.more() && !cmd.stuck(&here));
@@ -135,7 +135,7 @@ void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
 {
   if (cmd.skip1b('(')) {
     // start with a paren
-    unsigned start = cmd.cursor();
+    size_t start = cmd.cursor();
     parse_param_list(cmd);
     if (cmd.gotit(start)) {		// ( params ( ....
       // named args before num list
@@ -188,7 +188,7 @@ void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
     }
   }else{
     // does not start with a paren
-    unsigned start = cmd.cursor();
+    size_t start = cmd.cursor();
     parse_param_list(cmd);
     if (cmd.gotit(start)) {
       if (cmd.skip1b('(')) {		// params ( list ) params

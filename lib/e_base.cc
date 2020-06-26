@@ -66,7 +66,7 @@ const std::string CKT_BASE::long_label()const
 bool CKT_BASE::help(CS& Cmd, OMSTREAM& Out)const
 {
   if (help_text() != "") {
-    unsigned here = Cmd.cursor();
+    size_t here = Cmd.cursor();
     std::string keyword;
     Cmd >> keyword;
     CS ht(CS::_STRING, help_text());

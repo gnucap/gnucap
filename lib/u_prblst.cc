@@ -77,7 +77,7 @@ bool operator!=(const PROBE& prb, const std::string& par)
  */
 void PROBELIST::remove_list(CS& cmd)
 { 
-  unsigned mark = cmd.cursor();
+  size_t mark = cmd.cursor();
   std::string parameter(cmd.ctos(TOKENTERM) + '(');
   int paren = cmd.skip1b('(');
   parameter += cmd.ctos(TOKENTERM) + ')';
@@ -145,7 +145,7 @@ void PROBELIST::add_list(CS& cmd)
     push_new_probe(what, 0);
   }else if (cmd.is_alnum() || cmd.match1("*?")) {
     // branches or named nodes
-    unsigned here1 = cmd.cursor();
+    size_t here1 = cmd.cursor();
     bool found_something = add_branches(cmd.ctos(),what,&CARD_LIST::card_list);
     if (!found_something) {
       cmd.warn(bWARNING, here1, "no match");
@@ -157,7 +157,7 @@ void PROBELIST::add_list(CS& cmd)
 	break;
       }else{
       }
-      unsigned here2 = cmd.cursor();
+      size_t here2 = cmd.cursor();
       found_something = add_branches(cmd.ctos(),what,&CARD_LIST::card_list);
       if (!found_something) {itested();
 	cmd.reset(here2);

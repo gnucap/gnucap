@@ -160,15 +160,15 @@ MODEL_TABLE::~MODEL_TABLE()
 /*--------------------------------------------------------------------------*/
 bool MODEL_TABLE::parse_params_obsolete_callback(CS& cmd)
 {
-  unsigned here1 = cmd.cursor();
+  size_t here1 = cmd.cursor();
   {
     Get(cmd, "order", &_order);
     Get(cmd, "below", &_below);
     Get(cmd, "above", &_above);
     bool got_opening_paren = cmd.skip1b('(');
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     for (;;) {
-      unsigned start_of_pair = here;
+      size_t start_of_pair = here;
       std::pair<PARAMETER<double>, PARAMETER<double> > p;
       cmd >> p.first; // key
       if (cmd.stuck(&here)) {

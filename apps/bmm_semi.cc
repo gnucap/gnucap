@@ -233,7 +233,7 @@ void EVAL_BM_SEMI_BASE::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_SEMI_BASE::parse_numlist(CS& cmd)
 {
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   PARAMETER<double> val(NOT_VALID);
   cmd >> val;
   if (cmd.gotit(here)) {

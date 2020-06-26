@@ -76,8 +76,8 @@ std::string CS::ctos(const std::string& term,
   assert(begin_quote.length() == end_quote.length());
 
   skipbl();
-  unsigned begin_string = cursor();
-  unsigned end_string = cursor();
+  size_t begin_string = cursor();
+  size_t end_string = cursor();
 
   std::string s;
   std::string::size_type which_quote = find1(begin_quote);
@@ -144,7 +144,7 @@ std::string CS::get_to(const std::string& term)
 bool CS::ctob()
 {
   skipbl();
-  unsigned here = cursor();
+  size_t here = cursor();
   bool val = true;
   ONE_OF
     || Set(*this, "1",       &val, true)
@@ -172,7 +172,7 @@ int CS::ctoi()
   int sign = 1;
 
   skipbl();
-  unsigned here = cursor();
+  size_t here = cursor();
   if (skip1("-")) {
     sign = -1;
   }else{
@@ -197,7 +197,7 @@ unsigned CS::ctou()
   unsigned val = 0;
 
   skipbl();
-  unsigned here = cursor();
+  size_t here = cursor();
   while (is_digit()) {
     val = 10 * val + static_cast<unsigned>(ctoc()-'0');
   }
@@ -217,7 +217,7 @@ int CS::ctoo()
   int val = 0;
 
   skipbl();
-  unsigned here = cursor();
+  size_t here = cursor();
   while (is_digit()) {
     val = 8 * val + (ctoc()-'0');
   }
@@ -236,7 +236,7 @@ int CS::ctox()
   int val = 0;
 
   skipbl();
-  unsigned here = cursor();
+  size_t here = cursor();
   while (is_xdigit()) {untested();
     if (is_digit()) {untested();
       val = 16 * val + (ctoc()-'0');

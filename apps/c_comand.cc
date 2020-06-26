@@ -91,7 +91,7 @@ class CMD_TEMP : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*) {itested();
     double t = NOT_INPUT;
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     cmd >> '=' >> t;
     if (!cmd.stuck(&here)) {itested();
       OPT::temp_c = t;

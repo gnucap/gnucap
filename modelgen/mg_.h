@@ -126,7 +126,7 @@ public:
 
   void parse(CS& file) {
     int paren = !BEGIN || file.skip1b(BEGIN);
-    unsigned here = file.cursor();
+    size_t here = file.cursor();
     for (;;) {
       C_Comment   c_comment;
       Cxx_Comment cxx_comment;
@@ -181,7 +181,7 @@ public:
   const_iterator end()const	 {return _list.end();}
 
   void parse(CS& file) {
-    unsigned here = file.cursor();
+    size_t here = file.cursor();
     T* m = new T(file);
     if (!file.stuck(&here)) {
       _list.push_back(m);

@@ -97,7 +97,7 @@ TT* DISPATCHER<TT>::operator[](std::string s)
 template <class TT>
 TT* DISPATCHER<TT>::operator[](CS& cmd)
 {
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   std::string s;
   cmd >> s;
   //------------------------

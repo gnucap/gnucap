@@ -33,7 +33,7 @@ const int MAXHANDLE = CHAR_BIT*sizeof(int)-1;
 class INTERFACE OMSTREAM {
 private:
   static FILE* _stream[MAXHANDLE+1];
-  static unsigned _cpos[MAXHANDLE+1];/* character counter */
+  static size_t _cpos[MAXHANDLE+1];/* character counter */
   int _mask;
   int _fltdig;			/* max precision for float/double numbers */
   int _fltwid;			/* fixed(min)width for float/double numbers */
@@ -86,8 +86,8 @@ public:
   OMSTREAM& reset()
     {_fltdig=7;_fltwid=0;_format=0; _cipher=_pack=false; return *this;}
   /* out */
-  OMSTREAM& tab(unsigned);
-  OMSTREAM& tab(int p)			{return tab(static_cast<unsigned>(p));}
+  OMSTREAM& tab(size_t);
+  OMSTREAM& tab(int p)			{return tab(static_cast<size_t>(p));}
   OMSTREAM& form(const char*,...);
   OMSTREAM& operator<<(char c);
   OMSTREAM& operator<<(const char* s);
