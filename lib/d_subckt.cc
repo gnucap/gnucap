@@ -1,4 +1,4 @@
-/*$Id: d_subckt.cc  2018/05/27  $ -*- C++ -*-
+/*$Id: d_subckt.cc   $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -32,6 +32,7 @@
  *	- need to process the entire ring - for doesn't work
  */
 //testing=script 2016.09.16
+#include "u_nodemap.h"
 #include "e_node.h"
 #include "globals.h"
 #include "e_paramlist.h"
@@ -72,7 +73,7 @@ private:
 public:
   static int	count()			{untested();return _count;}
 protected:
-  const BASE_SUBCKT* _parent;
+  const COMPONENT* _parent;
 private:
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
@@ -195,21 +196,28 @@ void DEV_SUBCKT::expand()
   COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
   assert(c);
   if (!_parent) {
-    // get here when instanciating X, then set modelname
+    // first time
     assert(c->modelname()!="");
     const CARD* model = find_looking_out(c->modelname());
-    if(!dynamic_cast<const BASE_SUBCKT*>(model)) {
-      throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
+    if ((_parent = prechecked_cast<const DEV_SUBCKT_PROTO*>(model))) {
+      // good
+    }else if (prechecked_cast<const BASE_SUBCKT*>(model)) {
+      throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt proto");
     }else{
-      _parent = prechecked_cast<const BASE_SUBCKT*>(model);
+      throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
     }
   }else{
-    // possible after clone_instance.
+    // reruns
     assert(find_looking_out(c->modelname()) == _parent);
   }
   
+  assert(_parent);
   assert(_parent->subckt());
+  assert(_parent->subckt()->nodes());
+  trace2("",  _parent->net_nodes(),  _parent->subckt()->nodes()->how_many());
+  assert(_parent->net_nodes() <= _parent->subckt()->nodes()->how_many());
   assert(_parent->subckt()->params());
+
   PARAM_LIST* pl = const_cast<PARAM_LIST*>(_parent->subckt()->params());
   assert(pl);
   c->_params.set_try_again(pl);
