@@ -1,4 +1,4 @@
-/*$Id: e_node.h 2018/05/27 al$ -*- C++ -*-
+/*$Id: e_node.h $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -162,7 +162,7 @@ public: // raw data access (rvalues)
   double   final_time()const		{return _final_time;}
   double   last_change_time()const	{return _lastchange;}
   const MODEL_LOGIC* process()const	{return _family;}
-  double   old_last_change_time()const	{untested(); return _old_lastchange;}
+  double   old_last_change_time()const	{return _old_lastchange;}
   const LOGICVAL old_lv()const		{return _old_lv;}
 
 public: // simple calculated data access (rvalues)
@@ -189,7 +189,7 @@ public: // raw data access (lvalues)
 
   void  store_old_last_change_time()	{_old_lastchange = last_change_time();}
   void	store_old_lv()			{_old_lv = lv();}
-  void	restore_lv()			{untested(); set_lv(old_lv());}
+  void	restore_lv()			{set_lv(old_lv());}
   void	set_mode(smode_t m)		{_mode = m;}
 
 public: // other internal

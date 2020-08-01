@@ -1,4 +1,4 @@
-/*$Id: d_logic.cc  2016/09/17 $ -*- C++ -*-
+/*$Id: d_logic.cc  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -194,7 +194,7 @@ void DEV_LOGIC::tr_advance()
       if (_sim->_time0 >= _n[OUTNODE]->final_time()) {
 	_n[OUTNODE]->propagate();
       }else{
-	// not ready to propagate. overclocked?
+	// not ready to propagate.
       }
     }else{
     }
@@ -202,50 +202,36 @@ void DEV_LOGIC::tr_advance()
   }
 }
 void DEV_LOGIC::tr_regress()
-{ untested();
-  assert(_gatemode == moDIGITAL || _gatemode == moANALOG);
-  const COMMON_LOGIC* c = prechecked_cast<const COMMON_LOGIC*>(common());
-  assert(c);
-  const MODEL_LOGIC* m = prechecked_cast<const MODEL_LOGIC*>(c->model());
-  assert(m);
+{
   ELEMENT::tr_regress();
 
-  if (_gatemode != _oldgatemode) {itested();
+  if (_gatemode != _oldgatemode) {untested();
     tr_unload();
     _n[OUTNODE]->set_mode(_gatemode);
     _oldgatemode = _gatemode;
-  }else{itested();
+  }else{
   }
   switch (_gatemode) {
   case moUNKNOWN: unreachable(); break;
   case moMIXED:   unreachable(); break;
-  case moANALOG:  itested();
+  case moANALOG:  untested();
     assert(subckt());
     subckt()->tr_regress();
     break;
-  case moDIGITAL: itested();
-    _n[0]->restore_lv();
-    if (_n[OUTNODE]->in_transit()) {
-      _n[0]->set_last_change_time(_n[0]->old_last_change_time());
-      q_eval();
+  case moDIGITAL:
+    q_eval();
+    if (_n[OUTNODE]->last_change_time() > _sim->_time0) {
+      _n[OUTNODE]->set_final_time(_n[OUTNODE]->last_change_time());
+      _n[OUTNODE]->set_last_change_time(_n[OUTNODE]->old_last_change_time());
+      _n[OUTNODE]->restore_lv();
+      _n[OUTNODE]->set_d_iter();
+    }else if (_n[OUTNODE]->in_transit()) {
       if (_sim->_time0 >= _n[OUTNODE]->final_time()) {untested();
 	_n[OUTNODE]->propagate();
       }else{
       }
     }else{
-      // try and recover final time from before rejected step
-      if(_n[0]->old_last_change_time() == 0){
-	// perhaps it should be initialised to NEVER?
-      }else if(_n[0]->old_last_change_time() < _sim->_time0){
-	_n[0]->set_final_time( _n[0]->old_last_change_time() + m->delay );
-	_n[0]->restore_lv();
-      }else{
-      }
-      _n[0]->set_last_change_time(_n[0]->old_last_change_time());
-      // _n[0]->set_d_iter(); //needed?
-      q_eval(); // really? yes
     }
-    // _lastchangenode = 0; // needed?
     break;
   }
 }
@@ -407,10 +393,7 @@ void DEV_LOGIC::tr_accept()
     }else{
     }
     assert(_gatemode == moANALOG);
-//  }else if(_lastchangenode == 0){
-//    incomplete();
   }else{
-//    ELEMENT::tr_accept(); // needed? has no effect.
     assert(want_digital());
     if (_gatemode == moANALOG) {
       error(bTRACE, "%s:%u:%g switch to digital\n",
@@ -421,7 +404,6 @@ void DEV_LOGIC::tr_accept()
     }
     assert(_gatemode == moDIGITAL);
     if (_sim->analysis_is_restore()) {untested();
-      incomplete();
     }else if (_sim->analysis_is_static()) {
     }else{
     }
@@ -458,7 +440,6 @@ void DEV_LOGIC::tr_accept()
 	if (_n[OUTNODE]->lv() == lvUNKNOWN
 	    || future_state.lv_future() != _n[OUTNODE]->lv_future()) {
 	  _n[OUTNODE]->set_event(m->delay, future_state);
-
 	  _sim->new_event(_n[OUTNODE]->final_time());
 	  //assert(future_state == _n[OUTNODE].lv_future());
 	  if (_lastchangenode == OUTNODE) {
@@ -467,19 +448,13 @@ void DEV_LOGIC::tr_accept()
 		  long_label().c_str(), _sim->iteration_tag(), _sim->_time0);
 	  }else{
 	  }
-	}else if(_n[0]->final_time()-m->fall > _sim->_dtmin+_sim->_time0){
-	  // step control hack. transition start event.
-	  // also deal with rise? where?
-	  _sim->new_event(_n[OUTNODE]->final_time() - m->fall);
-	}else if(_n[0]->final_time() > _sim->_time0){
-	  _sim->new_event(_n[OUTNODE]->final_time());
-	}else{ untested();
+	}else{
 	}
       }else{
       }
     }else{
     }
-    _n[0]->store_old_last_change_time();
+    _n[OUTNODE]->store_old_last_change_time();
     _n[OUTNODE]->store_old_lv(); // needed? yes
   }
 }

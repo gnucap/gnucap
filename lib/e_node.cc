@@ -1,4 +1,4 @@
-/*$Id: e_node.cc 2018/05/27  al $ -*- C++ -*-
+/*$Id: e_node.cc $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -212,9 +212,9 @@ double LOGIC_NODE::tr_probe_num(const std::string& x)const
 {
   if (Umatch(x, "l{ogic} ")) {
     return annotated_logic_value();
-  }else if (Umatch(x, "la{stchange} ")) {untested();
+  }else if (Umatch(x, "la{stchange} ")) {
     return _lastchange;
-  }else if (Umatch(x, "fi{naltime} ")) {untested();
+  }else if (Umatch(x, "fi{naltime} ")) {
     return final_time();
   }else if (Umatch(x, "di{ter} ")) {untested();
     return static_cast<double>(_d_iter);
@@ -485,7 +485,7 @@ void LOGIC_NODE::set_event(double delay, LOGICVAL v)
   }
   set_d_iter();
   set_final_time(_sim->_time0 + delay);
-  if (OPT::picky <= bTRACE) {untested();
+  if (OPT::picky <= bTRACE) {
     error(bTRACE, "%s:%u:%g new event\n",
 	  long_label().c_str(), d_iter(), final_time());
   }

@@ -27,15 +27,14 @@ new=4.29961e-10  old=8.75e-10  required=4.375e-10
 backwards time step
 newtime=7.916667e-10  rejectedtime=1.375000e-09  oldtime=5.000000e-10
  791.7E-12  16.        1.         375.E-12   1.375E-9   5.         5.         5.         3.01       2.         4.21      
- 875.E-12   2.         0.         375.E-12   1.375E-9   5.         5.         5.         3.01       2.         4.21      
- 1.0417E-9  6.         0.         375.E-12   1.375E-9   5.         3.3486     4.873      3.01       2.         4.21      
- 1.2083E-9  6.         0.         375.E-12   1.375E-9   5.         1.6948     4.5112     3.01       2.         4.21      
- 1.375E-9   2.         0.         1.375E-9   Inf        5.         0.039115   3.9506     3.01       0.         4.21      
- 2.E-9      1.         0.         1.375E-9   Inf        5.         0.020629   2.0836     3.01       0.         4.21      
+ 1.0833E-9  6.         0.         375.E-12   1.375E-9   5.         2.9347     4.7371     3.01       2.         4.21      
+ 1.2292E-9  6.         0.         375.E-12   1.375E-9   5.         1.4874     4.3938     3.01       2.         4.21      
+ 1.375E-9   2.         0.         1.375E-9   Inf        5.         0.038617   3.9003     3.01       0.         4.21      
+ 2.E-9      1.         0.         1.375E-9   Inf        5.         0.020367   2.0571     3.01       0.         4.21      
 >>>>>.status notime 
 Gnucap   System status
-iterations: op=0, dc=0, tran=42, fourier=0, total=56
-transient timesteps: accepted=13, rejected=1, total=14
+iterations: op=0, dc=0, tran=39, fourier=0, total=52
+transient timesteps: accepted=12, rejected=1, total=13
 nodes: user=3, subckt=0, model=0, total=3
 dctran density=77.8%, ac density=77.8%
 >>>>>.end 

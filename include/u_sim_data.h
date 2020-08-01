@@ -1,4 +1,4 @@
-/*$Id: u_sim_data.h 2016/03/23 al $ -*- C++ -*-
+/*$Id: u_sim_data.h  $ -*- C++ -*-
  * Copyright (C) 2009 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -71,7 +71,7 @@ struct INTERFACE SIM_DATA {
   BSMATRIX<double> _aa;	/* raw matrix for DC & tran */
   BSMATRIX<double> _lu;	/* decomposed matrix for DC & tran */
   BSMATRIX<COMPLEX> _acx;/* raw & decomposed matrix for AC */
-  std::priority_queue<double, std::vector<double> > _eq; /*event queue*/
+  std::priority_queue<double, std::vector<double>, std::greater<double> > _eq; /*event queue*/
   std::vector<CARD*> _loadq;
   std::vector<CARD*> _acceptq;
   std::deque<CARD*>  _evalq1; /* evaluate queues -- alternate between */
