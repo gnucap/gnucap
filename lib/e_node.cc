@@ -296,7 +296,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
       }else{untested();
       }
       assert(dt > 0.);
-      restore_lv();			/* skip back one */
+      set_lv(old_lv());			/* skip back one */
     }else{
       store_old_last_change_time();
       store_old_lv();			/* save to see if it changes */
@@ -455,6 +455,14 @@ void LOGIC_NODE::propagate()
   set_final_time(NEVER);
   set_last_change_time();
   assert(!(in_transit()));
+}
+/*--------------------------------------------------------------------------*/
+void LOGIC_NODE::unpropagate()
+{
+  set_final_time(last_change_time());
+  set_last_change_time(old_last_change_time());
+  set_lv(old_lv());
+  set_d_iter();
 }
 /*--------------------------------------------------------------------------*/
 void LOGIC_NODE::force_initial_value(LOGICVAL v)

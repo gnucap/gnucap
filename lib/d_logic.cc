@@ -221,15 +221,10 @@ void DEV_LOGIC::tr_regress()
   case moDIGITAL:
     q_eval();
     if (_n[OUTNODE]->last_change_time() > _sim->_time0) {
-      _n[OUTNODE]->set_final_time(_n[OUTNODE]->last_change_time());
-      _n[OUTNODE]->set_last_change_time(_n[OUTNODE]->old_last_change_time());
-      _n[OUTNODE]->restore_lv();
-      _n[OUTNODE]->set_d_iter();
-    }else if (_n[OUTNODE]->in_transit()) {
-      if (_sim->_time0 >= _n[OUTNODE]->final_time()) {untested();
-	_n[OUTNODE]->propagate();
-      }else{
-      }
+      _n[OUTNODE]->unpropagate();
+      assert(_sim->_time0 < _n[OUTNODE]->final_time());
+    }else if (_sim->_time0 >= _n[OUTNODE]->final_time()) {untested();
+      _n[OUTNODE]->propagate();
     }else{
     }
     break;

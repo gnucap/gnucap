@@ -189,7 +189,6 @@ public: // raw data access (lvalues)
 
   void  store_old_last_change_time()	{_old_lastchange = last_change_time();}
   void	store_old_lv()			{_old_lv = lv();}
-  void	restore_lv()			{set_lv(old_lv());}
   void	set_mode(smode_t m)		{_mode = m;}
 
 public: // other internal
@@ -214,6 +213,7 @@ public: // action, used by logic
   void	      set_event(double delay, LOGICVAL v);
   void	      force_initial_value(LOGICVAL v);
   void	      propagate();
+  void	      unpropagate();
   double      to_analog(const MODEL_LOGIC*f);
   void	      to_logic(const MODEL_LOGIC*f);
 
