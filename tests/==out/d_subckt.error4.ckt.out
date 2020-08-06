@@ -1,0 +1,8 @@
+ 
+x2: x1 is not a subckt proto
+.subckt foo ( 1 2 )
+r1 ( 1 2 )  1.
+.ends foo
+v1 ( 1 0 )  DC  1.
+x1 ( 1 2 )  foo 
+x2 ( 2 3 )  x1 

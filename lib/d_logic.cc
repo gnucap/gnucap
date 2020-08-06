@@ -1,4 +1,4 @@
-/*$Id: d_logic.cc  2016/09/17 $ -*- C++ -*-
+/*$Id: d_logic.cc  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -194,7 +194,7 @@ void DEV_LOGIC::tr_advance()
       if (_sim->_time0 >= _n[OUTNODE]->final_time()) {
 	_n[OUTNODE]->propagate();
       }else{
-	// not ready to propagate. overclocked?
+	// not ready to propagate.
       }
     }else{
     }
@@ -202,30 +202,30 @@ void DEV_LOGIC::tr_advance()
   }
 }
 void DEV_LOGIC::tr_regress()
-{itested();
+{
   ELEMENT::tr_regress();
 
-  if (_gatemode != _oldgatemode) {itested();
+  if (_gatemode != _oldgatemode) {untested();
     tr_unload();
     _n[OUTNODE]->set_mode(_gatemode);
     _oldgatemode = _gatemode;
-  }else{itested();
+  }else{
   }
   switch (_gatemode) {
   case moUNKNOWN: unreachable(); break;
   case moMIXED:   unreachable(); break;
-  case moANALOG:  itested();
+  case moANALOG:  untested();
     assert(subckt());
     subckt()->tr_regress();
     break;
-  case moDIGITAL: itested();
-    if (_n[OUTNODE]->in_transit()) {itested();
-      q_eval();
-      if (_sim->_time0 >= _n[OUTNODE]->final_time()) {itested();
-	_n[OUTNODE]->propagate();
-      }else{itested();
-      }
-    }else{itested();
+  case moDIGITAL:
+    q_eval();
+    if (_n[OUTNODE]->last_change_time() > _sim->_time0) {
+      _n[OUTNODE]->unpropagate();
+      assert(_sim->_time0 < _n[OUTNODE]->final_time());
+    }else if (_sim->_time0 >= _n[OUTNODE]->final_time()) {untested();
+      _n[OUTNODE]->propagate();
+    }else{
     }
     break;
   }
@@ -411,6 +411,7 @@ void DEV_LOGIC::tr_accept()
       if ((_n[OUTNODE]->is_unknown()) &&
 	  (_sim->analysis_is_static() || _sim->analysis_is_restore())) {
 	_n[OUTNODE]->force_initial_value(future_state);
+	_n[OUTNODE]->store_old_lv();
 	/* This happens when initial DC is digital.
 	 * Answers could be wrong if order in netlist is reversed 
 	 */
@@ -448,6 +449,8 @@ void DEV_LOGIC::tr_accept()
       }
     }else{
     }
+    _n[OUTNODE]->store_old_last_change_time();
+    _n[OUTNODE]->store_old_lv(); // needed? yes
   }
 }
 /*--------------------------------------------------------------------------*/
