@@ -1,4 +1,4 @@
-/*$Id: ap_construct.cc  2016/09/11 $ -*- C++ -*-
+/*$Id: ap_construct.cc  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -121,8 +121,8 @@ CS::CS(const CS& p)
 #endif
 /*--------------------------------------------------------------------------*/
 CS& CS::operator=(const std::string& s)
-{untested();
-  assert(!_file);
+{itested();
+  //assert(!_file);
   _cmd = s;
   _cnt = 0;
   _ok = true;

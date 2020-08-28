@@ -1,4 +1,4 @@
-/*$Id: e_compon.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: e_compon.cc  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -537,9 +537,10 @@ void COMPONENT::precalc_first()
 
   _mfactor.e_val(1, scope());
   trace1(long_label().c_str(), double(_mfactor));
-  if (const COMPONENT* o = prechecked_cast<const COMPONENT*>(owner())) {
+  if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
     _mfactor_fixed = o->mfactor() * _mfactor;
   }else{
+    assert(!owner());
     _mfactor_fixed =  _mfactor;
   } 
   trace1(long_label().c_str(), _mfactor_fixed);
