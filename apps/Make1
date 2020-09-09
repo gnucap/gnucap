@@ -1,4 +1,4 @@
-#$Id: Make1 2016/09/17 $ -*- Makefile -*-
+#$Id: Make1  $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -119,8 +119,8 @@ DISTCLEANFILES = $(CLEANFILES)
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-LIBPATH = `pwd | sed 's/apps/lib/g'`
-MODELGEN = `pwd | sed 's/apps/modelgen/g'`/gnucap-modelgen
+LIBPATH = `pwd | sed 's/\(.*\)apps/\1lib/'`
+MODELGEN = `pwd | sed 's/\(.*\)apps/\1modelgen/'`/gnucap-modelgen
 #------------------------------------------------------------------------
 %.h : %.model
 	(export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -h $<)
