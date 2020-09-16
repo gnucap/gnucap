@@ -57,6 +57,9 @@ public:
 			: _list(p._list), _iter(p._iter) {}
     explicit	  fat_iterator(CARD_LIST* l, iterator i)
 			: _list(l), _iter(i) {}
+    fat_iterator& operator=(const fat_iterator& p){
+      _list = p._list, _iter = p._iter; return *this;
+    }
     bool	  is_end()const		{return _iter == _list->end();}
     CARD*	  operator*()		{return (is_end()) ? NULL : *_iter;}
     fat_iterator& operator++()	{assert(!is_end()); ++_iter; return *this;}

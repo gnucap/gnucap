@@ -33,6 +33,9 @@ struct TIME_PAIR {
   TIME_PAIR(double Error, double Event) : _error_estimate(Error), _event(Event) {}
   TIME_PAIR(const TIME_PAIR& P)
     : _error_estimate(P._error_estimate), _event(P._event) {}
+  TIME_PAIR& operator=(const TIME_PAIR& P){
+    _error_estimate = P._error_estimate; _event = P._event; return *this;
+  }
   TIME_PAIR& reset() {
     _error_estimate = NEVER;
     _event = NEVER;

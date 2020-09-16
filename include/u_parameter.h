@@ -56,7 +56,13 @@ private:
   mutable T _v;
 public:
   explicit PARAMETER() : PARA_BASE(), _v(NOT_INPUT) {}
+#if 0
+  PARAMETER(const PARAMETER<bool>& p) : PARA_BASE(p), _v(p._v) {}
+  PARAMETER(const PARAMETER<int>& p) : PARA_BASE(p), _v(p._v) {}
   PARAMETER(const PARAMETER<double>& p): PARA_BASE(p), _v(p._v) {}
+#else
+  PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
+#endif
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}

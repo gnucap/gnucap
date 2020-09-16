@@ -51,6 +51,7 @@ struct FPOLY1{		/* first order polynomial	*/
   explicit FPOLY1(const CPOLY1& p);
   ~FPOLY1() {}
 
+  FPOLY1&  operator=(const FPOLY1& p){ x=p.x; f0=p.f0; f1=p.f1; return *this;}
   bool	   operator==(const FPOLY1& p)const
 				{return (f1==p.f1 && f0==p.f0 && x==p.x);}
   FPOLY1&  operator*=(double s)	{f0*=s; f1*=s; return *this;}
@@ -74,6 +75,7 @@ struct CPOLY1{		/* first order polynomial	*/
   explicit CPOLY1(const FPOLY1& p);
   ~CPOLY1() {}
 
+  CPOLY1&  operator=(const CPOLY1& p){ x=p.x; c0=p.c0; c1=p.c1; return *this;}
   bool	   operator==(const CPOLY1& p)const
 				{return (c1==p.c1 && c0==p.c0 && x==p.x);}
   CPOLY1&  operator*=(double s)	{c0*=s; c1*=s; return *this;}

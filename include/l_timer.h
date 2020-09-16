@@ -30,6 +30,8 @@ class OMSTREAM;
 /*--------------------------------------------------------------------------*/
 class INTERFACE TIMER {
 private:
+  TIMER(TIMER const&){unreachable();}
+private:
   double _ref;		// time the clock was started
   double _last;		// time of timed operation
   double _total;	// time since program start
