@@ -1,4 +1,4 @@
-/*$Id: l_timer.h,v 26.83 2008/06/05 04:46:59 al Exp $ -*- C++ -*-
+/*$Id: l_timer.h  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -30,13 +30,13 @@ class OMSTREAM;
 /*--------------------------------------------------------------------------*/
 class INTERFACE TIMER {
 private:
-  TIMER(TIMER const&){unreachable();}
-private:
   double _ref;		// time the clock was started
   double _last;		// time of timed operation
   double _total;	// time since program start
   bool	 _running;
   std::string _name;
+private:
+  TIMER(TIMER const& X) {untested(); operator=(X);}
 public:
   explicit	TIMER();
   explicit	TIMER(const std::string&);

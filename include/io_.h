@@ -1,4 +1,4 @@
-/*$Id: io_.h 2016/05/15 al Exp $ -*- C++ -*-
+/*$Id: io_.h  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -41,13 +41,12 @@ private:
   bool _cipher;			/* flag: encrypt output file */
   bool _pack;			/* flag: convert whitespace to tabs on out */
 
-  OMSTREAM(int m)
+  explicit OMSTREAM(int m)
     :_mask(m),_fltdig(7),_fltwid(0),_format(0),_cipher(false),_pack(false) {}
 public:
   OMSTREAM(OMSTREAM const& p)
     :_mask(p._mask),_fltdig(p._fltdig),_fltwid(p._fltwid),_format(p._format),
      _cipher(p._cipher),_pack(p._pack) {}
-public:
   explicit OMSTREAM(FILE* f = 0)
     :_mask(0),_fltdig(7),_fltwid(0),_format(0),_cipher(false), _pack(false)
   {

@@ -1,4 +1,4 @@
-/*$Id: u_parameter.h 2016.09.11 $ -*- C++ -*-
+/*$Id: u_parameter.h  $ -*- C++ -*-
  * Copyright (C) 2005 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -38,9 +38,9 @@ protected:
   std::string _s;
   
 public:
-  PARA_BASE( ): _s(){}
-  PARA_BASE(const PARA_BASE& p): _s(p._s) {}
-  PARA_BASE(const std::string s): _s(s){untested();}
+  explicit PARA_BASE( ): _s(){}
+  explicit PARA_BASE(const PARA_BASE& p): _s(p._s) {}
+  explicit PARA_BASE(const std::string s): _s(s){untested();}
   virtual ~PARA_BASE(){}
 
 	  bool	has_hard_value()const {return (_s != "");}
@@ -56,13 +56,7 @@ private:
   mutable T _v;
 public:
   explicit PARAMETER() : PARA_BASE(), _v(NOT_INPUT) {}
-#if 0
-  PARAMETER(const PARAMETER<bool>& p) : PARA_BASE(p), _v(p._v) {}
-  PARAMETER(const PARAMETER<int>& p) : PARA_BASE(p), _v(p._v) {}
-  PARAMETER(const PARAMETER<double>& p): PARA_BASE(p), _v(p._v) {}
-#else
-  PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
-#endif
+	   PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}

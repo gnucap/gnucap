@@ -1,4 +1,4 @@
-/*$Id: e_cardlist.h,v 26.138 2013/04/24 02:32:27 al Exp $ -*- C++ -*-
+/*$Id: e_cardlist.h  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -54,26 +54,23 @@ public:
     explicit	  fat_iterator()	{unreachable();}
   public:
 		  fat_iterator(const fat_iterator& p)
-			: _list(p._list), _iter(p._iter) {}
+					: _list(p._list), _iter(p._iter) {}
     explicit	  fat_iterator(CARD_LIST* l, iterator i)
-			: _list(l), _iter(i) {}
-    fat_iterator& operator=(const fat_iterator& p){
-      _list = p._list, _iter = p._iter; return *this;
-    }
+					: _list(l), _iter(i) {}
+    fat_iterator& operator=(const fat_iterator& p)
+					{_list = p._list, _iter = p._iter; return *this;}
     bool	  is_end()const		{return _iter == _list->end();}
     CARD*	  operator*()		{return (is_end()) ? NULL : *_iter;}
-    fat_iterator& operator++()	{assert(!is_end()); ++_iter; return *this;}
+    fat_iterator& operator++()		{assert(!is_end()); ++_iter; return *this;}
     fat_iterator  operator++(int)
-		{assert(!is_end()); fat_iterator t(*this); ++_iter; return t;}
+				{assert(!is_end()); fat_iterator t(*this); ++_iter; return t;}
     bool	  operator==(const fat_iterator& x)const
-    	     {unreachable(); assert(_list==x._list); return (_iter==x._iter);}
+				{unreachable(); assert(_list==x._list); return (_iter==x._iter);}
     bool	  operator!=(const fat_iterator& x)const
-			{assert(_list==x._list); return (_iter!=x._iter);}
+					{assert(_list==x._list); return (_iter!=x._iter);}
     iterator	  iter()const		{return _iter;}
-    CARD_LIST*	  list()const		{return _list;}
-    fat_iterator  end()const	{return fat_iterator(_list, _list->end());}
-
-    void	  insert(CARD* c)	{list()->insert(iter(),c);}
+    fat_iterator  end()const		{return fat_iterator(_list, _list->end());}
+    void	  insert(CARD* c)	{_list->insert(iter(),c);}
   };
 
   // status queries
@@ -140,8 +137,7 @@ public:
   void map_subckt_nodes(const CARD* model, const CARD* owner);
 
   explicit CARD_LIST();
-  CARD_LIST(const CARD* model, CARD* owner, const CARD_LIST* scope,
-  	    PARAM_LIST* p);
+  explicit CARD_LIST(const CARD* model, CARD* owner, const CARD_LIST* scope, PARAM_LIST* p);
   ~CARD_LIST();
 private:
   explicit CARD_LIST(const CARD_LIST&) {unreachable(); incomplete();}
