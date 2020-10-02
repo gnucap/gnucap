@@ -1,4 +1,4 @@
-/*$Id: e_card.h 2014.11.25 $ -*- C++ -*-
+/*$Id: e_card.h  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -34,7 +34,7 @@ class node_t;
 class CARD_LIST;
 class PARAM_LIST;
 class LANGUAGE;
-class TIME_PAIR;
+struct TIME_PAIR;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CARD : public CKT_BASE {
 private:

@@ -1,4 +1,4 @@
-/*$Id: bm.h 2016/03/23 al $ -*- C++ -*-
+/*$Id: bm.h $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -27,7 +27,7 @@
 #include "e_compon.h"
 /*--------------------------------------------------------------------------*/
 class SPLINE;
-class FPOLY1;
+struct FPOLY1;
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_BASE : public COMMON_COMPONENT {
 protected:
