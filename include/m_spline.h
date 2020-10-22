@@ -1,4 +1,4 @@
-/*$Id: m_spline.h,v 26.83 2008/06/05 04:46:59 al Exp $ -*- C++ -*-
+/*$Id: m_spline.h $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -37,7 +37,7 @@
 #define M_SPLINE_H
 #include "u_parameter.h"
 /*--------------------------------------------------------------------------*/
-class FPOLY1;
+struct FPOLY1;
 /*--------------------------------------------------------------------------*/
 class INTERFACE SPLINE {
 private:

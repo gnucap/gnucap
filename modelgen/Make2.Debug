@@ -1,4 +1,4 @@
-#$Id: Make2.Debug 2014/07/03 al $ -*- Makefile -*-
+#$Id: Make2.Debug  $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -33,7 +33,7 @@ CCFLAGS = \
 -Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
 -Winit-self -Wmissing-include-dirs -Winvalid-pch \
 -Wvolatile-register-var -Wstack-protector \
--Wlogical-op -Wvla -Woverlength-strings -Wsign-conversion
+-Wvla -Woverlength-strings -Wno-sign-conversion -Wno-unused-const-variable
 #last line not in 4.1
 
 LIBS = \
@@ -75,6 +75,11 @@ $(TARGET): $(TARGET_DEPENDS)
 # warnings turned off, because of the public headers
 #-Wunreachable-code -- didn't use nonportable syntax to hide
 #-Wmissing-noreturn -- didn't use nonportable syntax to hide
+
+# warnings turned off, issues with clang
+#-Wlogical-op -- not recognized
+#-Wsign-conversion -- int to size_t
+#-Wunused-const-variable -- generated code
 
 # warnings that should be on, but ...
 #-Wshadow -- lambda functions

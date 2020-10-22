@@ -106,6 +106,7 @@ static void read_startup_files(void)
 /*--------------------------------------------------------------------------*/
 /* sig_abrt: trap asserts
  */
+#if 0
 extern "C" {
   static void sig_abrt(SIGNALARGS)
   {untested();
@@ -119,6 +120,7 @@ extern "C" {
     }
   }
 }
+#endif
 /*--------------------------------------------------------------------------*/
 /* sig_int: what to do on receipt of interrupt signal (SIGINT)
  * cancel batch files, then back to command mode.

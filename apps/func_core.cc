@@ -1,4 +1,4 @@
-/*$Id: func_core.cc,v 26.137 2010/04/10 02:37:05 al Exp $ -*- C++ -*-
+/*$Id: func_core.cc $ -*- C++ -*-
  * Copyright (C) 2008 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -134,7 +134,7 @@ public:
     x.e_val(NOT_INPUT, Scope);
     y.e_val(NOT_INPUT, Scope);
     z.e_val(NOT_INPUT, Scope);
-    return to_string(x ? y : z);
+    return to_string(x!=0. ? y : z);
   }
 } p_if;
 DISPATCHER<FUNCTION>::INSTALL d_if(&function_dispatcher, "if", &p_if);
