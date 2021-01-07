@@ -1,4 +1,4 @@
-/*$Id: s_tr_swp.cc 2016/09/26 al $ -*- C++ -*-
+/*$Id: s_tr_swp.cc  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -154,19 +154,30 @@ void TRANSIENT::set_step_cause(STEP_CAUSE C)
 {
   switch (C) {
   case scITER_A:untested();
+      // fall through
   case scADT:untested();
+      // fall through
   case scUSER:
+      // fall through
   case scEVENTQ:
+      // fall through
   case scSKIP:
+      // fall through
   case scITER_R:
+      // fall through
   case scTE:
+      // fall through
   case scAMBEVENT:
+      // fall through
   case scINITIAL:
     ::status.control = C;
     break;
   case scNO_ADVANCE:untested();
+      // fall through
   case scZERO:untested();
+      // fall through
   case scSMALL:untested();
+      // fall through
   case scREJECT:
     ::status.control += C;
     break;
@@ -276,14 +287,17 @@ bool TRANSIENT::next()
       new_control = scUSER;
     }else{
     }
-    double fixed_time = newtime;
-    double almost_fixed_time = newtime;
+    double fixed_time = _time_by_user_request;
+    double almost_fixed_time = _time_by_user_request;
     check_consistency();
 
     
     // event queue, events that absolutely will happen
     // exact time.  NOT ok to move or omit, even by _sim->_dtmin
     // some action is associated with it.
+    // At this point, use it, don't pop,
+    // in case this step is rejected or not used.
+    // Pop happens in accept.
     if (!_sim->_eq.empty() && _sim->_eq.top() < newtime) {
       newtime = _sim->_eq.top();
       new_dt = newtime - reftime;
@@ -419,6 +433,16 @@ bool TRANSIENT::next()
     }else{
     }
 
+    // if all that makes it close to event, make it official
+    if (!_sim->_eq.empty()
+	&& up_order(newtime-_sim->_dtmin, _sim->_eq.top(), newtime+_sim->_dtmin)) {
+      newtime =  _sim->_eq.top(),
+      new_dt = newtime - reftime;
+      new_control = scEVENTQ;
+      check_consistency();
+    }else{
+    }
+
     // if all that makes it close to user_requested, make it official
     if (up_order(newtime-_sim->_dtmin, _time_by_user_request, newtime+_sim->_dtmin)) {
       //newtime = _time_by_user_request;
@@ -490,18 +514,6 @@ bool TRANSIENT::next()
     check_consistency2();
   }
   _sim->_time0 = newtime;
-  
-  /* advance event queue (maybe) */
-  /* We already looked at it.  Dump what's on top if we took it. */
-  while (!_sim->_eq.empty() && _sim->_eq.top() <= _sim->_time0) {
-    trace1("eq", _sim->_eq.top());
-    _sim->_eq.pop();
-  }
-  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {untested();
-    trace1("eq-extra", _sim->_eq.top());
-    _sim->_eq.pop();
-  }
-  //BUG// what if it is later rejected?  It's lost!
 
   check_consistency2();
   ++steps_total_;
@@ -549,6 +561,21 @@ bool TRANSIENT::review()
 void TRANSIENT::accept()
 {
   ::status.accept.start();
+
+  // advance event queue (maybe)
+  // We already looked at it.  Dump what's on top if we took it.
+  while (!_sim->_eq.empty() && _sim->_eq.top() <= _sim->_time0) {
+    assert(_sim->_eq.top() == _sim->_time0);
+    trace1("eq", _sim->_eq.top());
+    _sim->_eq.pop();
+  }
+  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {untested();
+    // near duplicate events in the queue.  overclocked?
+    incomplete(); //BUG// does this result in events being ignored?
+    trace1("eq-extra", _sim->_eq.top());
+    _sim->_eq.pop();
+  }
+
   _sim->set_limit();
   if (OPT::traceload) {
     while (!_sim->_acceptq.empty()) {

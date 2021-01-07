@@ -1,4 +1,4 @@
-/*$Id: u_parameter.h 2016.09.11 $ -*- C++ -*-
+/*$Id: u_parameter.h  $ -*- C++ -*-
  * Copyright (C) 2005 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -38,9 +38,9 @@ protected:
   std::string _s;
   
 public:
-  PARA_BASE( ): _s(){}
-  PARA_BASE(const PARA_BASE& p): _s(p._s) {}
-  PARA_BASE(const std::string s): _s(s){untested();}
+  explicit PARA_BASE( ): _s(){}
+  explicit PARA_BASE(const PARA_BASE& p): _s(p._s) {}
+  explicit PARA_BASE(const std::string s): _s(s){untested();}
   virtual ~PARA_BASE(){}
 
 	  bool	has_hard_value()const {return (_s != "");}
@@ -56,7 +56,7 @@ private:
   mutable T _v;
 public:
   explicit PARAMETER() : PARA_BASE(), _v(NOT_INPUT) {}
-  PARAMETER(const PARAMETER<double>& p): PARA_BASE(p), _v(p._v) {}
+	   PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}
@@ -193,12 +193,12 @@ void e_val(T* p, const T& def, const CARD_LIST*)
 /*--------------------------------------------------------------------------*/
 class INTERFACE PARAM_LIST {
 private:
-  mutable std::map<const std::string, PARAMETER<double> > _pl;
+  mutable std::map<std::string, PARAMETER<double> > _pl;
   PARAM_LIST* _try_again; // if you don't find it, also look here
 public:
-  typedef std::map<const std::string, PARAMETER<double> >::const_iterator
+  typedef std::map<std::string, PARAMETER<double> >::const_iterator
 		const_iterator;
-  typedef std::map<const std::string, PARAMETER<double> >::iterator
+  typedef std::map<std::string, PARAMETER<double> >::iterator
 		iterator;
   explicit PARAM_LIST() :_try_again(NULL) {}
   explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl), _try_again(p._try_again) {}
@@ -222,8 +222,9 @@ public:
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
+  const_iterator begin()const {untested(); return _pl.begin();}
+  const_iterator end()const {untested(); return _pl.end();}
 private:
-  mutable int _index;
   mutable const_iterator _previous;
 };
 /*--------------------------------------------------------------------------*/

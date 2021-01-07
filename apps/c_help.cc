@@ -46,13 +46,13 @@ class CMD_HELP : public CMD {
 public:
   void do_it(CS& Cmd, CARD_LIST*)
   {
-    unsigned tail = Cmd.cursor();
+    size_t tail = Cmd.cursor();
     
     std::string topic;
     Cmd >> topic;
 
     bool did_something = false;
-    unsigned here = Cmd.cursor();
+    size_t here = Cmd.cursor();
     for (DISPATCHER_BASE** ii = dispatchers; *ii; ++ii) {
       CKT_BASE* object = (**ii)[topic];
       if (object) {

@@ -29,9 +29,9 @@
  */
 CS& CS::umatch(const std::string& s)
 {
-  unsigned start = cursor();
+  size_t start = cursor();
   skipbl();
-  unsigned begin_match = cursor();
+  size_t begin_match = cursor();
   const char* str2 = s.c_str();
   bool optional = 0;
 
@@ -89,7 +89,7 @@ CS& CS::umatch(const std::string& s)
 /*--------------------------------------------------------------------------*/
 CS& CS::scan(const std::string& s)
 {
-  unsigned start = cursor();
+  size_t start = cursor();
   for (;;) {
     if (umatch(s)) {	 // found it
       _ok = true;
@@ -112,7 +112,7 @@ std::string CS::last_match()const
 /*--------------------------------------------------------------------------*/
 std::string CS::trimmed_last_match(const std::string& suf)const
 {
-  unsigned real_end = _end_match;
+  size_t real_end = _end_match;
   while (strchr(suf.c_str(), _cmd[real_end-1])) {
     --real_end;
   }

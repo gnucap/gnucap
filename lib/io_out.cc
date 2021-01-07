@@ -40,7 +40,7 @@
 //	OMSTREAM & OMSTREAM::operator<<(char chr)
 /*--------------------------------------------------------------------------*/
 FILE* OMSTREAM::_stream[MAXHANDLE+1];
-unsigned OMSTREAM::_cpos[MAXHANDLE+1];         /* character counter    */
+size_t OMSTREAM::_cpos[MAXHANDLE+1];         /* character counter    */
 /*--------------------------------------------------------------------------*/
 /* octal: make octal string for an int
  */
@@ -55,7 +55,7 @@ const char* octal(int x)
  * by outputting spaces.
  * If already beyond, start new line, then tab to column.
  */
-OMSTREAM & OMSTREAM::tab(unsigned count)
+OMSTREAM & OMSTREAM::tab(size_t count)
 {
   for (int ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
     if (_mask & mm) {

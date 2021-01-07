@@ -55,8 +55,8 @@ protected:
   PARAMETER<double> _step_in[DCNEST];
   double _step[DCNEST];
   bool _linswp[DCNEST];
-  double* (_sweepval[DCNEST]);	/* pointer to thing to sweep, dc command */
-  ELEMENT* (_zap[DCNEST]);	/* to branch to zap, for re-expand */
+  double* _sweepval[DCNEST];	/* pointer to thing to sweep, dc command */
+  ELEMENT* _zap[DCNEST];	/* to branch to zap, for re-expand */
   CARDSTASH _stash[DCNEST];	/* store std values of elements being swept */
   bool _loop[DCNEST];		/* flag: do it again backwards */
   bool _reverse_in[DCNEST];	/* flag: sweep backwards, input */
@@ -303,7 +303,7 @@ void DCOP::fix_args(int Nest)
 void DCOP::options(CS& Cmd, int Nest)
 {
   _sim->_uic = _loop[Nest] = _reverse_in[Nest] = false;
-  unsigned here = Cmd.cursor();
+  size_t here = Cmd.cursor();
   do{
     ONE_OF
       || (Cmd.match1("'\"({")	&& ((Cmd >> _step_in[Nest]), (_stepmode[Nest] = LIN_STEP)))

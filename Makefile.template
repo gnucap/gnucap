@@ -28,7 +28,7 @@
 #-----------------------------------------------------------------------------
 # The default is to use the makefile built by "configure"
 default: nothing
-	-mkdir O
+	mkdir -p O
 	cat Make1 Make2 ../Make3 Make.depend >O/Makefile
 	(cd O; ${MAKE} -k)
 #-----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ default: nothing
 # and has the proper libraries and headers.
 # It is optimized for speed.  Debugging is off.
 g++: nothing
-	-mkdir O
+	mkdir -p O
 	cat Make1 Make2.g++ ../Make3 Make.depend >O/Makefile
 	(cd O; ${MAKE} -k)
 #-----------------------------------------------------------------------------
@@ -47,14 +47,14 @@ g++: nothing
 # "Untested" means the regressions don't test it.
 # It doesn't mean TOTALLY untested.
 debug: nothing
-	-mkdir O-DEBUG
+	mkdir -p O-DEBUG
 	cat Make1 Make2.Debug ../Make3 Make.depend >O-DEBUG/Makefile
 	(cd O-DEBUG; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 # MS Windows using mingw32
 mingw: nothing
-	-mkdir MSW
+	mkdir -p MSW
 	cat Make1 Make2.mingw32 ../Make3 Make.depend >MSW/Makefile
 	(cd MSW; ${MAKE} -k)
 #-----------------------------------------------------------------------------

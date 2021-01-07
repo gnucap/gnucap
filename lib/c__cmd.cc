@@ -47,7 +47,7 @@ void CMD::cmdproc(CS& cmd, CARD_LIST* scope)
     /* skip any number of these */
   }
 
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   std::string s;
 
   // Map possible short names to full ones.

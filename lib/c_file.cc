@@ -38,7 +38,7 @@ class CMD_INCLUDE : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     try {
       std::string file_name;
       cmd >> file_name;

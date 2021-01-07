@@ -48,7 +48,7 @@ public:
   void do_it(CS& cmd, CARD_LIST*)
   {
     OMSTREAM where = (cmd.more())  ?  OMSTREAM()  :  IO::mstdout;
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     do{
       ONE_OF
 	|| ::Get(cmd, "f{requency}",&freq,   mPOSITIVE)

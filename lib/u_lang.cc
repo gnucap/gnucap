@@ -1,4 +1,4 @@
-/*$Id: u_lang.cc 2016/09/22 $ -*- C++ -*-
+/*$Id: u_lang.cc 2018/05/27 $ -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -106,14 +106,16 @@ void LANGUAGE::new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope)
   }else{
     std::string type = find_type_in_string(cmd);
     if (const CARD* proto = find_proto(type, owner)) {
-      CARD* new_instance = proto->clone_instance();
-      assert(new_instance);
-      new_instance->set_owner(owner);
-      CARD* x = parse_item(cmd, new_instance);
-      if (x) {
-	assert(Scope);
-	Scope->push_back(x);
+      if (CARD* new_instance = proto->clone_instance()) {
+	new_instance->set_owner(owner);
+	CARD* x = parse_item(cmd, new_instance);
+	if (x) {
+	  assert(Scope);
+	  Scope->push_back(x);
+	}else{
+	}
       }else{
+	cmd.warn(bDANGER, type + ": incomplete prototype");
       }
     }else{
       cmd.warn(bDANGER, type + ": no match");

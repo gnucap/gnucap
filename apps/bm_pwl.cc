@@ -155,7 +155,13 @@ TIME_PAIR EVAL_BM_PWL::tr_review(COMPONENT* d)const
     std::vector<DPAIR>::const_iterator upper = upper_bound(begin, end, here);
     std::vector<DPAIR>::const_iterator lower = upper - 1;
     assert(x > lower->first);
-    d->_time_by.min_event((x < upper->first) ? upper->first : NEVER);
+    if(upper==end){
+    }else if(x < upper->first){
+      d->_time_by.min_event(upper->first);
+    }else{ untested();
+      // this is a no-op.
+ //     d->_time_by.min_event(NEVER);
+    }
   }else{itested();
     // index (x) is input
     // It's really needed here too, more work needed
@@ -166,10 +172,10 @@ TIME_PAIR EVAL_BM_PWL::tr_review(COMPONENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_PWL::parse_numlist(CS& cmd)
 {
-  unsigned start = cmd.cursor();
-  unsigned here = cmd.cursor();
+  size_t start = cmd.cursor();
+  size_t here = cmd.cursor();
   for (;;) {
-    unsigned start_of_pair = here;
+    size_t start_of_pair = here;
     std::pair<PARAMETER<double>, PARAMETER<double> > p;
     //cmd >> key >> value;
     cmd >> p.first; // key

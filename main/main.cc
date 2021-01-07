@@ -59,7 +59,7 @@ static void prepare_env()
                               "\0         (reserved space)                 ";
 
   std::string ldlpath = OS::getenv("LD_LIBRARY_PATH");
-  if (ldlpath != "") {untested();
+  if (ldlpath != "") {
     ldlpath += ":";
   }else{
   }
@@ -106,6 +106,7 @@ static void read_startup_files(void)
 /*--------------------------------------------------------------------------*/
 /* sig_abrt: trap asserts
  */
+#if 0
 extern "C" {
   static void sig_abrt(SIGNALARGS)
   {untested();
@@ -119,6 +120,7 @@ extern "C" {
     }
   }
 }
+#endif
 /*--------------------------------------------------------------------------*/
 /* sig_int: what to do on receipt of interrupt signal (SIGINT)
  * cancel batch files, then back to command mode.
@@ -212,7 +214,17 @@ static void process_cmd_line(int argc, const char *argv[])
 	}else{untested();
 	}
       }else{
-	CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+	try {
+	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+	}catch (Exception& e) {itested();
+	  error(bDANGER, e.message() + '\n');
+	  finish();
+	}
+	if (ii >= argc) {itested();
+	  //CMD::command("end", &CARD_LIST::card_list);
+	  throw Exception_Quit("");
+	}else{untested();
+	}	
       }
     }catch (Exception_Quit& e) {
       throw;
@@ -299,3 +311,4 @@ int main(int argc, const char *argv[])
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+// vim:ts=8:sw=2:noet

@@ -1,0 +1,47 @@
+>>>>>.print tran v(nodes) logic(nodes) control(0) 
+U2: can't find subckt: mosinv1, forcing digital
+>>>>>.tran 10n trace rejected 
+#Time       v(1)       v(2)       v(8)       logic(1)   logic(2)   logic(8)   control(0)
+new max = 5, new limit = 5.5
+ 0.         0.         5.         5.         0.01       3.         4.21       1.        
+ 100.p      0.5        5.         5.         0.01       3.         4.21       9.        
+ 200.p      1.         5.         5.         0.01       3.         4.21       6.        
+ 363.33p    1.8167     5.         5.         1.01       3.         4.21       6.        
+:20:3e-09 new event
+ 1.n        5.         5.         5.         3.01       2.         4.21       7.        
+ 2.n        5.         5.         5.         3.01       2.         4.21       7.        
+ 2.5n       2.5        2.5        5.         2.01       2.         4.21       6.        
+:32:5e-09 new event
+ 3.n        0.         0.         5.         0.01       1.         4.21       2.        
+step rejected:V1
+new=1.08776e-10  old=5e-10  required=2.5e-10
+ 3.5n       0.         0.         5.         0.01       1.         4.21       6.        
+backwards time step
+newtime=3.100000e-09  rejectedtime=3.500000e-09  oldtime=3.000000e-09
+ 3.1n       0.         0.         5.         0.01       1.         4.21       16.       
+ 3.2n       0.         0.         5.         0.01       1.         4.21       6.        
+ 3.2581n    0.         0.         5.         0.01       1.         4.21       6.        
+ 3.3161n    0.         0.         5.         0.01       1.         4.21       6.        
+ 5.n        0.         5.         5.         0.01       3.         4.21       2.        
+:60:8e-09 new event
+ 6.n        5.         5.         5.         3.01       2.         4.21       7.        
+ 7.n        5.         5.         5.         3.01       2.         4.21       7.        
+:68:1e-08 new event
+ 8.n       -1.f        0.         5.         0.01       1.         4.21       2.        
+step rejected:V1
+new=1.10545e-10  old=1e-09  required=5e-10
+ 9.n       -1.f        5.f        5.         0.01       1.         4.21       6.        
+backwards time step
+newtime=8.100000e-09  rejectedtime=9.000000e-09  oldtime=8.000000e-09
+ 8.1n       0.         0.         5.         0.01       1.         4.21       16.       
+ 8.2n       0.         0.         5.         0.01       1.         4.21       6.        
+ 8.2692n    0.         0.         5.         0.01       1.         4.21       6.        
+ 8.3385n    0.         0.         5.         0.01       1.         4.21       6.        
+ 10.n       0.         5.         5.         0.01       3.         4.21       1.        
+>>>>>.stat notime 
+Gnucap   System status
+iterations: op=0, dc=0, tran=69, fourier=0, total=92
+transient timesteps: accepted=21, rejected=2, total=23
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=33.3%, ac density=33.3%
+>>>>>.end 

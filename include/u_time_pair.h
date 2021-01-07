@@ -1,4 +1,4 @@
-/*$Id: u_time_pair.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
+/*$Id: u_time_pair.h  $ -*- C++ -*-
  * Copyright (C) 2008 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -29,10 +29,16 @@
 struct TIME_PAIR {
   double _error_estimate;
   double _event;
-  TIME_PAIR() : _error_estimate(NEVER), _event(NEVER) {}
-  TIME_PAIR(double Error, double Event) : _error_estimate(Error), _event(Event) {}
-  TIME_PAIR(const TIME_PAIR& P)
-    : _error_estimate(P._error_estimate), _event(P._event) {}
+
+  explicit TIME_PAIR() : _error_estimate(NEVER), _event(NEVER) {}
+  explicit TIME_PAIR(double Error, double Event) : _error_estimate(Error), _event(Event) {}
+	   TIME_PAIR(const TIME_PAIR& P) : _error_estimate(P._error_estimate), _event(P._event) {}
+
+  TIME_PAIR& operator=(const TIME_PAIR& P) {
+    _error_estimate = P._error_estimate;
+    _event = P._event;
+    return *this;
+  }
   TIME_PAIR& reset() {
     _error_estimate = NEVER;
     _event = NEVER;

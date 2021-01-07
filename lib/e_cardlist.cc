@@ -1,4 +1,4 @@
-/*$Id: e_cardlist.cc  2016/09/17 $ -*- C++ -*-
+/*$Id: e_cardlist.cc $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -465,6 +465,8 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   trace0(owner->long_label().c_str());
 
   int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
+  trace2("",  model->net_nodes(),  num_nodes_in_subckt);
+  assert(model->net_nodes() <= num_nodes_in_subckt);
   int* map = new int[num_nodes_in_subckt+1];
   {
     map[0] = 0;
@@ -479,6 +481,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       // map them to what the calling circuit wants
       int i=0;
       for (i=1; i <= model->net_nodes(); ++i) {
+	assert(i <= num_nodes_in_subckt);
 	map[i] = owner->n_(i-1).t_();
 	trace3("ports", i, map[i], owner->n_(i-1).t_());
       }

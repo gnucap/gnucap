@@ -38,7 +38,7 @@
  */
 CARD_LIST::fat_iterator findbranch(CS& cmd, CARD_LIST::fat_iterator here)
 {
-  unsigned save = cmd.cursor();
+  size_t save = cmd.cursor();
 
   char labelwanted[BUFLEN+1];
   cmd.ctostr(labelwanted, BUFLEN, TOKENTERM);

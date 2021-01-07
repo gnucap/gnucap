@@ -1,4 +1,4 @@
-/*$Id: e_base.h 2014/07/04 al $ -*- C++ -*-
+/*$Id: e_base.h $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -30,7 +30,7 @@
 class XPROBE;
 class WAVE;
 class OMSTREAM;
-class SIM_DATA;
+struct SIM_DATA;
 class PROBE_LISTS;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CKT_BASE {

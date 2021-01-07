@@ -1,4 +1,4 @@
-/*$Id: e_card.cc 2016/09/17 $ -*- C++ -*-
+/*$Id: e_card.cc $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -26,8 +26,6 @@
 #include "e_cardlist.h"
 #include "e_node.h"
 #include "e_card.h"
-/*--------------------------------------------------------------------------*/
-const int POOLSIZE = 4;
 /*--------------------------------------------------------------------------*/
 CARD::CARD()
   :CKT_BASE(),

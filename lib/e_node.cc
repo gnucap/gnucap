@@ -1,4 +1,4 @@
-/*$Id: e_node.cc,v 26.138 2013/04/24 03:03:11 al Exp $ -*- C++ -*-
+/*$Id: e_node.cc $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -57,8 +57,8 @@ const _LOGICVAL LOGICVAL::not_truth[lvNUM_STATES] = {
 /*--------------------------------------------------------------------------*/
 static _LOGICVAL prop_truth[lvNUM_STATES][lvNUM_STATES] = {
   {lvSTABLE0, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
-  {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN},
-  {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN},
+  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
+  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
   {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvSTABLE1, lvUNKNOWN},
   {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN}
 };
@@ -203,7 +203,7 @@ double NODE::tr_probe_num(const std::string& x)const
     double z1 = tr_probe_num("zero ");
     double z2 = tr_probe_num("zero ");
     return z1/z2;
-  }else{itested();
+  }else{untested();
     return CKT_BASE::tr_probe_num(x);
   }
 }
@@ -212,9 +212,9 @@ double LOGIC_NODE::tr_probe_num(const std::string& x)const
 {
   if (Umatch(x, "l{ogic} ")) {
     return annotated_logic_value();
-  }else if (Umatch(x, "la{stchange} ")) {untested();
+  }else if (Umatch(x, "la{stchange} ")) {
     return _lastchange;
-  }else if (Umatch(x, "fi{naltime} ")) {untested();
+  }else if (Umatch(x, "fi{naltime} ")) {
     return final_time();
   }else if (Umatch(x, "di{ter} ")) {untested();
     return static_cast<double>(_d_iter);
@@ -232,7 +232,7 @@ XPROBE NODE::ac_probe_ext(const std::string& x)const
   }else if (Umatch(x, "z ")) {
     return XPROBE(port_impedance(node_t(const_cast<NODE*>(this)),
 				 node_t(&ground_node), _sim->_acx, COMPLEX(0.)));
-  }else{itested();
+  }else{untested();
     return CKT_BASE::ac_probe_ext(x);
   }
 }
@@ -296,7 +296,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
       }else{untested();
       }
       assert(dt > 0.);
-      restore_lv();			/* skip back one */
+      set_lv(old_lv());			/* skip back one */
     }else{
       store_old_last_change_time();
       store_old_lv();			/* save to see if it changes */
@@ -413,7 +413,6 @@ double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)
   case lvSTABLE0:
     return process()->vmin;
   case lvRISING:
-    untested(); 
     start = process()->vmin;
     end = process()->vmax;
     risefall = process()->rise;
@@ -438,7 +437,6 @@ double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)
     untested();
     return end;
   }else{
-    untested();
     return end - ((end-start) * (final_time()-_sim->_time0) / risefall);
   }
 }
@@ -457,6 +455,14 @@ void LOGIC_NODE::propagate()
   set_final_time(NEVER);
   set_last_change_time();
   assert(!(in_transit()));
+}
+/*--------------------------------------------------------------------------*/
+void LOGIC_NODE::unpropagate()
+{
+  set_final_time(last_change_time());
+  set_last_change_time(old_last_change_time());
+  set_lv(old_lv());
+  set_d_iter();
 }
 /*--------------------------------------------------------------------------*/
 void LOGIC_NODE::force_initial_value(LOGICVAL v)
@@ -479,12 +485,15 @@ void LOGIC_NODE::force_initial_value(LOGICVAL v)
 void LOGIC_NODE::set_event(double delay, LOGICVAL v)
 {
   _lv.set_in_transition(v);
-  if (_sim->analysis_is_tran_dynamic()  &&  in_transit()) {untested();
+  if (_sim->analysis_is_tran_dynamic()  &&  in_transit()) {
     set_bad_quality("race");
+  }else{
+    // normal good quality event
+    // leaving quality as it was
   }
   set_d_iter();
   set_final_time(_sim->_time0 + delay);
-  if (OPT::picky <= bTRACE) {untested();
+  if (OPT::picky <= bTRACE) {
     error(bTRACE, "%s:%u:%g new event\n",
 	  long_label().c_str(), d_iter(), final_time());
   }
@@ -533,11 +542,14 @@ void node_t::new_model_node(const std::string& node_name, CARD* d)
 void node_t::map_subckt_node(int* m, const CARD* d)
 {
   assert(m);
-  assert(e_() >= 0);
-  if (node_is_valid(m[e_()])) {
-    _ttt = m[e_()];
-  }else{
-    throw Exception(d->long_label() + ": need more nodes");
+  if (e_() != INVALID_NODE) {
+    if (node_is_valid(m[e_()])) {
+      _ttt = m[e_()];
+    }else{
+      throw Exception(d->long_label() + ": need more nodes");
+    }
+  }else{untested();
+    throw Exception(d->long_label() + ": invalid nodes");
   }
   //_nnn->set_flat_number(_ttt);
   assert(node_is_valid(_ttt));

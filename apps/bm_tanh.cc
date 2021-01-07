@@ -120,7 +120,7 @@ void EVAL_BM_TANH::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_TANH::parse_numlist(CS& cmd)
 {
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   PARAMETER<double> gain(NOT_VALID);
   PARAMETER<double> limit(NOT_VALID);
   cmd >> gain >> limit;

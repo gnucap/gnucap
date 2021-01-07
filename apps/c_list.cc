@@ -61,7 +61,7 @@ void list_save(CS& cmd, OMSTREAM out, CARD_LIST* scope)
       OPT::language->print_item(out, *ci);
     }
   }else{				/* some args: be selective	    */
-    unsigned arg1 = cmd.cursor();
+    size_t arg1 = cmd.cursor();
     CARD_LIST::fat_iterator ci = (cmd.match1('-')) 
       ? CARD_LIST::fat_iterator(scope, scope->begin())
       : findbranch(cmd, scope);
@@ -89,7 +89,7 @@ void list_save(CS& cmd, OMSTREAM out, CARD_LIST* scope)
       }
     }else{				/* no dash: a list		    */
       do {				/* each arg			    */
-	unsigned next = cmd.cursor();
+	size_t next = cmd.cursor();
 	do {				/* all that match this arg	    */
 	  OPT::language->print_item(out, *ci);
 	  cmd.reset(arg1);

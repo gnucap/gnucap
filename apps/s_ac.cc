@@ -141,7 +141,7 @@ void AC::setup(CS& Cmd)
     }
   }
   
-  unsigned here = Cmd.cursor();
+  size_t here = Cmd.cursor();
   do{
     ONE_OF
       || (Get(Cmd, "*",		  &_step_in) && (_stepmode = TIMES))

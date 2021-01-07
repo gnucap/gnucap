@@ -111,28 +111,28 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
 #ifdef HAS_NUMERIC_LIMITS
   if (num == std::numeric_limits<double>::infinity()) {
     untested();
-    strncpy(str," Over", 5);
+    memcpy(str, " Over", 5);
   }else if (num == -std::numeric_limits<double>::infinity()) {
     untested();
-    strncpy(str,"-Over", 5);
+    memcpy(str, "-Over", 5);
   }else if (num == std::numeric_limits<double>::quiet_NaN()) {
     untested();
-    strncpy(str," NaN", 4);
+    memcpy(str, " NaN", 4);
   }else if (num == std::numeric_limits<double>::signaling_NaN()) {
     untested();
-    strncpy(str," NaN", 4);
+    memcpy(str, " NaN", 4);
   }else
 #endif
   if (num == NOT_VALID) {
-    strncpy(str," ??", 3);
+    memcpy(str, " ??", 3);
   }else if (num == NOT_INPUT) {
-    strncpy(str," NA", 3);
+    memcpy(str, " NA", 3);
   }else if (num >= BIGBIG) {
-    strncpy(str," Inf", 4);
+    memcpy(str, " Inf", 4);
   }else if (num <= -BIGBIG) {
-    strncpy(str,"-Inf", 4);
+    memcpy(str, "-Inf", 4);
   }else if (num != num) {
-    strncpy(str," NaN", 4);
+    memcpy(str, " NaN", 4);
   }else{
     if (std::abs(num) < ftos_floor) {	/* hide noise */
       num = 0.;

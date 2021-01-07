@@ -42,7 +42,7 @@ bool OPT::set_values(CS& cmd)
 {
   bool big_change = false;
   bool changed = false;
-  unsigned here = cmd.cursor();
+  size_t here = cmd.cursor();
   do{
     ONE_OF
       || Get(cmd, "acct",	&acct)

@@ -1,0 +1,56 @@
+>>>>>options trtol=1 
+>>>>>spice 
+>>>>>.model mos logic 
+>>>>>.model cross sw vt=2.5 vh=1.25 
+>>>>>.list 
+.model mos logic ( delay=NA( 1.n) vmax=NA( 5.) vmin=NA( 0.) unknown=NA( 2.5) rise=NA( 500.p) fall=NA( 500.p) rs=NA( 100.) rw=NA( 1.G) thh=NA( 0.75) thl=NA( 0.25) mr=NA( 5.) mf=NA( 5.) over=NA( 0.1) tnom=NA( 27.))
+.model cross sw ( vt=2.5 vh=1.25 von=NA( 3.75) voff=NA( 1.25) ron=NA( 1.) roff=NA( 1.E+12) tnom=NA( 27.))
+U1 ( 3 0 0 0 1 2 )  mos nor 
+* U1 3 0 0 0 1 mos inv 
+V1 ( 1 0 ) pulse iv= 0. pv= 5. delay= 0. rise= 500.p fall=NA( 0.) width=NA( Inf) period=NA( Inf)
+V2 ( 2 0 ) pulse iv= 0. pv= 5. delay= 300.p rise= 500.p fall=NA( 0.) width=NA( Inf) period=NA( Inf)
+S1 ( 0 0 1 0 )  cross 
+S1 ( 0 0 2 0 )  cross 
+C1 ( 4 0 )  100.f
+R1 ( 4 3 )  10.K
+>>>>>.print tr control(0) hidden(0) la(3) fi(3) v(nodes) l(nodes) 
+U1: can't find subckt: mosnor2, forcing digital
+>>>>>.tr 2n trace=n basic 
+#Time       control(0) hidden(0)  la(3)      fi(3)      v(1)       v(2)       v(3)       v(4)       l(1)       l(2)       l(3)       l(4)      
+new max = 5, new limit = 5.5
+ 0.         1.         0.         0.         Inf        0.         0.         5.         5.         0.01       0.01       3.         4.21      
+initial step rejected:V1
+new=9.6e-12  old=2e-11  required=1e-11
+backwards time step
+newtime=1.000000e-11  rejectedtime=2.000000e-11  oldtime=0.000000e+00
+ 10.E-12    16.        1.         0.         Inf        0.1        0.         5.         5.         0.01       0.01       3.         4.21      
+ 29.13E-12  6.         0.         0.         Inf        0.29135    0.         5.         5.         0.01       0.01       3.         4.21      
+ 38.89E-12  6.         0.         0.         Inf        0.38891    0.         5.         5.         0.01       0.01       3.         4.21      
+ 300.E-12   7.         0.         0.         Inf        3.         0.         5.         5.         1.01       0.01       3.         4.21      
+:28:1.375e-09 new event
+ 375.E-12   7.         0.         375.E-12   1.375E-9   3.75       0.75       5.         5.         3.01       0.01       2.         4.21      
+ 377.E-12   7.         0.         375.E-12   1.375E-9   3.77       0.77       5.         5.         3.01       0.01       2.         4.21      
+ 443.5E-12  6.         0.         375.E-12   1.375E-9   4.4353     1.4353     5.         5.         3.01       1.01       2.         4.21      
+ 500.E-12   7.         0.         375.E-12   1.375E-9   5.         2.         5.         5.         3.01       1.01       2.         4.21      
+ 675.E-12   7.         0.         375.E-12   1.375E-9   5.         3.75       5.         5.         3.01       3.01       2.         4.21      
+ 677.E-12   7.         0.         375.E-12   1.375E-9   5.         3.77       5.         5.         3.01       3.01       2.         4.21      
+ 754.6E-12  6.         0.         375.E-12   1.375E-9   5.         4.5456     5.         5.         3.01       3.01       2.         4.21      
+ 800.E-12   7.         0.         375.E-12   1.375E-9   5.         5.         5.         5.         3.01       3.01       2.         4.21      
+step rejected:V2
+new=1.86607e-10  old=5.75e-10  required=2.875e-10
+backwards time step
+newtime=9.437500e-10  rejectedtime=1.375000e-09  oldtime=8.000000e-10
+ 943.7E-12  16.        1.         375.E-12   1.375E-9   5.         5.         4.3189     4.9543     3.01       3.01       2.         4.21      
+ 1.0156E-9  6.         0.         375.E-12   1.375E-9   5.         5.         3.6065     4.8855     3.01       3.01       2.         4.21      
+ 1.0875E-9  6.         0.         375.E-12   1.375E-9   5.         5.         2.8938     4.7721     3.01       3.01       2.         4.21      
+ 1.1594E-9  6.         0.         375.E-12   1.375E-9   5.         5.         2.1806     4.617      3.01       3.01       2.         4.21      
+ 1.375E-9   2.         0.         1.375E-9   Inf        5.         5.         0.038954   3.9344     3.01       3.01       0.         4.21      
+ 1.6875E-9  6.         0.         1.375E-9   Inf        5.         5.         0.028516   2.8801     3.01       3.01       0.         4.21      
+ 2.E-9      1.         0.         1.375E-9   Inf        5.         5.         0.020875   2.1084     3.01       3.01       0.         4.21      
+>>>>>.status notime 
+Gnucap   System status
+iterations: op=0, dc=0, tran=66, fourier=0, total=88
+transient timesteps: accepted=20, rejected=2, total=22
+nodes: user=4, subckt=0, model=0, total=4
+dctran density=62.5%, ac density=62.5%
+>>>>>.end 

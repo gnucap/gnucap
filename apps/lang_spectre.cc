@@ -1,4 +1,4 @@
-/*$Id: lang_spectre.cc 2016/09/17  $ -*- C++ -*-
+/*$Id: lang_spectre.cc $ -*- C++ -*-
  * Copyright (C) 2007 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -20,6 +20,7 @@
  * 02110-1301, USA.
  */
 //testing=script 2015.01.27
+#include "u_nodemap.h"
 #include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
@@ -78,7 +79,7 @@ static void parse_args(CS& cmd, CARD* x)
 {
   assert(x);
   
-  unsigned here = 0;
+  size_t here = 0;
   while (cmd.more() && !cmd.stuck(&here)) {
     std::string name  = cmd.ctos("=", "", "");
     cmd >> '=';
@@ -95,31 +96,46 @@ static void parse_label(CS& cmd, CARD* x)
 {
   assert(x);
   std::string my_name;
-  cmd >> my_name;
-  x->set_label(my_name);
+  if (cmd >> my_name) {
+    x->set_label(my_name);
+  }else{untested();
+    x->set_label(x->id_letter() + std::string("_unnamed")); //BUG// not unique
+    cmd.warn(bDANGER, "label required");
+  }
 }
 /*--------------------------------------------------------------------------*/
-static void parse_ports(CS& cmd, COMPONENT* x)
+static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 {
   assert(x);
 
   int index = 0;
   if (cmd >> '(') {
     while (cmd.is_alnum()) {
-      unsigned here = cmd.cursor();
+      size_t here = cmd.cursor();
       try{
 	std::string value;
 	cmd >> value;
-	x->set_port_by_index(index++, value);
+	x->set_port_by_index(index, value);
+	if (all_new) {
+	  if (x->node_is_grounded(index)) {
+	    cmd.warn(bDANGER, here, "node 0 not allowed here");
+	  }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {
+	    cmd.warn(bDANGER, here, "duplicate port name, skipping");
+	  }else{
+	    ++index;
+	  }
+	}else{
+	  ++index;
+	}
       }catch (Exception_Too_Many& e) {
 	cmd.warn(bDANGER, here, e.message());
       }
     }
     cmd >> ')';
   }else{
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     OPT::language->find_type_in_string(cmd);
-    unsigned stop = cmd.cursor();
+    size_t stop = cmd.cursor();
     cmd.reset(here);
 
     while (cmd.cursor() < stop) {
@@ -127,7 +143,18 @@ static void parse_ports(CS& cmd, COMPONENT* x)
       try{
 	std::string value;
 	cmd >> value;
-	x->set_port_by_index(index++, value);
+	x->set_port_by_index(index, value);
+	if (all_new) {untested();
+	  if (x->node_is_grounded(index)) {untested();
+	    cmd.warn(bDANGER, here, "node 0 not allowed here");
+	  }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {untested();
+	    cmd.warn(bDANGER, here, "duplicate port name, skipping");
+	  }else{untested();
+	    ++index;
+	  }
+	}else{
+	  ++index;
+	}
       }catch (Exception_Too_Many& e) {
 	cmd.warn(bDANGER, here, e.message());
       }
@@ -165,7 +192,7 @@ DEV_DOT* LANG_SPECTRE::parse_command(CS& cmd, DEV_DOT* x)
     cmd >> label;
     
     if (label != "-") {
-      unsigned here = cmd.cursor();
+      size_t here = cmd.cursor();
       std::string command;
       cmd >> command;
       cmd.reset(here);
@@ -201,7 +228,7 @@ BASE_SUBCKT* LANG_SPECTRE::parse_module(CS& cmd, BASE_SUBCKT* x)
   cmd.reset().skipbl();
   cmd >> "subckt ";
   parse_label(cmd, x);
-  parse_ports(cmd, x);
+  parse_ports(cmd, x, true/*all new*/);
 
   // body
   for (;;) {
@@ -221,7 +248,7 @@ COMPONENT* LANG_SPECTRE::parse_instance(CS& cmd, COMPONENT* x)
   assert(x);
   cmd.reset();
   parse_label(cmd, x);
-  parse_ports(cmd, x);
+  parse_ports(cmd, x, false/*allow dups*/);
   parse_type(cmd, x);
   parse_args(cmd, x);
   cmd.check(bWARNING, "what's this?");
@@ -233,7 +260,7 @@ std::string LANG_SPECTRE::find_type_in_string(CS& cmd)
   // known to be not always correct
 
   cmd.reset().skipbl();
-  unsigned here = 0;
+  size_t here = 0;
   std::string type;
   if ((cmd >> "*|//")) {
     assert(here == 0);
@@ -250,11 +277,11 @@ std::string LANG_SPECTRE::find_type_in_string(CS& cmd)
   }else if (cmd.reset().scan("=")) {
     // back up two, by starting over
     cmd.reset().skiparg();
-    unsigned here1 = cmd.cursor();
+    size_t here1 = cmd.cursor();
     cmd.skiparg();
-    unsigned here2 = cmd.cursor();
+    size_t here2 = cmd.cursor();
     cmd.skiparg();
-    unsigned here3 = cmd.cursor();
+    size_t here3 = cmd.cursor();
     while (here2 != here3 && !cmd.match1('=')) {
       cmd.skiparg();
       here1 = here2;
@@ -366,9 +393,9 @@ void LANG_SPECTRE::print_instance(OMSTREAM& o, const COMPONENT* x)
 void LANG_SPECTRE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 {
   assert(x);
-  if (x->comment()[0] != '*') {
-    o << "*";
-  }else{untested();
+  if ((x->comment().compare(0, 2, "//")) != 0) {untested();
+    o << "//";
+  }else{
   }
   o << x->comment() << '\n';
 }
@@ -386,18 +413,20 @@ class CMD_MODEL : public CMD {
     // already got "model"
     std::string my_name, base_name;
     cmd >> my_name;
-    unsigned here = cmd.cursor();    
+    size_t here = cmd.cursor();
     cmd >> base_name;
 
     //const MODEL_CARD* p = model_dispatcher[base_name];
     const CARD* p = lang_spectre.find_proto(base_name, NULL);
     if (p) {
-      MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(p->clone());
+      CARD* cl = p->clone();
+      MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);
       if (new_card) {
 	assert(!new_card->owner());
 	lang_spectre.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
       }else{untested();
+	delete(cl);
 	cmd.warn(bDANGER, here, "model: base has incorrect type");
       }
     }else{untested();

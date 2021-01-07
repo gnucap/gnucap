@@ -1,0 +1,21 @@
+verilog
+
+// does not work yet. logic "model" is inaccessible from verilog
+// paramset must support COMPONENTS...
+paramset mos logic;
+   .delay= 1n;
+   .rise= 1n;
+   .fall= 1n;
+   .rs= 100.;
+   .rw= 1.G ;
+   .thh= 0.75;
+   .thl= 0.25;
+   .mr= 5.;
+   .mf= 5.;
+   .over=10k;
+	.vmax= 5.;
+   .vmin= 0.;
+endparamset
+
+list
+end

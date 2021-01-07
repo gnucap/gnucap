@@ -1,0 +1,13 @@
+verilog
+
+module crash(iout, nC);
+// extra paren in vccs 
+vccs #(.gm({alpha*adap}))) iF(0 f cd 0);
+endmodule //E
+
+// syntax error, no label
+crash(x, y);
+
+list
+
+print tran v(x) v(y)

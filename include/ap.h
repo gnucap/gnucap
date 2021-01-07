@@ -50,10 +50,10 @@ private:
   FILE* _file;
   std::string _name;
   std::string _cmd;
-  unsigned  _cnt;
-  unsigned  _length;
-  unsigned  _begin_match;
-  unsigned  _end_match;
+  size_t  _cnt;
+  size_t  _length;
+  size_t  _begin_match;
+  size_t  _end_match;
   bool _ok;
   int _line_number;
 public:
@@ -69,15 +69,15 @@ public:
 	      ~CS()		{if (is_file()) {fclose(_file);}}
   
   // status - non-consuming
-  unsigned cursor()const	{return _cnt;}
-  bool	stuck(unsigned* last)	{bool ok=*last<_cnt; *last=_cnt; return !ok;}
-  bool	gotit(unsigned last)	{return last<_cnt;}
+  size_t cursor()const	{return _cnt;}
+  bool	stuck(size_t* last)	{bool ok=*last<_cnt; *last=_cnt; return !ok;}
+  bool	gotit(size_t last)	{return last<_cnt;}
 	operator bool()const	{return _ok;}
 
   // get -- non-consuming
   const std::string fullstring()const		{return _cmd;}
-  const std::string substr(unsigned i)const {return ((_cmd.length()>=i) ? _cmd.substr(i) : "");}
-  const std::string substr(unsigned i, unsigned n)const	{return _cmd.substr(i,n);}
+  const std::string substr(size_t i)const {return ((_cmd.length()>=i) ? _cmd.substr(i) : "");}
+  const std::string substr(size_t i, size_t n)const	{return _cmd.substr(i,n);}
   const std::string tail()const			{return substr(_cnt);}
   char		    peek()const			{return _cmd[_cnt];}
 
@@ -89,11 +89,11 @@ public:
   bool	      is_first_read()const {untested(); return (_line_number == 0);}
 
   // control
-  CS&	      reset(unsigned c=0) {_cnt=c; _ok=true; return *this;}
+  CS&	      reset(size_t c=0) {_cnt=c; _ok=true; return *this;}
 
   // exception handling (ap_error.cc) non-consuming
   CS&	      check(int, const std::string&);
-  CS&	      warn(int, unsigned, const std::string&);
+  CS&	      warn(int, size_t, const std::string&);
   CS&         warn(int i, const std::string& s)	{return warn(i,cursor(), s);}
 
   // string matching (ap_match.cc) possibly consuming, sets _ok
@@ -145,7 +145,7 @@ public:
 
   // skip (ap_skip.cc) possibly consuming, sets _ok
   CS&	      skip(int c=1) 
-    {_cnt=static_cast<unsigned>(static_cast<int>(_cnt)+c); _ok=_cnt<=_length; return *this;}
+    {_cnt=static_cast<size_t>(static_cast<int>(_cnt)+c); _ok=_cnt<=_length; return *this;}
   CS&	      skipbl();
   CS&	      skip1b(char);
   CS&	      skip1(char);

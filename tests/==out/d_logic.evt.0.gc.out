@@ -1,0 +1,40 @@
+>>>>>spice 
+>>>>>.model mos logic 
+>>>>>.model cross sw vt=2.5 vh=1.25 
+>>>>>.list 
+.model mos logic ( delay=NA( 1.n) vmax=NA( 5.) vmin=NA( 0.) unknown=NA( 2.5) rise=NA( 500.p) fall=NA( 500.p) rs=NA( 100.) rw=NA( 1.G) thh=NA( 0.75) thl=NA( 0.25) mr=NA( 5.) mf=NA( 5.) over=NA( 0.1) tnom=NA( 27.))
+.model cross sw ( vt=2.5 vh=1.25 von=NA( 3.75) voff=NA( 1.25) ron=NA( 1.) roff=NA( 1.E+12) tnom=NA( 27.))
+U1 ( 2 0 0 0 1 )  mos inv 
+V1 ( 1 0 ) pulse iv= 0. pv= 5. delay= 0. rise= 500.p fall=NA( 0.) width=NA( Inf) period=NA( Inf)
+S1 ( 0 0 1 0 )  cross 
+C1 ( 3 0 )  100.f
+R1 ( 3 2 )  10.K
+>>>>>.print tr control(0) hidden(0) la(2) fi(2) v(nodes) l(nodes) 
+U1: can't find subckt: mosinv1, forcing digital
+>>>>>.tr 2n trace=a basic 
+#Time       control(0) hidden(0)  la(2)      fi(2)      v(1)       v(2)       v(3)       l(1)       l(2)       l(3)      
+new max = 5, new limit = 5.5
+ 0.         1.         0.         0.         Inf        0.         5.         5.         0.01       3.         4.21      
+ 20.E-12    9.         0.         0.         Inf        0.2        5.         5.         0.01       3.         4.21      
+ 86.E-12    6.         0.         0.         Inf        0.86       5.         5.         0.01       3.         4.21      
+ 152.E-12   6.         0.         0.         Inf        1.52       5.         5.         1.01       3.         4.21      
+:20:1.375e-09 new event
+ 375.E-12   7.         0.         375.E-12   1.375E-9   3.75       5.         5.         3.01       2.         4.21      
+ 377.E-12   7.         0.         375.E-12   1.375E-9   3.77       5.         5.         3.01       2.         4.21      
+ 500.E-12   7.         0.         375.E-12   1.375E-9   5.         5.         5.         3.01       2.         4.21      
+step rejected:V1
+new=4.29961e-10  old=8.75e-10  required=4.375e-10
+backwards time step
+newtime=7.916667e-10  rejectedtime=1.375000e-09  oldtime=5.000000e-10
+ 791.7E-12  16.        1.         375.E-12   1.375E-9   5.         5.         5.         3.01       2.         4.21      
+ 1.0833E-9  6.         0.         375.E-12   1.375E-9   5.         2.9347     4.7371     3.01       2.         4.21      
+ 1.2292E-9  6.         0.         375.E-12   1.375E-9   5.         1.4874     4.3938     3.01       2.         4.21      
+ 1.375E-9   2.         0.         1.375E-9   Inf        5.         0.038617   3.9003     3.01       0.         4.21      
+ 2.E-9      1.         0.         1.375E-9   Inf        5.         0.020367   2.0571     3.01       0.         4.21      
+>>>>>.status notime 
+Gnucap   System status
+iterations: op=0, dc=0, tran=39, fourier=0, total=52
+transient timesteps: accepted=12, rejected=1, total=13
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=77.8%, ac density=77.8%
+>>>>>.end 

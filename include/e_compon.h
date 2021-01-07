@@ -1,4 +1,4 @@
-/*$Id: e_compon.h 2016/03/23 al $ -*- C++ -*-
+/*$Id: e_compon.h  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -192,9 +192,10 @@ public:	// state, aux data
   double mfactor()const {
     assert(_mfactor_fixed != NOT_VALID);
 #ifndef NDEBUG
-    if (const COMPONENT* o = prechecked_cast<const COMPONENT*>(owner())) {
+    if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
       assert(_mfactor_fixed == o->mfactor() * _mfactor);
     }else{
+      assert(!owner());
       assert(_mfactor_fixed == _mfactor);
     }
 #endif

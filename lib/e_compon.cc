@@ -1,4 +1,4 @@
-/*$Id: e_compon.cc 2016/03/23 al $ -*- C++ -*-
+/*$Id: e_compon.cc  $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
  * Author: Albert Davis <aldavis@gnu.org>
  *
@@ -123,8 +123,8 @@ void COMMON_COMPONENT::parse_modelname(CS& cmd)
 // called only by COMMON_COMPONENT::parse_obsolete
 bool COMMON_COMPONENT::parse_param_list(CS& cmd)
 {
-  unsigned start = cmd.cursor();
-  unsigned here = cmd.cursor();
+  size_t start = cmd.cursor();
+  size_t here = cmd.cursor();
   do{
     parse_params_obsolete_callback(cmd); //BUG//callback
   }while (cmd.more() && !cmd.stuck(&here));
@@ -135,7 +135,7 @@ void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
 {
   if (cmd.skip1b('(')) {
     // start with a paren
-    unsigned start = cmd.cursor();
+    size_t start = cmd.cursor();
     parse_param_list(cmd);
     if (cmd.gotit(start)) {		// ( params ( ....
       // named args before num list
@@ -188,7 +188,7 @@ void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
     }
   }else{
     // does not start with a paren
-    unsigned start = cmd.cursor();
+    size_t start = cmd.cursor();
     parse_param_list(cmd);
     if (cmd.gotit(start)) {
       if (cmd.skip1b('(')) {		// params ( list ) params
@@ -537,9 +537,10 @@ void COMPONENT::precalc_first()
 
   _mfactor.e_val(1, scope());
   trace1(long_label().c_str(), double(_mfactor));
-  if (const COMPONENT* o = prechecked_cast<const COMPONENT*>(owner())) {
+  if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
     _mfactor_fixed = o->mfactor() * _mfactor;
   }else{
+    assert(!owner());
     _mfactor_fixed =  _mfactor;
   } 
   trace1(long_label().c_str(), _mfactor_fixed);

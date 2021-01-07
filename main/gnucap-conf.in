@@ -27,14 +27,20 @@ case $1 in
 	--libdir)
 		echo "$libdir"
 	;;
+	--plugin-libs)
+		: # not needed on posix
+	;;
 	--libs)
-		echo "$LIBS"
+		echo "$GNUCAP_LIBS"
 	;;
 	--exec-prefix)
 		echo "$exec_prefix"
 	;;
 	--data)
 		echo "$datarootdir"
+	;;
+	--docdir)
+		echo "$docdir"
 	;;
 	--sysconfdir)
 		echo "$sysconfdir"

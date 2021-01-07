@@ -54,7 +54,7 @@ GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
 #------------------------------------------------------------------------
 GENERATED_DIST = Make.depend
 IMPORTED_DIST = $(IMPORTED)
-DISTFILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
+DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
 SRCS = $(RAW_SRCS) $(GENERATED_SRCS)

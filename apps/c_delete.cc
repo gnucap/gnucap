@@ -109,7 +109,7 @@ private:
       CARD_LIST::card_list.erase_all();
     }else{
       while (cmd.more()) {
-	unsigned mark = cmd.cursor();
+	size_t mark = cmd.cursor();
 	bool didit = delete_one_name(cmd.ctos(), Scope);
 	if (!didit) {
 	  cmd.warn(bWARNING, mark, "no match");

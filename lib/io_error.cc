@@ -31,7 +31,7 @@
 	void	error(int,const std::string&);
 /*--------------------------------------------------------------------------*/
 #if 0
-Exception_CS::Exception_CS(const std::string& Message, const CS& cmd, unsigned cursor)
+Exception_CS::Exception_CS(const std::string& Message, const CS& cmd, size_t cursor)
   :Exception(Message),
    _cmd(cmd.fullstring()),
    _cursor(cursor)

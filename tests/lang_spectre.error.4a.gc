@@ -1,0 +1,11 @@
+
+spectre
+
+// duplicate label error
+subckt crash n0 n1 n2 n3 n000 n4
+ends
+
+X1 1 2 crash
+- list
+- op
+- end

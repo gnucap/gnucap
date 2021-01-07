@@ -27,7 +27,7 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
-std::map<const std::string, void*> attach_list;
+std::map<std::string, void*> attach_list;
 /*--------------------------------------------------------------------------*/
 std::string plug_path()
 {
@@ -50,7 +50,7 @@ class CMD_ATTACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*)
   {
-    unsigned here = cmd.cursor();
+    size_t here = cmd.cursor();
     int dl_scope = RTLD_LOCAL;
     int check = RTLD_NOW;
     // RTLD_NOW means to resolve symbols on loading
@@ -138,7 +138,7 @@ class CMD_DETACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*)
   {
-    unsigned here = cmd.cursor();	//BUG// due to the way dlopen and dlclose work
+    size_t here = cmd.cursor();		//BUG// due to the way dlopen and dlclose work
     std::string file_name;		// it doesn't really work.
     cmd >> file_name;			// the dispatcher's active instance blocks unload
     
