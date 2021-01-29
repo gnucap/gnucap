@@ -61,10 +61,10 @@ void TRANSIENT::sweep()
   if (_cont) {  // use the data from last time
     _sim->_phase = p_RESTORE;
     _sim->restore_voltages();
-    CARD_LIST::card_list.tr_restore();
+    _scope->tr_restore();
   }else{
     _sim->clear_limit();
-    CARD_LIST::card_list.tr_begin();
+    _scope->tr_begin();
   }
   
   first();
@@ -73,7 +73,7 @@ void TRANSIENT::sweep()
   if (_sim->uic_now()) {
     advance_time();
     _sim->zero_voltages();
-    CARD_LIST::card_list.do_tr();    //evaluate_models
+    _scope->do_tr();    //evaluate_models
     while (!_sim->_late_evalq.empty()) {untested(); //BUG// encapsulation violation
       _sim->_late_evalq.front()->do_tr_last();
       _sim->_late_evalq.pop_front();
@@ -527,7 +527,7 @@ bool TRANSIENT::review()
   ::status.review.start();
   _sim->count_iterations(iTOTAL);
 
-  TIME_PAIR time_by = CARD_LIST::card_list.tr_review();
+  TIME_PAIR time_by = _scope->tr_review();
   _time_by_error_estimate = time_by._error_estimate;
 
   // limit minimum time step
@@ -584,7 +584,7 @@ void TRANSIENT::accept()
     }
   }else{untested();
     _sim->_acceptq.clear();
-    CARD_LIST::card_list.tr_accept();
+    _scope->tr_accept();
   }
   ++steps_accepted_;
   ::status.accept.stop();

@@ -200,7 +200,7 @@ void DC::setup(CS& Cmd)
 
   if (Cmd.more()) {
     for (_n_sweeps = 0; Cmd.more() && _n_sweeps < DCNEST; ++_n_sweeps) {
-      CARD_LIST::fat_iterator ci = findbranch(Cmd, &CARD_LIST::card_list);
+      CARD_LIST::fat_iterator ci = findbranch(Cmd, _scope);
       if (!ci.is_end()) {			// sweep a component
 	if (ELEMENT* c = dynamic_cast<ELEMENT*>(*ci)) {
 	  _zap[_n_sweeps] = c;
@@ -344,10 +344,10 @@ void DCOP::sweep()
   _sim->set_inc_mode_bad();
   if (_cont) {untested();
     _sim->restore_voltages();
-    CARD_LIST::card_list.tr_restore();
+    _scope->tr_restore();
   }else{
     _sim->clear_limit();
-    CARD_LIST::card_list.tr_begin();
+    _scope->tr_begin();
   }
   sweep_recursive(_n_sweeps);
 }
@@ -364,7 +364,7 @@ void DCOP::sweep_recursive(int Nest)
   do {
     if (Nest == 0) {
       if (_sim->command_is_op()) {
-	CARD_LIST::card_list.precalc_last();
+	_scope->precalc_last();
       }else{
       }
       int converged = solve_with_homotopy(itl,_trace);
@@ -374,7 +374,7 @@ void DCOP::sweep_recursive(int Nest)
       }
       ::status.accept.start();
       _sim->set_limit();
-      CARD_LIST::card_list.tr_accept();
+      _scope->tr_accept();
       ::status.accept.stop();
       _sim->_has_op = _sim->_mode;
       outdata(*_sweepval[Nest], ofPRINT | ofSTORE | ofKEEP);

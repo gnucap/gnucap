@@ -79,7 +79,7 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
   try {
     setup(Cmd);
     _sim->init();
-    CARD_LIST::card_list.precalc_last();
+    _scope->precalc_last();
 
     _sim->alloc_vectors();    
     _sim->_aa.reallocate();

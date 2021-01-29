@@ -37,7 +37,7 @@ void SIM::command_base(CS& cmd)
   try {
     setup(cmd);
     _sim->init();
-    CARD_LIST::card_list.precalc_last();
+    _scope->precalc_last();
 
     _sim->alloc_vectors();
     _sim->_aa.reallocate();
