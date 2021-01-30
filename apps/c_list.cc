@@ -32,7 +32,11 @@ namespace {
 /*--------------------------------------------------------------------------*/
 void list_save(CS& cmd, OMSTREAM out, CARD_LIST* scope)
 {
-  CARD_LIST::card_list.precalc_first();
+  assert(scope);
+  if (scope == &CARD_LIST::card_list) {
+  }else{ untested();
+  }
+  scope->precalc_first();
 
   //out.setfloatwidth(7);
   switch (ENV::run_mode) {
@@ -107,6 +111,10 @@ class CMD_LIST : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    if (Scope == &CARD_LIST::card_list) {
+    }else if(Scope){untested();
+    }else{ untested();
+    }
     list_save(cmd, IO::mstdout, Scope);
   }
 } p1;
@@ -116,6 +124,10 @@ class CMD_SAVE : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {itested();
+    if (Scope == &CARD_LIST::card_list) {untested();
+    }else if(Scope){untested();
+    }else{ untested();
+    }
     cmd.reset(); /* back up to beginning of input line */
     OMSTREAM out; // = IO::mstdout;
     list_save(cmd, *outset(cmd,&out), Scope);

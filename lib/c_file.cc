@@ -28,6 +28,7 @@
 #include "u_lang.h"
 #include "c_comand.h"
 #include "globals.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 extern OMSTREAM mout;		/* > file bitmap		*/
 extern OMSTREAM mlog;		/* log file bitmap		*/
@@ -38,6 +39,10 @@ class CMD_INCLUDE : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    if (Scope == &CARD_LIST::card_list) {
+    }else if(Scope){untested();
+    }else{ untested();
+    }
     size_t here = cmd.cursor();
     try {
       std::string file_name;
@@ -68,8 +73,12 @@ DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "include", &p0);
  */
 class CMD_LOG : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
+  void do_it(CS& cmd, CARD_LIST* Scope)
   {itested();
+    if (Scope == &CARD_LIST::card_list) {untested();
+    }else if(Scope){untested();
+    }else{ untested();
+    }
     static std::list<FILE*> filestack;
     
     if (cmd.more()) {			/* a file name .. open it */
@@ -108,8 +117,12 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "log", &p1);
  */
 class CMD_FILE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
+  void do_it(CS& cmd, CARD_LIST* Scope)
   {itested();
+    if (Scope == &CARD_LIST::card_list) {untested();
+    }else if(Scope){untested();
+    }else{ untested();
+    }
     static std::list<FILE*> filestack;
     
     if (cmd.more()) {			/* a file name .. open it */

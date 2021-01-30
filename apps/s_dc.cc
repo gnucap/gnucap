@@ -89,6 +89,10 @@ private:
 /*--------------------------------------------------------------------------*/
 void DC::do_it(CS& Cmd, CARD_LIST* Scope)
 {
+  assert(Scope);
+  if (Scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   _scope = Scope;
   _sim->_time0 = 0.;
   _sim->set_command_dc();
@@ -102,6 +106,10 @@ void DC::do_it(CS& Cmd, CARD_LIST* Scope)
 /*--------------------------------------------------------------------------*/
 void OP::do_it(CS& Cmd, CARD_LIST* Scope)
 {
+  assert(Scope);
+  if (Scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   _scope = Scope;
   _sim->_time0 = 0.;
   _sim->set_command_op();

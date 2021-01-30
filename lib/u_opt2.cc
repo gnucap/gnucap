@@ -27,6 +27,7 @@
 #include "u_lang.h"
 #include "l_compar.h"
 #include "ap.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 void OPT::command(CS& cmd)
 {
@@ -322,7 +323,11 @@ void OPT::print(OMSTREAM& o)
 namespace {
   class CMD_OPT : public CMD {
   public:
-    void do_it(CS& cmd, CARD_LIST*) {
+    void do_it(CS& cmd, CARD_LIST* Scope) {
+      if (Scope == &CARD_LIST::card_list) {
+      }else if(Scope){untested();
+      }else{untested();
+      }
       static OPT o;
       o.command(cmd);
     }

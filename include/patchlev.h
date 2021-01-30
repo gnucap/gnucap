@@ -1,1 +1,1 @@
-#define PATCHLEVEL "scope 2021.01.29"
+#define PATCHLEVEL "scope 2021.01.30"
