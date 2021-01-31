@@ -30,13 +30,14 @@
 void SIM::command_base(CS& cmd)
 {  
   assert(_sim);
+  assert(_scope);
   reset_timers();
   _sim->reset_iteration_counter(_sim->_mode);
   _sim->reset_iteration_counter(iPRINTSTEP);
 
   try {
     setup(cmd);
-    _sim->init();
+    _sim->init(_scope);
     _scope->precalc_last();
 
     _sim->alloc_vectors();

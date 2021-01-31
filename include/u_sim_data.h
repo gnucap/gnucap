@@ -32,6 +32,7 @@
 // external
 class WAVE;
 class CARD;
+class CARD_LIST;
 class LOGIC_NODE;
 /*--------------------------------------------------------------------------*/
 enum TRI_STATE {tsNO=0, tsYES=1, tsBAD=-1};
@@ -87,7 +88,7 @@ struct INTERFACE SIM_DATA {
   void alloc_hold_vectors(); /* s__init.cc */
   void alloc_vectors();
   void unalloc_vectors();
-  void init();
+  void init(CARD_LIST* scope);
   void uninit();
   void set_limit();  /* s__aux.cc */
   void set_limit(double v);

@@ -242,23 +242,27 @@ void SIM_DATA::order_auto()
 /* init: allocate, set up, etc ... for any type of simulation
  * also called by status and probe for access to internals and subckts
  */
-void SIM_DATA::init()
+void SIM_DATA::init(CARD_LIST* scope)
 {
+  assert(scope);
+  if(scope == &CARD_LIST::card_list){ untested();
+  }else{untested();
+  }
   if (is_first_expand()) {
     uninit();
-    init_node_count(CARD_LIST::card_list.nodes()->how_many(), 0, 0);
-    CARD_LIST::card_list.expand();
+    init_node_count(scope->nodes()->how_many(), 0, 0);
+    scope->expand();
     map__nodes();
-    CARD_LIST::card_list.map_nodes();
+    scope->map_nodes();
     alloc_hold_vectors();
     _aa.reinit(_total_nodes);
     _lu.reinit(_total_nodes);
     _acx.reinit(_total_nodes);
-    CARD_LIST::card_list.tr_iwant_matrix();
-    CARD_LIST::card_list.ac_iwant_matrix();
+    scope->tr_iwant_matrix();
+    scope->ac_iwant_matrix();
     _last_time = 0;
   }else{
-    CARD_LIST::card_list.precalc_first();
+    scope->precalc_first();
   }
 }
 /*--------------------------------------------------------------------------*/
