@@ -245,7 +245,7 @@ void SIM_DATA::order_auto()
 void SIM_DATA::init(CARD_LIST* scope)
 {
   assert(scope);
-  if(scope == &CARD_LIST::card_list){ untested();
+  if(scope == &CARD_LIST::card_list){
   }else{untested();
   }
   if (is_first_expand()) {

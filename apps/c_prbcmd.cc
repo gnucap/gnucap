@@ -39,7 +39,7 @@ void do_probe(CS& cmd, PROBELIST *probes, CARD_LIST *scope)
   assert(probes);
   assert(scope);
 #ifdef TRACE_UNTESTED
-  if(scope==&CARD_LIST::card_list){ untested();
+  if(scope==&CARD_LIST::card_list){
   }else{ untested();
   }
 #endif
@@ -124,7 +124,7 @@ public:
   void do_it(CS& cmd, CARD_LIST* Scope) {
     assert(Scope);
 #ifdef TRACE_UNTESTED
-    if(Scope==&CARD_LIST::card_list){ untested();
+    if(Scope==&CARD_LIST::card_list){
     }else{ untested();
     }
 #endif
@@ -140,7 +140,7 @@ public:
   void do_it(CS& cmd, CARD_LIST* Scope) {
     assert(Scope);
 #ifdef TRACE_UNTESTED
-    if(Scope==&CARD_LIST::card_list){ untested();
+    if(Scope==&CARD_LIST::card_list){
     }else{ untested();
     }
 #endif
@@ -156,7 +156,7 @@ public:
   void do_it(CS& cmd, CARD_LIST* Scope) {
     assert(Scope);
 #ifdef TRACE_UNTESTED
-    if(Scope==&CARD_LIST::card_list){ untested();
+    if(Scope==&CARD_LIST::card_list){
     }else{ untested();
     }
 #endif
@@ -173,7 +173,7 @@ public:
   void do_it(CS& cmd, CARD_LIST* Scope) {
     assert(Scope);
 #ifdef TRACE_UNTESTED
-    if(Scope==&CARD_LIST::card_list){ untested();
+    if(Scope==&CARD_LIST::card_list){
     }else{ untested();
     }
 #endif
