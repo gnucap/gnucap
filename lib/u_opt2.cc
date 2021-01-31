@@ -324,8 +324,8 @@ namespace {
   class CMD_OPT : public CMD {
   public:
     void do_it(CS& cmd, CARD_LIST* Scope) {
+      assert(Scope);
       if (Scope == &CARD_LIST::card_list) {
-      }else if(Scope){untested();
       }else{untested();
       }
       static OPT o;

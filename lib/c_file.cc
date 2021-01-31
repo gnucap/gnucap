@@ -39,8 +39,8 @@ class CMD_INCLUDE : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else if(Scope){untested();
     }else{ untested();
     }
     size_t here = cmd.cursor();
@@ -75,8 +75,8 @@ class CMD_LOG : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {itested();
+    assert(Scope);
     if (Scope == &CARD_LIST::card_list) {untested();
-    }else if(Scope){untested();
     }else{ untested();
     }
     static std::list<FILE*> filestack;
@@ -119,8 +119,8 @@ class CMD_FILE : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {itested();
+    assert(Scope);
     if (Scope == &CARD_LIST::card_list) {untested();
-    }else if(Scope){untested();
     }else{ untested();
     }
     static std::list<FILE*> filestack;

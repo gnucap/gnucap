@@ -50,8 +50,8 @@ class CMD_ATTACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else if(Scope){untested();
     }else{ untested();
     }
     size_t here = cmd.cursor();
@@ -142,8 +142,8 @@ class CMD_DETACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else if(Scope){untested();
     }else{ untested();
     }
     size_t here = cmd.cursor();		//BUG// due to the way dlopen and dlclose work
@@ -186,8 +186,8 @@ class CMD_DETACH_ALL : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else if(Scope){untested();
     }else{ untested();
     }
     if (Scope->is_empty()) {

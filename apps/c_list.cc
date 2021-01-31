@@ -111,8 +111,8 @@ class CMD_LIST : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else if(Scope){untested();
     }else{ untested();
     }
     list_save(cmd, IO::mstdout, Scope);
@@ -124,8 +124,8 @@ class CMD_SAVE : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)
   {itested();
+    assert(Scope);
     if (Scope == &CARD_LIST::card_list) {untested();
-    }else if(Scope){untested();
     }else{ untested();
     }
     cmd.reset(); /* back up to beginning of input line */
