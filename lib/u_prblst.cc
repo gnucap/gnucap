@@ -127,8 +127,12 @@ void PROBELIST::remove_one(CKT_BASE *brh)
  * but not "v(r4) v(r5)" which has two parameters.
  * It also takes care of setting the range for plot or alarm.
  */
-void PROBELIST::add_list(CS& cmd)
+void PROBELIST::add_list(CS& cmd, CARD_LIST* scope)
 {
+  assert(scope);
+  if(scope==&CARD_LIST::card_list){untested();
+  }else{ untested();
+  }
   int oldcount = size();
   std::string what(cmd.ctos(TOKENTERM));/* parameter */
   if (what.empty()) {untested();
@@ -139,14 +143,14 @@ void PROBELIST::add_list(CS& cmd)
   int paren = cmd.skip1b('(');		/* device, node, etc. */
   if (cmd.umatch("nodes ")) {
     // all nodes
-    add_all_nodes(what);
+    add_all_nodes(what, scope);
   }else if (cmd.umatch("0")) {
     // node 0 means system stuff
     push_new_probe(what, 0);
   }else if (cmd.is_alnum() || cmd.match1("*?")) {
     // branches or named nodes
     size_t here1 = cmd.cursor();
-    bool found_something = add_branches(cmd.ctos(),what,&CARD_LIST::card_list);
+    bool found_something = add_branches(cmd.ctos(), what, scope);
     if (!found_something) {
       cmd.warn(bWARNING, here1, "no match");
     }else{
@@ -158,7 +162,7 @@ void PROBELIST::add_list(CS& cmd)
       }else{
       }
       size_t here2 = cmd.cursor();
-      found_something = add_branches(cmd.ctos(),what,&CARD_LIST::card_list);
+      found_something = add_branches(cmd.ctos(), what, scope);
       if (!found_something) {itested();
 	cmd.reset(here2);
 	break;
@@ -193,11 +197,15 @@ void PROBELIST::push_new_probe(const std::string& param,const CKT_BASE* object)
   bag.push_back(PROBE(param, object));
 }
 /*--------------------------------------------------------------------------*/
-void PROBELIST::add_all_nodes(const std::string& what)
+void PROBELIST::add_all_nodes(const std::string& what, CARD_LIST* scope)
 {
+  assert(scope);
+  if(scope==&CARD_LIST::card_list){untested();
+  }else{ untested();
+  }
   for (NODE_MAP::const_iterator
-       i = CARD_LIST::card_list.nodes()->begin();
-       i != CARD_LIST::card_list.nodes()->end();
+       i = scope->nodes()->begin();
+       i != scope->nodes()->end();
        ++i) {
     if ((i->first != "0") && (i->first.find('.') == std::string::npos)) {
       NODE* node = i->second;
@@ -216,6 +224,9 @@ bool PROBELIST::add_branches(const std::string&device,
 			     const CARD_LIST* scope)
 {
   assert(scope);
+  if(scope==&CARD_LIST::card_list){untested();
+  }else{ untested();
+  }
   bool found_something = false;
 
   std::string::size_type dotplace = device.find_first_of(".");

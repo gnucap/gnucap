@@ -112,7 +112,7 @@ void do_probe(CS& cmd, PROBELIST *probes, CARD_LIST *scope)
 	if (action == aDELETE) {
 	  probes[simtype].remove_list(cmd);
 	}else{
-	  probes[simtype].add_list(cmd);
+	  probes[simtype].add_list(cmd, scope);
 	}
       }
     }
