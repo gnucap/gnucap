@@ -107,7 +107,7 @@ private:
   {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else{ untested();
+    }else{untested();
     }
     if (cmd.umatch("all ")) {
       Scope->erase_all();

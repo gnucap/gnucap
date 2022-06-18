@@ -52,7 +52,7 @@ public:
   {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else{ untested();
+    }else{untested();
     }
     size_t here = cmd.cursor();
     int dl_scope = RTLD_LOCAL;
@@ -144,7 +144,7 @@ public:
   {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else{ untested();
+    }else{untested();
     }
     size_t here = cmd.cursor();		//BUG// due to the way dlopen and dlclose work
     std::string file_name;		// it doesn't really work.
@@ -188,7 +188,7 @@ public:
   {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else{ untested();
+    }else{untested();
     }
     if (Scope->is_empty()) {
       for (std::map<std::string, void*>::iterator

@@ -141,6 +141,9 @@ void SIM::finish_building_evalq(void)
 {
   ::status.queue.start();
   assert(_scope);
+  if (_scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   _scope->tr_queue_eval();
   ::status.queue.stop();
 }
@@ -148,6 +151,9 @@ void SIM::finish_building_evalq(void)
 void SIM::advance_time(void)
 {
   assert(_scope);
+  if (_scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   ::status.advance.start();
   static double last_iter_time;
   if (_sim->_time0 > 0) {
@@ -209,6 +215,9 @@ void SIM::clear_arrays(void)
 void SIM::evaluate_models()
 {
   assert(_scope);
+  if (_scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   ::status.evaluate.start();
   if (OPT::bypass) {
     converged = true;
@@ -253,6 +262,9 @@ void SIM::load_matrix()
   }else{
     _sim->_loadq.clear();
     assert(_scope);
+    if (_scope == &CARD_LIST::card_list) {
+    }else{untested();
+    }
     _scope->tr_load();
   }
   assert(_sim->_loadq.empty());

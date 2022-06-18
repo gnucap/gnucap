@@ -34,7 +34,7 @@ void list_save(CS& cmd, OMSTREAM out, CARD_LIST* scope)
 {
   assert(scope);
   if (scope == &CARD_LIST::card_list) {
-  }else{ untested();
+  }else{untested();
   }
   scope->precalc_first();
 
@@ -113,7 +113,7 @@ public:
   {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
-    }else{ untested();
+    }else{untested();
     }
     list_save(cmd, IO::mstdout, Scope);
   }
@@ -126,7 +126,7 @@ public:
   {itested();
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {untested();
-    }else{ untested();
+    }else{untested();
     }
     cmd.reset(); /* back up to beginning of input line */
     OMSTREAM out; // = IO::mstdout;

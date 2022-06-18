@@ -31,6 +31,9 @@ void SIM::command_base(CS& cmd)
 {  
   assert(_sim);
   assert(_scope);
+  if (_scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   reset_timers();
   _sim->reset_iteration_counter(_sim->_mode);
   _sim->reset_iteration_counter(iPRINTSTEP);
