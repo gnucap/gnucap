@@ -46,7 +46,7 @@ public:
 
   void	   remove_list(CS&);
   void     remove_one(CKT_BASE*);
-  void     add_list(CS&);
+  void     add_list(CS&, CARD_LIST* scope);
   int	   size()const		{return static_cast<int>(bag.size());}
   const_iterator begin()const	{return bag.begin();}
   const_iterator end()const	{return bag.end();}
@@ -55,8 +55,8 @@ public:
 private:
   void	  erase(iterator b, iterator e) {bag.erase(b,e);}
   void	  push_new_probe(const std::string& param, const CKT_BASE* object);
-  bool    add_branches(const std::string&,const std::string&,const CARD_LIST*);
-  void    add_all_nodes(const std::string&);
+  bool    add_branches(const std::string&, const std::string&, const CARD_LIST*);
+  void    add_all_nodes(const std::string&, CARD_LIST*);
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE PROBE_LISTS {

@@ -48,8 +48,12 @@ void list()
 /*--------------------------------------------------------------------------*/
 class CMD_ATTACH : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
+  void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    assert(Scope);
+    if (Scope == &CARD_LIST::card_list) {
+    }else{untested();
+    }
     size_t here = cmd.cursor();
     int dl_scope = RTLD_LOCAL;
     int check = RTLD_NOW;
@@ -79,7 +83,7 @@ public:
       // a name to look for
       // check if already loaded
       if (void* handle = attach_list[short_file_name]) {itested();
-	if (CARD_LIST::card_list.is_empty()) {itested();
+	if (Scope->is_empty()) {itested();
 	  cmd.warn(bDANGER, here, "\"" + short_file_name + "\": already loaded, replacing");
 	  dlclose(handle);
 	  attach_list[short_file_name] = NULL;
@@ -136,8 +140,12 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_DETACH : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
+  void do_it(CS& cmd, CARD_LIST* Scope)
   {
+    assert(Scope);
+    if (Scope == &CARD_LIST::card_list) {
+    }else{untested();
+    }
     size_t here = cmd.cursor();		//BUG// due to the way dlopen and dlclose work
     std::string file_name;		// it doesn't really work.
     cmd >> file_name;			// the dispatcher's active instance blocks unload
@@ -146,7 +154,7 @@ public:
       // nothing, list what we have
       list();
     }else{untested();
-      if (CARD_LIST::card_list.is_empty()) {untested();
+      if (Scope->is_empty()) {untested();
 	void* handle = attach_list[file_name];
 	if (handle) {untested();
 	  dlclose(handle);
@@ -176,9 +184,13 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "detach|unload", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_DETACH_ALL : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
+  void do_it(CS& cmd, CARD_LIST* Scope)
   {
-    if (CARD_LIST::card_list.is_empty()) {
+    assert(Scope);
+    if (Scope == &CARD_LIST::card_list) {
+    }else{untested();
+    }
+    if (Scope->is_empty()) {
       for (std::map<std::string, void*>::iterator
 	     ii = attach_list.begin(); ii != attach_list.end(); ++ii) {
 	void* handle = ii->second;
