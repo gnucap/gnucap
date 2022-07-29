@@ -162,5 +162,14 @@ double CKT_BASE::ac_probe_num(const std::string& what)const
   return NULL;
 }
 /*--------------------------------------------------------------------------*/
+bool CKT_BASE::operator!=(const std::string& n)const
+{
+  if(OPT::case_insensitive){
+    return strcasecmp(_label.c_str(),n.c_str())!=0;
+  }else{
+    return strcmp(_label.c_str(),n.c_str())!=0;
+  }
+}
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

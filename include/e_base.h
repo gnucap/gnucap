@@ -64,7 +64,7 @@ public: // probes
   static  WAVE*	      find_wave(const std::string& probe_name);
   //--------------------------------------------------------------------
 public: // label
-  bool operator!=(const std::string& n)const {return strcasecmp(_label.c_str(),n.c_str())!=0;}
+  bool operator!=(const std::string& n)const;
   virtual const std::string long_label()const;
   const std::string&  short_label()const {return _label;}
   void	set_label(const std::string& s) {_label = s;}
