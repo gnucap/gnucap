@@ -92,3 +92,8 @@ e1 ( 4 0 5 1 ) t2
  9.5        1.u        9.5        11.525     11.525     90.25      70.        70.       
  9.75       1.u        9.75       12.006     12.006     95.063     72.5       72.5      
  10.        1.u        10.        12.5       12.5       100.       75.        75.       
+Gnucap   System status
+iterations: op=5, dc=431, tran=0, fourier=0, total=436
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=7, subckt=0, model=0, total=7
+dctran density=59.2%, ac density=59.2%

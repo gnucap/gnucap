@@ -18,3 +18,8 @@ r3 ( 0 4 )  1.K
  1.K        2.         0.5        0.002     -0.004      ??         ??        
 #Freq       vo(v1)     vin(v1)    i(v1)      p(v1)      pd(v1)     ps(v1)    
  1.K        1.         0.         500.u     -500.u      ??         ??        
+Gnucap   System status
+iterations: op=3, dc=0, tran=0, fourier=0, total=12
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=4, subckt=0, model=0, total=4
+dctran density=62.5%, ac density=62.5%

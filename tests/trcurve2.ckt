@@ -42,4 +42,5 @@ MPD 4 1 0 6 CMOSN L=3U W=3U AD=9P AS=9P PD=12U PS=12U
 .op
 .DC VDD 0 5 1 VIN 0 5 1
 .DC VIN 0 5 1 VBACK 0 5 1
+*>.status notime
 .END

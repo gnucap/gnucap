@@ -13,4 +13,5 @@ r4 4 0 10k
 .dc v1 -10 10 1
 .dc v1 1 100 decade 5
 .dc v1 32 68 9
+*>.status notime
 .end

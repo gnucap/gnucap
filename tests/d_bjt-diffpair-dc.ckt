@@ -76,4 +76,5 @@ rbias 7 8 20k
 *>.op
 *>.print op p(v*)
 .op
+*>.status notime
 .end
