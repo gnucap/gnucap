@@ -109,7 +109,7 @@ public: // owner, scope
 
   CARD*		owner()		   {return _owner;}
   const CARD*	owner()const	   {return _owner;}
-  void		set_owner(CARD* o) {assert(!_owner||_owner==o); _owner=o;}
+  void		set_owner(CARD* o) {assert(!o||!_owner||_owner==o); _owner=o;}
   //--------------------------------------------------------------------
 public: // subckt
   CARD_LIST*	     subckt()		{return _subckt;}
