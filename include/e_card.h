@@ -68,6 +68,7 @@ public:	// "elaborate"
   virtual void	 expand_last()		{}
   virtual void	 precalc_last()		{}
   virtual void	 map_nodes()		{}
+  virtual CARD*  deflate()		{untested(); return this;}
   //--------------------------------------------------------------------
 public:	// dc-tran
   virtual void	 tr_iwant_matrix()	{}
@@ -108,7 +109,7 @@ public: // owner, scope
 
   CARD*		owner()		   {return _owner;}
   const CARD*	owner()const	   {return _owner;}
-  void		set_owner(CARD* o) {assert(!_owner||_owner==o); _owner=o;}
+  void		set_owner(CARD* o) {assert(!o||!_owner||_owner==o); _owner=o;}
   //--------------------------------------------------------------------
 public: // subckt
   CARD_LIST*	     subckt()		{return _subckt;}

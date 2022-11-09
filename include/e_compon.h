@@ -168,6 +168,7 @@ public:	// "elaborate"
   void	precalc_first();
   void	expand();
   void	precalc_last();
+  virtual bool is_valid()const	{return true;}
   //--------------------------------------------------------------------
 public:	// dc-tran
   void      tr_iwant_matrix();
