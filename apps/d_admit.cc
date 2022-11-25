@@ -52,6 +52,7 @@ protected: // override virtual
   bool	   use_obsolete_callback_parse()const {return true;}
   CARD*	   clone()const		{return new DEV_ADMITTANCE(*this);}
   void     precalc_last();
+  void	   dc_advance();
   void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
   void     tr_begin();
   bool	   do_tr();
@@ -109,8 +110,27 @@ protected: // override virtual
 void DEV_ADMITTANCE::precalc_last()
 {
   ELEMENT::precalc_last();
-  set_constant(!has_tr_eval());
+  set_constant(!using_tr_eval());
   set_converged(!has_tr_eval());
+}
+/*--------------------------------------------------------------------------*/
+void DEV_ADMITTANCE::dc_advance()
+{
+  ELEMENT::dc_advance();
+  if(using_tr_eval()){
+  }else{
+    _y[0].f1 = value();
+    _y[0].f0 = LINEAR;
+
+    if(_y[0].f1 != _y1.f1){ untested();
+      store_values();
+      _m0.c1 = _y[0].f1;
+      _m0.c0 = 0.;
+      q_load();
+      // set_constant(false); not needed. nothing to do in do_tr.
+    }else{
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_ADMITTANCE::tr_begin()
