@@ -29,7 +29,7 @@
 class CARDSTASH {
 private:
   COMPONENT*		_brh;
-  double		_value;
+  PARAMETER<double>	_value;
   COMMON_COMPONENT*	_c;
 public:
   explicit CARDSTASH()		:_brh(0), _value(0.), _c(0) {}
@@ -37,7 +37,11 @@ public:
 	   CARDSTASH(const CARDSTASH& p);
 	   ~CARDSTASH()		{COMMON_COMPONENT::detach_common(&_c);}
   void	   operator=(CARD* b);
-  void	   restore()		{assert(_brh); _brh->set_value(_value, _c);}
+  void	   restore() {
+    assert(_brh);
+    _brh->set_value(_value, _c);
+    _brh->set_value(_value);
+  }
 #if 0
   bool operator==(const CARDSTASH&)const
 	{incomplete();unreachable();return false;}

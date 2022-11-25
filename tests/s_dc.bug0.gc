@@ -1,0 +1,19 @@
+spice
+
+v1 1 0 v
+r1 0 1 {1/g}
+
+.param v=-1
+.param g=1
+
+.list
+
+.print dc i(r1)
+.dc r1 1 2 1
+.dc v1 1 2 1
+
+.print dc i(v1)
+.dc r1 1 2 1
+.dc v1 1 2 1
+
+.end
