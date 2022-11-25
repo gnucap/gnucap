@@ -206,7 +206,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	E->push_back(clone());
 	delete t;
       }
-    }else{untested();
+    }else{itested();
       // # - # - or something like that
       E->push_back(t2);
       E->push_back(t1);

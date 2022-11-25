@@ -202,7 +202,7 @@ public:
   Base* add(const String*)const override 	{           return NULL;}
   Base* multiply(const String*)const override	{untested();return NULL;}
   Base* subtract(const String*)const override	{untested();return NULL;}
-  Base* r_subtract(const String*)const override	{untested();return NULL;}
+  Base* r_subtract(const String*)const override	{itested();return NULL;}
   Base* divide(const String*)const override	{untested();return NULL;}
   Base* r_divide(const String*)const override	{	    return NULL;}
 

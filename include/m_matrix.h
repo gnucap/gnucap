@@ -668,7 +668,7 @@ void BSMATRIX<T>::lu_decomp(const BSMATRIX<T>& aa, bool do_partial)
 	}
       }else{    /* bn == mm */
 	d(mm,mm) = aa.d(mm,mm);
-	if (d(mm,mm)==0.) {untested();
+	if (d(mm,mm)==0.) {itested();
 	  d(mm,mm) = _min_pivot;
 	}else{
 	}

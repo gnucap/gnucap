@@ -107,7 +107,7 @@ public:
 	full_file_name = findfile(short_file_name, path, R_OK);
 	if (full_file_name != "") {
 	  // found it, with search
-	}else{untested();
+	}else{itested();
 	  cmd.reset(here);
 	  throw Exception_CS("plugin not found in " + path, cmd);
 	}

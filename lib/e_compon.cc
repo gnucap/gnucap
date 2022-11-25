@@ -263,9 +263,9 @@ std::string COMMON_COMPONENT::param_name(int i, int j)const
 std::string COMMON_COMPONENT::param_value(int i)const
 {
   switch (i) {
-  case 0:untested();  return _tnom_c.string();
-  case 1:untested();  return _dtemp.string();
-  case 2:untested();  return _temp_c.string();
+  case 0:itested();  return _tnom_c.string();
+  case 1:itested();  return _dtemp.string();
+  case 2:itested();  return _temp_c.string();
   case 3:  return _mfactor.string();
   default:untested(); return "";
   }
@@ -585,7 +585,7 @@ void COMPONENT::tr_iwant_matrix()
     assert(matrix_nodes() == 0);
     if (subckt()) {
       subckt()->tr_iwant_matrix();
-    }else{untested();
+    }else{itested();
     }
   }else{
   }
@@ -597,7 +597,7 @@ void COMPONENT::ac_iwant_matrix()
     assert(matrix_nodes() == 0);
     if (subckt()) {
       subckt()->ac_iwant_matrix();
-    }else{untested();
+    }else{itested();
     }
   }else{
   }
@@ -701,7 +701,7 @@ std::string COMPONENT::param_name(int i, int j)const
   }else{
     if (j == 0) {
       return param_name(i);
-    }else if (i >= CARD::param_count()) {untested();
+    }else if (i >= CARD::param_count()) {itested();
       return "";
     }else{untested();
       return CARD::param_name(i,j);
