@@ -51,25 +51,25 @@ private:
 public:
   explicit	DEV_SUBCKT();
 		~DEV_SUBCKT()		{--_count;}
-  CARD*		clone()const		{return new DEV_SUBCKT(*this);}
+  CARD*		clone()const override	{return new DEV_SUBCKT(*this);}
 private: // override virtual
-  char		id_letter()const	{return 'X';}
-  bool		print_type_in_spice()const {return true;}
-  std::string   value_name()const	{return "#";}
-  int		max_nodes()const	{return PORTS_PER_SUBCKT;}
-  int		min_nodes()const	{return 0;}
-  int		matrix_nodes()const	{return 0;}
-  int		net_nodes()const	{return _net_nodes;}
-  void		precalc_first();
-  bool		makes_own_scope()const  {return false;}
+  char		id_letter()const override	{return 'X';}
+  bool		print_type_in_spice()const override {return true;}
+  std::string   value_name()const override	{return "#";}
+  int		max_nodes()const override	{return PORTS_PER_SUBCKT;}
+  int		min_nodes()const override	{return 0;}
+  int		matrix_nodes()const override	{return 0;}
+  int		net_nodes()const override	{return _net_nodes;}
+  void		precalc_first()override;
+  bool		makes_own_scope()const override  {return false;}
 
-  void		expand();
+  void		expand() override;
 private:
-  void		precalc_last();
-  double	tr_probe_num(const std::string&)const;
-  int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
+  void		precalc_last()override;
+  double	tr_probe_num(const std::string&)const override;
+  int param_count_dont_print()const override {return common()->COMMON_COMPONENT::param_count();}
 
-  std::string port_name(int i)const;
+  std::string port_name(int i)const override;
 public:
   static int	count()			{untested();return _count;}
 protected:
@@ -87,40 +87,40 @@ public:
   explicit	DEV_SUBCKT_PROTO();
 		~DEV_SUBCKT_PROTO(){}
 public: // override virtual
-  char		id_letter()const	{untested();return '\0';}
-  CARD*		clone_instance()const;
-  bool		print_type_in_spice()const {unreachable(); return false;}
-  std::string   value_name()const	{untested();incomplete(); return "";}
-  std::string   dev_type()const		{untested(); return "";}
-  int		max_nodes()const	{return PORTS_PER_SUBCKT;}
-  int		min_nodes()const	{return 0;}
-  int		matrix_nodes()const	{untested();return 0;}
-  int		net_nodes()const	{return _net_nodes;}
-  CARD*		clone()const		{return new DEV_SUBCKT_PROTO(*this);}
-  bool		is_device()const	{return false;}
-  bool		makes_own_scope()const  {return true;}
-  CARD_LIST*	   scope()		{untested();return subckt();}
-  const CARD_LIST* scope()const		{return subckt();}
+  char		id_letter()const override	{untested();return '\0';}
+  CARD*		clone_instance()const override;
+  bool		print_type_in_spice()const override {unreachable(); return false;}
+  std::string   value_name()const override	{untested();incomplete(); return "";}
+  std::string   dev_type()const override		{untested(); return "";}
+  int		max_nodes()const override	{return PORTS_PER_SUBCKT;}
+  int		min_nodes()const override	{return 0;}
+  int		matrix_nodes()const override	{untested();return 0;}
+  int		net_nodes()const override	{return _net_nodes;}
+  CARD*		clone()const override		{return new DEV_SUBCKT_PROTO(*this);}
+  bool		is_device()const override	{return false;}
+  bool		makes_own_scope()const override	{return true;}
+  CARD_LIST*	   scope()override		{untested();return subckt();}
+  const CARD_LIST* scope()const override	{return subckt();}
 private: // no-ops for prototype
-  void precalc_first(){}
-  void expand(){}
-  void precalc_last(){}
-  void map_nodes(){}
-  void tr_begin(){}
-  void tr_load(){}
-  TIME_PAIR tr_review(){ return TIME_PAIR(NEVER, NEVER);}
-  void tr_accept(){}
-  void tr_advance(){}
-  void tr_restore(){}
-  void tr_regress(){}
-  void dc_advance(){}
-  void ac_begin(){}
-  void do_ac(){}
-  void ac_load(){}
-  bool do_tr(){ return true;}
-  bool tr_needs_eval()const{untested(); return false;}
-  void tr_queue_eval(){}
-  std::string port_name(int)const {untested();return "";}
+  void precalc_first()override {}
+  void expand()override {}
+  void precalc_last()override {}
+  void map_nodes()override {}
+  void tr_begin()override {}
+  void tr_load()override {}
+  TIME_PAIR tr_review() override { return TIME_PAIR(NEVER, NEVER);}
+  void tr_accept()override {}
+  void tr_advance()override {}
+  void tr_restore()override {}
+  void tr_regress()override {}
+  void dc_advance()override {}
+  void ac_begin()override {}
+  void do_ac()override {}
+  void ac_load()override {}
+  bool do_tr()override { return true;}
+  bool tr_needs_eval()const override {untested(); return false;}
+  void tr_queue_eval()override {}
+  std::string port_name(int)const override{untested();return "";}
 } pp;
 DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt", &pp);
 /*--------------------------------------------------------------------------*/

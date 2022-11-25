@@ -48,8 +48,7 @@ void list()
 /*--------------------------------------------------------------------------*/
 class CMD_ATTACH : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
     }else{untested();
@@ -125,8 +124,7 @@ public:
     }
   }
 
-  std::string help_text()const
-  {
+  std::string help_text()const override {
     return 
       "load command\n"
       "Loads plugins\n"
@@ -140,8 +138,7 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_DETACH : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope) override {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
     }else{untested();
@@ -169,8 +166,7 @@ public:
     }
   }
 
-  std::string help_text()const
-  {
+  std::string help_text()const override {
     return 
       "unload command\n"
       "Unloads plugins\n"
@@ -184,8 +180,7 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "detach|unload", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_DETACH_ALL : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
     }else{untested();
