@@ -369,10 +369,7 @@ void DCOP::sweep_recursive(int Nest)
   first(Nest);
   do {
     if (Nest == 0) {
-      if (_sim->command_is_op()) {
-	_scope->precalc_last();
-      }else{
-      }
+      _scope->precalc_last();
       int converged = solve_with_homotopy(itl,_trace);
       if (!converged) {untested();
 	error(bWARNING, "did not converge\n");
