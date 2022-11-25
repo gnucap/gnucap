@@ -77,20 +77,6 @@ bool ELEMENT::skip_dev_type(CS& cmd)
   return cmd.umatch(dev_type() + ' ');
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::precalc_last()
-{
-  COMPONENT::precalc_last();
-
-  //BUG// This is needed for AC analysis without doing op (or dc or tran ...) first.
-  // Something like it should be moved to ac_begin.
-  if (_sim->has_op() == s_NONE) {
-    _y[0].x  = 0.;
-    _y[0].f0 = LINEAR;
-    _y[0].f1 = value();
-  }else{
-  }
-}
-/*--------------------------------------------------------------------------*/
 void ELEMENT::tr_begin()
 {
   _time[0] = 0.;
@@ -103,6 +89,16 @@ void ELEMENT::tr_begin()
     _y[i] = FPOLY1(0., 0., 0.);
   }
   _dt = NOT_VALID;
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::ac_begin()
+{
+  if (_sim->has_op() == s_NONE) {
+    _y[0].x  = 0.;
+    _y[0].f0 = LINEAR;
+    _y[0].f1 = value();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_restore()

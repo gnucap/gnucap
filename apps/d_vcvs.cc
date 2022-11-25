@@ -109,6 +109,7 @@ bool DEV_VCVS::do_tr()
 /*--------------------------------------------------------------------------*/
 void DEV_VCVS::ac_begin()
 {
+  ELEMENT::ac_begin();
   _loss1 = _loss0 = 1./OPT::shortckt;
   _ev = _y[0].f1;
   _acg = -_loss0 * _ev;

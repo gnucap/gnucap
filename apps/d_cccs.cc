@@ -47,7 +47,7 @@ private: // override virtual
   bool	   do_tr_last();
   void	   tr_load()		{tr_load_active();}
   void	   ac_iwant_matrix()	{ac_iwant_matrix_active();}
-  void	   ac_begin()		{_ev = _y[0].f1;}
+  void	   ac_begin()		{CCSRC_BASE::ac_begin(); _ev = _y[0].f1;}
   void	   do_ac();
   void	   ac_load()		{ac_load_active();}
 

@@ -43,7 +43,7 @@ public:
   bool	   skip_dev_type(CS&);
 public: // override virtual
   bool	   print_type_in_spice()const {return false;}
-  void	   precalc_last();
+  void	   ac_begin();
   void	   tr_begin();
   void	   tr_restore();
   void	   dc_advance();

@@ -60,7 +60,7 @@ protected: // override virtual
   double   tr_involts()const	{return tr_outvolts();}
   double   tr_involts_limited()const {return tr_outvolts_limited();}
   void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void	   ac_begin()		{_acg = _ev = _y[0].f1;}
+  void	   ac_begin()		{ELEMENT::ac_begin(); _acg = _ev = _y[0].f1;}
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
   COMPLEX  ac_involts()const	{untested();return ac_outvolts();}

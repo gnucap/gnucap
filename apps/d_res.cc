@@ -56,7 +56,7 @@ private: // override virtual
   double   tr_involts_limited()const {return tr_outvolts_limited();}
   double   tr_input_limited()const {return _m0.c0+_m0.c1*tr_involts_limited();}
   void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void     ac_begin()           {_ev = _y[0].f1; _acg = 1. / _ev;} 
+  void     ac_begin();
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
   COMPLEX  ac_involts()const	{return ac_outvolts();}
@@ -118,6 +118,13 @@ bool DEV_RESISTANCE::do_tr()
     assert(converged());
   }
   return converged();
+}
+/*--------------------------------------------------------------------------*/
+void DEV_RESISTANCE::ac_begin()
+{
+  ELEMENT::ac_begin();
+  _ev = _y[0].f1;
+  _acg = 1. / _ev;
 }
 /*--------------------------------------------------------------------------*/
 void DEV_RESISTANCE::do_ac()
