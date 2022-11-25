@@ -55,6 +55,7 @@ public: // override virtual
   bool	   use_obsolete_callback_parse()const {return true;}
   CARD*	   clone()const		{return new DEV_INDUCTANCE(*this);}
   void     expand();
+  void     precalc_last();
   void	   tr_iwant_matrix();
   void     tr_begin();
   bool	   do_tr();
@@ -67,7 +68,7 @@ public: // override virtual
   double   tr_amps()const;
   double   tr_probe_num(const std::string&)const;
   void	   ac_iwant_matrix();
-  void	   ac_begin()		{_loss1 = _loss0 = ((!_c_model) ? 0. : 1.); _ev = _y[0].f1;}
+  void	   ac_begin();
   void	   do_ac();
   void	   ac_load();
   COMPLEX  ac_involts()const	{return ac_outvolts();}
@@ -212,6 +213,18 @@ DEV_MUTUAL_L::DEV_MUTUAL_L(const DEV_MUTUAL_L& p)
   assert(_yf1 == _yf[0]);
   assert(_yr[0].x == 0. && _yr[0].f0 == 0. && _yr[0].f1 == 0.);
   assert(_yr1 == _yr[0]);
+}
+/*--------------------------------------------------------------------------*/
+void DEV_INDUCTANCE::precalc_last()
+{
+  STORAGE::precalc_last();
+  // Something like it should be moved to ac_begin.
+  if (_sim->has_op() == s_NONE) {
+    _y[0].x  = 0.;
+    _y[0].f0 = LINEAR;
+    _y[0].f1 = value();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_INDUCTANCE::expand()
@@ -488,6 +501,14 @@ void DEV_INDUCTANCE::ac_iwant_matrix()
     _sim->_acx.iwant(_n[OUT1].m_(),_n[IN1].m_());
     _sim->_acx.iwant(_n[OUT2].m_(),_n[IN1].m_());
   }
+}
+/*--------------------------------------------------------------------------*/
+void DEV_INDUCTANCE::ac_begin()
+{
+  // STORAGE::ac_begin();
+
+  _loss1 = _loss0 = ((!_c_model) ? 0. : 1.);
+  _ev = _y[0].f1;
 }
 /*--------------------------------------------------------------------------*/
 void DEV_INDUCTANCE::do_ac()

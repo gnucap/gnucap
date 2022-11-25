@@ -99,7 +99,6 @@ void DC::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_phase = p_INIT_DC;
   ::status.dc.reset().start();
   command_base(Cmd);
-  _sim->_has_op = s_DC;
   _scope = NULL;
   ::status.dc.stop();
 }
@@ -116,7 +115,6 @@ void OP::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_phase = p_INIT_DC;
   ::status.op.reset().start();
   command_base(Cmd);
-  _sim->_has_op = s_OP;
   _scope = NULL;
   ::status.op.stop();
 }
@@ -371,10 +369,7 @@ void DCOP::sweep_recursive(int Nest)
   first(Nest);
   do {
     if (Nest == 0) {
-      if (_sim->command_is_op()) {
-	_scope->precalc_last();
-      }else{
-      }
+      _scope->precalc_last();
       int converged = solve_with_homotopy(itl,_trace);
       if (!converged) {untested();
 	error(bWARNING, "did not converge\n");

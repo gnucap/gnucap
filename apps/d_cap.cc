@@ -59,7 +59,7 @@ protected: // override virtual
   double   tr_involts_limited()const {return tr_outvolts_limited();}
   double   tr_probe_num(const std::string&)const;
   void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void	   ac_begin()		{_ev = _y[0].f1;}
+  void	   ac_begin()		{STORAGE::ac_begin(); _ev = _y[0].f1;}
   void	   do_ac();
   void	   ac_load()		{ac_load_passive();}
   COMPLEX  ac_involts()const	{itested();return ac_outvolts();}

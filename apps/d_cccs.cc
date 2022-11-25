@@ -41,13 +41,14 @@ private: // override virtual
   bool	   use_obsolete_callback_parse()const {return true;}
   CARD*	   clone()const		{return new DEV_CCCS(*this);}
   void     precalc_last();
+  void     dc_advance();
   void	   tr_iwant_matrix()	{tr_iwant_matrix_active();}
   void     tr_begin();
   bool     do_tr()		{_sim->_late_evalq.push_back(this); return true;}
   bool	   do_tr_last();
   void	   tr_load()		{tr_load_active();}
   void	   ac_iwant_matrix()	{ac_iwant_matrix_active();}
-  void	   ac_begin()		{_ev = _y[0].f1;}
+  void	   ac_begin()		{CCSRC_BASE::ac_begin(); _ev = _y[0].f1;}
   void	   do_ac();
   void	   ac_load()		{ac_load_active();}
 
@@ -66,11 +67,28 @@ private: // override virtual
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+void DEV_CCCS::dc_advance()
+{
+  CCSRC_BASE::dc_advance();
+  if(using_tr_eval()){
+  }else{
+    _y[0].f1 = value();
+
+    if(_y1.f1 != _y[0].f1){ untested();
+      store_values();
+      // q_load(); // called unconditionally in do_tr_last.
+      _m0.c0 = _y[0].f1;
+      // set_constant(false); not needed. nothing to do in do_tr.
+    }else{
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
 void DEV_CCCS::precalc_last()
 {
   CCSRC_BASE::precalc_last();
-  set_converged();
-  assert(!is_constant()); /* because of incomplete analysis */
+  set_converged(!has_tr_eval());
+  set_constant(!using_tr_eval());
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CCCS::tr_begin()

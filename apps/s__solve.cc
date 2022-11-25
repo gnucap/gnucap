@@ -209,7 +209,7 @@ void SIM::clear_arrays(void)
     std::fill_n(_sim->_i, _sim->_aa.size()+1, 0);
   }else{
   }
-  assert(_sim->_loadq.empty());
+  // assert(_sim->_loadq.empty()); // queued load in *_advance.
 }
 /*--------------------------------------------------------------------------*/
 void SIM::evaluate_models()

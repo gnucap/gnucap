@@ -11,14 +11,14 @@ D1 ( 2 0 )  ddd 1.
 -6.        -6.        -3.         30.u      -30.u      -30.u      -3.         100.K      500.f      100.K      50.K       10.u       50.K       4.        
 -4.        -4.        -2.         20.u      -20.u      -20.u      -2.         100.K      577.35f    100.K      50.K       10.u       50.K       4.        
 -2.        -2.        -1.         10.u      -10.u      -10.u      -1.         100.K      707.11f    100.K      50.K       10.u       50.K       4.        
- 0.         0.         0.         0.         0.         0.         0.         100.K      1.p        100.K      50.K       10.u       50.K       4.        
+ 0.         0.         0.         0.         0.         0.         0.         100.K      1.p        100.K      50.K       10.u       50.K       5.        
  2.         2.         0.53636   -14.636u    14.636u    14.636u    0.53636    1.7364K    1.4656p    100.K      1.7068K    575.89u    1.7068K    6.        
  4.         4.         0.56367   -34.363u    34.363u    34.363u    0.56367    747.05     1.5043p    100.K      741.51     0.0013386  741.51     5.        
  6.         6.         0.57697   -54.23u     54.23u     54.23u     0.57697    474.67     1.5231p    100.K      472.43     0.0021067  472.43     5.        
  8.         8.         0.58576   -74.142u    74.142u    74.142u    0.58576    347.63     1.5355p    100.K      346.43     0.0028766  346.43     5.        
  10.        10.        0.59234   -94.077u    94.077u    94.077u    0.59234    274.17     1.5448p    100.K      273.42     0.0036473  273.42     5.        
 Gnucap   System status
-iterations: op=6, dc=50, tran=0, fourier=0, total=56
+iterations: op=6, dc=51, tran=0, fourier=0, total=57
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=2, subckt=0, model=0, total=2
 dctran density=100.0%, ac density=100.0%
@@ -29,7 +29,7 @@ dctran density=100.0%, ac density=100.0%
 #           v(1)       v(2)       i(V1)      i(R1)      id(D1)     vd(D1)     req(D1)    cap(D1)    z(D1)      zraw(D1)   y(D1)      z(2)      
  27.        10.        0.59234   -94.077u    94.077u    94.077u    0.59234    274.17     1.5448p    100.K      273.42     0.0036473  273.42    
 Gnucap   System status
-iterations: op=6, dc=10, tran=0, fourier=0, total=72
+iterations: op=6, dc=10, tran=0, fourier=0, total=73
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=2, subckt=0, model=0, total=2
 dctran density=100.0%, ac density=100.0%

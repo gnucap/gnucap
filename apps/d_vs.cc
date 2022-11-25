@@ -47,6 +47,7 @@ private: // override virtual
   bool	   use_obsolete_callback_parse()const {return true;}
   CARD*	   clone()const		{return new DEV_VS(*this);}
   void     precalc_last();
+  void     dc_advance();
   void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
   void	   tr_begin();
   bool	   do_tr();
@@ -72,11 +73,26 @@ private: // override virtual
 /*--------------------------------------------------------------------------*/
 void DEV_VS::precalc_last()
 {
-  //ELEMENT::precalc_last();	//BUG// skip
-  COMPONENT::precalc_last();
-  set_constant(!has_tr_eval());
+  ELEMENT::precalc_last();
+  set_constant(!using_tr_eval());
   set_converged(!has_tr_eval());
-  set_constant(false);
+}
+/*--------------------------------------------------------------------------*/
+void DEV_VS::dc_advance()
+{
+  ELEMENT::dc_advance();
+
+  if(using_tr_eval()){
+  }else{
+    _y[0].f1 = value();
+    if(_y[0].f1 != _y1.f1){ untested();
+      store_values();
+      q_load();
+      _m0.c0 = -_loss0 * _y[0].f1;
+      // set_constant(false); not needed. nothing to do in do_tr.
+    }else{
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_VS::tr_begin()
@@ -89,7 +105,7 @@ void DEV_VS::tr_begin()
   _m0.x  = 0.;
   _m0.c0 = -_loss0 * _y[0].f1;
   _m0.c1 = 0.;
-  _m1 = _m0;    
+  _m1 = _m0;
   if (!using_tr_eval()) {
     if (_n[OUT2].m_() == 0) {
       _sim->set_limit(value());
