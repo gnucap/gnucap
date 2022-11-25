@@ -44,6 +44,7 @@ private: // override virtual
   bool	   use_obsolete_callback_parse()const {return true;}
   CARD*	   clone()const		{return new DEV_VCVS(*this);}
   void     precalc_last();
+  void     dc_advance();
   void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
   void     tr_begin();
   bool	   do_tr();
@@ -69,8 +70,25 @@ private: // override virtual
 void DEV_VCVS::precalc_last()
 {
   ELEMENT::precalc_last();
-  set_constant(!has_tr_eval());
+  set_constant(!using_tr_eval());
   set_converged(!has_tr_eval());
+}
+/*--------------------------------------------------------------------------*/
+void DEV_VCVS::dc_advance()
+{
+  ELEMENT::dc_advance();
+  if(using_tr_eval()){
+  }else{
+    _y[0].f1 = value();
+
+    if(_y1.f1 != _y[0].f1){ untested();
+      store_values();
+      q_load();
+      _m0.c0 = _y[0].f1;
+      // set_constant(false); not needed. nothing to do in do_tr.
+    }else{
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_VCVS::tr_begin()
