@@ -83,7 +83,7 @@ protected:
     }
   }
 public:
-  virtual void parse(CS& f) = 0;
+  void parse(CS& f)override = 0;
   typedef typename std::list<T*>::const_iterator const_iterator;
   const_iterator begin()const	 {return _list.begin();}
   const_iterator end()const	 {return _list.end();}
@@ -95,14 +95,14 @@ class C_Comment
   :public Base
 {
 public:
-  void parse(CS& f);
+  void parse(CS& f)override;
 };
 /*--------------------------------------------------------------------------*/
 class Cxx_Comment
   :public Base
 {
 public:
-  void parse(CS& f);
+  void parse(CS& f)override;
 };
 /*--------------------------------------------------------------------------*/
 /* A "Collection" differs from a "List" in how it is parsed.
@@ -124,7 +124,7 @@ public:
   const_iterator begin()const	 {return _list.begin();}
   const_iterator end()const	 {return _list.end();}
 
-  void parse(CS& file) {
+  void parse(CS& file)override {
     int paren = !BEGIN || file.skip1b(BEGIN);
     size_t here = file.cursor();
     for (;;) {
@@ -152,7 +152,7 @@ public:
       }
     }
   }
-  void print(std::ostream& f)const {
+  void print(std::ostream& f)const override {
     f << BEGIN;
     for (const_iterator i = begin(); i != end(); ++i) {
       f << (**i);
@@ -180,7 +180,7 @@ public:
   const_iterator begin()const	 {return _list.begin();}
   const_iterator end()const	 {return _list.end();}
 
-  void parse(CS& file) {
+  void parse(CS& file) override{
     size_t here = file.cursor();
     T* m = new T(file);
     if (!file.stuck(&here)) {
@@ -190,7 +190,7 @@ public:
       file.warn(0, "what's this??");
     }
   }
-  void print(std::ostream& f)const {
+  void print(std::ostream& f)const override{
     for (const_iterator i = begin(); i != end(); ++i) {
       f << (**i);
     }
@@ -204,8 +204,8 @@ class Key
   std::string _var;
   std::string _value;
 public:
-  void parse(CS& f) {f >> _name >> _var >> '=' >> _value >> ';';}
-  void print(std::ostream& f)const
+  void parse(CS& f)override {f >> _name >> _var >> '=' >> _value >> ';';}
+  void print(std::ostream& f)const override
   {f << name() << " " << var() << "=" << value() << "; ";}
   Key(CS& f) {parse(f);}
   const std::string& name()const	{return _name;}
@@ -219,8 +219,8 @@ class String_Arg
 {
   std::string	_s;
 public:
-  void parse(CS& f)			 {f >> _s >> ';';}
-  void print(std::ostream& f)const	 {f << _s;}
+  void parse(CS& f)override {f >> _s >> ';';}
+  void print(std::ostream& f)const override {f << _s;}
   void operator=(const std::string& s)	 {untested();_s = s;}
   void operator+=(const std::string& s)	 {_s += s;}
   bool operator!=(const std::string& s)const {return _s != s;}
@@ -234,8 +234,8 @@ class Bool_Arg
 {
   bool _s;
 public:
-  void parse(CS& f)	{_s = true; f.skip1b(";");}
-  void print(std::ostream& f)const {untested();f << _s;}
+  void parse(CS& f)override {_s = true; f.skip1b(";");}
+  void print(std::ostream& f)const override {untested();f << _s;}
   Bool_Arg() :_s(false) {}
   operator bool()const {return _s;}
 };
@@ -260,8 +260,8 @@ class Parameter
   bool	      _positive;
   bool	      _octal;
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const;
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override;
   Parameter(CS& f) :_positive(false), _octal(false) {parse(f);}
   const std::string& type()const		{return _type;}
   const std::string& code_name()const		{return _code_name;}
@@ -294,8 +294,8 @@ class Code_Block
 {
   std::string s;
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const {f << s;}
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override{f << s;}
   Code_Block() {}
   bool is_empty()const {return s.length() < 2;}
 };
@@ -311,8 +311,8 @@ class Parameter_Block
   Code_Block	 _code_mid;
   Code_Block     _code_post;
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const;
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override;
   const String_Arg&	unnamed_value()const	{return _unnamed_value;}
   const Parameter_List& override()const 	{return _override;}
   const Parameter_List& raw()const		{return _raw;}
@@ -337,8 +337,8 @@ protected:
   Code_Block _code;
   Eval() :_name(), _code() {}
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const;  
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override;
   Eval(CS& f) :_name(), _code() {parse(f);}
   const String_Arg&	name()const	{return _name;}
   const Code_Block&	code()const	{return _code;}
@@ -349,8 +349,8 @@ class Function
   :public Eval
 {
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const;  
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override;
   Function(CS& f) :Eval() {parse(f);}
 };
 typedef Collection<Function> Function_List;
@@ -362,8 +362,8 @@ class Port
   std::string _short_to;
   std::string _short_if;
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const;
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override;
   Port() {untested();}
   Port(CS& f) {parse(f);}
   const std::string& name()const	{return _name;}
@@ -385,8 +385,8 @@ class Element
   std::string _reverse;
   std::string _state;
 public:
-  void parse(CS&);
-  void print(std::ostream& f)const;
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override;
   Element() {untested();}
   Element(CS& f) {parse(f);}
   const std::string& dev_type()const	{return _dev_type;}
@@ -407,8 +407,8 @@ class Arg
 {
   std::string _arg;
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const {f << "      " << arg() << ";\n";}
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override {f << "      " << arg() << ";\n";}
   Arg(CS& f) {parse(f);}
   const std::string& arg()const {return _arg;}
 };
@@ -421,8 +421,8 @@ class Args
   String_Arg _type;
   Arg_List   _arg_list;
 public:
-  void parse(CS& f) {f >> _name >> _type >> _arg_list;}
-  void print(std::ostream& f)const
+  void parse(CS& f)override {f >> _name >> _type >> _arg_list;}
+  void print(std::ostream& f)const override
   {f << "    args " << name() << " " << type() << "\n"
      << arg_list() << "\n";}
   Args(CS& f) {parse(f);}
@@ -445,8 +445,8 @@ class Circuit
   Args_List	_args_list;
   bool		_sync;
 public:
-  void parse(CS&);
-  void print(std::ostream& f)const;
+  void parse(CS&) override;
+  void print(std::ostream& f)const override;
   Circuit() : _sync(false) {}
   bool		      sync()const	 {return _sync;}
   const Port_List&    req_nodes()const   {return _required_nodes;}
@@ -465,8 +465,8 @@ class Probe
   std::string _name;
   std::string _expression;
 public:
-  void parse(CS& f) {f >> _name >> '=' >> _expression >> ';';}
-  void print(std::ostream& f)const
+  void parse(CS& f) override{f >> _name >> '=' >> _expression >> ';';}
+  void print(std::ostream& f)const override
 	{f << "    " << name() << " = \"" << expression() << "\";\n";}
   Probe() {untested();}
   Probe(CS& f) {parse(f);}
@@ -492,8 +492,8 @@ class Model
   Code_Block		_validate;
   Bool_Arg		_hide_base;
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const;
+  void parse(CS&) override;
+  void print(std::ostream& f)const override;
   Model(CS& f) {parse(f);}
   bool			 hide_base()const	{return _hide_base;}
   const String_Arg&	 name()const		{return _name;}
@@ -525,8 +525,8 @@ class Device
   Eval_List		_eval_list;
   Function_List		_function_list;
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const;
+  void parse(CS&) override;
+  void print(std::ostream& f)const override;
   Device(CS& f) {parse(f);}
   const String_Arg&	 name()const		{return _name;}
   const String_Arg&	 parse_name()const	{return _parse_name;}
@@ -551,8 +551,8 @@ class Head
 {
   std::string s;
 public:
-  void parse(CS& f);
-  void print(std::ostream& f)const {f << s;}
+  void parse(CS& f)override;
+  void print(std::ostream& f)const override{f << s;}
   Head() {}
 };
 /*--------------------------------------------------------------------------*/
@@ -563,7 +563,7 @@ class Attribute
   String_Arg _name;
   String_Arg _value;
 public:
-  void parse(CS& f);
+  void parse(CS& f)override;
   Attribute(CS& f) {untested();parse(f);}
   const String_Arg& name()const		{untested();return _name;}
   const String_Arg& value()const	{untested();return _value;}
