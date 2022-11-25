@@ -6,19 +6,19 @@ D1 ( 2 0 )  ddd NA( 1.) m=4.
 #           v(1)       v(2)       i(V1)      i(R1)      id(D1)     vd(D1)     req(D1)    cap(D1)    z(D1)      zraw(D1)   y(D1)      z(2)      
  27.        10.        0.5582    -94.418u    94.418u    23.604u    0.5582     1.0957K    1.4965p    100.K      273.18     912.63u    273.18    
 #           v(1)       v(2)       i(V1)      i(R1)      id(D1)     vd(D1)     req(D1)    cap(D1)    z(D1)      zraw(D1)   y(D1)      z(2)       iter(0)   
--10.       -10.       -10.        0.        -10.04p    -10.f      -10.        2.119E180  301.51f    100.K      100.K      0.         100.K      4.        
+-10.       -10.       -10.        0.        -10.04p    -10.f      -10.        2.119E180  301.51f    100.K      100.K      0.         100.K      5.        
 -8.        -8.        -8.         0.        -8.04p     -10.f      -8.         553.9E144  333.33f    100.K      100.K      0.         100.K      4.        
 -6.        -6.        -6.         0.        -6.04p     -10.f      -6.         144.8E111  377.96f    100.K      100.K      0.         100.K      4.        
 -4.        -4.        -4.         0.        -4.04p     -10.f      -4.         37.85E+78  447.21f    100.K      100.K      0.         100.K      4.        
 -2.        -2.        -2.         0.        -2.04p     -10.f      -2.         9.894E+45  577.35f    100.K      100.K      0.         100.K      4.        
- 0.         0.         0.         0.         0.         0.         0.         2.586E+12  1.p        100.K      100.K      386.64f    100.K      4.        
+ 0.         0.         0.         0.         0.         0.         0.         2.586E+12  1.p        100.K      100.K      386.64f    100.K      5.        
  2.         2.         0.51044   -14.896u    14.896u    3.7239u    0.51044    6.9455K    1.429p     100.K      1.7067K    143.98u    1.7067K    10.       
  4.         4.         0.5323    -34.677u    34.677u    8.6693u    0.5323     2.9834K    1.4599p    100.K      740.34     335.18u    740.34     5.        
  6.         6.         0.54402   -54.56u     54.56u     13.64u     0.54402    1.8962K    1.4765p    100.K      471.82     527.37u    471.82     5.        
  8.         8.         0.55207   -74.479u    74.479u    18.62u     0.55207    1.3891K    1.4878p    100.K      346.06     719.91u    346.06     5.        
  10.        10.        0.5582    -94.418u    94.418u    23.604u    0.5582     1.0957K    1.4965p    100.K      273.18     912.63u    273.18     5.        
 Gnucap   System status
-iterations: op=9, dc=54, tran=0, fourier=0, total=63
+iterations: op=9, dc=56, tran=0, fourier=0, total=65
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=2, subckt=0, model=0, total=2
 dctran density=100.0%, ac density=100.0%
@@ -29,7 +29,7 @@ dctran density=100.0%, ac density=100.0%
 #           v(1)       v(2)       i(V1)      i(R1)      id(D1)     vd(D1)     req(D1)    cap(D1)    z(D1)      zraw(D1)   y(D1)      z(2)      
  27.        10.        0.5582    -94.418u    94.418u    23.604u    0.5582     1.0957K    1.4965p    100.K      273.18     912.63u    273.18    
 Gnucap   System status
-iterations: op=9, dc=13, tran=0, fourier=0, total=85
+iterations: op=9, dc=13, tran=0, fourier=0, total=87
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=2, subckt=0, model=0, total=2
 dctran density=100.0%, ac density=100.0%
