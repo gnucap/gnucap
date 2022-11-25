@@ -165,25 +165,25 @@ protected: // create and destroy.
 	     ~COMPONENT();
   //--------------------------------------------------------------------
 public:	// "elaborate"
-  void	precalc_first();
-  void	expand();
-  void	precalc_last();
+  void	precalc_first() override;
+  void	expand() override;
+  void	precalc_last() override;
   virtual bool is_valid()const	{return true;}
   //--------------------------------------------------------------------
 public:	// dc-tran
-  void      tr_iwant_matrix();
-  void      tr_queue_eval();
-  TIME_PAIR tr_review();
-  void      tr_accept();
-  double    tr_probe_num(const std::string&)const;
+  void      tr_iwant_matrix() override;
+  void      tr_queue_eval() override;
+  TIME_PAIR tr_review() override;
+  void      tr_accept() override;
+  double    tr_probe_num(const std::string&)const override;
   //--------------------------------------------------------------------
 public:	// ac
-  void  ac_iwant_matrix();
+  void  ac_iwant_matrix() override;
   //--------------------------------------------------------------------
 public:	// state, aux data
-  bool	is_device()const		{return true;}
-  void	set_slave();
-  void  map_nodes();
+  bool	is_device()const override	{return true;}
+  void	set_slave()override;
+  void  map_nodes()override;
   virtual const std::string current_probe_name()const {untested(); return "";}
   static double volts_limited(const node_t& n1, const node_t& n2);
   bool	converged()const		{return _converged;}
@@ -224,7 +224,7 @@ public:	// state, aux data
   void	deflate_common();
   //--------------------------------------------------------------------
 public:	// type
-  void  set_dev_type(const std::string& new_type);
+  void  set_dev_type(const std::string& new_type) override;
   //--------------------------------------------------------------------
 public:	// ports
   virtual std::string port_name(int)const = 0;
@@ -244,7 +244,7 @@ public:	// ports
   virtual int	num_current_ports()const {return 0;}
   virtual int	tail_size()const	{return 0;}
 
-  virtual int	net_nodes()const	{untested();return 0;} //override
+  int	net_nodes()const override	{untested();return 0;} //override
   virtual int	ext_nodes()const	{return max_nodes();}
   virtual int	int_nodes()const	{return 0;}
   virtual int	matrix_nodes()const	{return 0;}
@@ -258,14 +258,14 @@ public:	// ports
   virtual bool	node_is_connected(int i)const;
   //--------------------------------------------------------------------
 public: // parameters
-  void set_param_by_name(std::string, std::string);
-  void set_param_by_index(int, std::string&, int);
-  int  param_count()const
+  void set_param_by_name(std::string, std::string) override;
+  void set_param_by_index(int, std::string&, int) override;
+  int  param_count()const override
 	{return ((has_common()) ? (common()->param_count()) : (2 + CARD::param_count()));}
-  bool param_is_printable(int)const;
-  std::string param_name(int)const;
-  std::string param_name(int,int)const;
-  std::string param_value(int)const; 
+  bool param_is_printable(int)const override;
+  std::string param_name(int)const override;
+  std::string param_name(int,int)const override;
+  std::string param_value(int)const override;
 
   virtual void set_parameters(const std::string& Label, CARD* Parent,
 			      COMMON_COMPONENT* Common, double Value,
@@ -279,9 +279,9 @@ public: // parameters
   //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code
   virtual bool print_type_in_spice()const = 0;
-  bool use_obsolete_callback_parse()const;
-  bool use_obsolete_callback_print()const;
-  void print_args_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  bool use_obsolete_callback_parse()const override;
+  bool use_obsolete_callback_print()const override;
+  void print_args_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
   void obsolete_move_parameters_from_common(const COMMON_COMPONENT*);
 };
 /*--------------------------------------------------------------------------*/

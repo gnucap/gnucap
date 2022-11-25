@@ -37,9 +37,9 @@ private:
   const Base* _data;
   std::string _aRgs;
 public:
-  void parse(CS&) {unreachable();}
+  void parse(CS&) override {unreachable();}
 public:
-  void dump(std::ostream&)const;
+  void dump(std::ostream&)const override;
 protected:
   explicit Token(const std::string Name, const Base* Data, const std::string Args)
     : _name(Name), _data(Data), _aRgs(Args) {}
@@ -65,8 +65,8 @@ public:
   explicit Token_SYMBOL(const std::string Name, const std::string Args)
     : Token(Name, NULL, Args) {}
   explicit Token_SYMBOL(const Token_SYMBOL& P) : Token(P) {untested();}
-  Token* clone()const {untested();return new Token_SYMBOL(*this);}
-  void stack_op(Expression*)const;
+  Token* clone()const  override{untested();return new Token_SYMBOL(*this);}
+  void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
 class Token_BINOP : public Token
@@ -75,9 +75,9 @@ public:
   explicit Token_BINOP(const std::string Name)
     : Token(Name, NULL, "") {}
   explicit Token_BINOP(const Token_BINOP& P) : Token(P) {}
-  Token* clone()const {return new Token_BINOP(*this);}
+  Token* clone()const override{return new Token_BINOP(*this);}
   Token* op(const Token* t1, const Token* t2)const;
-  void stack_op(Expression*)const;
+  void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
 class Token_STOP : public Token
@@ -86,8 +86,8 @@ public:
   explicit Token_STOP(const std::string Name)
     : Token(Name, NULL, "") {}
   explicit Token_STOP(const Token_STOP& P) : Token(P) {}
-  Token* clone()const {return new Token_STOP(*this);}
-  void stack_op(Expression*)const;
+  Token* clone()const override{return new Token_STOP(*this);}
+  void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
 class Token_PARLIST : public Token
@@ -96,8 +96,8 @@ public:
   explicit Token_PARLIST(const std::string Name)
     : Token(Name, NULL, "") {}
   explicit Token_PARLIST(const Token_PARLIST& P) : Token(P) {untested();}
-  Token* clone()const {untested();return new Token_PARLIST(*this);}
-  void stack_op(Expression*)const;
+  Token* clone()const override{untested();return new Token_PARLIST(*this);}
+  void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
 class Token_UNARY : public Token
@@ -106,9 +106,9 @@ public:
   explicit Token_UNARY(const std::string Name)
     : Token(Name, NULL, "") {}
   explicit Token_UNARY(const Token_UNARY& P) : Token(P) {untested();}
-  Token* clone()const {untested();return new Token_UNARY(*this);}
+  Token* clone()const override {untested();return new Token_UNARY(*this);}
   Token* op(const Token* t1)const;
-  void stack_op(Expression*)const;
+  void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
 class Token_CONSTANT : public Token
@@ -117,8 +117,8 @@ public:
   explicit Token_CONSTANT(const std::string Name, const Base* Data, const std::string Args)
     : Token(Name, Data, Args) {}
   explicit Token_CONSTANT(const Token_CONSTANT& P) : Token(P) {untested();}
-  Token* clone()const {untested();return new Token_CONSTANT(*this);}
-  void stack_op(Expression*)const;
+  Token* clone()const override {untested();return new Token_CONSTANT(*this);}
+  void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE Expression
@@ -127,8 +127,8 @@ class INTERFACE Expression
 public:
   const CARD_LIST* _scope;
 public:
-  void parse(CS&);
-  void dump(std::ostream&)const;
+  void parse(CS&) override;
+  void dump(std::ostream&)const override;
 private: // expression-in.cc
   void arglisttail(CS& File);
   void arglist(CS& File);

@@ -61,12 +61,12 @@ public:
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}
   
-  bool	has_good_value()const {return (_v != NOT_INPUT);}
+  bool	has_good_value()const override {return (_v != NOT_INPUT);}
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
   T	e_val(const T& def, const CARD_LIST* scope)const;
-  void	parse(CS& cmd);
+  void	parse(CS& cmd) override;
 
   std::string string()const {
     if (_s == "#") {
@@ -83,7 +83,7 @@ public:
   void	operator=(const T& v)		{_v = v; _s = "#";}
   //void	operator=(const std::string& s)	{untested();_s = s;}
 
-  void	operator=(const std::string& s)	{
+  void	operator=(const std::string& s)override	{
     if (strchr("'\"{", s[0])) {
       CS cmd(CS::_STRING, s);
       _s = cmd.ctos("", "'\"{", "'\"}");
@@ -214,7 +214,7 @@ public:
   std::string value(int)const;
 
   void	eval_copy(PARAM_LIST&, const CARD_LIST*);
-  bool  operator==(const PARAM_LIST& p)const {return _pl == p._pl;}
+  bool  operator==(const PARAM_LIST& p)const{return _pl == p._pl;}
   const PARAMETER<double>& deep_lookup(std::string)const;
   const PARAMETER<double>& operator[](std::string i)const {return deep_lookup(i);}
   void set(std::string, const std::string&);
