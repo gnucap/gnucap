@@ -49,29 +49,29 @@ public:
   explicit DEV_CPOLY_CAP();
   ~DEV_CPOLY_CAP();
 protected: // override virtual
-  char	   id_letter()const	{unreachable(); return '\0';}
-  std::string value_name()const	{incomplete(); return "";}
-  std::string dev_type()const	{unreachable(); return "cpoly_cap";}
-  int	   max_nodes()const	{return net_nodes();}
-  int	   min_nodes()const	{return net_nodes();}
-  int	   matrix_nodes()const	{return _n_ports*2;}
-  int	   net_nodes()const	{return _n_ports*2;}
-  CARD*	   clone()const	        {unreachable();return new DEV_CPOLY_CAP(*this);}
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
-  bool	   tr_needs_eval()const	{/*assert(!is_q_for_eval());*/ return true;}
-  bool	   do_tr();
-  void	   tr_load();
-  TIME_PAIR tr_review()		{return _time_by.reset();}//BUG//review(_i0.f0, _it1.f0);}
-  void	   tr_unload();
-  double   tr_involts()const	{unreachable(); return NOT_VALID;}
-  double   tr_involts_limited()const {unreachable(); return NOT_VALID;}
-  double   tr_amps()const;
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_extended();}
-  void	   ac_load();
-  COMPLEX  ac_involts()const	{itested(); return NOT_VALID;}
-  COMPLEX  ac_amps()const	{itested(); return NOT_VALID;}
+  char	   id_letter()const override	{unreachable(); return '\0';}
+  std::string value_name()const override{incomplete(); return "";}
+  std::string dev_type()const override	{unreachable(); return "cpoly_cap";}
+  int	   max_nodes()const override	{return net_nodes();}
+  int	   min_nodes()const override	{return net_nodes();}
+  int	   matrix_nodes()const override	{return _n_ports*2;}
+  int	   net_nodes()const override	{return _n_ports*2;}
+  CARD*	   clone()const override        {unreachable();return new DEV_CPOLY_CAP(*this);}
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  bool	   tr_needs_eval()const override	{/*assert(!is_q_for_eval());*/ return true;}
+  bool	   do_tr()override;
+  void	   tr_load()override;
+  TIME_PAIR tr_review()override		{return _time_by.reset();}//BUG//review(_i0.f0, _it1.f0);}
+  void	   tr_unload()override;
+  double   tr_involts()const override	{unreachable(); return NOT_VALID;}
+  double   tr_involts_limited()const override {unreachable(); return NOT_VALID;}
+  double   tr_amps()const override;
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_load()override;
+  COMPLEX  ac_involts()const override	{itested(); return NOT_VALID;}
+  COMPLEX  ac_amps()const override	{itested(); return NOT_VALID;}
 
-  std::string port_name(int)const {untested();
+  std::string port_name(int)const override {untested();
     incomplete();
     unreachable();
     return "";
@@ -80,7 +80,7 @@ public:
   void set_parameters(const std::string& Label, CARD* Parent,
 		      COMMON_COMPONENT* Common, double Value,
 		      int state_count, double state[],
-		      int node_count, const node_t nodes[]);
+		      int node_count, const node_t nodes[])override;
   //		      const double* inputs[]=0);
 protected:
   bool do_tr_con_chk_and_q();
@@ -93,10 +93,10 @@ private:
 public:
   explicit DEV_FPOLY_CAP() :DEV_CPOLY_CAP() {}
 private: // override virtual
-  char	   id_letter()const  {unreachable(); return '\0';}
-  std::string dev_type()const{unreachable(); return "fpoly_cap";}
-  CARD*	   clone()const	     {return new DEV_FPOLY_CAP(*this);}
-  bool	   do_tr();
+  char	   id_letter()const override	{unreachable(); return '\0';}
+  std::string dev_type()const override	{unreachable(); return "fpoly_cap";}
+  CARD*	   clone()const override	{return new DEV_FPOLY_CAP(*this);}
+  bool	   do_tr()override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -34,33 +34,33 @@ private:
 public:
   explicit DEV_VS()		:ELEMENT() {}
 private: // override virtual
-  char	   id_letter()const	{return 'V';}
-  std::string value_name()const {return "dc";}
-  std::string dev_type()const	{return "vsource";}
-  int	   max_nodes()const	{return 2;}
-  int	   min_nodes()const	{return 2;}
-  int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	{return 2;}
-  bool	   is_source()const	{return true;}
-  bool	   f_is_value()const	{return true;}
-  bool	   has_iv_probe()const  {return true;}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_VS(*this);}
-  void     precalc_last();
-  void     dc_advance();
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
-  void	   tr_begin();
-  bool	   do_tr();
-  void	   tr_load()		{tr_load_shunt(); tr_load_source();}
-  void	   tr_unload()		{untested();tr_unload_source();}
-  double   tr_involts()const	{return 0.;}
-  double   tr_involts_limited()const {unreachable(); return 0.;}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void	   ac_begin()		{_loss1 = _loss0 = 1./OPT::shortckt; _acg = _ev = 0.;}
-  void	   do_ac();
-  void	   ac_load()		{ac_load_shunt(); ac_load_source();}
-  COMPLEX  ac_involts()const	{return 0.;}
-  COMPLEX  ac_amps()const	{return (_acg + ac_outvolts()*_loss0);}
+  char	   id_letter()const override	{return 'V';}
+  std::string value_name()const override{return "dc";}
+  std::string dev_type()const override	{return "vsource";}
+  int	   max_nodes()const override	{return 2;}
+  int	   min_nodes()const override	{return 2;}
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override	{return 2;}
+  bool	   is_source()const override	{return true;}
+  bool	   f_is_value()const override	{return true;}
+  bool	   has_iv_probe()const override	{return true;}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const override	{return new DEV_VS(*this);}
+  void     precalc_last()override;
+  void     dc_advance()override;
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
+  void	   tr_begin()override;
+  bool	   do_tr()override;
+  void	   tr_load()override		{tr_load_shunt(); tr_load_source();}
+  void	   tr_unload()override		{untested();tr_unload_source();}
+  double   tr_involts()const override	{return 0.;}
+  double   tr_involts_limited()const override{unreachable(); return 0.;}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_passive();}
+  void	   ac_begin()override		{_loss1 = _loss0 = 1./OPT::shortckt; _acg = _ev = 0.;}
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_shunt(); ac_load_source();}
+  COMPLEX  ac_involts()const override	{return 0.;}
+  COMPLEX  ac_amps()const override	{return (_acg + ac_outvolts()*_loss0);}
 
   std::string port_name(int i)const {
     assert(i >= 0);

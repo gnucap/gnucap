@@ -33,7 +33,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class AC : public SIM {
 public:
-  void	do_it(CS&, CARD_LIST*);
+  void	do_it(CS&, CARD_LIST*)override;
 
   explicit AC():
     SIM(),
@@ -49,12 +49,12 @@ public:
   ~AC() {}
 private:
   explicit AC(const AC&):SIM() {unreachable(); incomplete();}
-  void	sweep();
+  void	sweep()override;
   void	first();
   bool	next();
   void	solve();
   void	clear();
-  void	setup(CS&);
+  void	setup(CS&)override;
 private:
   PARAMETER<double> _start;	// sweep start frequency
   PARAMETER<double> _stop;	// sweep stop frequency

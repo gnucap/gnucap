@@ -34,35 +34,35 @@ private:
 public:
   explicit DEV_CS()		:ELEMENT() {}
 private: // override virtual
-  char	   id_letter()const	{return 'I';}
-  std::string value_name()const {itested(); return "dc";}
-  std::string dev_type()const	{return "isource";}
-  int	   max_nodes()const	{return 2;}
-  int	   min_nodes()const	{return 2;}
-  int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	{return 2;}
-  bool	   is_source()const	{return true;}
-  bool	   f_is_value()const	{return true;}
-  bool	   has_iv_probe()const  {return true;}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_CS(*this);}
-  void     precalc_last();
-  void     dc_advance();
-  void	   tr_iwant_matrix()	{/* nothing */}
-  void	   tr_begin();
-  bool	   do_tr();
-  void	   tr_load()		{tr_load_source();}
-  void	   tr_unload()		{untested();tr_unload_source();}
-  double   tr_involts()const	{return 0.;}
-  double   tr_involts_limited()const {unreachable(); return 0.;}
-  void	   ac_iwant_matrix()	{/* nothing */}
-  void	   ac_begin()		{_acg = _ev = 0.;}
-  void	   do_ac();
-  void	   ac_load()		{ac_load_source();}
-  COMPLEX  ac_involts()const	{untested();return 0.;}
-  COMPLEX  ac_amps()const	{return _acg;}
+  char	   id_letter()const override	{return 'I';}
+  std::string value_name()const override{itested(); return "dc";}
+  std::string dev_type()const override	{return "isource";}
+  int	   max_nodes()const override	{return 2;}
+  int	   min_nodes()const override	{return 2;}
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override	{return 2;}
+  bool	   is_source()const override	{return true;}
+  bool	   f_is_value()const override	{return true;}
+  bool	   has_iv_probe()const override	{return true;}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const override	{return new DEV_CS(*this);}
+  void     precalc_last()override;
+  void     dc_advance()override;
+  void	   tr_iwant_matrix()override	{/* nothing */}
+  void	   tr_begin()override;
+  bool	   do_tr()override;
+  void	   tr_load()override		{tr_load_source();}
+  void	   tr_unload()override		{untested();tr_unload_source();}
+  double   tr_involts()const override	{return 0.;}
+  double   tr_involts_limited()const override {unreachable(); return 0.;}
+  void	   ac_iwant_matrix()override	{/* nothing */}
+  void	   ac_begin()override		{_acg = _ev = 0.;}
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_source();}
+  COMPLEX  ac_involts()const override	{untested();return 0.;}
+  COMPLEX  ac_amps()const override	{return _acg;}
 
-  std::string port_name(int i)const {
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};

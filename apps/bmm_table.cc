@@ -39,13 +39,13 @@ public:
   explicit EVAL_BM_TABLE(int c=0);
   ~EVAL_BM_TABLE() {}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {return new EVAL_BM_TABLE(*this);}
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
-  void  	expand(const COMPONENT*);
-  void		tr_eval(ELEMENT*)const;
-  std::string	name()const	{untested();return modelname().c_str();}
-  bool		ac_too()const		{untested();return false;}
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {return new EVAL_BM_TABLE(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
+  void  	expand(const COMPONENT*) override;
+  void		tr_eval(ELEMENT*)const override;
+  std::string	name()const override	{untested();return modelname().c_str();}
+  bool		ac_too()const override	{untested();return false;}
 };
 /*--------------------------------------------------------------------------*/
 class MODEL_TABLE : public MODEL_CARD {

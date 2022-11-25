@@ -50,16 +50,16 @@ public:
   explicit      EVAL_BM_FIT(int c=0);
 		~EVAL_BM_FIT();
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const	{return new EVAL_BM_FIT(*this);}
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {return new EVAL_BM_FIT(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
-  void		precalc_last(const CARD_LIST*);
-  void		tr_eval(ELEMENT*)const;
-  std::string	name()const		{return "fit";}
-  bool		ac_too()const		{return false;}
-  bool		parse_numlist(CS&);
-  bool		parse_params_obsolete_callback(CS&);
+  void		precalc_last(const CARD_LIST*) override;
+  void		tr_eval(ELEMENT*)const override;
+  std::string	name()const override		{return "fit";}
+  bool		ac_too()const override		{return false;}
+  bool		parse_numlist(CS&)override;
+  bool		parse_params_obsolete_callback(CS&)override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -35,34 +35,34 @@ private:
 public:
   explicit DEV_RESISTANCE()	:ELEMENT() {}
 private: // override virtual
-  char	   id_letter()const	{return 'R';}
-  std::string value_name()const {return "r";}
-  std::string dev_type()const	{return "resistor";}
-  int	   max_nodes()const	{return 2;}
-  int	   min_nodes()const	{return 2;}
-  int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	{return 2;}
-  bool	   has_iv_probe()const  {return true;}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_RESISTANCE(*this);}
-  void     precalc_last();
-  void     dc_advance();
+  char	   id_letter()const override	{return 'R';}
+  std::string value_name()const override {return "r";}
+  std::string dev_type()const override	{return "resistor";}
+  int	   max_nodes()const override	{return 2;}
+  int	   min_nodes()const override	{return 2;}
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override	{return 2;}
+  bool	   has_iv_probe()const override  {return true;}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const override		{return new DEV_RESISTANCE(*this);}
+  void     precalc_last()override;
+  void     dc_advance()override;
   void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
-  void     tr_begin();
-  bool	   do_tr();
+  void     tr_begin()override;
+  bool	   do_tr()override;
   void	   tr_load()		{tr_load_passive();}
   void	   tr_unload()		{untested();tr_unload_passive();}
-  double   tr_involts()const	{return tr_outvolts();}
-  double   tr_input()const	{untested(); return _m0.c0 + _m0.c1 * tr_involts();}
-  double   tr_involts_limited()const {return tr_outvolts_limited();}
-  double   tr_input_limited()const {return _m0.c0+_m0.c1*tr_involts_limited();}
+  double   tr_involts()const override	{return tr_outvolts();}
+  double   tr_input()const override	{untested(); return _m0.c0 + _m0.c1 * tr_involts();}
+  double   tr_involts_limited()const override {return tr_outvolts_limited();}
+  double   tr_input_limited()const override {return _m0.c0+_m0.c1*tr_involts_limited();}
   void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void     ac_begin();
-  void	   do_ac();
+  void     ac_begin()override;
+  void	   do_ac()override;
   void	   ac_load()		{ac_load_passive();}
-  COMPLEX  ac_involts()const	{return ac_outvolts();}
+  COMPLEX  ac_involts()const override	{return ac_outvolts();}
 
-  std::string port_name(int i)const {
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};

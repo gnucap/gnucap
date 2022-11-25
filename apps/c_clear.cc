@@ -33,8 +33,7 @@ namespace {
  */
 class CMD_CLEAR : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)
-  {
+  void do_it(CS&, CARD_LIST* Scope)override {
     command("unfault", Scope);
     command("unmark", Scope);
     //command("ic clear", Scope);
