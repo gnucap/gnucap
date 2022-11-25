@@ -99,7 +99,6 @@ void DC::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_phase = p_INIT_DC;
   ::status.dc.reset().start();
   command_base(Cmd);
-  _sim->_has_op = s_DC;
   _scope = NULL;
   ::status.dc.stop();
 }
@@ -116,7 +115,6 @@ void OP::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_phase = p_INIT_DC;
   ::status.op.reset().start();
   command_base(Cmd);
-  _sim->_has_op = s_OP;
   _scope = NULL;
   ::status.op.stop();
 }

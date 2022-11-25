@@ -100,7 +100,6 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_acx.unallocate();
   _sim->unalloc_vectors();
 
-  _sim->_has_op = s_AC;
   _scope = NULL;
   
   ::status.ac.stop();
@@ -259,6 +258,7 @@ void AC::sweep()
     _sim->_jomega = COMPLEX(0., _sim->_freq * M_TWO_PI);
     solve();
     outdata(_sim->_freq, ofPRINT | ofSTORE);
+    _sim->_has_op = s_AC;
   } while (next());
 }
 /*--------------------------------------------------------------------------*/

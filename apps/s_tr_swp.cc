@@ -587,6 +587,7 @@ void TRANSIENT::accept()
     _scope->tr_accept();
   }
   ++steps_accepted_;
+  _sim->_has_op = s_TRAN;
   ::status.accept.stop();
 }
 /*--------------------------------------------------------------------------*/
