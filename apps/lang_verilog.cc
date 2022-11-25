@@ -38,12 +38,12 @@ class LANG_VERILOG : public LANGUAGE {
 public:
   LANG_VERILOG() : arg_count(INACTIVE) {}
   ~LANG_VERILOG() {}
-  std::string name()const {return "verilog";}
-  bool case_insensitive()const {return false;}
-  UNITS units()const {return uSI;}
+  std::string name()const override {return "verilog";}
+  bool case_insensitive()const override {return false;}
+  UNITS units()const override {return uSI;}
 
 public: // override virtual, used by callback
-  std::string arg_front()const {untested();
+  std::string arg_front()const override {untested();
     switch (_mode) {
     case mPARAMSET:untested(); return " .";			    break;
     case mDEFAULT:untested();  return (arg_count++ > 0) ? ", ." : "."; break;
@@ -51,7 +51,7 @@ public: // override virtual, used by callback
     unreachable();
     return "";
   }
-  std::string arg_mid()const {untested();
+  std::string arg_mid()const override {untested();
     switch (_mode) {
     case mPARAMSET:untested(); return "="; break;
     case mDEFAULT:untested();  return "("; break;
@@ -59,7 +59,7 @@ public: // override virtual, used by callback
     unreachable();
     return "";
   }
-  std::string arg_back()const {untested();
+  std::string arg_back()const override {untested();
     switch (_mode) {
     case mPARAMSET:untested(); return ";"; break;
     case mDEFAULT:untested();  return ")"; break;
@@ -69,20 +69,20 @@ public: // override virtual, used by callback
   }
 
 public: // override virtual, called by commands
-  void		parse_top_item(CS&, CARD_LIST*);
-  DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*);
-  DEV_DOT*	parse_command(CS&, DEV_DOT*);
-  MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*);
-  BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*);
-  COMPONENT*	parse_instance(CS&, COMPONENT*);
-  std::string	find_type_in_string(CS&);
+  void		parse_top_item(CS&, CARD_LIST*)override;
+  DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*)override;
+  DEV_DOT*	parse_command(CS&, DEV_DOT*)override;
+  MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*)override;
+  BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*)override;
+  COMPONENT*	parse_instance(CS&, COMPONENT*)override;
+  std::string	find_type_in_string(CS&)override;
 
 private: // override virtual, called by print_item
-  void print_paramset(OMSTREAM&, const MODEL_CARD*);
-  void print_module(OMSTREAM&, const BASE_SUBCKT*);
-  void print_instance(OMSTREAM&, const COMPONENT*);
-  void print_comment(OMSTREAM&, const DEV_COMMENT*);
-  void print_command(OMSTREAM& o, const DEV_DOT* c);
+  void print_paramset(OMSTREAM&, const MODEL_CARD*)override;
+  void print_module(OMSTREAM&, const BASE_SUBCKT*)override;
+  void print_instance(OMSTREAM&, const COMPONENT*)override;
+  void print_comment(OMSTREAM&, const DEV_COMMENT*)override;
+  void print_command(OMSTREAM& o, const DEV_DOT* c)override;
 private: // local
   void print_args(OMSTREAM&, const MODEL_CARD*);
   void print_args(OMSTREAM&, const COMPONENT*);

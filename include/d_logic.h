@@ -45,34 +45,34 @@ public:
   explicit	DEV_LOGIC(const DEV_LOGIC& p);
 		~DEV_LOGIC()		{--_count;}
 private: // override virtuals
-  char	   id_letter()const	{return 'U';}
-  std::string value_name()const	{return "#";}
-  bool	      print_type_in_spice()const {return true;}
-  std::string dev_type()const {assert(has_common());
+  char	   id_letter()const override	{return 'U';}
+  std::string value_name()const override{return "#";}
+  bool	      print_type_in_spice()const override{return true;}
+  std::string dev_type()const override{assert(has_common());
     return (common()->modelname() + " " + common()->name()).c_str();}
-  int	   tail_size()const	{return 2;}
-  int	   max_nodes()const	{return PORTS_PER_GATE;}
-  int	   min_nodes()const	{return BEGIN_IN+1;}
-  int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	{return _net_nodes;}
-  CARD*	   clone()const		{return new DEV_LOGIC(*this);}
-  void	   precalc_first() {ELEMENT::precalc_first(); if (subckt()) {subckt()->precalc_first();}}
-  void	   expand();
-  void	   precalc_last() {ELEMENT::precalc_last(); if (subckt()) {subckt()->precalc_last();}}
+  int	   tail_size()const override {return 2;}
+  int	   max_nodes()const override {return PORTS_PER_GATE;}
+  int	   min_nodes()const override {return BEGIN_IN+1;}
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override {return _net_nodes;}
+  CARD*	   clone()const override {return new DEV_LOGIC(*this);}
+  void	   precalc_first()override {ELEMENT::precalc_first(); if (subckt()) {subckt()->precalc_first();}}
+  void	   expand()override;
+  void	   precalc_last() override{ELEMENT::precalc_last(); if (subckt()) {subckt()->precalc_last();}}
   //void   map_nodes();
 
-  void	   tr_iwant_matrix();
-  void	   tr_begin();
-  void	   tr_restore();
-  void	   dc_advance();
-  void	   tr_advance();
-  void	   tr_regress();
-  bool	   tr_needs_eval()const;
-  void	   tr_queue_eval();
-  bool	   do_tr();
-  void	   tr_load();
-  TIME_PAIR tr_review();
-  void	   tr_accept();
+  void	   tr_iwant_matrix()override;
+  void	   tr_begin()override;
+  void	   tr_restore()override;
+  void	   dc_advance()override;
+  void	   tr_advance()override;
+  void	   tr_regress()override;
+  bool	   tr_needs_eval()const override;
+  void	   tr_queue_eval()override;
+  bool	   do_tr()override;
+  void	   tr_load()override;
+  TIME_PAIR tr_review()override;
+  void	   tr_accept()override;
   void	   tr_unload();
   double   tr_involts()const		{unreachable(); return 0;}
   //double tr_input()const		//ELEMENT

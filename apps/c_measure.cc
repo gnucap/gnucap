@@ -31,8 +31,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_MEASURE : public CMD {
 public:
-  void do_it(CS& Cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& Cmd, CARD_LIST* Scope)override {
     std::string assign_to, function;
     Cmd >> assign_to >> '=' >> function >> '(';
     if (FUNCTION* f = measure_dispatcher[function]) {

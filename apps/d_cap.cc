@@ -41,30 +41,30 @@ protected:
 public:
   explicit DEV_CAPACITANCE()	:STORAGE() {}
 protected: // override virtual
-  char	   id_letter()const	{return 'C';}
-  std::string value_name()const {return "c";}
-  std::string dev_type()const	{return "capacitor";}
-  int	   max_nodes()const	{return 2;}
-  int	   min_nodes()const	{return 2;}
-  int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	{return 2;}
-  bool	   has_iv_probe()const  {return true;}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_CAPACITANCE(*this);}
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
-  bool	   do_tr();
-  void	   tr_load()		{tr_load_passive();}
-  void	   tr_unload()		{tr_unload_passive();}
-  double   tr_involts()const	{return tr_outvolts();}
-  double   tr_involts_limited()const {return tr_outvolts_limited();}
-  double   tr_probe_num(const std::string&)const;
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void	   ac_begin()		{STORAGE::ac_begin(); _ev = _y[0].f1;}
-  void	   do_ac();
-  void	   ac_load()		{ac_load_passive();}
-  COMPLEX  ac_involts()const	{itested();return ac_outvolts();}
+  char	   id_letter()const override	{return 'C';}
+  std::string value_name()const override{return "c";}
+  std::string dev_type()const override	{return "capacitor";}
+  int	   max_nodes()const override	{return 2;}
+  int	   min_nodes()const override	{return 2;}
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override	{return 2;}
+  bool	   has_iv_probe()const override {return true;}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const override		{return new DEV_CAPACITANCE(*this);}
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
+  bool	   do_tr()override;
+  void	   tr_load()override		{tr_load_passive();}
+  void	   tr_unload()override		{tr_unload_passive();}
+  double   tr_involts()const override	{return tr_outvolts();}
+  double   tr_involts_limited()const override {return tr_outvolts_limited();}
+  double   tr_probe_num(const std::string&)const override;
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_passive();}
+  void	   ac_begin()override		{STORAGE::ac_begin(); _ev = _y[0].f1;}
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_passive();}
+  COMPLEX  ac_involts()const override	{itested();return ac_outvolts();}
 
-  std::string port_name(int i)const {
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};
@@ -78,24 +78,24 @@ private:
 public:
   explicit DEV_TRANSCAP()	:DEV_CAPACITANCE() {}
 private: // override virtual
-  char     id_letter()const	{untested();return '\0';}
-  std::string value_name()const {untested(); return "c";}
-  std::string dev_type()const	{return "tcap";}
-  int	   max_nodes()const	{return 4;}
-  int	   min_nodes()const	{return 4;}
-  int	   matrix_nodes()const	{return 4;}
-  int	   net_nodes()const	{return 4;}
-  bool	   has_iv_probe()const  {untested(); return false;}
-  bool	   f_is_value()const	{untested();return true;}
-  CARD*	   clone()const		{return new DEV_TRANSCAP(*this);}
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_active();}
-  void	   tr_load()		{tr_load_active();}
-  double   tr_involts()const	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
-  double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_active();}
-  void	   ac_load()		{untested(); ac_load_active();}
+  char     id_letter()const override	{untested();return '\0';}
+  std::string value_name()const override{untested(); return "c";}
+  std::string dev_type()const override	{return "tcap";}
+  int	   max_nodes()const override	{return 4;}
+  int	   min_nodes()const override	{return 4;}
+  int	   matrix_nodes()const override	{return 4;}
+  int	   net_nodes()const override	{return 4;}
+  bool	   has_iv_probe()const override {untested(); return false;}
+  bool	   f_is_value()const override	{untested();return true;}
+  CARD*	   clone()const override	{return new DEV_TRANSCAP(*this);}
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_active();}
+  void	   tr_load()override		{tr_load_active();}
+  double   tr_involts()const override	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
+  double   tr_involts_limited()const override {return volts_limited(_n[IN1],_n[IN2]);}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_active();}
+  void	   ac_load()override		{untested(); ac_load_active();}
 
-  std::string port_name(int i)const {untested();
+  std::string port_name(int i)const override {untested();
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"p", "n", "ps", "ns"};
@@ -110,23 +110,23 @@ private:
 public:
   explicit DEV_VCCAP()		:DEV_CAPACITANCE() {}
 private: // override virtual
-  char     id_letter()const	{untested();return '\0';}
-  std::string value_name()const {untested(); return "c";}
-  std::string dev_type()const	{return "vccap";}
-  int	   max_nodes()const	{return 4;}
-  int	   min_nodes()const	{return 4;}
-  int	   matrix_nodes()const	{return 4;}
-  int	   net_nodes()const	{return 4;}
-  bool	   has_iv_probe()const  {untested(); return false;}
-  bool	   f_is_value()const	{untested();return true;}
-  CARD*	   clone()const		{return new DEV_VCCAP(*this);}
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
-  bool     do_tr();
-  double   tr_involts()const	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
-  double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_extended();}
+  char     id_letter()const override	{untested();return '\0';}
+  std::string value_name()const override{untested(); return "c";}
+  std::string dev_type()const override	{return "vccap";}
+  int	   max_nodes()const override	{return 4;}
+  int	   min_nodes()const override	{return 4;}
+  int	   matrix_nodes()const override	{return 4;}
+  int	   net_nodes()const override	{return 4;}
+  bool	   has_iv_probe()const override {untested(); return false;}
+  bool	   f_is_value()const override	{untested();return true;}
+  CARD*	   clone()const override	{return new DEV_VCCAP(*this);}
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  bool     do_tr()override;
+  double   tr_involts()const override	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
+  double   tr_involts_limited()const override {return volts_limited(_n[IN1],_n[IN2]);}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
 
-  std::string port_name(int i)const {untested();
+  std::string port_name(int i)const override {untested();
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"p", "n", "ps", "ns"};

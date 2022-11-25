@@ -44,8 +44,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_HELP : public CMD {
 public:
-  void do_it(CS& Cmd, CARD_LIST*)
-  {
+  void do_it(CS& Cmd, CARD_LIST*)override {
     size_t tail = Cmd.cursor();
     
     std::string topic;
@@ -68,8 +67,7 @@ public:
     }
   }
   
-  std::string help_text()const
-  {
+  std::string help_text()const override {
     return 
       "help command\n"
       "Provides help on a variety of topics\n"

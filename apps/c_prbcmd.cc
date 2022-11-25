@@ -121,7 +121,7 @@ void do_probe(CS& cmd, PROBELIST *probes, CARD_LIST *scope)
 /*--------------------------------------------------------------------------*/
 class CMD_STORE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope) {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
 #ifdef TRACE_UNTESTED
     if (Scope == &CARD_LIST::card_list) {
@@ -137,7 +137,7 @@ DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "store", &p0);
 /*--------------------------------------------------------------------------*/
 class CMD_ALARM : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope) {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
 #ifdef TRACE_UNTESTED
     if (Scope == &CARD_LIST::card_list) {
@@ -153,7 +153,7 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "alarm", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_PLOT : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope) {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
 #ifdef TRACE_UNTESTED
     if (Scope == &CARD_LIST::card_list) {
@@ -170,7 +170,7 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "iplot|plot", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_PRINT : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope) {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
 #ifdef TRACE_UNTESTED
     if (Scope == &CARD_LIST::card_list) {

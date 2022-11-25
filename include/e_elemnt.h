@@ -42,14 +42,14 @@ public:
 
   bool	   skip_dev_type(CS&);
 public: // override virtual
-  bool	   print_type_in_spice()const {return false;}
-  void	   ac_begin();
-  void	   tr_begin();
-  void	   tr_restore();
-  void	   dc_advance();
-  void	   tr_advance();
-  void	   tr_regress();
-  bool	   tr_needs_eval()const {/*assert(!is_q_for_eval());*/ return !is_constant();}
+  bool	   print_type_in_spice()const override {return false;}
+  void	   ac_begin() override;
+  void	   tr_begin() override;
+  void	   tr_restore() override;
+  void	   dc_advance() override;
+  void	   tr_advance() override;
+  void	   tr_regress() override;
+  bool	   tr_needs_eval()const override {/*assert(!is_q_for_eval());*/ return !is_constant();}
 #if 0
   void	   tr_queue_eval()	{
     if(tr_needs_eval()) {
@@ -58,13 +58,13 @@ public: // override virtual
     }
   }
 #endif
-  TIME_PAIR tr_review();
+  TIME_PAIR tr_review() override;
 
   //void   map_nodes();
-  void	   tr_iwant_matrix() = 0;
-  void	   ac_iwant_matrix() = 0;
-  double   tr_probe_num(const std::string&)const;
-  XPROBE   ac_probe_ext(const std::string&)const;
+  void	   tr_iwant_matrix() override = 0;
+  void	   ac_iwant_matrix() override = 0;
+  double   tr_probe_num(const std::string&)const override;
+  XPROBE   ac_probe_ext(const std::string&)const override;
 
 protected: // inline, below
   double   dampdiff(double*, const double&);
@@ -145,7 +145,7 @@ public:
 
   virtual int order()const		{return OPT::trsteporder;}
   virtual double error_factor()const	{return OPT::trstepcoef[OPT::trsteporder];}
-  int param_count()const {return (0 + COMPONENT::param_count());}
+  int param_count()const override {return (0 + COMPONENT::param_count());}
 protected:
   int      _loaditer;	// load iteration number
 private:

@@ -104,8 +104,8 @@ public: // maniputation
   //NODE& set_flat_number(int n) {itested();_flat_number = n; return *this;}
   //NODE& set_matrix_number(int n){untested();_matrix_number = n;return *this;}
 public: // virtuals
-  double	tr_probe_num(const std::string&)const;
-  XPROBE	ac_probe_ext(const std::string&)const;
+  double	tr_probe_num(const std::string&)const override;
+  XPROBE	ac_probe_ext(const std::string&)const override;
 
   double      v0()const	{
     assert(m_() >= 0);
@@ -150,7 +150,7 @@ private:
   // so it is not pure virtual
   //const	      std::string long_label()const;
 public: // virtuals
-  double	tr_probe_num(const std::string&)const;
+  double	tr_probe_num(const std::string&)const override;
   //XPROBE	ac_probe_ext(const std::string&)const;
 
 public: // raw data access (rvalues)

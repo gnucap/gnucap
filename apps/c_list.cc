@@ -109,8 +109,7 @@ void list_save(CS& cmd, OMSTREAM out, CARD_LIST* scope)
 /*--------------------------------------------------------------------------*/
 class CMD_LIST : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
     }else{untested();
@@ -122,8 +121,7 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "list", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_SAVE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {itested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {itested();
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {untested();
     }else{untested();

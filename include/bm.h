@@ -37,12 +37,13 @@ protected:
     :COMMON_COMPONENT(p) {}
 		~EVAL_BM_BASE() {}
 protected: // override virtual
-  bool operator==(const COMMON_COMPONENT&)const{/*incomplete();*/return false;}
-  bool		has_tr_eval()const	{return true;}
-  bool		has_ac_eval()const	{return true;}
-  bool use_obsolete_callback_parse()const {return true;}
-  bool use_obsolete_callback_print()const {return true;}
-  bool has_parse_params_obsolete_callback()const {return true;}
+  bool operator==(const COMMON_COMPONENT&)const override
+						{/*incomplete();*/return false;}
+  bool		has_tr_eval()const override	{return true;}
+  bool		has_ac_eval()const override	{return true;}
+  bool use_obsolete_callback_parse()const override	{return true;}
+  bool use_obsolete_callback_print()const override	{return true;}
+  bool has_parse_params_obsolete_callback()const override {return true;}
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE EVAL_BM_ACTION_BASE : public EVAL_BM_BASE {
@@ -68,15 +69,15 @@ protected:
   double	uic(double x)const	{return (_sim->uic_now()) ? _ic : x;}
   double	ioffset(double x)const	{return uic(x) + _ioffset;}	
 public: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
+  bool		operator==(const COMMON_COMPONENT&)const override;
   //COMPONENT_COMMON* clone()const;	//COMPONENT_COMMON=0
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
-  void		precalc_last(const CARD_LIST*);
-  void		ac_eval(ELEMENT*)const;
+  void		precalc_last(const CARD_LIST*)override;
+  void		ac_eval(ELEMENT*)const override;
   virtual bool	ac_too()const = 0;
 protected: // override virtual
-  bool  	parse_params_obsolete_callback(CS&);
+  bool  	parse_params_obsolete_callback(CS&)override;
 public:
   bool		has_ext_args()const;
   static COMMON_COMPONENT* parse_func_type(CS&);
@@ -90,17 +91,17 @@ public:
   explicit      EVAL_BM_VALUE(int c=0) :EVAL_BM_ACTION_BASE(c) {}
 		~EVAL_BM_VALUE()	{}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const	{return new EVAL_BM_VALUE(*this);}
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
-  bool		is_trivial()const;
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {return new EVAL_BM_VALUE(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
+  bool		is_trivial()const override;
 
-  void		precalc_first(const CARD_LIST*);
-  void		tr_eval(ELEMENT*)const;
-  std::string	name()const		{itested();return "VALUE";}
-  bool		ac_too()const		{return false;}
-  bool		parse_numlist(CS&);
-  bool  	parse_params_obsolete_callback(CS&);
+  void		precalc_first(const CARD_LIST*)override;
+  void		tr_eval(ELEMENT*)const override;
+  std::string	name()const override	{itested();return "VALUE";}
+  bool		ac_too()const override	{return false;}
+  bool		parse_numlist(CS&) override;
+  bool  	parse_params_obsolete_callback(CS&) override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

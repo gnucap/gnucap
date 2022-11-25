@@ -37,8 +37,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_INCLUDE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
     }else{ untested();
@@ -73,8 +72,7 @@ DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "include", &p0);
  */
 class CMD_LOG : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {itested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {itested();
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {untested();
     }else{ untested();
@@ -117,8 +115,7 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "log", &p1);
  */
 class CMD_FILE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {itested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {itested();
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {untested();
     }else{ untested();

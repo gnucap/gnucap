@@ -41,25 +41,25 @@ public:
   explicit	EVAL_BM_COND(int c=0);
 		~EVAL_BM_COND();
 private: // override virtual
-  bool  operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const	{return new EVAL_BM_COND(*this);}
-  void  parse_common_obsolete_callback(CS&);
-  void  print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  bool  operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {return new EVAL_BM_COND(*this);}
+  void  parse_common_obsolete_callback(CS&) override;
+  void  print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
   
-  void  	precalc_first(const CARD_LIST*);
-  void		expand(const COMPONENT*);
-  COMMON_COMPONENT* deflate();
-  void  	precalc_last(const CARD_LIST*);
+  void  	precalc_first(const CARD_LIST*) override;
+  void		expand(const COMPONENT*) override;
+  COMMON_COMPONENT* deflate() override;
+  void  	precalc_last(const CARD_LIST*) override;
 
-  void  tr_eval(ELEMENT*d)const
+  void  tr_eval(ELEMENT*d)const override
 	{assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_eval(d);}
-  void  ac_eval(ELEMENT*d)const
+  void  ac_eval(ELEMENT*d)const override
 	{assert(_func[s_AC]);	   _func[s_AC]->ac_eval(d);}
-  TIME_PAIR tr_review(COMPONENT*d)const
+  TIME_PAIR tr_review(COMPONENT*d)const override
 	{assert(_func[d->_sim->sim_mode()]); return _func[d->_sim->sim_mode()]->tr_review(d);}
-  void  tr_accept(COMPONENT*d)const
+  void  tr_accept(COMPONENT*d)const override
 	{assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_accept(d);}
-  std::string name()const		{itested(); return "????";}
+  std::string name()const override	{itested(); return "????";}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -64,19 +64,19 @@ public:
   }
   ~TRANSIENT() {}
 public:
-  void	do_it(CS&, CARD_LIST* scope);
-  std::string status()const;
+  void	do_it(CS&, CARD_LIST* scope)override;
+  std::string status()const override;
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:		// s_tr_rev.cc
   bool	review();
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:		// s_tr_set.cc
-  void	setup(CS&);
+  void	setup(CS&)override;
 protected:
   void	options(CS&);
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:		// s_tr_swp.cc
-  void	sweep();
+  void	sweep()override;
 private:
   void	set_step_cause(STEP_CAUSE);
 public:
@@ -87,7 +87,7 @@ public:
   void	reject();
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
-  bool	is_step_rejected()const {return (step_cause() > scREJECT);}
+  bool	is_step_rejected()const override {return (step_cause() > scREJECT);}
   explicit TRANSIENT(const TRANSIENT&): SIM(),_skip_in(1) {unreachable(); incomplete();}
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:

@@ -35,26 +35,26 @@ protected:
     :ELEMENT(p), _input_label(p._input_label), _input(p._input) {}
   ~CCSRC_BASE() {}
 protected: // override virtual
-  int	   max_nodes()const	{return 3;}
-  int	   ext_nodes()const	{return 4;}
-  int	   min_nodes()const	{return 3;}
-  int	   matrix_nodes()const	{return 4;}
-  int	   net_nodes()const	{return 2;}
-  int	   num_current_ports()const {return 1;}
-  const std::string current_port_value(int)const {return _input_label;};
+  int	   max_nodes()const override	{return 3;}
+  int	   ext_nodes()const override	{return 4;}
+  int	   min_nodes()const override	{return 3;}
+  int	   matrix_nodes()const override	{return 4;}
+  int	   net_nodes()const override	{return 2;}
+  int	   num_current_ports()const override {return 1;}
+  const std::string current_port_value(int)const override {return _input_label;};
   //void   precalc_first();	//ELEMENT
-  void	   expand_last();
+  void	   expand_last() override;
   //void   precalc_last();	//ELEMENT
-  bool	   tr_needs_eval()const	{assert(!is_q_for_eval()); return true;}
+  bool	   tr_needs_eval()const override{assert(!is_q_for_eval()); return true;}
   //void   tr_queue_eval()	//ELEMENT
-  void	   tr_unload()		{untested(); tr_unload_active();}
-  double   tr_involts()const	{untested();return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
-  double   tr_input()const	{untested(); return _input->tr_amps();}
-  double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
-  double   tr_input_limited()const {return _input->tr_amps();}
-  COMPLEX  ac_involts()const	{untested();return _n[IN1]->vac()-_n[IN2]->vac();}
-  void	   set_port_by_index(int index, std::string& value);
-  bool	   node_is_connected(int i)const;
+  void	   tr_unload()override		{untested(); tr_unload_active();}
+  double   tr_involts()const override	{untested();return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
+  double   tr_input()const override	{untested(); return _input->tr_amps();}
+  double   tr_involts_limited()const override{return volts_limited(_n[IN1],_n[IN2]);}
+  double   tr_input_limited()const override{return _input->tr_amps();}
+  COMPLEX  ac_involts()const override	{untested();return _n[IN1]->vac()-_n[IN2]->vac();}
+  void	   set_port_by_index(int index, std::string& value) override;
+  bool	   node_is_connected(int i)const override;
 public:
   void	set_parameters_cc(const std::string& Label, CARD* Parent,
 		       COMMON_COMPONENT* Common, double Value,

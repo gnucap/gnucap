@@ -42,17 +42,17 @@ protected:
   explicit EVAL_BM_SEMI_BASE(int c=0);
   ~EVAL_BM_SEMI_BASE() {untested();}
 protected: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const = 0;
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override = 0;
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
-  void		precalc_last(const CARD_LIST*);
-  void  	expand(const COMPONENT*);
-  void		tr_eval(ELEMENT*)const;
-  std::string	name()const	{untested();return modelname().c_str();}
-  bool		ac_too()const	{untested();return false;}
-  bool  	parse_params_obsolete_callback(CS&);
-  bool		parse_numlist(CS& cmd);
+  void		precalc_last(const CARD_LIST*) override;
+  void  	expand(const COMPONENT*) override;
+  void		tr_eval(ELEMENT*)const override;
+  std::string	name()const override	{untested();return modelname().c_str();}
+  bool		ac_too()const override	{untested();return false;}
+  bool  	parse_params_obsolete_callback(CS&) override;
+  bool		parse_numlist(CS& cmd) override;
 };
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_CAPACITOR : public EVAL_BM_SEMI_BASE {
@@ -64,8 +64,8 @@ public:
     :EVAL_BM_SEMI_BASE(c) {}
   ~EVAL_BM_SEMI_CAPACITOR() {untested();}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {untested();return new EVAL_BM_SEMI_CAPACITOR(*this);}
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override{untested();return new EVAL_BM_SEMI_CAPACITOR(*this);}
   void  	expand(const COMPONENT*);
   void		precalc_last(const CARD_LIST*);
 };
@@ -79,8 +79,8 @@ public:
     :EVAL_BM_SEMI_BASE(c) {}
   ~EVAL_BM_SEMI_RESISTOR() {untested();}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {untested();return new EVAL_BM_SEMI_RESISTOR(*this);}
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {untested();return new EVAL_BM_SEMI_RESISTOR(*this);}
   void  	expand(const COMPONENT*);
   void		precalc_last(const CARD_LIST*);
 };

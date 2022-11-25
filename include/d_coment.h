@@ -33,10 +33,10 @@ private:
 public:
   explicit	DEV_COMMENT()	:CARD()  {set_constant(true);}
 private: // override virtual
-  char		id_letter()const	{untested(); return '\0';}
-  std::string	dev_type()const		{untested(); return "comment";}
-  CARD*		clone()const		{return new DEV_COMMENT(*this);}
-  std::string   value_name()const	{return "";}
+  char		id_letter()const override	{untested(); return '\0';}
+  std::string	dev_type()const override	{untested(); return "comment";}
+  CARD*		clone()const override		{return new DEV_COMMENT(*this);}
+  std::string   value_name()const override	{return "";}
 public:
   void set(const std::string& s) {_s = s;}
   std::string comment()const {return _s;}
