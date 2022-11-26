@@ -227,7 +227,7 @@ void COMMON_COMPONENT::set_param_by_index(int i, std::string& Value, int Offset)
   switch (i) {
   case 0:untested();  _tnom_c = Value; break;
   case 1:untested();  _dtemp = Value; break;
-  case 2:untested();  _temp_c = Value; break;
+  case 2:itested();  _temp_c = Value; break;
   case 3:  _mfactor = Value; break;
   default:untested(); throw Exception_Too_Many(i, 3, Offset); break;
   }
@@ -249,7 +249,7 @@ std::string COMMON_COMPONENT::param_name(int i)const
   switch (i) {
   case 0:untested();  return "tnom";
   case 1:untested();  return "dtemp";
-  case 2:untested();  return "temp";
+  case 2:itested();  return "temp";
   case 3:  return "m";
   default:untested(); return "";
   }
@@ -306,13 +306,13 @@ bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
-  if (has_parse_params_obsolete_callback()) {untested();
+  if (has_parse_params_obsolete_callback()) {itested();
     std::string args(Name + "=" + Value);
     CS cmd(CS::_STRING, args); //obsolete_callback
     bool ok = parse_params_obsolete_callback(cmd); //BUG//callback
     if (!ok) {untested();
       throw Exception_No_Match(Name);
-    }else{untested();
+    }else{itested();
     }
   }else{
     //BUG// ugly linear search
@@ -676,7 +676,7 @@ bool COMPONENT::param_is_printable(int i)const
     switch (COMPONENT::param_count() - 1 - i) {
     case 0:  return value().has_hard_value();
     case 1:  return _mfactor.has_hard_value();
-    default:untested(); return CARD::param_is_printable(i);
+    default:itested(); return CARD::param_is_printable(i);
     }
   }
 }
@@ -826,7 +826,7 @@ void COMPONENT::q_eval()
   if(!is_q_for_eval()) {
     mark_q_for_eval();
     _sim->_evalq_uc->push_back(this);
-  }else{untested();
+  }else{itested();
   }
 }
 /*--------------------------------------------------------------------------*/

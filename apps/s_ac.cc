@@ -185,10 +185,10 @@ void AC::setup(CS& Cmd)
     needslinfix = true;		// and I am too lazy to do it
     _linswp = true;		// right.
     break;
-  case TIMES:untested();
+  case TIMES:itested();
     if (_step == 0.  &&  _start != 0.) {untested();
       _step = _stop / _start;
-    }else{untested();
+    }else{itested();
     }
     needslinfix = false;
     _linswp = false;

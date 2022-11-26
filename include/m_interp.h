@@ -66,16 +66,13 @@ FPOLY1 interpolate(Iterator begin, Iterator end, double x,
 	untested();
       }
       f1 = above;
-    }else if ((upper == begin) && (x < (*lower).first) && (below!=NOT_INPUT)) {
+    }else if ((upper == begin) && (x < (*lower).first) && (below!=NOT_INPUT)) { itested();
       // x is out of bounds, below
-      untested();
-      if (below != 0.) {
-	untested();
-      }else{
-	untested();
+      if (below != 0.) { itested();
+      }else{ untested();
       }
       f1 = below;
-    }else if ((*upper).first <= (*lower).first) {untested();
+    }else if ((*upper).first <= (*lower).first) {itested();
       throw Exception("interpolate table is not sorted or has duplicate keys");
       f1 = 0.;
     }else{

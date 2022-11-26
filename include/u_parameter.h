@@ -291,7 +291,7 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
 	//BUG// it is likely to have a numeric overflow resulting from the bad value
       }else{
       }
-    }else{untested();
+    }else{itested();
       _v = def;
       error(bDANGER, "parameter " + *first_name + " recursion too deep\n");
     }

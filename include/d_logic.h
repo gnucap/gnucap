@@ -166,7 +166,7 @@ private:
   explicit LOGIC_AND(const LOGIC_AND& p) :COMMON_LOGIC(p){untested();++_count;}
   COMMON_COMPONENT* clone()const {untested(); return new LOGIC_AND(*this);}
 public:
-  explicit LOGIC_AND(int c=0)		  :COMMON_LOGIC(c) {untested();}
+  explicit LOGIC_AND(int c=0)		  :COMMON_LOGIC(c) {itested();}
   LOGICVAL logic_eval(const node_t* n)const {untested();
     LOGICVAL out(n[0]->lv());
     for (int ii=1; ii<incount; ++ii) {untested();
@@ -198,7 +198,7 @@ private:
   explicit LOGIC_OR(const LOGIC_OR& p)	 :COMMON_LOGIC(p){untested();++_count;}
   COMMON_COMPONENT* clone()const {untested(); return new LOGIC_OR(*this);}
 public:
-  explicit LOGIC_OR(int c=0)		  :COMMON_LOGIC(c) {untested();}
+  explicit LOGIC_OR(int c=0)		  :COMMON_LOGIC(c) {itested();}
   LOGICVAL logic_eval(const node_t* n)const {untested();
     LOGICVAL out(n[0]->lv());
     for (int ii=1; ii<incount; ++ii) {untested();
@@ -230,7 +230,7 @@ private:
   explicit LOGIC_XOR(const LOGIC_XOR& p) :COMMON_LOGIC(p){untested();++_count;}
   COMMON_COMPONENT* clone()const {untested(); return new LOGIC_XOR(*this);}
 public:
-  explicit LOGIC_XOR(int c=0)		  :COMMON_LOGIC(c) {untested();}
+  explicit LOGIC_XOR(int c=0)		  :COMMON_LOGIC(c) {itested();}
   LOGICVAL logic_eval(const node_t* n)const {untested();
     LOGICVAL out(n[0]->lv());
     for (int ii=1; ii<incount; ++ii) {untested();
@@ -246,7 +246,7 @@ private:
   explicit LOGIC_XNOR(const LOGIC_XNOR&p):COMMON_LOGIC(p){untested();++_count;}
   COMMON_COMPONENT* clone()const {untested(); return new LOGIC_XNOR(*this);}
 public:
-  explicit LOGIC_XNOR(int c=0)		  :COMMON_LOGIC(c) {untested();}
+  explicit LOGIC_XNOR(int c=0)		  :COMMON_LOGIC(c) {itested();}
   LOGICVAL logic_eval(const node_t* n)const {untested();
     LOGICVAL out(n[0]->lv());
     for (int ii=1; ii<incount; ++ii) {untested();

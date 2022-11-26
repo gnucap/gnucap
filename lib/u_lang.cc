@@ -101,7 +101,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
 /*--------------------------------------------------------------------------*/
 void LANGUAGE::new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope)
 {
-  if (cmd.is_end()) {untested();
+  if (cmd.is_end()) {itested();
     // nothing
   }else{
     std::string type = find_type_in_string(cmd);
@@ -166,7 +166,7 @@ void LANGUAGE::print_item(OMSTREAM& o, const CARD* c)
     print_comment(o, com);
   }else if (const DEV_DOT* d = dynamic_cast<const DEV_DOT*>(c)) {untested();
     print_command(o, d);
-  }else{untested();
+  }else{itested();
     incomplete();
     unreachable();
   }
