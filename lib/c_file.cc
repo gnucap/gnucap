@@ -50,7 +50,7 @@ public:
       for (;;) {
 	if (OPT::language) {
 	  OPT::language->parse_top_item(file, Scope);
-	}else{untested();
+	}else{itested();
 	  CMD::cmdproc(file.get_line(""), Scope);
 	}
       }
