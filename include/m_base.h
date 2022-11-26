@@ -202,7 +202,7 @@ public:
   Base* add(const String*)const override 	{           return NULL;}
   Base* multiply(const String*)const override	{untested();return NULL;}
   Base* subtract(const String*)const override	{untested();return NULL;}
-  Base* r_subtract(const String*)const override	{untested();return NULL;}
+  Base* r_subtract(const String*)const override	{itested();return NULL;}
   Base* divide(const String*)const override	{untested();return NULL;}
   Base* r_divide(const String*)const override	{	    return NULL;}
 
@@ -236,11 +236,11 @@ public:
   Base* not_equal(const String* X)const override{untested();assert(X); return new Float((_data != X->_data)?1.:0.);}
   Base* equal(const String* X)const override	{untested();assert(X); return new Float((_data == X->_data)?1.:0.);}
   Base* add(const String*)const override	{	     return NULL;}
-  Base* multiply(const String*)const override	{untested(); return NULL;}
+  Base* multiply(const String*)const override	{itested(); return NULL;}
   Base* subtract(const String*)const override	{untested(); return NULL;}
-  Base* r_subtract(const String*)const override	{untested(); return NULL;}
+  Base* r_subtract(const String*)const override	{itested(); return NULL;}
   Base* divide(const String*)const override	{untested(); return NULL;}
-  Base* r_divide(const String*)const override	{untested(); return NULL;}
+  Base* r_divide(const String*)const override	{itested(); return NULL;}
 
   Base* less(const Base* X)const override	{untested();return ((X) ? (X->greater(this))   : (NULL));}
   Base* greater(const Base* X)const override	{untested();return ((X) ? (X->less(this))      : (NULL));}
@@ -249,8 +249,8 @@ public:
   Base* not_equal(const Base* X)const override	{untested();return ((X) ? (X->not_equal(this)) : (NULL));}
   Base* equal(const Base* X)const override	{untested();return ((X) ? (X->equal(this))     : (NULL));}
   Base* add(const Base* X)const override 	{	    return ((X) ? (X->add(this))       : (NULL));}
-  Base* multiply(const Base* X)const override	{untested();return ((X) ? (X->multiply(this))  : (NULL));}
-  Base* subtract(const Base* X)const override	{untested();return ((X) ? (X->r_subtract(this)): (NULL));}
+  Base* multiply(const Base* X)const override	{itested();return ((X) ? (X->multiply(this))  : (NULL));}
+  Base* subtract(const Base* X)const override	{itested();return ((X) ? (X->r_subtract(this)): (NULL));}
   Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (NULL));}
   Base* divide(const Base* X)const override	{	    return ((X) ? (X->r_divide(this))  : (NULL));}
   Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (NULL));}

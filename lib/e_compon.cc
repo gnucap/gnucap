@@ -227,7 +227,7 @@ void COMMON_COMPONENT::set_param_by_index(int i, std::string& Value, int Offset)
   switch (i) {
   case 0:untested();  _tnom_c = Value; break;
   case 1:untested();  _dtemp = Value; break;
-  case 2:untested();  _temp_c = Value; break;
+  case 2:itested();  _temp_c = Value; break;
   case 3:  _mfactor = Value; break;
   default:untested(); throw Exception_Too_Many(i, 3, Offset); break;
   }
@@ -249,7 +249,7 @@ std::string COMMON_COMPONENT::param_name(int i)const
   switch (i) {
   case 0:untested();  return "tnom";
   case 1:untested();  return "dtemp";
-  case 2:untested();  return "temp";
+  case 2:itested();  return "temp";
   case 3:  return "m";
   default:untested(); return "";
   }
@@ -263,9 +263,9 @@ std::string COMMON_COMPONENT::param_name(int i, int j)const
 std::string COMMON_COMPONENT::param_value(int i)const
 {
   switch (i) {
-  case 0:untested();  return _tnom_c.string();
-  case 1:untested();  return _dtemp.string();
-  case 2:untested();  return _temp_c.string();
+  case 0:itested();  return _tnom_c.string();
+  case 1:itested();  return _dtemp.string();
+  case 2:itested();  return _temp_c.string();
   case 3:  return _mfactor.string();
   default:untested(); return "";
   }
@@ -306,13 +306,13 @@ bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
-  if (has_parse_params_obsolete_callback()) {untested();
+  if (has_parse_params_obsolete_callback()) {itested();
     std::string args(Name + "=" + Value);
     CS cmd(CS::_STRING, args); //obsolete_callback
     bool ok = parse_params_obsolete_callback(cmd); //BUG//callback
     if (!ok) {untested();
       throw Exception_No_Match(Name);
-    }else{untested();
+    }else{itested();
     }
   }else{
     //BUG// ugly linear search
@@ -585,7 +585,7 @@ void COMPONENT::tr_iwant_matrix()
     assert(matrix_nodes() == 0);
     if (subckt()) {
       subckt()->tr_iwant_matrix();
-    }else{untested();
+    }else{itested();
     }
   }else{
   }
@@ -597,7 +597,7 @@ void COMPONENT::ac_iwant_matrix()
     assert(matrix_nodes() == 0);
     if (subckt()) {
       subckt()->ac_iwant_matrix();
-    }else{untested();
+    }else{itested();
     }
   }else{
   }
@@ -676,7 +676,7 @@ bool COMPONENT::param_is_printable(int i)const
     switch (COMPONENT::param_count() - 1 - i) {
     case 0:  return value().has_hard_value();
     case 1:  return _mfactor.has_hard_value();
-    default:untested(); return CARD::param_is_printable(i);
+    default:itested(); return CARD::param_is_printable(i);
     }
   }
 }
@@ -701,7 +701,7 @@ std::string COMPONENT::param_name(int i, int j)const
   }else{
     if (j == 0) {
       return param_name(i);
-    }else if (i >= CARD::param_count()) {untested();
+    }else if (i >= CARD::param_count()) {itested();
       return "";
     }else{untested();
       return CARD::param_name(i,j);
@@ -826,7 +826,7 @@ void COMPONENT::q_eval()
   if(!is_q_for_eval()) {
     mark_q_for_eval();
     _sim->_evalq_uc->push_back(this);
-  }else{untested();
+  }else{itested();
   }
 }
 /*--------------------------------------------------------------------------*/

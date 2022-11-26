@@ -131,7 +131,7 @@ void PROBELIST::add_list(CS& cmd, CARD_LIST* scope)
 {
   assert(scope);
   if (scope==&CARD_LIST::card_list) {
-  }else{untested();
+  }else{itested();
   }
   int oldcount = size();
   std::string what(cmd.ctos(TOKENTERM));/* parameter */
@@ -201,7 +201,7 @@ void PROBELIST::add_all_nodes(const std::string& what, CARD_LIST* scope)
 {
   assert(scope);
   if (scope == &CARD_LIST::card_list) {
-  }else{untested();
+  }else{itested();
   }
   for (NODE_MAP::const_iterator
        i = scope->nodes()->begin();

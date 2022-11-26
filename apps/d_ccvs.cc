@@ -36,7 +36,7 @@ public:
   explicit DEV_CCVS()		:CCSRC_BASE() {}
 private: // override virtual
   char	   id_letter()const override	{return 'H';}
-  std::string value_name()const override{untested(); return "gain";}
+  std::string value_name()const override{itested(); return "gain";}
   std::string dev_type()const override	{return "ccvs";}
   bool	   use_obsolete_callback_parse()const override {return true;}
   CARD*	   clone()const	override {return new DEV_CCVS(*this);}

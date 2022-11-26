@@ -43,26 +43,26 @@ public:
   UNITS units()const override {return uSI;}
 
 public: // override virtual, used by callback
-  std::string arg_front()const override {untested();
+  std::string arg_front()const override {itested();
     switch (_mode) {
     case mPARAMSET:untested(); return " .";			    break;
-    case mDEFAULT:untested();  return (arg_count++ > 0) ? ", ." : "."; break;
+    case mDEFAULT:itested();  return (arg_count++ > 0) ? ", ." : "."; break;
     }
     unreachable();
     return "";
   }
-  std::string arg_mid()const override {untested();
+  std::string arg_mid()const override {itested();
     switch (_mode) {
     case mPARAMSET:untested(); return "="; break;
-    case mDEFAULT:untested();  return "("; break;
+    case mDEFAULT:itested();  return "("; break;
     }
     unreachable();
     return "";
   }
-  std::string arg_back()const override {untested();
+  std::string arg_back()const override {itested();
     switch (_mode) {
     case mPARAMSET:untested(); return ";"; break;
-    case mDEFAULT:untested();  return ")"; break;
+    case mDEFAULT:itested();  return ")"; break;
     }
     unreachable();
     return "";
@@ -209,7 +209,7 @@ static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	  std::string name, value;
 	  cmd >> name >> '(' >> value >> ')' >> ',';
 	  x->set_port_by_name(name, value);
-	}catch (Exception_No_Match&) {untested();
+	}catch (Exception_No_Match&) {itested();
 	  cmd.warn(bDANGER, here, "mismatch, ignored");
 	}
       }
@@ -476,7 +476,7 @@ void LANG_VERILOG::print_instance(OMSTREAM& o, const COMPONENT* x)
 void LANG_VERILOG::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 {
   assert(x);
-  if ((x->comment().compare(0, 2, "//")) != 0) {untested();
+  if ((x->comment().compare(0, 2, "//")) != 0) {itested();
     o << "//";
   }else{
   }

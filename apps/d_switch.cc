@@ -83,7 +83,7 @@ protected: // override virtual
   void	   tr_load()		{tr_load_passive();}
   TIME_PAIR tr_review();
   void	   tr_unload()		{untested(); tr_unload_passive();}
-  double   tr_involts()const override	{untested(); return tr_outvolts();}
+  double   tr_involts()const override	{itested(); return tr_outvolts();}
   double   tr_involts_limited()const override {unreachable(); return tr_outvolts_limited();}
   void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
   void	   ac_begin()		{_ev = _y[0].f1; _acg = _m0.c1;}

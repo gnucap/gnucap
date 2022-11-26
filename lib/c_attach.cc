@@ -59,7 +59,7 @@ public:
     // RTLD_NOW means to resolve symbols on loading
     // RTLD_LOCAL means symbols defined in a plugin are local
     do {
-      if (cmd.umatch("public ")) {untested();
+      if (cmd.umatch("public ")) {itested();
 	dl_scope = RTLD_GLOBAL;
 	// RTLD_GLOBAL means symbols defined in a plugin are global
 	// Use this when a plugin depends on another.
@@ -94,8 +94,8 @@ public:
       }
       
       std::string full_file_name;
-      if (short_file_name[0]=='/' || short_file_name[0]=='.'){untested();
-	if (OS::access_ok(short_file_name, R_OK)) {untested();
+      if (short_file_name[0]=='/' || short_file_name[0]=='.'){itested();
+	if (OS::access_ok(short_file_name, R_OK)) {itested();
 	  // found it, local or root
 	  full_file_name = short_file_name;
 	}else{untested();
@@ -107,7 +107,7 @@ public:
 	full_file_name = findfile(short_file_name, path, R_OK);
 	if (full_file_name != "") {
 	  // found it, with search
-	}else{untested();
+	}else{itested();
 	  cmd.reset(here);
 	  throw Exception_CS("plugin not found in " + path, cmd);
 	}
@@ -150,10 +150,10 @@ public:
     if (file_name == "") {
       // nothing, list what we have
       list();
-    }else{untested();
-      if (Scope->is_empty()) {untested();
+    }else{itested();
+      if (Scope->is_empty()) {itested();
 	void* handle = attach_list[file_name];
-	if (handle) {untested();
+	if (handle) {itested();
 	  dlclose(handle);
 	  attach_list[file_name] = NULL;
 	}else{untested();

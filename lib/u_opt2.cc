@@ -325,7 +325,7 @@ namespace {
     void do_it(CS& cmd, CARD_LIST* Scope) override {
       assert(Scope);
       if (Scope == &CARD_LIST::card_list) {
-      }else{untested();
+      }else{itested();
       }
       static OPT o;
       o.command(cmd);

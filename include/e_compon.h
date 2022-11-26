@@ -244,7 +244,7 @@ public:	// ports
   virtual int	num_current_ports()const {return 0;}
   virtual int	tail_size()const	{return 0;}
 
-  int	net_nodes()const override	{untested();return 0;} //override
+  int	net_nodes()const override	{itested();return 0;} //override
   virtual int	ext_nodes()const	{return max_nodes();}
   virtual int	int_nodes()const	{return 0;}
   virtual int	matrix_nodes()const	{return 0;}

@@ -184,9 +184,9 @@ static void process_cmd_line(int argc, const char *argv[])
 	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
 	}else{untested();
 	}
-      }else if (strcasecmp(argv[ii], "-i") == 0) {untested();
+      }else if (strcasecmp(argv[ii], "-i") == 0) {itested();
 	++ii;
-	if (ii < argc) {untested();
+	if (ii < argc) {itested();
 	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
 	}else{untested();
 	}

@@ -49,7 +49,7 @@ std::string COMMON_PARAMLIST::param_name(int i)const
   assert(i < COMMON_PARAMLIST::param_count());
   if (i >= COMMON_COMPONENT::param_count()) {
     return _params.name(COMMON_PARAMLIST::param_count() - 1 - i);
-  }else{untested();
+  }else{itested();
     return COMMON_COMPONENT::param_name(i);
   }
 }
@@ -71,7 +71,7 @@ std::string COMMON_PARAMLIST::param_value(int i)const
   assert(i < COMMON_PARAMLIST::param_count());
   if (i >= COMMON_COMPONENT::param_count()) {
     return _params.value(COMMON_PARAMLIST::param_count() - 1 - i);
-  }else{untested();
+  }else{itested();
     return COMMON_COMPONENT::param_value(i);
   }
 }

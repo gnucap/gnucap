@@ -50,7 +50,7 @@ public:
       for (;;) {
 	if (OPT::language) {
 	  OPT::language->parse_top_item(file, Scope);
-	}else{untested();
+	}else{itested();
 	  CMD::cmdproc(file.get_line(""), Scope);
 	}
       }
@@ -117,7 +117,7 @@ class CMD_FILE : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {itested();
     assert(Scope);
-    if (Scope == &CARD_LIST::card_list) {untested();
+    if (Scope == &CARD_LIST::card_list) {itested();
     }else{ untested();
     }
     static std::list<FILE*> filestack;

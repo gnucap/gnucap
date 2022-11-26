@@ -83,7 +83,7 @@ void DEV_CS::dc_advance()
   ELEMENT::dc_advance();
 
   if(using_tr_eval()){
-  }else{ untested();
+  }else{itested();
     _y[0].f1 = value();
 
     if(_y1.f1 != _y[0].f1){ untested();
@@ -91,7 +91,7 @@ void DEV_CS::dc_advance()
       q_load();
       _m0.c0 = _y[0].f1;
       // set_constant(false); not needed. nothing to do in do_tr.
-    }else{ untested();
+    }else{itested();
     }
   }
 }
@@ -138,7 +138,7 @@ void DEV_CS::do_ac()
   if (using_ac_eval()) {
     ac_eval();
     _acg = _ev;
-  }else{untested();
+  }else{itested();
     assert(_acg == 0.);
   }
 }

@@ -392,12 +392,12 @@ void LANG_SPICE_BASE::parse_logic_using_obsolete_callback(CS& cmd, COMPONENT* x)
   std::string modelname = cmd.ctos(TOKENTERM);
 
   COMMON_LOGIC* common = 0;
-  if      (cmd.umatch("and " )) {untested();common = new LOGIC_AND;}
+  if      (cmd.umatch("and " )) {itested();common = new LOGIC_AND;}
   else if (cmd.umatch("nand ")) {common = new LOGIC_NAND;}
-  else if (cmd.umatch("or "  )) {untested();common = new LOGIC_OR;}
+  else if (cmd.umatch("or "  )) {itested();common = new LOGIC_OR;}
   else if (cmd.umatch("nor " )) {common = new LOGIC_NOR;}
-  else if (cmd.umatch("xor " )) {untested();common = new LOGIC_XOR;}
-  else if (cmd.umatch("xnor ")) {untested();common = new LOGIC_XNOR;}
+  else if (cmd.umatch("xor " )) {itested();common = new LOGIC_XOR;}
+  else if (cmd.umatch("xnor ")) {itested();common = new LOGIC_XNOR;}
   else if (cmd.umatch("inv " )) {common = new LOGIC_INV;}
   else {untested();
     cmd.warn(bWARNING,"need and,nand,or,nor,xor,xnor,inv");
@@ -771,7 +771,7 @@ void LANG_SPICE_BASE::print_type(OMSTREAM& o, const COMPONENT* x)
   assert(x);
   if (x->print_type_in_spice()) {
     o << "  " << x->dev_type();
-  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {untested();
+  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {itested();
     o << "  " << x->dev_type();
   }else{
     // don't print type
@@ -1062,7 +1062,7 @@ DISPATCHER<CMD>::INSTALL d8(&command_dispatcher, "spice", &p8);
 class CMD_ACS : public CMD {
 public:
   void do_it(CS&, CARD_LIST* Scope)
-  {untested();
+  {itested();
     command("options lang=acs", Scope);
   }
 } p9;

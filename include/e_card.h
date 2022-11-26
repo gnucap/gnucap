@@ -139,7 +139,7 @@ public: // parameters
 				{untested(); throw Exception_Too_Many(i, 0, offset);}
   virtual int  param_count_dont_print()const	   {return 0;}
   virtual int  param_count()const		   {return 0;}
-  virtual bool param_is_printable(int)const	   {untested(); return false;}
+  virtual bool param_is_printable(int)const	   {itested(); return false;}
   virtual std::string param_name(int)const	   {return "";}
   virtual std::string param_name(int i,int j)const {return (j==0) ? param_name(i) : "";}
   virtual std::string param_value(int)const	   {untested(); return "";}
