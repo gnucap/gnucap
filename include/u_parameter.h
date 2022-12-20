@@ -215,7 +215,7 @@ public:
   std::string name(int)const;
   std::string value(int)const;
 
-  void	eval_copy(PARAM_LIST&, const CARD_LIST*);
+  void	eval_copy(PARAM_LIST const&, const CARD_LIST*);
   bool  operator==(const PARAM_LIST& p)const{return _pl == p._pl;}
   const PARAMETER<double>& deep_lookup(std::string)const;
   const PARAMETER<double>& operator[](std::string i)const {return deep_lookup(i);}

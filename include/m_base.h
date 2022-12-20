@@ -154,7 +154,7 @@ private:
     }
   }
 public:
-  /*implicit*/ Float(const Float& p) :Base(), _data(p._data) {untested();}
+  /*implicit*/ Float(const Float& p) :Base(), _data(p._data) {}
   explicit Float(CS& file)		{untested();parse(file);}
   explicit Float(const std::string& s)	{CS cs(CS::_STRING, s); parse(cs);}
   Float(double x=NOT_INPUT) :_data(x) {}
@@ -202,7 +202,7 @@ public:
   Base* add(const String*)const override 	{           return NULL;}
   Base* multiply(const String*)const override	{untested();return NULL;}
   Base* subtract(const String*)const override	{untested();return NULL;}
-  Base* r_subtract(const String*)const override	{itested();return NULL;}
+  Base* r_subtract(const String*)const override	{           return NULL;}
   Base* divide(const String*)const override	{untested();return NULL;}
   Base* r_divide(const String*)const override	{	    return NULL;}
 
@@ -222,6 +222,7 @@ public:
   explicit String(CS& file) {untested();parse(file);}
   explicit String()	    {}
   explicit String(const std::string& s) :_data(s) {}
+  explicit String(const String& s) : Base(), _data(s._data) {}
   operator const std::string&()const	{return _data;}
   std::string val_string()const override		{untested();return _data;}
   bool to_bool()const override			{untested();return (_data != "");}
@@ -250,7 +251,7 @@ public:
   Base* equal(const Base* X)const override	{untested();return ((X) ? (X->equal(this))     : (NULL));}
   Base* add(const Base* X)const override 	{	    return ((X) ? (X->add(this))       : (NULL));}
   Base* multiply(const Base* X)const override	{itested();return ((X) ? (X->multiply(this))  : (NULL));}
-  Base* subtract(const Base* X)const override	{itested();return ((X) ? (X->r_subtract(this)): (NULL));}
+  Base* subtract(const Base* X)const override	{           return ((X) ? (X->r_subtract(this)): (NULL));}
   Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (NULL));}
   Base* divide(const Base* X)const override	{	    return ((X) ? (X->r_divide(this))  : (NULL));}
   Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (NULL));}

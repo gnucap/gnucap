@@ -28,6 +28,7 @@
 #include "globals.h"
 #include "u_function.h"
 #include "u_parameter.h"
+#include <stack>
 /*--------------------------------------------------------------------------*/
 Token* Token_BINOP::op(const Token* T1, const Token* T2)const
 {
@@ -119,12 +120,42 @@ void Token_SYMBOL::stack_op(Expression* E)const
   if (!E->is_empty() && dynamic_cast<const Token_PARLIST*>(E->back())) {
     // has parameters (table or function)
     if (FUNCTION* f = function_dispatcher[name()]) {
-      const Token* T1 = E->back(); // arglist
-      E->pop_back();
-      CS cmd(CS::_STRING, T1->name());      
-      std::string value = f->eval(cmd, E->_scope);
-      const Float* v = new Float(value);
-      E->push_back(new Token_CONSTANT(value, v, ""));
+      const Token* T1 = E->back(); // Token_PARLIST
+      assert(T1->data()); // expression
+      Base const* d = T1->data();
+      auto ee = prechecked_cast<Expression const*>(d);
+      assert(ee);
+
+      // Expression fee = f->ev(ee); ?
+
+      bool all_float = true;
+      for (Expression::const_iterator i = ee->begin(); i != ee->end(); ++i) {
+	trace1("float?", (**i).name());
+	all_float = dynamic_cast<Float const*>((**i).data());
+	if(!all_float){
+	  break;
+	}else{
+	}
+      }
+
+      if(all_float){
+	// function call as usual
+	CS cmd(CS::_STRING, T1->name());
+	std::string value = f->eval(cmd, E->_scope);
+	E->pop_back();
+	const Float* v = new Float(value);
+	E->push_back(new Token_CONSTANT(value, v, ""));
+      }else{
+	// restore argument.
+	E->pop_back();
+	E->push_back(new Token_STOP("stopname"));
+	for (Expression::const_iterator i = ee->begin(); i != ee->end(); ++i) {
+	  trace1("stackop restore arg", (**i).name());
+	  (**i).stack_op(E);
+	}
+	E->push_back(new Token_PARLIST(".."));
+	E->push_back(clone());
+      }
       delete T1;
     }else{
       throw Exception_No_Match(name()); //BUG// memory leak
@@ -141,14 +172,33 @@ void Token_SYMBOL::stack_op(Expression* E)const
       // a name
       PARAMETER<double> p = (*(E->_scope->params()))[name()];
       if (p.has_hard_value()) {
-	// can find value - push value
+	// BUG: produces warnings.
 	double v = p.e_val(NOT_INPUT, E->_scope);
-	Float* n = new Float(v);
-	E->push_back(new Token_CONSTANT(n->val_string(), n, ""));
+	if(v!=NOT_INPUT){
+	  Float* n = new Float(v);
+	  E->push_back(new Token_CONSTANT(n->val_string(), n, ""));
+	}else{
+	  CS cmd(CS::_STRING, p.string());
+
+	  // BUG: redoing Expresions used above inside p.e_val.
+	  Expression pp(cmd);
+	  Expression e(pp, E->_scope);
+
+	  for (Expression::const_iterator i = e.begin(); i != e.end(); ++i) {
+	    E->push_back(*i);
+	  }
+	  while (e.size()){
+	    e.pop_back();
+	  }
+	}
       }else{
 	// no value - push name (and accept incomplete solution later)
+#if 1
 	String* s = new String(name());
-	E->push_back(new Token_CONSTANT(name(), s, ""));	
+	E->push_back(new Token_CONSTANT(name(), s, ""));
+#else
+	E->push_back(new Token_SYMBOL(name(), ""));	
+#endif
       }
     }
   }
@@ -206,13 +256,13 @@ void Token_BINOP::stack_op(Expression* E)const
 	E->push_back(clone());
 	delete t;
       }
-    }else{itested();
+    }else{
       // # - # - or something like that
       E->push_back(t2);
       E->push_back(t1);
       E->push_back(clone());
     }
-  }else{untested();
+  }else{
     // # - # - or something like that
     E->push_back(t2);
     E->push_back(t1);
@@ -229,14 +279,17 @@ void Token_STOP::stack_op(Expression* E)const
 void Token_PARLIST::stack_op(Expression* E)const
 {
   assert(E);
+  std::stack<Token*> stack;
+  auto arg_exp = new Expression();
   // replace multiple tokens of a PARLIST with a single token
   bool been_here = false;
   std::string tmp;//(")");
   for (;;) {
-    const Token* t = E->back();
+    Token* t = E->back();
     E->pop_back();
     if (dynamic_cast<const Token_STOP*>(t)) {
       // tmp = "(" + tmp;
+      delete t;
       break;
     }else{
       if (been_here) {
@@ -245,10 +298,18 @@ void Token_PARLIST::stack_op(Expression* E)const
 	been_here = true;
       }
       tmp = t->name() + tmp;
+      stack.push(t);
+      // arg_exp->push_back(t);
     }
-    delete t;
   }
-  E->push_back(new Token_PARLIST(tmp));
+  // turn over (there is no push_front, maybe on purpose)
+  while(!stack.empty()){
+    trace1("pushing", stack.top()->name());
+    arg_exp->push_back(stack.top());
+    stack.pop();
+  }
+  auto parlist = new Token_PARLIST(tmp, arg_exp);
+  E->push_back(parlist);
 }
 /*--------------------------------------------------------------------------*/
 void Token_UNARY::stack_op(Expression* E)const
@@ -276,9 +337,18 @@ void Token_UNARY::stack_op(Expression* E)const
 /*--------------------------------------------------------------------------*/
 void Token_CONSTANT::stack_op(Expression* E)const
 {
-  unreachable();
-  (void)(E);
+  // unreachable(); no. restoring arg expression??
+  trace3("stackop constant", name(), aRgs(), dynamic_cast<Float const*>(data()));
+
   assert(E);
+  if(auto f = dynamic_cast<Float const*>(data())){
+    E->push_back(new Token_CONSTANT(name(), new Float(*f), aRgs()));
+  }else if(auto s = dynamic_cast<String const*>(data())){
+    E->push_back(new Token_CONSTANT(name(), new String(*s), aRgs()));
+  }else{
+    assert(false);
+    unreachable();
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -287,6 +357,9 @@ void Expression::reduce_copy(const Expression& Proto)
   // The Proto._list is the expression in RPN.
   // Attempt to build a reduced _list here, hopefully with only one item.
   for (const_iterator i = Proto.begin(); i != Proto.end(); ++i) {
+    trace2("reducecopy", (**i).name(), (**i).data() );
+    trace1("reducecopy", dynamic_cast<const Token_CONSTANT*>(*i));
+    trace1("reducecopy", dynamic_cast<const Token_SYMBOL*>(*i));
     (**i).stack_op(this);
   }
   if (is_empty()) {untested();

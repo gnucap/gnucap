@@ -133,7 +133,7 @@ public:
   PARAM_LIST* params()const;
 
   // more complex stuff
-  void attach_params(PARAM_LIST* p, const CARD_LIST* scope);
+  void attach_params(PARAM_LIST const* p, const CARD_LIST* scope);
   void shallow_copy(const CARD_LIST*);
   void map_subckt_nodes(const CARD* model, const CARD* owner);
 

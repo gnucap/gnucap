@@ -423,7 +423,7 @@ CARD_LIST& CARD_LIST::ac_load()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-void CARD_LIST::attach_params(PARAM_LIST* p, const CARD_LIST* scope)
+void CARD_LIST::attach_params(PARAM_LIST const* p, const CARD_LIST* scope)
 {
   if (p) {
     assert(scope);
