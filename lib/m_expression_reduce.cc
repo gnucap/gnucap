@@ -172,21 +172,21 @@ void Token_SYMBOL::stack_op(Expression* E)const
       // a name
       PARAMETER<double> p = (*(E->_scope->params()))[name()];
       if (p.has_hard_value()) {
-	// BUG: produces warnings.
-	double v = p.e_val(NOT_INPUT, E->_scope);
+	CS cmd(CS::_STRING, p.string());
+	Expression pp(cmd);
+	Expression e(pp, E->_scope);
+	double v = e.eval();
+
 	if(v!=NOT_INPUT){
+	  // it's a float constant.
 	  Float* n = new Float(v);
 	  E->push_back(new Token_CONSTANT(n->val_string(), n, ""));
 	}else{
-	  CS cmd(CS::_STRING, p.string());
-
-	  // BUG: redoing Expresions used above inside p.e_val.
-	  Expression pp(cmd);
-	  Expression e(pp, E->_scope);
-
+	  // not a float. keep expression
 	  for (Expression::const_iterator i = e.begin(); i != e.end(); ++i) {
 	    E->push_back(*i);
 	  }
+	  // disown
 	  while (e.size()){
 	    e.pop_back();
 	  }

@@ -109,7 +109,7 @@ void Expression::dump(std::ostream& out)const
     out << "empty";
   }else{
     out << stack.back()->full_name();
-    if(stack.size() == 1){ untested();
+    if(stack.size() == 1){
     }else{ untested();
       incomplete();
     }

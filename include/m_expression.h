@@ -63,7 +63,7 @@ public:
   explicit Token_SYMBOL(const std::string Name, const std::string Args)
     : Token(Name, NULL, Args) {}
   explicit Token_SYMBOL(const Token_SYMBOL& P) : Token(P) {}
-  Token* clone()const  override{untested();return new Token_SYMBOL(*this);}
+  Token* clone()const  override{return new Token_SYMBOL(*this);}
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/

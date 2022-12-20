@@ -1,12 +1,6 @@
 * unknown parameter check 
-parameter max(a,2) not specified, using default
-parameter max(a,2) value is "NOT_INPUT"
 x=max(a, 2)
-parameter min(a,2) not specified, using default
-parameter min(a,2) value is "NOT_INPUT"
 y=min(a, 2)
-parameter zz+3 not specified, using default
-parameter zz+3 value is "NOT_INPUT"
 z=(zz + 3)
 max(a, 2)=max(a, 2)
 min(a, 2)=min(a, 2)

@@ -2,27 +2,11 @@
 >>>>>.param  x='3+a+1+1+exp(b-17)-3' 
 >>>>>.param a = sqrt(b) 
 >>>>>.eval x 
-parameter 3+a+1+1+exp(b-17)-3 not specified, using default
-parameter 3+a+1+1+exp(b-17)-3 value is "NOT_INPUT"
-parameter 3+a+1+1+exp(b-17)-3 not specified, using default
-parameter 3+a+1+1+exp(b-17)-3 value is "NOT_INPUT"
-parameter sqrt(b) not specified, using default
-parameter sqrt(b) value is "NOT_INPUT"
 x=((((3 + sqrt(b)) +  2.) + exp((b - 17))) - 3)
 >>>>>.eval 3+a+1+1+exp(b-17)-3 
-parameter sqrt(b) not specified, using default
-parameter sqrt(b) value is "NOT_INPUT"
 (((((3 + a) + 1) + 1) + exp((b - 17))) - 3)=((((3 + sqrt(b)) +  2.) + exp((b - 17))) - 3)
 >>>>>.param a={2+b} 
 >>>>>.eval x 
-parameter 3+a+1+1+exp(b-17)-3 not specified, using default
-parameter 3+a+1+1+exp(b-17)-3 value is "NOT_INPUT"
-parameter 3+a+1+1+exp(b-17)-3 not specified, using default
-parameter 3+a+1+1+exp(b-17)-3 value is "NOT_INPUT"
-parameter 2+b not specified, using default
-parameter 2+b value is "NOT_INPUT"
 x=((((3 + (b + 2)) +  2.) + exp((b - 17))) - 3)
 >>>>>.eval 3+a+1+1 
-parameter 2+b not specified, using default
-parameter 2+b value is "NOT_INPUT"
 (((3 + a) + 1) + 1)=((3 + (b + 2)) +  2.)
