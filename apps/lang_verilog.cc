@@ -440,9 +440,9 @@ void LANG_VERILOG::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
 {
   assert(x);
   _mode = mPARAMSET;
-  o << "paramset " << x->short_label() << ' ' << x->dev_type() << ";\\\n";
+  o << "paramset " << x->short_label() << ' ' << x->dev_type() << ";\n";
   print_args(o, x);
-  o << "\\\n"
+  o << "\n"
     "endparamset\n\n";
   _mode = mDEFAULT;
 }

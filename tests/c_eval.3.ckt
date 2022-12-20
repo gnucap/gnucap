@@ -1,0 +1,17 @@
+* unknown parameter check
+.param  x='max(a,2)'
+.param  y='min(a,2)'
+.eval x
+.eval y
+.param zz
+.param z=zz+3
+.eval z
+.eval max(a,2)
+.eval min(a,2)
+.eval min(exp(-1),exp(-2))
+.eval min(exp(a),exp(b))
+.param a=2
+.eval x
+.eval max(a,2)
+.eval min(exp(a),exp(b+a))
+.end

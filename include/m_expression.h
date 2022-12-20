@@ -46,9 +46,7 @@ protected:
   explicit Token(const Token& P)
     : Base(), _name(P._name), _data(P._data), _aRgs(P._aRgs) {assert(!_data);}
 public:
-  virtual ~Token()   {if (_data) {
-delete _data;}else{
-}}
+  virtual ~Token()   { delete _data; _data=NULL; }
   virtual Token*     clone()const = 0;
   const std::string& name()const {return _name;}
   const Base*	     data()const {return _data;}
@@ -64,8 +62,8 @@ class Token_SYMBOL : public Token
 public:
   explicit Token_SYMBOL(const std::string Name, const std::string Args)
     : Token(Name, NULL, Args) {}
-  explicit Token_SYMBOL(const Token_SYMBOL& P) : Token(P) {untested();}
-  Token* clone()const  override{untested();return new Token_SYMBOL(*this);}
+  explicit Token_SYMBOL(const Token_SYMBOL& P) : Token(P) {}
+  Token* clone()const  override{return new Token_SYMBOL(*this);}
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
@@ -93,8 +91,8 @@ public:
 class Token_PARLIST : public Token
 {
 public:
-  explicit Token_PARLIST(const std::string Name)
-    : Token(Name, NULL, "") {}
+  explicit Token_PARLIST(const std::string Name, Base* L=NULL)
+    : Token(Name, L, "") {}
   explicit Token_PARLIST(const Token_PARLIST& P) : Token(P) {untested();}
   Token* clone()const override{untested();return new Token_PARLIST(*this);}
   void stack_op(Expression*)const override;
@@ -145,7 +143,7 @@ private: // expression-in.cc
   void exptail(CS& File);
   void expression(CS& File);
 public:
-  explicit Expression() : _scope(NULL) {untested();}
+  explicit Expression() : _scope(NULL) {}
   explicit Expression(CS& File) : _scope(NULL) {parse(File);}
 private: // expression-reduce.cc
   void reduce_copy(const Expression&);

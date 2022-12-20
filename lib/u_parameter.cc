@@ -102,7 +102,7 @@ std::string PARAM_LIST::value(int i)const
   return "";
 }
 /*--------------------------------------------------------------------------*/
-void PARAM_LIST::eval_copy(PARAM_LIST& p, const CARD_LIST* scope)
+void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 {
   assert(!_try_again);
   _try_again = p._try_again;

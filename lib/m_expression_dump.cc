@@ -52,7 +52,8 @@ void Expression::dump(std::ostream& out)const
 	if (dynamic_cast<const Token_STOP*>(t)) {
 	  tmp = "(" + tmp;
 	  break;
-	}else if (dynamic_cast<const Token_SYMBOL*>(t)) {
+	}else if (dynamic_cast<const Token_SYMBOL*>(t)
+	      ||  dynamic_cast<const Token_CONSTANT*>(t)) {
 	  if (been_here) {
 	    tmp = ", " + tmp;
 	  }else{
@@ -108,7 +109,10 @@ void Expression::dump(std::ostream& out)const
     out << "empty";
   }else{
     out << stack.back()->full_name();
-    assert(stack.size() == 1);
+    if(stack.size() == 1){
+    }else{ untested();
+      incomplete();
+    }
   }
   while (!locals.empty()) {
     delete locals.back();

@@ -6,8 +6,8 @@ resistor      # ... k))      Rin  (in 0 vcc);
                                         ^ ? too many: requested=3 max=2
 resistor      # ... 00k))      Rout (out); 
                                         ^ ? need 1 more nodes, grounding
-paramset zz npn;\
- .level=1; .kf=NA( 0.); .af=NA( 1.); .bf=150; .br=NA( 1.); .is=NA( 100.E-18); .nf=NA( 1.); .nr=NA( 1.); .c4=NA( 0.); .nc=NA( 2.); .c2=NA( 0.); .ne=NA( 1.5); .rb=NA( 0.); .re=NA( 0.); .rc=NA( 0.); .cjc=NA( 0.); .cje=NA( 0.); .cjs=NA( 0.); .mjc=NA( 0.33); .mje=NA( 0.33); .mjs=NA( 0.); .vjc=NA( 0.75); .vje=NA( 0.75); .vjs=NA( 0.75); .xcjc=NA( 1.); .itf=NA( 0.); .ptf=NA( 0.); .tf=NA( 0.); .tr=NA( 0.); .xtf=NA( 0.); .xtb=NA( 0.); .xti=NA( 3.); .eg=NA( 1.11);\
+paramset zz npn;
+ .level=1; .kf=NA( 0.); .af=NA( 1.); .bf=150; .br=NA( 1.); .is=NA( 100.E-18); .nf=NA( 1.); .nr=NA( 1.); .c4=NA( 0.); .nc=NA( 2.); .c2=NA( 0.); .ne=NA( 1.5); .rb=NA( 0.); .re=NA( 0.); .rc=NA( 0.); .cjc=NA( 0.); .cje=NA( 0.); .cjs=NA( 0.); .mjc=NA( 0.33); .mje=NA( 0.33); .mjs=NA( 0.); .vjc=NA( 0.75); .vje=NA( 0.75); .vjs=NA( 0.75); .xcjc=NA( 1.); .itf=NA( 0.); .ptf=NA( 0.); .tf=NA( 0.); .tr=NA( 0.); .xtf=NA( 0.); .xtb=NA( 0.); .xti=NA( 3.); .eg=NA( 1.11);
 endparamset
 
 module dumb_resistor (a,b);
