@@ -193,13 +193,15 @@ void e_val(T* p, const T& def, const CARD_LIST*)
 /*--------------------------------------------------------------------------*/
 class INTERFACE PARAM_LIST {
 private:
-  mutable std::map<std::string, PARAMETER<double> > _pl;
-  PARAM_LIST* _try_again; // if you don't find it, also look here
+  typedef std::map<std::string, PARAMETER<double> > map;
 public:
-  typedef std::map<std::string, PARAMETER<double> >::const_iterator
-		const_iterator;
-  typedef std::map<std::string, PARAMETER<double> >::iterator
-		iterator;
+  typedef map::const_iterator const_iterator;
+  typedef map::iterator iterator;
+private:
+  mutable map _pl;
+  PARAM_LIST* _try_again; // if you don't find it, also look here
+  mutable const_iterator _previous;
+public:
   explicit PARAM_LIST() :_try_again(NULL) {}
   explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl), _try_again(p._try_again) {}
   //explicit PARAM_LIST(PARAM_LIST* ta) :_try_again(ta) {untested();}
@@ -224,8 +226,7 @@ public:
   iterator end() {return _pl.end();}
   const_iterator begin()const {itested(); return _pl.begin();}
   const_iterator end()const {itested(); return _pl.end();}
-private:
-  mutable const_iterator _previous;
+  const_iterator find(std::string const& k) const {untested(); return _pl.find(k); }
 };
 /*--------------------------------------------------------------------------*/
 template <>
