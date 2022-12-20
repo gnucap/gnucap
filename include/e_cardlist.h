@@ -75,6 +75,7 @@ public:
 
   // status queries
   bool is_empty()const			{return _cl.empty();}
+  size_t size()const			{return _cl.size();}
   const CARD_LIST* parent()const	{return _parent;}
 
   // return an iterator
