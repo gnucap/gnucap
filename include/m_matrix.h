@@ -504,7 +504,7 @@ T& BSMATRIX<T>::m(int r, int c)
  */
 template <class T>
 T BSMATRIX<T>::s(int row, int col)const
-{untested();
+{itested();
   assert(_lownode);
   assert(0 <= col);
   assert(col <= size());
@@ -512,23 +512,23 @@ T BSMATRIX<T>::s(int row, int col)const
   assert(row <= size());
   assert(_zero == 0.);
 
-  if (col == row) {untested();
+  if (col == row) {itested();
     return d(row, col);
-  }else if (col > row) {untested();    /* above the diagonal */
-    if (row == 0) {untested();
+  }else if (col > row) {itested();    /* above the diagonal */
+    if (row == 0) {itested();
       return _trash;
-    }else if (row < _lownode[col]) {untested();
+    }else if (row < _lownode[col]) {itested();
       return _zero;
-    }else{untested();
+    }else{itested();
       return u(row, col);
     }
-  }else{untested();                    /* below the diagonal */
+  }else{itested();                    /* below the diagonal */
     assert(col < row);
-    if (col == 0) {untested();
+    if (col == 0) {itested();
       return _trash;
-    }else if (col < _lownode[row]) {untested();
+    }else if (col < _lownode[row]) {itested();
       return _zero;
-    }else{untested();
+    }else{itested();
       return l(row, col);
     }
   }
