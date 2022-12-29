@@ -68,7 +68,7 @@ public:	// "elaborate"
   virtual void	 expand_last()		{}
   virtual void	 precalc_last()		{}
   virtual void	 map_nodes()		{}
-  virtual CARD*  deflate()		{untested(); return this;}
+  virtual CARD*  deflate()		{itested(); return this;}
   //--------------------------------------------------------------------
 public:	// dc-tran
   virtual void	 tr_iwant_matrix()	{}
