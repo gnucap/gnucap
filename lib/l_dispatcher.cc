@@ -94,7 +94,7 @@ void DISPATCHER_BASE::install(const std::string& s, CKT_BASE* p)
       // duplicate .. stash the old one so we can get it back
       error(bWARNING, name + ": already installed, replacing\n");
       std::string save_name = name + ":0";
-      for (int ii = 0; (*_map)[save_name]; ++ii) {untested();
+      for (int ii = 0; (*_map)[save_name]; ++ii) {itested();
 	save_name = name + ":" + to_string(ii);
       }
       (*_map)[save_name] = (*_map)[name];
