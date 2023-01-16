@@ -87,7 +87,7 @@ void DEV_RESISTANCE::dc_advance()
     assert(_m0.c0 == 0.);
     if(value() != 0.) {
       _y[0].f1 = value();
-    }else { untested();
+    }else {
       _y[0].f1 = OPT::shortckt;
     }
     if(_y[0].f1 != _y1.f1){ untested();
@@ -154,6 +154,7 @@ bool DEV_RESISTANCE::do_tr()
     if (_y[0].f1 == 0.) {
       error(bPICKY, long_label() + ": short circuit\n");
       _y[0].f1 = OPT::shortckt;
+      _y[0].x = _y[0].f0 / _y[0].f1;
       set_converged(conv_check());
     }else{
     }

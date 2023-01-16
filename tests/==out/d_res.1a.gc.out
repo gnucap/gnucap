@@ -1,17 +1,12 @@
-# bogus output, fail
 #           v(1)       v(2)       v(3)      
 r1: short circuit
  0.         0.         0.         0.        
 r2: short circuit
 -1.         0.0097087  0.019417   0.99029   
 r2: short circuit
--2.         0.009803   0.0098973  0.9902    
+-2.         0.0097087  0.019417   0.99029   
 r2: short circuit
--3.         0.0098039  0.0098048  0.9902    
-r2: short circuit
--4.         0.0098039  0.0098039  0.9902    
-r2: short circuit
- 0.         0.0098039  0.0098039  0.9902    
+ 0.         0.0097087  0.019417   0.99029   
 #           v(1)       v(2)       v(3)       y(r1)      y(r2)      y(r0)     
 r1: short circuit
  0.         0.         0.         0.         100.K      100.K      1.K       
@@ -20,18 +15,15 @@ r2: short circuit
 -1.         0.0097087  0.019417   0.99029    100.K      100.K      1.K       
 r1: short circuit
 r2: short circuit
--2.         188.52u    377.04u    0.9901     100.K      100.K      1.K       
+-2.         0.0097087  0.019417   0.99029    100.K      100.K      1.K       
 r1: short circuit
 r2: short circuit
--3.         3.6606u    7.3211u    0.9901     100.K      100.K      1.K       
+-3.         0.0097087  0.019417   0.99029    100.K      100.K      1.K       
 r1: short circuit
 r2: short circuit
--4.         71.079n    142.16n    0.9901     100.K      100.K      1.K       
-r1: short circuit
-r2: short circuit
- 0.         71.079n    142.16n    0.9901     100.K      100.K      1.K       
+ 0.         0.0097087  0.019417   0.99029    100.K      100.K      1.K       
 Gnucap   System status
-iterations: op=0, dc=5, tran=0, fourier=0, total=10
+iterations: op=0, dc=4, tran=0, fourier=0, total=7
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=3, subckt=0, model=0, total=3
 dctran density=77.8%, ac density=77.8%
