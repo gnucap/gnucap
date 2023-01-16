@@ -313,7 +313,7 @@ double ELEMENT::tr_probe_num(const std::string& x)const
     return _y[0].f1;
   }else if (Umatch(x, "nv ")) {
     return value();
-  }else if (Umatch(x, "eiv ")) {untested();
+  }else if (Umatch(x, "eiv ")) {
     return _m0.x;
   }else if (Umatch(x, "y ")) {
     return _m0.c1;

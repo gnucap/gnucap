@@ -1,0 +1,18 @@
+spice
+
+.param r=0
+
+* bug: r2 has a common, r1 doesn't
+r1 1 0 {r}
+r2 1 2 r
+
+r0 3 2 1m
+v1 3 0 1
+
+.print dc v(nodes)
+.dc trace=i
+.print dc v(nodes) y(r*)
+.dc trace=i
+
+.status notime
+.end

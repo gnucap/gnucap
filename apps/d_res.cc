@@ -49,6 +49,7 @@ private: // override virtual
   void     dc_advance()override;
   void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
   void     tr_begin()override;
+  void     tr_restore()override;
   bool	   do_tr()override;
   void	   tr_load()		{tr_load_passive();}
   void	   tr_unload()		{untested();tr_unload_passive();}
@@ -84,7 +85,13 @@ void DEV_RESISTANCE::dc_advance()
   if(using_tr_eval()){
   }else{
     assert(_m0.c0 == 0.);
-    _y[0].f1 = (value() != 0.) ? value() : OPT::shortckt;
+    if(value() == 0.) {
+      _y[0].f1 = OPT::shortckt;
+    }else if(std::abs(value())<OPT::shortckt){
+      _y[0].f1 = OPT::shortckt;
+    }else {
+      _y[0].f1 = value();
+    }
     if(_y[0].f1 != _y1.f1){ untested();
       store_values();
       q_load();
@@ -99,15 +106,45 @@ void DEV_RESISTANCE::dc_advance()
 void DEV_RESISTANCE::tr_begin()
 {
   ELEMENT::tr_begin();
-  _y1.f1 = _y[0].f1 = (value() != 0.) ? value() : OPT::shortckt;
-  _m0.x  = _y[0].x;  
+  if(value() == 0.){
+    _y[0].f1 = OPT::shortckt;
+  }else if(std::abs(value()) < OPT::shortckt) {
+    _y[0].f1 = OPT::shortckt;
+  }else {
+    _y[0].f1 = value();
+  }
+  _y1.f1 = _y[0].f1;
+  _m0.x  = _y[0].x;
   _m0.c1 = 1./_y[0].f1;
   _m0.c0 = 0.;
   _m1 = _m0;
   assert(_loss0 == 0.);
   assert(_loss1 == 0.);
-  if (value() == 0. && !has_common()) {
+  if(has_common()) {
+  }else if (std::abs(value()) <= OPT::shortckt) {
     error(bPICKY, long_label() + ": short circuit\n");
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void DEV_RESISTANCE::tr_restore()
+{
+  ELEMENT::tr_restore();
+
+  // is this needed in ELEMENT?
+  if (_time[0] > _sim->_time0) {untested();
+  }else if (_time[0] != _sim->_time0) {untested();
+  }else if (_y[0].f0 != LINEAR){
+  }else if (using_tr_eval()) {
+    trace3("tr_restore invent history", long_label(), _y[0].f0, _y[1].f1);
+    _m0.x = tr_involts_limited();
+    _y[0].x = tr_input_limited();
+    tr_eval();
+    store_values();
+    for (int i=1  ; i<OPT::_keep_time_steps; ++i) {
+      _time[i] = 0;
+      _y[i] = _y[0];
+    }
   }else{
   }
 }
@@ -119,9 +156,10 @@ bool DEV_RESISTANCE::do_tr()
     _y[0].x = tr_input_limited();;
     tr_eval();
     assert(_y[0].f0 != LINEAR);
-    if (_y[0].f1 == 0.) {
+    if (std::abs(_y[0].f1) <= OPT::shortckt) {
       error(bPICKY, long_label() + ": short circuit\n");
       _y[0].f1 = OPT::shortckt;
+      _y[0].x = _y[0].f0 / _y[0].f1;
       set_converged(conv_check());
     }else{
     }
@@ -129,6 +167,7 @@ bool DEV_RESISTANCE::do_tr()
     q_load();
     _m0.c1 = 1./_y[0].f1;
     _m0.c0 = _y[0].x - _y[0].f0 / _y[0].f1;
+    trace4("DEV_RESISTANCE::dtr", long_label(), _sim->_time0, _y[0].f0, _y[0].f1);
   }else{
     assert(_y[0].f0 == LINEAR);
     assert(_y[0].f1 == value() || _y[0].f1 == OPT::shortckt);
@@ -151,7 +190,7 @@ void DEV_RESISTANCE::do_ac()
 {
   if (using_ac_eval()) {
     ac_eval();
-    if (_ev == 0.) {
+    if (std::abs(_ev) <= OPT::shortckt) {
       error(bPICKY, long_label() + ": short circuit\n");
       _ev = OPT::shortckt;
     }else{
