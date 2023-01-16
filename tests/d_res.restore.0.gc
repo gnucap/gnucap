@@ -1,0 +1,16 @@
+spice
+
+.param r=1
+
+v1 1 0 sin amplitude=1 frequency=1
+r1 1 0 r
+r2 1 0 {r}
+
+.print tran v(1)
+.tran 1.1 trace=n
+
+.print tran eiv(r*) v(1)
+.tran 2 trace=a
+
+.status notime
+.end

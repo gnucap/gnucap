@@ -49,6 +49,7 @@ private: // override virtual
   void     dc_advance()override;
   void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
   void     tr_begin()override;
+  void     tr_restore()override;
   bool	   do_tr()override;
   void	   tr_load()		{tr_load_passive();}
   void	   tr_unload()		{untested();tr_unload_passive();}
@@ -112,6 +113,28 @@ void DEV_RESISTANCE::tr_begin()
   }
 }
 /*--------------------------------------------------------------------------*/
+void DEV_RESISTANCE::tr_restore()
+{
+  ELEMENT::tr_restore();
+
+  // is this needed in ELEMENT?
+  if (_time[0] > _sim->_time0) {untested();
+  }else if (_time[0] != _sim->_time0) {untested();
+  }else if (_y[0].f0 != LINEAR){
+  }else if (using_tr_eval()) {
+    trace3("tr_restore invent history", long_label(), _y[0].f0, _y[1].f1);
+    _m0.x = tr_involts_limited();
+    _y[0].x = tr_input_limited();
+    tr_eval();
+    store_values();
+    for (int i=1  ; i<OPT::_keep_time_steps; ++i) {
+      _time[i] = 0;
+      _y[i] = _y[0];
+    }
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
 bool DEV_RESISTANCE::do_tr()
 {
   if (using_tr_eval()) {
@@ -129,6 +152,7 @@ bool DEV_RESISTANCE::do_tr()
     q_load();
     _m0.c1 = 1./_y[0].f1;
     _m0.c0 = _y[0].x - _y[0].f0 / _y[0].f1;
+    trace4("DEV_RESISTANCE::dtr", long_label(), _sim->_time0, _y[0].f0, _y[0].f1);
   }else{
     assert(_y[0].f0 == LINEAR);
     assert(_y[0].f1 == value() || _y[0].f1 == OPT::shortckt);
