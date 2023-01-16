@@ -85,7 +85,11 @@ void DEV_RESISTANCE::dc_advance()
   if(using_tr_eval()){
   }else{
     assert(_m0.c0 == 0.);
-    _y[0].f1 = (value() != 0.) ? value() : OPT::shortckt;
+    if(value() != 0.) {
+      _y[0].f1 = value();
+    }else { untested();
+      _y[0].f1 = OPT::shortckt;
+    }
     if(_y[0].f1 != _y1.f1){ untested();
       store_values();
       q_load();
@@ -100,8 +104,13 @@ void DEV_RESISTANCE::dc_advance()
 void DEV_RESISTANCE::tr_begin()
 {
   ELEMENT::tr_begin();
-  _y1.f1 = _y[0].f1 = (value() != 0.) ? value() : OPT::shortckt;
-  _m0.x  = _y[0].x;  
+  if(value() != 0.) {
+    _y[0].f1 = value();
+  }else {
+    _y[0].f1 = OPT::shortckt;
+  }
+  _y1.f1 = _y[0].f1;
+  _m0.x  = _y[0].x;
   _m0.c1 = 1./_y[0].f1;
   _m0.c0 = 0.;
   _m1 = _m0;
