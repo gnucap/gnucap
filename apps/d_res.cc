@@ -87,7 +87,7 @@ void DEV_RESISTANCE::dc_advance()
     assert(_m0.c0 == 0.);
     if(value() == 0.) {
       _y[0].f1 = OPT::shortckt;
-    }else if(std::abs(value())<OPT::shortckt){ untested();
+    }else if(std::abs(value())<OPT::shortckt){
       _y[0].f1 = OPT::shortckt;
     }else {
       _y[0].f1 = value();
@@ -108,7 +108,7 @@ void DEV_RESISTANCE::tr_begin()
   ELEMENT::tr_begin();
   if(value() == 0.){
     _y[0].f1 = OPT::shortckt;
-  }else if(std::abs(value()) < OPT::shortckt) { untested();
+  }else if(std::abs(value()) < OPT::shortckt) {
     _y[0].f1 = OPT::shortckt;
   }else {
     _y[0].f1 = value();
