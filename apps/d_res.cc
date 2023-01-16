@@ -85,10 +85,12 @@ void DEV_RESISTANCE::dc_advance()
   if(using_tr_eval()){
   }else{
     assert(_m0.c0 == 0.);
-    if(value() != 0.) {
-      _y[0].f1 = value();
-    }else {
+    if(value() == 0.) {
       _y[0].f1 = OPT::shortckt;
+    }else if(std::abs(value())<OPT::shortckt){ untested();
+      _y[0].f1 = OPT::shortckt;
+    }else {
+      _y[0].f1 = value();
     }
     if(_y[0].f1 != _y1.f1){ untested();
       store_values();
@@ -104,10 +106,12 @@ void DEV_RESISTANCE::dc_advance()
 void DEV_RESISTANCE::tr_begin()
 {
   ELEMENT::tr_begin();
-  if(value() != 0.) {
-    _y[0].f1 = value();
-  }else {
+  if(value() == 0.){
     _y[0].f1 = OPT::shortckt;
+  }else if(std::abs(value()) < OPT::shortckt) { untested();
+    _y[0].f1 = OPT::shortckt;
+  }else {
+    _y[0].f1 = value();
   }
   _y1.f1 = _y[0].f1;
   _m0.x  = _y[0].x;
@@ -116,7 +120,8 @@ void DEV_RESISTANCE::tr_begin()
   _m1 = _m0;
   assert(_loss0 == 0.);
   assert(_loss1 == 0.);
-  if (value() == 0. && !has_common()) {
+  if(has_common()) {
+  }else if (std::abs(value()) <= OPT::shortckt) {
     error(bPICKY, long_label() + ": short circuit\n");
   }else{
   }
@@ -151,7 +156,7 @@ bool DEV_RESISTANCE::do_tr()
     _y[0].x = tr_input_limited();;
     tr_eval();
     assert(_y[0].f0 != LINEAR);
-    if (_y[0].f1 == 0.) {
+    if (std::abs(_y[0].f1) <= OPT::shortckt) {
       error(bPICKY, long_label() + ": short circuit\n");
       _y[0].f1 = OPT::shortckt;
       _y[0].x = _y[0].f0 / _y[0].f1;
@@ -185,7 +190,7 @@ void DEV_RESISTANCE::do_ac()
 {
   if (using_ac_eval()) {
     ac_eval();
-    if (_ev == 0.) {
+    if (std::abs(_ev) <= OPT::shortckt) {
       error(bPICKY, long_label() + ": short circuit\n");
       _ev = OPT::shortckt;
     }else{
