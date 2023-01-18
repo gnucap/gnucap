@@ -30,7 +30,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_END : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope) {
+  void do_it(CS&, CARD_LIST* Scope)override {
     switch (ENV::run_mode) {
     case rPRE_MAIN: unreachable(); break;
     case rPRESET:   untested(); break;  //BUG// this should close the file
@@ -60,7 +60,7 @@ DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "end", &p0);
 /*--------------------------------------------------------------------------*/
 class CMD_PAUSE : public CMD {
 public:
-  void do_it(CS&, CARD_LIST*) {untested();
+  void do_it(CS&, CARD_LIST*)override {untested();
     //BUG// buffer problem
     //BUG// redirection problem
     IO::error << "Continue? ";
@@ -75,7 +75,7 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "pause", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_QUIT : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope) {
+  void do_it(CS&, CARD_LIST* Scope)override {
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable(); break;
     case rINTERACTIVE:	
@@ -89,7 +89,7 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "quit|exit", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_TEMP : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*) {itested();
+  void do_it(CS& cmd, CARD_LIST*)override {itested();
     double t = NOT_INPUT;
     size_t here = cmd.cursor();
     cmd >> '=' >> t;
@@ -104,7 +104,7 @@ DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "temperature|temp", &p3);
 /*--------------------------------------------------------------------------*/
 class CMD_TITLE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*) {
+  void do_it(CS& cmd, CARD_LIST*)override {
     if (cmd.more()) {
       head = cmd.tail();
     }else{itested(); 

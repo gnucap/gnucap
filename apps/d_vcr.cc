@@ -36,32 +36,32 @@ private:
 public:
   explicit DEV_VCR()		:ELEMENT() {}
 private: // override virtual
-  char	   id_letter()const	{itested();return '\0';}
-  std::string value_name()const {itested(); return "r";}
-  std::string dev_type()const	{return "vcr";}
-  int	   max_nodes()const	{return 4;}
-  int	   min_nodes()const	{return 4;}
-  int	   matrix_nodes()const	{return 4;}
-  int	   net_nodes()const	{return 4;}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_VCR(*this);}
-  void     precalc_last();
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
-  void     tr_begin();
-  bool	   do_tr();
-  void	   tr_load()		{tr_load_shunt(); tr_load_active();}
-  void	   tr_unload()		{untested(); tr_unload_shunt(); tr_unload_active();}
-  double   tr_involts()const	{untested(); return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
-  double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
-  double   tr_amps()const	{untested(); return ELEMENT::tr_amps();}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_extended();}
-  void	   ac_begin();
-  void	   do_ac();
-  void	   ac_load()		{ac_load_shunt(); ac_load_active();}
-  COMPLEX  ac_involts()const	{untested();return _n[IN1]->vac()-_n[IN2]->vac();}
-  COMPLEX  ac_amps()const	{untested(); return ELEMENT::ac_amps();}
+  char	   id_letter()const override	{itested();return '\0';}
+  std::string value_name()const override{itested(); return "r";}
+  std::string dev_type()const override	{return "vcr";}
+  int	   max_nodes()const override	{return 4;}
+  int	   min_nodes()const override	{return 4;}
+  int	   matrix_nodes()const override	{return 4;}
+  int	   net_nodes()const override	{return 4;}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const override	{return new DEV_VCR(*this);}
+  void     precalc_last()override;
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  void     tr_begin()override;
+  bool	   do_tr()override;
+  void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
+  void	   tr_unload()override		{untested(); tr_unload_shunt(); tr_unload_active();}
+  double   tr_involts()const override	{untested(); return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
+  double   tr_involts_limited()const override {return volts_limited(_n[IN1],_n[IN2]);}
+  double   tr_amps()const override	{untested(); return ELEMENT::tr_amps();}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_begin()override;
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_shunt(); ac_load_active();}
+  COMPLEX  ac_involts()const override	{untested();return _n[IN1]->vac()-_n[IN2]->vac();}
+  COMPLEX  ac_amps()const override	{untested(); return ELEMENT::ac_amps();}
 
-  std::string port_name(int i)const {untested();
+  std::string port_name(int i)const override {untested();
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"p", "n", "ps", "ns"};

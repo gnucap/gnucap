@@ -36,7 +36,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class FOURIER : public TRANSIENT {
 public:
-  void	do_it(CS&, CARD_LIST*);
+  void	do_it(CS&, CARD_LIST*)override;
   explicit FOURIER():
     TRANSIENT(),
     _fstart(0.),
@@ -48,14 +48,14 @@ public:
   ~FOURIER() {}
 private:
   explicit FOURIER(const FOURIER&): TRANSIENT() {unreachable(); incomplete();}
-  std::string status()const {untested();return "";}
-  void	setup(CS&);	/* s_fo_set.cc */
+  std::string status()const override {untested();return "";}
+  void	setup(CS&)override;	/* s_fo_set.cc */
   void	fftallocate();
   void	fftunallocate();
   void	foout();	/* s_fo_out.cc */
   void	fohead(const PROBE&);
   void	foprint(COMPLEX*);
-  void	store_results(double); // override virtual
+  void	store_results(double)override; // override virtual
 private:
   PARAMETER<double> _fstart;	/* user start frequency */
   PARAMETER<double> _fstop;	/* user stop frequency */

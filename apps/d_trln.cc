@@ -50,18 +50,18 @@ private:
   explicit COMMON_TRANSLINE(const COMMON_TRANSLINE& p);
 public:
   explicit COMMON_TRANSLINE(int c=0);
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {return new COMMON_TRANSLINE(*this);}
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {return new COMMON_TRANSLINE(*this);}
 
-  void		set_param_by_index(int, std::string&, int);
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int param_count()const {return (9 + COMMON_COMPONENT::param_count());}
+  void		set_param_by_index(int, std::string&, int)override;
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override {return (9 + COMMON_COMPONENT::param_count());}
 public:
-  void		precalc_last(const CARD_LIST*);
-  std::string	name()const		{untested(); return "transline";}
+  void		precalc_last(const CARD_LIST*)override;
+  std::string	name()const override		{untested(); return "transline";}
 };
 /*--------------------------------------------------------------------------*/
 class DEV_TRANSLINE : public ELEMENT {
@@ -80,34 +80,34 @@ private:
 public:
   explicit	DEV_TRANSLINE();
 private: // override virtual
-  char		id_letter()const	{return 'T';}
-  std::string   value_name()const	{return "#";}
-  std::string	dev_type()const		{itested(); return "tline";}
-  int		max_nodes()const	{return 4;}
-  int		min_nodes()const	{return 4;}
-  int		matrix_nodes()const	{return 4;}
-  int		net_nodes()const	{return 4;}
-  CARD*		clone()const		{return new DEV_TRANSLINE(*this);}
-  void		precalc_last();
-  void		tr_iwant_matrix();
-  void		tr_begin();
-  void		dc_advance();
-  void		tr_advance();
-  void		tr_regress();
-  bool		tr_needs_eval()const;
-  bool		do_tr();
-  void		tr_load();
-  TIME_PAIR 	tr_review();
-  void		tr_accept();
-  void		tr_unload();
-  double	tr_involts()const;
-  double	tr_involts_limited()const;
-  void		ac_iwant_matrix()	{ac_iwant_matrix_extended();}
-  void		do_ac();
-  void		ac_load();
-  COMPLEX	ac_involts()const;
+  char		id_letter()const override	{return 'T';}
+  std::string   value_name()const override	{return "#";}
+  std::string	dev_type()const override	{itested(); return "tline";}
+  int		max_nodes()const override	{return 4;}
+  int		min_nodes()const override	{return 4;}
+  int		matrix_nodes()const override	{return 4;}
+  int		net_nodes()const override	{return 4;}
+  CARD*		clone()const override		{return new DEV_TRANSLINE(*this);}
+  void		precalc_last()override;
+  void		tr_iwant_matrix()override;
+  void		tr_begin()override;
+  void		dc_advance()override;
+  void		tr_advance()override;
+  void		tr_regress()override;
+  bool		tr_needs_eval()const override;
+  bool		do_tr()override;
+  void		tr_load()override;
+  TIME_PAIR 	tr_review()override;
+  void		tr_accept()override;
+  void		tr_unload()override;
+  double	tr_involts()const override;
+  double	tr_involts_limited()const override;
+  void		ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void		do_ac()override;
+  void		ac_load()override;
+  COMPLEX	ac_involts()const override;
 
-  std::string port_name(int i)const {itested();
+  std::string port_name(int i)const override {itested();
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"t1", "b1", "t2", "b2"};

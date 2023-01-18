@@ -33,12 +33,12 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class DCOP : public SIM {
 public:
-  void	finish();
+  void	finish()override;
 protected:
   void	fix_args(int);
   void	options(CS&, int);
 private:
-  void	sweep();
+  void	sweep()override;
   void	sweep_recursive(int);
   void	first(int);
   bool	next(int);
@@ -70,9 +70,9 @@ class DC : public DCOP {
 public:
   explicit DC(): DCOP() {}
   ~DC() {}
-  void	do_it(CS&, CARD_LIST*);
+  void	do_it(CS&, CARD_LIST*)override;
 private:
-  void	setup(CS&);
+  void	setup(CS&)override;
   explicit DC(const DC&): DCOP() {unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
@@ -80,9 +80,9 @@ class OP : public DCOP {
 public:
   explicit OP(): DCOP() {}
   ~OP() {}
-  void	do_it(CS&, CARD_LIST*);
+  void	do_it(CS&, CARD_LIST*)override;
 private:
-  void	setup(CS&);
+  void	setup(CS&)override;
   explicit OP(const OP&): DCOP() {unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/

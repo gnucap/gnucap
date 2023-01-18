@@ -103,8 +103,7 @@ private:
     return false;
   }
   //-----------------------------------
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
     }else{untested();
