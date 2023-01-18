@@ -65,17 +65,17 @@ public:
   explicit MODEL_TABLE();
   ~MODEL_TABLE();
 private: // override virtual
-  std::string dev_type()const		{return "table";}
-  void  precalc_first();
-  COMMON_COMPONENT* new_common()const	{return new EVAL_BM_TABLE;}
-  CARD* clone()const			{return new MODEL_TABLE(*this);}
+  std::string dev_type()const override		{return "table";}
+  void  precalc_first() override;
+  COMMON_COMPONENT* new_common()const override	{return new EVAL_BM_TABLE;}
+  CARD* clone()const override			{return new MODEL_TABLE(*this);}
 
-  bool use_obsolete_callback_print()const {return true;}
-  bool use_obsolete_callback_parse()const {return true;}
-  void print_args_obsolete_callback(OMSTREAM&,LANGUAGE*)const;
-  bool parse_params_obsolete_callback(CS&);
+  bool use_obsolete_callback_print()const override {return true;}
+  bool use_obsolete_callback_parse()const override {return true;}
+  void print_args_obsolete_callback(OMSTREAM&,LANGUAGE*)const override;
+  bool parse_params_obsolete_callback(CS&) override;
 
-  void tr_eval(COMPONENT*)const;
+  void tr_eval(COMPONENT*)const override;
 };
 /*--------------------------------------------------------------------------*/
 int    const MODEL_TABLE::_default_order = 3;

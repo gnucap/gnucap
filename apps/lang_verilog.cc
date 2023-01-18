@@ -492,8 +492,7 @@ void LANG_VERILOG::print_command(OMSTREAM& o, const DEV_DOT* x)
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 class CMD_PARAMSET : public CMD {
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     // already got "paramset"
     std::string my_name, base_name;
     cmd >> my_name;
@@ -521,8 +520,7 @@ class CMD_PARAMSET : public CMD {
 DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "paramset", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_MODULE : public CMD {
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("subckt"));
     assert(new_module);
     assert(!new_module->owner());
@@ -537,8 +535,7 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "module|macromodule", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_VERILOG : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)
-  {
+  void do_it(CS&, CARD_LIST* Scope)override {
     command("options lang=verilog", Scope);
   }
 } p8;

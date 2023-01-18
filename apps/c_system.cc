@@ -33,8 +33,7 @@ namespace {
  */
 class CMD_EDIT : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {itested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {itested();
     std::string editor(OS::getenv("EDITOR"));
     if (editor == "") {
       throw Exception("no editor defined\n"
@@ -56,8 +55,7 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "edit", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_SYSTEM : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
-  {itested();
+  void do_it(CS& cmd, CARD_LIST*)override {itested();
     if (cmd.more()) {itested();
       OS::system(cmd.tail());
     }else{
@@ -69,8 +67,7 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "system|!", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_CHDIR : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
-  {itested();
+  void do_it(CS& cmd, CARD_LIST*)override {itested();
     if (cmd.more()) {
       OS::chdir(cmd.ctos(""));
     }else{

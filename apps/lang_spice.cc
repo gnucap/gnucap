@@ -40,17 +40,17 @@ public:
   enum EOB {NO_EXIT_ON_BLANK, EXIT_ON_BLANK};
 
 public: // override virtual, used by callback
-  std::string arg_front()const {return " ";}
-  std::string arg_mid()const {return "=";}
-  std::string arg_back()const {return "";}
+  std::string arg_front()const override {return " ";}
+  std::string arg_mid()const override {return "=";}
+  std::string arg_back()const override {return "";}
 
 public: // override virtual, called by commands
-  DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*);
-  DEV_DOT*	parse_command(CS&, DEV_DOT*);
-  MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*);
-  BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*);
-  COMPONENT*	parse_instance(CS&, COMPONENT*);
-  std::string	find_type_in_string(CS&);
+  DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*)override;
+  DEV_DOT*	parse_command(CS&, DEV_DOT*)override;
+  MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*)override;
+  BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*)override;
+  COMPONENT*	parse_instance(CS&, COMPONENT*)override;
+  std::string	find_type_in_string(CS&)override;
 public: // "local?", called by own commands
   void parse_module_body(CS&, BASE_SUBCKT*, CARD_LIST*, const std::string&,
 			 EOB, const std::string&);
@@ -64,11 +64,11 @@ private: // compatibility hacks
   void parse_logic_using_obsolete_callback(CS&, COMPONENT*);
 
 private: // override virtual, called by print_item
-  void print_paramset(OMSTREAM&, const MODEL_CARD*);
-  void print_module(OMSTREAM&, const BASE_SUBCKT*);
-  void print_instance(OMSTREAM&, const COMPONENT*);
-  void print_comment(OMSTREAM&, const DEV_COMMENT*);
-  void print_command(OMSTREAM&, const DEV_DOT*);
+  void print_paramset(OMSTREAM&, const MODEL_CARD*)override;
+  void print_module(OMSTREAM&, const BASE_SUBCKT*)override;
+  void print_instance(OMSTREAM&, const COMPONENT*)override;
+  void print_comment(OMSTREAM&, const DEV_COMMENT*)override;
+  void print_command(OMSTREAM&, const DEV_DOT*)override;
 private: // local
   void print_args(OMSTREAM&, const MODEL_CARD*);
   void print_type(OMSTREAM&, const COMPONENT*);
@@ -81,10 +81,10 @@ class LANG_SPICE : public LANG_SPICE_BASE {
 public:
   LANG_SPICE() {}
   ~LANG_SPICE() {}
-  std::string name()const {return "spice";}
-  bool case_insensitive()const {return true;}
-  UNITS units()const {return uSPICE;}
-  void parse_top_item(CS&, CARD_LIST*);
+  std::string name()const override {return "spice";}
+  bool case_insensitive()const override {return true;}
+  UNITS units()const override {return uSPICE;}
+  void parse_top_item(CS&, CARD_LIST*)override;
 } lang_spice;
 DISPATCHER<LANGUAGE>::INSTALL
 	ds(&language_dispatcher, lang_spice.name(), &lang_spice);
@@ -93,9 +93,9 @@ class LANG_ACS : public LANG_SPICE_BASE {
 public:
   LANG_ACS() {}
   ~LANG_ACS() {}
-  std::string name()const {return "acs";}
-  bool case_insensitive()const {return true;}
-  UNITS units()const {return uSPICE;}
+  std::string name()const override {return "acs";}
+  bool case_insensitive()const override {return true;}
+  UNITS units()const override {return uSPICE;}
 } lang_acs;
 DISPATCHER<LANGUAGE>::INSTALL
 	da(&language_dispatcher, lang_acs.name(), &lang_acs);
@@ -824,8 +824,7 @@ void LANG_SPICE_BASE::print_ports(OMSTREAM& o, const COMPONENT* x)
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 class CMD_MODEL : public CMD {
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     // already got "model"
     std::string my_name, base_name;
     cmd >> my_name;
@@ -869,8 +868,7 @@ class CMD_MODEL : public CMD {
 DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, ".model", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_SUBCKT : public CMD {
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("subckt"));
     assert(new_module);
     assert(!new_module->owner());
@@ -948,8 +946,7 @@ static void getmerge(CS& cmd, Skip_Header skip_header, CARD_LIST* Scope)
  */
 class CMD_LIB : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     size_t here = cmd.cursor();
     std::string section_name, more_stuff;
     cmd >> section_name >> more_stuff;
@@ -975,8 +972,7 @@ DISPATCHER<CMD>::INSTALL d33(&command_dispatcher, ".lib|lib", &p33);
  */
 class CMD_INCLUDE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {untested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {untested();
     getmerge(cmd, NO_HEADER, Scope);
   }
 } p3;
@@ -987,8 +983,7 @@ DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, ".include", &p3);
  */
 class CMD_MERGE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {untested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {untested();
     SET_RUN_MODE xx(rPRESET);
     getmerge(cmd, NO_HEADER, Scope);
   }
@@ -1002,8 +997,7 @@ DISPATCHER<CMD>::INSTALL d4(&command_dispatcher, ".merge|merge", &p4);
  */
 class CMD_RUN : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     while (cmd.match1('<')) {untested();
       command("clear", Scope);
       cmd.skip();
@@ -1021,8 +1015,7 @@ DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "<", &p5);
  */
 class CMD_GET : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     SET_RUN_MODE xx(rPRESET);
     command("clear", Scope);
     getmerge(cmd, SKIP_HEADER, Scope);
@@ -1040,8 +1033,7 @@ DISPATCHER<CMD>::INSTALL d6(&command_dispatcher, ".get|get", &p6);
  */
 class CMD_BUILD : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {untested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {untested();
     SET_RUN_MODE xx(rPRESET);
     ::status.get.reset().start();
     lang_spice.parse_module_body(cmd, NULL, Scope, ">", lang_spice.EXIT_ON_BLANK, ". ");
@@ -1052,8 +1044,7 @@ DISPATCHER<CMD>::INSTALL d7(&command_dispatcher, ".build|build", &p7);
 /*--------------------------------------------------------------------------*/
 class CMD_SPICE : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)
-  {
+  void do_it(CS&, CARD_LIST* Scope)override {
     command("options lang=spice", Scope);
   }
 } p8;
@@ -1061,8 +1052,7 @@ DISPATCHER<CMD>::INSTALL d8(&command_dispatcher, "spice", &p8);
 /*--------------------------------------------------------------------------*/
 class CMD_ACS : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)
-  {itested();
+  void do_it(CS&, CARD_LIST* Scope)override {itested();
     command("options lang=acs", Scope);
   }
 } p9;
@@ -1070,8 +1060,7 @@ DISPATCHER<CMD>::INSTALL d9(&command_dispatcher, "acs", &p9);
 /*--------------------------------------------------------------------------*/
 class CMD_ENDC : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)
-  {untested();
+  void do_it(CS&, CARD_LIST* Scope)override {untested();
     if (OPT::language == &lang_acs) {untested();
       command("options lang=spice", Scope);
     }else{untested();
@@ -1082,8 +1071,7 @@ DISPATCHER<CMD>::INSTALL d88(&command_dispatcher, ".endc", &p88);
 /*--------------------------------------------------------------------------*/
 class CMD_CONTROL : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)
-  {untested();
+  void do_it(CS&, CARD_LIST* Scope)override {untested();
     if (OPT::language == &lang_spice) {untested();
       command("options lang=acs", Scope);
     }else{untested();

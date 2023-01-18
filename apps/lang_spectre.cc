@@ -35,30 +35,30 @@ class LANG_SPECTRE : public LANGUAGE {
 public:
   LANG_SPECTRE()  {}
   ~LANG_SPECTRE() {}
-  std::string name()const {return "spectre";}
-  bool case_insensitive()const {return false;}
-  UNITS units()const {return uSI;}
+  std::string name()const override {return "spectre";}
+  bool case_insensitive()const override {return false;}
+  UNITS units()const override {return uSI;}
 
 public: // override virtual, used by callback
-  std::string arg_front()const {unreachable();return " ";}
-  std::string arg_mid()const {unreachable();return "=";}
-  std::string arg_back()const {unreachable();return "";}
+  std::string arg_front()const override {unreachable();return " ";}
+  std::string arg_mid()const override {unreachable();return "=";}
+  std::string arg_back()const override {unreachable();return "";}
 
 public: // override virtual, called by commands
-  void		parse_top_item(CS&, CARD_LIST*);
-  DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*);
-  DEV_DOT*	parse_command(CS&, DEV_DOT*);
-  MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*);
-  BASE_SUBCKT*	parse_module(CS&, BASE_SUBCKT*);
-  COMPONENT*	parse_instance(CS&, COMPONENT*);
-  std::string	find_type_in_string(CS&);
+  void		parse_top_item(CS&, CARD_LIST*)override;
+  DEV_COMMENT*	parse_comment(CS&, DEV_COMMENT*)override;
+  DEV_DOT*	parse_command(CS&, DEV_DOT*)override;
+  MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*)override;
+  BASE_SUBCKT*	parse_module(CS&, BASE_SUBCKT*)override;
+  COMPONENT*	parse_instance(CS&, COMPONENT*)override;
+  std::string	find_type_in_string(CS&)override;
 
 private: // override virtual, called by print_item
-  void print_paramset(OMSTREAM&, const MODEL_CARD*);
-  void print_module(OMSTREAM&, const BASE_SUBCKT*);
-  void print_instance(OMSTREAM&, const COMPONENT*);
-  void print_comment(OMSTREAM&, const DEV_COMMENT*);
-  void print_command(OMSTREAM& o, const DEV_DOT* c);
+  void print_paramset(OMSTREAM&, const MODEL_CARD*)override;
+  void print_module(OMSTREAM&, const BASE_SUBCKT*)override;
+  void print_instance(OMSTREAM&, const COMPONENT*)override;
+  void print_comment(OMSTREAM&, const DEV_COMMENT*)override;
+  void print_command(OMSTREAM& o, const DEV_DOT* c)override;
 private: // local
   void print_args(OMSTREAM&, const CARD*);
 } lang_spectre;
@@ -408,8 +408,7 @@ void LANG_SPECTRE::print_command(OMSTREAM& o, const DEV_DOT* x)
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 class CMD_MODEL : public CMD {
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     // already got "model"
     std::string my_name, base_name;
     cmd >> my_name;
@@ -437,8 +436,7 @@ class CMD_MODEL : public CMD {
 DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "model", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_SUBCKT : public CMD {
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("subckt"));
     assert(new_module);
     assert(!new_module->owner());
@@ -452,8 +450,7 @@ class CMD_SUBCKT : public CMD {
 DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "subckt", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_SIMULATOR : public CMD {
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     command("options " + cmd.tail(), Scope);
   }
 } p3;
@@ -461,8 +458,7 @@ DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "simulator", &p3);
 /*--------------------------------------------------------------------------*/
 class CMD_SPECTRE : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)
-  {
+  void do_it(CS&, CARD_LIST* Scope)override {
     command("options lang=spectre", Scope);
   }
 } p8;

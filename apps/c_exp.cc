@@ -29,8 +29,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_ : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     Expression e(cmd);
     cmd.check(bDANGER, "syntax error");
     Expression r(e, Scope);

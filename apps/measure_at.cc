@@ -29,8 +29,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class MEASURE : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     std::string probe_name;
     PARAMETER<double> x;
     bool derivative = false;

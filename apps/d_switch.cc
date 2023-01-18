@@ -44,14 +44,14 @@ public:
   explicit COMMON_SWITCH(int c=0) 
     :COMMON_COMPONENT(c), _ic(_UNKNOWN) {}
   bool operator==(const COMMON_COMPONENT&)const override;
-  COMMON_COMPONENT* clone()const {return new COMMON_SWITCH(*this);}
-  std::string name()const	 {untested(); return "switch";}
+  COMMON_COMPONENT* clone()const override{return new COMMON_SWITCH(*this);}
+  std::string name()const override	 {untested(); return "switch";}
 
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int param_count()const {return (1 + COMMON_COMPONENT::param_count());}
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override {return (1 + COMMON_COMPONENT::param_count());}
 public:
   state_t	_ic;		/* initial state, belongs in common */
   //BUG// no way to set _ic
@@ -74,21 +74,21 @@ protected: // override virtual
   void     expand()override;
   void     precalc_last()override;
   void	   tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
-  void	   tr_begin();
-  void     dc_advance();
-  void     tr_advance();
-  void     tr_regress();
+  void	   tr_begin()override;
+  void     dc_advance()override;
+  void     tr_advance()override;
+  void     tr_regress()override;
   bool	   tr_needs_eval()const override {return _sim->analysis_is_static();} // also q by tr_advance
-  bool	   do_tr();
-  void	   tr_load()		{tr_load_passive();}
-  TIME_PAIR tr_review();
-  void	   tr_unload()		{untested(); tr_unload_passive();}
+  bool	   do_tr()override;
+  void	   tr_load()override		{tr_load_passive();}
+  TIME_PAIR tr_review()override;
+  void	   tr_unload()override		{untested(); tr_unload_passive();}
   double   tr_involts()const override	{itested(); return tr_outvolts();}
   double   tr_involts_limited()const override {unreachable(); return tr_outvolts_limited();}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void	   ac_begin()		{_ev = _y[0].f1; _acg = _m0.c1;}
-  void	   do_ac();
-  void	   ac_load()		{ac_load_passive();}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_passive();}
+  void	   ac_begin()override		{_ev = _y[0].f1; _acg = _m0.c1;}
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_passive();}
   COMPLEX  ac_involts()const override	{untested(); return ac_outvolts();}
 protected:
   const ELEMENT* _input;
@@ -131,11 +131,11 @@ private: // override virtual
   int	    num_current_ports()const override {return 1;}
   const std::string current_port_value(int)const override {return _input_label;};
   CARD*	    clone()const override	{return new DEV_CSWITCH(*this);}
-  void	    expand();
+  void	    expand()override;
   char	    id_letter()const override	{return 'W';}
-  void	   set_port_by_name(std::string& Name, std::string& Value)
+  void	   set_port_by_name(std::string& Name, std::string& Value)override
 		{untested(); SWITCH_BASE::set_port_by_name(Name,Value);}
-  void	   set_port_by_index(int, std::string&);
+  void	   set_port_by_index(int, std::string&)override;
   bool	   node_is_connected(int)const override;
 
   std::string port_name(int i)const override {itested();
@@ -160,11 +160,11 @@ private:
 public:
   explicit	MODEL_SWITCH(const SWITCH_BASE*);
 private: // override virtual
-  void		set_dev_type(const std::string& nt);
+  void		set_dev_type(const std::string& nt)override;
   std::string	dev_type()const override;
   CARD*		clone()const override	{return new MODEL_SWITCH(*this);}
-  void		precalc_first();
-  void		set_param_by_index(int, std::string&, int);
+  void		precalc_first()override;
+  void		set_param_by_index(int, std::string&, int)override;
   bool		param_is_printable(int)const override;
   std::string	param_name(int)const override;
   std::string	param_name(int,int)const override;

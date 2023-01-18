@@ -129,8 +129,7 @@ void modify_fault(CS& cmd, WHATTODO command, CARD_LIST* scope)
 /*--------------------------------------------------------------------------*/
 class CMD_MODIFY : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     modify_fault(cmd, MODIFY, Scope);
   }
 } p1;
@@ -138,8 +137,7 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "modify|alter", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_FAULT : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     modify_fault(cmd, FAULT, Scope);
   }
 } p2;
@@ -147,8 +145,7 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "fault", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_RESTORE : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)
-  {untested();
+  void do_it(CS&, CARD_LIST* Scope)override {untested();
     command("unfault", Scope);
     command("unmark", Scope);
   }
@@ -157,8 +154,7 @@ DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "restore", &p3);
 /*--------------------------------------------------------------------------*/
 class CMD_UNFAULT : public CMD {
 public:
-  void do_it(CS&, CARD_LIST*)
-  {
+  void do_it(CS&, CARD_LIST*)override {
     while (!faultstack.empty()) {
       faultstack.back().restore();
       faultstack.pop_back();
