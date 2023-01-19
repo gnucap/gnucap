@@ -240,7 +240,7 @@ bool COMMON_COMPONENT::param_is_printable(int i)const
   case 1:  return _dtemp.has_hard_value();
   case 2:  return _temp_c.has_hard_value();
   case 3:  return _mfactor.has_hard_value();
-  default:untested(); return false;
+  default: return false;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -372,7 +372,6 @@ bool COMMON_COMPONENT::parse_params_obsolete_callback(CS& cmd)
 COMPONENT::COMPONENT()
   :CARD(),
    _common(0),
-   _value(0),
    _mfactor(1),
    _mfactor_fixed(NOT_VALID),
    _converged(false),
@@ -388,7 +387,6 @@ COMPONENT::COMPONENT()
 COMPONENT::COMPONENT(const COMPONENT& p)
   :CARD(p),
    _common(0),
-   _value(p._value),
    _mfactor(p._mfactor),
    _mfactor_fixed(p._mfactor_fixed),
    _converged(p._converged),
@@ -557,8 +555,6 @@ void COMPONENT::precalc_last()
     }
   }else{
   }
-
-  _value.e_val(0.,scope());
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::map_nodes()
@@ -612,7 +608,7 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
 {
   set_label(Label);
   set_owner(Owner);
-  set_value(Value);
+  obsolete_set_value(Value);
   attach_common(Common);
 
   assert(node_count <= net_nodes());
@@ -628,16 +624,6 @@ void COMPONENT::set_slave()
     subckt()->set_slave();
   }else{
   }
-}
-/*--------------------------------------------------------------------------*/
-void COMPONENT::set_value(double v, COMMON_COMPONENT* c)
-{
-  if (c != _common) {
-    detach_common();
-    attach_common(c);
-  }else{
-  }
-  set_value(v);
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_param_by_name(std::string Name, std::string Value)
@@ -661,8 +647,7 @@ void COMPONENT::set_param_by_index(int i, std::string& Value, int offset)
     attach_common(c);
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
-    case 0: _value = Value; break;
-    case 1:untested(); _mfactor = Value; break;
+    case 0:untested(); _mfactor = Value; break;
     default:untested(); CARD::set_param_by_index(i, Value, offset);
     }
   }
@@ -674,9 +659,8 @@ bool COMPONENT::param_is_printable(int i)const
     return common()->param_is_printable(i);
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
-    case 0:  return value().has_hard_value();
-    case 1:  return _mfactor.has_hard_value();
-    default:itested(); return CARD::param_is_printable(i);
+    case 0:  return _mfactor.has_hard_value();
+    default: return CARD::param_is_printable(i);
     }
   }
 }
@@ -687,8 +671,7 @@ std::string COMPONENT::param_name(int i)const
     return common()->param_name(i);
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
-    case 0:  return value_name();
-    case 1:  return "m";
+    case 0:  return "m";
     default:untested(); return CARD::param_name(i);
     }
   }
@@ -696,6 +679,7 @@ std::string COMPONENT::param_name(int i)const
 /*--------------------------------------------------------------------------*/
 std::string COMPONENT::param_name(int i, int j)const
 {
+  trace3("COMPONENT::param_name", long_label(), i, j);
   if (has_common()) {untested();
     return common()->param_name(i,j);
   }else{
@@ -715,8 +699,7 @@ std::string COMPONENT::param_value(int i)const
     return common()->param_value(i);
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
-    case 0:  return value().string();
-    case 1:  return _mfactor.string();
+    case 0:  return _mfactor.string();
     default:untested(); return CARD::param_value(i);
     }
   }
@@ -872,13 +855,6 @@ bool COMPONENT::use_obsolete_callback_print()const
   }else{
     return false;
   }
-}
-/*--------------------------------------------------------------------------*/
-void COMPONENT::obsolete_move_parameters_from_common(const COMMON_COMPONENT* dc)
-{
-  assert(dc);
-  _value   = dc->value();
-  _mfactor = dc->mfactor();
 }
 /*--------------------------------------------------------------------------*/
 /* volts_limited: transient voltage, best approximation, with limiting

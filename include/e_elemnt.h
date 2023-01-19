@@ -38,11 +38,21 @@ protected:
   void	   store_values()		{assert(_y[0]==_y[0]); _y1=_y[0];}
   //void   reject_values()		{ _y0 = _y1;}
 public:
+  void	set_value(const PARAMETER<double>& v)	{_value = v;}
+  void	set_value(double v)			{_value = v;}
+  void	set_value(const std::string& v)		{untested(); _value = v;}
+  void	set_value(double v, COMMON_COMPONENT* c);
+  const PARAMETER<double>& value()const		{return _value;}
   double*  set__value()			{return _value.pointer_hack();}
 
   bool	   skip_dev_type(CS&);
+public: // obsolete -- do not use in new code
+  void     obsolete_move_parameters_from_common(const COMMON_COMPONENT*);
+private: // obsolete -- do not use in new code
+  void     obsolete_set_value(double v) final override{set_value(v);}
 public: // override virtual
   bool	   print_type_in_spice()const override {return false;}
+  void	   precalc_last() override;
   void	   ac_begin() override;
   void	   tr_begin() override;
   void	   tr_restore() override;
@@ -145,8 +155,16 @@ public:
 
   virtual int order()const		{return OPT::trsteporder;}
   virtual double error_factor()const	{return OPT::trstepcoef[OPT::trsteporder];}
-  int param_count()const override {return (0 + COMPONENT::param_count());}
+private:
+  int param_count()const override {return (1 + COMPONENT::param_count());}
+  void set_param_by_name(std::string, std::string);
+  void set_param_by_index(int, std::string&, int);
+  bool param_is_printable(int)const;
+  std::string param_name(int)const;
+  std::string param_name(int,int)const;
+  std::string param_value(int)const;
 protected:
+  PARAMETER<double> _value;	// value, for simple parts
   int      _loaditer;	// load iteration number
 private:
   node_t   _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
