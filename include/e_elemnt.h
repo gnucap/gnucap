@@ -43,7 +43,6 @@ public:
   void	set_value(const std::string& v)		{untested(); _value = v;}
   void	set_value(double v, COMMON_COMPONENT* c);
   const PARAMETER<double>& value()const		{return _value;}
-  double*  set__value()			{return _value.pointer_hack();}
 
   bool	   skip_dev_type(CS&);
 public: // obsolete -- do not use in new code
@@ -462,6 +461,7 @@ inline void ELEMENT::tr_eval()
     common()->tr_eval(this);
   }else{
     // can get here if a simple device has probes
+    // ( or in value sweeps? )
     _y[0].f1 = value();
     _y[0].f0 = _y[0].x * _y[0].f1;
   }

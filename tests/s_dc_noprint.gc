@@ -1,0 +1,6 @@
+verilog
+
+vsource #(1) v(30,0);
+list
+dc v 0 1 1
+status notime

@@ -1,0 +1,14 @@
+spice
+
+.param r=0
+r1 1 2 {1-r}
+r2 1 0 r
+v1 2 0 1
+
+.print dc v(nodes)
+.dc r 0 1 .5
+.dc r 1 0 -.5
+
+.print dc v(nodes) y(r*)
+.dc r 0 1 .5 loop
+.end

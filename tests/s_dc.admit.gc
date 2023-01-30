@@ -1,0 +1,25 @@
+spice
+
+v1 1 0 v
+y1 0 1 {1/r}
+
+v2 2 0 v
+y2 0 2 {1/r}
+
+.param v=-1
+.param r=1
+
+.list
+
+.print dc i(v*)
+.dc r 1 2 1
+.dc y1 1 2 1
+
+.dc r 1 2 1
+.dc y1 1 2 1
+
+.print dc i(y*)
+.dc r 1 2 1
+.dc y1 1 2 1
+
+.end

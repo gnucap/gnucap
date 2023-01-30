@@ -1,0 +1,30 @@
+#           v(1)       v(2)      
+r2: short circuit
+r2: short circuit
+r2: short circuit
+ 0.         9.9998u    0.99999   
+ 0.5        0.5        0.99999   
+ 1.         0.99998    0.99999   
+#           v(1)       v(2)      
+ 1.         0.99998    0.99999   
+ 0.5        0.5        0.99999   
+r2: short circuit
+r2: short circuit
+r2: short circuit
+ 0.         9.9998u    0.99999   
+#           v(1)       v(2)       y(r1)      y(r2)     
+r2: short circuit
+r2: short circuit
+r2: short circuit
+r2: short circuit
+ 0.         9.9998u    0.99999    1.         100.K     
+ 0.5        0.5        0.99999    2.         2.        
+r1: short circuit
+r1: short circuit
+r1: short circuit
+ 1.         0.99998    0.99999    100.K      1.        
+ 0.5        0.5        0.99999    2.         2.        
+r2: short circuit
+r2: short circuit
+r2: short circuit
+ 0.         9.9998u    0.99999    1.         100.K     

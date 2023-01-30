@@ -1,0 +1,15 @@
+spice
+* parameter vs element sweep
+* (elements take precedence)
+
+v1 1 0 {2*v1}
+
+.param v1=1
+
+.list
+
+.print dc v(nodes)
+
+.dc v1 0 2 1
+
+.end

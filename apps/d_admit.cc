@@ -122,7 +122,7 @@ void DEV_ADMITTANCE::dc_advance()
     _y[0].f1 = value();
     _y[0].f0 = LINEAR;
 
-    if(_y[0].f1 != _y1.f1){ untested();
+    if(_y[0].f1 != _y1.f1){
       store_values();
       _m0.c1 = _y[0].f1;
       _m0.c0 = 0.;

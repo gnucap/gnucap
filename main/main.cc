@@ -261,7 +261,7 @@ int main(int argc, const char *argv[])
 	exit(0);
       }
 #endif
-    }else{untested();
+    }else{
       finish();		/* error clean up (from longjmp()) */
       //CMD::command("quit", &CARD_LIST::card_list);
       exit(0);

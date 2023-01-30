@@ -140,6 +140,15 @@ const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
   }
 }
 /*--------------------------------------------------------------------------*/
+void PARAM_LIST::set(std::string Name, const double& Value)
+{
+  if (OPT::case_insensitive) {
+    notstd::to_lower(&Name);
+  }else{
+  }
+  _pl[Name] = Value;
+}
+/*--------------------------------------------------------------------------*/
 void PARAM_LIST::set(std::string Name, const std::string& Value)
 {
   if (OPT::case_insensitive) {

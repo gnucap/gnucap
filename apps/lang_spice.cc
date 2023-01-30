@@ -771,7 +771,7 @@ void LANG_SPICE_BASE::print_type(OMSTREAM& o, const COMPONENT* x)
   assert(x);
   if (x->print_type_in_spice()) {
     o << "  " << x->dev_type();
-  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {itested();
+  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {
     o << "  " << x->dev_type();
   }else{
     // don't print type

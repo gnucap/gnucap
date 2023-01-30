@@ -63,7 +63,7 @@ void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
   assert(to);
   if (c == *to) {
     // The new and old are the same object.  Do nothing.
-  }else if (!c) {untested();
+  }else if (!c) {
     // There is no new common.  probably a simple element
     detach_common(to);
   }else if (!*to) {
@@ -512,6 +512,7 @@ void COMPONENT::expand()
     COMMON_COMPONENT* deflated_common = new_common->deflate();
     if (deflated_common != common()) {
       attach_common(deflated_common);
+      trace1("done attach", deflated_common);
     }else{untested();
     }
   }else{

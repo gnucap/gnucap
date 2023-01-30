@@ -1,0 +1,51 @@
+simulator language=verilog
+
+// qucs style component macros.
+
+module Idc(1 2);
+parameter I=1m
+isource #(.dc(I)) dev(2 1);
+endmodule
+
+module Vdc(p n);
+	parameter U=1m
+	parameter Temp
+	vsource #(.dc(U)) dev(p n);
+endmodule
+
+module R(p, n);
+	parameter R
+	parameter Temp=26.85
+	parameter Tnom=26.85
+	parameter Tc1=0
+	parameter Tc2=0
+
+	// local?
+	parameter dT={Temp-Tnom}
+
+	resistor #(.r(R * (1. + dT*(Tc1 + dT*Tc2)))) dev(p, n);
+endmodule // R
+
+Idc #(.I(ii)) i1(1 0)
+R #(.R(rr) r1(1 0)
+Vdc #(.U(vv)) v1(2 0)
+
+spice
+.options noinsensitive
+
+
+.param rr=1
+.param ii=1
+.param vv=1
+
+.list
+
+.print dc v(nodes)
+* i(i1.dev)
+
+.dc
+.dc rr 1 2 1
+.dc ii 0 2 1
+.dc vv 0 2 1
+
+.end

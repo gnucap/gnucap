@@ -126,6 +126,7 @@ public:
   const MODEL_CARD*   model()const	{assert(_model); return _model;}
   bool		      has_model()const	{return _model;}
   const PARAMETER<double>& mfactor()const {return _mfactor;}
+  void set_value(double v) {_value = v;}
   const PARAMETER<double>& value()const {return _value;}
 private:
   bool parse_param_list(CS&);

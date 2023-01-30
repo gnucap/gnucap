@@ -2,9 +2,11 @@ spice
 
 r1 1 0 r
 i1 0 1 i
+v1 2 0 v
 
 .param r=1
 .param i=1
+.param v=1
 
 .list
 
@@ -13,5 +15,7 @@ i1 0 1 i
 .dc
 .dc r1 1 2 1
 .dc i1 0 2 1
-
+.dc v1 0 2 1
+*
+.status notime
 .end

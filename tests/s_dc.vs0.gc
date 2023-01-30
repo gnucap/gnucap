@@ -1,0 +1,15 @@
+spice
+
+.param ee 3
+
+.subckt vsrc 1 2
+.param ee 3
+v1 1 2 ee
+.ends
+
+x1 in 0 vsrc ee=ee
+
+r1 in 0 1
+
+.print dc i(r1)
+.dc ee 0 2 1
