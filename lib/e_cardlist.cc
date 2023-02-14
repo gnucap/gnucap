@@ -324,7 +324,7 @@ bool CARD_LIST::do_tr()
  */
 CARD_LIST& CARD_LIST::tr_load()
 {
-  if (CKT_BASE::_sim->is_inc_mode()) {itested();
+  if (CKT_BASE::_sim->is_inc_mode()) { untested();
     assert(!OPT::traceload);
     for (iterator ci=begin(); ci!=end(); ++ci) {itested();
       trace_func_comp();

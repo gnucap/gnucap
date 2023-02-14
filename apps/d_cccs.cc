@@ -74,7 +74,7 @@ void DEV_CCCS::dc_advance()
   }else{
     _y[0].f1 = value();
 
-    if(_y1.f1 != _y[0].f1){ untested();
+    if(_y1.f1 != _y[0].f1){
       store_values();
       // q_load(); // called unconditionally in do_tr_last.
       _m0.c0 = _y[0].f1;

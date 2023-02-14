@@ -126,6 +126,7 @@ public:
   const MODEL_CARD*   model()const	{assert(_model); return _model;}
   bool		      has_model()const	{return _model;}
   const PARAMETER<double>& mfactor()const {return _mfactor;}
+  void set_value(double v) {_value = v;}
   const PARAMETER<double>& value()const {return _value;}
 private:
   bool parse_param_list(CS&);
@@ -150,7 +151,6 @@ class INTERFACE COMPONENT : public CARD {
 private:
   COMMON_COMPONENT* _common;
 protected:
-  PARAMETER<double> _value;	// value, for simple parts
   PARAMETER<double> _mfactor;	// number of devices in parallel
 private:
   double _mfactor_fixed;	// composite, including subckt mfactor
@@ -271,18 +271,13 @@ public: // parameters
 			      COMMON_COMPONENT* Common, double Value,
 			      int state_count, double state[],
 			      int node_count, const node_t nodes[]);
-  void	set_value(const PARAMETER<double>& v)	{_value = v;}
-  void	set_value(double v)			{_value = v;}
-  void  set_value(const std::string& v)		{itested(); _value = v;}
-  void	set_value(double v, COMMON_COMPONENT* c);
-  const PARAMETER<double>& value()const		{return _value;}
   //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code
   virtual bool print_type_in_spice()const = 0;
   bool use_obsolete_callback_parse()const override;
   bool use_obsolete_callback_print()const override;
   void print_args_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
-  void obsolete_move_parameters_from_common(const COMMON_COMPONENT*);
+  virtual void obsolete_set_value(double) {}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

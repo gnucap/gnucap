@@ -1,0 +1,12 @@
+verilog
+
+param ee 3
+
+vsource #(ee) vv(in 0);
+
+spice
+
+r1 in 0 1
+
+.print dc i(r1)
+.dc ee 0 2 1

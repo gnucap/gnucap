@@ -85,7 +85,7 @@ void DEV_VS::dc_advance()
   if(using_tr_eval()){
   }else{
     _y[0].f1 = value();
-    if(_y[0].f1 != _y1.f1){ untested();
+    if(_y[0].f1 != _y1.f1){
       store_values();
       q_load();
       _m0.c0 = -_loss0 * _y[0].f1;

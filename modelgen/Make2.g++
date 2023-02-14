@@ -26,7 +26,7 @@ VPATH = .:..
 CCC = g++
 
 CCFLAGS = \
--DUNIX -O3 -DNDEBUG -I. -I../include -I../../include -W
+-std=c++11 -DUNIX -O3 -DNDEBUG -I. -I../include -I../../include -W
 
 LIBS = \
 -lgnucap \

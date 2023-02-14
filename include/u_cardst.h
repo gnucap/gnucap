@@ -24,11 +24,11 @@
 //testing=script,complete 2006.07.14
 #ifndef U_CARDST_H
 #define U_CARDST_H
-#include "e_compon.h"
+#include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
 class CARDSTASH {
 private:
-  COMPONENT*		_brh;
+  ELEMENT*		_brh;
   PARAMETER<double>	_value;
   COMMON_COMPONENT*	_c;
 public:
@@ -58,7 +58,7 @@ public:
 inline void CARDSTASH::operator=(CARD* b)
 {
   assert(b);
-  _brh = prechecked_cast<COMPONENT*>(b);
+  _brh = prechecked_cast<ELEMENT*>(b);
   assert(_brh);
   _value = _brh->value();
   COMMON_COMPONENT::detach_common(&_c);

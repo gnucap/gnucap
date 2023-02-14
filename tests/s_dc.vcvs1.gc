@@ -1,0 +1,14 @@
+spice
+
+.param ee 3
+
+.subckt vcvs 1 2 3 4
+.param ee 3
+E1 1 2 3 4 ee
+.ends
+
+x1 out 0 in 0 vcvs ee=ee
+v1 in 0 1.5
+
+.print dc v(nodes)
+.dc ee 0 2 1

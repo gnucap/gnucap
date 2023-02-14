@@ -29,6 +29,7 @@
 /*--------------------------------------------------------------------------*/
 ELEMENT::ELEMENT()
   :COMPONENT(),
+   _value(0),
    _loaditer(0),
    _m0(),
    _m1(),
@@ -47,6 +48,7 @@ ELEMENT::ELEMENT()
 /*--------------------------------------------------------------------------*/
 ELEMENT::ELEMENT(const ELEMENT& p)
   :COMPONENT(p),
+   _value(p._value),
    _loaditer(0),
    _m0(),
    _m1(),
@@ -72,9 +74,113 @@ ELEMENT::ELEMENT(const ELEMENT& p)
   notstd::copy_n(p._time, int(OPT::_keep_time_steps), _time);
 }
 /*--------------------------------------------------------------------------*/
+void ELEMENT::set_value(double v, COMMON_COMPONENT* c)
+{
+  if (c != common()) {
+    detach_common();
+    attach_common(c);
+  }else{
+  }
+  set_value(v);
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::set_param_by_name(std::string Name, std::string Value)
+{
+  if(Name == value_name()){
+    _value = Value;
+  }else if (has_common()) {
+    COMMON_COMPONENT* c = common()->clone();
+    assert(c);
+    c->set_param_by_name(Name, Value);
+    attach_common(c);
+  }else{ untested();
+    COMPONENT::set_param_by_name(Name, Value);
+  }
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
+{
+  if (has_common()) {untested();
+    COMMON_COMPONENT* c = common()->clone();
+    assert(c);
+    c->set_param_by_index(i, Value, offset);
+    attach_common(c);
+  }else{
+    switch (ELEMENT::param_count() - 1 - i) {
+    case 0:
+      _value = Value; break;
+    default: untested();
+      COMPONENT::set_param_by_index(i, Value, offset);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool ELEMENT::param_is_printable(int i)const
+{
+  if (has_common()) {
+    return common()->param_is_printable(i);
+  }else{
+    switch (ELEMENT::param_count() - 1 - i) {
+    case 0:
+      return value().has_hard_value();
+    default:
+      return COMPONENT::param_is_printable(i);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string ELEMENT::param_name(int i)const
+{
+  if (has_common()) {
+    return common()->param_name(i);
+  }else{
+    switch (ELEMENT::param_count() - 1 - i) {
+    case 0:  return value_name();
+    default:
+      return COMPONENT::param_name(i);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string ELEMENT::param_name(int i, int j)const
+{
+  if (has_common()) {untested();
+    return common()->param_name(i,j);
+  }else{ untested();
+    if (j == 0) { untested();
+      return param_name(i);
+    }else if (i >= ELEMENT::param_count()) {untested();
+      return "";
+    }else{untested();
+      return COMPONENT::param_name(i,j);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string ELEMENT::param_value(int i)const
+{
+  if (has_common()) {
+    return common()->param_value(i);
+  }else{
+    switch (ELEMENT::param_count() - 1 - i) {
+    case 0:
+      return value().string();
+    default:
+      return COMPONENT::param_value(i);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
 bool ELEMENT::skip_dev_type(CS& cmd)
 {
   return cmd.umatch(dev_type() + ' ');
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::precalc_last()
+{
+  COMPONENT::precalc_last();
+  _value.e_val(0.,scope());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_begin()
@@ -482,6 +588,14 @@ double ELEMENT::tr_review_check_and_convert(double timestep)
   assert(time_future > 0.);
   assert(time_future > _time[1]);
   return time_future;
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::obsolete_move_parameters_from_common(const COMMON_COMPONENT* dc)
+{
+  assert(dc);
+
+  _value   = dc->value();
+  _mfactor = dc->mfactor();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

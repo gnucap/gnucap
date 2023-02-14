@@ -1,0 +1,16 @@
+verilog
+
+cccs #(ee) F1(out, 0, Vin);
+* F1 out 0 vin ee
+
+spice
+.options noinsensitive
+
+.param ee 3
+Rout out 0 1
+
+Vin in 0 1
+Rin in 0 1
+
+.print dc v(nodes)
+.dc ee 0 2 1

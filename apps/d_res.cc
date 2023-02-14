@@ -92,7 +92,7 @@ void DEV_RESISTANCE::dc_advance()
     }else {
       _y[0].f1 = value();
     }
-    if(_y[0].f1 != _y1.f1){ untested();
+    if(_y[0].f1 != _y1.f1) {
       store_values();
       q_load();
       _m0.c1 = 1./_y[0].f1;
