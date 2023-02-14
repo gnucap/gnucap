@@ -38,7 +38,7 @@ else
 fi
 rm -f a.out
 
-echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
+echo "-std=c++11 -DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
 echo "" >>Make.libs
 echo "PREFIX = " $prefix >>Make.libs
 echo "" >>Make.libs
