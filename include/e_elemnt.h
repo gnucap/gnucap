@@ -154,7 +154,7 @@ public:
 
   virtual int order()const		{return OPT::trsteporder;}
   virtual double error_factor()const	{return OPT::trstepcoef[OPT::trsteporder];}
-private:
+protected:
   int param_count()const override {return (1 + COMPONENT::param_count());}
   void set_param_by_name(std::string, std::string);
   void set_param_by_index(int, std::string&, int);
