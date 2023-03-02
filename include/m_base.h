@@ -331,7 +331,7 @@ void List<T>::parse(CS& File)
     }else{untested();
       T* x = new T(File);
       if (!File.stuck(&here)) {untested();
-	push(x);
+	List_Base<T>::push_back(x);
       }else{untested();
 	delete x;
 	File.warn(0, "what's this? (List)");
