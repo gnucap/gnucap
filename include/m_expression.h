@@ -93,8 +93,8 @@ class Token_PARLIST : public Token
 public:
   explicit Token_PARLIST(const std::string Name, Base* L=NULL)
     : Token(Name, L, "") {}
-  explicit Token_PARLIST(const Token_PARLIST& P) : Token(P) {untested();}
-  Token* clone()const override{untested();return new Token_PARLIST(*this);}
+  explicit Token_PARLIST(const Token_PARLIST& P) : Token(P) {itested();}
+  Token* clone()const override{itested();return new Token_PARLIST(*this);}
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
