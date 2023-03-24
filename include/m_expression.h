@@ -103,8 +103,8 @@ class Token_UNARY : public Token
 public:
   explicit Token_UNARY(const std::string Name)
     : Token(Name, NULL, "") {}
-  explicit Token_UNARY(const Token_UNARY& P) : Token(P) {untested();}
-  Token* clone()const override {untested();return new Token_UNARY(*this);}
+  explicit Token_UNARY(const Token_UNARY& P) : Token(P) {itested();}
+  Token* clone()const override {itested();return new Token_UNARY(*this);}
   Token* op(const Token* t1)const;
   void stack_op(Expression*)const override;
 };
