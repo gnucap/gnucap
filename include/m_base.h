@@ -117,6 +117,10 @@ public:
   T*		 back()		 {assert(!is_empty()); return _list.back();}
   void		 push_back(T* x) {assert(x);	       _list.push_back(x);}
   void  	 pop_back()	 {assert(!is_empty()); _list.pop_back();}
+  const_iterator erase(const_iterator i) { itested();
+    delete *i;
+    return _list.erase(i);
+  }
 };
 /*--------------------------------------------------------------------------*/
 template <class T>

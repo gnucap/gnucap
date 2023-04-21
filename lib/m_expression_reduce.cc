@@ -329,7 +329,7 @@ void Token_UNARY::stack_op(Expression* E)const
       E->push_back(clone());
       delete t;
     }
-  }else{untested();
+  }else{itested();
     E->push_back(t1);
     E->push_back(clone());
   }
