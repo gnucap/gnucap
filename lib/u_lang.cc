@@ -85,7 +85,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
     else if (Umatch(Name, "st{atus} "))     {            s = "status";}
     else if (Umatch(Name, "te{mperature} ")){untested(); s = "temperature";}
     else if (Umatch(Name, "tr{ansient} "))  {            s = "transient";}
-    else if (Umatch(Name, "!"))		    {untested(); s = "system";}
+    else if (Umatch(Name, "!"))		    {itested();  s = "system";}
     else if (Umatch(Name, "<"))		    {untested(); s = "<";}
     else if (Umatch(Name, ">"))		    {untested(); s = ">";}
     else{ /* no shortcut available */
