@@ -91,7 +91,7 @@ public: // override virtual
   CARD*		clone_instance()const override;
   bool		print_type_in_spice()const override {unreachable(); return false;}
   std::string   value_name()const override	{untested();incomplete(); return "";}
-  std::string   dev_type()const override		{untested(); return "";}
+  std::string   dev_type()const override	{itested(); return "";}
   int		max_nodes()const override	{return PORTS_PER_SUBCKT;}
   int		min_nodes()const override	{return 0;}
   int		matrix_nodes()const override	{untested();return 0;}

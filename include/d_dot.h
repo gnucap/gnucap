@@ -38,7 +38,7 @@ private: // override virtual
   CARD*		clone()const override		{return new DEV_DOT(*this);}
 public:
   void set(const std::string& S) {_s = S;}
-  const std::string& s()const {untested();return _s;}
+  const std::string& s()const {itested();return _s;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

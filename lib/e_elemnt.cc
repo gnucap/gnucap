@@ -93,7 +93,7 @@ void ELEMENT::set_param_by_name(std::string Name, std::string Value)
     assert(c);
     c->set_param_by_name(Name, Value);
     attach_common(c);
-  }else{ untested();
+  }else{ itested();
     COMPONENT::set_param_by_name(Name, Value);
   }
 }
@@ -146,12 +146,12 @@ std::string ELEMENT::param_name(int i, int j)const
 {
   if (has_common()) {untested();
     return common()->param_name(i,j);
-  }else{ untested();
-    if (j == 0) { untested();
+  }else{ itested();
+    if (j == 0) { itested();
       return param_name(i);
     }else if (i >= ELEMENT::param_count()) {untested();
       return "";
-    }else{untested();
+    }else{itested();
       return COMPONENT::param_name(i,j);
     }
   }

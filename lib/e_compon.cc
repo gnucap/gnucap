@@ -435,7 +435,7 @@ void COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
     }else{
     }
   }
-  untested();
+  itested();
   throw Exception_No_Match(int_name);
 }
 /*--------------------------------------------------------------------------*/
@@ -641,7 +641,7 @@ void COMPONENT::set_param_by_name(std::string Name, std::string Value)
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_param_by_index(int i, std::string& Value, int offset)
 {
-  if (has_common()) {untested();
+  if (has_common()) {itested();
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     c->set_param_by_index(i, Value, offset);
@@ -673,7 +673,7 @@ std::string COMPONENT::param_name(int i)const
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
     case 0:  return "m";
-    default:untested(); return CARD::param_name(i);
+    default:itested(); return CARD::param_name(i);
     }
   }
 }
