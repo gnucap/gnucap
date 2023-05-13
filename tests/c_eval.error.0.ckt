@@ -1,0 +1,8 @@
+* unknown parameter check
+.param zz=zz
+.param a=1
+.param z=zz+3
+.eval z
+.eval z
+.eval z
+.eval a

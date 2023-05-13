@@ -38,7 +38,7 @@ CARD_LIST::CARD_LIST()
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
-		     const CARD_LIST* scope, PARAM_LIST* p)
+		     const CARD_LIST* scope, PARAM_LIST const* p)
   :_parent(NULL),
    _nm(new NODE_MAP),
    _params(NULL)

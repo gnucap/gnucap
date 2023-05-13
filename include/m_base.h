@@ -271,7 +271,7 @@ public:
   Base* subtract(const Float*)const override	{untested();return NULL;}
   Base* r_subtract(const Float*)const override	{untested();return NULL;}
   Base* divide(const Float*)const override	{untested();return NULL;}
-  Base* r_divide(const Float*)const override	{untested();return NULL;}
+  Base* r_divide(const Float*)const override	{ itested();return NULL;}
 };
 /*--------------------------------------------------------------------------*/
 class Name_String	// a string that contains only alnum and _[]

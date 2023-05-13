@@ -744,7 +744,7 @@ void LANG_SPICE_BASE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 }
 /*--------------------------------------------------------------------------*/
 void LANG_SPICE_BASE::print_command(OMSTREAM& o, const DEV_DOT* x)
-{untested();
+{itested();
   assert(x);
   o << x->s() << '\n';
 }

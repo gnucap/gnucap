@@ -371,7 +371,33 @@ void Expression::reduce_copy(const Expression& Proto)
 Expression::Expression(const Expression& Proto, const CARD_LIST* Scope)
   :_scope(Scope)
 {
-  reduce_copy(Proto);
+  //BUG// is this thread-safe?
+  static int recursion = 0;
+  static Expression const* first_name;
+
+  if(recursion==0){
+    first_name = &Proto;
+  }else{
+  }
+
+  ++recursion;
+  if (recursion <= OPT::recursion) {
+    try{
+      reduce_copy(Proto);
+    }catch(Exception const& e){
+      recursion = 0;
+      throw e;
+    }
+    // first_name->dump(std::cerr);
+  }else{
+    std::stringstream s;
+    first_name->dump(s);
+    recursion = 0;
+    //BUG// needs to show scope
+    throw Exception("parameter " + s.str() + ": recursion too deep");
+  }
+
+  --recursion;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -91,7 +91,7 @@ public: // override virtual
   CARD*		clone_instance()const override;
   bool		print_type_in_spice()const override {unreachable(); return false;}
   std::string   value_name()const override	{untested();incomplete(); return "";}
-  std::string   dev_type()const override		{untested(); return "";}
+  std::string   dev_type()const override	{itested(); return "";}
   int		max_nodes()const override	{return PORTS_PER_SUBCKT;}
   int		min_nodes()const override	{return 0;}
   int		matrix_nodes()const override	{untested();return 0;}
@@ -218,7 +218,7 @@ void DEV_SUBCKT::expand()
   assert(_parent->net_nodes() <= _parent->subckt()->nodes()->how_many());
   assert(_parent->subckt()->params());
 
-  PARAM_LIST* pl = const_cast<PARAM_LIST*>(_parent->subckt()->params());
+  PARAM_LIST const* pl = _parent->subckt()->params();
   assert(pl);
   c->_params.set_try_again(pl);
 
@@ -231,7 +231,7 @@ void DEV_SUBCKT::precalc_first()
   BASE_SUBCKT::precalc_first();
 
   if (subckt()) {
-    COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
+    auto c = prechecked_cast<COMMON_PARAMLIST const*>(common());
     assert(c);
     subckt()->attach_params(&(c->_params), scope());
     subckt()->precalc_first();
