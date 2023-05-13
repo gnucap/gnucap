@@ -109,10 +109,15 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 
   for (iterator i = p._pl.begin(); i != p._pl.end(); ++i) {
     if (i->second.has_hard_value()) {
-      if (_pl[i->first].has_hard_value()) {untested();
-	_pl[i->first] = i->second.e_val(_pl[i->first], scope);
-      }else{
+      auto j = _pl.find(i->first);
+      if(j == _pl.end()){
+	// spice feature: create parameters from arglist
+	// should not get here in verilog mode
 	_pl[i->first] = i->second.e_val(NOT_INPUT, scope);
+      }else if(j->second.has_hard_value()) {untested();
+	j->second = i->second.e_val(j->second, scope);
+      }else{
+	// this is not needed.
       }
     }else{
     }
