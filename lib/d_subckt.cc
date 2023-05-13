@@ -218,7 +218,7 @@ void DEV_SUBCKT::expand()
   assert(_parent->net_nodes() <= _parent->subckt()->nodes()->how_many());
   assert(_parent->subckt()->params());
 
-  PARAM_LIST* pl = const_cast<PARAM_LIST*>(_parent->subckt()->params());
+  PARAM_LIST const* pl = _parent->subckt()->params();
   assert(pl);
   c->_params.set_try_again(pl);
 
@@ -231,7 +231,7 @@ void DEV_SUBCKT::precalc_first()
   BASE_SUBCKT::precalc_first();
 
   if (subckt()) {
-    COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
+    auto c = prechecked_cast<COMMON_PARAMLIST const*>(common());
     assert(c);
     subckt()->attach_params(&(c->_params), scope());
     subckt()->precalc_first();

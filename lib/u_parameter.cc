@@ -107,7 +107,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
   assert(!_try_again);
   _try_again = p._try_again;
 
-  for (iterator i = p._pl.begin(); i != p._pl.end(); ++i) {
+  for (const_iterator i = p._pl.begin(); i != p._pl.end(); ++i) {
     if (i->second.has_hard_value()) {
       auto j = _pl.find(i->first);
       if(j == _pl.end()){
@@ -130,10 +130,10 @@ const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
     notstd::to_lower(&Name);
   }else{
   }
-  PARAMETER<double> & rv = _pl[Name];
-  if (rv.has_hard_value()) {
+  const_iterator i = _pl.find(Name);
+  if (i!=_pl.end() && i->second.has_hard_value()) {
     // found a value, return it
-    return rv;
+    return i->second;
   }else if (_try_again) {
     // didn't find one, look in enclosing scope
     return _try_again->deep_lookup(Name);
@@ -141,7 +141,8 @@ const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
     // no enclosing scope to look in
     // really didn't find it, give up
     // return garbage value (NOT_INPUT)
-    return rv;
+    static PARAMETER<double> garbage;
+    return garbage;
   }
 }
 /*--------------------------------------------------------------------------*/

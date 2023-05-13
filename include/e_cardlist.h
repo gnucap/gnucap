@@ -138,7 +138,7 @@ public:
   void map_subckt_nodes(const CARD* model, const CARD* owner);
 
   explicit CARD_LIST();
-  explicit CARD_LIST(const CARD* model, CARD* owner, const CARD_LIST* scope, PARAM_LIST* p);
+  explicit CARD_LIST(const CARD* model, CARD* owner, const CARD_LIST* scope, PARAM_LIST const* p);
   ~CARD_LIST();
 private:
   explicit CARD_LIST(const CARD_LIST&) {unreachable(); incomplete();}

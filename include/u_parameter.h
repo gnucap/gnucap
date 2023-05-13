@@ -197,8 +197,8 @@ public:
   typedef map::const_iterator const_iterator;
   typedef map::iterator iterator;
 private:
-  mutable map _pl;
-  PARAM_LIST* _try_again; // if you don't find it, also look here
+  map _pl;
+  PARAM_LIST const* _try_again; // if you don't find it, also look here
   mutable const_iterator _previous;
 public:
   explicit PARAM_LIST() :_try_again(NULL) {}
@@ -220,7 +220,7 @@ public:
   const PARAMETER<double>& operator[](std::string i)const {return deep_lookup(i);}
   void set(std::string, const double&);
   void set(std::string, const std::string&);
-  void set_try_again(PARAM_LIST* t) {_try_again = t;}
+  void set_try_again(PARAM_LIST const* t) {_try_again = t;}
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
