@@ -1,0 +1,8 @@
+* unknown parameter check 
+.eval z 
+      ^ ? parameter z: recursion too deep
+.eval z 
+      ^ ? parameter z: recursion too deep
+.eval z 
+      ^ ? parameter z: recursion too deep
+a= 1.
