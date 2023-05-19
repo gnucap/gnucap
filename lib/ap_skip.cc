@@ -139,7 +139,7 @@ CS& CS::skipto1(char c)
     skip();
   }
   _ok = ns_more();
-  if (!_ok) {untested();
+  if (!_ok) {itested();
     reset(here);
   }else{
   }

@@ -60,7 +60,7 @@ void Name_String::parse(CS& File)
       _data += File.ctoc();
     }
   }else{
-    while (File.is_alpha() || File.is_pfloat() || File.match1("_[]")) {
+    while (File.is_alpha() || File.is_pfloat() || File.match1("_[]$")) {
       _data += File.ctoc();
     }
   }
