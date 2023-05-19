@@ -1,0 +1,4 @@
+ dollar=dol$lar
+eval dol$lar 
+        ^ ? syntax error
+dol=dol
