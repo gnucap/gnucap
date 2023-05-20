@@ -205,6 +205,10 @@ public:
   explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl), _try_again(p._try_again) {}
   //explicit PARAM_LIST(PARAM_LIST* ta) :_try_again(ta) {untested();}
   ~PARAM_LIST() {}
+  PARAM_LIST& operator=(const PARAM_LIST& p) { itested();
+    _pl = p._pl;
+    return *this;
+  }
   void	parse(CS& cmd);
   void	print(OMSTREAM&, LANGUAGE*)const;
   
