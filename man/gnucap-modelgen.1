@@ -1,0 +1,42 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH GNUCAP-MODELGEN 1 "November 2016" "Debian Project" "Debian GNU"
+
+.SH NAME
+gnucap-modelgen \- GNU Circuit Analysis Package .model translator
+.SH SYNOPSIS
+.B gnucap-modelgen [\fB-cc\fP] [\fB-h\fP] [filename]
+.br
+.SH DESCRIPTION
+.B Gnucap-Modelgen
+is a .model translator tool in the Gnucap suite. It will transform .model models
+into c++ code implementing gnucap component plugins.
+.PP
+A typical usage can be
+
+gnucap-modelgen \-cc mymodel.model
+
+.SH OPTIONS
+
+.TP
+\fI-cc\fI
+generate c++ file
+.TP
+\fI-h\fI
+create header
+
+.SH BUGS
+See
+.B /usr/share/doc/gnucap/bugs
+for a list of known bugs in this release.
+.PP
+Gnucap is an ongoing research project.  It is being released in a
+preliminary phase in hopes that it will be useful and that others
+will use it as a thrust or base for their research.  I also hope
+for some comments that may help me direct my research.
+
+.SH AUTHOR
+Gnucap is being written by Albert Davis <al211@freeelectron.org>
+.PP
+This manual page was written by Felix Salfelder <felix@salfelder.org>.
+For the full LaTeX documentation, please see
+.B /usr/share/doc/gnucap/manual.
