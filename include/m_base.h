@@ -317,8 +317,8 @@ List_Base<T>::~List_Base()
 /*--------------------------------------------------------------------------*/
 template <class T>
 void List_Base<T>::dump(std::ostream& Out)const
-{untested();
-  for (const_iterator i = begin(); i != end(); ++i) {untested();
+{itested();
+  for (const_iterator i = begin(); i != end(); ++i) {itested();
     assert(*i);
     Out << **i;
   }
