@@ -1,0 +1,10 @@
+"param a="aaa" + 1 "
+param a="aaa" + 1 
+              ^ ? syntax error
+"eval a "
+a=aaa
+"param b="aaa" + "bbb" "
+param b="aaa" + "bbb" 
+              ^ ? syntax error
+"eval b "
+b=aaa

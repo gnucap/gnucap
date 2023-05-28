@@ -1,0 +1,6 @@
+verilog
+option list
+param a="aaa" + 1
+eval a
+param b="aaa" + "bbb"
+eval b
