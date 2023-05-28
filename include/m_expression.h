@@ -78,6 +78,22 @@ public:
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
+class Token_TERNARY : public Token {
+  Expression const* _true{NULL};
+  Expression const* _false{NULL};
+public:
+  explicit Token_TERNARY(const std::string Name, Expression const* t, Expression const* f)
+    : Token(Name, NULL, ""), _true(t), _false(f) {}
+  explicit Token_TERNARY(const Token_TERNARY& P) : Token(P) {}
+  ~Token_TERNARY() { }
+  Token* clone()const override{return new Token_TERNARY(*this);}
+  Token* op(const Token* t1, const Token* t2, const Token* t3)const;
+  void stack_op(Expression*)const override;
+public:
+  Expression const* true_part() const{ return _true; }
+  Expression const* false_part() const{ return _false; }
+};
+/*--------------------------------------------------------------------------*/
 class Token_STOP : public Token
 {
 public:
@@ -115,7 +131,13 @@ public:
   explicit Token_CONSTANT(const std::string Name, const Base* Data, const std::string Args)
     : Token(Name, Data, Args) {}
   explicit Token_CONSTANT(const Token_CONSTANT& P) : Token(P) {untested();}
-  Token* clone()const override {untested();return new Token_CONSTANT(*this);}
+  Token* clone()const override {
+    if (auto s = dynamic_cast<String const*>(data())) { untested();
+      return new Token_CONSTANT(name(), new String(*s), aRgs());
+    }else{ untested();
+      return new Token_CONSTANT(*this);
+    }
+  }
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
@@ -132,6 +154,7 @@ private: // expression-in.cc
   void arglist(CS& File);
   void leaf(CS& File);
   void factor(CS& File);
+  void ternary(CS& File);
   void termtail(CS& File);
   void term(CS& File);
   void addexptail(CS& File);

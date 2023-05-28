@@ -201,7 +201,7 @@ public:
   Base* greater(const String*)const override	{untested();return NULL;}
   Base* leq(const String*)const override 	{untested();return NULL;}
   Base* geq(const String*)const override 	{untested();return NULL;}
-  Base* not_equal(const String*)const override	{untested();return NULL;}
+  Base* not_equal(const String*)const override	{return NULL;}
   Base* equal(const String*)const override	{return NULL;}
   Base* add(const String*)const override 	{           return NULL;}
   Base* multiply(const String*)const override	{untested();return NULL;}
@@ -251,7 +251,7 @@ public:
   Base* greater(const Base* X)const override	{untested();return ((X) ? (X->less(this))      : (NULL));}
   Base* leq(const Base* X)const override	{untested();return ((X) ? (X->geq(this))       : (NULL));}
   Base* geq(const Base* X)const override	{untested();return ((X) ? (X->leq(this))       : (NULL));}
-  Base* not_equal(const Base* X)const override	{untested();return ((X) ? (X->not_equal(this)) : (NULL));}
+  Base* not_equal(const Base* X)const override	{return ((X) ? (X->not_equal(this)) : (NULL));}
   Base* equal(const Base* X)const override	{return ((X) ? (X->equal(this))     : (NULL));}
   Base* add(const Base* X)const override 	{	    return ((X) ? (X->add(this))       : (NULL));}
   Base* multiply(const Base* X)const override	{itested();return ((X) ? (X->multiply(this))  : (NULL));}

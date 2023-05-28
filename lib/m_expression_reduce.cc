@@ -1,6 +1,6 @@
-/*$Id: m_expression_reduce.cc,v 26.137 2010/04/10 02:37:33 al Exp $ -*- C++ -*-
+/*                               -*- C++ -*-
  * Copyright (C) 2003 Albert Davis
- * Author: Albert Davis <aldavis@gnu.org>
+ *               2023 Felix Salfelder
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
@@ -167,6 +167,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
     if (strchr("0123456789.", name()[0])) {
       // a number
       Float* n = new Float(name());
+      trace1("found number", name());
       E->push_back(new Token_CONSTANT(name(), n, ""));
     }else{
       // a name
@@ -201,6 +202,44 @@ void Token_SYMBOL::stack_op(Expression* E)const
 #endif
       }
     }
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Token_TERNARY::stack_op(Expression* E)const
+{
+  assert(E);
+  Token const* t = E->back();
+  auto constant = dynamic_cast<Token_CONSTANT const*>(t);
+
+  bool is_float = false;
+  if(constant){
+    is_float = dynamic_cast<Float const*>(constant->data());
+  }else{
+  }
+
+  assert(true_part());
+  assert(false_part());
+  if (is_float) {
+    assert(constant->data());
+    bool select = constant->data()->to_bool();
+    delete t;
+    E->pop_back();
+    Expression const* sel;
+
+    if(select){
+      sel = true_part();
+    }else{
+      sel = false_part();
+    }
+    // E->reduce_copy(*sel);
+    for (Expression::const_iterator i = sel->begin(); i != sel->end(); ++i) {
+      (**i).stack_op(E);
+    }
+
+  }else{
+    Expression* t = new Expression(*true_part(), E->_scope);
+    Expression* f = new Expression(*false_part(), E->_scope);
+    E->push_back(new Token_TERNARY(name(), t, f));
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -101,6 +101,21 @@ void Expression::dump(std::ostream& out)const
       Token* t = new Token_SYMBOL(tmp, "");
       locals.push_back(t);
       stack.push_back(t);
+    }else if (auto t = dynamic_cast<const Token_TERNARY*>(*i)) {
+      assert(!stack.empty());
+      const Token* cond = stack.back();
+      stack.pop_back();
+      std::stringstream tmp;
+
+      tmp << '(' << cond->full_name() << ")? (";
+      t->true_part()->dump(tmp);
+      tmp << "):(";
+      t->false_part()->dump(tmp);
+      tmp << ')';
+
+      Token* n = new Token_SYMBOL(tmp.str(), "");
+      locals.push_back(n);
+      stack.push_back(n);
     }else{
       unreachable();
     }
