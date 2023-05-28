@@ -1,10 +1,32 @@
-"param a="aaa" + 1 "
-param a="aaa" + 1 
-              ^ ? syntax error
+"eval "string" "
+"string"="string"
+"param a="aaa" "
 "eval a "
 a=aaa
-"param b="aaa" + "bbb" "
-param b="aaa" + "bbb" 
-              ^ ? syntax error
+"param b={"aaa" + "bbb"} "
 "eval b "
-b=aaa
+b=("bbb" + "aaa")
+"param c={"aaa" == "bbb"} "
+"eval c "
+c= 0.
+"param d={"aaa" == a} "
+"eval d "
+d= 1.
+"param e={exp("0.")} "
+"eval e "
+e=exp("0.")
+"param f={exp(1.+"0.")} "
+"eval f "
+f=exp(("0." + 1.))
+"param g={exp("aaa" == 0.)} "
+"eval g "
+g=exp(("aaa" == 0.))
+"param h={exp(0. == "aaa")} "
+"eval h "
+h=exp((0. == "aaa"))
+"param i={exp(a == "aaa")} "
+"eval i "
+i= 2.71828182845905
+"param j={exp(0. != 0.)} "
+"eval j "
+j= 1.

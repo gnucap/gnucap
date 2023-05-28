@@ -87,20 +87,30 @@ void Expression::arglist(CS& File)
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 void Expression::leaf(CS& File)
 {
-#if 0
-  if (File.peek() == '"') {untested();
-    Quoted_String name(File);
-    push_back(new Token_SYMBOL(name, ""));
-    // do not put constants in symbol table
-  } // else 
-#endif
   size_t here = File.cursor();
-  Name_String name(File);
-  if (!File.stuck(&here)) {
-    arglist(File);
-    push_back(new Token_SYMBOL(name, ""));
-  }else{itested();
-    throw Exception_CS("what's this?", File);
+  if (File.peek() == '"') {
+    Quoted_String* s = new Quoted_String();
+    try{
+      File >> *s;
+      trace1("leaf qs", *s);
+    }catch(Exception const& e){
+      delete s;
+      throw e;
+    }
+    if (File.stuck(&here)) { untested();
+      delete s;
+      throw Exception_CS("what's this?", File);
+    }else{
+      push_back(new Token_CONSTANT("\"" + s->val_string() + "\"", s, ""));
+    }
+  }else{
+    Name_String name(File);
+    if (!File.stuck(&here)) {
+      arglist(File);
+      push_back(new Token_SYMBOL(name, ""));
+    }else{itested();
+      throw Exception_CS("what's this?", File);
+    }
   }
 }
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */

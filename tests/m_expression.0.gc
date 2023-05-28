@@ -1,6 +1,22 @@
-verilog
 option list
-param a="aaa" + 1
+eval "string"
+param a="aaa"
 eval a
-param b="aaa" + "bbb"
+param b={"aaa" + "bbb"}
 eval b
+param c={"aaa" == "bbb"}
+eval c
+param d={"aaa" == a}
+eval d
+param e={exp("0.")}
+eval e
+param f={exp(1.+"0.")}
+eval f
+param g={exp("aaa" == 0.)}
+eval g
+param h={exp(0. == "aaa")}
+eval h
+param i={exp(a == "aaa")}
+eval i
+param j={exp(0. != 0.)}
+eval j
