@@ -68,19 +68,19 @@ void Name_String::parse(CS& File)
 }
 /*--------------------------------------------------------------------------*/
 void Quoted_String::parse(CS& File)
-{untested();
+{
   File.skipbl();
   size_t here = File.cursor();
   char quote = File.ctoc();
   _data = "";
-  for (;;) {untested();
-    if (File.skip1(quote)) {untested();
+  for (;;) {
+    if (File.skip1(quote)) {
       break;
     }else if (!File.more()) {untested();
       File.warn(0, "end of file in quoted string");
       File.warn(0, here, "string begins here");
       break;
-    }else{untested();
+    }else{
       _data += File.ctoc();
     }
   }

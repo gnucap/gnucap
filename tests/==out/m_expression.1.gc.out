@@ -1,0 +1,49 @@
+"param a={1?2:3} "
+"eval a "
+a= 2.
+"param b={0?2:3} "
+"eval b "
+b= 3.
+"param c={x?2:3} "
+"eval c "
+c=(x)? (2):(3)
+"param d={exp(4)?2:3} "
+"eval d "
+d= 2.
+"param e={1-1?2:3} "
+"eval e "
+e= 3.
+"param f={(exp(0)-1)?2:3} "
+"eval f "
+f= 3.
+"param g={(exp(0)>0)?2:3} "
+"eval g "
+g= 2.
+"param h={(exp(0)>=1)?2:3*0} "
+"eval h "
+h= 2.
+"param i={(1)?1:0&&0} "
+"eval i "
+i= 1.
+"param j={(1)?0:0||1} "
+"eval j "
+j= 0.
+"param k={(0?0:0)||1} "
+"eval k "
+k= 1.
+"param l={0?0:(0||1)} "
+"eval l "
+l= 1.
+"param m={0?1:1+0?2:3} "
+"eval m "
+m= 2.
+"param n={(xx==0)?1/2:1/3} "
+"eval n "
+n=((xx == 0))? ( 0.5):( 0.333333333333333)
+"param o={ (QEpercent != 0) ? QEpercent*Lambda/1.2398e5:Responsivity } "
+"eval o "
+o=((QEpercent != 0))? (((Lambda * QEpercent) / 1.2398e5)):(Responsivity)
+"param p={0?1:1+0?2} "
+"eval p "
+eval p 
+     ^ ? missing colon (ternary)

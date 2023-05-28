@@ -201,8 +201,8 @@ public:
   Base* greater(const String*)const override	{untested();return NULL;}
   Base* leq(const String*)const override 	{untested();return NULL;}
   Base* geq(const String*)const override 	{untested();return NULL;}
-  Base* not_equal(const String*)const override	{untested();return NULL;}
-  Base* equal(const String*)const override	{untested();return NULL;}
+  Base* not_equal(const String*)const override	{return NULL;}
+  Base* equal(const String*)const override	{return NULL;}
   Base* add(const String*)const override 	{           return NULL;}
   Base* multiply(const String*)const override	{untested();return NULL;}
   Base* subtract(const String*)const override	{untested();return NULL;}
@@ -221,14 +221,14 @@ protected:
 public:
   void parse(CS&) override {unreachable(); incomplete();}
 private:
-  void dump(std::ostream& o)const override {untested();o << _data;}
+  void dump(std::ostream& o)const override {o << _data;}
 public:
   explicit String(CS& file) {untested();parse(file);}
   explicit String()	    {}
   explicit String(const std::string& s) :_data(s) {}
   explicit String(const String& s) : Base(), _data(s._data) {}
   operator const std::string&()const	{return _data;}
-  std::string val_string()const override		{untested();return _data;}
+  std::string val_string()const override		{return _data;}
   bool to_bool()const override			{untested();return (_data != "");}
 
   Base* minus()const override			{untested(); return NULL;}
@@ -239,7 +239,7 @@ public:
   Base* leq(const String* X)const override	{untested();assert(X); return new Float((_data <= X->_data)?1.:0.);}
   Base* geq(const String* X)const override	{untested();assert(X); return new Float((_data >= X->_data)?1.:0.);}
   Base* not_equal(const String* X)const override{untested();assert(X); return new Float((_data != X->_data)?1.:0.);}
-  Base* equal(const String* X)const override	{untested();assert(X); return new Float((_data == X->_data)?1.:0.);}
+  Base* equal(const String* X)const override	{assert(X); return new Float((_data == X->_data)?1.:0.);}
   Base* add(const String*)const override	{	     return NULL;}
   Base* multiply(const String*)const override	{itested(); return NULL;}
   Base* subtract(const String*)const override	{untested(); return NULL;}
@@ -251,8 +251,8 @@ public:
   Base* greater(const Base* X)const override	{untested();return ((X) ? (X->less(this))      : (NULL));}
   Base* leq(const Base* X)const override	{untested();return ((X) ? (X->geq(this))       : (NULL));}
   Base* geq(const Base* X)const override	{untested();return ((X) ? (X->leq(this))       : (NULL));}
-  Base* not_equal(const Base* X)const override	{untested();return ((X) ? (X->not_equal(this)) : (NULL));}
-  Base* equal(const Base* X)const override	{untested();return ((X) ? (X->equal(this))     : (NULL));}
+  Base* not_equal(const Base* X)const override	{return ((X) ? (X->not_equal(this)) : (NULL));}
+  Base* equal(const Base* X)const override	{return ((X) ? (X->equal(this))     : (NULL));}
   Base* add(const Base* X)const override 	{	    return ((X) ? (X->add(this))       : (NULL));}
   Base* multiply(const Base* X)const override	{itested();return ((X) ? (X->multiply(this))  : (NULL));}
   Base* subtract(const Base* X)const override	{           return ((X) ? (X->r_subtract(this)): (NULL));}
@@ -265,7 +265,7 @@ public:
   Base* leq(const Float*)const override 	{untested();return NULL;}
   Base* geq(const Float*)const override		{untested();return NULL;}
   Base* not_equal(const Float*)const override	{untested();return NULL;}
-  Base* equal(const Float*)const override	{untested();return NULL;}
+  Base* equal(const Float*)const override	{return NULL;}
   Base* add(const Float*)const override 	{           return NULL;}
   Base* multiply(const Float*)const override	{untested();return NULL;}
   Base* subtract(const Float*)const override	{untested();return NULL;}
@@ -291,7 +291,7 @@ public:
   void parse(CS&) override;
 public:
   explicit Quoted_String(CS& file)	{untested();parse(file);}
-  explicit Quoted_String()		{untested();}
+  explicit Quoted_String()		{}
 };
 /*--------------------------------------------------------------------------*/
 class Tail_String	// a string that is parsed to the end of a line
@@ -317,8 +317,8 @@ List_Base<T>::~List_Base()
 /*--------------------------------------------------------------------------*/
 template <class T>
 void List_Base<T>::dump(std::ostream& Out)const
-{untested();
-  for (const_iterator i = begin(); i != end(); ++i) {untested();
+{itested();
+  for (const_iterator i = begin(); i != end(); ++i) {itested();
     assert(*i);
     Out << **i;
   }
