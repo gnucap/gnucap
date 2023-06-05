@@ -84,6 +84,12 @@ public:
   virtual Base* r_divide(const Base*)const	{untested(); return NULL;}
   virtual Base* r_divide(const Float*)const	{untested(); return NULL;}
   virtual Base* r_divide(const String*)const	{untested(); return NULL;}
+  virtual Base* modulo(const Base*)const	{untested(); return NULL;}
+  virtual Base* modulo(const Float*)const	{untested(); return NULL;}
+  virtual Base* modulo(const String*)const	{untested(); return NULL;}
+  virtual Base* r_modulo(const Base*)const	{untested(); return NULL;}
+  virtual Base* r_modulo(const Float*)const	{untested(); return NULL;}
+  virtual Base* r_modulo(const String*)const	{untested(); return NULL;}
 
   Base* logic_not()const;
   Base* logic_or(const Base* X)const;
@@ -183,6 +189,8 @@ public:
   Base* r_subtract(const Float* X)const override{assert(X); return new Float(X->_data - _data);}
   Base* divide(const Float* X)const override	{untested();assert(X); return new Float(_data / X->_data);}
   Base* r_divide(const Float* X)const override	{assert(X); return new Float(X->_data / _data);}
+  Base* modulo(const Float* X)const override	{untested();assert(X); return new Float(fmod(_data, X->_data));}
+  Base* r_modulo(const Float* X)const override	{           assert(X); return new Float(fmod(X->_data, _data));}
 
   Base* less(const Base* X)const override	{return ((X) ? (X->greater(this))   : (NULL));}
   Base* greater(const Base* X)const override	{return ((X) ? (X->less(this))      : (NULL));}
@@ -196,6 +204,8 @@ public:
   Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (NULL));}
   Base* divide(const Base* X)const override	{return ((X) ? (X->r_divide(this))  : (NULL));}
   Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (NULL));}
+  Base* modulo(const Base* X)const override	{return ((X) ? (X->r_modulo(this))  : (NULL));}
+  Base* r_modulo(const Base* X)const override	{untested();return ((X) ? (X->modulo(this))    : (NULL));}
 
   Base* less(const String*)const override	{untested();return NULL;}
   Base* greater(const String*)const override	{untested();return NULL;}
@@ -209,6 +219,8 @@ public:
   Base* r_subtract(const String*)const override	{           return NULL;}
   Base* divide(const String*)const override	{untested();return NULL;}
   Base* r_divide(const String*)const override	{	    return NULL;}
+  Base* modulo(const String*)const override	{untested();return NULL;}
+  Base* r_modulo(const String*)const override	{untested();return NULL;}
 
   bool  is_NA()const			{untested();return _data == NOT_INPUT;}
 };
@@ -246,6 +258,8 @@ public:
   Base* r_subtract(const String*)const override	{itested(); return NULL;}
   Base* divide(const String*)const override	{untested(); return NULL;}
   Base* r_divide(const String*)const override	{itested(); return NULL;}
+  Base* modulo(const String*)const override	{untested(); return NULL;}
+  Base* r_modulo(const String*)const override	{untested(); return NULL;}
 
   Base* less(const Base* X)const override	{untested();return ((X) ? (X->greater(this))   : (NULL));}
   Base* greater(const Base* X)const override	{untested();return ((X) ? (X->less(this))      : (NULL));}
@@ -259,6 +273,8 @@ public:
   Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (NULL));}
   Base* divide(const Base* X)const override	{	    return ((X) ? (X->r_divide(this))  : (NULL));}
   Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (NULL));}
+  Base* modulo(const Base* X)const override	{	    return ((X) ? (X->r_modulo(this))  : (NULL));}
+  Base* r_modulo(const Base* X)const override	{untested();return ((X) ? (X->modulo(this))    : (NULL));}
 
   Base* less(const Float*)const override 	{untested();return NULL;}
   Base* greater(const Float*)const override	{untested();return NULL;}
@@ -272,6 +288,8 @@ public:
   Base* r_subtract(const Float*)const override	{untested();return NULL;}
   Base* divide(const Float*)const override	{untested();return NULL;}
   Base* r_divide(const Float*)const override	{ itested();return NULL;}
+  Base* modulo(const Float*)const override	{untested();return NULL;}
+  Base* r_modulo(const Float*)const override	{untested();return NULL;}
 };
 /*--------------------------------------------------------------------------*/
 class Name_String	// a string that contains only alnum and _[]

@@ -1,1 +1,1 @@
-#define PATCHLEVEL "ternary 2023.05.22"
+#define PATCHLEVEL "modulo 2023.06.05"
