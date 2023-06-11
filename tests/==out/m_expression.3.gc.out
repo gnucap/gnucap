@@ -1,0 +1,21 @@
+"param a1=b[4] "
+"eval a1 "
+a1=b[4]
+"param a2="_[b]4" "
+"eval a2 "
+a2=_[b]4
+"param a3="b]x]y]z]w" "
+"eval a3 "
+a3=b]x]y]z]w
+"param a4=_]b[3 "
+"eval a4 "
+a4=_]b[3
+"param a5=_$b[3 "
+"eval a5 "
+a5=_$b[3
+"param a6=yy[[3] "
+"eval a6 "
+a6=yy[[3]
+"param a7=yy[3]] "
+"eval a7 "
+a7=yy[3]]
