@@ -1,0 +1,13 @@
+option list
+param a1={2%3}
+eval a1
+param a2={2%3+1}
+eval a2
+param a3={c+2%3+b}
+eval a3
+param a4={(c+2)%3+b}
+eval a4
+param a5={12*3%4*2.}
+eval a5
+param a6={exp(12*3%4*2.)}
+eval a6

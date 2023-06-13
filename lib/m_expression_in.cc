@@ -163,7 +163,7 @@ void Expression::ternary(CS& File)
 /*--------------------------------------------------------------------------*/
 void Expression::termtail(CS& File)
 {
-  if (File >> "*|/") {
+  if (File >> "*|/|%") {
     std::string name(File.last_match());
     factor(File);
     push_back(new Token_BINOP(name));

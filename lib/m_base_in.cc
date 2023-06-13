@@ -60,8 +60,21 @@ void Name_String::parse(CS& File)
       _data += File.ctoc();
     }
   }else{
-    while (File.is_alpha() || File.is_pfloat() || File.match1("_[]$")) {
+    int bracket = 0;
+    while (true) {
+      if (File.is_alpha() || File.is_pfloat() || File.match1("_$")) {
+      }else if (File.match1("[")) {
+	++bracket;
+      }else if (bracket && File.match1("]")) {
+	--bracket;
+      }else{
+	break;
+      }
       _data += File.ctoc();
+    }
+    if(bracket){
+      File.warn(bDANGER, "missing ]?");
+    }else{
     }
   }
   File.skipbl();
