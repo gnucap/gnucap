@@ -1,4 +1,33 @@
-Readme for development snapshot 2013-04-23
+== Readme for development snapshot 20230623
+
+This is a development snapshot addressing expression handling.
+
+- ternary operator
+- modulo binary operator
+- quoted strings
+
+== Readme for development snapshot 20230520
+
+This is a development snapshot.
+
+- param eval recursion bugfix
+- allow '$' in identifiers
+- add man pages from Debian
+
+== Readme for development snapshot 20230214
+
+This is a development snapshot. Related to Verilog-AMS work.
+
+- module overloading interface
+- allow '$' in identifiers
+- explicitly specify c++11 during build
+- move COMPONENT::_value to ELEMENT
+- ELEMENT cleanup and parameter sweeps
+- "override" decorators
+- more scope flexibility in commands
+- fix case insensitivity in label compare
+
+== Readme for development snapshot 2013-04-23
 
 This is a development snapshot.  As such, there may be problems due to
 new work.
