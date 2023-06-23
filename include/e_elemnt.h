@@ -234,7 +234,7 @@ inline void ELEMENT::tr_load_shunt()
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_unload_shunt()
-{untested();
+{itested();
   _loss0 = 0.;
   _sim->mark_inc_mode_bad();
   tr_load_shunt();
