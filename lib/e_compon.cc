@@ -247,8 +247,8 @@ bool COMMON_COMPONENT::param_is_printable(int i)const
 std::string COMMON_COMPONENT::param_name(int i)const
 {
   switch (i) {
-  case 0:untested();  return "tnom";
-  case 1:untested();  return "dtemp";
+  case 0:itested();  return "tnom";
+  case 1:itested();  return "dtemp";
   case 2:itested();  return "temp";
   case 3:  return "m";
   default:untested(); return "";
@@ -326,7 +326,7 @@ void COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 	}
       }
     }
-    untested();
+    itested();
     throw Exception_No_Match(Name);
   }
 }
@@ -889,12 +889,15 @@ double COMPONENT::volts_limited(const node_t & n1, const node_t & n2)
     if (OPT::dampstrategy & dsRANGE) {
       _sim->_fulldamp = true;
       error(bTRACE, "range limit damp\n");
+    }else{
     }
-    if (OPT::picky <= bTRACE) {untested();
+    if (OPT::picky <= bTRACE) {itested();
       error(bNOERROR,"node limiting (n1,n2,dif) "
 	    "was (%g %g %g) now (%g %g %g)\n",
 	    n1.v0(), n2.v0(), n1.v0() - n2.v0(), v1, v2, v1-v2);
+    }else{
     }
+  }else{
   }
 
   return dn_diff(v1,v2);

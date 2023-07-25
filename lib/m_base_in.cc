@@ -87,13 +87,13 @@ void Quoted_String::parse(CS& File)
   char quote = File.ctoc();
   _data = "";
   for (;;) {
-    if (File.match1('\\')) { untested();
+    if (File.match1('\\')) { itested();
       _data += File.ctoc();
-      if (File.match1(quote)) { untested();
+      if (File.match1(quote)) { itested();
 	_data += File.ctoc();
-      }else if (File.match1('\\')) { untested();
+      }else if (File.match1('\\')) { itested();
 	_data += File.ctoc();
-      }else{ untested();
+      }else{ itested();
       }
     }else if (File.skip1(quote)) {
       break;
