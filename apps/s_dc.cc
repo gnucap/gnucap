@@ -311,7 +311,7 @@ void DC::setup(CS& Cmd)
 	  // possibly not a parameter. go on
 	  Cmd.reset(here);
 	}
-      }else{ untested();
+      }else{ itested();
 	// leave as it was .. repeat Cmd with no args
       }
       

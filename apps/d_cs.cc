@@ -35,7 +35,7 @@ public:
   explicit DEV_CS()		:ELEMENT() {}
 private: // override virtual
   char	   id_letter()const override	{return 'I';}
-  std::string value_name()const override{itested(); return "dc";}
+  std::string value_name()const override{return "dc";}
   std::string dev_type()const override	{return "isource";}
   int	   max_nodes()const override	{return 2;}
   int	   min_nodes()const override	{return 2;}

@@ -108,7 +108,7 @@ void TRANSIENT::setup(CS& Cmd)
 	_tstart = 0.;
 	_tstop  = oldrange;
 	/* _tstrobe unchanged */
-      }else{untested();			     /* 1 arg: _tstrobe */
+      }else{itested();			     /* 1 arg: _tstrobe */
 	assert(arg1 <= _sim->_last_time);
 	assert(arg1 > 0.);
 	double oldrange = _tstop - _tstart;

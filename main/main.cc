@@ -220,7 +220,7 @@ static void process_cmd_line(int argc, const char *argv[])
 	  error(bDANGER, e.message() + '\n');
 	  finish();
 	}
-	if (ii >= argc) {itested();
+	if (ii >= argc) {
 	  //CMD::command("end", &CARD_LIST::card_list);
 	  throw Exception_Quit("");
 	}else{untested();
