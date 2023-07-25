@@ -543,7 +543,7 @@ bool TRANSIENT::review()
   }else{
   }
 
-  if (time_by._error_estimate < _time1 + 2*_sim->_dtmin) {itested();
+  if (time_by._error_estimate < _time1 + 2*_sim->_dtmin) {
     _time_by_error_estimate = _time1 + 2*_sim->_dtmin;
   }else{
     _time_by_error_estimate = time_by._error_estimate;

@@ -30,3 +30,23 @@ i= 2.71828182845905
 "param j={exp(0. != 0.)} "
 "eval j "
 j= 1.
+"param k={"aaa bbb"} "
+"eval k "
+k="aaa bbb"
+"* //BUG// does not work with spice get_line "
+"param l={"aaa\"bbb"} "
+"eval l "
+l="aaa"
+"* //BUG// totally does not work with spice get_line "
+"* param m=exp("aaa\"bbb") "
+"* eval m "
+"options nag "
+"param n={"missing quote} "
+>>>>>param n={"missing quote} 
+"eval n "
+>>>>>eval n 
+"missing quote
+              ^ ? end of file in quoted string
+"missing quote
+^ ? string begins here
+n="missing quote"

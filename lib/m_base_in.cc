@@ -87,11 +87,19 @@ void Quoted_String::parse(CS& File)
   char quote = File.ctoc();
   _data = "";
   for (;;) {
-    if (File.skip1(quote)) {
+    if (File.match1('\\')) { untested();
+      _data += File.ctoc();
+      if (File.match1(quote)) { untested();
+	_data += File.ctoc();
+      }else if (File.match1('\\')) { untested();
+	_data += File.ctoc();
+      }else{ untested();
+      }
+    }else if (File.skip1(quote)) {
       break;
-    }else if (!File.more()) {untested();
-      File.warn(0, "end of file in quoted string");
-      File.warn(0, here, "string begins here");
+    }else if (!File.ns_more()) {
+      File.warn(bNOERROR, "end of file in quoted string");
+      File.warn(bNOERROR, here, "string begins here");
       break;
     }else{
       _data += File.ctoc();
