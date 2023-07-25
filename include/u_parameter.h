@@ -55,13 +55,13 @@ class PARAMETER : public PARA_BASE {
 private:
   mutable T _v;
 public:
-  explicit PARAMETER() : PARA_BASE(), _v(NOT_INPUT) {}
+  explicit PARAMETER() : PARA_BASE(), _v(not_input()) {}
 	   PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}
   
-  bool	has_good_value()const override {return (_v != NOT_INPUT);}
+  bool	has_good_value()const override {return (_v != not_input());}
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
@@ -97,10 +97,10 @@ public:
     return (_v == p._v  &&  _s == p._s);
   }
   bool  operator==(const T& v)const {
-    if (v != NOT_INPUT) {
+    if (v != not_input()) {
       return _v == v;
     }else{
-      return (_v == NOT_INPUT || !has_hard_value());
+      return (_v == not_input() || !has_hard_value());
     }
   }
   //bool	operator!=(const PARAMETER& p)const {untested();
@@ -109,6 +109,8 @@ public:
   //bool	operator!=(const T& v)const {untested();
   //  return !(*this == v);
   //}
+protected:
+  virtual T not_input() const {return T(NOT_INPUT);}
 private:
   T lookup_solve(const T& def, const CARD_LIST* scope)const;
 };
@@ -247,7 +249,7 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
   Expression e(cmd);
   Expression reduced(e, scope);
   T v = T(reduced.eval());
-  if (v != NOT_INPUT) {
+  if (v != not_input()) {
     return v;
   }else{
     const PARAM_LIST* pl = scope->params();
@@ -290,7 +292,7 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
     // anything else means look up the value
     if (recursion <= OPT::recursion) {
       _v = lookup_solve(def, scope);
-      if (_v == NOT_INPUT) {
+      if (_v == not_input()) {
 	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
 	//BUG// needs to show scope
 	//BUG// it is likely to have a numeric overflow resulting from the bad value
