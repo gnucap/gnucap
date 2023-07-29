@@ -61,7 +61,7 @@ public:
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}
   
-  bool	has_good_value()const override {return (_v != not_input());}
+  bool	has_good_value()const override {return (_v != NOT_INPUT);} // BUG // T==bool?
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
@@ -292,8 +292,9 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
     // anything else means look up the value
     if (recursion <= OPT::recursion) {
       _v = lookup_solve(def, scope);
-      if (_v == not_input()) {
+      if (_v == NOT_INPUT) {
 	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
+	//BUG// not reachable if T==bool?
 	//BUG// needs to show scope
 	//BUG// it is likely to have a numeric overflow resulting from the bad value
       }else{
