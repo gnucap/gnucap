@@ -1,3 +1,13 @@
+== Readme for development snapshot 20230729
+
+This is a development snapshot
+
+- white space in quoted strings
+- escaped chars in quoted strings
+- more testing and interactive testing
+- typed NOT_INPUT override
+- version presented at fsic23
+
 == Readme for development snapshot 20230623
 
 This is a development snapshot addressing expression handling.
