@@ -109,7 +109,7 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
     switch (ELEMENT::param_count() - 1 - i) {
     case 0:
       _value = Value; break;
-    default: untested();
+    default: itested();
       COMPONENT::set_param_by_index(i, Value, offset);
     }
   }

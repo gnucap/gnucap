@@ -648,7 +648,7 @@ void COMPONENT::set_param_by_index(int i, std::string& Value, int offset)
     attach_common(c);
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
-    case 0:untested(); _mfactor = Value; break;
+    case 0:itested(); _mfactor = Value; break;
     default:untested(); CARD::set_param_by_index(i, Value, offset);
     }
   }
