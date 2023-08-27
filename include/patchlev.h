@@ -1,1 +1,1 @@
-#define PATCHLEVEL "snapshot 2023.07.29"
+#define PATCHLEVEL "reset_fail 2023.08.27"
