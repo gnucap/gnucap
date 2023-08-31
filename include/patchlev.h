@@ -1,1 +1,1 @@
-#define PATCHLEVEL "reset_fail 2023.08.27"
+#define PATCHLEVEL "getlines_fix 2023.08.31"
