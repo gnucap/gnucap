@@ -40,7 +40,7 @@ protected:
 public:
   void	set_value(const PARAMETER<double>& v)	{_value = v;}
   void	set_value(double v)			{_value = v;}
-  void	set_value(const std::string& v)		{untested(); _value = v;}
+  void	set_value(const std::string& v)		{itested(); _value = v;}
   void	set_value(double v, COMMON_COMPONENT* c);
   const PARAMETER<double>& value()const		{return _value;}
 
@@ -156,12 +156,12 @@ public:
   virtual double error_factor()const	{return OPT::trstepcoef[OPT::trsteporder];}
 protected:
   int param_count()const override {return (1 + COMPONENT::param_count());}
-  void set_param_by_name(std::string, std::string);
-  void set_param_by_index(int, std::string&, int);
-  bool param_is_printable(int)const;
-  std::string param_name(int)const;
-  std::string param_name(int,int)const;
-  std::string param_value(int)const;
+  void set_param_by_name(std::string, std::string)override;
+  void set_param_by_index(int, std::string&, int)override;
+  bool param_is_printable(int)const override;
+  std::string param_name(int)const override;
+  std::string param_name(int,int)const override;
+  std::string param_value(int)const override;
 protected:
   PARAMETER<double> _value;	// value, for simple parts
   int      _loaditer;	// load iteration number

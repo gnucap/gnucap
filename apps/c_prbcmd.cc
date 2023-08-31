@@ -40,7 +40,7 @@ void do_probe(CS& cmd, PROBELIST *probes, CARD_LIST *scope)
   assert(scope);
 #ifdef TRACE_UNTESTED
   if (scope == &CARD_LIST::card_list) {
-  }else{untested();
+  }else{itested();
   }
 #endif
 
@@ -174,7 +174,7 @@ public:
     assert(Scope);
 #ifdef TRACE_UNTESTED
     if (Scope == &CARD_LIST::card_list) {
-    }else{untested();
+    }else{itested();
     }
 #endif
     IO::plotset = false;

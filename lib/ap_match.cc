@@ -81,8 +81,7 @@ CS& CS::umatch(const std::string& s)
     skipcom();
     _ok = true;
   }else{
-    reset(start);
-    _ok = false;
+    reset_fail(start);
   }
   return *this;
 }
@@ -95,8 +94,7 @@ CS& CS::scan(const std::string& s)
       _ok = true;
       break;
     }else if (!more()) { // ran out
-      reset(start);
-      _ok = false;
+      reset_fail(start);
       break;
     }else{		 // skip and try again
       skiparg();

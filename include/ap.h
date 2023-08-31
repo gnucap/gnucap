@@ -90,6 +90,7 @@ public:
 
   // control
   CS&	      reset(size_t c=0) {_cnt=c; _ok=true; return *this;}
+  CS&	      reset_fail(size_t c=0) {_cnt=c; _ok=false; return *this;}
 
   // exception handling (ap_error.cc) non-consuming
   CS&	      check(int, const std::string&);

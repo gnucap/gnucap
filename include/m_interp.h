@@ -69,7 +69,7 @@ FPOLY1 interpolate(Iterator begin, Iterator end, double x,
     }else if ((upper == begin) && (x < (*lower).first) && (below!=NOT_INPUT)) { itested();
       // x is out of bounds, below
       if (below != 0.) { itested();
-      }else{ untested();
+      }else{ itested();
       }
       f1 = below;
     }else if ((*upper).first <= (*lower).first) {itested();
