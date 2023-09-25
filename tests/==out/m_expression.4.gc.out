@@ -1,0 +1,12 @@
+"param a1={<test> + 2} "
+"eval a1 "
+a1=(<test> + 2)
+"param a2={test2# + stuff} "
+"eval a2 "
+a2=test2
+"param a3={<test2>bla + stuff} "
+"eval a3 "
+a3=<test2>
+"param a4={exp(<test2>) * 17.} "
+"eval a4 "
+a4=(exp(<test2>) * 17.)

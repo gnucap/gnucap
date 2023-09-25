@@ -207,6 +207,15 @@ void Token_SYMBOL::stack_op(Expression* E)const
   }
 }
 /*--------------------------------------------------------------------------*/
+Token_TERNARY::~Token_TERNARY()
+{
+  delete _true;
+  _true = NULL;
+
+  delete _false;
+  _false = NULL;
+}
+/*--------------------------------------------------------------------------*/
 void Token_TERNARY::stack_op(Expression* E)const
 {
   assert(E);

@@ -80,12 +80,20 @@ void Name_String::parse(CS& File)
   File.skipbl();
 }
 /*--------------------------------------------------------------------------*/
+void Angled_String::parse(CS& File)
+{
+  File.skipbl();
+  _data = File.ctos("", "<", ">");
+  File.skipbl();
+}
+/*--------------------------------------------------------------------------*/
 void Quoted_String::parse(CS& File)
 {
   File.skipbl();
   size_t here = File.cursor();
   char quote = File.ctoc();
   _data = "";
+  // TODO: extend ctos and use it.
   for (;;) {
     if (File.match1('\\')) { itested();
       _data += File.ctoc();

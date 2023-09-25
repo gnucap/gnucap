@@ -302,6 +302,16 @@ public:
   explicit Name_String()		{untested();}
 };
 /*--------------------------------------------------------------------------*/
+class Angled_String	// <alphanumeric> string
+  :public String
+{
+public:
+  void parse(CS&) override;
+public:
+  explicit Angled_String(CS& file)	{parse(file);}
+  explicit Angled_String()		{}
+};
+/*--------------------------------------------------------------------------*/
 class Quoted_String	// the first non-blank character is a quote
   :public String	// a repeat of the same character terminates it
 {
