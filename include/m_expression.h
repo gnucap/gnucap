@@ -85,7 +85,7 @@ public:
   explicit Token_TERNARY(const std::string Name, Expression const* t, Expression const* f)
     : Token(Name, NULL, ""), _true(t), _false(f) {}
   explicit Token_TERNARY(const Token_TERNARY& P) : Token(P) {}
-  ~Token_TERNARY() { }
+  ~Token_TERNARY();
   Token* clone()const override{return new Token_TERNARY(*this);}
   Token* op(const Token* t1, const Token* t2, const Token* t3)const;
   void stack_op(Expression*)const override;
@@ -133,7 +133,7 @@ public:
   explicit Token_CONSTANT(const Token_CONSTANT& P) : Token(P) {untested();}
   Token* clone()const override {
     if (auto s = dynamic_cast<String const*>(data())) {itested();
-      return new Token_CONSTANT(name(), new String(*s), aRgs());
+      return new Token_CONSTANT(name(), new String(*s), aRgs()); // BUG?
     }else{ untested();
       return new Token_CONSTANT(*this);
     }

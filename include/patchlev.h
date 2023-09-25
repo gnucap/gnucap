@@ -1,1 +1,1 @@
-#define PATCHLEVEL "angled_string 2023.09.01"
+#define PATCHLEVEL "ternary_fix 2023.09.22"

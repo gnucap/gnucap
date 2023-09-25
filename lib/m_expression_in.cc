@@ -151,6 +151,7 @@ void Expression::ternary(CS& File)
   true_part = new Expression(File);
 
   if (!File.skip1b(":")) {
+    delete true_part;
     throw Exception_CS("missing colon (ternary)", File);
   }else{
     // push_back(new Token_STOP(":"));
