@@ -156,15 +156,24 @@ bool DEV_RESISTANCE::do_tr()
     _y[0].x = tr_input_limited();;
     tr_eval();
     assert(_y[0].f0 != LINEAR);
-    if (std::abs(_y[0].f1) <= OPT::shortckt) {
+    if (_y[0].f1 >= OPT::shortckt) {
+    }else if (_y[0].f1 <= - OPT::shortckt) { untested();
+    }else if (_y[0].f1 >= 0) {
       error(bPICKY, long_label() + ": short circuit\n");
-      _y[0].f1 = OPT::shortckt; // TODO: sign?
-      if( _y[0].f0 < _y[0].x * _y[0].f1 ){
+      _y[0].f1 = OPT::shortckt;
+      if (0. <= _y[0].f0 && _y[0].f0 <= _y[0].x * _y[0].f1) {
 	_y[0].f0 = _y[0].x * _y[0].f1;
       }else{
       }
       set_converged(conv_check());
-    }else{
+    }else{ untested();
+      error(bPICKY, long_label() + ": short circuit\n");
+      _y[0].f1 = - OPT::shortckt;
+      if( 0. >= _y[0].f0 && _y[0].f0 >= _y[0].x * _y[0].f1 ) { untested();
+	_y[0].f0 = _y[0].x * _y[0].f1;
+      }else{ untested();
+      }
+      set_converged(conv_check());
     }
     store_values();
     q_load();

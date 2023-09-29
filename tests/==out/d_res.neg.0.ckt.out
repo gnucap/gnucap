@@ -1,0 +1,25 @@
+nonlinear res test 
+R1: short circuit
+R1: short circuit
+R1: short circuit
+R1: short circuit
+R1: short circuit
+R1: short circuit
+did not converge
+R1: short circuit
+R1: short circuit
+R1: short circuit
+R1: short circuit
+R1: short circuit
+R1: short circuit
+did not converge
+R1: short circuit
+R1: short circuit
+R1: short circuit
+R1: short circuit
+R1: short circuit
+Gnucap   System status
+iterations: op=0, dc=10403, tran=0, fourier=0, total=10403
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%
