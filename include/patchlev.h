@@ -1,1 +1,1 @@
-#define PATCHLEVEL "ternary_fix 2023.09.22"
+#define PATCHLEVEL "res_fix 2023.09.23"

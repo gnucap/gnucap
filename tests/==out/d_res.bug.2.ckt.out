@@ -7,12 +7,12 @@ nonlinear res test
  4.         991.08     3.9901    -991.08     5.        
  5.         9.1743K    4.9083    -9.1743K    5.        
  6.         52.632K    5.4737    -52.632K    5.        
- 7.         350.K      3.5       -350.K      5.        
- 8.         400.K      4.        -400.K      4.        
- 9.         450.K      4.5       -450.K      4.        
- 10.        500.K      5.        -500.K      4.        
+ 7.         100.K      6.        -100.K      74.       
+ 8.         192.11K    6.2895    -171.05K    3.        
+ 9.         281.93K    6.3736    -262.64K    3.        
+ 10.        371.93K    6.474     -352.6K     3.        
 Gnucap   System status
-iterations: op=0, dc=50, tran=0, fourier=0, total=50
+iterations: op=0, dc=116, tran=0, fourier=0, total=116
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=1, subckt=0, model=0, total=1
 dctran density=100.0%, ac density=100.0%
