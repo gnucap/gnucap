@@ -7,6 +7,8 @@ r2: short circuit
 r2: short circuit
 -2.        
 r2: short circuit
+-3.        
+r2: short circuit
  0.        
  0.        
 r2: short circuit
@@ -38,6 +40,10 @@ r3: short circuit
 r1: short circuit
 r2: short circuit
 r3: short circuit
+-2.         100.K      100.K      100.K     
+r1: short circuit
+r2: short circuit
+r3: short circuit
  0.9        100.K      100.K      100.K     
  0.         100.K      100.K      100.K     
 r1: short circuit
@@ -66,7 +72,7 @@ r2: short circuit
 r3: short circuit
  1.         100.K      100.K      100.K     
 Gnucap   System status
-iterations: op=0, dc=0, tran=8, fourier=0, total=27
+iterations: op=0, dc=0, tran=9, fourier=0, total=29
 transient timesteps: accepted=7, rejected=0, total=7
 nodes: user=1, subckt=0, model=0, total=1
 dctran density=100.0%, ac density=100.0%

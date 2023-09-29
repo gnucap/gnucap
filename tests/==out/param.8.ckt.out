@@ -7,7 +7,7 @@ r2: short circuit
 r2: short circuit
 r2: short circuit
 r2: short circuit
- 27.        1.         0.         4.        
+ 27.        1.         3.3333u    4.        
 Gnucap   System status
 iterations: op=4, dc=0, tran=0, fourier=0, total=4
 transient timesteps: accepted=0, rejected=0, total=0

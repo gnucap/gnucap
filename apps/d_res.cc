@@ -159,7 +159,8 @@ bool DEV_RESISTANCE::do_tr()
     if (std::abs(_y[0].f1) <= OPT::shortckt) {
       error(bPICKY, long_label() + ": short circuit\n");
       _y[0].f1 = OPT::shortckt;
-      set_converged();
+      _y[0].f0 = _y[0].x * _y[0].f1;
+      set_converged(conv_check());
     }else{
     }
     store_values();
