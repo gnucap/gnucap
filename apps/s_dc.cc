@@ -488,7 +488,7 @@ void DCOP::sweep_recursive(int Nest)
     if (Nest == 0) {
       precalc();
       int converged = solve_with_homotopy(itl,_trace);
-      if (!converged) {untested();
+      if (!converged) {
 	error(bWARNING, "did not converge\n");
       }else{
       }
