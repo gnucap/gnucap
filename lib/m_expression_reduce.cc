@@ -248,9 +248,9 @@ void Token_TERNARY::stack_op(Expression* E)const
     }
 
   }else{
-    Expression* t = new Expression(*true_part(), E->_scope);
-    Expression* f = new Expression(*false_part(), E->_scope);
-    E->push_back(new Token_TERNARY(name(), t, f));
+    Expression* te = new Expression(*true_part(), E->_scope);
+    Expression* fe = new Expression(*false_part(), E->_scope);
+    E->push_back(new Token_TERNARY(name(), te, fe));
   }
 }
 /*--------------------------------------------------------------------------*/

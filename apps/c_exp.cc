@@ -36,8 +36,8 @@ public:
     try{
       Expression r(e, Scope);
       std::cout << e << '=' << r << '\n';
-    }catch(Exception const& e){
-      cmd.warn(bWARNING, here, e.message());
+    }catch(Exception const& ee){
+      cmd.warn(bWARNING, here, ee.message());
     }
   }
 } p0;
