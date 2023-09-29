@@ -1,0 +1,18 @@
+nonlinear res test 
+#           i(R1)      vin(R1)    i(V1)      iter(0)   
+ 0.         0.099999  -999.99n   -0.099999   4.        
+ 1.         0.99999    0.99999   -0.99999    4.        
+ 2.         9.9991     1.9999    -9.9991     5.        
+ 3.         99.91      2.999     -99.91      5.        
+ 4.         991.08     3.9901    -991.08     5.        
+ 5.         9.1743K    4.9083    -9.1743K    5.        
+ 6.         52.632K    5.4737    -52.632K    5.        
+ 7.         350.K      3.5       -350.K      5.        
+ 8.         400.K      4.        -400.K      4.        
+ 9.         450.K      4.5       -450.K      4.        
+ 10.        500.K      5.        -500.K      4.        
+Gnucap   System status
+iterations: op=0, dc=50, tran=0, fourier=0, total=50
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%

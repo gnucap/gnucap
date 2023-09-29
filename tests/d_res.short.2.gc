@@ -9,6 +9,8 @@ v1 2 0 1
 .dc r 0 1 .5
 .dc r 1 0 -.5
 
-.print dc v(nodes) y(r*)
+.print dc v(nodes) y(r*) iter(0)
 .dc r 0 1 .5 loop
+
+.status notime
 .end
