@@ -1,3 +1,11 @@
+== Readme for development snapshot 20230930
+
+- revisit resistor short condition handling
+- fix uninitialised access in getlines
+- fix a mem leak in ternary op
+- add CS::reset_fail
+- parse string in angle brackets
+
 == Readme for development snapshot 20230729
 
 This is a development snapshot

@@ -95,7 +95,7 @@ public:
   Base* logic_or(const Base* X)const;
   Base* logic_and(const Base* X)const;
 };
-inline CS&	     operator>>(CS& f, Base& b)	{untested();b.parse(f); return f;}
+inline CS&	     operator>>(CS& f, Base& b)	{itested();b.parse(f); return f;}
 inline std::ostream& operator<<(std::ostream& out, const Base& d)
 					{d.dump(out); return out;}
 /*--------------------------------------------------------------------------*/
