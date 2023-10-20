@@ -24,7 +24,7 @@
 //testing=script 2014.07.04
 #ifndef E_BASE_H
 #define E_BASE_H
-#include "md.h"
+#include "u_attrib.h"
 /*--------------------------------------------------------------------------*/
 // external
 class XPROBE;
@@ -38,13 +38,14 @@ private:
   mutable int	_probes;		/* number of probes set */
   std::string	_label;
 public:
+  ATTRIB_LIST_p	_attributes;
   static SIM_DATA* _sim;
   static PROBE_LISTS* _probe_lists;
   //--------------------------------------------------------------------
 protected: // create and destroy
-  explicit CKT_BASE()			  :_probes(0), _label() {}
-  explicit CKT_BASE(const std::string& s) :_probes(0), _label(s) {}
-  explicit CKT_BASE(const CKT_BASE& p)	  :_probes(0), _label(p._label) {}
+  explicit CKT_BASE()			  :_probes(0), _label(), _attributes() {}
+  explicit CKT_BASE(const std::string& s) :_probes(0), _label(s), _attributes() {}
+  explicit CKT_BASE(const CKT_BASE& p)	  :_probes(0), _label(p._label), _attributes(p._attributes) {}
   virtual  ~CKT_BASE();
   //--------------------------------------------------------------------
 public: // user stuff

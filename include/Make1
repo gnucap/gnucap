@@ -40,7 +40,7 @@ m_divdiff.h m_expression.h m_interp.h m_matrix.h m_phase.h m_spline.h \
 m_wave.h md.h mode.h patchlev.h s__.h s_tr.h trace_off.h trace_on.h \
 u_cardst.h u_function.h u_lang.h u_limit.h u_nodemap.h u_opt.h \
 u_parameter.h u_prblst.h u_probe.h u_sdp.h u_sim_data.h u_status.h \
-u_time_pair.h u_xprobe.h
+u_time_pair.h u_xprobe.h u_attrib.h
 #------------------------------------------------------------------------
 RAW_OTHER = \
 configure Make1
