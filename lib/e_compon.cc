@@ -304,7 +304,7 @@ bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 	  && _value == x._value);
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
+int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
   if (has_parse_params_obsolete_callback()) {itested();
     std::string args(Name + "=" + Value);
@@ -314,13 +314,14 @@ void COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
       throw Exception_No_Match(Name);
     }else{itested();
     }
+    return 0;
   }else{
     //BUG// ugly linear search
     for (int i = param_count() - 1;  i >= 0;  --i) {
       for (int j = 0;  param_name(i,j) != "";  ++j) {
 	if (Umatch(Name, param_name(i,j) + ' ')) {
 	  set_param_by_index(i, Value, 0/*offset*/);
-	  return; //success
+	  return i; //success
 	}else{
 	  //keep looking
 	}
@@ -426,12 +427,12 @@ bool COMPONENT::node_is_connected(int i)const
   return _n[i].is_connected();
 }
 /*--------------------------------------------------------------------------*/
-void COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
+int COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
 {
   for (int i=0; i<max_nodes(); ++i) {
     if (int_name == port_name(i)) {
       set_port_by_index(i, ext_name);
-      return;
+      return i;
     }else{
     }
   }
@@ -627,15 +628,16 @@ void COMPONENT::set_slave()
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMPONENT::set_param_by_name(std::string Name, std::string Value)
+int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
   if (has_common()) {
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
-    c->set_param_by_name(Name, Value);
+    int index = c->set_param_by_name(Name, Value);
     attach_common(c);
+    return index;
   }else{
-    CARD::set_param_by_name(Name, Value);
+    return CARD::set_param_by_name(Name, Value);
   }
 }
 /*--------------------------------------------------------------------------*/

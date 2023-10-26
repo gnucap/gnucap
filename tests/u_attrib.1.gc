@@ -1,4 +1,5 @@
 
+option list
 verilog
 (* a *) module aaa (c,d);
         resistor #(100) r1(a,b);
@@ -22,6 +23,8 @@ verilog
 	a2 a4(a,b);
 (* f *) a1 a5(a,b);
 (* g *) a2 a6(a,b);
+(* i *)(* j *) a1 a7(a,b);
+(* k *)(* l *) a2 a8(a,b);
 	endmodule;
 	
 list

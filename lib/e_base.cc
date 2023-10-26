@@ -22,7 +22,6 @@
  * Base class for "cards" in the circuit description file
  */
 //testing=script 2014.07.04
-#include "ap.h"
 #include "u_sim_data.h"
 #include "m_wave.h"
 #include "u_prblst.h"
@@ -37,6 +36,7 @@ static char fix_case(char c)
 double CKT_BASE::tr_probe_num(const std::string&)const {return NOT_VALID;}
 XPROBE CKT_BASE::ac_probe_ext(const std::string&)const {return XPROBE(NOT_VALID, mtNONE);}
 /*--------------------------------------------------------------------------*/
+INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
 SIM_DATA* CKT_BASE::_sim = NULL; 
 PROBE_LISTS* CKT_BASE::_probe_lists = NULL;
 /*--------------------------------------------------------------------------*/

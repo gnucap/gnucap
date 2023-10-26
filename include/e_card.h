@@ -134,7 +134,7 @@ public:	// ports -- mostly defer to COMPONENT
   int     connects_to(const node_t& node)const;
   //--------------------------------------------------------------------
 public: // parameters
-  virtual void set_param_by_name(std::string, std::string);
+  virtual int  set_param_by_name(std::string, std::string);
   virtual void set_param_by_index(int i, std::string&, int offset)
 				{untested(); throw Exception_Too_Many(i, 0, offset);}
   virtual int  param_count_dont_print()const	   {return 0;}

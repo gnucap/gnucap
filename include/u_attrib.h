@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * real base for anything to do with a circuit
  */
-//testing=script 2023.10.19
+//testing=script 2023.10.25
 #ifndef U_ATTRIB_H
 #define U_ATTRIB_H
 #include "ap.h"
@@ -39,6 +39,7 @@ private:
 public:
   ATTRIB_LIST(const std::string& S, ATTRIB_LIST* UP, const void* Owner) 
     :_s(S), _ref_count(0), _up(UP), _owner(Owner) {}
+
   ~ATTRIB_LIST() {assert(_ref_count==0);}
 
   int   inc_ref_count() {return ++_ref_count;}
@@ -96,10 +97,10 @@ private:
 public:
   ATTRIB_LIST_p() :_p(NULL) {}
 
-  ATTRIB_LIST_p(const ATTRIB_LIST_p& P) :_p(P._p) {
-    if (_p) {
+  ATTRIB_LIST_p(const ATTRIB_LIST_p& P) :_p(P._p) {untested();
+    if (_p) {untested();
       _p->inc_ref_count();
-    }else{
+    }else{untested();
     }
   }
   
@@ -107,7 +108,7 @@ public:
     if (_p) {
       if (_p->dec_ref_count()==0) {
 	delete _p;
-      }else{
+      }else{untested();
       }
     }else{
     }
@@ -116,8 +117,12 @@ public:
   const std::string string(const void* Owner)const {return _p->string(Owner);}
   const std::string operator[] (const std::string& Key)const {untested();return ((_p) ? (*_p)[Key] : "0");}
 
-  ATTRIB_LIST_p& add_to(const std::string& String, void* Owner) {
+  ATTRIB_LIST_p& add_to(const std::string& String, const void* Owner) {
+    if (_p) {
+    }else{
+    }
     _p = new ATTRIB_LIST(String, _p, Owner);
+    assert(_p);
     _p->inc_ref_count();
     return *this;
   }

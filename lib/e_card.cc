@@ -218,14 +218,14 @@ node_t& CARD::n_(int i)const
   return _n[i];
 }
 /*--------------------------------------------------------------------------*/
-void CARD::set_param_by_name(std::string Name, std::string Value)
+int CARD::set_param_by_name(std::string Name, std::string Value)
 {
   //BUG// ugly linear search
   for (int i = param_count() - 1;  i >= 0;  --i) {
     for (int j = 0;  param_name(i,j) != "";  ++j) { // multiple names
       if (Umatch(Name, param_name(i,j) + ' ')) {
 	set_param_by_index(i, Value, 0/*offset*/);
-	return; //success
+	return i; //success
       }else{
 	//keep looking
       }

@@ -1,24 +1,53 @@
+"verilog "
+"(* a *) module aaa (c,d); "
+"resistor #(100) r1(a,b); "
+"(* b *) resistor #(200) r2(a,b); "
+"r1 r3(a,b); "
+"r2 r4(a,b); "
+"(* c *) r1 r5(a,b); "
+"(* d *) r2 r6(a,b); "
+"endmodule; "
+"(* h *) module bbb (e,f); "
+"resistor #(100) r1(a,b); "
+"(* b *) resistor #(200) r2(a,b); "
+"r1 r3(a,b); "
+"r2 r4(a,b); "
+"(* c *) r1 r5(a,b); "
+"(* d *) r2 r6(a,b); "
+"aaa a1(a,b); "
+"(* e *) aaa a2(a,b); "
+"a1 a3(a,b); "
+"a2 a4(a,b); "
+"(* f *) a1 a5(a,b); "
+"(* g *) a2 a6(a,b); "
+"(* i *)(* j *) a1 a7(a,b); "
+"(* k *)(* l *) a2 a8(a,b); "
+"endmodule; "
+"list "
 (* a *) module aaa (c,d);
 resistor #(.r(100)) r1 (.p(a),.n(b));
 (* b *) resistor #(.r(200)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));
-(* b *) resistor #(.r(200)) r4 (.p(a),.n(b));
+resistor #(.r(200)) r4 (.p(a),.n(b));
 (* c *) resistor #(.r(100)) r5 (.p(a),.n(b));
-(* b, d *) resistor #(.r(200)) r6 (.p(a),.n(b));
+(* d *) resistor #(.r(200)) r6 (.p(a),.n(b));
 endmodule // aaa
 
 (* h *) module bbb (e,f);
 resistor #(.r(100)) r1 (.p(a),.n(b));
 (* b *) resistor #(.r(200)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));
-(* b *) resistor #(.r(200)) r4 (.p(a),.n(b));
+resistor #(.r(200)) r4 (.p(a),.n(b));
 (* c *) resistor #(.r(100)) r5 (.p(a),.n(b));
-(* b, d *) resistor #(.r(200)) r6 (.p(a),.n(b));
+(* d *) resistor #(.r(200)) r6 (.p(a),.n(b));
 aaa #() a1 (.c(a),.d(b));
 (* e *) aaa #() a2 (.c(a),.d(b));
 a1 #() a3 (.c(a),.d(b));
-(* e *) a2 #() a4 (.c(a),.d(b));
+a2 #() a4 (.c(a),.d(b));
 (* f *) a1 #() a5 (.c(a),.d(b));
-(* e, g *) a2 #() a6 (.c(a),.d(b));
+(* g *) a2 #() a6 (.c(a),.d(b));
+(* i, j *) a1 #() a7 (.c(a),.d(b));
+(* k, l *) a2 #() a8 (.c(a),.d(b));
 endmodule // bbb
 
+"end "
