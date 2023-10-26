@@ -1,0 +1,32 @@
+
+option list
+verilog
+(* a *) module aaa (c,d);
+        resistor #(100) r1(a,b);
+(* b *) resistor #(200) r2(a,b);
+	r1 r3(a,b);
+	r2 r4(a,b);
+(* c *)	r1 r5(a,b);
+(* d *)	r2 r6(a,b);
+	endmodule;
+
+(* h *) module bbb (e,f);
+        resistor #(100) r1(a,b);
+(* b *) resistor #(200) r2(a,b);
+	r1 r3(a,b);
+	r2 r4(a,b);
+(* c *)	r1 r5(a,b);
+(* d *)	r2 r6(a,b);
+	aaa a1(a,b);
+(* e *)	aaa a2(a,b);
+	a1 a3(a,b);
+	a2 a4(a,b);
+(* f *) a1 a5(a,b);
+(* g *) a2 a6(a,b);
+(* i *)(* j *) a1 a7(a,b);
+(* k *)(* l *) a2 a8(a,b);
+	endmodule;
+	
+list
+
+end

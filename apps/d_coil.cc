@@ -139,8 +139,8 @@ private: // override virtual
   void	   ac_load()override;
   COMPLEX  ac_amps()const override	{untested(); return _loss0 * ac_outvolts();}
 
-  void	   set_port_by_name(std::string& Name, std::string& Value)override
-		{untested(); COMPONENT::set_port_by_name(Name,Value);}
+  int	   set_port_by_name(std::string& Name, std::string& Value)override
+		{untested(); return COMPONENT::set_port_by_name(Name,Value);}
   void	   set_port_by_index(int Index, std::string& Value)override
 		{set_current_port_by_index(Index, Value);}
   bool	   node_is_connected(int i)const override {

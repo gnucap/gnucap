@@ -24,7 +24,8 @@
 //testing=script 2014.07.04
 #ifndef E_BASE_H
 #define E_BASE_H
-#include "md.h"
+#include "u_attrib.h"
+#include "l_indirect.h"
 /*--------------------------------------------------------------------------*/
 // external
 class XPROBE;
@@ -40,6 +41,11 @@ private:
 public:
   static SIM_DATA* _sim;
   static PROBE_LISTS* _probe_lists;
+private:
+  static INDIRECT<ATTRIB_LIST_p> _attribs;
+public:
+  ATTRIB_LIST_p& attributes(void* x) {return _attribs.at(x);}
+  const ATTRIB_LIST_p& attributes(const void* x) {return _attribs.at(x);}
   //--------------------------------------------------------------------
 protected: // create and destroy
   explicit CKT_BASE()			  :_probes(0), _label() {}

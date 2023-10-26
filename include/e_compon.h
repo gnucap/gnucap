@@ -97,7 +97,7 @@ public:
   virtual std::string param_name(int)const;
   virtual std::string param_name(int,int)const;
   virtual std::string param_value(int)const;
-  virtual void set_param_by_name(std::string, std::string);
+  virtual int  set_param_by_name(std::string, std::string);
   void Set_param_by_name(std::string, std::string); //BUG// see implementation
   virtual void set_param_by_index(int, std::string&, int);
   virtual int param_count()const {return 4;}
@@ -228,7 +228,7 @@ public:	// type
   //--------------------------------------------------------------------
 public:	// ports
   virtual std::string port_name(int)const = 0;
-  virtual void set_port_by_name(std::string& name, std::string& value);
+  virtual int  set_port_by_name(std::string& name, std::string& value);
   virtual void set_port_by_index(int index, std::string& value);
   bool port_exists(int i)const {return i < net_nodes();}
   const std::string port_value(int i)const;
@@ -258,7 +258,7 @@ public:	// ports
   virtual bool	node_is_connected(int i)const;
   //--------------------------------------------------------------------
 public: // parameters
-  void set_param_by_name(std::string, std::string) override;
+  int  set_param_by_name(std::string, std::string) override;
   void set_param_by_index(int, std::string&, int) override;
   int  param_count()const override
 	{return ((has_common()) ? (common()->param_count()) : (2 + CARD::param_count()));}

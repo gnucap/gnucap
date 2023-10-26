@@ -167,7 +167,7 @@ public: // parameters
   std::string param_name(int)const;
   std::string param_name(int i, int j)const;
   std::string param_value(int)const; 
-  void set_param_by_name(std::string Name, std::string Value);
+  int  set_param_by_name(std::string Name, std::string Value);
   void set_param_by_index(int, std::string&, int);
   int param_count_dont_print()const {return MODEL_CARD::param_count();}
   int param_count()const { return (static_cast<int>(_params.size()) + MODEL_CARD::param_count());}
@@ -264,7 +264,7 @@ public:	// ports
     return port_names[i];
   }
   // const std::string& port_value(int i)const; //COMPONENT
-  //void set_port_by_name(std::string& name, std::string& value);
+  //int  set_port_by_name(std::string& name, std::string& value);
   //void set_port_by_index(int index, std::string& value);
 private: // parameters
   //bool Param_exists(int i)const; // {return Param_name(i) != "";}
@@ -272,7 +272,7 @@ private: // parameters
   //std::string Param_name(int)const;
   //std::string Param_name(int i, int j)const {return STORAGE::Param_name(i, j);}
   //std::string Param_value(int)const; 
-  void set_param_by_name(std::string Name, std::string Value);
+  int  set_param_by_name(std::string Name, std::string Value);
   void Set_param_by_name(std::string Name, std::string Value);
   void Set_param_by_index(int, std::string&, int);
   int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
@@ -593,7 +593,7 @@ void MODEL_SPICE::Set_param_by_name(std::string Name, std::string new_value)
   }
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SPICE::set_param_by_name(std::string Name, std::string Value)
+int MODEL_SPICE::set_param_by_name(std::string Name, std::string Value)
 {
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
@@ -601,6 +601,7 @@ void MODEL_SPICE::set_param_by_name(std::string Name, std::string Value)
   }
   _params.set(Name, Value);
   Set_param_by_name(Name, to_string(_params[Name].e_val(1,scope())));
+  return 0;
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_SPICE::precalc_first()
@@ -833,7 +834,7 @@ void DEV_SPICE::Set_param_by_name(std::string Name, std::string new_value)
   mutable_common()->COMMON_COMPONENT::Set_param_by_name(Name, new_value);
 }
 /*--------------------------------------------------------------------------*/
-void DEV_SPICE::set_param_by_name(std::string Name, std::string Value)
+int DEV_SPICE::set_param_by_name(std::string Name, std::string Value)
 {
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
@@ -842,7 +843,7 @@ void DEV_SPICE::set_param_by_name(std::string Name, std::string Value)
   COMPONENT::set_param_by_name(Name, Value);
   COMMON_PARAMLIST* c = dynamic_cast<COMMON_PARAMLIST*>(mutable_common());
   assert(c);
-  Set_param_by_name(Name, to_string(c->_params[Name].e_val(1,scope())));
+  return Set_param_by_name(Name, to_string(c->_params[Name].e_val(1,scope())));
 }
 /*--------------------------------------------------------------------------*/
 void DEV_SPICE::Set_param_by_index(int i, std::string& new_value, int offset)

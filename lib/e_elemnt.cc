@@ -84,17 +84,19 @@ void ELEMENT::set_value(double v, COMMON_COMPONENT* c)
   set_value(v);
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::set_param_by_name(std::string Name, std::string Value)
+int ELEMENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(Name == value_name()){
     _value = Value;
+    return ELEMENT::param_count() - 1;
   }else if (has_common()) {
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
-    c->set_param_by_name(Name, Value);
+    int index = c->set_param_by_name(Name, Value);
     attach_common(c);
+    return index;
   }else{ itested();
-    COMPONENT::set_param_by_name(Name, Value);
+    return COMPONENT::set_param_by_name(Name, Value);
   }
 }
 /*--------------------------------------------------------------------------*/

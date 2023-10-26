@@ -133,8 +133,8 @@ private: // override virtual
   CARD*	    clone()const override	{return new DEV_CSWITCH(*this);}
   void	    expand()override;
   char	    id_letter()const override	{return 'W';}
-  void	   set_port_by_name(std::string& Name, std::string& Value)override
-		{untested(); SWITCH_BASE::set_port_by_name(Name,Value);}
+  int	   set_port_by_name(std::string& Name, std::string& Value)override
+		{untested(); return SWITCH_BASE::set_port_by_name(Name,Value);}
   void	   set_port_by_index(int, std::string&)override;
   bool	   node_is_connected(int)const override;
 
