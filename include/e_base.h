@@ -45,7 +45,7 @@ private:
   static INDIRECT<ATTRIB_LIST_p> _attribs;
 public:
   ATTRIB_LIST_p& attributes(void* x) {return _attribs.at(x);}
-  const ATTRIB_LIST_p& attributes(const void* x) {return _attribs.at(x);}
+  const ATTRIB_LIST_p& attributes(const void* x)const {return _attribs.at(x);}
   //--------------------------------------------------------------------
 protected: // create and destroy
   explicit CKT_BASE()			  :_probes(0), _label() {}

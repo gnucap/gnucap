@@ -72,6 +72,8 @@ public:
 	}else{untested();
 	  val = "1";
 	}
+	found = true;
+	break;
       }else{untested();
 	cmd.skiparg();
 	if (cmd >> "=") {untested();
