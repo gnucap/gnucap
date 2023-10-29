@@ -41,10 +41,10 @@ private:
 public:
   static SIM_DATA* _sim;
   static PROBE_LISTS* _probe_lists;
-private:
+protected:
   static INDIRECT<ATTRIB_LIST_p> _attribs;
 public:
-  ATTRIB_LIST_p& attributes(void* x) {return _attribs.at(x);}
+  ATTRIB_LIST_p& attributes(void* x) {return _attribs[x];}
   const ATTRIB_LIST_p& attributes(const void* x)const {return _attribs.at(x);}
   //--------------------------------------------------------------------
 protected: // create and destroy
@@ -52,6 +52,7 @@ protected: // create and destroy
   explicit CKT_BASE(const std::string& s) :_probes(0), _label(s) {}
   explicit CKT_BASE(const CKT_BASE& p)	  :_probes(0), _label(p._label) {}
   virtual  ~CKT_BASE();
+  virtual void	      purge() {}
   //--------------------------------------------------------------------
 public: // user stuff
   virtual std::string help_text()const {return "";}

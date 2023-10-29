@@ -32,21 +32,39 @@ class INDIRECT {
   std::map<const void*, T> _map;
   INDIRECT(const INDIRECT&) = delete;
  public:
-  INDIRECT() : _map() {}
+  INDIRECT() : _map() {_map[NULL];}
   ~INDIRECT() {}
+
+  size_t count(const void* x)const {return _map.count(x);}
     
-  T& at(void* x) {
+  T& operator[](void* x) {
+    if (!x) {untested();
+      // null tag, not allowed here
+    }else if (_map.count(x) == 0) {
+      // first use of this tag
+    }else{
+      // repeat, adding or replacing
+      // possible collision
+    }
     assert(x);
     return _map[x];
   }
-  const T& at(const void* x) {
+  const T& at(const void* x)const {
     if (!x) {untested();
-      return _map[NULL];
+      return _map.at(NULL);
     }else if (_map.count(x) == 0) {
-      return _map[NULL];
+      return _map.at(NULL);
     }else{
-      return _map[x];
+      return _map.at(x);
     }
+  }
+  size_t erase(void* b, void* e) {
+    size_t c=0;
+    assert(b <= e);
+    for (void* i=b; i<=e; i=reinterpret_cast<bool*>(i)+1) {
+      c += _map.erase(i);
+    }
+    return c;
   }
 };
 /*--------------------------------------------------------------------------*/
