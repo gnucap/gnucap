@@ -37,7 +37,7 @@ class INDIRECT {
 
   size_t count(const void* x)const {return _map.count(x);}
     
-  T& operator[](void* x) {
+  T& operator[](const void* x) {
     if (!x) {untested();
       // null tag, not allowed here
     }else if (_map.count(x) == 0) {

@@ -44,7 +44,7 @@ public:
 protected:
   static INDIRECT<ATTRIB_LIST_p> _attribs;
 public:
-  ATTRIB_LIST_p& attributes(void* x) {return _attribs[x];}
+  ATTRIB_LIST_p& attributes(const void* x) {return _attribs[x];}
   const ATTRIB_LIST_p& attributes(const void* x)const {return _attribs.at(x);}
   //--------------------------------------------------------------------
 protected: // create and destroy

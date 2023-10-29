@@ -130,6 +130,11 @@ public:	// label -- in CKT_BASE
   // non-virtual const std::string& short_label()const //BASE
   /*virtual*/ const std::string long_label()const final;
   //--------------------------------------------------------------------
+public: // tags -- an identifier
+  const void* id_tag()const		      {return static_cast<const void*>(this);}
+  virtual const void* port_id_tag(int i)const {return(reinterpret_cast<const bool*>(this)-(i+1));}
+  virtual const void* param_id_tag(int i)const{return(reinterpret_cast<const bool*>(this)+(i+1));}
+  //--------------------------------------------------------------------
 public:	// ports -- mostly defer to COMPONENT
   node_t& n_(int i)const;
   int     connects_to(const node_t& node)const;
