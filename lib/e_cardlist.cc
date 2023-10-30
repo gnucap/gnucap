@@ -100,17 +100,23 @@ CARD_LIST::const_iterator CARD_LIST::find_again(const std::string& short_name,
 CARD_LIST& CARD_LIST::erase(iterator ci)
 {
   assert(ci != end());
-  (*ci)->purge();
-  delete *ci;
+  if (*ci) {
+    (*ci)->purge();
+    delete *ci;
+  }else{untested();
+  }
   _cl.erase(ci);
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::erase(CARD* c)
 {untested();
-  c->purge();
-  delete c;
-  _cl.remove(c);
+  if (c) {untested();
+    c->purge();
+    delete c;
+    _cl.remove(c);
+  }else{untested();
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -120,8 +126,11 @@ CARD_LIST& CARD_LIST::erase(CARD* c)
 CARD_LIST& CARD_LIST::erase_all()
 {
   while (!_cl.empty()) {
-    _cl.back()->purge();
-    delete _cl.back();
+    if (_cl.back()) {
+      _cl.back()->purge();
+      delete _cl.back();
+    }else{untested();
+    }
     _cl.pop_back();
   }
   return *this;
