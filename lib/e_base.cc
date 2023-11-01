@@ -51,6 +51,12 @@ CKT_BASE::~CKT_BASE()
   }
   trace1("", _probes);
   assert(_probes==0);
+
+  if (_attribs.count(this) > 0) {untested();
+    _attribs.erase(this, this);
+  }else{
+  }
+  assert(_attribs.count(this)==0);
 }
 /*--------------------------------------------------------------------------*/
 const std::string CKT_BASE::long_label()const

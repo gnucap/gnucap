@@ -38,23 +38,36 @@ private:
   ATTRIB_LIST() = delete;
 public:
   ATTRIB_LIST(const std::string& S, ATTRIB_LIST* UP, const void* Owner) 
-    :_s(S), _ref_count(0), _up(UP), _owner(Owner) {}
+    :_s(S), _ref_count(0), _up(UP), _owner(Owner) {
+    if (_up) {
+      _up->inc_ref_count();
+    }else{
+    }
+  }
 
-  ~ATTRIB_LIST() {assert(_ref_count==0);}
+  ~ATTRIB_LIST() {
+    if (_up) {
+      if (_up->dec_ref_count()==0) {
+	delete _up;
+	_up = NULL;
+      }else{untested();
+      }
+    }else{
+    }
+    assert(_ref_count == 0);
+  }
 
   int   inc_ref_count() {return ++_ref_count;}
   int   dec_ref_count() {assert(_ref_count>0); return --_ref_count;}
   //int   ref_count()const {untested(); return _ref_count;}
 
   const std::string string(const void* Owner)const {
-    std::string s;
     if (Owner == _owner || !Owner) {
       if (_up) {
-	s += _up->string(Owner) + ", ";
+	return _up->string(Owner) + ", " + _s;
       }else{
+	return _s;
       }
-      s += _s;
-      return s;
     }else{untested();
       return "";
     }
@@ -73,7 +86,7 @@ public:
 	  val = "1";
 	}
 	found = true;
-	break;
+	// keep looking in case there is another, which will supercede
       }else{untested();
 	cmd.skiparg();
 	if (cmd >> "=") {untested();
@@ -110,6 +123,7 @@ public:
     if (_p) {
       if (_p->dec_ref_count()==0) {
 	delete _p;
+	_p = NULL;
       }else{untested();
       }
     }else{
@@ -121,6 +135,7 @@ public:
 
   ATTRIB_LIST_p& add_to(const std::string& String, const void* Owner) {
     if (_p) {
+      _p->dec_ref_count();
     }else{
     }
     _p = new ATTRIB_LIST(String, _p, Owner);

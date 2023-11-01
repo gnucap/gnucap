@@ -78,7 +78,7 @@ public: // override virtual, called by commands
   std::string	find_type_in_string(CS&)override;
 private: // local
   void skip_attributes(CS& cmd);
-  void parse_attributes(CS& cmd, void* x);
+  void parse_attributes(CS& cmd, const void* x);
   void parse_type(CS& cmd, CARD* x);
   void parse_args_paramset(CS& cmd, MODEL_CARD* x);
   void parse_args_instance(CS& cmd, CARD* x); 
@@ -112,7 +112,7 @@ void LANG_VERILOG::skip_attributes(CS& cmd)
   }
 }
 /*--------------------------------------------------------------------------*/
-void LANG_VERILOG::parse_attributes(CS& cmd, void* x)
+void LANG_VERILOG::parse_attributes(CS& cmd, const void* x)
 {
   assert(x);
   while (cmd >> "(*") {
@@ -170,8 +170,7 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	    // has attributes
 	    size_t here = cmd.cursor();
 	    cmd.reset(c_attrib);
-	    bool* tag = reinterpret_cast<bool*>(x);
-	    parse_attributes(cmd, tag+(Index+1));
+	    parse_attributes(cmd, x->param_id_tag(Index));
 	    assert(cmd.cursor() == c_arg);
 	    cmd.reset(here);
 	  }else{
@@ -195,8 +194,7 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	    // has attributes
 	    size_t here = cmd.cursor();
 	    cmd.reset(c_attrib);
-	    bool* tag = reinterpret_cast<bool*>(x);
-	    parse_attributes(cmd, tag+(Index+1));
+	    parse_attributes(cmd, x->param_id_tag(Index));
 	    assert(cmd.cursor() == c_arg);
 	    cmd.reset(here);
 	  }else{
@@ -250,8 +248,7 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	    // has attributes
 	    size_t here = cmd.cursor();
 	    cmd.reset(c_attrib);
-	    bool* tag = reinterpret_cast<bool*>(x);
-	    parse_attributes(cmd, tag-(Index+1));
+	    parse_attributes(cmd, x->port_id_tag(Index));
 	    assert(cmd.cursor() == c_arg);
 	    cmd.reset(here);
 	  }else{
@@ -286,8 +283,7 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	    // has attributes
 	    size_t here = cmd.cursor();
 	    cmd.reset(c_attrib);
-	    bool* tag = reinterpret_cast<bool*>(x);
-	    parse_attributes(cmd, tag-(Index+1));
+	    parse_attributes(cmd, x->port_id_tag(Index));
 	    assert(cmd.cursor() == c_arg);
 	    cmd.reset(here);
 	  }else{
@@ -356,7 +352,7 @@ DEV_DOT* LANG_VERILOG::parse_command(CS& cmd, DEV_DOT* x)
   x->set(cmd.fullstring());
   CARD_LIST* scope = (x->owner()) ? x->owner()->subckt() : &CARD_LIST::card_list;
   cmd.reset();
-  parse_attributes(cmd, x);
+  parse_attributes(cmd, x->id_tag());
   CMD::cmdproc(cmd, scope);
   delete x;
   return NULL;
@@ -373,7 +369,7 @@ MODEL_CARD* LANG_VERILOG::parse_paramset(CS& cmd, MODEL_CARD* x)
 {
   assert(x);
   cmd.reset();
-  parse_attributes(cmd, x);
+  parse_attributes(cmd, x->id_tag());
   cmd >> "paramset ";
   parse_label(cmd, x);
   parse_type(cmd, x);
@@ -406,7 +402,7 @@ BASE_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, BASE_SUBCKT* x)
 
   // header
   cmd.reset();
-  parse_attributes(cmd, x);
+  parse_attributes(cmd, x->id_tag());
   (cmd >> "module |macromodule ");
   parse_label(cmd, x);
   parse_ports(cmd, x, true/*all new*/);
@@ -429,7 +425,7 @@ COMPONENT* LANG_VERILOG::parse_instance(CS& cmd, COMPONENT* x)
 {
   assert(x);
   cmd.reset();
-  parse_attributes(cmd, x);
+  parse_attributes(cmd, x->id_tag());
   parse_type(cmd, x);
   parse_args_instance(cmd, x);
   parse_label(cmd, x);
@@ -499,8 +495,7 @@ void LANG_VERILOG::print_args(OMSTREAM& o, const COMPONENT* x)
     for (int ii = x->param_count() - 1;  ii >= 0;  --ii) {
       if (x->param_is_printable(ii)) {
 	o << sep;
-	const bool* tag = reinterpret_cast<const bool*>(x);
-	print_attributes(o, tag+(ii+1));
+	print_attributes(o, x->param_id_tag(ii));
 	o << '.' << x->param_name(ii) << '(' << x->param_value(ii) << ')';
 	sep = ',';
       }else{
@@ -531,15 +526,13 @@ void LANG_VERILOG::print_ports_long(OMSTREAM& o, const COMPONENT* x)
   std::string sep = "";
   for (int ii = 0;  x->port_exists(ii);  ++ii) {
     o << sep;
-    const bool* tag = reinterpret_cast<const bool*>(x);
-    print_attributes(o, tag-(ii+1));
+    print_attributes(o, x->port_id_tag(ii));
     o << '.' << x->port_name(ii) << '(' << x->port_value(ii) << ')';
     sep = ',';
   }
   for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
     o << sep;
-    const bool* tag = reinterpret_cast<const bool*>(x);
-    print_attributes(o, tag-(ii+1+x->net_nodes()));
+    //////print_attributes(o, x->param_id_tag(ii));
     o << '.' << x->current_port_name(ii) << '(' << x->current_port_value(ii) << ')';
     sep = ',';
   }
@@ -555,15 +548,13 @@ void LANG_VERILOG::print_ports_short(OMSTREAM& o, const COMPONENT* x)
   std::string sep = "";
   for (int ii = 0;  x->port_exists(ii);  ++ii) {
     o << sep;
-    const bool* tag = reinterpret_cast<const bool*>(x);
-    print_attributes(o, tag-(ii+1));
+    print_attributes(o, x->port_id_tag(ii));
     o << x->port_value(ii);
     sep = ',';
   }
   for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
     o << sep;
-    const bool* tag = reinterpret_cast<const bool*>(x);
-    print_attributes(o, tag-(ii+1+x->net_nodes()));
+    //////print_attributes(o, tag-(ii+1+x->net_nodes()));
     o << x->current_port_value(ii);
     sep = ',';
   }
@@ -575,7 +566,7 @@ void LANG_VERILOG::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
 {
   assert(x);
   _mode = mPARAMSET;
-  print_attributes(o, x);
+  print_attributes(o, x->id_tag());
   o << "paramset " << x->short_label() << ' ' << x->dev_type() << ";\n";
   print_args(o, x);
   o << "\n"
@@ -588,7 +579,7 @@ void LANG_VERILOG::print_module(OMSTREAM& o, const BASE_SUBCKT* x)
   assert(x);
   assert(x->subckt());
 
-  print_attributes(o, x);
+  print_attributes(o, x->id_tag());
   o << "module " <<  x->short_label();
   print_ports_short(o, x);
   o << ";\n";
@@ -602,7 +593,7 @@ void LANG_VERILOG::print_module(OMSTREAM& o, const BASE_SUBCKT* x)
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::print_instance(OMSTREAM& o, const COMPONENT* x)
 {
-  print_attributes(o, x);
+  print_attributes(o, x->id_tag());
   print_type(o, x);
   print_args(o, x);
   print_label(o, x);

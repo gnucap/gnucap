@@ -58,6 +58,7 @@ protected: // create and destroy.
   explicit CARD(const CARD&);
 public:
   virtual  ~CARD();
+	  void	 purge() override;
   virtual CARD*	 clone()const = 0;
   virtual CARD*	 clone_instance()const  {return clone();}
   //--------------------------------------------------------------------
@@ -94,7 +95,7 @@ public:	// ac
   //--------------------------------------------------------------------
 public:	// state, aux data
   virtual char id_letter()const	{unreachable(); return '\0';}
-  virtual int  net_nodes()const	{untested();return 0;}
+  virtual int  net_nodes()const	{return 0;}
   virtual bool is_device()const	{return false;}
   virtual void set_slave()	{untested(); assert(!subckt());}
 	  bool evaluated()const;
@@ -128,6 +129,11 @@ public:	// label -- in CKT_BASE
   // non-virtual void set_label(const std::string& s) //BASE
   // non-virtual const std::string& short_label()const //BASE
   /*virtual*/ const std::string long_label()const final;
+  //--------------------------------------------------------------------
+public: // tags -- an identifier
+  const void* id_tag()const		      {return static_cast<const void*>(this);}
+  virtual const void* port_id_tag(int i)const {return(reinterpret_cast<const bool*>(this)-(i+1));}
+  virtual const void* param_id_tag(int i)const{return(reinterpret_cast<const bool*>(this)+(i+1));}
   //--------------------------------------------------------------------
 public:	// ports -- mostly defer to COMPONENT
   node_t& n_(int i)const;
