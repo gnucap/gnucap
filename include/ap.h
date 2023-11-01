@@ -158,7 +158,7 @@ public:
   CS&	      skipcom()			{return skip1b(",");}
   CS&	      operator>>(const char& x)	{return skip1b(x);}
   CS&	      operator>>(const char* x)	{return umatch(x);}
-  CS&	      operator>>(const std::string& x)	{untested();return umatch(x);}
+  CS&	      operator>>(const std::string& x)	{itested();return umatch(x);}
 };	
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

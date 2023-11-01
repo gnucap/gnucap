@@ -73,14 +73,14 @@ public:
     }
   }
 
-  const std::string operator[] (const std::string& Key)const {untested();
+  const std::string operator[] (const std::string& Key)const {itested();
     CS cmd(CS::_STRING, _s);
     bool found = false;
     std::string val("0");
 
-    while (cmd.more()) {untested();
-      if (cmd >> Key) {untested();
-	if (cmd >> "=") {untested();
+    while (cmd.more()) {itested();
+      if (cmd >> Key) {itested();
+	if (cmd >> "=") {itested();
 	  cmd >> val;
 	}else{untested();
 	  val = "1";
@@ -96,7 +96,7 @@ public:
       }
     }
 
-    if (found) {untested();
+    if (found) {itested();
       return val;
     }else if (_up) {untested();
       return (*_up)[Key];
@@ -131,7 +131,7 @@ public:
   }
   operator bool()const {return _p;}
   const std::string string(const void* Owner)const {return _p->string(Owner);}
-  const std::string operator[] (const std::string& Key)const {untested();return ((_p) ? (*_p)[Key] : "0");}
+  const std::string operator[] (const std::string& Key)const {itested();return ((_p) ? (*_p)[Key] : "0");}
 
   ATTRIB_LIST_p& add_to(const std::string& String, const void* Owner) {
     if (_p) {
