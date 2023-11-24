@@ -256,7 +256,7 @@ std::string COMMON_COMPONENT::param_name(int i)const
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i, int j)const
-{untested();
+{itested();
   return (j==0) ? param_name(i) : "";
 }
 /*--------------------------------------------------------------------------*/
@@ -370,7 +370,7 @@ bool COMMON_COMPONENT::parse_params_obsolete_callback(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-COMPONENT::COMPONENT()
+COMPONENT::COMPONENT(COMMON_COMPONENT* c)
   :CARD(),
    _common(0),
    _mfactor(1),
@@ -383,6 +383,8 @@ COMPONENT::COMPONENT()
     _sim->uninit();
   }else{
   }
+  attach_common(c);
+  assert(_common == c);
 }
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT(const COMPONENT& p)

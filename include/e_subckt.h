@@ -28,8 +28,8 @@
 /*--------------------------------------------------------------------------*/
 class BASE_SUBCKT : public COMPONENT {
 protected:
-  explicit BASE_SUBCKT()
-    :COMPONENT() {}
+  explicit BASE_SUBCKT(COMMON_COMPONENT* c=NULL)
+    :COMPONENT(c) {}
   explicit BASE_SUBCKT(const BASE_SUBCKT& p)
     :COMPONENT(p) {}
   ~BASE_SUBCKT() {}

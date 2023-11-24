@@ -43,26 +43,26 @@ public:
   UNITS units()const override {return uSI;}
 
 public: // override virtual, used by callback
-  std::string arg_front()const override {untested();
+  std::string arg_front()const override {
     switch (_mode) {
     case mPARAMSET:untested(); return " .";			    break;
-    case mDEFAULT:untested();  return (arg_count++ > 0) ? ", ." : "."; break;
+    case mDEFAULT:  return (arg_count++ > 0) ? ", ." : "."; break;
     }
     unreachable();
     return "";
   }
-  std::string arg_mid()const override {untested();
+  std::string arg_mid()const override {
     switch (_mode) {
     case mPARAMSET:untested(); return "="; break;
-    case mDEFAULT:untested();  return "("; break;
+    case mDEFAULT:  return "("; break;
     }
     unreachable();
     return "";
   }
-  std::string arg_back()const override {untested();
+  std::string arg_back()const override {
     switch (_mode) {
     case mPARAMSET:untested(); return ";"; break;
-    case mDEFAULT:untested();  return ")"; break;
+    case mDEFAULT:  return ")"; break;
     }
     unreachable();
     return "";
@@ -604,7 +604,7 @@ void LANG_VERILOG::print_instance(OMSTREAM& o, const COMPONENT* x)
 void LANG_VERILOG::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 {
   assert(x);
-  if ((x->comment().compare(0, 2, "//")) != 0) {untested();
+  if ((x->comment().compare(0, 2, "//")) != 0) {
     o << "//";
   }else{
   }

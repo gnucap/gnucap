@@ -706,9 +706,9 @@ lang_spice.o: lang_spice.cc ../include/u_nodemap.h ../include/md.h \
  ../include/constant.h ../include/l_compar.h ../include/m_matrix.h \
  ../include/u_time_pair.h ../include/u_parameter.h \
  ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
- ../include/u_lang.h ../include/d_logic.h ../include/e_model.h \
- ../include/e_elemnt.h ../include/e_node.h ../include/m_cpoly.h \
- ../include/l_denoise.h ../include/bm.h
+ ../include/u_lang.h ../include/e_model.h ../include/e_elemnt.h \
+ ../include/e_node.h ../include/m_cpoly.h ../include/l_denoise.h \
+ ../include/bm.h
 lang_spectre.o: lang_spectre.cc ../include/u_nodemap.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/globals.h \
  ../include/l_dispatcher.h ../include/e_base.h ../include/u_attrib.h \

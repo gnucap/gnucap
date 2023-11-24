@@ -93,7 +93,6 @@ enum {uGROUND=1, uFLOAT=2, uDISALLOW=3};
 const int MATRIX_NODES = (MAX_NET_NODES + INTERNAL_NODES);
 class DEV_SPICE;
 class MODEL_SPICE;
-static COMMON_PARAMLIST Default_Params(CC_STATIC);
 /*--------------------------------------------------------------------------*/
 /* function mapping: see devdefs.h
  * DEVparam	DEV_SPICE::parse_spice
@@ -207,7 +206,7 @@ public:
 private:
   explicit DEV_SPICE(const DEV_SPICE& p);
 public:
-  explicit DEV_SPICE();
+  explicit DEV_SPICE(COMMON_COMPONENT* c=NULL);
   ~DEV_SPICE();
 protected: // override virtual
   char	  id_letter()const	{untested();return SPICE_LETTER[0];}
@@ -697,8 +696,8 @@ void MODEL_SPICE::set_param_by_index(int, std::string&, int)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-DEV_SPICE::DEV_SPICE()
-  :STORAGE(),
+DEV_SPICE::DEV_SPICE(COMMON_COMPONENT* c)
+  :STORAGE(c),
    _inst(),
    _modelname(""),
    _model(NULL),
@@ -713,7 +712,6 @@ DEV_SPICE::DEV_SPICE()
    _num_states(0),
    _maxEqNum(0)
 {
-  attach_common(&Default_Params);
   std::fill_n(&_inst_space, sizeof(INSTANCE), '\0');
   assert_instance();
 
@@ -1893,7 +1891,8 @@ static struct COMPLEX_TEST {
 int MODEL_SPICE::_count = -1;
 int DEV_SPICE::_count = -1;
 
-static DEV_SPICE p0;
+static COMMON_PARAMLIST Default_Params(CC_STATIC);
+static DEV_SPICE p0(&Default_Params);
 static DISPATCHER<CARD>::INSTALL
   d0(&device_dispatcher, std::string(SPICE_LETTER) + "|" + DEVICE_TYPE, &p0);
 

@@ -24,7 +24,8 @@
  * device:  mxxxx  out gnd vdd in1 in2 ... family gatetype
  * model:   .model mname LOGIC <args>
  */
-//testing=script,sparse 2006.07.17
+//testing=script,sparse 2023.11.22
+#include "u_lang.h"
 #include "globals.h"
 #include "e_subckt.h"
 #include "u_xprobe.h"
@@ -33,25 +34,57 @@
 int DEV_LOGIC::_count = -1;
 int COMMON_LOGIC::_count = -1;
 int MODEL_LOGIC::_count = -1; // there is one in e_node.cc, and the dispatcher
-static LOGIC_NONE Default_LOGIC(CC_STATIC);
 /*--------------------------------------------------------------------------*/
-static DEV_LOGIC p1;
-static DISPATCHER<CARD>::INSTALL
-d1(&device_dispatcher, "U|logic", &p1);
+static LOGIC_NONE Default_LOGIC(CC_STATIC);
+static DEV_LOGIC p1(&Default_LOGIC);
+static DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "logic", &p1);
+
+static LOGIC_AND  c_and(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_and(&bm_dispatcher, "and", &c_and);
+static DEV_LOGIC d_and(&c_and);
+static DISPATCHER<CARD>::INSTALL dd_and(&device_dispatcher, "and", &d_and);
+
+static LOGIC_NAND c_nand(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_nand(&bm_dispatcher, "nand", &c_nand);
+static DEV_LOGIC d_nand(&c_nand);
+static DISPATCHER<CARD>::INSTALL dd_nand(&device_dispatcher, "nand", &d_nand);
+
+static LOGIC_OR   c_or(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_or(&bm_dispatcher, "or", &c_or);
+static DEV_LOGIC d_or(&c_or);
+static DISPATCHER<CARD>::INSTALL dd_or(&device_dispatcher, "or", &d_or);
+
+static LOGIC_NOR  c_nor(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_nor(&bm_dispatcher, "nor", &c_nor);
+static DEV_LOGIC d_nor(&c_nor);
+static DISPATCHER<CARD>::INSTALL dd_nor(&device_dispatcher, "nor", &d_nor);
+
+static LOGIC_XOR  c_xor(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_xor(&bm_dispatcher, "xor", &c_xor);
+static DEV_LOGIC d_xor(&c_xor);
+static DISPATCHER<CARD>::INSTALL dd_xor(&device_dispatcher, "xor", &d_xor);
+
+static LOGIC_XNOR c_xnor(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_xnor(&bm_dispatcher, "xnor", &c_xnor);
+static DEV_LOGIC d_xnor(&c_xnor);
+static DISPATCHER<CARD>::INSTALL dd_xnor(&device_dispatcher, "xnor", &d_xnor);
+
+static LOGIC_INV  c_inv(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_inv(&bm_dispatcher, "inv", &c_inv);
+static DEV_LOGIC d_inv(&c_inv);
+static DISPATCHER<CARD>::INSTALL dd_inv(&device_dispatcher, "inv", &d_inv);
 /*--------------------------------------------------------------------------*/
 static MODEL_LOGIC p2(&p1);
-static DISPATCHER<MODEL_CARD>::INSTALL
-d2(&model_dispatcher, "logic", &p2);
+static DISPATCHER<MODEL_CARD>::INSTALL d2(&model_dispatcher, "logic", &p2);
 /*--------------------------------------------------------------------------*/
-DEV_LOGIC::DEV_LOGIC()
-  :ELEMENT(),
+DEV_LOGIC::DEV_LOGIC(COMMON_COMPONENT* c)
+  :ELEMENT(c),
    _lastchangenode(0),
    _quality(qGOOD),
    _failuremode("ok"),
    _oldgatemode(moUNKNOWN),
    _gatemode(moUNKNOWN)   
 {
-  attach_common(&Default_LOGIC);
   _n = nodes;
   ++_count;
 }
@@ -77,16 +110,15 @@ void DEV_LOGIC::expand()
   ELEMENT::expand();
   const COMMON_LOGIC* c = prechecked_cast<const COMMON_LOGIC*>(common());
   assert(c);
-  
-  attach_model();
 
+  attach_model();
   const MODEL_LOGIC* m = dynamic_cast<const MODEL_LOGIC*>(c->model());
   if (!m) {
     throw Exception_Model_Type_Mismatch(long_label(), c->modelname(), "logic family (LOGIC)");
   }else{
   }
 
-  std::string subckt_name(c->modelname()+c->name()+to_string(c->incount));
+  std::string subckt_name(c->modelname()+c->name()+to_string(net_nodes()-BEGIN_IN));
   try {
     const CARD* model = find_looking_out(subckt_name);
     
@@ -247,8 +279,8 @@ bool DEV_LOGIC::tr_needs_eval()const
     }else{
     }
     return (_sim->analysis_is_static() || _sim->analysis_is_restore());
-  case moANALOG:
-    untested();
+  case moANALOG:untested();
+    
     assert(!is_q_for_eval());
     assert(subckt());
     return subckt()->tr_needs_eval();
@@ -406,7 +438,7 @@ void DEV_LOGIC::tr_accept()
 	|| _lastchangenode != OUTNODE
 	|| _sim->analysis_is_static()
 	|| _sim->analysis_is_restore()) {
-      LOGICVAL future_state = c->logic_eval(&_n[BEGIN_IN]);
+      LOGICVAL future_state = c->logic_eval(&_n[BEGIN_IN], net_nodes()-BEGIN_IN);
       //		         ^^^^^^^^^^
       if ((_n[OUTNODE]->is_unknown()) &&
 	  (_sim->analysis_is_static() || _sim->analysis_is_restore())) {
@@ -437,7 +469,7 @@ void DEV_LOGIC::tr_accept()
 	  _n[OUTNODE]->set_event(m->delay, future_state);
 	  _sim->new_event(_n[OUTNODE]->final_time());
 	  //assert(future_state == _n[OUTNODE].lv_future());
-	  if (_lastchangenode == OUTNODE) {
+	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();
 	    error(bDANGER, "%s:%u:%g non-event state change\n",
 		  long_label().c_str(), _sim->iteration_tag(), _sim->_time0);
@@ -506,13 +538,57 @@ bool COMMON_LOGIC::operator==(const COMMON_COMPONENT& x)const
 {
   const COMMON_LOGIC* p = dynamic_cast<const COMMON_LOGIC*>(&x);
   bool rv = p
-    && incount == p->incount
     && COMMON_COMPONENT::operator==(x);
   if (rv) {
   }else{
   }
   return rv;
 }
+/*--------------------------------------------------------------------------*/
+void COMMON_LOGIC::set_param_by_index(int I, std::string& Value, int Offset)
+{
+  switch (COMMON_LOGIC::param_count() - 1 - I) {
+  case 0:  _modelname = Value; break;
+  default:untested();untested(); COMMON_COMPONENT::set_param_by_index(I, Value, Offset); break;
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool COMMON_LOGIC::param_is_printable(int I)const
+{
+  switch (COMMON_LOGIC::param_count() - 1 - I) {
+  case 0: return OPT::language 
+      && OPT::language->name() != "spice" && OPT::language->name() != "acs";
+  default: return COMMON_COMPONENT::param_is_printable(I);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string COMMON_LOGIC::param_name(int I)const
+{
+  switch (COMMON_LOGIC::param_count() - 1 - I) {
+  case 0: return "model";
+  default:untested(); return COMMON_COMPONENT::param_name(I);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string COMMON_LOGIC::param_name(int I, int j)const
+{
+  if (j == 0) {
+    return param_name(I);
+  }else if (I >= COMMON_COMPONENT::param_count()) {untested();
+    return "";
+  }else{untested();
+    return COMMON_COMPONENT::param_name(I, j);
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string COMMON_LOGIC::param_value(int I)const
+{
+  switch (COMMON_LOGIC::param_count() - 1 - I) {
+  case 0: return _modelname;
+  default:untested(); return COMMON_COMPONENT::param_value(I);
+  }
+}
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

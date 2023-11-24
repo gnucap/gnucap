@@ -27,8 +27,8 @@
 #include "e_aux.h"
 #include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
-ELEMENT::ELEMENT()
-  :COMPONENT(),
+ELEMENT::ELEMENT(COMMON_COMPONENT* c)
+  :COMPONENT(c),
    _value(0),
    _loaditer(0),
    _m0(),
@@ -95,7 +95,7 @@ int ELEMENT::set_param_by_name(std::string Name, std::string Value)
     int index = c->set_param_by_name(Name, Value);
     attach_common(c);
     return index;
-  }else{ itested();
+  }else{
     return COMPONENT::set_param_by_name(Name, Value);
   }
 }

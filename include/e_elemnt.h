@@ -31,7 +31,7 @@
 /*--------------------------------------------------------------------------*/
 class INTERFACE ELEMENT : public COMPONENT {
 protected:
-  explicit ELEMENT();
+  explicit ELEMENT(COMMON_COMPONENT* c=NULL);
   explicit ELEMENT(const ELEMENT& p);
   ~ELEMENT() {}
   
