@@ -24,7 +24,7 @@
 //testing=script 2006.07.12
 #ifndef E_ELEMNT_H
 #define E_ELEMNT_H
-#include "e_node.h"
+#include "e_logicnode.h"
 #include "m_cpoly.h"
 #include "l_denoise.h"
 #include "e_compon.h"

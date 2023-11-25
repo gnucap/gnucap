@@ -25,57 +25,231 @@
  * model:   .model mname LOGIC <args>
  */
 //testing=script,sparse 2023.11.22
+#include "e_logicmod.h"
 #include "u_lang.h"
 #include "globals.h"
 #include "e_subckt.h"
 #include "u_xprobe.h"
-#include "d_logic.h"
+#include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
-int DEV_LOGIC::_count = -1;
-int COMMON_LOGIC::_count = -1;
-int MODEL_LOGIC::_count = -1; // there is one in e_node.cc, and the dispatcher
+namespace {
 /*--------------------------------------------------------------------------*/
-static LOGIC_NONE Default_LOGIC(CC_STATIC);
-static DEV_LOGIC p1(&Default_LOGIC);
-static DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "logic", &p1);
+class DEV_LOGIC : public ELEMENT {
+public:
+  enum {OUTNODE=0,GND_NODE=1,PWR_NODE=2,ENABLE=3,BEGIN_IN=4}; //node labels
+  enum {PORTS_PER_GATE = 9};
+private:
+  int		_lastchangenode;
+  int		_quality;
+  std::string	_failuremode;
+  smode_t	_oldgatemode;
+  smode_t	_gatemode;
+  static int	_count;
+  node_t	nodes[PORTS_PER_GATE];	/* PORTS_PER_GATE <= PORTSPERSUBCKT */
+public:
+  explicit	DEV_LOGIC(COMMON_COMPONENT* c=NULL);
+  explicit	DEV_LOGIC(const DEV_LOGIC& p);
+		~DEV_LOGIC()		{--_count;}
+private: // override virtuals
+  char	   id_letter()const override	{untested();return 'U';}
+  std::string value_name()const override{return "";}
+  bool	      print_type_in_spice()const override{return true;}
+  std::string dev_type()const override{assert(has_common()); return common()->name();}
+  int	   tail_size()const override {return 2;}
+  int	   max_nodes()const override {return PORTS_PER_GATE;}
+  int	   min_nodes()const override {return BEGIN_IN+1;}
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override {return _net_nodes;}
+  CARD*	   clone()const override {return new DEV_LOGIC(*this);}
+  void	   precalc_first()override {ELEMENT::precalc_first(); if (subckt()) {subckt()->precalc_first();}}
+  void	   expand()override;
+  void	   precalc_last() override{ELEMENT::precalc_last(); if (subckt()) {subckt()->precalc_last();}}
+  //void   map_nodes();
 
-static LOGIC_AND  c_and(CC_STATIC);
-DISPATCHER<COMMON_COMPONENT>::INSTALL dc_and(&bm_dispatcher, "and", &c_and);
-static DEV_LOGIC d_and(&c_and);
-static DISPATCHER<CARD>::INSTALL dd_and(&device_dispatcher, "and", &d_and);
+  void	   tr_iwant_matrix()override;
+  void	   tr_begin()override;
+  void	   tr_restore()override;
+  void	   dc_advance()override;
+  void	   tr_advance()override;
+  void	   tr_regress()override;
+  bool	   tr_needs_eval()const override;
+  void	   tr_queue_eval()override;
+  bool	   do_tr()override;
+  void	   tr_load()override;
+  TIME_PAIR tr_review()override;
+  void	   tr_accept()override;
+  void	   tr_unload();
+  double   tr_involts()const		{unreachable(); return 0;}
+  //double tr_input()const		//ELEMENT
+  double   tr_involts_limited()const	{unreachable(); return 0;}
+  //double tr_input_limited()const	//ELEMENT
+  //double tr_amps()const		//ELEMENT
+  double   tr_probe_num(const std::string&)const;
 
-static LOGIC_NAND c_nand(CC_STATIC);
-DISPATCHER<COMMON_COMPONENT>::INSTALL dc_nand(&bm_dispatcher, "nand", &c_nand);
-static DEV_LOGIC d_nand(&c_nand);
-static DISPATCHER<CARD>::INSTALL dd_nand(&device_dispatcher, "nand", &d_nand);
+  void	   ac_iwant_matrix();
+  void	   ac_begin();
+  void	   do_ac()	{untested();  assert(subckt());  subckt()->do_ac();}
+  void	   ac_load()	{untested();  assert(subckt());  subckt()->ac_load();}
+  COMPLEX  ac_involts()const		{unreachable(); return 0.;}
+  COMPLEX  ac_amps()const		{unreachable(); return 0.;}
+  XPROBE   ac_probe_ext(const std::string&)const;
 
-static LOGIC_OR   c_or(CC_STATIC);
-DISPATCHER<COMMON_COMPONENT>::INSTALL dc_or(&bm_dispatcher, "or", &c_or);
-static DEV_LOGIC d_or(&c_or);
-static DISPATCHER<CARD>::INSTALL dd_or(&device_dispatcher, "or", &d_or);
-
-static LOGIC_NOR  c_nor(CC_STATIC);
-DISPATCHER<COMMON_COMPONENT>::INSTALL dc_nor(&bm_dispatcher, "nor", &c_nor);
-static DEV_LOGIC d_nor(&c_nor);
-static DISPATCHER<CARD>::INSTALL dd_nor(&device_dispatcher, "nor", &d_nor);
-
-static LOGIC_XOR  c_xor(CC_STATIC);
-DISPATCHER<COMMON_COMPONENT>::INSTALL dc_xor(&bm_dispatcher, "xor", &c_xor);
-static DEV_LOGIC d_xor(&c_xor);
-static DISPATCHER<CARD>::INSTALL dd_xor(&device_dispatcher, "xor", &d_xor);
-
-static LOGIC_XNOR c_xnor(CC_STATIC);
-DISPATCHER<COMMON_COMPONENT>::INSTALL dc_xnor(&bm_dispatcher, "xnor", &c_xnor);
-static DEV_LOGIC d_xnor(&c_xnor);
-static DISPATCHER<CARD>::INSTALL dd_xnor(&device_dispatcher, "xnor", &d_xnor);
-
-static LOGIC_INV  c_inv(CC_STATIC);
-DISPATCHER<COMMON_COMPONENT>::INSTALL dc_inv(&bm_dispatcher, "inv", &c_inv);
-static DEV_LOGIC d_inv(&c_inv);
-static DISPATCHER<CARD>::INSTALL dd_inv(&device_dispatcher, "inv", &d_inv);
+  std::string port_name(int i)const override {
+    assert(i >= 0);
+    assert(i < PORTS_PER_GATE);
+    static std::string names[] = {"out", "vss", "vdd", "enable", 
+				  "in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
+    return names[i];
+  }
+public:
+  static int count()			{untested();return _count;}
+private:
+  bool	   tr_eval_digital();
+  bool	   want_analog()const;
+  bool	   want_digital()const;
+};
 /*--------------------------------------------------------------------------*/
-static MODEL_LOGIC p2(&p1);
-static DISPATCHER<MODEL_CARD>::INSTALL d2(&model_dispatcher, "logic", &p2);
+class INTERFACE COMMON_LOGIC : public COMMON_COMPONENT {
+protected:
+  explicit	COMMON_LOGIC(int c=0)
+    :COMMON_COMPONENT(c) {++_count;}
+  explicit	COMMON_LOGIC(const COMMON_LOGIC& p)
+    :COMMON_COMPONENT(p) {++_count;}
+public:
+		~COMMON_LOGIC()			{--_count;}
+  bool operator==(const COMMON_COMPONENT&)const;
+  static  int	count()				{untested();return _count;}
+  virtual LOGICVAL logic_eval(const node_t*, int)const	= 0;
+
+  void		set_param_by_index(int, std::string&, int)override;
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override {return (1 + COMMON_COMPONENT::param_count());}
+protected:
+  static int	_count;
+};
+/*--------------------------------------------------------------------------*/
+class LOGIC_AND : public COMMON_LOGIC {
+private:
+  explicit LOGIC_AND(const LOGIC_AND& p) :COMMON_LOGIC(p){untested();++_count;}
+  COMMON_COMPONENT* clone()const {untested();return new LOGIC_AND(*this);}
+public:
+  explicit LOGIC_AND(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(const node_t* n,  int incount)const {untested();
+    LOGICVAL out(n[0]->lv());
+    for (int ii=1; ii<incount; ++ii) {untested();
+      out &= n[ii]->lv();
+    }
+    return out;
+  }
+  std::string name()const override	  {untested();return "and";}
+};
+/*--------------------------------------------------------------------------*/
+class LOGIC_NAND : public COMMON_LOGIC {
+private:
+  explicit LOGIC_NAND(const LOGIC_NAND&p):COMMON_LOGIC(p){++_count;}
+  COMMON_COMPONENT* clone()const {return new LOGIC_NAND(*this);}
+public:
+  explicit LOGIC_NAND(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+    LOGICVAL out(n[0]->lv());
+    for (int ii=1; ii<incount; ++ii) {untested();
+      out &= n[ii]->lv();
+    }
+    return ~out;
+  }
+  std::string name()const override	  {return "nand";}
+};
+/*--------------------------------------------------------------------------*/
+class LOGIC_OR : public COMMON_LOGIC {
+private:
+  explicit LOGIC_OR(const LOGIC_OR& p)	 :COMMON_LOGIC(p){untested();++_count;}
+  COMMON_COMPONENT* clone()const {untested(); return new LOGIC_OR(*this);}
+public:
+  explicit LOGIC_OR(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+    LOGICVAL out(n[0]->lv());
+    for (int ii=1; ii<incount; ++ii) {untested();
+      out |= n[ii]->lv();
+    }
+    return out;
+  }
+  std::string name()const override	  {untested();return "or";}
+};
+/*--------------------------------------------------------------------------*/
+class LOGIC_NOR : public COMMON_LOGIC {
+private:
+  explicit LOGIC_NOR(const LOGIC_NOR& p) :COMMON_LOGIC(p) {++_count;}
+  COMMON_COMPONENT* clone()const {return new LOGIC_NOR(*this);}
+public:
+  explicit LOGIC_NOR(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(const node_t* n, int incount)const {
+    LOGICVAL out(n[0]->lv());
+    for (int ii=1; ii<incount; ++ii) {
+      out |= n[ii]->lv();
+    }
+    return ~out;
+  }
+  std::string name()const override	  {return "nor";}
+};
+/*--------------------------------------------------------------------------*/
+class LOGIC_XOR : public COMMON_LOGIC {
+private:
+  explicit LOGIC_XOR(const LOGIC_XOR& p) :COMMON_LOGIC(p){untested();++_count;}
+  COMMON_COMPONENT* clone()const {untested(); return new LOGIC_XOR(*this);}
+public:
+  explicit LOGIC_XOR(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+    LOGICVAL out(n[0]->lv());
+    for (int ii=1; ii<incount; ++ii) {untested();
+      out ^= n[ii]->lv();
+    }
+    return out;
+  }
+  std::string name()const override	  {untested();return "xor";}
+};
+/*--------------------------------------------------------------------------*/
+class LOGIC_XNOR : public COMMON_LOGIC {
+private:
+  explicit LOGIC_XNOR(const LOGIC_XNOR&p):COMMON_LOGIC(p){untested();++_count;}
+  COMMON_COMPONENT* clone()const {untested(); return new LOGIC_XNOR(*this);}
+public:
+  explicit LOGIC_XNOR(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+    LOGICVAL out(n[0]->lv());
+    for (int ii=1; ii<incount; ++ii) {untested();
+      out ^= n[ii]->lv();
+    }
+    return ~out;
+  }
+  std::string name()const override	  {untested();return "xnor";}
+};
+/*--------------------------------------------------------------------------*/
+class LOGIC_INV : public COMMON_LOGIC {
+private:
+  explicit LOGIC_INV(const LOGIC_INV& p) :COMMON_LOGIC(p){++_count;}
+  COMMON_COMPONENT* clone()const	{return new LOGIC_INV(*this);}
+public:
+  explicit LOGIC_INV(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(const node_t* n, int)const {
+    return ~n[0]->lv();
+  }
+  std::string name()const override	  {return "inv";}
+};
+/*--------------------------------------------------------------------------*/
+class LOGIC_NONE : public COMMON_LOGIC {
+private:
+  explicit LOGIC_NONE(const LOGIC_NONE&p):COMMON_LOGIC(p){untested();++_count;}
+  COMMON_COMPONENT* clone()const {untested(); return new LOGIC_NONE(*this);}
+public:
+  explicit LOGIC_NONE(int c=0)		  :COMMON_LOGIC(c) {}
+  LOGICVAL logic_eval(const node_t*, int)const {untested();
+    return lvUNKNOWN;
+  }
+  std::string name()const override	  {untested();return "error";}
+};
 /*--------------------------------------------------------------------------*/
 DEV_LOGIC::DEV_LOGIC(COMMON_COMPONENT* c)
   :ELEMENT(c),
@@ -588,7 +762,53 @@ std::string COMMON_LOGIC::param_value(int I)const
   default:untested(); return COMMON_COMPONENT::param_value(I);
   }
 }
+
 /*--------------------------------------------------------------------------*/
+int DEV_LOGIC::_count = -1;
+int COMMON_LOGIC::_count = -1;
+/*--------------------------------------------------------------------------*/
+static LOGIC_NONE Default_LOGIC(CC_STATIC);
+static DEV_LOGIC p1(&Default_LOGIC);
+static DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "logic", &p1);
+
+static LOGIC_AND  c_and(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_and(&bm_dispatcher, "and", &c_and);
+static DEV_LOGIC d_and(&c_and);
+static DISPATCHER<CARD>::INSTALL dd_and(&device_dispatcher, "and", &d_and);
+
+static LOGIC_NAND c_nand(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_nand(&bm_dispatcher, "nand", &c_nand);
+static DEV_LOGIC d_nand(&c_nand);
+static DISPATCHER<CARD>::INSTALL dd_nand(&device_dispatcher, "nand", &d_nand);
+
+static LOGIC_OR   c_or(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_or(&bm_dispatcher, "or", &c_or);
+static DEV_LOGIC d_or(&c_or);
+static DISPATCHER<CARD>::INSTALL dd_or(&device_dispatcher, "or", &d_or);
+
+static LOGIC_NOR  c_nor(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_nor(&bm_dispatcher, "nor", &c_nor);
+static DEV_LOGIC d_nor(&c_nor);
+static DISPATCHER<CARD>::INSTALL dd_nor(&device_dispatcher, "nor", &d_nor);
+
+static LOGIC_XOR  c_xor(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_xor(&bm_dispatcher, "xor", &c_xor);
+static DEV_LOGIC d_xor(&c_xor);
+static DISPATCHER<CARD>::INSTALL dd_xor(&device_dispatcher, "xor", &d_xor);
+
+static LOGIC_XNOR c_xnor(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_xnor(&bm_dispatcher, "xnor", &c_xnor);
+static DEV_LOGIC d_xnor(&c_xnor);
+static DISPATCHER<CARD>::INSTALL dd_xnor(&device_dispatcher, "xnor", &d_xnor);
+
+static LOGIC_INV  c_inv(CC_STATIC);
+DISPATCHER<COMMON_COMPONENT>::INSTALL dc_inv(&bm_dispatcher, "inv", &c_inv);
+static DEV_LOGIC d_inv(&c_inv);
+static DISPATCHER<CARD>::INSTALL dd_inv(&device_dispatcher, "inv", &d_inv);
+
+static MODEL_LOGIC p2(&p1);
+static DISPATCHER<MODEL_CARD>::INSTALL d2(&model_dispatcher, "logic", &p2);
+}
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:
