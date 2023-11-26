@@ -36,8 +36,8 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class DEV_LOGIC : public ELEMENT {
 public:
-  enum {OUTNODE=0,GND_NODE=1,PWR_NODE=2,ENABLE=3,BEGIN_IN=4}; //node labels
-  enum {PORTS_PER_GATE = 9};
+  enum {OUTNODE=0,PWR_NODE=1,GND_NODE=2,ENABLE=3,BEGIN_IN=4}; //node labels
+  enum {PORTS_PER_GATE = 13};
 private:
   int		_lastchangenode;
   int		_quality;
@@ -76,9 +76,9 @@ private: // override virtuals
   void	   tr_queue_eval()override;
   bool	   do_tr()override;
   void	   tr_load()override;
+  void	   tr_unload()override;
   TIME_PAIR tr_review()override;
   void	   tr_accept()override;
-  void	   tr_unload();
   double   tr_involts()const		{unreachable(); return 0;}
   //double tr_input()const		//ELEMENT
   double   tr_involts_limited()const	{unreachable(); return 0;}
@@ -97,8 +97,8 @@ private: // override virtuals
   std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < PORTS_PER_GATE);
-    static std::string names[] = {"out", "vss", "vdd", "enable", 
-				  "in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
+    static std::string names[PORTS_PER_GATE] = {"out", "vdd", "vss", "enable", 
+			"in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
     return names[i];
   }
 public:
@@ -318,7 +318,7 @@ void DEV_LOGIC::tr_iwant_matrix()
     subckt()->tr_iwant_matrix();
   }else{
   }
-  tr_iwant_matrix_passive();
+  ////////tr_iwant_matrix_passive();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::tr_begin()
@@ -495,7 +495,7 @@ bool DEV_LOGIC::tr_eval_digital()
   _y[0].f0 = 0.;
   _m0.x = 0.;
   _m0.c1 = 1./m->rs;
-  _m0.c0 = _y[0].f1 / -m->rs;
+  _m0.c0 = _y[0].f1 / m->rs;
   set_converged(conv_check());
   store_values();
   q_load();
@@ -519,8 +519,36 @@ void DEV_LOGIC::tr_load()
   switch (_gatemode) {
   case moUNKNOWN: unreachable(); break;
   case moMIXED:   unreachable(); break;
-  case moDIGITAL: tr_load_passive(); break;
+  case moDIGITAL:
+    tr_load_diagonal_point(_n[OUTNODE], &_m0.c1, &_m1.c1);
+    tr_load_source_point(_n[OUTNODE], &_m0.c0, &_m1.c0);
+    break;
   case moANALOG:  assert(subckt()); subckt()->tr_load(); break;
+  }
+}
+/*--------------------------------------------------------------------------*/
+void DEV_LOGIC::tr_unload()
+{
+  if (subckt()) {
+    switch (_gatemode) {
+    case moUNKNOWN: unreachable(); break;
+    case moMIXED:   unreachable(); break;
+    case moDIGITAL:		   break;
+    case moANALOG:  untested();    break;
+    }
+    subckt()->tr_unload();
+    assert(_m0.c0 == 0.);
+    assert(_m0.c1 == 0.);
+  }else{untested();
+    switch (_gatemode) {
+    case moUNKNOWN: unreachable(); break;
+    case moMIXED:   unreachable(); break;
+    case moDIGITAL: untested(); break;
+    case moANALOG:  untested(); break;
+    }
+    _m0.c0 = _m0.c1 = 0.;
+    _sim->mark_inc_mode_bad();
+    tr_load();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -658,15 +686,6 @@ void DEV_LOGIC::tr_accept()
     _n[OUTNODE]->store_old_last_change_time();
     _n[OUTNODE]->store_old_lv(); // needed? yes
   }
-}
-/*--------------------------------------------------------------------------*/
-void DEV_LOGIC::tr_unload()
-{
-  if (subckt()) {
-    subckt()->tr_unload();
-  }else{untested();
-  }
-  tr_unload_passive();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::ac_iwant_matrix()

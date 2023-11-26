@@ -8,13 +8,13 @@ dctran density=53.1%, ac density=53.1%
 .model mos logic ( delay=1n vmax=5. vmin=0. unknown=NA( 2.5) rise=1n fall=1n rs=100. rw=1.G thh=0.75 thl=0.25 mr=5. mf=5. over=10k tnom=NA( 27.))
 Vdd ( 8 0 )  DC  5.
 V1 ( 1 0 ) generator scale= 1.
-U2 ( 2 0 8 8 1 )  mos inv 
-U3 ( 3 0 8 8 2 )  mos inv 
-U4 ( 4 0 8 8 3 )  mos inv 
-U5 ( 5 0 8 8 4 )  mos inv 
-U6 ( 6 0 8 8 5 )  mos inv 
-U7 ( 7 0 8 8 6 )  mos inv 
-.subckt mosinv1 ( 2 4 1 5 3 )
+U2 ( 2 8 0 0 1 )  mos inv 
+U3 ( 3 8 0 0 2 )  mos inv 
+U4 ( 4 8 0 0 3 )  mos inv 
+U5 ( 5 8 0 0 4 )  mos inv 
+U6 ( 6 8 0 0 5 )  mos inv 
+U7 ( 7 8 0 0 6 )  mos inv 
+.subckt mosinv1 ( 2 1 4 5 3 )
 M1 ( 2 3 4 4 )  nmos  l=100.u w=100.u nrd=1. nrs=1.
 M2 ( 2 3 1 1 )  pmos  l=100.u w=100.u nrd=1. nrs=1.
 .ends mosinv1
@@ -29,13 +29,13 @@ endparamset
 
 vsource #( DC  5.) Vdd (.p(8),.n(0));
 vsource #(generator.scale( 1.)) V1 (.p(1),.n(0));
-inv #(.model(mos)) U2 (.out(2),.vss(0),.vdd(8),.enable(8),.in1(1));
-inv #(.model(mos)) U3 (.out(3),.vss(0),.vdd(8),.enable(8),.in1(2));
-inv #(.model(mos)) U4 (.out(4),.vss(0),.vdd(8),.enable(8),.in1(3));
-inv #(.model(mos)) U5 (.out(5),.vss(0),.vdd(8),.enable(8),.in1(4));
-inv #(.model(mos)) U6 (.out(6),.vss(0),.vdd(8),.enable(8),.in1(5));
-inv #(.model(mos)) U7 (.out(7),.vss(0),.vdd(8),.enable(8),.in1(6));
-module mosinv1 (2,4,1,5,3);
+inv #(.model(mos)) U2 (.out(2),.vdd(8),.vss(0),.enable(0),.in1(1));
+inv #(.model(mos)) U3 (.out(3),.vdd(8),.vss(0),.enable(0),.in1(2));
+inv #(.model(mos)) U4 (.out(4),.vdd(8),.vss(0),.enable(0),.in1(3));
+inv #(.model(mos)) U5 (.out(5),.vdd(8),.vss(0),.enable(0),.in1(4));
+inv #(.model(mos)) U6 (.out(6),.vdd(8),.vss(0),.enable(0),.in1(5));
+inv #(.model(mos)) U7 (.out(7),.vdd(8),.vss(0),.enable(0),.in1(6));
+module mosinv1 (2,1,4,5,3);
 nmos #(.l(100.u),.w(100.u),.nrd(1.),.nrs(1.)) M1 (.d(2),.g(3),.s(4),.b(4));
 pmos #(.l(100.u),.w(100.u),.nrd(1.),.nrs(1.)) M2 (.d(2),.g(3),.s(1),.b(1));
 endmodule // mosinv1

@@ -2,15 +2,15 @@
 .gen freq=1 offset=2.5 init=2.5 ampl=2.5 
 Vdd  8  0  dc 5.
 V1   1  0  generator( 1. ) 
-U2   2 0 8 8 1  mos inv
-U3   3 0 8 8 2  mos inv
-U4   4 0 8 8 3  mos inv
-U5   5 0 8 8 4  mos inv
-U6   6 0 8 8 5  mos inv
-U7   7 0 8 8 6  mos inv
+U2   2 8 0 0 1  mos inv
+U3   3 8 0 0 2  mos inv
+U4   4 8 0 0 3  mos inv
+U5   5 8 0 0 4  mos inv
+U6   6 8 0 0 5  mos inv
+U7   7 8 0 0 6  mos inv
 .model  mos logic ( delay= 1n  rise= 1n  fall= 1n  rs= 100.  rw= 1.G 
 + thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
-.subckt mosinv1  2  4  1  5  3 
+.subckt mosinv1  2  1  4  5  3 
 M1   2  3  4  4  nmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1. 
 M2   2  3  1  1  pmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1. 
 .ends
