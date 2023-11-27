@@ -5,16 +5,17 @@ spice
 .gen freq=1 offset=2.5 init=2.5 ampl=2.5 
 Vdd  8  0  dc 5.
 V1   1  0  generator( 1. ) 
-U2   2 8 0 0 1  mos inv
-U3   3 8 0 0 2  mos inv
-U4   4 8 0 0 3  mos inv
-U5   5 8 0 0 4  mos inv
+U2   2 1  mos inv
+U3   3 2  mos inv
+U4   4 3  mos inv
+U5   5 4  mos inv
 .verilog
-inv #(.model(mos)) U6  (6 8 0 0 5);
-inv #(.model(mos)) U7  (7 8 0 0 6);
+inv #(.model(mos)) U6  (6 5);
+inv #(.model(mos)) U7  (7 6);
 spice
-.subckt mosinv1  2  1  4  5  3 
-M1   2  3  4  4  nmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1. 
+.subckt mosinv1  2  3 
+Vdd  1  0  dc 5.
+M1   2  3  0  0  nmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1. 
 M2   2  3  1  1  pmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1. 
 .ends
 *+ends mosinv1

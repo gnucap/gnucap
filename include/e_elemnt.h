@@ -268,7 +268,7 @@ inline void ELEMENT::tr_load_source()
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_unload_source()
-{untested();
+{
   _m0.c0 = _m0.c1 = 0.;
   _sim->mark_inc_mode_bad();
   tr_load_source();

@@ -1,21 +1,22 @@
 #           v(1)       v(2)       v(3)       v(4)       v(5)       v(6)       v(7)       v(8)       logic(1)   logic(2)   logic(3)   logic(4)   logic(5)   logic(6)   logic(7)   logic(8)  
  27.        0.         5.         66.926n    5.         66.926n    5.         66.926n    5.         0.01       3.01       0.01       3.01       0.01       3.01       0.01       4.21      
 Gnucap   System status
-iterations: op=13, dc=0, tran=0, fourier=0, total=13
+iterations: op=12, dc=0, tran=0, fourier=0, total=12
 transient timesteps: accepted=0, rejected=0, total=0
-nodes: user=8, subckt=0, model=0, total=8
-dctran density=53.1%, ac density=53.1%
+nodes: user=8, subckt=6, model=0, total=14
+dctran density=56.1%, ac density=56.1%
 .model mos logic ( delay=1n vmax=5. vmin=0. unknown=NA( 2.5) rise=1n fall=1n rs=100. rw=1.G thh=0.75 thl=0.25 mr=5. mf=5. over=10k tnom=NA( 27.))
 Vdd ( 8 0 )  DC  5.
 V1 ( 1 0 ) generator scale= 1.
-U2 ( 2 8 0 0 1 )  mos inv 
-U3 ( 3 8 0 0 2 )  mos inv 
-U4 ( 4 8 0 0 3 )  mos inv 
-U5 ( 5 8 0 0 4 )  mos inv 
-U6 ( 6 8 0 0 5 )  mos inv 
-U7 ( 7 8 0 0 6 )  mos inv 
-.subckt mosinv1 ( 2 1 4 5 3 )
-M1 ( 2 3 4 4 )  nmos  l=100.u w=100.u nrd=1. nrs=1.
+U2 ( 2 1 )  mos inv 
+U3 ( 3 2 )  mos inv 
+U4 ( 4 3 )  mos inv 
+U5 ( 5 4 )  mos inv 
+U6 ( 6 5 )  mos inv 
+U7 ( 7 6 )  mos inv 
+.subckt mosinv1 ( 2 3 )
+Vdd ( 1 0 )  DC  5.
+M1 ( 2 3 0 0 )  nmos  l=100.u w=100.u nrd=1. nrs=1.
 M2 ( 2 3 1 1 )  pmos  l=100.u w=100.u nrd=1. nrs=1.
 .ends mosinv1
 .model nmos nmos2 ( level=2 nfs=0. neff=1. delta=0. vto=0. gamma=0. phi=0.6 tox=100.n uo=600. tpg=1 tnom=NA( 27.) fc=0.5 pb=0.8 cj=0. mj=0.5 cjsw=0. mjsw=0.33 is=10.E-15 rsh=0. cgso=0. cgdo=0. cgbo=0. ld=0.)
@@ -29,14 +30,15 @@ endparamset
 
 vsource #( DC  5.) Vdd (.p(8),.n(0));
 vsource #(generator.scale( 1.)) V1 (.p(1),.n(0));
-inv #(.model(mos)) U2 (.out(2),.vdd(8),.vss(0),.enable(0),.in1(1));
-inv #(.model(mos)) U3 (.out(3),.vdd(8),.vss(0),.enable(0),.in1(2));
-inv #(.model(mos)) U4 (.out(4),.vdd(8),.vss(0),.enable(0),.in1(3));
-inv #(.model(mos)) U5 (.out(5),.vdd(8),.vss(0),.enable(0),.in1(4));
-inv #(.model(mos)) U6 (.out(6),.vdd(8),.vss(0),.enable(0),.in1(5));
-inv #(.model(mos)) U7 (.out(7),.vdd(8),.vss(0),.enable(0),.in1(6));
-module mosinv1 (2,1,4,5,3);
-nmos #(.l(100.u),.w(100.u),.nrd(1.),.nrs(1.)) M1 (.d(2),.g(3),.s(4),.b(4));
+inv #(.model(mos)) U2 (.out(2),.in1(1));
+inv #(.model(mos)) U3 (.out(3),.in1(2));
+inv #(.model(mos)) U4 (.out(4),.in1(3));
+inv #(.model(mos)) U5 (.out(5),.in1(4));
+inv #(.model(mos)) U6 (.out(6),.in1(5));
+inv #(.model(mos)) U7 (.out(7),.in1(6));
+module mosinv1 (2,3);
+vsource #( DC  5.) Vdd (.p(1),.n(0));
+nmos #(.l(100.u),.w(100.u),.nrd(1.),.nrs(1.)) M1 (.d(2),.g(3),.s(0),.b(0));
 pmos #(.l(100.u),.w(100.u),.nrd(1.),.nrs(1.)) M2 (.d(2),.g(3),.s(1),.b(1));
 endmodule // mosinv1
 

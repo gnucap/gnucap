@@ -36,8 +36,8 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class DEV_LOGIC : public ELEMENT {
 public:
-  enum {OUTNODE=0,PWR_NODE=1,GND_NODE=2,ENABLE=3,BEGIN_IN=4}; //node labels
-  enum {PORTS_PER_GATE = 13};
+  enum {OUTNODE=0,BEGIN_IN=1}; //node labels
+  enum {PORTS_PER_GATE = 10};
 private:
   int		_lastchangenode;
   int		_quality;
@@ -97,7 +97,7 @@ private: // override virtuals
   std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < PORTS_PER_GATE);
-    static std::string names[PORTS_PER_GATE] = {"out", "vdd", "vss", "enable", 
+    static std::string names[PORTS_PER_GATE] = {"out",
 			"in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
     return names[i];
   }
