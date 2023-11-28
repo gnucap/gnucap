@@ -574,9 +574,9 @@ void BSMATRIX<T>::load_couple(int i, int j, T value)
   }
 }
 /*--------------------------------------------------------------------------*/
-// load_point(i, i, value); or load_diagonal_point(i, value);
-// load_point(j, j, value); or load_diagonal_point(j, value);
-// load_point(i, j, -value);
+// load_point(i, i, value);	// load_diagonal_point(i, value);
+// load_point(j, j, value);	// load_diagonal_point(j, value);
+// load_point(i, j, -value);	// load_couple(i, j, value);
 // load_point(j, i, -value);
 template <class T>
 void BSMATRIX<T>::load_symmetric(int i, int j, T value)

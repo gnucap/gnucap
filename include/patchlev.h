@@ -1,1 +1,1 @@
-#define PATCHLEVEL "snapshot 2023.10.31"
+#define PATCHLEVEL "logic-4 2023.11.26"

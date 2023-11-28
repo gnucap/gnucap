@@ -24,7 +24,7 @@
 //testing=script 2006.07.14
 #include "e_cardlist.h"
 #include "u_status.h"
-#include "e_node.h"
+#include "e_logicnode.h"
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 //	bool	SIM::solve(int,int);

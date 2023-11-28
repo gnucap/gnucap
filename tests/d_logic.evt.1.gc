@@ -5,8 +5,8 @@ spice
 .model mos logic
 .model cross sw vt=2.5 vh=1.25
 
-U1 3 0 0 0 1 2 mos nor
-* U1 3 0 0 0 1 mos inv
+U1 3 1 2 mos nor
+* U1 3 1 mos inv
 V1 1 0 pulse iv=0 pv=5 delay=0 rise=500p
 V2 2 0 pulse iv=0 pv=5 delay=300p rise=500p
 S1 0 0 1 0 cross

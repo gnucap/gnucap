@@ -78,7 +78,7 @@ private:
   explicit	DEV_TRANSLINE(const DEV_TRANSLINE& p)
     :ELEMENT(p), _forward(), _reflect(), _if0(0), _ir0(0), _if1(0), _ir1(0) {}
 public:
-  explicit	DEV_TRANSLINE();
+  explicit	DEV_TRANSLINE(COMMON_COMPONENT* c=NULL);
 private: // override virtual
   char		id_letter()const override	{return 'T';}
   std::string   value_name()const override	{return "#";}
@@ -150,7 +150,6 @@ const double _default_td  (NOT_INPUT);
 const double _default_f   (NOT_INPUT);
 const double _default_nl  (0.25);
 const double LINLENTOL = .000001;
-static COMMON_TRANSLINE Default_TRANSLINE(CC_STATIC);
 /*--------------------------------------------------------------------------*/
 COMMON_TRANSLINE::COMMON_TRANSLINE(int c)
   :COMMON_COMPONENT(c),
@@ -365,13 +364,12 @@ void COMMON_TRANSLINE::precalc_last(const CARD_LIST* Scope)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-DEV_TRANSLINE::DEV_TRANSLINE()
-  :ELEMENT(),
+DEV_TRANSLINE::DEV_TRANSLINE(COMMON_COMPONENT* c)
+  :ELEMENT(c),
    _forward(), _reflect(),
    _if0(0), _ir0(0), _if1(0), _ir1(0),
    _y11(), _y12()
 {
-  attach_common(&Default_TRANSLINE);
 }
 /*--------------------------------------------------------------------------*/
 void DEV_TRANSLINE::precalc_last()
@@ -547,7 +545,8 @@ void DEV_TRANSLINE::ac_load()
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-DEV_TRANSLINE p1;
+COMMON_TRANSLINE Default_TRANSLINE(CC_STATIC);
+DEV_TRANSLINE p1(&Default_TRANSLINE);
 DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "T|tline", &p1);
 }
 /*--------------------------------------------------------------------------*/

@@ -24,14 +24,14 @@
 //testing=script 2006.07.12
 #ifndef E_ELEMNT_H
 #define E_ELEMNT_H
-#include "e_node.h"
+#include "e_logicnode.h"
 #include "m_cpoly.h"
 #include "l_denoise.h"
 #include "e_compon.h"
 /*--------------------------------------------------------------------------*/
 class INTERFACE ELEMENT : public COMPONENT {
 protected:
-  explicit ELEMENT();
+  explicit ELEMENT(COMMON_COMPONENT* c=NULL);
   explicit ELEMENT(const ELEMENT& p);
   ~ELEMENT() {}
   
@@ -268,7 +268,7 @@ inline void ELEMENT::tr_load_source()
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_unload_source()
-{untested();
+{
   _m0.c0 = _m0.c1 = 0.;
   _sim->mark_inc_mode_bad();
   tr_load_source();

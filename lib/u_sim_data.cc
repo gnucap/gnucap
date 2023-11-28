@@ -23,7 +23,7 @@
  */
 //testing=script 2015.01.28
 #include "m_wave.h"
-#include "e_node.h"
+#include "e_logicnode.h"
 #include "u_nodemap.h"
 #include "e_cardlist.h"
 #include "u_status.h"

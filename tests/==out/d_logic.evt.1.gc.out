@@ -5,8 +5,8 @@
 >>>>>.list 
 .model mos logic ( delay=NA( 1.n) vmax=NA( 5.) vmin=NA( 0.) unknown=NA( 2.5) rise=NA( 500.p) fall=NA( 500.p) rs=NA( 100.) rw=NA( 1.G) thh=NA( 0.75) thl=NA( 0.25) mr=NA( 5.) mf=NA( 5.) over=NA( 0.1) tnom=NA( 27.))
 .model cross sw ( vt=2.5 vh=1.25 von=NA( 3.75) voff=NA( 1.25) ron=NA( 1.) roff=NA( 1.E+12) tnom=NA( 27.))
-U1 ( 3 0 0 0 1 2 )  mos nor 
-* U1 3 0 0 0 1 mos inv 
+U1 ( 3 1 2 )  mos nor 
+* U1 3 1 mos inv 
 V1 ( 1 0 ) pulse iv= 0. pv= 5. delay= 0. rise= 500.p fall=NA( 0.) width=NA( Inf) period=NA( Inf)
 V2 ( 2 0 ) pulse iv= 0. pv= 5. delay= 300.p rise= 500.p fall=NA( 0.) width=NA( Inf) period=NA( Inf)
 S1 ( 0 0 1 0 )  cross 

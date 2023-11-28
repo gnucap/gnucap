@@ -40,7 +40,7 @@
 /*--------------------------------------------------------------------------*/
 namespace{
 /*--------------------------------------------------------------------------*/
-static COMMON_PARAMLIST Default_SUBCKT(CC_STATIC);
+COMMON_PARAMLIST Default_SUBCKT(CC_STATIC);
 #define PORTS_PER_SUBCKT 100
 //BUG// fixed limit on number of ports
 /*--------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ class DEV_SUBCKT : public BASE_SUBCKT {
 private:
   explicit	DEV_SUBCKT(const DEV_SUBCKT&);
 public:
-  explicit	DEV_SUBCKT();
+  explicit	DEV_SUBCKT(COMMON_COMPONENT* c=NULL);
 		~DEV_SUBCKT()		{--_count;}
   CARD*		clone()const override	{return new DEV_SUBCKT(*this);}
 private: // override virtual
@@ -77,14 +77,14 @@ protected:
 private:
   node_t	_nodes[PORTS_PER_SUBCKT];
   static int	_count;
-} p1;
+} p1(&Default_SUBCKT);
 int DEV_SUBCKT::_count = -1;
 /*--------------------------------------------------------------------------*/
 class DEV_SUBCKT_PROTO : public DEV_SUBCKT {
 private:
   explicit	DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO&p);
 public:
-  explicit	DEV_SUBCKT_PROTO();
+  explicit	DEV_SUBCKT_PROTO(COMMON_COMPONENT* c=NULL);
 		~DEV_SUBCKT_PROTO(){}
 public: // override virtual
   char		id_letter()const override	{untested();return '\0';}
@@ -120,8 +120,8 @@ private: // no-ops for prototype
   bool do_tr()override { return true;}
   bool tr_needs_eval()const override {untested(); return false;}
   void tr_queue_eval()override {}
-  std::string port_name(int)const override{untested();return "";}
-} pp;
+  std::string port_name(int i)const override{return port_value(i);}
+} pp(&Default_SUBCKT);
 DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt", &pp);
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO& p)
@@ -130,20 +130,30 @@ DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO& p)
   new_subckt();
 }
 /*--------------------------------------------------------------------------*/
-DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO()
-  :DEV_SUBCKT()
+DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(COMMON_COMPONENT* c)
+  :DEV_SUBCKT(c)
 {
   new_subckt();
 }
 /*--------------------------------------------------------------------------*/
 CARD* DEV_SUBCKT_PROTO::clone_instance()const
 {
+#if 1
   DEV_SUBCKT* new_instance = dynamic_cast<DEV_SUBCKT*>(p1.clone());
+#else
+  DEV_SUBCKT* new_instance = dynamic_cast<DEV_SUBCKT*>(DEV_SUBCKT::clone());
+  assert(new_instance);
+  for (int ii = 0;  ii < net_nodes();  ++ii) {
+    new_instance->_nodes[ii] = node_t();
+  }
+  new_instance->_net_nodes = 0;
+#endif
   assert(!new_instance->subckt());
 
   if (this == &pp){
     // cloning from static, empty model
     // look out for _parent in expand
+    assert(!new_instance->_parent);
   }else{
     new_instance->_parent = this;
   }
@@ -152,11 +162,10 @@ CARD* DEV_SUBCKT_PROTO::clone_instance()const
   return new_instance;
 }
 /*--------------------------------------------------------------------------*/
-DEV_SUBCKT::DEV_SUBCKT()
-  :BASE_SUBCKT(),
+DEV_SUBCKT::DEV_SUBCKT(COMMON_COMPONENT* c)
+  :BASE_SUBCKT(c),
    _parent(NULL)
 {
-  attach_common(&Default_SUBCKT);
   _n = _nodes;
   ++_count;
 }
@@ -178,7 +187,7 @@ std::string DEV_SUBCKT::port_name(int i)const
 {
   if (const DEV_SUBCKT* p=dynamic_cast<const DEV_SUBCKT*>(_parent)) {
     if (i<p->net_nodes()){
-      return p->port_value(i);
+      return p->port_name(i);
     }else{untested(); 
       return "";
     }
@@ -207,7 +216,7 @@ void DEV_SUBCKT::expand()
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
     }
   }else{
-    // reruns
+    // reruns, or got it at construction
     assert(find_looking_out(c->modelname()) == _parent);
   }
   

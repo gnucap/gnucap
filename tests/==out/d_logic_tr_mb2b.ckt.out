@@ -2,7 +2,7 @@
 #           v(1)       l(1)       v(2)       l(2)       v(3)       l(3)       iter(0)    control(0)
  27.        0.         0.01       5.         3.01       66.926n    0.01       9.         0.        
 #Time       v(1)       l(1)       v(2)       l(2)       v(3)       l(3)       iter(0)    control(0)
- 0.         2.5        1.41       2.4995     1.41       2.57       1.41       17.        1.        
+ 0.         2.5        1.41       2.4995     1.41       2.5698     1.41       17.        1.        
  500.n      2.5079     1.41       2.4622     2.41       3.0399     1.41       9.         9.        
  1.u        2.5157     1.41       2.3909     2.41       3.3973     1.41       6.         6.        
  5.4545u    2.5857     1.41       1.7291     2.41       4.4962     3.31       8.         6.        
@@ -247,5 +247,5 @@
 Gnucap   System status
 iterations: op=9, dc=0, tran=1490, fourier=0, total=1741
 transient timesteps: accepted=242, rejected=0, total=242
-nodes: user=4, subckt=0, model=0, total=4
-dctran density=87.5%, ac density=87.5%
+nodes: user=4, subckt=2, model=0, total=6
+dctran density=61.1%, ac density=61.1%

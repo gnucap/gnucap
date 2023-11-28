@@ -52,7 +52,7 @@ private: // override virtual
   void	   tr_begin()override;
   bool	   do_tr()override;
   void	   tr_load()override		{tr_load_shunt(); tr_load_source();}
-  void	   tr_unload()override		{untested();tr_unload_source();}
+  void	   tr_unload()override		{tr_unload_source();}
   double   tr_involts()const override	{return 0.;}
   double   tr_involts_limited()const override{unreachable(); return 0.;}
   void	   ac_iwant_matrix()override	{ac_iwant_matrix_passive();}

@@ -62,8 +62,8 @@ protected:
   PARAMETER<double>	_temp_c;  // actual temperature of device
   PARAMETER<double>	_mfactor; // number of devices in parallel
   PARAMETER<double>	_value;
-private:
   std::string	_modelname;
+private:
   mutable const MODEL_CARD* _model;
   int		_attach_count;
 public:
@@ -160,7 +160,7 @@ public:
   TIME_PAIR _time_by;
   //--------------------------------------------------------------------
 protected: // create and destroy.
-  explicit   COMPONENT();
+  explicit   COMPONENT(COMMON_COMPONENT* c=NULL);
   explicit   COMPONENT(const COMPONENT& p);
 	     ~COMPONENT();
   //--------------------------------------------------------------------

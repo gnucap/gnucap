@@ -28,7 +28,8 @@
 #include "d_coment.h"
 #include "e_subckt.h"
 #include "u_lang.h"
-#include "d_logic.h"
+#include "e_model.h"
+#include "e_elemnt.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
 namespace {
@@ -61,8 +62,6 @@ private: // local
   void parse_ports(CS&, COMPONENT*, int minnodes, int start, int num_nodes, bool all_new);
 private: // compatibility hacks
   void parse_element_using_obsolete_callback(CS&, COMPONENT*);
-  void parse_logic_using_obsolete_callback(CS&, COMPONENT*);
-
 private: // override virtual, called by print_item
   void print_paramset(OMSTREAM&, const MODEL_CARD*)override;
   void print_module(OMSTREAM&, const BASE_SUBCKT*)override;
@@ -377,39 +376,6 @@ void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* 
   cmd.check(bDANGER, "what's this?");
 }
 /*--------------------------------------------------------------------------*/
-void LANG_SPICE_BASE::parse_logic_using_obsolete_callback(CS& cmd, COMPONENT* x)
-{
-  assert(x);
-  {
-    size_t here = cmd.cursor();
-    int num_nodes = count_ports(cmd, x->max_nodes(), x->min_nodes(), x->tail_size(), 0/*start*/);
-    cmd.reset(here);
-    parse_ports(cmd, x, x->min_nodes(), 0/*start*/, num_nodes, false);
-  }
-  int incount = x->net_nodes() - x->min_nodes() + 1;
-  assert(incount > 0);
-
-  std::string modelname = cmd.ctos(TOKENTERM);
-
-  COMMON_LOGIC* common = 0;
-  if      (cmd.umatch("and " )) {itested();common = new LOGIC_AND;}
-  else if (cmd.umatch("nand ")) {common = new LOGIC_NAND;}
-  else if (cmd.umatch("or "  )) {itested();common = new LOGIC_OR;}
-  else if (cmd.umatch("nor " )) {common = new LOGIC_NOR;}
-  else if (cmd.umatch("xor " )) {itested();common = new LOGIC_XOR;}
-  else if (cmd.umatch("xnor ")) {itested();common = new LOGIC_XNOR;}
-  else if (cmd.umatch("inv " )) {common = new LOGIC_INV;}
-  else {untested();
-    cmd.warn(bWARNING,"need and,nand,or,nor,xor,xnor,inv");
-    common=new LOGIC_NONE;
-  }
-  
-  assert(common);
-  common->incount = incount;
-  common->set_modelname(modelname);
-  x->attach_common(common);
-}
-/*--------------------------------------------------------------------------*/
 void LANG_SPICE_BASE::parse_type(CS& cmd, CARD* x)
 {
   assert(x);
@@ -609,8 +575,6 @@ COMPONENT* LANG_SPICE_BASE::parse_instance(CS& cmd, COMPONENT* x)
     
     if (x->use_obsolete_callback_parse()) {
       parse_element_using_obsolete_callback(cmd, x);
-    }else if (DEV_LOGIC* xx = dynamic_cast<DEV_LOGIC*>(x)) {
-      parse_logic_using_obsolete_callback(cmd, xx);
     }else{
       {
 	size_t here = cmd.cursor();
@@ -620,6 +584,10 @@ COMPONENT* LANG_SPICE_BASE::parse_instance(CS& cmd, COMPONENT* x)
       }
       if (x->print_type_in_spice()) {
 	parse_type(cmd, x);
+	if (x->tail_size() == 2) {
+	  cmd.skiparg(); // hack for logic device syntax
+	}else{		 // eat it for syntax, already got it
+	}
       }else{
       }
       parse_args(cmd, x);
@@ -657,11 +625,18 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
     break;
   case 'G':
     here = cmd.cursor();
-
     if (cmd.scan("vccap |vcg |vcr |vccs ")) {
       s = cmd.trimmed_last_match();
     }else{
       s = "G";
+    }
+    break;
+  case 'U':
+    here = cmd.cursor();
+    if (cmd.scan("and |nand |or |nor |xor |xnor |inv ")) {
+      s = cmd.trimmed_last_match();
+    }else{untested();
+      s = "U";
     }
     break;
   default:
@@ -770,7 +745,12 @@ void LANG_SPICE_BASE::print_type(OMSTREAM& o, const COMPONENT* x)
 {
   assert(x);
   if (x->print_type_in_spice()) {
-    o << "  " << x->dev_type();
+    if (x->tail_size() == 2) {		// hack for logic device syntax
+      assert(x->common());
+      o << "  " << x->common()->modelname() << " " << x->dev_type();
+    }else{
+      o << "  " << x->dev_type();
+    }
   }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {
     o << "  " << x->dev_type();
   }else{

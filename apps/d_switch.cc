@@ -59,7 +59,7 @@ public:
 /*--------------------------------------------------------------------------*/
 class SWITCH_BASE : public ELEMENT {
 protected:
-  explicit	SWITCH_BASE();
+  explicit	SWITCH_BASE(COMMON_COMPONENT* c=NULL);
   explicit	SWITCH_BASE(const SWITCH_BASE& p);
 protected: // override virtual
   std::string value_name()const override	{return "";}
@@ -101,7 +101,7 @@ class DEV_VSWITCH : public SWITCH_BASE {
 private:
   explicit  DEV_VSWITCH(const DEV_VSWITCH& p) :SWITCH_BASE(p) {}
 public:
-  explicit  DEV_VSWITCH()	:SWITCH_BASE() {}
+  explicit  DEV_VSWITCH(COMMON_COMPONENT* c=NULL) :SWITCH_BASE(c) {}
 private: // override virtual
   int	    max_nodes()const override	{return 4;}
   int	    min_nodes()const override	{return 4;}
@@ -122,7 +122,7 @@ private:
   explicit  DEV_CSWITCH(const DEV_CSWITCH& p) 
     :SWITCH_BASE(p), _input_label(p._input_label) {}
 public:
-  explicit  DEV_CSWITCH()	:SWITCH_BASE(), _input_label() {}
+  explicit  DEV_CSWITCH(COMMON_COMPONENT* c=NULL) :SWITCH_BASE(c), _input_label() {}
 private: // override virtual
   int	    max_nodes()const override	{return 3;}
   int	    ext_nodes()const override	{return 2;}
@@ -186,7 +186,6 @@ private:
   static double const _default_roff;
 };
 /*--------------------------------------------------------------------------*/
-static COMMON_SWITCH Default_SWITCH(CC_STATIC);
 double const MODEL_SWITCH::_default_vt = 0.;
 double const MODEL_SWITCH::_default_vh = 0.;
 double const MODEL_SWITCH::_default_ron = 1.;
@@ -377,11 +376,10 @@ std::string MODEL_SWITCH::param_value(int i)const
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-SWITCH_BASE::SWITCH_BASE()
-  :ELEMENT(),
+SWITCH_BASE::SWITCH_BASE(COMMON_COMPONENT* c)
+  :ELEMENT(c),
    _input(NULL)
 {
-  attach_common(&Default_SWITCH);
   std::fill_n(_in, int(OPT::_keep_time_steps), 0.);
   std::fill_n(_state, int(OPT::_keep_time_steps), _UNKNOWN);
 }
@@ -632,8 +630,9 @@ bool DEV_CSWITCH::node_is_connected(int i)const
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-DEV_VSWITCH p2;
-DEV_CSWITCH p3;
+COMMON_SWITCH Default_SWITCH(CC_STATIC);
+DEV_VSWITCH p2(&Default_SWITCH);
+DEV_CSWITCH p3(&Default_SWITCH);
 DISPATCHER<CARD>::INSTALL
   d2(&device_dispatcher, "S|vswitch", &p2),
   d3(&device_dispatcher, "W|cswitch|iswitch", &p3);
