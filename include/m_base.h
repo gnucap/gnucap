@@ -172,7 +172,7 @@ public:
   double value()const			{return _data;}
   operator double()const		{untested();return _data;}
   std::string val_string()const override{return ftos(_data, 0, 15, ftos_EXP);}
-  bool to_bool()const override		{return (_data != 0);}
+  bool to_bool()const override		{return (_data != 0.);}
 
   Base* minus()const override		{return new Float(-_data);}
   Base* plus()const override		{return new Float(_data);}

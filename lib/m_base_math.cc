@@ -35,7 +35,7 @@ Base* Base::logic_not()const
 {
   if (to_bool()) {
     return new Float(0.);
-  }else{untested();
+  }else{itested();
     return new Float(1.);
   }
 }
