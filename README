@@ -1,3 +1,8 @@
+== Readme for development snapshot 20231131
+
+- instanciate logic devices using any language
+- VAMS LRM compliant logic device ports
+
 == Readme for development snapshot 20231031
 
 - attribute instance

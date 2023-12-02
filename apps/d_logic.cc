@@ -133,8 +133,8 @@ protected:
 /*--------------------------------------------------------------------------*/
 class LOGIC_AND : public COMMON_LOGIC {
 private:
-  explicit LOGIC_AND(const LOGIC_AND& p) :COMMON_LOGIC(p){untested();++_count;}
-  COMMON_COMPONENT* clone()const {untested();return new LOGIC_AND(*this);}
+  explicit LOGIC_AND(const LOGIC_AND& p) :COMMON_LOGIC(p){itested();++_count;}
+  COMMON_COMPONENT* clone()const {itested();return new LOGIC_AND(*this);}
 public:
   explicit LOGIC_AND(int c=0)		  :COMMON_LOGIC(c) {}
   LOGICVAL logic_eval(const node_t* n,  int incount)const {untested();
@@ -144,7 +144,7 @@ public:
     }
     return out;
   }
-  std::string name()const override	  {untested();return "and";}
+  std::string name()const override	  {itested();return "and";}
 };
 /*--------------------------------------------------------------------------*/
 class LOGIC_NAND : public COMMON_LOGIC {
@@ -165,8 +165,8 @@ public:
 /*--------------------------------------------------------------------------*/
 class LOGIC_OR : public COMMON_LOGIC {
 private:
-  explicit LOGIC_OR(const LOGIC_OR& p)	 :COMMON_LOGIC(p){untested();++_count;}
-  COMMON_COMPONENT* clone()const {untested(); return new LOGIC_OR(*this);}
+  explicit LOGIC_OR(const LOGIC_OR& p)	 :COMMON_LOGIC(p){itested();++_count;}
+  COMMON_COMPONENT* clone()const {itested(); return new LOGIC_OR(*this);}
 public:
   explicit LOGIC_OR(int c=0)		  :COMMON_LOGIC(c) {}
   LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
@@ -176,7 +176,7 @@ public:
     }
     return out;
   }
-  std::string name()const override	  {untested();return "or";}
+  std::string name()const override	  {itested();return "or";}
 };
 /*--------------------------------------------------------------------------*/
 class LOGIC_NOR : public COMMON_LOGIC {
@@ -197,8 +197,8 @@ public:
 /*--------------------------------------------------------------------------*/
 class LOGIC_XOR : public COMMON_LOGIC {
 private:
-  explicit LOGIC_XOR(const LOGIC_XOR& p) :COMMON_LOGIC(p){untested();++_count;}
-  COMMON_COMPONENT* clone()const {untested(); return new LOGIC_XOR(*this);}
+  explicit LOGIC_XOR(const LOGIC_XOR& p) :COMMON_LOGIC(p){itested();++_count;}
+  COMMON_COMPONENT* clone()const {itested(); return new LOGIC_XOR(*this);}
 public:
   explicit LOGIC_XOR(int c=0)		  :COMMON_LOGIC(c) {}
   LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
@@ -208,13 +208,13 @@ public:
     }
     return out;
   }
-  std::string name()const override	  {untested();return "xor";}
+  std::string name()const override	  {itested();return "xor";}
 };
 /*--------------------------------------------------------------------------*/
 class LOGIC_XNOR : public COMMON_LOGIC {
 private:
-  explicit LOGIC_XNOR(const LOGIC_XNOR&p):COMMON_LOGIC(p){untested();++_count;}
-  COMMON_COMPONENT* clone()const {untested(); return new LOGIC_XNOR(*this);}
+  explicit LOGIC_XNOR(const LOGIC_XNOR&p):COMMON_LOGIC(p){itested();++_count;}
+  COMMON_COMPONENT* clone()const {itested(); return new LOGIC_XNOR(*this);}
 public:
   explicit LOGIC_XNOR(int c=0)		  :COMMON_LOGIC(c) {}
   LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
@@ -224,7 +224,7 @@ public:
     }
     return ~out;
   }
-  std::string name()const override	  {untested();return "xnor";}
+  std::string name()const override	  {itested();return "xnor";}
 };
 /*--------------------------------------------------------------------------*/
 class LOGIC_INV : public COMMON_LOGIC {
