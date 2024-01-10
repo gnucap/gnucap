@@ -40,7 +40,7 @@ enum {			/* formatting bit-fields */
   ftos_FILL = 4		/* fill in trailing zeros */
 };
 /*--------------------------------------------------------------------------*/
-// wrappers for old standard C lpbrary
+// wrappers for old standard C library
 namespace OS {
   inline void system(const std::string& s) {itested();
     ::system(s.c_str());

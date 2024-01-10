@@ -335,7 +335,7 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 //BUG// This is a kluge for the spice_wrapper, to disable virtual functions.
 // It is called during expansion only.
 
-void COMMON_COMPONENT::Set_param_by_name(std::string Name, std::string Value)
+int COMMON_COMPONENT::Set_param_by_name(std::string Name, std::string Value)
 {untested();
   assert(!has_parse_params_obsolete_callback());
   
@@ -344,7 +344,7 @@ void COMMON_COMPONENT::Set_param_by_name(std::string Name, std::string Value)
     for (int j = 0;  COMMON_COMPONENT::param_name(i,j) != "";  ++j) {untested();
       if (Umatch(Name, COMMON_COMPONENT::param_name(i,j) + ' ')) {untested();
 	COMMON_COMPONENT::set_param_by_index(i, Value, 0/*offset*/);
-	return; //success
+	return i; //success
       }else{untested();
 	//keep looking
       }

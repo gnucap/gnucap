@@ -98,7 +98,7 @@ public:
   virtual std::string param_name(int,int)const;
   virtual std::string param_value(int)const;
   virtual int  set_param_by_name(std::string, std::string);
-  void Set_param_by_name(std::string, std::string); //BUG// see implementation
+  int Set_param_by_name(std::string, std::string); //BUG// see implementation
   virtual void set_param_by_index(int, std::string&, int);
   virtual int param_count()const {return 4;}
 public:
