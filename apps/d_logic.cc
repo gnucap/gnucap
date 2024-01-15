@@ -137,9 +137,9 @@ private:
   COMMON_COMPONENT* clone()const {itested();return new LOGIC_AND(*this);}
 public:
   explicit LOGIC_AND(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n,  int incount)const {untested();
+  LOGICVAL logic_eval(const node_t* n,  int incount)const {itested();
     LOGICVAL out(n[0]->lv());
-    for (int ii=1; ii<incount; ++ii) {untested();
+    for (int ii=1; ii<incount; ++ii) {itested();
       out &= n[ii]->lv();
     }
     return out;
@@ -153,9 +153,9 @@ private:
   COMMON_COMPONENT* clone()const {return new LOGIC_NAND(*this);}
 public:
   explicit LOGIC_NAND(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+  LOGICVAL logic_eval(const node_t* n, int incount)const {itested();
     LOGICVAL out(n[0]->lv());
-    for (int ii=1; ii<incount; ++ii) {untested();
+    for (int ii=1; ii<incount; ++ii) {itested();
       out &= n[ii]->lv();
     }
     return ~out;

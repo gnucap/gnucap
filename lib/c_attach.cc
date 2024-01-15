@@ -144,7 +144,7 @@ void CMD_ATTACH::attach_dir(CS& cmd, std::string const& dirname,
     if(s<slen){
     }else if(fname.substr(s-slen, s) == SUFFIX){
       sos.push_back(fname);
-    }else{untested();
+    }else{ itested();
     }
   }
   std::sort(sos.begin(), sos.end());
