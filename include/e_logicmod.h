@@ -33,15 +33,15 @@ public:
   explicit MODEL_LOGIC(const COMPONENT*);
 	   ~MODEL_LOGIC()		{--_count;}
 private: // override virtuals
-  std::string	dev_type()const		{return "logic";}
-  CARD*		clone()const		{return new MODEL_LOGIC(*this);}
-  void		precalc_first();
-  void		set_param_by_index(int, std::string&, int);
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int		param_count()const	{return (13 + MODEL_CARD::param_count());}
+  std::string	dev_type()const override{return "logic";}
+  CARD*		clone()const override	{return new MODEL_LOGIC(*this);}
+  void		precalc_first()override;
+  void		set_param_by_index(int, std::string&, int)override;
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int		param_count()const override {return (13 + MODEL_CARD::param_count());}
 public:
   static int	count()			{untested();return _count;}
 public:
