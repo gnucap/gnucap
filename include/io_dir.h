@@ -50,6 +50,11 @@ public:
     const_iterator& operator++() {assert(_d); _de = ::readdir(_d); return *this;}
     bool operator==(const_iterator const& o)const {return _de == o._de;}
     bool operator!=(const_iterator const& o)const {return !operator==(o);}
+    const_iterator& operator=(const_iterator const& o) { itested();
+      _d = o._d;
+      _de = o._de;
+      return *this;
+    }
   };
 
 public:
