@@ -1,0 +1,12 @@
+option list
+param a2=ln(3)
+param a1=log(3)
+param a3=log10(3)
+param
+eval a1
+eval a2
+eval a3
+option debug
+eval a1
+eval a2
+eval a3
