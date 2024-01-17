@@ -75,6 +75,7 @@ public:
     } while (cmd.more() && !cmd.stuck(&here));
 
     std::string short_file_name;
+    here = cmd.cursor();
     cmd >> short_file_name;
     
     if (short_file_name == "") {
@@ -105,10 +106,10 @@ public:
       trace2("cmd_attach", full_file_name, dir.exists());
 
       if(dir.exists()) {
-	attach_dir(cmd, full_file_name, dir, Scope, check | dl_scope);
+	attach_dir(cmd, full_file_name, dir, Scope, check | dl_scope, here);
       }else{
 	try{
-	  attach_file(cmd, full_file_name, Scope, check | dl_scope);
+	  attach_file(cmd, full_file_name, Scope, check | dl_scope, here);
 	}catch(Exception_CS const& e){untested();
 	  cmd.reset(here);
 	  throw e;
@@ -116,8 +117,9 @@ public:
       }
     }
   }
-  void attach_dir(CS&, std::string const&, DIRECTORY const&, CARD_LIST const*, int);
-  void attach_file(CS&, std::string const&, CARD_LIST const*, int);
+  void attach_dir(CS&, std::string const&, DIRECTORY const&,
+                  CARD_LIST const*, int, size_t);
+  void attach_file(CS&, std::string const&, CARD_LIST const*, int, size_t);
 
   std::string help_text()const override {
     return 
@@ -133,7 +135,7 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
 /*--------------------------------------------------------------------------*/
 void CMD_ATTACH::attach_dir(CS& cmd, std::string const& dirname,
                             DIRECTORY const& dir,
-                            CARD_LIST const* Scope, int flags)
+                            CARD_LIST const* Scope, int flags, size_t here)
 {
   DIRECTORY::const_iterator i;
   std::vector<std::string> sos;
@@ -152,19 +154,19 @@ void CMD_ATTACH::attach_dir(CS& cmd, std::string const& dirname,
   error(bLOG, "Loading from " + dirname + "\n");
   for(ni=sos.begin(); ni!=sos.end(); ++ni) {
     error(bLOG, " .. " + *ni + "\n");
-    attach_file(cmd, dirname + "/" + *ni, Scope, flags);
+    attach_file(cmd, dirname + "/" + *ni, Scope, flags, here);
   }
 }
 /*--------------------------------------------------------------------------*/
 void CMD_ATTACH::attach_file(CS& cmd, std::string const& file_name,
-                             CARD_LIST const* Scope, int flags)
+                             CARD_LIST const* Scope, int flags,
+                             size_t here)
 {
   // a name to look for
   // check if already loaded
-  if (void* handle = attach_list[file_name]) {untested();
-    if (Scope->is_empty()) {untested();
-      cmd.warn(bDANGER, "\"" + file_name + "\": already loaded, replacing");
-//      error(bDANGER, "\"" + file_name + "\": already loaded, replacing");?
+  if (void* handle = attach_list[file_name]) {itested();
+    if (Scope->is_empty()) {itested();
+      cmd.warn(bDANGER, here, "\"" + file_name + "\": already loaded, replacing");
       dlclose(handle);
       attach_list[file_name] = NULL;
     }else{untested();
