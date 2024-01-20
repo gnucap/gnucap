@@ -99,13 +99,8 @@ void Expression::leaf(CS& File)
       push_back(new Token_CONSTANT("\"" + s->val_string() + "\"", s, ""));
     }
   }else if (File.peek() == '<') {
-    Angled_String* s = new Angled_String(File);
-    if (File.stuck(&here)) { untested();
-      delete s;
-      throw Exception_CS("what's this?", File);
-    }else{
-      push_back(new Token_CONSTANT("<" + s->val_string() + ">", s, ""));
-    }
+    std::string s = File.ctos("", "<", ">");
+    push_back(new Token_SYMBOL("<" + s + ">", "" ));
   }else{
     Name_String name(File);
     if (!File.stuck(&here)) {
