@@ -48,6 +48,55 @@ void list()
   }
 }
 /*--------------------------------------------------------------------------*/
+void tach_dir(CS&, std::string const&, DIRECTORY const&,
+		CARD_LIST const*, int, size_t);
+void attach_file(CS&, std::string const& file_name, CARD_LIST const*, int, size_t);
+void detach_file(CS&, std::string const& file_name, CARD_LIST const*, size_t);
+void load_or_unload(CS& cmd, CARD_LIST const* Scope, int flags)
+{
+  size_t here = cmd.cursor();
+  std::string short_file_name;
+  cmd >> short_file_name;
+  if (short_file_name == "") {
+    // nothing, list what we have
+    list();
+  }else{
+    std::string full_file_name;
+    if (short_file_name[0]=='/' || short_file_name[0]=='.'){
+      if (OS::access_ok(short_file_name, R_OK)) {
+	// found it, local or root
+	full_file_name = short_file_name;
+      }else{untested();
+	cmd.reset(here);
+	throw Exception_CS(std::string("plugin not found in ") + short_file_name[0], cmd);
+      }
+    }else{
+      std::string path = plug_path();
+      full_file_name = findfile(short_file_name, path, R_OK);
+      if (full_file_name != "") {
+	// found it, with search
+      }else{untested();
+	cmd.reset(here);
+	throw Exception_CS("plugin not found in " + path, cmd);
+      }
+    }
+
+    DIRECTORY dir(full_file_name);
+    trace2("cmd_attach", full_file_name, dir.exists());
+
+    if(dir.exists()) {
+      tach_dir(cmd, full_file_name, dir, Scope, flags, here);
+    }else{
+      if(flags){
+	attach_file(cmd, full_file_name, Scope, flags, here);
+      }else{itested();
+	detach_file(cmd, full_file_name, Scope, here);
+      }
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+
 class CMD_ATTACH : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {
@@ -61,7 +110,7 @@ public:
     // RTLD_NOW means to resolve symbols on loading
     // RTLD_LOCAL means symbols defined in a plugin are local
     do {
-      if (cmd.umatch("public ")) {untested();
+      if (cmd.umatch("public ")) {itested();
 	dl_scope = RTLD_GLOBAL;
 	// RTLD_GLOBAL means symbols defined in a plugin are global
 	// Use this when a plugin depends on another.
@@ -74,52 +123,8 @@ public:
       }
     } while (cmd.more() && !cmd.stuck(&here));
 
-    std::string short_file_name;
-    here = cmd.cursor();
-    cmd >> short_file_name;
-    
-    if (short_file_name == "") {
-      // nothing, list what we have
-      list();
-    }else{
-      std::string full_file_name;
-      if (short_file_name[0]=='/' || short_file_name[0]=='.'){
-	if (OS::access_ok(short_file_name, R_OK)) {
-	  // found it, local or root
-	  full_file_name = short_file_name;
-	}else{untested();
-	  cmd.reset(here);
-	  throw Exception_CS(std::string("plugin not found in ") + short_file_name[0], cmd);
-	}
-      }else{
-	std::string path = plug_path();
-	full_file_name = findfile(short_file_name, path, R_OK);
-	if (full_file_name != "") {
-	  // found it, with search
-	}else{untested();
-	  cmd.reset(here);
-	  throw Exception_CS("plugin not found in " + path, cmd);
-	}
-      }
-
-      DIRECTORY dir(full_file_name);
-      trace2("cmd_attach", full_file_name, dir.exists());
-
-      if(dir.exists()) {
-	attach_dir(cmd, full_file_name, dir, Scope, check | dl_scope, here);
-      }else{
-	try{
-	  attach_file(cmd, full_file_name, Scope, check | dl_scope, here);
-	}catch(Exception_CS const& e){untested();
-	  cmd.reset(here);
-	  throw e;
-	}
-      }
-    }
+    load_or_unload(cmd, Scope, check | dl_scope);
   }
-  void attach_dir(CS&, std::string const&, DIRECTORY const&,
-                  CARD_LIST const*, int, size_t);
-  void attach_file(CS&, std::string const&, CARD_LIST const*, int, size_t);
 
   std::string help_text()const override {
     return 
@@ -133,9 +138,8 @@ public:
 } p1;
 DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
 /*--------------------------------------------------------------------------*/
-void CMD_ATTACH::attach_dir(CS& cmd, std::string const& dirname,
-                            DIRECTORY const& dir,
-                            CARD_LIST const* Scope, int flags, size_t here)
+void tach_dir(CS& cmd, std::string const& dirname, DIRECTORY const& dir,
+              CARD_LIST const* Scope, int flags, size_t here)
 {
   DIRECTORY::const_iterator i;
   std::vector<std::string> sos;
@@ -146,30 +150,36 @@ void CMD_ATTACH::attach_dir(CS& cmd, std::string const& dirname,
     if(s<slen){
     }else if(fname.substr(s-slen, s) == SUFFIX){
       sos.push_back(fname);
-    }else{ itested();
+    }else{
     }
   }
   std::sort(sos.begin(), sos.end());
   std::vector<std::string>::const_iterator ni;
-  error(bLOG, "Loading from " + dirname + "\n");
+  error(bLOG, "Plugins in " + dirname + "\n");
   for(ni=sos.begin(); ni!=sos.end(); ++ni) {
     error(bLOG, " .. " + *ni + "\n");
-    attach_file(cmd, dirname + "/" + *ni, Scope, flags, here);
+    if(flags){
+      attach_file(cmd, dirname + "/" + *ni, Scope, flags, here);
+    }else{ itested();
+      detach_file(cmd, dirname + "/" + *ni, Scope, here);
+    }
   }
 }
 /*--------------------------------------------------------------------------*/
-void CMD_ATTACH::attach_file(CS& cmd, std::string const& file_name,
+void attach_file(CS& cmd, std::string const& file_name,
                              CARD_LIST const* Scope, int flags,
                              size_t here)
 {
   // a name to look for
   // check if already loaded
-  if (void* handle = attach_list[file_name]) {itested();
-    if (Scope->is_empty()) {itested();
+  assert(flags);
+  if (void* handle = attach_list[file_name]) {
+    if (Scope->is_empty()) {
       cmd.warn(bDANGER, here, "\"" + file_name + "\": already loaded, replacing");
       dlclose(handle);
       attach_list[file_name] = NULL;
     }else{untested();
+      cmd.reset(here);
       throw Exception_CS("already loaded, cannot replace when there is a circuit", cmd);
     }
   }else{
@@ -177,10 +187,29 @@ void CMD_ATTACH::attach_file(CS& cmd, std::string const& file_name,
 
   assert(OS::access_ok(file_name, R_OK));
 
-  if (void* handle = dlopen(file_name.c_str(), flags)) {
+  if (!flags) { untested();
+  }else if (void* handle = dlopen(file_name.c_str(), flags)) {
     attach_list[file_name] = handle;
   }else{untested();
     throw Exception_CS(dlerror(), cmd);
+  }
+}
+/*--------------------------------------------------------------------------*/
+void detach_file(CS& cmd, std::string const& file_name,
+                 CARD_LIST const* Scope, size_t here)
+{itested();
+  if (Scope->is_empty()) {itested();
+    void* handle = attach_list[file_name];
+    if (handle) {itested();
+      dlclose(handle);
+      attach_list[file_name] = NULL;
+    }else{untested();
+      cmd.reset(here);
+      throw Exception_CS("plugin not attached", cmd);
+    }
+  }else{untested();
+    cmd.reset(here);
+    throw Exception_CS("detach prohibited when there is a circuit", cmd);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -191,27 +220,11 @@ public:
     if (Scope == &CARD_LIST::card_list) {
     }else{untested();
     }
-    size_t here = cmd.cursor();		//BUG// due to the way dlopen and dlclose work
-    std::string file_name;		// it doesn't really work.
-    cmd >> file_name;			// the dispatcher's active instance blocks unload
-    
-    if (file_name == "") {
-      // nothing, list what we have
-      list();
-    }else{untested();
-      if (Scope->is_empty()) {untested();
-	void* handle = attach_list[file_name];
-	if (handle) {untested();
-	  dlclose(handle);
-	  attach_list[file_name] = NULL;
-	}else{untested();
-	  cmd.reset(here);
-	  throw Exception_CS("plugin not attached", cmd);
-	}
-      }else{untested();
-	throw Exception_CS("detach prohibited when there is a circuit", cmd);
-      }
-    }
+    //BUG// due to the way dlopen and dlclose work
+    // it doesn't really work.
+    // the dispatcher's active instance blocks unload
+
+    load_or_unload(cmd, Scope, 0);
   }
 
   std::string help_text()const override {
@@ -240,7 +253,7 @@ public:
 	if (handle) {
 	  dlclose(handle);
 	  ii->second = NULL;
-	}else{untested();
+	}else{itested();
 	  // name still in list, but has been detached already
 	}
       }
