@@ -136,7 +136,7 @@ class List
 protected:
   explicit List() {untested();}
 public:
-  void parse(CS& f);
+  void parse(CS& f) override;
 };
 /*--------------------------------------------------------------------------*/
 #if 0

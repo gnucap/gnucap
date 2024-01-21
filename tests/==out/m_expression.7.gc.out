@@ -1,0 +1,19 @@
+"param a2=ln(3) "
+"param a1=log(3) "
+"param a3=log10(3) "
+"param "
+ a1=log(3) a2=ln(3) a3=log10(3)
+"eval a1 "
+a1= 1.09861228866811
+"eval a2 "
+a2= 1.09861228866811
+"eval a3 "
+a3= 0.477121254719662
+"option debug "
+"eval a1 "
+log(3): Ambiguous. Use 'ln', or 'log10'
+a1= 1.09861228866811
+"eval a2 "
+a2= 1.09861228866811
+"eval a3 "
+a3= 0.477121254719662

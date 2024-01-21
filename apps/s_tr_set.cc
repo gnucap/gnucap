@@ -69,7 +69,7 @@ void TRANSIENT::setup(CS& Cmd)
 	_tstart = arg1;			    /* _tstart _tstop _tstrobe */
 	_tstop  = arg2;				
 	_tstrobe  = arg3;
-      }else if (arg1 > arg3) {untested();   /* eca (logical) order: */
+      }else if (arg1 > arg3) { itested();   /* eca (logical) order: */
 	_tstart = arg1;			    /* _tstart _tstop _tstrobe */
 	_tstop  = arg2;				
 	_tstrobe  = arg3;

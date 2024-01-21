@@ -48,7 +48,7 @@ public:
 } p_sqrt;
 DISPATCHER<FUNCTION>::INSTALL d_sqrt(&function_dispatcher, "sqrt", &p_sqrt);
 /*--------------------------------------------------------------------------*/
-class log : public FUNCTION {
+class ln : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
@@ -56,8 +56,31 @@ public:
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::log(x));
   }
+} p_ln;
+DISPATCHER<FUNCTION>::INSTALL d_ln(&function_dispatcher, "ln", &p_ln);
+/*--------------------------------------------------------------------------*/
+class log : public FUNCTION {
+public:
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
+    error(bDEBUG, "log("+Cmd.fullstring() + "): Ambiguous. Use 'ln', or 'log10'\n");
+    PARAMETER<double> x;
+    Cmd >> x;
+    x.e_val(NOT_INPUT, Scope);
+    return to_string(std::log(x));
+  }
 } p_log;
 DISPATCHER<FUNCTION>::INSTALL d_log(&function_dispatcher, "log", &p_log);
+/*--------------------------------------------------------------------------*/
+class log10 : public FUNCTION {
+public:
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
+    PARAMETER<double> x;
+    Cmd >> x;
+    x.e_val(NOT_INPUT, Scope);
+    return to_string(std::log10(x));
+  }
+} p_log10;
+DISPATCHER<FUNCTION>::INSTALL d_log10(&function_dispatcher, "log10", &p_log10);
 /*--------------------------------------------------------------------------*/
 class exp : public FUNCTION {
 public:

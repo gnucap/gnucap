@@ -1,0 +1,10 @@
+option list
+param a3={<test>}
+
+verilog
+capacitor #(a3) r1(1,0);
+capacitor #(.c(<aaa>)) r1(1,0);
+capacitor #(" <test> + 4 ") r1(1,0);
+
+list
+dc

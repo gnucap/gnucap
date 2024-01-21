@@ -130,7 +130,7 @@ extern "C" {
   static void sig_int(SIGNALARGS)
   {itested();
     signal(SIGINT,sig_int);
-    if (ENV::run_mode == rBATCH) {untested();
+    if (ENV::run_mode == rBATCH) {itested();
       exit(1);
     }else{itested();
       IO::error << '\n';

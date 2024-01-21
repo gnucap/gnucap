@@ -79,20 +79,20 @@ private: // override virtuals
   void	   tr_unload()override;
   TIME_PAIR tr_review()override;
   void	   tr_accept()override;
-  double   tr_involts()const		{unreachable(); return 0;}
+  double   tr_involts()const override	{unreachable(); return 0;}
   //double tr_input()const		//ELEMENT
-  double   tr_involts_limited()const	{unreachable(); return 0;}
+  double   tr_involts_limited()const override {unreachable(); return 0;}
   //double tr_input_limited()const	//ELEMENT
   //double tr_amps()const		//ELEMENT
-  double   tr_probe_num(const std::string&)const;
+  double   tr_probe_num(const std::string&)const override;
 
-  void	   ac_iwant_matrix();
-  void	   ac_begin();
-  void	   do_ac()	{untested();  assert(subckt());  subckt()->do_ac();}
-  void	   ac_load()	{untested();  assert(subckt());  subckt()->ac_load();}
-  COMPLEX  ac_involts()const		{unreachable(); return 0.;}
-  COMPLEX  ac_amps()const		{unreachable(); return 0.;}
-  XPROBE   ac_probe_ext(const std::string&)const;
+  void	   ac_iwant_matrix()override;
+  void	   ac_begin()override;
+  void	   do_ac()override	{untested();  assert(subckt());  subckt()->do_ac();}
+  void	   ac_load()override	{untested();  assert(subckt());  subckt()->ac_load();}
+  COMPLEX  ac_involts()const override	{unreachable(); return 0.;}
+  COMPLEX  ac_amps()const override	{unreachable(); return 0.;}
+  XPROBE   ac_probe_ext(const std::string&)const override;
 
   std::string port_name(int i)const override {
     assert(i >= 0);
@@ -117,7 +117,7 @@ protected:
     :COMMON_COMPONENT(p) {++_count;}
 public:
 		~COMMON_LOGIC()			{--_count;}
-  bool operator==(const COMMON_COMPONENT&)const;
+  bool operator==(const COMMON_COMPONENT&)const override;
   static  int	count()				{untested();return _count;}
   virtual LOGICVAL logic_eval(const node_t*, int)const	= 0;
 
@@ -134,12 +134,12 @@ protected:
 class LOGIC_AND : public COMMON_LOGIC {
 private:
   explicit LOGIC_AND(const LOGIC_AND& p) :COMMON_LOGIC(p){itested();++_count;}
-  COMMON_COMPONENT* clone()const {itested();return new LOGIC_AND(*this);}
+  COMMON_COMPONENT* clone()const override{itested();return new LOGIC_AND(*this);}
 public:
   explicit LOGIC_AND(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n,  int incount)const {untested();
+  LOGICVAL logic_eval(const node_t* n,  int incount)const override {itested();
     LOGICVAL out(n[0]->lv());
-    for (int ii=1; ii<incount; ++ii) {untested();
+    for (int ii=1; ii<incount; ++ii) {itested();
       out &= n[ii]->lv();
     }
     return out;
@@ -150,12 +150,12 @@ public:
 class LOGIC_NAND : public COMMON_LOGIC {
 private:
   explicit LOGIC_NAND(const LOGIC_NAND&p):COMMON_LOGIC(p){++_count;}
-  COMMON_COMPONENT* clone()const {return new LOGIC_NAND(*this);}
+  COMMON_COMPONENT* clone()const override {return new LOGIC_NAND(*this);}
 public:
   explicit LOGIC_NAND(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+  LOGICVAL logic_eval(const node_t* n, int incount)const override {itested();
     LOGICVAL out(n[0]->lv());
-    for (int ii=1; ii<incount; ++ii) {untested();
+    for (int ii=1; ii<incount; ++ii) {itested();
       out &= n[ii]->lv();
     }
     return ~out;
@@ -166,10 +166,10 @@ public:
 class LOGIC_OR : public COMMON_LOGIC {
 private:
   explicit LOGIC_OR(const LOGIC_OR& p)	 :COMMON_LOGIC(p){itested();++_count;}
-  COMMON_COMPONENT* clone()const {itested(); return new LOGIC_OR(*this);}
+  COMMON_COMPONENT* clone()const override {itested(); return new LOGIC_OR(*this);}
 public:
   explicit LOGIC_OR(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+  LOGICVAL logic_eval(const node_t* n, int incount)const override{untested();
     LOGICVAL out(n[0]->lv());
     for (int ii=1; ii<incount; ++ii) {untested();
       out |= n[ii]->lv();
@@ -182,10 +182,10 @@ public:
 class LOGIC_NOR : public COMMON_LOGIC {
 private:
   explicit LOGIC_NOR(const LOGIC_NOR& p) :COMMON_LOGIC(p) {++_count;}
-  COMMON_COMPONENT* clone()const {return new LOGIC_NOR(*this);}
+  COMMON_COMPONENT* clone()const override {return new LOGIC_NOR(*this);}
 public:
   explicit LOGIC_NOR(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n, int incount)const {
+  LOGICVAL logic_eval(const node_t* n, int incount)const override {
     LOGICVAL out(n[0]->lv());
     for (int ii=1; ii<incount; ++ii) {
       out |= n[ii]->lv();
@@ -198,10 +198,10 @@ public:
 class LOGIC_XOR : public COMMON_LOGIC {
 private:
   explicit LOGIC_XOR(const LOGIC_XOR& p) :COMMON_LOGIC(p){itested();++_count;}
-  COMMON_COMPONENT* clone()const {itested(); return new LOGIC_XOR(*this);}
+  COMMON_COMPONENT* clone()const override {itested(); return new LOGIC_XOR(*this);}
 public:
   explicit LOGIC_XOR(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+  LOGICVAL logic_eval(const node_t* n, int incount)const override {untested();
     LOGICVAL out(n[0]->lv());
     for (int ii=1; ii<incount; ++ii) {untested();
       out ^= n[ii]->lv();
@@ -214,10 +214,10 @@ public:
 class LOGIC_XNOR : public COMMON_LOGIC {
 private:
   explicit LOGIC_XNOR(const LOGIC_XNOR&p):COMMON_LOGIC(p){itested();++_count;}
-  COMMON_COMPONENT* clone()const {itested(); return new LOGIC_XNOR(*this);}
+  COMMON_COMPONENT* clone()const override {itested(); return new LOGIC_XNOR(*this);}
 public:
   explicit LOGIC_XNOR(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n, int incount)const {untested();
+  LOGICVAL logic_eval(const node_t* n, int incount)const override {untested();
     LOGICVAL out(n[0]->lv());
     for (int ii=1; ii<incount; ++ii) {untested();
       out ^= n[ii]->lv();
@@ -230,10 +230,10 @@ public:
 class LOGIC_INV : public COMMON_LOGIC {
 private:
   explicit LOGIC_INV(const LOGIC_INV& p) :COMMON_LOGIC(p){++_count;}
-  COMMON_COMPONENT* clone()const	{return new LOGIC_INV(*this);}
+  COMMON_COMPONENT* clone()const override {return new LOGIC_INV(*this);}
 public:
   explicit LOGIC_INV(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t* n, int)const {
+  LOGICVAL logic_eval(const node_t* n, int)const override {
     return ~n[0]->lv();
   }
   std::string name()const override	  {return "inv";}
@@ -242,10 +242,10 @@ public:
 class LOGIC_NONE : public COMMON_LOGIC {
 private:
   explicit LOGIC_NONE(const LOGIC_NONE&p):COMMON_LOGIC(p){untested();++_count;}
-  COMMON_COMPONENT* clone()const {untested(); return new LOGIC_NONE(*this);}
+  COMMON_COMPONENT* clone()const override {untested(); return new LOGIC_NONE(*this);}
 public:
   explicit LOGIC_NONE(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_t*, int)const {untested();
+  LOGICVAL logic_eval(const node_t*, int)const override {untested();
     return lvUNKNOWN;
   }
   std::string name()const override	  {untested();return "error";}
