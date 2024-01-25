@@ -73,16 +73,10 @@ Token* Token_BINOP::op(const Token* T1, const Token* T2)const
     return NULL;
   }
   if (b) {
-    if (T1->aRgs() == "") {
-    }else{untested();
-    }
-    if (T2->aRgs() == "") {
-    }else{untested();
-    }
-    return new Token_CONSTANT(b->val_string(), b, (T1->aRgs()+T2->aRgs()));
+    return new Token_CONSTANT(b->val_string(), b);
   }else{
     // can get here if either T1 or T2 has no data
-    return new Token_CONSTANT("false", NULL, "");
+    return new Token_CONSTANT("false", NULL);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -105,13 +99,10 @@ Token* Token_UNARY::op(const Token* T1)const
     return NULL;
   }
   if (b) {
-    if (T1->aRgs() == "") {
-    }else{untested();
-    }
-    return new Token_CONSTANT(b->val_string(), b, (T1->aRgs()));
+    return new Token_CONSTANT(b->val_string(), b);
   }else{untested();
     // can get here if T1 has no data
-    return new Token_CONSTANT("false", NULL, "");
+    return new Token_CONSTANT("false", NULL);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -172,7 +163,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	delete(E->back());
 	E->pop_back();
 	const Float* v = new Float(result);
-	E->push_back(new Token_CONSTANT(result, v, ""));
+	E->push_back(new Token_CONSTANT(result, v));
       }
     }else{
       throw Exception_No_Match(name()); //BUG// memory leak
@@ -186,7 +177,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
       // a number
       Float* n = new Float(name());
       trace1("found number", name());
-      E->push_back(new Token_CONSTANT(name(), n, ""));
+      E->push_back(new Token_CONSTANT(name(), n));
     }else{
       // a name
       PARAMETER<double> p = (*(E->_scope->params()))[name()];
@@ -199,7 +190,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	if(v!=NOT_INPUT){
 	  // it's a float constant.
 	  Float* n = new Float(v);
-	  E->push_back(new Token_CONSTANT(n->val_string(), n, ""));
+	  E->push_back(new Token_CONSTANT(n->val_string(), n));
 	}else{
 	  // not a float. keep expression
 	  for (Expression::const_iterator i = e.begin(); i != e.end(); ++i) {
@@ -212,12 +203,8 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	}
       }else{
 	// no value - push name (and accept incomplete solution later)
-#if 1
 	String* s = new String(name());
-	E->push_back(new Token_CONSTANT(name(), s, ""));
-#else
-	E->push_back(new Token_SYMBOL(name(), ""));	
-#endif
+	E->push_back(new Token_CONSTANT(name(), s));
       }
     }
   }
@@ -382,13 +369,13 @@ void Token_UNARY::stack_op(Expression* E)const
 void Token_CONSTANT::stack_op(Expression* E)const
 {
   // unreachable(); no. restoring arg expression??
-  trace3("stackop constant", name(), aRgs(), dynamic_cast<Float const*>(data()));
+  trace2("stackop constant", name(), dynamic_cast<Float const*>(data()));
 
   assert(E);
   if(auto f = dynamic_cast<Float const*>(data())){
-    E->push_back(new Token_CONSTANT(name(), new Float(*f), aRgs()));
+    E->push_back(new Token_CONSTANT(name(), new Float(*f)));
   }else if(auto s = dynamic_cast<String const*>(data())){
-    E->push_back(new Token_CONSTANT(name(), new String(*s), aRgs()));
+    E->push_back(new Token_CONSTANT(name(), new String(*s)));
   }else{
     assert(false);
     unreachable();

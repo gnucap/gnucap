@@ -83,7 +83,7 @@ void Expression::dump(std::ostream& out)const
 	// pop op push
 	const Token* t1 = stack.back();
 	stack.pop_back();
-	Token* t = new Token_SYMBOL((**i).name(), t1->full_name());
+	Token* t = new Token_SYMBOL((**i).name() + t1->full_name());
 	locals.push_back(t);
 	stack.push_back(t);
       }else{
@@ -99,7 +99,7 @@ void Expression::dump(std::ostream& out)const
       const Token* t1 = stack.back();
       stack.pop_back();
       std::string tmp('(' + t1->full_name() + ' ' + (**i).name() + ' ' + t2->full_name() + ')');
-      Token* t = new Token_SYMBOL(tmp, "");
+      Token* t = new Token_SYMBOL(tmp);
       locals.push_back(t);
       stack.push_back(t);
     }else if (dynamic_cast<const Token_UNARY*>(*i)) {
@@ -108,7 +108,7 @@ void Expression::dump(std::ostream& out)const
       const Token* t1 = stack.back();
       stack.pop_back();
       std::string tmp('(' + (**i).name() + ' ' + t1->full_name() + ')');
-      Token* t = new Token_SYMBOL(tmp, "");
+      Token* t = new Token_SYMBOL(tmp);
       locals.push_back(t);
       stack.push_back(t);
     }else if (auto t = dynamic_cast<const Token_TERNARY*>(*i)) {
@@ -123,7 +123,7 @@ void Expression::dump(std::ostream& out)const
       t->false_part()->dump(tmp);
       tmp << ')';
 
-      Token* n = new Token_SYMBOL(tmp.str(), "");
+      Token* n = new Token_SYMBOL(tmp.str());
       locals.push_back(n);
       stack.push_back(n);
     }else{
