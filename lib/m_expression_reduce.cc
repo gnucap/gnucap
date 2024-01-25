@@ -115,55 +115,71 @@ Token* Token_UNARY::op(const Token* T1)const
   }
 }
 /*--------------------------------------------------------------------------*/
+static std::string call_function(FUNCTION const* f, Expression const* E)
+{
+  assert(!E->is_empty());
+  Expression::const_iterator input = E->end();
+  --input;
+  assert(dynamic_cast<const Token_PARLIST*>(*input));
+  --input;
+
+  std::string arg;
+  std::string comma = "";
+  bool all_float = true;
+  while (!dynamic_cast<const Token_STOP*>(*input)) {
+    Float const* f = dynamic_cast<Float const*>((*input)->data());
+    all_float = f;
+    if(!all_float){
+      trace1("not float", (*input)->name());
+      break;
+    }else{
+      assert(dynamic_cast<Token_CONSTANT const*>(*input));
+    }
+
+    arg = (*input)->name() + comma + arg;
+    comma = ", ";
+    assert(input != E->begin());
+    --input;
+  }
+
+  if(all_float){
+    // function call as usual
+    CS cmd(CS::_STRING, arg);
+    return f->eval(cmd, E->_scope);
+  }else{
+    return "";
+  }
+}
+/*--------------------------------------------------------------------------*/
 void Token_SYMBOL::stack_op(Expression* E)const
 {
   assert(E);
   // replace single token with its value
   if (!E->is_empty() && dynamic_cast<const Token_PARLIST*>(E->back())) {
+    trace1("SYM stackop", name());
     // has parameters (table or function)
     if (FUNCTION* f = function_dispatcher[name()]) {
-      const Token* T1 = E->back(); // Token_PARLIST
-      assert(T1->data()); // expression
-      Base const* d = T1->data();
-      auto ee = prechecked_cast<Expression const*>(d);
-      assert(ee);
-
-      // Expression fee = f->ev(ee); ?
-
-      bool all_float = true;
-      for (Expression::const_iterator i = ee->begin(); i != ee->end(); ++i) {
-	trace1("float?", (**i).name());
-	all_float = dynamic_cast<Float const*>((**i).data());
-	if(!all_float){
-	  break;
-	}else{
-	}
-      }
-
-      if(all_float){
-	// function call as usual
-	CS cmd(CS::_STRING, T1->name());
-	std::string value = f->eval(cmd, E->_scope);
-	E->pop_back();
-	const Float* v = new Float(value);
-	E->push_back(new Token_CONSTANT(value, v, ""));
-      }else{
-	// restore argument.
-	E->pop_back();
-	E->push_back(new Token_STOP("stopname"));
-	for (Expression::const_iterator i = ee->begin(); i != ee->end(); ++i) {
-	  trace1("stackop restore arg", (**i).name());
-	  (**i).stack_op(E);
-	}
-	E->push_back(new Token_PARLIST(".."));
+      std::string result = call_function(f, E);
+      trace2("callf", result, name());
+      if(result==""){
 	E->push_back(clone());
+      }else{
+	while (!dynamic_cast<const Token_STOP*>(E->back())) {
+	  delete(E->back());
+	  E->pop_back();
+	  assert(!E->is_empty());
+	}
+	delete(E->back());
+	E->pop_back();
+	const Float* v = new Float(result);
+	E->push_back(new Token_CONSTANT(result, v, ""));
       }
-      delete T1;
     }else{
       throw Exception_No_Match(name()); //BUG// memory leak
       unreachable();
       E->push_back(clone());
     }
+
   }else{
     // has no parameters (scalar)
     if (strchr("0123456789.", name()[0])) {
@@ -255,7 +271,7 @@ void Token_TERNARY::stack_op(Expression* E)const
 }
 /*--------------------------------------------------------------------------*/
 void Token_BINOP::stack_op(Expression* E)const
-{
+{ itested();
   assert(E);
   // replace 2 tokens (binop) with 1 (result)
   Token* t1 = E->back();
@@ -326,40 +342,18 @@ void Token_STOP::stack_op(Expression* E)const
   E->push_back(clone());
 }
 /*--------------------------------------------------------------------------*/
+void Token_ARRAY::stack_op(Expression* E)const
+{
+  assert(E);
+  E->push_back(clone());
+  return;
+}
+/*--------------------------------------------------------------------------*/
 void Token_PARLIST::stack_op(Expression* E)const
 {
   assert(E);
-  std::stack<Token*> stack;
-  auto arg_exp = new Expression();
-  // replace multiple tokens of a PARLIST with a single token
-  bool been_here = false;
-  std::string tmp;//(")");
-  for (;;) {
-    Token* t = E->back();
-    E->pop_back();
-    if (dynamic_cast<const Token_STOP*>(t)) {
-      // tmp = "(" + tmp;
-      delete t;
-      break;
-    }else{
-      if (been_here) {
-	tmp = ", " + tmp;
-      }else{
-	been_here = true;
-      }
-      tmp = t->name() + tmp;
-      stack.push(t);
-      // arg_exp->push_back(t);
-    }
-  }
-  // turn over (there is no push_front, maybe on purpose)
-  while(!stack.empty()){
-    trace1("pushing", stack.top()->name());
-    arg_exp->push_back(stack.top());
-    stack.pop();
-  }
-  auto parlist = new Token_PARLIST(tmp, arg_exp);
-  E->push_back(parlist);
+  E->push_back(clone());
+  return;
 }
 /*--------------------------------------------------------------------------*/
 void Token_UNARY::stack_op(Expression* E)const

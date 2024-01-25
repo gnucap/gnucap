@@ -38,10 +38,14 @@ void Expression::dump(std::ostream& out)const
   for (const_iterator i = begin(); i != end(); ++i) {
     if (dynamic_cast<const Token_STOP*>(*i)) {
       stack.push_back(*i);
-    }else if (dynamic_cast<const Token_PARLIST*>(*i)) {
+    }else if (dynamic_cast<const Token_PARLIST*>(*i)
+           || dynamic_cast<const Token_ARRAY*>(*i)) {
+      if((*i)->data()){ untested();
+      }else{
+      }
       // pop*n  push
       bool been_here = false;
-      std::string tmp(")");
+      std::string tmp((*i)->name());
       for (;;) {
 	if (stack.empty()) {untested();
 	  throw Exception("bad expression");
@@ -50,10 +54,11 @@ void Expression::dump(std::ostream& out)const
 	const Token* t = stack.back();
 	stack.pop_back();
 	if (dynamic_cast<const Token_STOP*>(t)) {
-	  tmp = "(" + tmp;
+	  tmp = t->name() + tmp;
 	  break;
 	}else if (dynamic_cast<const Token_SYMBOL*>(t)
-	      ||  dynamic_cast<const Token_CONSTANT*>(t)) {
+	      ||  dynamic_cast<const Token_CONSTANT*>(t)
+	      ||  dynamic_cast<const Token_ARRAY*>(t)) {
 	  if (been_here) {
 	    tmp = ", " + tmp;
 	  }else{
@@ -64,7 +69,12 @@ void Expression::dump(std::ostream& out)const
 	  unreachable();
 	}
       }
-      Token* t = new Token_PARLIST(tmp);
+      Token* t;
+      if (dynamic_cast<const Token_PARLIST*>(*i)){
+	t = new Token_PARLIST(tmp);
+      }else{
+	t = new Token_ARRAY(tmp);
+      }
       locals.push_back(t);
       stack.push_back(t);
     }else if (dynamic_cast<const Token_CONSTANT*>(*i)|| dynamic_cast<const Token_SYMBOL*>(*i)) {
