@@ -86,6 +86,31 @@ void Expression::arglist(CS& File)
   }
 }
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+CS& Expression::array(CS& File)
+{itested();
+  trace1("array", File.tail().substr(0,20));
+  size_t here = File.cursor();
+  if (File.skip1b("'") && File.peek() == '{') { itested();
+    File.skip();
+    trace1("array2", File.tail().substr(0,20));
+    push_back(new Token_STOP("'{"));
+    if (!File.skip1b("}")) { itested();
+      expression(File);
+      arglisttail(File);
+      if (!File.skip1b("}")) { untested();
+	throw Exception_CS("unbalanced parentheses (array)", File);
+      }else{ itested();
+      }
+    }else{
+    }
+
+    push_back(new Token_ARRAY("}"));
+  }else{itested();
+    File.reset_fail(here);
+  }
+  return File;
+}
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 void Expression::leaf(CS& File)
 {
     trace1("leaf?", File.tail());
@@ -96,16 +121,17 @@ void Expression::leaf(CS& File)
       delete s;
       throw Exception_CS("what's this?", File);
     }else{
-      push_back(new Token_CONSTANT("\"" + s->val_string() + "\"", s, ""));
+      push_back(new Token_CONSTANT("\"" + s->val_string() + "\"", s));
     }
   }else if (File.peek() == '<') {
     std::string s = File.ctos("", "<", ">");
-    push_back(new Token_SYMBOL("<" + s + ">", "" ));
+    push_back(new Token_SYMBOL("<" + s + ">"));
+  }else if (array(File)) { itested();
   }else{
     Name_String name(File);
     if (!File.stuck(&here)) {
       arglist(File);
-      push_back(new Token_SYMBOL(name, ""));
+      push_back(new Token_SYMBOL(name));
     }else{itested();
       trace1("leafstuck", File.tail());
       throw Exception_CS("what's this?", File);
