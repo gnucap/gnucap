@@ -21,7 +21,7 @@
 #------------------------------------------------------------------------
 TARGET =
 #------------------------------------------------------------------------
-INSTALL_FILES = $(RAW_SRCS) $(RAW_HDRS)
+INSTALL_FILES = $(RAW_SRCS) $(RAW_HDRS) Make2.g++ Make2.Debug Make3 config.h
 INSTALL_DIR = $(PREFIX)/include/gnucap
 #------------------------------------------------------------------------
 LIBS =
@@ -44,7 +44,7 @@ u_cardst.h u_function.h u_lang.h u_limit.h u_nodemap.h u_opt.h \
 u_parameter.h u_prblst.h u_probe.h u_sdp.h u_sim_data.h u_status.h \
 u_time_pair.h u_xprobe.h u_attrib.h
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 configure
+RAW_OTHER = Make1 configure Make2.g++ Make2.Debug Make3 config.h
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------

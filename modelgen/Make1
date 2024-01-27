@@ -34,7 +34,7 @@ mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc
 #------------------------------------------------------------------------
 RAW_HDRS = mg_.h mg_out.h
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 Make2.g++ Make2.Debug Make2.mingw32 configure
+RAW_OTHER = Make1 Make2.mingw32 configure
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------

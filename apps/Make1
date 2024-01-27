@@ -83,7 +83,7 @@ $(LANG_SRCS) \
 $(FUNC_SRCS) \
 $(OTHER_SRCS)
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 Make2.g++ Make2.Debug Make2.mingw32 configure test_readline.cc
+RAW_OTHER = Make1 Make2.mingw32 configure test_readline.cc
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER) $(MODELS)
 #------------------------------------------------------------------------

@@ -53,6 +53,6 @@ chmod +x gnucap-conf
 echo \# created by $PWD/$0. do not edit >Make2
 echo \#------------------------------------------------------------------------ >>Make2
 echo "CCC = c++" >>Make2
-cat Make1 Make2 ../Make3 >Makefile
+cat Make1 Make2 ../include/Make3 >Makefile
 
 exit 0

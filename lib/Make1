@@ -48,7 +48,7 @@ bm_cond.cc bm_value.cc bm.cc \
 c__cmd.cc c_attach.cc c_file.cc \
 findbr.cc plot.cc
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 Make2.g++ Make2.Debug Make2.mingw32 configure test_readline.cc
+RAW_OTHER = Make1 Make2.mingw32 configure test_readline.cc
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
