@@ -27,6 +27,8 @@ VPATH = .:..
 CCC = g++
 
 CCFLAGS = \
+-fPIC \
+-DHAVE_LIBREADLINE \
 -std=c++11 -DUNIX  -g -O0 -I. -I../../include -DTRACE_UNTESTED \
 -Wall -Wextra \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
@@ -36,19 +38,12 @@ CCFLAGS = \
 -Wvla -Woverlength-strings -Wno-sign-conversion -Wno-unused-const-variable
 #last line not in 4.1
 
-LIBS = \
--lgnucap \
-
-LDFLAGS = -rdynamic  \
--L../../lib/O-DEBUG
-
-%.SUFFIXES:
+.SUFFIXES:
 .SUFFIXES: .o .cc
 .cc.o:; $(CCC) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
-$(TARGET): $(TARGET_DEPENDS)
-	rm -f $@
-	$(CCC)  $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@
+MAKE_EXE = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_LIB = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3

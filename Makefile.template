@@ -59,18 +59,22 @@ mingw: nothing
 	(cd MSW; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 tags: nothing
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	(${MAKE} tags -f Make.aux)
 #-----------------------------------------------------------------------------
 depend: nothing
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux depend
 #-----------------------------------------------------------------------------
 checkin: nothing
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux checkin
 #-----------------------------------------------------------------------------
 checkout: nothing
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux checkout
 #-----------------------------------------------------------------------------
@@ -83,6 +87,7 @@ install-debug: nothing
 	(cd O-DEBUG; ${MAKE} install)
 #-----------------------------------------------------------------------------
 uninstall: nothing
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux uninstall
 #-----------------------------------------------------------------------------
@@ -102,31 +107,39 @@ unconfig:
 	rm -f Makefile
 #-----------------------------------------------------------------------------
 date: nothing
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux date
 #-----------------------------------------------------------------------------
 header-check:
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux header-check
 #-----------------------------------------------------------------------------
 manifest:
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux manifest
 #-----------------------------------------------------------------------------
 md5sums:
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux md5sums
 #-----------------------------------------------------------------------------
 mostlyclean:
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux mostlyclean
 clean:
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux clean
 distclean:
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux distclean
 maintainer-clean:
+	rm -f Make.aux
 	cat Make1 Make2 ../Make3 >Make.aux
 	${MAKE} -f Make.aux maintainer-clean
 #-----------------------------------------------------------------------------

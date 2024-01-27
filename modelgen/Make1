@@ -1,5 +1,4 @@
-#$Id: Make1,v 26.138 2013/04/24 03:21:58 al Exp $ -*- Makefile -*-
-#
+#$Id: modelgen/Make1 $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -23,8 +22,9 @@
 TARGET = gnucap-modelgen
 #------------------------------------------------------------------------
 INSTALL_FILES = $(TARGET)$(TARGET_EXT)
-#------------------------------------------------------------------------
 INSTALL_DIR = $(PREFIX)/bin
+#------------------------------------------------------------------------
+LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
@@ -41,7 +41,6 @@ RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
 IMPORTED_SRCS =
 IMPORTED_HDRS =
-NOT_IMPORTED_HDRS =
 IMPORTED_OTHER =
 IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
 #------------------------------------------------------------------------
@@ -57,7 +56,7 @@ IMPORTED_DIST = $(IMPORTED)
 DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-SRCS = $(RAW_SRCS) $(GENERATED_SRCS)
+SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
 HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
 OBJS = ${SRCS:.cc=.o}
 TARGET_DEPENDS = $(OBJS) $(RAW)
@@ -67,5 +66,10 @@ MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
 CLEANFILES = $(MOSTLYCLEANFILES)
 DISTCLEANFILES = $(CLEANFILES)
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+$(TARGET)$(TARGET_EXT): $(TARGET_DEPENDS)
+	rm -f $@
+	$(MAKE_EXE) -o $@
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------

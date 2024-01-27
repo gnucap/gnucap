@@ -1,6 +1,7 @@
 #!/bin/sh
+# conf/configure
+# configure for config
 
-mkdir -p O
 #-------------  Stuff added to enable --prefix  --------------
 if test "x$1" != "x"; then
     # echo Found input parameter -- $1
@@ -21,31 +22,37 @@ else
 fi
 
 sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
-
 #----------------------------------------------------------------
-echo "CCFLAGS = -fPIC \\" >Make.ccflags
-echo "-std=c++11 -DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W \\" >>Make.ccflags
-# begin special stuff
-# end special stuff
-echo "" >>Make.ccflags
+pkglibdir='${prefix}/lib/gnucap'
+pkglibdir_expanded="${prefix}/lib/gnucap"
 
-cat <<CAT_EOF >Make.sys
-#------------------------------------------------------------------------
-VPATH = .:..
-CCC = c++
+# bug. this is not implemented consistently.
+CXX=${CXX-c++}
 
-.SUFFIXES:
-.SUFFIXES: .o .cc
-.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
-#------------------------------------------------------------------------
-MAKE_EXE = \$(CCC) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@ 
-MAKE_LIB = \$(CCC) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -shared -o \$@ 
-#------------------------------------------------------------------------
-CAT_EOF
+fill_template() {
+sed -e "s#@prefix@#$prefix#" \
+    -e "s#@exec_prefix@#$prefix#" \
+    -e "s#@libdir@#$prefix/lib#" \
+    -e "s#@includedir@#$\{prefix\}/include#" \
+    -e "s#@datarootdir@#$\{prefix\}/share/gnucap#" \
+    -e "s#@docdir@#$\{prefix\}/share/doc/gnucap#" \
+    -e "s#@sysconfdir@#$\{prefix\}/etc#" \
+    -e "s#@pkglibdir@#$pkglibdir#" \
+    -e "s#@pkglibdir_expanded@#$pkglibdir_expanded#" \
+    -e "s#@CXXFLAGS@#$CCFLAGS#" \
+    -e "s#@GNUCAP_LIBS@#-lgnucap#" \
+    -e "s#@CXX@#$CXX#" < $1.in > $1
+}
+
+fill_template config.h
+fill_template gnucap-conf
+fill_template gnucap.conf
+
+chmod +x gnucap-conf
 
 echo \# created by $PWD/$0. do not edit >Make2
 echo \#------------------------------------------------------------------------ >>Make2
-cat Make.ccflags Make.sys >>Make2
-rm  Make.ccflags Make.sys
+echo "CCC = c++" >>Make2
+cat Make1 Make2 ../Make3 >Makefile
 
 exit 0

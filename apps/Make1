@@ -1,4 +1,4 @@
-#$Id: Make1  $ -*- Makefile -*-
+#$Id: apps/Make1 $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -20,12 +20,10 @@
 # 02110-1301, USA.
 #------------------------------------------------------------------------
 TARGET = gnucap-default-plugins
+TARGET_EXT = .so
 #------------------------------------------------------------------------
 INSTALL_FILES = $(TARGET)$(TARGET_EXT)
-#------------------------------------------------------------------------
 INSTALL_DIR = $(PREFIX)/lib/gnucap
-#------------------------------------------------------------------------
-DELETED =
 #------------------------------------------------------------------------
 # These source files can be omitted, and supplied as plugins.
 # device models defined in high level .model files
@@ -107,7 +105,7 @@ IMPORTED_DIST = $(IMPORTED)
 DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-SRCS = $(IMPORTED_SRCS) $(GENERATED_SRCS) $(RAW_SRCS)
+SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
 HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
 OBJS = ${SRCS:.cc=.o}
 TARGET_DEPENDS = $(OBJS) $(RAW) $(MODELS)
@@ -129,3 +127,8 @@ MODELGEN = `pwd | sed 's/\(.*\)apps/\1modelgen/'`/gnucap-modelgen
 	(export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<)
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
+$(TARGET)$(TARGET_EXT): $(TARGET_DEPENDS)
+	rm -f $@
+	$(MAKE_LIB) -o $@
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------

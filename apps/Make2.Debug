@@ -21,11 +21,10 @@
 #------------------------------------------------------------------------
 VPATH = .:..
 
-# Standard base for g++, debugging, a little optimization
+# Standard base for g++, debugging, no optimization
 # Running the program will give a spew of line markers for debugging.
 
 CCC = g++
-TARGET_EXT = .so
 
 CCFLAGS = \
 -fPIC \
@@ -39,17 +38,12 @@ CCFLAGS = \
 -Wvla -Woverlength-strings -Wno-sign-conversion -Wno-unused-const-variable
 #last line not in 4.1
 
-LIBS = \
-
-LDFLAGS = -shared
-
-%.SUFFIXES:
+.SUFFIXES:
 .SUFFIXES: .o .cc
 .cc.o:; $(CCC) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
-$(TARGET)$(TARGET_EXT): $(TARGET_DEPENDS)
-	rm -f $@
-	$(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_EXE = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_LIB = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3

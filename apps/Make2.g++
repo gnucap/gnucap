@@ -24,23 +24,18 @@ VPATH = .:..
 # Standard base for g++.
 
 CCC = g++
-TARGET_EXT = .so
 
 CCFLAGS = \
 -fPIC \
+-DHAVE_LIBREADLINE \
 -std=c++11 -DUNIX -O3 -DNDEBUG -I. -I../include -I../../include -W
-
-LIBS = \
-
-LDFLAGS = -shared
 
 .SUFFIXES:
 .SUFFIXES: .o .cc
 .cc.o:; $(CCC) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
-$(TARGET)$(TARGET_EXT): $(TARGET_DEPENDS)
-	rm -f $@
-	$(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_EXE = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_LIB = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # If you are porting and using g++, you should use this file as a start,
 #	for a "release" version, optimized with run-time tracing removed.
