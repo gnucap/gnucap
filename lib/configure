@@ -44,8 +44,9 @@ VPATH = .:..
 CXX = c++
 
 .SUFFIXES:
-.SUFFIXES: .o .cc
+.SUFFIXES: .so .o .cc
 .cc.o:; \$(CXX) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.cc.so:; \$(MAKE_LIB) \$<
 #------------------------------------------------------------------------
 MAKE_EXE = \$(CXX) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@ 
 MAKE_LIB = \$(CXX) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -shared -o \$@ 

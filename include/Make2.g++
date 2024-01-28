@@ -31,9 +31,11 @@ CCFLAGS = \
 -DHAVE_LIBREADLINE \
 -std=c++11 -DUNIX -O3 -DNDEBUG -I. -I../include -I../../include -W
 
+
 .SUFFIXES:
-.SUFFIXES: .o .cc
-.cc.o:; $(CXX) $(CCFLAGS) -c $<
+.SUFFIXES: .so .o .cc
+.cc.o:; $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
+.cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
 MAKE_EXE = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
 MAKE_LIB = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 

@@ -36,12 +36,13 @@ CCFLAGS = \
 -Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
 -Winit-self -Wmissing-include-dirs -Winvalid-pch \
 -Wvolatile-register-var -Wstack-protector \
--Wvla -Woverlength-strings -Wno-sign-conversion -Wno-unused-const-variable
+-Wvla -Woverlength-strings -Wno-sign-conversion
 #last line not in 4.1
 
 .SUFFIXES:
-.SUFFIXES: .o .cc
-.cc.o:; $(CXX) $(CCFLAGS) -c $<
+.SUFFIXES: .so .o .cc
+.cc.o:; $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
+.cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
 MAKE_EXE = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
 MAKE_LIB = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 

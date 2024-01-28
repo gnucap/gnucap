@@ -21,7 +21,7 @@
 #------------------------------------------------------------------------
 # Part 3 of a Makefile
 #------------------------------------------------------------------------
-all: ${TARGET_LIB:%=%${TARGET_LIB_EXT}} ${TARGET_EXE:%=%${TARGET_EXE_EXT}}
+all: $(TARGET) ${TARGET_LIB:%=%${TARGET_LIB_EXT}} ${TARGET_EXE:%=%${TARGET_EXE_EXT}}
 #------------------------------------------------------------------------
 tags: $(HDRS) $(SRCS)
 	etags --c++ $(HDRS) $(SRCS)
