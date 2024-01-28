@@ -106,7 +106,7 @@ Token* Token_UNARY::op(const Token* T1)const
   }
 }
 /*--------------------------------------------------------------------------*/
-static std::string call_function(FUNCTION const* f, Expression const* E)
+static std::string call_function(FUNCTION const* F, Expression const* E)
 {
   assert(!E->is_empty());
   Expression::const_iterator input = E->end();
@@ -136,7 +136,7 @@ static std::string call_function(FUNCTION const* f, Expression const* E)
   if(all_float){
     // function call as usual
     CS cmd(CS::_STRING, arg);
-    return f->eval(cmd, E->_scope);
+    return F->eval(cmd, E->_scope);
   }else{
     return "";
   }
