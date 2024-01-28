@@ -30,7 +30,7 @@ CXX = g++
 CCFLAGS = \
 -fPIC \
 -DHAVE_LIBREADLINE \
--std=c++11 -DUNIX  -g -O0 -I. -I../../include -DTRACE_UNTESTED \
+-std=c++11 -DUNIX  -g -O0 $(INCLUDE) -DTRACE_UNTESTED \
 -Wall -Wextra \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
 -Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \

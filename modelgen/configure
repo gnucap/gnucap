@@ -24,7 +24,7 @@ sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 
 #----------------------------------------------------------------
 echo "CCFLAGS = -fPIC \\" >Make.ccflags
-echo "-std=c++11 -DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W \\" >>Make.ccflags
+echo "-std=c++11 -DUNIX -O2 -DNDEBUG \$(INCLUDE) -W \\" >>Make.ccflags
 # begin special stuff
 # end special stuff
 echo "" >>Make.ccflags
