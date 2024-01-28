@@ -21,7 +21,7 @@
 #------------------------------------------------------------------------
 # Part 3 of a Makefile
 #------------------------------------------------------------------------
-stop:
+all: ${TARGET_LIB:%=%${TARGET_LIB_EXT}} ${TARGET_EXE:%=%${TARGET_EXE_EXT}}
 #------------------------------------------------------------------------
 tags: $(HDRS) $(SRCS)
 	etags --c++ $(HDRS) $(SRCS)
@@ -31,7 +31,7 @@ checkout:
 #------------------------------------------------------------------------
 install-debug : install
 
-install : $(INSTALL_FILES)  $(INSTALL_FILES_1)  $(INSTALL_FILES_2) 
+install : $(INSTALL_FILES)  $(INSTALL_FILES_1)  $(INSTALL_FILES_2)
 	[ -z "$(INSTALL_DIR)" ]   || mkdir -p $(DESTDIR)$(INSTALL_DIR)
 	[ -z "$(INSTALL_DIR_1)" ] || mkdir -p $(DESTDIR)$(INSTALL_DIR_1)
 	[ -z "$(INSTALL_DIR_2)" ] || mkdir -p $(DESTDIR)$(INSTALL_DIR_2)
@@ -53,14 +53,14 @@ backup:
 #------------------------------------------------------------------------
 depend: Make.depend
 Make.depend: $(SRCS) $(HDRS)
-	$(CCC) -MM $(CCFLAGS) $(SRCS) > Make.depend
+	$(CXX) -MM $(CCFLAGS) $(SRCS) > Make.depend
 #-----------------------------------------------------------------------------
 date:
 	date "+#define PATCHLEVEL \"`git branch | awk '/\*/ { print $$2; }'` %Y.%m.%d\"" \
 		>patchlev.h
 #-----------------------------------------------------------------------------
 header-check:
-	-$(CCC) -I../include -o /dev/null $(RAW_HDRS)
+	-$(CXX) -I../include -o /dev/null $(RAW_HDRS)
 #-----------------------------------------------------------------------------
 manifest: MANIFEST
 MANIFEST: $(DIST_FILES)
@@ -86,3 +86,13 @@ maintainer-clean:
 	rm -f *~ \#*\#
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
+$(TARGET_EXE)$(TARGET_EXE_EXT): $(TARGET_DEPENDS)
+	rm -f $@
+	$(MAKE_EXE) -o $@
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+$(TARGET_LIB)$(TARGET_LIB_EXT): $(TARGET_DEPENDS)
+	rm -f $@
+	$(MAKE_LIB) -o $@
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------

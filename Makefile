@@ -24,14 +24,6 @@ g++:
 	(cd main; ${MAKE} g++)
 	(cd apps; ${MAKE} g++)
 
-mingw:
-	#(cd conf; ${MAKE} mingw)
-	#(cd include; ${MAKE} mingw)
-	(cd lib; ${MAKE} mingw)
-	(cd modelgen; ${MAKE} mingw)
-	(cd main; ${MAKE} mingw)
-	(cd apps; ${MAKE} mingw)
-
 clean:
 	#(cd conf; ${MAKE} clean)
 	#(cd include; ${MAKE} clean)

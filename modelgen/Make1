@@ -19,9 +19,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET = gnucap-modelgen
+TARGET_EXE = gnucap-modelgen
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET)$(TARGET_EXT)
+INSTALL_FILES = $(TARGET_EXE)$(TARGET_EXE_EXT)
 INSTALL_DIR = $(PREFIX)/bin
 #------------------------------------------------------------------------
 LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
@@ -34,7 +34,7 @@ mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc
 #------------------------------------------------------------------------
 RAW_HDRS = mg_.h mg_out.h
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 Make2.mingw32 configure
+RAW_OTHER = Make1 configure
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
@@ -66,10 +66,5 @@ MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
 CLEANFILES = $(MOSTLYCLEANFILES)
 DISTCLEANFILES = $(CLEANFILES)
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
-#------------------------------------------------------------------------
-#------------------------------------------------------------------------
-$(TARGET)$(TARGET_EXT): $(TARGET_DEPENDS)
-	rm -f $@
-	$(MAKE_EXE) -o $@
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------

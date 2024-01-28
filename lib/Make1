@@ -19,10 +19,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET = libgnucap
-TARGET_EXT = .so
+TARGET_LIB = libgnucap
+TARGET_LIB_EXT = .so
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET)$(TARGET_EXT)
+INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
 INSTALL_DIR = $(PREFIX)/lib
 #------------------------------------------------------------------------
 LIBS = \
@@ -48,7 +48,7 @@ bm_cond.cc bm_value.cc bm.cc \
 c__cmd.cc c_attach.cc c_file.cc \
 findbr.cc plot.cc
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 Make2.mingw32 configure test_readline.cc
+RAW_OTHER = Make1 configure test_readline.cc
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
@@ -80,10 +80,5 @@ MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
 CLEANFILES = $(MOSTLYCLEANFILES)
 DISTCLEANFILES = $(CLEANFILES)
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
-#------------------------------------------------------------------------
-#------------------------------------------------------------------------
-$(TARGET)$(TARGET_EXT): $(TARGET_DEPENDS)
-	rm -f $@
-	$(MAKE_LIB) -o $@
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------

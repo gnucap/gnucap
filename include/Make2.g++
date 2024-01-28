@@ -20,10 +20,11 @@
 # 02110-1301, USA.
 #------------------------------------------------------------------------
 VPATH = .:..
+PREFIX =  /usr/local
 
 # Standard base for g++.
 
-CCC = g++
+CXX = g++
 
 CCFLAGS = \
 -fPIC \
@@ -32,10 +33,10 @@ CCFLAGS = \
 
 .SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; $(CCC) $(CCFLAGS) -c $<
+.cc.o:; $(CXX) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
-MAKE_EXE = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
-MAKE_LIB = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
+MAKE_EXE = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_LIB = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # If you are porting and using g++, you should use this file as a start,
 #	for a "release" version, optimized with run-time tracing removed.

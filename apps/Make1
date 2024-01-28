@@ -19,10 +19,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET = gnucap-default-plugins
-TARGET_EXT = .so
+TARGET_LIB = gnucap-default-plugins
+TARGET_LIB_EXT = .so
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET)$(TARGET_EXT)
+INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
 INSTALL_DIR = $(PREFIX)/lib/gnucap
 #------------------------------------------------------------------------
 # These source files can be omitted, and supplied as plugins.
@@ -83,7 +83,7 @@ $(LANG_SRCS) \
 $(FUNC_SRCS) \
 $(OTHER_SRCS)
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 Make2.mingw32 configure test_readline.cc
+RAW_OTHER = Make1 configure test_readline.cc
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER) $(MODELS)
 #------------------------------------------------------------------------
@@ -127,8 +127,3 @@ MODELGEN = `pwd | sed 's/\(.*\)apps/\1modelgen/'`/gnucap-modelgen
 	(export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<)
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
-$(TARGET)$(TARGET_EXT): $(TARGET_DEPENDS)
-	rm -f $@
-	$(MAKE_LIB) -o $@
-#------------------------------------------------------------------------
-#------------------------------------------------------------------------

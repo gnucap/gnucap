@@ -20,11 +20,12 @@
 # 02110-1301, USA.
 #------------------------------------------------------------------------
 VPATH = .:..
+PREFIX =  /usr/local
 
 # Standard base for g++, debugging, no optimization
 # Running the program will give a spew of line markers for debugging.
 
-CCC = g++
+CXX = g++
 
 CCFLAGS = \
 -fPIC \
@@ -40,10 +41,10 @@ CCFLAGS = \
 
 .SUFFIXES:
 .SUFFIXES: .o .cc
-.cc.o:; $(CCC) $(CCFLAGS) -c $<
+.cc.o:; $(CXX) $(CCFLAGS) -c $<
 #------------------------------------------------------------------------
-MAKE_EXE = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
-MAKE_LIB = $(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
+MAKE_EXE = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_LIB = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3

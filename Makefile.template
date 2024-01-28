@@ -53,10 +53,11 @@ debug: nothing
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 # MS Windows using mingw32
-mingw: nothing
-	mkdir -p MSW
-	cat Make1 Make2.mingw32 ../include/Make3 Make.depend >MSW/Makefile
-	(cd MSW; ${MAKE} -k)
+# unmaintained, stale.  Holding stuib here pending further work.
+#mingw: nothing
+#	mkdir -p MSW
+#	cat Make1 Make2.mingw32 ../include/Make3 Make.depend >MSW/Makefile
+#	(cd MSW; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 tags: nothing
 	rm -f Make.aux
