@@ -1,0 +1,62 @@
+NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
+associated tarball. This file summarizes the important changes.
+
+== snapshot 20240130 (release candidate)
+
+- prepare build system files for use in extension packages
+- support for directories in attach plugin
+- Tokenize Verilog-AMS arrays
+- local search for gnucap.rc, see manual
+- Library improvements related to Verilog-AMS
+
+== development snapshot 20231131
+
+- instanciate logic devices using any language
+- VAMS LRM compliant logic device ports
+
+== development snapshot 20231031
+
+- attribute instance
+
+== development snapshot 20230930
+
+- revisit resistor short condition handling
+- fix uninitialised access in getlines
+- fix a mem leak in ternary op
+- add CS::reset_fail
+- parse string in angle brackets
+
+== development snapshot 20230729
+
+- white space in quoted strings
+- escaped chars in quoted strings
+- more testing and interactive testing
+- typed NOT_INPUT override
+- version presented at fsic23
+
+== development snapshot 20230623
+
+This is a development snapshot addressing expression handling.
+
+- ternary operator
+- modulo binary operator
+- quoted strings
+
+== development snapshot 20230520
+
+- param eval recursion bugfix
+- allow '$' in identifiers
+- add man pages from Debian
+
+== development snapshot 20230214
+
+This snapshot relates to new Verilog-AMS work.
+
+- module overloading interface
+- allow '$' in identifiers
+- explicitly specify c++11 during build
+- move COMPONENT::_value to ELEMENT
+- ELEMENT cleanup and parameter sweeps
+- "override" decorators
+- more scope flexibility in commands
+- fix case insensitivity in label compare

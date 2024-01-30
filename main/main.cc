@@ -85,7 +85,9 @@ static void read_startup_files(void)
     }
   }
   //CMD::command("clear", &CARD_LIST::card_list);
-  if (!OPT::language) {
+  if (language_dispatcher.empty()) {
+    // go on without language.
+  }else if (!OPT::language) {
     OPT::language = language_dispatcher[DEFAULT_LANGUAGE];
     
     for(DISPATCHER<LANGUAGE>::const_iterator
@@ -95,10 +97,10 @@ static void read_startup_files(void)
   }else{untested();
     // already have a language specified in a startup file
   }
-  if (OPT::language) {
+  if (OPT::language) { untested();
     OPT::case_insensitive = OPT::language->case_insensitive();
     OPT::units            = OPT::language->units();
-  }else{
+  }else{ untested();
     OPT::case_insensitive = false;
     OPT::units            = uSI;
   }

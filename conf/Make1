@@ -25,8 +25,9 @@ INSTALL_DIR = $(PREFIX)/bin
 INSTALL_FILES_1 = gnucap.conf
 INSTALL_DIR_1 = $(PREFIX)/etc
 #------------------------------------------------------------------------
-INSTALL_FILES_2 = config.h
-INSTALL_DIR_2 = $(PREFIX)/include
+# suspended. intent: remove it entirely.
+# INSTALL_FILES_2 = config.h
+# INSTALL_DIR_2 = $(PREFIX)/include
 #------------------------------------------------------------------------
 LIBS =
 INCLUDE = -I. -I../include -I../../include
