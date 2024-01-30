@@ -45,7 +45,7 @@ in future releases.
 .PP
 Gnucap is modular from the ground up. All devices, input languages and most
 algorithms can be customized and replaced at running time. Extensions and
-additional plugins are not part of the main pckage, but can be found on the
+additional plugins are not part of the main package, but can be found on the
 project website.
 
 .SH OPTIONS
@@ -74,11 +74,18 @@ for a list of known bugs in this release.
 Gnucap is an ongoing research project. It is being released in a
 preliminary phase in hopes that it will be useful and that others
 will use it as a thrust or base for their research and development.
-.PP
-This release has been prepared with funding through the NGI0 Entrust Fund, a
-fund established by NLnet with financial support from the European Commission's
-Next Generation Internet programme, under the aegis of DG Communications
-Networks, Content and Technology under grant agreement No 101069594.
+
+.SH FILES
+
+During startup, the first of
+\fIgnucap.rc\fP,
+\fI.gnucap/gnucap.rc\fP,
+\fI$sysconfdir/gnucap.rc\fP,
+\fI$sysconfdir/gnucap/gnucap.rc\fP will be included. Otherwise, default plugins will be loaded.
+
+Here, \fI$sysconfdir\fP is typically \fI${prefix}/etc\fP, and defaults to \fI/usr/local/etc\fP.
+It is expected to be set to \fI/etc\fP in packages obtained from the usual
+operating system distributors.
 
 .SH AUTHOR
 Gnucap is being written by Albert Davis <ad211@freeelectron.net>
@@ -88,3 +95,8 @@ by Hamish Moffatt <hamish@debian.org> for the Debian package of gnucap.
 Modified by Felix Salfelder <felix@salfelder.org>.
 For the full documentation, please visit
 .B http://gnucap.org.
+.PP
+This release has been prepared with funding through the NGI0 Entrust Fund, a
+fund established by NLnet with financial support from the European Commission's
+Next Generation Internet programme, under the aegis of DG Communications
+Networks, Content and Technology under grant agreement No 101069594.

@@ -33,7 +33,8 @@
   #define SYSTEMSTARTFILE "gnucap.rc"
 #endif
 #if !defined(SYSTEMSTARTPATH)
-  #define SYSTEMSTARTPATH OS::getenv("PATH")
+  #define SYSTEMSTARTPATH ".:.gnucap:@sysconfdir_expanded@" \
+                                   ":@sysconfdir_expanded@/gnucap"
 #endif
 #if !defined(USERSTARTFILE)
   #define USERSTARTFILE ".gnucaprc"
