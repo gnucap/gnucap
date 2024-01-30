@@ -1,5 +1,4 @@
 #!/bin/sh
-# configure for library (shared object)
 
 mkdir -p O
 #-------------  Stuff added to enable --prefix  --------------
@@ -25,45 +24,39 @@ sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 
 #----------------------------------------------------------------
 echo "CCFLAGS = -fPIC \\" >Make.ccflags
-echo "LIBS = -ldl \\" >Make.libs
-    
+echo "-std=c++11 -DUNIX -O2 -DNDEBUG \$(INCLUDE) -W \\" >>Make.ccflags
+# begin special stuff
 rm -f a.out
 c++ test_readline.cc -lreadline -ltermcap
 if [ -f a.out ] ; then
     echo "using readline"
     echo "-DHAVE_LIBREADLINE \\" >>Make.ccflags
-    echo "-lreadline -ltermcap \\" >>Make.libs
 else
     echo "warning: either libtermcap or libreadline is missing - building without readline"
 fi
 rm -f a.out
-
-echo "-std=c++11 -DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
-echo "" >>Make.libs
-echo "PREFIX = " $prefix >>Make.libs
-echo "" >>Make.libs
+# end special stuff
+echo "" >>Make.ccflags
 
 cat <<CAT_EOF >Make.sys
 #------------------------------------------------------------------------
 VPATH = .:..
-CCC = c++
-TARGET_EXT = .so
-
-LDFLAGS = -shared
+CXX = c++
 
 .SUFFIXES:
-.SUFFIXES: .o .cc
-.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.SUFFIXES: .so .o .cc
+.cc.o:; \$(CXX) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.cc.so:; \$(MAKE_LIB) \$<
 #------------------------------------------------------------------------
-\$(TARGET)\$(TARGET_EXT): \$(TARGET_DEPENDS)
-	rm -f \$@
-	\$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@
+MAKE_EXE = \$(CXX) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@ 
+MAKE_LIB = \$(CXX) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -shared -o \$@ 
 #------------------------------------------------------------------------
 CAT_EOF
 
 echo \# created by $PWD/$0. do not edit >Make2
 echo \#------------------------------------------------------------------------ >>Make2
-cat Make.ccflags Make.libs Make.sys >>Make2
-rm  Make.ccflags Make.libs Make.sys
+echo "PREFIX = " $prefix >>Make2
+cat Make.ccflags Make.sys >>Make2
+rm  Make.ccflags Make.sys
 
 exit 0

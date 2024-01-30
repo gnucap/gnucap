@@ -20,38 +20,32 @@
 # 02110-1301, USA.
 #------------------------------------------------------------------------
 VPATH = .:..
+PREFIX =  /usr/local
 
-# Standard base for g++, debugging, a little optimization
+# Standard base for g++, debugging, no optimization
 # Running the program will give a spew of line markers for debugging.
 
-CCC = g++
-TARGET_EXT = .so
+CXX = g++
 
 CCFLAGS = \
 -fPIC \
 -DHAVE_LIBREADLINE \
--std=c++11 -DUNIX  -g -O0 -I. -I../../include -DTRACE_UNTESTED \
+-std=c++11 -DUNIX  -g -O0 $(INCLUDE) -DTRACE_UNTESTED \
 -Wall -Wextra \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
 -Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
 -Winit-self -Wmissing-include-dirs -Winvalid-pch \
 -Wvolatile-register-var -Wstack-protector \
--Wvla -Woverlength-strings -Wno-sign-conversion -Wno-unused-const-variable
+-Wvla -Woverlength-strings -Wno-sign-conversion
 #last line not in 4.1
 
-LIBS = \
--lreadline -ltermcap \
--ldl
-
-LDFLAGS = -shared
-
-%.SUFFIXES:
-.SUFFIXES: .o .cc
-.cc.o:; $(CCC) $(CCFLAGS) -c $<
+.SUFFIXES:
+.SUFFIXES: .so .o .cc
+.cc.o:; $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
+.cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
-$(TARGET)$(TARGET_EXT): $(TARGET_DEPENDS)
-	rm -f $@
-	$(CCC) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_EXE = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_LIB = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3

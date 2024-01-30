@@ -21,6 +21,8 @@
 #------------------------------------------------------------------------
 # Part 3 of a Makefile
 #------------------------------------------------------------------------
+all: $(TARGET) ${TARGET_LIB:%=%${TARGET_LIB_EXT}} ${TARGET_EXE:%=%${TARGET_EXE_EXT}}
+#------------------------------------------------------------------------
 tags: $(HDRS) $(SRCS)
 	etags --c++ $(HDRS) $(SRCS)
 #------------------------------------------------------------------------
@@ -29,23 +31,18 @@ checkout:
 #------------------------------------------------------------------------
 install-debug : install
 
-install : $(INSTALL_FILES) $(DATA_FILES)
-	echo ==================
-	mkdir -p $(DESTDIR)$(INSTALL_DIR)
-	cp $(INSTALL_FILES) $(DESTDIR)$(INSTALL_DIR)
-
-	[ -z "$(INSTALL_DATA_DIR)" ] || \
-	mkdir -p $(DESTDIR)$(INSTALL_DATA_DIR)
-	[ -z "$(INSTALL_DATA_FILES)" ] || \
-	cp $(INSTALL_DATA_FILES) $(DESTDIR)$(INSTALL_DATA_DIR)
-
-	[ -z "$(INSTALL_SYSCONF_DIR)" ] || \
-	mkdir -p $(DESTDIR)$(INSTALL_SYSCONF_DIR)
-	[ -z "$(INSTALL_SYSCONF_FILES)" ] || \
-	cp $(INSTALL_SYSCONF_FILES) $(DESTDIR)$(INSTALL_SYSCONF_DIR)
+install : $(INSTALL_FILES)  $(INSTALL_FILES_1)  $(INSTALL_FILES_2)
+	[ -z "$(INSTALL_DIR)" ]   || mkdir -p $(DESTDIR)$(INSTALL_DIR)
+	[ -z "$(INSTALL_DIR_1)" ] || mkdir -p $(DESTDIR)$(INSTALL_DIR_1)
+	[ -z "$(INSTALL_DIR_2)" ] || mkdir -p $(DESTDIR)$(INSTALL_DIR_2)
+	[ -z "$(INSTALL_FILES)" ]   || cp $(INSTALL_FILES) $(DESTDIR)$(INSTALL_DIR)
+	[ -z "$(INSTALL_FILES_1)" ] || cp $(INSTALL_FILES_1) $(DESTDIR)$(INSTALL_DIR_1)
+	[ -z "$(INSTALL_FILES_2)" ] || cp $(INSTALL_FILES_2) $(DESTDIR)$(INSTALL_DIR_2)
 #------------------------------------------------------------------------
 uninstall :
-	(cd $(DESTDIR)$(INSTALL_DIR) ; rm $(INSTALL_FILES))
+	(cd $(DESTDIR)$(INSTALL_DIR) ; rm -f $(INSTALL_FILES))
+	(cd $(DESTDIR)$(INSTALL_DIR_1) ; rm -f $(INSTALL_FILES_1))
+	(cd $(DESTDIR)$(INSTALL_DIR_2) ; rm -f $(INSTALL_FILES_2))
 #------------------------------------------------------------------------
 #unclean:
 #	rm $(ALL)
@@ -56,14 +53,14 @@ backup:
 #------------------------------------------------------------------------
 depend: Make.depend
 Make.depend: $(SRCS) $(HDRS)
-	$(CCC) -MM $(CCFLAGS) $(SRCS) > Make.depend
+	$(CXX) -MM $(CCFLAGS) $(SRCS) > Make.depend
 #-----------------------------------------------------------------------------
 date:
 	date "+#define PATCHLEVEL \"`git branch | awk '/\*/ { print $$2; }'` %Y.%m.%d\"" \
 		>patchlev.h
 #-----------------------------------------------------------------------------
 header-check:
-	-$(CCC) -I../include -o /dev/null $(RAW_HDRS)
+	-$(CXX) -I../include -o /dev/null $(RAW_HDRS)
 #-----------------------------------------------------------------------------
 manifest: MANIFEST
 MANIFEST: $(DIST_FILES)
@@ -89,3 +86,13 @@ maintainer-clean:
 	rm -f *~ \#*\#
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
+$(TARGET_EXE)$(TARGET_EXE_EXT): $(TARGET_DEPENDS)
+	rm -f $@
+	$(MAKE_EXE) -o $@
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+$(TARGET_LIB)$(TARGET_LIB_EXT): $(TARGET_DEPENDS)
+	rm -f $@
+	$(MAKE_LIB) -o $@
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------

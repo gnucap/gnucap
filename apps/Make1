@@ -1,4 +1,4 @@
-#$Id: Make1  $ -*- Makefile -*-
+#$Id: apps/Make1 $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -19,13 +19,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET = gnucap-default-plugins
+TARGET_LIB = gnucap-default-plugins
+TARGET_LIB_EXT = .so
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET)$(TARGET_EXT)
-#------------------------------------------------------------------------
+INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
 INSTALL_DIR = $(PREFIX)/lib/gnucap
-#------------------------------------------------------------------------
-DELETED =
+INCLUDE = -I. -I../include -I../../include
 #------------------------------------------------------------------------
 # These source files can be omitted, and supplied as plugins.
 # device models defined in high level .model files
@@ -85,7 +84,7 @@ $(LANG_SRCS) \
 $(FUNC_SRCS) \
 $(OTHER_SRCS)
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 Make2.g++ Make2.Debug Make2.mingw32 configure test_readline.cc
+RAW_OTHER = Make1 configure test_readline.cc
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER) $(MODELS)
 #------------------------------------------------------------------------
@@ -107,7 +106,7 @@ IMPORTED_DIST = $(IMPORTED)
 DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-SRCS = $(IMPORTED_SRCS) $(GENERATED_SRCS) $(RAW_SRCS)
+SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
 HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
 OBJS = ${SRCS:.cc=.o}
 TARGET_DEPENDS = $(OBJS) $(RAW) $(MODELS)

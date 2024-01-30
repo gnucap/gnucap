@@ -27,6 +27,8 @@ args="--prefix=$prefix"
 
 echo "Configuring gnucap using $args"
 #---------------------------------------------------
+echo conf
+(cd conf; ./configure $args)
 echo include
 (cd include; ./configure $args)
 echo lib
