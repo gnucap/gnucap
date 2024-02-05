@@ -41,11 +41,11 @@ private:
 public:
   static SIM_DATA* _sim;
   static PROBE_LISTS* _probe_lists;
-protected:
-  static INDIRECT<ATTRIB_LIST_p> _attribs;
+//protected: // TODO
+  static INDIRECT<ATTRIB_LIST_p>* _attribs;
 public:
-  ATTRIB_LIST_p& attributes(const void* x) {return _attribs[x];}
-  const ATTRIB_LIST_p& attributes(const void* x)const {return _attribs.at(x);}
+  ATTRIB_LIST_p& attributes(const void* x) { assert(_attribs); return (*_attribs)[x];}
+  const ATTRIB_LIST_p& attributes(const void* x)const { assert(_attribs); return _attribs->at(x);}
   //--------------------------------------------------------------------
 protected: // create and destroy
   explicit CKT_BASE()			  :_probes(0), _label() {}

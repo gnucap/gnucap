@@ -51,13 +51,14 @@ CARD::CARD(const CARD& p)
 /*--------------------------------------------------------------------------*/
 CARD::~CARD()
 {
-  purge();
+  // purge();
   delete _subckt;
 }
 /*--------------------------------------------------------------------------*/
 void CARD::purge()
 {
-  _attribs.erase(reinterpret_cast<bool*>(this)-net_nodes(), reinterpret_cast<bool*>(this)+param_count());
+  assert(_attribs);
+  _attribs->erase(reinterpret_cast<bool*>(this)-net_nodes(), reinterpret_cast<bool*>(this)+param_count());
   CKT_BASE::purge();
 }
 /*--------------------------------------------------------------------------*/

@@ -45,7 +45,7 @@ public:
     }
   }
 
-  ~ATTRIB_LIST() {
+  ~ATTRIB_LIST() { itested();
     if (_up) {
       if (_up->dec_ref_count()==0) {
 	delete _up;

@@ -36,7 +36,7 @@ static char fix_case(char c)
 double CKT_BASE::tr_probe_num(const std::string&)const {return NOT_VALID;}
 XPROBE CKT_BASE::ac_probe_ext(const std::string&)const {return XPROBE(NOT_VALID, mtNONE);}
 /*--------------------------------------------------------------------------*/
-INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
+INDIRECT<ATTRIB_LIST_p>* CKT_BASE::_attribs;
 SIM_DATA* CKT_BASE::_sim = NULL; 
 PROBE_LISTS* CKT_BASE::_probe_lists = NULL;
 /*--------------------------------------------------------------------------*/
@@ -52,11 +52,12 @@ CKT_BASE::~CKT_BASE()
   trace1("", _probes);
   assert(_probes==0);
 
-  if (_attribs.count(this) > 0) {untested();
-    _attribs.erase(this, this);
+  if(!_attribs){ itested();
+  }else if (_attribs->count(this) > 0) {
+    _attribs->erase(this, this);
   }else{
   }
-  assert(_attribs.count(this)==0);
+  assert(!_attribs || _attribs->count(this)==0);
 }
 /*--------------------------------------------------------------------------*/
 const std::string CKT_BASE::long_label()const
