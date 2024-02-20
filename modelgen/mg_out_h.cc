@@ -46,7 +46,7 @@ static void make_sdp(std::ofstream& out, const Model& m)
     "public:\n"
     "  explicit SDP_" << m.name() << "(const COMMON_COMPONENT* c) : SDP_" 
       << m.inherit() << "(c) {init(c);}\n"
-    "  void init(const COMMON_COMPONENT*);\n"
+    "  void init(const COMMON_COMPONENT*)override;\n"
     "public:\n";
   Parameter_List::const_iterator p = m.size_dependent().raw().begin();
   for (;;) {
@@ -104,18 +104,18 @@ static void make_model(std::ofstream& out, const Model& m)
     "  explicit " << class_name << "(const BASE_SUBCKT*);\n"
     "  ~" << class_name << "() {--_count;}\n"
     "public: // override virtual\n"
-    "  std::string dev_type()const;\n"
-    "  void      set_dev_type(const std::string& nt);\n"
-    "  CARD*     clone()const {return new " << class_name << "(*this);}\n"
-    "  void      precalc_first();\n"
-    "  void      precalc_last();\n"
-    "  SDP_CARD* new_sdp(COMMON_COMPONENT* c)const;\n"
-    "  void      set_param_by_index(int, std::string&, int);\n"
-    "  bool      param_is_printable(int)const;\n"
-    "  std::string param_name(int)const;\n"
-    "  std::string param_name(int,int)const;\n"
-    "  std::string param_value(int)const;\n"
-    "  int param_count()const {return (" << 1 + m.independent().override().size()
+    "  std::string dev_type()const override;\n"
+    "  void      set_dev_type(const std::string& nt) override;\n"
+    "  CARD*     clone()const override {return new " << class_name << "(*this);}\n"
+    "  void      precalc_first() override;\n"
+    "  void      precalc_last() override;\n"
+    "  SDP_CARD* new_sdp(COMMON_COMPONENT* c)const override;\n"
+    "  void      set_param_by_index(int, std::string&, int) override;\n"
+    "  bool      param_is_printable(int)const override;\n"
+    "  std::string param_name(int)const override;\n"
+    "  std::string param_name(int,int)const override;\n"
+    "  std::string param_value(int)const override;\n"
+    "  int param_count()const override {return (" << 1 + m.independent().override().size()
 		+ 4 * m.size_dependent().raw().size() + m.independent().raw().size();
   if (!m.hide_base()) {
     out << " + MODEL_" << m.inherit() << "::param_count());}\n";
@@ -123,8 +123,8 @@ static void make_model(std::ofstream& out, const Model& m)
     out << ");}\n";
   }
   out <<
-    "  bool      is_valid(const COMPONENT*)const;\n"
-    "  void      tr_eval(COMPONENT*)const;\n"
+    "  bool      is_valid(const COMPONENT*)const override;\n"
+    "  void      tr_eval(COMPONENT*)const override;\n"
     "public: // not virtual\n"
     "  static int count() {return _count;}\n"
     "private: // strictly internal\n";
@@ -168,20 +168,20 @@ static void make_common(std::ofstream& out, const Device& d)
     "  explicit " << class_name << "(const " << class_name << "& p);\n"
     "  explicit " << class_name << "(int c=0);\n"
     "           ~" << class_name << "();\n"
-    "  bool     operator==(const COMMON_COMPONENT&)const;\n"
-    "  COMMON_COMPONENT* clone()const {return new "<<class_name<<"(*this);}\n"
-    "  void     set_param_by_index(int, std::string&, int);\n"
-    "  bool     param_is_printable(int)const;\n"
-    "  std::string param_name(int)const;\n"
-    "  std::string param_name(int,int)const;\n"
-    "  std::string param_value(int)const;\n"
-    "  int param_count()const {return (" 
+    "  bool     operator==(const COMMON_COMPONENT&)const override;\n"
+    "  COMMON_COMPONENT* clone()const override {return new "<<class_name<<"(*this);}\n"
+    "  void     set_param_by_index(int, std::string&, int) override;\n"
+    "  bool     param_is_printable(int)const override;\n"
+    "  std::string param_name(int)const override;\n"
+    "  std::string param_name(int,int)const override;\n"
+    "  std::string param_value(int)const override;\n"
+    "  int param_count()const  override{return (" 
 	     << d.common().override().size() + d.common().raw().size()
 	     << " + COMMON_COMPONENT::param_count());}\n"
-    "  void     expand(const COMPONENT*);\n"
-    "  void     precalc_last(const CARD_LIST*);\n"
-    "  std::string name()const {itested();return \"" << d.parse_name() << "\";}\n"
-    "  const SDP_CARD* sdp()const {return _sdp;}\n"
+    "  void     expand(const COMPONENT*)override;\n"
+    "  void     precalc_last(const CARD_LIST*)override;\n"
+    "  std::string name()const override{itested();return \"" << d.parse_name() << "\";}\n"
+    "  const SDP_CARD* sdp()const{return _sdp;}\n"
     "  bool     has_sdp()const {untested();return _sdp;}\n"
     "  static int  count() {return _count;}\n"
     "private: // strictly internal\n"
@@ -227,12 +227,12 @@ static void make_device(std::ofstream& out, const Device& d)
     "  explicit " << class_name << "();\n"
     "           ~" << class_name << "() {--_count;}\n"
     "private: // override virtual\n"
-    "  char      id_letter()const     {untested();return '" << d.id_letter() << "';}\n"
-    "  bool      print_type_in_spice()const {return true;}\n"
-    "  std::string value_name()const  {return \"area\";}\n"
-    "  //std::string dev_type()const;   //BASE_SUBCKT\n"
-    "  int       max_nodes()const     {return " << d.max_nodes() << ";}\n"
-    "  int       min_nodes()const     {return " << d.min_nodes() << ";}\n";
+    "  char      id_letter()const override    {untested();return '" << d.id_letter() << "';}\n"
+    "  bool      print_type_in_spice()const override {return true;}\n"
+    "  std::string value_name()const override {return \"area\";}\n"
+    "  //std::string dev_type()const override;   //BASE_SUBCKT\n"
+    "  int       max_nodes()const override    {return " << d.max_nodes() << ";}\n"
+    "  int       min_nodes()const override    {return " << d.min_nodes() << ";}\n";
   if (d.max_nodes() != d.min_nodes()) {
     out <<
       "  //int     matrix_nodes()const; //BASE_SUBCKT\n"
@@ -240,16 +240,16 @@ static void make_device(std::ofstream& out, const Device& d)
   }else{
     out <<
       "  //int     matrix_nodes()const; //BASE_SUBCKT\n"
-      "  int       net_nodes()const     {return " << d.max_nodes() << ";}\n";
+      "  int       net_nodes()const override {return " << d.max_nodes() << ";}\n";
   }
   out << 
-    "  int       int_nodes()const     {return " 
+    "  int       int_nodes()const override     {return " 
       << d.circuit().local_nodes().size() << ";}\n"
-    "  CARD*     clone()const         {return new "
+    "  CARD*     clone()const override         {return new "
       << class_name << "(*this);}\n"
-    "  void      precalc_first() {COMPONENT::precalc_first(); if(subckt()) subckt()->precalc_first();}\n"
-    "  void      expand();\n"
-    "  void      precalc_last()  {COMPONENT::precalc_last(); assert(subckt()); subckt()->precalc_last();}\n"
+    "  void      precalc_first()override {COMPONENT::precalc_first(); if(subckt()) subckt()->precalc_first();}\n"
+    "  void      expand()override;\n"
+    "  void      precalc_last()override {COMPONENT::precalc_last(); assert(subckt()); subckt()->precalc_last();}\n"
     "  //void    map_nodes();         //BASE_SUBCKT\n"
     "  //void    tr_begin();          //BASE_SUBCKT\n"
     "  //void    tr_restore();        //BASE_SUBCKT\n";
@@ -263,19 +263,19 @@ static void make_device(std::ofstream& out, const Device& d)
       "  //bool    do_tr();             //BASE_SUBCKT\n";
   }else{
     out <<
-      "  void      dc_advance() {set_not_converged(); BASE_SUBCKT::dc_advance();}\n"
-      "  void      tr_advance() {set_not_converged(); BASE_SUBCKT::tr_advance();}\n"
-      "  void      tr_regress() {set_not_converged(); BASE_SUBCKT::tr_regress();}\n"
-      "  bool      tr_needs_eval()const;\n"
-      "  void      tr_queue_eval()      {if(tr_needs_eval()){q_eval();}}\n"
-      "  bool      do_tr();\n";
+      "  void      dc_advance()override {set_not_converged(); BASE_SUBCKT::dc_advance();}\n"
+      "  void      tr_advance()override {set_not_converged(); BASE_SUBCKT::tr_advance();}\n"
+      "  void      tr_regress()override {set_not_converged(); BASE_SUBCKT::tr_regress();}\n"
+      "  bool      tr_needs_eval()const override;\n"
+      "  void      tr_queue_eval()override {if(tr_needs_eval()){q_eval();}}\n"
+      "  bool      do_tr()override;\n";
   }
   out <<
     "  //void    tr_load();           //BASE_SUBCKT\n"
     "  //double  tr_review();         //BASE_SUBCKT\n"
     "  //void    tr_accept();         //BASE_SUBCKT\n"
     "  //void    tr_unload();         //BASE_SUBCKT\n"
-    "  double    tr_probe_num(const std::string&)const;\n"
+    "  double    tr_probe_num(const std::string&)const override;\n"
     "  //void    ac_begin();          //BASE_SUBCKT\n"
     "  //void    do_ac();             //BASE_SUBCKT\n"
     "  //void    ac_load();           //BASE_SUBCKT\n"
@@ -345,7 +345,7 @@ static void make_device(std::ofstream& out, const Device& d)
     + d.circuit().local_nodes().size();
   out << "};\n"
     "  node_t _nodes[" << total_nodes << "];\n"
-    "  std::string port_name(int i)const {\n"
+    "  std::string port_name(int i)const override {\n"
     "    assert(i >= 0);\n"
     "    assert(i < " << d.circuit().req_nodes().size() + d.circuit().opt_nodes().size() << ");\n"
     "    static std::string names[] = {";
@@ -381,13 +381,13 @@ static void make_eval(std::ofstream& out, const Eval& e,
     "    :COMMON_COMPONENT(p) {}\n"
     "public:\n"
     "  explicit "<< class_name << "(int c=0) :COMMON_COMPONENT(c) {}\n"
-    "  bool operator==(const COMMON_COMPONENT& x)const "
+    "  bool operator==(const COMMON_COMPONENT& x)const override"
 		"{return COMMON_COMPONENT::operator==(x);}\n"
-    "  COMMON_COMPONENT* clone()const {return new "<<class_name<<"(*this);}\n"
-    "  std::string name()const {untested(); return \""<< class_name << "\";}\n"
-    "  void tr_eval(ELEMENT*d)const;\n"
-    "  bool has_tr_eval()const {return true;}\n"
-    "  bool has_ac_eval()const {return false;}\n"
+    "  COMMON_COMPONENT* clone()const override{return new "<<class_name<<"(*this);}\n"
+    "  std::string name()const override {untested(); return \""<< class_name << "\";}\n"
+    "  void tr_eval(ELEMENT*d)const override;\n"
+    "  bool has_tr_eval()const override {return true;}\n"
+    "  bool has_ac_eval()const override {return false;}\n"
     "};\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";

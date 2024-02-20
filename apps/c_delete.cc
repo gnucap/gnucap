@@ -103,10 +103,13 @@ private:
     return false;
   }
   //-----------------------------------
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
+    assert(Scope);
+    if (Scope == &CARD_LIST::card_list) {
+    }else{untested();
+    }
     if (cmd.umatch("all ")) {
-      CARD_LIST::card_list.erase_all();
+      Scope->erase_all();
     }else{
       while (cmd.more()) {
 	size_t mark = cmd.cursor();

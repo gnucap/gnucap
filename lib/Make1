@@ -1,4 +1,4 @@
-#$Id: Make1   $ -*- Makefile -*-
+#$Id: lib/Make1 $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -19,11 +19,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET = libgnucap
+TARGET_LIB = libgnucap
+TARGET_LIB_EXT = .so
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET)$(TARGET_EXT)
-#------------------------------------------------------------------------
+INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
 INSTALL_DIR = $(PREFIX)/lib
+#------------------------------------------------------------------------
+LIBS = \
+-lreadline -ltermcap \
+-ldl
+INCLUDE = -I. -I../include -I../../include
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
@@ -36,14 +41,15 @@ l_dispatcher.cc l_ftos.cc l_pmatch.cc l_timer.cc l_trim.cc l_wmatch.cc \
 io.cc io_contr.cc io_error.cc io_findf.cc io_out.cc io_xopen.cc \
 u_lang.cc u_nodemap.cc u_opt1.cc u_opt2.cc \
 u_parameter.cc u_prblst.cc u_probe.cc u_sim_data.cc u_xprobe.cc \
-d_subckt.cc d_logic.cc d_logicmod.cc \
+d_subckt.cc d_logicmod.cc \
 e_base.cc e_card.cc e_node.cc e_model.cc e_compon.cc \
+e_logicnode.cc e_logicval.cc \
 e_elemnt.cc e_ccsrc.cc e_storag.cc e_paramlist.cc e_cardlist.cc \
 bm_cond.cc bm_value.cc bm.cc \
 c__cmd.cc c_attach.cc c_file.cc \
 findbr.cc plot.cc
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 Make2.g++ Make2.Debug Make2.mingw32 configure test_readline.cc
+RAW_OTHER = Make1 configure test_readline.cc
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
@@ -65,10 +71,10 @@ IMPORTED_DIST = $(IMPORTED)
 DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-SRCS = $(IMPORTED_SRCS) $(GENERATED_SRCS) $(RAW_SRCS)
+SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
 HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
 OBJS = ${SRCS:.cc=.o}
-TARGET_DEPENDS = $(OBJS) $(RAW) 
+TARGET_DEPENDS = $(OBJS) $(RAW)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
 MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
@@ -76,4 +82,4 @@ CLEANFILES = $(MOSTLYCLEANFILES)
 DISTCLEANFILES = $(CLEANFILES)
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 #------------------------------------------------------------------------
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------------

@@ -53,4 +53,5 @@ rh8 22 0 10
 .tran 0 .1 .05
 .print ac v(nodes) i(v7) i(v8)
 .ac 1k
+*>.status notime
 .end

@@ -35,30 +35,30 @@ private:
 public:
   explicit DEV_CCVS()		:CCSRC_BASE() {}
 private: // override virtual
-  char	   id_letter()const	{return 'H';}
-  std::string value_name()const {untested(); return "gain";}
-  std::string dev_type()const	{return "ccvs";}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_CCVS(*this);}
-  void     precalc_last();
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
-  void     tr_begin();
-  bool     do_tr()		{_sim->_late_evalq.push_back(this); return true;}
-  bool	   do_tr_last();
-  void	   tr_load()		{tr_load_shunt(); tr_load_active();}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_extended();}
-  void	   ac_begin()		{_loss1=_loss0=1./OPT::shortckt; _ev = _y[0].f1;}
-  void	   do_ac();
-  void	   ac_load()		{ac_load_active();}
-  COMPLEX  ac_amps()const	{untested(); return ELEMENT::ac_amps();}
+  char	   id_letter()const override	{return 'H';}
+  std::string value_name()const override{itested(); return "gain";}
+  std::string dev_type()const override	{return "ccvs";}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const	override {return new DEV_CCVS(*this);}
+  void     precalc_last() override;
+  void	   tr_iwant_matrix() override	{tr_iwant_matrix_extended();}
+  void     tr_begin()override;
+  bool     do_tr()override		{_sim->_late_evalq.push_back(this); return true;}
+  bool	   do_tr_last()override;
+  void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_begin()override		{_loss1=_loss0=1./OPT::shortckt; _ev = _y[0].f1;}
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_active();}
+  COMPLEX  ac_amps()const override	{untested(); return ELEMENT::ac_amps();}
 
-  std::string port_name(int i)const {untested();
+  std::string port_name(int i)const override {untested();
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};
     return names[i];
   }
-  std::string current_port_name(int i)const {untested();
+  std::string current_port_name(int i)const override {untested();
     assert(i >= 0);
     assert(i < 1);
     static std::string names[] = {"in"};

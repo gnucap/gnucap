@@ -28,8 +28,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class abs : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -40,8 +39,7 @@ DISPATCHER<FUNCTION>::INSTALL d_abs(&function_dispatcher, "abs", &p_abs);
 /*--------------------------------------------------------------------------*/
 class sqrt : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -50,10 +48,21 @@ public:
 } p_sqrt;
 DISPATCHER<FUNCTION>::INSTALL d_sqrt(&function_dispatcher, "sqrt", &p_sqrt);
 /*--------------------------------------------------------------------------*/
+class ln : public FUNCTION {
+public:
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
+    PARAMETER<double> x;
+    Cmd >> x;
+    x.e_val(NOT_INPUT, Scope);
+    return to_string(std::log(x));
+  }
+} p_ln;
+DISPATCHER<FUNCTION>::INSTALL d_ln(&function_dispatcher, "ln", &p_ln);
+/*--------------------------------------------------------------------------*/
 class log : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
+    error(bDEBUG, "log("+Cmd.fullstring() + "): Ambiguous. Use 'ln', or 'log10'\n");
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -62,10 +71,20 @@ public:
 } p_log;
 DISPATCHER<FUNCTION>::INSTALL d_log(&function_dispatcher, "log", &p_log);
 /*--------------------------------------------------------------------------*/
+class log10 : public FUNCTION {
+public:
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
+    PARAMETER<double> x;
+    Cmd >> x;
+    x.e_val(NOT_INPUT, Scope);
+    return to_string(std::log10(x));
+  }
+} p_log10;
+DISPATCHER<FUNCTION>::INSTALL d_log10(&function_dispatcher, "log10", &p_log10);
+/*--------------------------------------------------------------------------*/
 class exp : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -76,8 +95,7 @@ DISPATCHER<FUNCTION>::INSTALL d_exp(&function_dispatcher, "exp", &p_exp);
 /*--------------------------------------------------------------------------*/
 class INT : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -88,8 +106,7 @@ DISPATCHER<FUNCTION>::INSTALL d_int(&function_dispatcher, "int", &p_int);
 /*--------------------------------------------------------------------------*/
 class pow : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x, y;
     Cmd >> x >> y;
     x.e_val(NOT_INPUT, Scope);
@@ -101,8 +118,7 @@ DISPATCHER<FUNCTION>::INSTALL d_pow(&function_dispatcher, "pow", &p_pow);
 /*--------------------------------------------------------------------------*/
 class MAX : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x, y;
     Cmd >> x >> y;
     x.e_val(NOT_INPUT, Scope);
@@ -114,9 +130,9 @@ DISPATCHER<FUNCTION>::INSTALL d_max(&function_dispatcher, "max", &p_max);
 /*--------------------------------------------------------------------------*/
 class MIN : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x, y;
+    trace1("min", Cmd.fullstring());
     Cmd >> x >> y;
     x.e_val(NOT_INPUT, Scope);
     y.e_val(NOT_INPUT, Scope);
@@ -127,8 +143,7 @@ DISPATCHER<FUNCTION>::INSTALL d_min(&function_dispatcher, "min", &p_min);
 /*--------------------------------------------------------------------------*/
 class IF : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x, y, z;
     Cmd >> x >> y >> z;
     x.e_val(NOT_INPUT, Scope);
@@ -141,8 +156,7 @@ DISPATCHER<FUNCTION>::INSTALL d_if(&function_dispatcher, "if", &p_if);
 /*--------------------------------------------------------------------------*/
 class sin : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -153,8 +167,7 @@ DISPATCHER<FUNCTION>::INSTALL d_sin(&function_dispatcher, "sin", &p_sin);
 /*--------------------------------------------------------------------------*/
 class sinh : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -165,8 +178,7 @@ DISPATCHER<FUNCTION>::INSTALL d_sinh(&function_dispatcher, "sinh", &p_sinh);
 /*--------------------------------------------------------------------------*/
 class cos : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -177,8 +189,7 @@ DISPATCHER<FUNCTION>::INSTALL d_cos(&function_dispatcher, "cos", &p_cos);
 /*--------------------------------------------------------------------------*/
 class cosh : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -189,8 +200,7 @@ DISPATCHER<FUNCTION>::INSTALL d_cosh(&function_dispatcher, "cosh", &p_cosh);
 /*--------------------------------------------------------------------------*/
 class tan : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -201,8 +211,7 @@ DISPATCHER<FUNCTION>::INSTALL d_tan(&function_dispatcher, "tan", &p_tan);
 /*--------------------------------------------------------------------------*/
 class tanh : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -213,8 +222,7 @@ DISPATCHER<FUNCTION>::INSTALL d_tanh(&function_dispatcher, "tanh", &p_tanh);
 /*--------------------------------------------------------------------------*/
 class na : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> arg;
     Cmd >> arg;
     arg.e_val(NOT_INPUT, Scope);
@@ -238,8 +246,7 @@ DISPATCHER<FUNCTION>::INSTALL d_na(&function_dispatcher, "na", &p_na);
 /*--------------------------------------------------------------------------*/
 class RANDOM_STUB : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const
-  {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> arg;
     Cmd >> arg;
     arg.e_val(NOT_INPUT, Scope);

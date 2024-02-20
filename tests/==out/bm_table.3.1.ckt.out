@@ -80,3 +80,8 @@ r4 ( 4 0 )  10.K
  56.5       56.5       8.4855     510.18    
  61.        61.        8.9834     552.58    
  65.5       65.5       9.4813     594.97    
+Gnucap   System status
+iterations: op=4, dc=48, tran=0, fourier=0, total=280
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=77.8%, ac density=77.8%

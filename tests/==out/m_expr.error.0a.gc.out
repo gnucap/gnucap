@@ -1,0 +1,22 @@
+"param a3={<test>} "
+"verilog "
+"capacitor #(a3) r1(1,0); "
+"capacitor #(.c(<aaa>)) r1(1,0); "
+"capacitor #(" <test> + 4 ") r1(1,0); "
+capacitor #(" <test> + 4 ") r1(1,0); 
+                          ^ ? '(' required (parse ports) (grounding)
+capacitor #(" <test> + 4 ") r1(1,0); 
+                          ^ ? p: port unconnected, grounding
+capacitor #(" <test> + 4 ") r1(1,0); 
+                          ^ ? n: port unconnected, grounding
+capacitor #(" <test> + 4 ") r1(1,0); 
+                          ^ ? what's this?
+"list "
+capacitor #(.c(a3)) r1 (.p(1),.n(0));
+capacitor #(.c(<aaa>)) r1 (.p(1),.n(0));
+capacitor #()  <test> + 4  (.p(0),.n(0));
+"dc "
+parameter a3 not specified, using default
+parameter <aaa> not specified, using default
+#          
+ 0.        

@@ -39,13 +39,13 @@ public:
   explicit EVAL_BM_TABLE(int c=0);
   ~EVAL_BM_TABLE() {}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {return new EVAL_BM_TABLE(*this);}
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
-  void  	expand(const COMPONENT*);
-  void		tr_eval(ELEMENT*)const;
-  std::string	name()const	{untested();return modelname().c_str();}
-  bool		ac_too()const		{untested();return false;}
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {return new EVAL_BM_TABLE(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
+  void  	expand(const COMPONENT*) override;
+  void		tr_eval(ELEMENT*)const override;
+  std::string	name()const override	{untested();return modelname().c_str();}
+  bool		ac_too()const override	{untested();return false;}
 };
 /*--------------------------------------------------------------------------*/
 class MODEL_TABLE : public MODEL_CARD {
@@ -65,17 +65,17 @@ public:
   explicit MODEL_TABLE();
   ~MODEL_TABLE();
 private: // override virtual
-  std::string dev_type()const		{return "table";}
-  void  precalc_first();
-  COMMON_COMPONENT* new_common()const	{return new EVAL_BM_TABLE;}
-  CARD* clone()const			{return new MODEL_TABLE(*this);}
+  std::string dev_type()const override		{return "table";}
+  void  precalc_first() override;
+  COMMON_COMPONENT* new_common()const override	{return new EVAL_BM_TABLE;}
+  CARD* clone()const override			{return new MODEL_TABLE(*this);}
 
-  bool use_obsolete_callback_print()const {return true;}
-  bool use_obsolete_callback_parse()const {return true;}
-  void print_args_obsolete_callback(OMSTREAM&,LANGUAGE*)const;
-  bool parse_params_obsolete_callback(CS&);
+  bool use_obsolete_callback_print()const override {return true;}
+  bool use_obsolete_callback_parse()const override {return true;}
+  void print_args_obsolete_callback(OMSTREAM&,LANGUAGE*)const override;
+  bool parse_params_obsolete_callback(CS&) override;
 
-  void tr_eval(COMPONENT*)const;
+  void tr_eval(COMPONENT*)const override;
 };
 /*--------------------------------------------------------------------------*/
 int    const MODEL_TABLE::_default_order = 3;

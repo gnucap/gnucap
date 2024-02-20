@@ -1,0 +1,21 @@
+r1 ( 1 0 ) r
+i1 ( 0 1 ) i
+v1 ( 2 0 ) v
+#           v(1)       v(2)      
+ 0.         1.         1.        
+#           v(1)       v(2)      
+ 1.         1.         1.        
+ 2.         2.         1.        
+#           v(1)       v(2)      
+ 0.         0.         1.        
+ 1.         1.         1.        
+ 2.         2.         1.        
+#           v(1)       v(2)      
+ 0.         1.         0.        
+ 1.         1.         1.        
+ 2.         1.         2.        
+Gnucap   System status
+iterations: op=0, dc=10, tran=0, fourier=0, total=32
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=50.0%, ac density=50.0%

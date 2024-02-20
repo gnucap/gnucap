@@ -1,4 +1,4 @@
-#$Id: Make1 2016/09/17 $ -*- Makefile -*-
+#$Id: include/Make1 $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -19,11 +19,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET =
-#------------------------------------------------------------------------
-INSTALL_FILES = $(RAW_SRCS) $(RAW_HDRS)
-#------------------------------------------------------------------------
+INSTALL_FILES = $(RAW_SRCS) $(RAW_HDRS) $(RAW_OTHER_INSTALL)
 INSTALL_DIR = $(PREFIX)/include/gnucap
+#------------------------------------------------------------------------
+LIBS =
+INCLUDE = -I. -I../include -I../../include
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
@@ -33,19 +33,22 @@ spice-wrapper.cc
 RAW_HDRS = \
 ap.h bm.h c_comand.h constant.h d_coment.h d_dot.h d_logic.h \
 declare.h e_aux.h e_base.h e_card.h e_cardlist.h e_ccsrc.h e_compon.h \
+e_logicmod.h e_logicnode.h e_logicval.h \
 e_elemnt.h e_model.h e_node.h e_paramlist.h e_storag.h e_subckt.h \
-globals.h io_.h io_error.h io_trace.h l_compar.h l_denoise.h \
-l_dispatcher.h l_lib.h l_stlextra.h l_timer.h m_base.h m_cpoly.h \
+globals.h io_.h io_error.h io_dir.h io_trace.h l_compar.h l_denoise.h \
+l_dispatcher.h l_indirect.h l_lib.h l_stlextra.h l_timer.h m_base.h m_cpoly.h \
 m_divdiff.h m_expression.h m_interp.h m_matrix.h m_phase.h m_spline.h \
 m_wave.h md.h mode.h patchlev.h s__.h s_tr.h trace_off.h trace_on.h \
 u_cardst.h u_function.h u_lang.h u_limit.h u_nodemap.h u_opt.h \
 u_parameter.h u_prblst.h u_probe.h u_sdp.h u_sim_data.h u_status.h \
-u_time_pair.h u_xprobe.h
+u_time_pair.h u_xprobe.h u_attrib.h
 #------------------------------------------------------------------------
-RAW_OTHER = \
-configure Make1
+RAW_OTHER_INSTALL = Make2.g++ Make2.Debug Make3
+RAW_OTHER_NO_INSTALL = Make1 configure config.h
+# -- config.h is installed by conf
+#    symlink here to mimic post-install during pre-install build
 #------------------------------------------------------------------------
-RAW = $(RAW_HDRS) $(RAW_SRCS) $(MODELS) $(RAW_OTHER)
+RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
 IMPORTED_SRCS =
@@ -54,8 +57,8 @@ IMPORTED_OTHER =
 IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-GENERATED_SRCS = ${MODELS:.model=.cc}
-GENERATED_HDRS = ${MODELS:.model=.h}
+GENERATED_SRCS =
+GENERATED_HDRS =
 GENERATED_OTHER = Make.aux
 GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
 #------------------------------------------------------------------------
@@ -65,10 +68,10 @@ IMPORTED_DIST = $(IMPORTED)
 DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-SRCS = $(IMPORTED_SRCS) $(GENERATED_SRCS) $(RAW_SRCS)
+SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
 HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
 OBJS = ${SRCS:.cc=.o}
-TARGET_DEPENDS = $(OBJS) $(RAW) $(MODELS)
+TARGET_DEPENDS = $(OBJS) $(RAW)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
 MOSTLYCLEANFILES = $(OBJS) $(GENERATED)

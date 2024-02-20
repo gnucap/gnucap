@@ -52,7 +52,7 @@ class CS;
 struct INTERFACE Exception_CS :public Exception { 
   std::string _cmd;
   size_t _cursor;
-  const std::string message()const;
+  const std::string message() const override;
   //Exception_CS(const std::string& Message, const CS& cmd, size_t cursor);
   Exception_CS(const std::string& Message, const CS& cmd);
 };

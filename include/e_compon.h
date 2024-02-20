@@ -62,8 +62,8 @@ protected:
   PARAMETER<double>	_temp_c;  // actual temperature of device
   PARAMETER<double>	_mfactor; // number of devices in parallel
   PARAMETER<double>	_value;
-private:
   std::string	_modelname;
+private:
   mutable const MODEL_CARD* _model;
   int		_attach_count;
 public:
@@ -97,8 +97,8 @@ public:
   virtual std::string param_name(int)const;
   virtual std::string param_name(int,int)const;
   virtual std::string param_value(int)const;
-  virtual void set_param_by_name(std::string, std::string);
-  void Set_param_by_name(std::string, std::string); //BUG// see implementation
+  virtual int  set_param_by_name(std::string, std::string);
+  int Set_param_by_name(std::string, std::string); //BUG// see implementation
   virtual void set_param_by_index(int, std::string&, int);
   virtual int param_count()const {return 4;}
 public:
@@ -126,6 +126,7 @@ public:
   const MODEL_CARD*   model()const	{assert(_model); return _model;}
   bool		      has_model()const	{return _model;}
   const PARAMETER<double>& mfactor()const {return _mfactor;}
+  void set_value(double v) {_value = v;}
   const PARAMETER<double>& value()const {return _value;}
 private:
   bool parse_param_list(CS&);
@@ -150,7 +151,6 @@ class INTERFACE COMPONENT : public CARD {
 private:
   COMMON_COMPONENT* _common;
 protected:
-  PARAMETER<double> _value;	// value, for simple parts
   PARAMETER<double> _mfactor;	// number of devices in parallel
 private:
   double _mfactor_fixed;	// composite, including subckt mfactor
@@ -160,29 +160,30 @@ public:
   TIME_PAIR _time_by;
   //--------------------------------------------------------------------
 protected: // create and destroy.
-  explicit   COMPONENT();
+  explicit   COMPONENT(COMMON_COMPONENT* c=NULL);
   explicit   COMPONENT(const COMPONENT& p);
 	     ~COMPONENT();
   //--------------------------------------------------------------------
 public:	// "elaborate"
-  void	precalc_first();
-  void	expand();
-  void	precalc_last();
+  void	precalc_first() override;
+  void	expand() override;
+  void	precalc_last() override;
+  virtual bool is_valid()const	{return true;}
   //--------------------------------------------------------------------
 public:	// dc-tran
-  void      tr_iwant_matrix();
-  void      tr_queue_eval();
-  TIME_PAIR tr_review();
-  void      tr_accept();
-  double    tr_probe_num(const std::string&)const;
+  void      tr_iwant_matrix() override;
+  void      tr_queue_eval() override;
+  TIME_PAIR tr_review() override;
+  void      tr_accept() override;
+  double    tr_probe_num(const std::string&)const override;
   //--------------------------------------------------------------------
 public:	// ac
-  void  ac_iwant_matrix();
+  void  ac_iwant_matrix() override;
   //--------------------------------------------------------------------
 public:	// state, aux data
-  bool	is_device()const		{return true;}
-  void	set_slave();
-  void  map_nodes();
+  bool	is_device()const override	{return true;}
+  void	set_slave()override;
+  void  map_nodes()override;
   virtual const std::string current_probe_name()const {untested(); return "";}
   static double volts_limited(const node_t& n1, const node_t& n2);
   bool	converged()const		{return _converged;}
@@ -223,11 +224,11 @@ public:	// state, aux data
   void	deflate_common();
   //--------------------------------------------------------------------
 public:	// type
-  void  set_dev_type(const std::string& new_type);
+  void  set_dev_type(const std::string& new_type) override;
   //--------------------------------------------------------------------
 public:	// ports
   virtual std::string port_name(int)const = 0;
-  virtual void set_port_by_name(std::string& name, std::string& value);
+  virtual int  set_port_by_name(std::string& name, std::string& value);
   virtual void set_port_by_index(int index, std::string& value);
   bool port_exists(int i)const {return i < net_nodes();}
   const std::string port_value(int i)const;
@@ -243,7 +244,7 @@ public:	// ports
   virtual int	num_current_ports()const {return 0;}
   virtual int	tail_size()const	{return 0;}
 
-  virtual int	net_nodes()const	{untested();return 0;} //override
+  int	net_nodes()const override	{itested();return 0;} //override
   virtual int	ext_nodes()const	{return max_nodes();}
   virtual int	int_nodes()const	{return 0;}
   virtual int	matrix_nodes()const	{return 0;}
@@ -257,31 +258,26 @@ public:	// ports
   virtual bool	node_is_connected(int i)const;
   //--------------------------------------------------------------------
 public: // parameters
-  void set_param_by_name(std::string, std::string);
-  void set_param_by_index(int, std::string&, int);
-  int  param_count()const
+  int  set_param_by_name(std::string, std::string) override;
+  void set_param_by_index(int, std::string&, int) override;
+  int  param_count()const override
 	{return ((has_common()) ? (common()->param_count()) : (2 + CARD::param_count()));}
-  bool param_is_printable(int)const;
-  std::string param_name(int)const;
-  std::string param_name(int,int)const;
-  std::string param_value(int)const; 
+  bool param_is_printable(int)const override;
+  std::string param_name(int)const override;
+  std::string param_name(int,int)const override;
+  std::string param_value(int)const override;
 
   virtual void set_parameters(const std::string& Label, CARD* Parent,
 			      COMMON_COMPONENT* Common, double Value,
 			      int state_count, double state[],
 			      int node_count, const node_t nodes[]);
-  void	set_value(const PARAMETER<double>& v)	{_value = v;}
-  void	set_value(double v)			{_value = v;}
-  void  set_value(const std::string& v)		{untested(); _value = v;}
-  void	set_value(double v, COMMON_COMPONENT* c);
-  const PARAMETER<double>& value()const		{return _value;}
   //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code
   virtual bool print_type_in_spice()const = 0;
-  bool use_obsolete_callback_parse()const;
-  bool use_obsolete_callback_print()const;
-  void print_args_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
-  void obsolete_move_parameters_from_common(const COMMON_COMPONENT*);
+  bool use_obsolete_callback_parse()const override;
+  bool use_obsolete_callback_print()const override;
+  void print_args_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
+  virtual void obsolete_set_value(double) {}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

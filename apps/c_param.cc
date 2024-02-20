@@ -29,8 +29,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_PARAM : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     PARAM_LIST* pl = Scope->params();
     if (cmd.is_end()) {
       pl->print(IO::mstdout, OPT::language);

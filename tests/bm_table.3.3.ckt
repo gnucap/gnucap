@@ -4,4 +4,5 @@ v1 1 0 t1
 + order=3 below=0 above=0
 .print tran v(nodes)
 .tran 0 10n .1n trace all
+*>.status notime
 .end

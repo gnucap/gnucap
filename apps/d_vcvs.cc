@@ -34,30 +34,31 @@ private:
 public:
   explicit DEV_VCVS()		:ELEMENT() {}
 private: // override virtual
-  char	   id_letter()const	{return 'E';}
-  std::string value_name()const {return "gain";}
-  std::string dev_type()const	{return "vcvs";}
-  int	   max_nodes()const	{return 4;}
-  int	   min_nodes()const	{return 4;}
-  int	   matrix_nodes()const	{return 4;}
-  int	   net_nodes()const	{return 4;}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_VCVS(*this);}
-  void     precalc_last();
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_extended();}
-  void     tr_begin();
-  bool	   do_tr();
-  void	   tr_load()		{tr_load_shunt(); tr_load_active();}
-  void	   tr_unload()		{untested();tr_unload_active();}
-  double   tr_involts()const	{return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
-  double   tr_involts_limited()const {return volts_limited(_n[IN1],_n[IN2]);}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_extended();}
-  void	   ac_begin();
-  void	   do_ac();
-  void	   ac_load()		{ac_load_shunt(); ac_load_active();}
-  COMPLEX  ac_involts()const	{return _n[IN1]->vac() - _n[IN2]->vac();}
+  char	   id_letter()const override	{return 'E';}
+  std::string value_name()const override{return "gain";}
+  std::string dev_type()const override	{return "vcvs";}
+  int	   max_nodes()const override	{return 4;}
+  int	   min_nodes()const override	{return 4;}
+  int	   matrix_nodes()const override	{return 4;}
+  int	   net_nodes()const override	{return 4;}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const override	{return new DEV_VCVS(*this);}
+  void     precalc_last()override;
+  void     dc_advance()override;
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  void     tr_begin()override;
+  bool	   do_tr()override;
+  void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
+  void	   tr_unload()override		{untested();tr_unload_active();}
+  double   tr_involts()const override	{return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
+  double   tr_involts_limited()const override {return volts_limited(_n[IN1],_n[IN2]);}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_begin()override;
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_shunt(); ac_load_active();}
+  COMPLEX  ac_involts()const override	{return _n[IN1]->vac() - _n[IN2]->vac();}
 
-  std::string port_name(int i)const {
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"p", "n", "ps", "ns"};
@@ -69,8 +70,25 @@ private: // override virtual
 void DEV_VCVS::precalc_last()
 {
   ELEMENT::precalc_last();
-  set_constant(!has_tr_eval());
+  set_constant(!using_tr_eval());
   set_converged(!has_tr_eval());
+}
+/*--------------------------------------------------------------------------*/
+void DEV_VCVS::dc_advance()
+{
+  ELEMENT::dc_advance();
+  if(using_tr_eval()){
+  }else{
+    _y[0].f1 = value();
+
+    if(_y1.f1 != _y[0].f1){ untested();
+      store_values();
+      q_load();
+      _m0.c0 = _y[0].f1;
+      // set_constant(false); not needed. nothing to do in do_tr.
+    }else{
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_VCVS::tr_begin()
@@ -109,6 +127,7 @@ bool DEV_VCVS::do_tr()
 /*--------------------------------------------------------------------------*/
 void DEV_VCVS::ac_begin()
 {
+  ELEMENT::ac_begin();
   _loss1 = _loss0 = 1./OPT::shortckt;
   _ev = _y[0].f1;
   _acg = -_loss0 * _ev;

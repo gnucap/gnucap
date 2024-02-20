@@ -1,0 +1,17 @@
+spice
+
+.param r=0
+
+r1 1 0 r
+r2 1 2 r
+
+r0 2 3 1m
+v1 3 0 1
+
+.print dc v(nodes)
+.dc trace=i
+.print dc v(nodes) y(r*)
+.dc trace=i
+
+.status notime
+.end

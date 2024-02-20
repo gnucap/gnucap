@@ -8,3 +8,8 @@ U1: can't find subckt: CMOSnor2, forcing digital
  6.         6.         10.        0.         0.         0.         0.        
  8.         8.         10.        0.         0.         0.         0.        
  10.        10.        10.        0.         0.         0.         0.        
+Gnucap   System status
+iterations: op=0, dc=20, tran=0, fourier=0, total=20
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=5, subckt=0, model=0, total=5
+dctran density=20.0%, ac density=20.0%

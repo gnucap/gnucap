@@ -1,0 +1,6 @@
+spice 
+>>>>>.subckt a 1 2 
+>>>>>.parameter v=0; 
+>>>>>.parameter d=0; 
+>>>>>.print op v(nodes) 
+X2: X1 is not a subckt proto

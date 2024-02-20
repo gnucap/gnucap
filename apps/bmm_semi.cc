@@ -42,17 +42,17 @@ protected:
   explicit EVAL_BM_SEMI_BASE(int c=0);
   ~EVAL_BM_SEMI_BASE() {untested();}
 protected: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const = 0;
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override = 0;
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
-  void		precalc_last(const CARD_LIST*);
-  void  	expand(const COMPONENT*);
-  void		tr_eval(ELEMENT*)const;
-  std::string	name()const	{untested();return modelname().c_str();}
-  bool		ac_too()const	{untested();return false;}
-  bool  	parse_params_obsolete_callback(CS&);
-  bool		parse_numlist(CS& cmd);
+  void		precalc_last(const CARD_LIST*) override;
+  void  	expand(const COMPONENT*) override;
+  void		tr_eval(ELEMENT*)const override;
+  std::string	name()const override	{untested();return modelname().c_str();}
+  bool		ac_too()const override	{untested();return false;}
+  bool  	parse_params_obsolete_callback(CS&) override;
+  bool		parse_numlist(CS& cmd) override;
 };
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_CAPACITOR : public EVAL_BM_SEMI_BASE {
@@ -64,10 +64,10 @@ public:
     :EVAL_BM_SEMI_BASE(c) {}
   ~EVAL_BM_SEMI_CAPACITOR() {untested();}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {untested();return new EVAL_BM_SEMI_CAPACITOR(*this);}
-  void  	expand(const COMPONENT*);
-  void		precalc_last(const CARD_LIST*);
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override{untested();return new EVAL_BM_SEMI_CAPACITOR(*this);}
+  void  	expand(const COMPONENT*)override;
+  void		precalc_last(const CARD_LIST*)override;
 };
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_RESISTOR : public EVAL_BM_SEMI_BASE {
@@ -79,10 +79,10 @@ public:
     :EVAL_BM_SEMI_BASE(c) {}
   ~EVAL_BM_SEMI_RESISTOR() {untested();}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {untested();return new EVAL_BM_SEMI_RESISTOR(*this);}
-  void  	expand(const COMPONENT*);
-  void		precalc_last(const CARD_LIST*);
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {untested();return new EVAL_BM_SEMI_RESISTOR(*this);}
+  void  	expand(const COMPONENT*)override;
+  void		precalc_last(const CARD_LIST*)override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -101,15 +101,15 @@ protected:
   explicit MODEL_SEMI_BASE();
   explicit MODEL_SEMI_BASE(const MODEL_SEMI_BASE& p);
 protected: // override virtual
-  void  precalc_first();
+  void  precalc_first()override;
   //void  precalc_last();
   //CARD* clone()const //MODEL_CARD/pure
-  void		set_param_by_index(int, std::string&, int);
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int param_count()const {return (4 + MODEL_CARD::param_count());}
+  void		set_param_by_index(int, std::string&, int)override;
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override{return (4 + MODEL_CARD::param_count());}
 };
 /*--------------------------------------------------------------------------*/
 class MODEL_SEMI_CAPACITOR : public MODEL_SEMI_BASE {
@@ -124,17 +124,17 @@ private:
 public:
   explicit MODEL_SEMI_CAPACITOR();
 private: // override virtual
-  std::string dev_type()const		{return "c";}
-  void  precalc_first();
+  std::string dev_type()const override		{return "c";}
+  void  precalc_first()override;
   //void  precalc_last();
-  COMMON_COMPONENT* new_common()const {return new EVAL_BM_SEMI_CAPACITOR;}
-  CARD* clone()const		{return new MODEL_SEMI_CAPACITOR(*this);}
-  void		set_param_by_index(int, std::string&, int);
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int param_count()const {return (2 + MODEL_SEMI_BASE::param_count());} 
+  COMMON_COMPONENT* new_common()const override {return new EVAL_BM_SEMI_CAPACITOR;}
+  CARD* clone()const override		{return new MODEL_SEMI_CAPACITOR(*this);}
+  void		set_param_by_index(int, std::string&, int)override;
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override {return (2 + MODEL_SEMI_BASE::param_count());} 
 };
 /*--------------------------------------------------------------------------*/
 class MODEL_SEMI_RESISTOR : public MODEL_SEMI_BASE {
@@ -147,17 +147,17 @@ private:
 public:
   explicit MODEL_SEMI_RESISTOR();
 private: // override virtual
-  std::string dev_type()const		{return "r";}
-  void  precalc_first();
+  std::string dev_type()const override		{return "r";}
+  void  precalc_first()override;
   //void  precalc_last();
-  COMMON_COMPONENT* new_common()const {return new EVAL_BM_SEMI_RESISTOR;}
-  CARD* clone()const		{return new MODEL_SEMI_RESISTOR(*this);}
-  void		set_param_by_index(int, std::string&, int);
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int param_count()const {return (1 + MODEL_SEMI_BASE::param_count());}
+  COMMON_COMPONENT* new_common()const override {return new EVAL_BM_SEMI_RESISTOR;}
+  CARD* clone()const override		{return new MODEL_SEMI_RESISTOR(*this);}
+  void		set_param_by_index(int, std::string&, int)override;
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override {return (1 + MODEL_SEMI_BASE::param_count());}
 };
 /*--------------------------------------------------------------------------*/
 double const EVAL_BM_SEMI_BASE::_default_length = NOT_INPUT;

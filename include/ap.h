@@ -90,6 +90,7 @@ public:
 
   // control
   CS&	      reset(size_t c=0) {_cnt=c; _ok=true; return *this;}
+  CS&	      reset_fail(size_t c=0) {_cnt=c; _ok=false; return *this;}
 
   // exception handling (ap_error.cc) non-consuming
   CS&	      check(int, const std::string&);
@@ -157,6 +158,7 @@ public:
   CS&	      skipcom()			{return skip1b(",");}
   CS&	      operator>>(const char& x)	{return skip1b(x);}
   CS&	      operator>>(const char* x)	{return umatch(x);}
+  CS&	      operator>>(const std::string& x)	{itested();return umatch(x);}
 };	
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

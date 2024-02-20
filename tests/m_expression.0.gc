@@ -1,0 +1,33 @@
+option list
+eval "string"
+param a="aaa"
+eval a
+param b={"aaa" + "bbb"}
+eval b
+param c={"aaa" == "bbb"}
+eval c
+param d={"aaa" == a}
+eval d
+param e={exp("0.")}
+eval e
+param f={exp(1.+"0.")}
+eval f
+param g={exp("aaa" == 0.)}
+eval g
+param h={exp(0. == "aaa")}
+eval h
+param i={exp(a == "aaa")}
+eval i
+param j={exp(0. != 0.)}
+eval j
+param k={"aaa bbb"}
+eval k
+* //BUG// does not work with spice get_line
+param l={"aaa\"bbb"}
+eval l
+* //BUG// totally does not work with spice get_line
+* param m=exp("aaa\"bbb")
+* eval m
+options nag
+param n={"missing quote}
+eval n

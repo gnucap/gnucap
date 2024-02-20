@@ -55,3 +55,8 @@ difpair ckt - simple differential pair
  27.       -7.6611u   -0.0025152  0.0025306 
 #           p(vin)     p(vcc)     p(vee)    
  27.        586.9E-18 -0.030183  -0.030367  
+Gnucap   System status
+iterations: op=9, dc=0, tran=0, fourier=0, total=243
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=9, subckt=0, model=4, total=13
+dctran density=65.7%, ac density=65.7%

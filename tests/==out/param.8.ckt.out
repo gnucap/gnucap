@@ -1,10 +1,15 @@
 'parameter test 
  a= 1. b= 2. c= 3.
 parameter d not specified, using default
-#           v(1)       v(2)      
+#           v(1)       v(2)       iter(0)   
 parameter d not specified, using default
 r2: short circuit
 r2: short circuit
 r2: short circuit
 r2: short circuit
- 27.        1.         0.        
+ 27.        1.         3.3333u    4.        
+Gnucap   System status
+iterations: op=4, dc=0, tran=0, fourier=0, total=4
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=100.0%, ac density=100.0%

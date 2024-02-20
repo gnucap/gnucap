@@ -29,7 +29,7 @@
 # The default is to use the makefile built by "configure"
 default: nothing
 	mkdir -p O
-	cat Make1 Make2 ../Make3 Make.depend >O/Makefile
+	cat Make1 Make2 ../include/Make3 Make.depend >O/Makefile
 	(cd O; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 # The most common configuration is g++
@@ -38,7 +38,7 @@ default: nothing
 # It is optimized for speed.  Debugging is off.
 g++: nothing
 	mkdir -p O
-	cat Make1 Make2.g++ ../Make3 Make.depend >O/Makefile
+	cat Make1 ../include/Make2.g++ ../include/Make3 Make.depend >O/Makefile
 	(cd O; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 # This one makes a "debug" build ...
@@ -48,30 +48,35 @@ g++: nothing
 # It doesn't mean TOTALLY untested.
 debug: nothing
 	mkdir -p O-DEBUG
-	cat Make1 Make2.Debug ../Make3 Make.depend >O-DEBUG/Makefile
+	cat Make1 ../include/Make2.Debug ../include/Make3 Make.depend >O-DEBUG/Makefile
 	(cd O-DEBUG; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 # MS Windows using mingw32
-mingw: nothing
-	mkdir -p MSW
-	cat Make1 Make2.mingw32 ../Make3 Make.depend >MSW/Makefile
-	(cd MSW; ${MAKE} -k)
+# unmaintained, stale.  Holding stuib here pending further work.
+#mingw: nothing
+#	mkdir -p MSW
+#	cat Make1 Make2.mingw32 ../include/Make3 Make.depend >MSW/Makefile
+#	(cd MSW; ${MAKE} -k)
 #-----------------------------------------------------------------------------
 tags: nothing
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	(${MAKE} tags -f Make.aux)
 #-----------------------------------------------------------------------------
 depend: nothing
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux depend
 #-----------------------------------------------------------------------------
 checkin: nothing
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux checkin
 #-----------------------------------------------------------------------------
 checkout: nothing
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux checkout
 #-----------------------------------------------------------------------------
 install: nothing
@@ -83,7 +88,8 @@ install-debug: nothing
 	(cd O-DEBUG; ${MAKE} install)
 #-----------------------------------------------------------------------------
 uninstall: nothing
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux uninstall
 #-----------------------------------------------------------------------------
 #  Note that the /usr/local directory is overwritten by configure.
@@ -102,32 +108,40 @@ unconfig:
 	rm -f Makefile
 #-----------------------------------------------------------------------------
 date: nothing
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux date
 #-----------------------------------------------------------------------------
 header-check:
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux header-check
 #-----------------------------------------------------------------------------
 manifest:
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux manifest
 #-----------------------------------------------------------------------------
 md5sums:
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux md5sums
 #-----------------------------------------------------------------------------
 mostlyclean:
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux mostlyclean
 clean:
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux clean
 distclean:
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux distclean
 maintainer-clean:
-	cat Make1 Make2 ../Make3 >Make.aux
+	rm -f Make.aux
+	cat Make1 Make2 ../include/Make3 >Make.aux
 	${MAKE} -f Make.aux maintainer-clean
 #-----------------------------------------------------------------------------
 nothing:

@@ -39,4 +39,5 @@ R1 1 0 TESTR(w=2, l=4)
 .ac 1
 .op
 .ac 1
+.status notime
 .end

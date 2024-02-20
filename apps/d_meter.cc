@@ -34,24 +34,24 @@ private:
 public:
   explicit DEV()		:ELEMENT() {}
 private: // override virtual
-  char	   id_letter()const	{return '\0';}
-  std::string value_name()const {return "";}
-  std::string dev_type()const	{return "meter";}
-  int	   max_nodes()const	{return 4;}
-  int	   min_nodes()const	{return 4;}
-  int	   matrix_nodes()const	{return 4;}
-  int	   net_nodes()const	{return 4;}
-  CARD*	   clone()const		{return new DEV(*this);}
-  void	   tr_iwant_matrix()	{}
-  void	   ac_iwant_matrix()	{}
-  void     precalc_last();
-  double   tr_involts()const	{return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
-  double   tr_involts_limited()const {return tr_involts();}
-  COMPLEX  ac_involts()const	{return _n[IN1]->vac() - _n[IN2]->vac();}
-  double   tr_probe_num(const std::string&)const;
-  XPROBE   ac_probe_ext(const std::string&)const;
+  char	   id_letter()const override	{return '\0';}
+  std::string value_name()const override {return "";}
+  std::string dev_type()const override	{return "meter";}
+  int	   max_nodes()const override		{return 4;}
+  int	   min_nodes()const override		{return 4;}
+  int	   matrix_nodes()const override	{return 4;}
+  int	   net_nodes()const override		{return 4;}
+  CARD*	   clone()const override		{return new DEV(*this);}
+  void	   tr_iwant_matrix()override	{}
+  void	   ac_iwant_matrix()override	{}
+  void     precalc_last()override;
+  double   tr_involts()const override	{return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
+  double   tr_involts_limited()const override {return tr_involts();}
+  COMPLEX  ac_involts()const override	{return _n[IN1]->vac() - _n[IN2]->vac();}
+  double   tr_probe_num(const std::string&)const override;
+  XPROBE   ac_probe_ext(const std::string&)const override;
 
-  std::string port_name(int i)const {
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"outp", "outn", "inp", "inn"};

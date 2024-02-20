@@ -6,4 +6,5 @@ D1   2  0  ddd   1.
 + eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5 )
 .print op v(1 2)
 .op
+*>.status notime
 .end

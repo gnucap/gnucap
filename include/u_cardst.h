@@ -24,12 +24,12 @@
 //testing=script,complete 2006.07.14
 #ifndef U_CARDST_H
 #define U_CARDST_H
-#include "e_compon.h"
+#include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
 class CARDSTASH {
 private:
-  COMPONENT*		_brh;
-  double		_value;
+  ELEMENT*		_brh;
+  PARAMETER<double>	_value;
   COMMON_COMPONENT*	_c;
 public:
   explicit CARDSTASH()		:_brh(0), _value(0.), _c(0) {}
@@ -37,7 +37,11 @@ public:
 	   CARDSTASH(const CARDSTASH& p);
 	   ~CARDSTASH()		{COMMON_COMPONENT::detach_common(&_c);}
   void	   operator=(CARD* b);
-  void	   restore()		{assert(_brh); _brh->set_value(_value, _c);}
+  void	   restore() {
+    assert(_brh);
+    _brh->set_value(_value, _c);
+    _brh->set_value(_value);
+  }
 #if 0
   bool operator==(const CARDSTASH&)const
 	{incomplete();unreachable();return false;}
@@ -54,7 +58,7 @@ public:
 inline void CARDSTASH::operator=(CARD* b)
 {
   assert(b);
-  _brh = prechecked_cast<COMPONENT*>(b);
+  _brh = prechecked_cast<ELEMENT*>(b);
   assert(_brh);
   _value = _brh->value();
   COMMON_COMPONENT::detach_common(&_c);

@@ -30,4 +30,5 @@ rtemp3 2 0 t2 (.5)
 .measure rt2 at(probe="r(rtemp2)")
 .measure rt3 at(probe="r(rtemp3)")
 
+.status notime
 .end

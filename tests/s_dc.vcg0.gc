@@ -1,0 +1,15 @@
+verilog
+
+vcg #(ee) vv(out, 0, in, 0);
+* F1 out 0 vin ee
+
+spice
+.options noinsensitive
+
+.param ee 3
+Iout 0 out 1
+
+Vin in 0 1
+
+.print dc v(nodes)
+.dc ee 1 3 1

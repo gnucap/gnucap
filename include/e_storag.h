@@ -34,34 +34,34 @@ INTERFACE FPOLY1 differentiate(const FPOLY1* q, const FPOLY1* i, double* time,
 class INTERFACE STORAGE : public ELEMENT {
 private:
 protected:
-  explicit STORAGE()			
-    :ELEMENT(), _method_u(meUNKNOWN), _method_a(mTRAPGEAR)  {}
+  explicit STORAGE(COMMON_COMPONENT* c=NULL)
+    :ELEMENT(c), _method_u(meUNKNOWN), _method_a(mTRAPGEAR)  {}
   explicit STORAGE(const STORAGE& p)
     :ELEMENT(p), _method_u(p._method_u), _method_a(p._method_a) {}
   ~STORAGE() {}
 public: // override virtual
   //void   precalc_first();	//ELEMENT
   //void   expand();		//COMPONENT
-  void	   precalc_last();
-  void     tr_begin();
-  void     tr_restore();
-  void     dc_advance();
-  void     tr_advance();
+  void	   precalc_last() override;
+  void     tr_begin() override;
+  void     tr_restore() override;
+  void     dc_advance() override;
+  void     tr_advance() override;
   //void   tr_regress();	//ELEMENT
-  bool	   tr_needs_eval()const;
+  bool	   tr_needs_eval()const override;
   //void   tr_queue_eval()	//ELEMENT
-  TIME_PAIR tr_review();
-  double   tr_probe_num(const std::string&)const;
+  TIME_PAIR tr_review() override;
+  double   tr_probe_num(const std::string&)const override;
 public:
   double   tr_c_to_g(double c, double g)const;
 private:
-  int	   order()const {
+  int	   order()const override {
     const int o[] = {1, 1, 2, 1, 1};
     int ord = o[_method_a];
     assert(ord < OPT::_keep_time_steps);
     return ord;
   }
-  double   error_factor()const {
+  double   error_factor()const override {
     const double f[]={1./2., 1./2., 1./12., 1./6., 1./2.};
     return f[_method_a];
   }

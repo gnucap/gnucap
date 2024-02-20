@@ -51,7 +51,15 @@ CARD::CARD(const CARD& p)
 /*--------------------------------------------------------------------------*/
 CARD::~CARD()
 {
+  // purge();
   delete _subckt;
+}
+/*--------------------------------------------------------------------------*/
+void CARD::purge()
+{
+  assert(_attribs);
+  _attribs->erase(reinterpret_cast<bool*>(this)-net_nodes(), reinterpret_cast<bool*>(this)+param_count());
+  CKT_BASE::purge();
 }
 /*--------------------------------------------------------------------------*/
 const std::string CARD::long_label()const
@@ -196,14 +204,14 @@ void CARD::new_subckt()
   _subckt = new CARD_LIST;
 }
 /*--------------------------------------------------------------------------*/
-void CARD::new_subckt(const CARD* Model, PARAM_LIST* Params)
+void CARD::new_subckt(const CARD* Model, PARAM_LIST const* Params)
 {
   delete _subckt;
   _subckt = NULL;
   _subckt = new CARD_LIST(Model, this, scope(), Params);
 }
 /*--------------------------------------------------------------------------*/
-void CARD::renew_subckt(const CARD* Model, PARAM_LIST* Params)
+void CARD::renew_subckt(const CARD* Model, PARAM_LIST const* Params)
 {
   if (_sim->is_first_expand()) {
     new_subckt(Model, Params);
@@ -218,14 +226,14 @@ node_t& CARD::n_(int i)const
   return _n[i];
 }
 /*--------------------------------------------------------------------------*/
-void CARD::set_param_by_name(std::string Name, std::string Value)
+int CARD::set_param_by_name(std::string Name, std::string Value)
 {
   //BUG// ugly linear search
   for (int i = param_count() - 1;  i >= 0;  --i) {
     for (int j = 0;  param_name(i,j) != "";  ++j) { // multiple names
       if (Umatch(Name, param_name(i,j) + ' ')) {
 	set_param_by_index(i, Value, 0/*offset*/);
-	return; //success
+	return i; //success
       }else{
 	//keep looking
       }

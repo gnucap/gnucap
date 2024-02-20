@@ -52,6 +52,7 @@
  *		| nothing
  * andarg	: logical andtail
  * exptail	: "||" andarg exptail
+ *		| "?" expression ":" expression
  *		| nothing
  * expression	: andarg exptail
  */
@@ -85,28 +86,62 @@ void Expression::arglist(CS& File)
   }
 }
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+CS& Expression::array(CS& File)
+{itested();
+  trace1("array", File.tail().substr(0,20));
+  size_t here = File.cursor();
+  if (File.skip1b("'") && File.peek() == '{') { itested();
+    File.skip();
+    trace1("array2", File.tail().substr(0,20));
+    push_back(new Token_STOP("'{"));
+    if (!File.skip1b("}")) { itested();
+      expression(File);
+      arglisttail(File);
+      if (!File.skip1b("}")) { untested();
+	throw Exception_CS("unbalanced parentheses (array)", File);
+      }else{ itested();
+      }
+    }else{
+    }
+
+    push_back(new Token_ARRAY("}"));
+  }else{itested();
+    File.reset_fail(here);
+  }
+  return File;
+}
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 void Expression::leaf(CS& File)
 {
-#if 0
-  if (File.peek() == '"') {untested();
-    Quoted_String name(File);
-    push_back(new Token_SYMBOL(name, ""));
-    // do not put constants in symbol table
-  } // else 
-#endif
+    trace1("leaf?", File.tail());
   size_t here = File.cursor();
-  Name_String name(File);
-  if (!File.stuck(&here)) {
-    arglist(File);
-    push_back(new Token_SYMBOL(name, ""));
-  }else{itested();
-    throw Exception_CS("what's this?", File);
+  if (File.peek() == '"') {
+    Quoted_String* s = new Quoted_String(File);
+    if (File.stuck(&here)) { untested();
+      delete s;
+      throw Exception_CS("what's this?", File);
+    }else{
+      push_back(new Token_CONSTANT("\"" + s->val_string() + "\"", s));
+    }
+  }else if (File.peek() == '<') {
+    std::string s = File.ctos("", "<", ">");
+    push_back(new Token_SYMBOL("<" + s + ">"));
+  }else if (array(File)) { itested();
+  }else{
+    Name_String name(File);
+    if (!File.stuck(&here)) {
+      arglist(File);
+      push_back(new Token_SYMBOL(name));
+    }else{itested();
+      trace1("leafstuck", File.tail());
+      throw Exception_CS("what's this?", File);
+    }
   }
 }
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 void Expression::factor(CS& File)
 {
-  Token* t = 0;
+  Token* t = NULL;
   if (File >> "-|+|!") {
     std::string name(File.last_match());
     t = new Token_UNARY(name);
@@ -125,11 +160,33 @@ void Expression::factor(CS& File)
     push_back(t);
   }else{
   }
+  trace1("factor1", File.tail());
+}
+/*--------------------------------------------------------------------------*/
+void Expression::ternary(CS& File)
+{
+  std::string name(File.last_match());
+  Expression* true_part = NULL;
+  Expression* false_part = NULL;
+
+  true_part = new Expression(File);
+
+  if (!File.skip1b(":")) {
+    delete true_part;
+    throw Exception_CS("missing colon (ternary)", File);
+  }else{
+    // push_back(new Token_STOP(":"));
+  }
+  false_part = new Expression(File);
+
+ // andarg(File);
+
+  push_back(new Token_TERNARY(name, true_part, false_part));
 }
 /*--------------------------------------------------------------------------*/
 void Expression::termtail(CS& File)
 {
-  if (File >> "*|/") {
+  if (File >> "*|/|%") {
     std::string name(File.last_match());
     factor(File);
     push_back(new Token_BINOP(name));
@@ -140,7 +197,9 @@ void Expression::termtail(CS& File)
 /*--------------------------------------------------------------------------*/
 void Expression::term(CS& File)
 {
+  trace1("term0", File.tail());
   factor(File);
+  trace1("term1", File.tail());
   termtail(File);
 }
 /*--------------------------------------------------------------------------*/
@@ -202,6 +261,9 @@ void Expression::exptail(CS& File)
     andarg(File);
     push_back(new Token_BINOP(name));
     exptail(File);
+  }else if (File >> "?") {
+    assert(size());
+    ternary(File);
   }else{
   }
 }

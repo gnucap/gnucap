@@ -38,7 +38,7 @@ CARD_LIST::CARD_LIST()
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
-		     const CARD_LIST* scope, PARAM_LIST* p)
+		     const CARD_LIST* scope, PARAM_LIST const* p)
   :_parent(NULL),
    _nm(new NODE_MAP),
    _params(NULL)
@@ -100,15 +100,23 @@ CARD_LIST::const_iterator CARD_LIST::find_again(const std::string& short_name,
 CARD_LIST& CARD_LIST::erase(iterator ci)
 {
   assert(ci != end());
-  delete *ci;
+  if (*ci) {
+    (*ci)->purge();
+    delete *ci;
+  }else{itested();
+  }
   _cl.erase(ci);
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::erase(CARD* c)
-{
-  delete c;
-  _cl.remove(c);
+{untested();
+  if (c) {untested();
+    c->purge();
+    delete c;
+    _cl.remove(c);
+  }else{untested();
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -118,7 +126,11 @@ CARD_LIST& CARD_LIST::erase(CARD* c)
 CARD_LIST& CARD_LIST::erase_all()
 {
   while (!_cl.empty()) {
-    delete _cl.back();
+    if (_cl.back()) {
+      _cl.back()->purge();
+      delete _cl.back();
+    }else{itested();
+    }
     _cl.pop_back();
   }
   return *this;
@@ -324,7 +336,7 @@ bool CARD_LIST::do_tr()
  */
 CARD_LIST& CARD_LIST::tr_load()
 {
-  if (CKT_BASE::_sim->is_inc_mode()) {itested();
+  if (CKT_BASE::_sim->is_inc_mode()) { untested();
     assert(!OPT::traceload);
     for (iterator ci=begin(); ci!=end(); ++ci) {itested();
       trace_func_comp();
@@ -423,7 +435,7 @@ CARD_LIST& CARD_LIST::ac_load()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
-void CARD_LIST::attach_params(PARAM_LIST* p, const CARD_LIST* scope)
+void CARD_LIST::attach_params(PARAM_LIST const* p, const CARD_LIST* scope)
 {
   if (p) {
     assert(scope);

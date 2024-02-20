@@ -32,13 +32,13 @@ private:
 public:
   explicit	DEV_DOT()		:CARD() {set_constant(true);}
 private: // override virtual
-  std::string   value_name()const	{untested();return "";}
-  char		id_letter()const	{untested();return '\0';}
-  std::string	dev_type()const		{untested();return "dotcard";}
-  CARD*		clone()const		{return new DEV_DOT(*this);}
+  std::string   value_name()const override {untested();return "";}
+  char		id_letter()const override	{untested();return '\0';}
+  std::string	dev_type()const override		{untested();return "dotcard";}
+  CARD*		clone()const override		{return new DEV_DOT(*this);}
 public:
   void set(const std::string& S) {_s = S;}
-  const std::string& s()const {untested();return _s;}
+  const std::string& s()const {itested();return _s;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

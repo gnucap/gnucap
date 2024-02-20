@@ -1,0 +1,27 @@
+*// qucs style component macros. 
+.subckt Idc ( 1 2 )
+dev ( 2 1 )  isource I
+.ends Idc
+.subckt Vdc ( p n )
+dev ( p n )  vsource U
+.ends Vdc
+.subckt R ( p n )
+*// local? 
+dev ( p n )  resistor R * (1. + dT*(Tc1 + dT*Tc2))
+.ends R
+i1 ( 1 0 )  Idc  I=ii
+r1 ( 1 0 )  R  R=rr
+v1 ( 2 0 )  Vdc  U=vv
+#           v(1)       v(2)      
+ 0.         1.         1.        
+#           v(1)       v(2)      
+ 1.         1.         1.        
+ 2.         2.         1.        
+#           v(1)       v(2)      
+ 0.         0.         1.        
+ 1.         1.         1.        
+ 2.         2.         1.        
+#           v(1)       v(2)      
+ 0.         1.         0.        
+ 1.         1.         1.        
+ 2.         1.         2.        

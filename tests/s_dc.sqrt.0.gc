@@ -1,0 +1,13 @@
+spice
+
+v1 2 0 v
+
+.print dc v(nodes)
+.parameter s=1
+.parameter v=sqrt(s)
+
+.dc s 0 2 .5
+
+.status notime
+
+.end

@@ -1,0 +1,102 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH GNUCAP 1 "November 2001" "Debian Project" "Debian GNU"
+
+.SH NAME
+gnucap \- GNU Circuit Analysis Package
+.SH SYNOPSIS
+.B gnucap
+[\fB-b\fP filename] [\fB-i\fP filename] [filename]
+.br
+.SH DESCRIPTION
+.B Gnucap
+is a general purpose circuit simulator.  It performs nonlinear
+dc and transient analyses, fourier analysis, and ac analysis
+linearized at an operating point.  It is fully interactive and
+command driven.  It can also be run in batch mode or as a server.
+The output is produced as it simulates.  Spice compatible models
+for the MOSFET (level 1,2,3) and diode are included in this
+release.
+.PP
+Since it is fully interactive, it is possible to make changes and
+re-simulate quickly.  The interactive design makes it well suited
+to the typical iterative design process used it optimizing a circuit
+design.  It is also well suited to undergraduate teaching where
+Spice in batch mode can be quite intimidating.  This version, while
+still officially in beta test, should be stable enough for basic
+undergraduate teaching and courses in MOS design.
+.PP
+In batch mode it is mostly Spice compatible, so it is often possible
+to use the same file for both Gnucap and Spice (e.g. ngspice).
+.PP
+The analog simulation is based on traditional nodal analysis with
+iteration by Newton's method and LU decomposition.  An event queue
+and incremental matrix update speed up the solution for large
+circuits (at some expense for small circuits).
+.PP
+It also has digital devices for mixed signal simulation.  The
+digital devices may be implemented as either analog subcircuits or
+as true digital models.  The simulator will automatically determine
+which to use.  Networks of digital devices are simulated as digital,
+with no conversions to analog between gates.  This results in
+digital circuits being simulated faster than on a typical analog
+simulator, even with behavioral models.  The digital mode is
+experimental and needs work.  There will be substantial improvements
+in future releases.
+.PP
+Gnucap is modular from the ground up. All devices, input languages and most
+algorithms can be customized and replaced at running time. Extensions and
+additional plugins are not part of the main package, but can be found on the
+project website.
+
+.SH OPTIONS
+Various command-line options are available. These are processed in order.
+If no parameters are given, gnucap will start in interactive
+mode (recommended) and read from standard input.
+.TP
+\fI-a filename\fP
+load plugin from filename during startup
+.TP
+\fI-i filename\fI
+execute the commands in the named file then go into interactive mode
+.TP
+\fI-b filename\fP
+execute the commands in the named file then exit (Spice batch mode)
+.TP
+\fI--<command>\fP
+execute interactive command as if typed into interactive mode. E.g. --verilog,
+switches to verilog mode.
+.TP
+.SH BUGS
+See 
+.B /usr/share/doc/gnucap/bugs
+for a list of known bugs in this release.
+.PP
+Gnucap is an ongoing research project. It is being released in a
+preliminary phase in hopes that it will be useful and that others
+will use it as a thrust or base for their research and development.
+
+.SH FILES
+
+During startup, the first of
+\fIgnucap.rc\fP,
+\fI.gnucap/gnucap.rc\fP,
+\fI$sysconfdir/gnucap.rc\fP,
+\fI$sysconfdir/gnucap/gnucap.rc\fP will be included. Otherwise, default plugins will be loaded.
+
+Here, \fI$sysconfdir\fP is typically \fI${prefix}/etc\fP, and defaults to \fI/usr/local/etc\fP.
+It is expected to be set to \fI/etc\fP in packages obtained from the usual
+operating system distributors.
+
+.SH AUTHOR
+Gnucap is being written by Albert Davis <ad211@freeelectron.net>
+.PP
+This manual page was written by Jon Rabone <jkr@debian.org> and maintained
+by Hamish Moffatt <hamish@debian.org> for the Debian package of gnucap.
+Modified by Felix Salfelder <felix@salfelder.org>.
+For the full documentation, please visit
+.B http://gnucap.org.
+.PP
+This release has been prepared with funding through the NGI0 Entrust Fund, a
+fund established by NLnet with financial support from the European Commission's
+Next Generation Internet programme, under the aegis of DG Communications
+Networks, Content and Technology under grant agreement No 101069594.

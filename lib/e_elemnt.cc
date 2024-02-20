@@ -27,8 +27,9 @@
 #include "e_aux.h"
 #include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
-ELEMENT::ELEMENT()
-  :COMPONENT(),
+ELEMENT::ELEMENT(COMMON_COMPONENT* c)
+  :COMPONENT(c),
+   _value(0),
    _loaditer(0),
    _m0(),
    _m1(),
@@ -47,6 +48,7 @@ ELEMENT::ELEMENT()
 /*--------------------------------------------------------------------------*/
 ELEMENT::ELEMENT(const ELEMENT& p)
   :COMPONENT(p),
+   _value(p._value),
    _loaditer(0),
    _m0(),
    _m1(),
@@ -72,6 +74,106 @@ ELEMENT::ELEMENT(const ELEMENT& p)
   notstd::copy_n(p._time, int(OPT::_keep_time_steps), _time);
 }
 /*--------------------------------------------------------------------------*/
+void ELEMENT::set_value(double v, COMMON_COMPONENT* c)
+{
+  if (c != common()) {
+    detach_common();
+    attach_common(c);
+  }else{
+  }
+  set_value(v);
+}
+/*--------------------------------------------------------------------------*/
+int ELEMENT::set_param_by_name(std::string Name, std::string Value)
+{
+  if(Name == value_name()){
+    _value = Value;
+    return ELEMENT::param_count() - 1;
+  }else if (has_common()) {
+    COMMON_COMPONENT* c = common()->clone();
+    assert(c);
+    int index = c->set_param_by_name(Name, Value);
+    attach_common(c);
+    return index;
+  }else{
+    return COMPONENT::set_param_by_name(Name, Value);
+  }
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
+{
+  if (has_common()) {untested();
+    COMMON_COMPONENT* c = common()->clone();
+    assert(c);
+    c->set_param_by_index(i, Value, offset);
+    attach_common(c);
+  }else{
+    switch (ELEMENT::param_count() - 1 - i) {
+    case 0:
+      _value = Value; break;
+    default: itested();
+      COMPONENT::set_param_by_index(i, Value, offset);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool ELEMENT::param_is_printable(int i)const
+{
+  if (has_common()) {
+    return common()->param_is_printable(i);
+  }else{
+    switch (ELEMENT::param_count() - 1 - i) {
+    case 0:
+      return value().has_hard_value();
+    default:
+      return COMPONENT::param_is_printable(i);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string ELEMENT::param_name(int i)const
+{
+  if (has_common()) {
+    return common()->param_name(i);
+  }else{
+    switch (ELEMENT::param_count() - 1 - i) {
+    case 0:  return value_name();
+    default:
+      return COMPONENT::param_name(i);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string ELEMENT::param_name(int i, int j)const
+{
+  if (has_common()) {untested();
+    return common()->param_name(i,j);
+  }else{ itested();
+    if (j == 0) { itested();
+      return param_name(i);
+    }else if (i >= ELEMENT::param_count()) {untested();
+      return "";
+    }else{itested();
+      return COMPONENT::param_name(i,j);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string ELEMENT::param_value(int i)const
+{
+  if (has_common()) {
+    return common()->param_value(i);
+  }else{
+    switch (ELEMENT::param_count() - 1 - i) {
+    case 0:
+      return value().string();
+    default:
+      return COMPONENT::param_value(i);
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
 bool ELEMENT::skip_dev_type(CS& cmd)
 {
   return cmd.umatch(dev_type() + ' ');
@@ -80,15 +182,7 @@ bool ELEMENT::skip_dev_type(CS& cmd)
 void ELEMENT::precalc_last()
 {
   COMPONENT::precalc_last();
-
-  //BUG// This is needed for AC analysis without doing op (or dc or tran ...) first.
-  // Something like it should be moved to ac_begin.
-  if (_sim->has_op() == s_NONE) {
-    _y[0].x  = 0.;
-    _y[0].f0 = LINEAR;
-    _y[0].f1 = value();
-  }else{
-  }
+  _value.e_val(0.,scope());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_begin()
@@ -103,6 +197,16 @@ void ELEMENT::tr_begin()
     _y[i] = FPOLY1(0., 0., 0.);
   }
   _dt = NOT_VALID;
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::ac_begin()
+{
+  if (_sim->has_op() == s_NONE) {
+    _y[0].x  = 0.;
+    _y[0].f0 = LINEAR;
+    _y[0].f1 = value();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_restore()
@@ -317,7 +421,7 @@ double ELEMENT::tr_probe_num(const std::string& x)const
     return _y[0].f1;
   }else if (Umatch(x, "nv ")) {
     return value();
-  }else if (Umatch(x, "eiv ")) {untested();
+  }else if (Umatch(x, "eiv ")) {
     return _m0.x;
   }else if (Umatch(x, "y ")) {
     return _m0.c1;
@@ -486,6 +590,14 @@ double ELEMENT::tr_review_check_and_convert(double timestep)
   assert(time_future > 0.);
   assert(time_future > _time[1]);
   return time_future;
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::obsolete_move_parameters_from_common(const COMMON_COMPONENT* dc)
+{
+  assert(dc);
+
+  _value   = dc->value();
+  _mfactor = dc->mfactor();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -133,8 +133,7 @@ static void doit(CARD_LIST* scope)
 /*--------------------------------------------------------------------------*/
 class CMD_SWEEP : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
     if (cmd.more()) {
       buildfile(cmd);
     }else{

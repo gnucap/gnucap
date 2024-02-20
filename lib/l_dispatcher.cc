@@ -48,20 +48,23 @@ CKT_BASE* DISPATCHER_BASE::operator[](std::string s)
 /*--------------------------------------------------------------------------*/
 void DISPATCHER_BASE::uninstall(CKT_BASE* p)
 {
-  assert(_map);
-  for (typename std::map<std::string, CKT_BASE*>::iterator
-	 ii = _map->begin();  ii != _map->end();  ++ii) {
-    if (ii->second == p) {
-      ii->second = NULL;
-    }else{
+  if(p){
+    assert(_map);
+    for (typename std::map<std::string, CKT_BASE*>::iterator
+	   ii = _map->begin();  ii != _map->end();  ++ii) {
+      if (ii->second == p) {
+	ii->second = NULL;
+      }else{
+      }
     }
-  }
 #if !defined(NDEBUG)
-  for (typename std::map<std::string, CKT_BASE*>::iterator
-	 ii = _map->begin();  ii != _map->end();  ++ii) {
-    assert(ii->second != p);
-  }
+    for (typename std::map<std::string, CKT_BASE*>::iterator
+	   ii = _map->begin();  ii != _map->end();  ++ii) {
+      assert(ii->second != p);
+    }
 #endif
+  }else{ itested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DISPATCHER_BASE::check_init()
@@ -87,11 +90,11 @@ void DISPATCHER_BASE::install(const std::string& s, CKT_BASE* p)
     trace2(name.c_str(), bss, ess);
     if (name == "") {untested();
       // quietly ignore empty string
-    }else if ((*_map)[name]) {untested();
+    }else if ((*_map)[name]) {itested();
       // duplicate .. stash the old one so we can get it back
       error(bWARNING, name + ": already installed, replacing\n");
       std::string save_name = name + ":0";
-      for (int ii = 0; (*_map)[save_name]; ++ii) {untested();
+      for (int ii = 0; (*_map)[save_name]; ++ii) {itested();
 	save_name = name + ":" + to_string(ii);
       }
       (*_map)[save_name] = (*_map)[name];

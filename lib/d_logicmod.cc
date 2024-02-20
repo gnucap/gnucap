@@ -25,9 +25,11 @@
  * model:   .model mname LOGIC <args>
  */
 //testing=script 2006.07.17
-#include "d_logic.h"
+#include "e_logicmod.h"
 /*--------------------------------------------------------------------------*/
-MODEL_LOGIC::MODEL_LOGIC(const DEV_LOGIC* p)
+int MODEL_LOGIC::_count = -1; // there is one in e_node.cc, and the dispatcher
+/*--------------------------------------------------------------------------*/
+MODEL_LOGIC::MODEL_LOGIC(const COMPONENT* p)
   :MODEL_CARD(p),
    delay  (1e-9),
    vmax   (5.),

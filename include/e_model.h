@@ -51,16 +51,16 @@ public:
 		~MODEL_CARD();
 
 public: // override virtuals
-  char	id_letter()const	{untested();return '\0';}
-  CARD*	clone_instance()const	{return (_component_proto) ? _component_proto->clone() : NULL;}
-  void	precalc_first();
-  void	set_param_by_index(int, std::string&, int);
-  bool  param_is_printable(int)const;
-  std::string value_name()const {untested();return "";}
-  std::string param_name(int)const;
-  std::string param_name(int,int)const;
-  std::string param_value(int)const;
-  int param_count()const {return (1 + CARD::param_count());}
+  char	id_letter()const override	{untested();return '\0';}
+  CARD*	clone_instance()const override	{return (_component_proto) ? _component_proto->clone() : NULL;}
+  void	precalc_first()override;
+  void	set_param_by_index(int, std::string&, int)override;
+  bool  param_is_printable(int)const override;
+  std::string value_name()const override {untested();return "";}
+  std::string param_name(int)const override;
+  std::string param_name(int,int)const override;
+  std::string param_value(int)const override;
+  int param_count()const override {return (1 + CARD::param_count());}
 public:
   virtual void	tr_eval(COMPONENT*)const{unreachable();}
   virtual void	ac_eval(COMPONENT*)const{unreachable();}

@@ -61,6 +61,8 @@
 /* usual but non-standard (POSIX??) collection of includes */
 #include <unistd.h>	/* chdir, access, getcwd */
 #include <fcntl.h>	/* old style unix files */
+#include <dirent.h>     /* opendir */
+#include <sys/types.h>  /* needed for dirent.h */
 /*--------------------------------------------------------------------------*/
 /* constants related to memory size, word size, etc */
 enum {

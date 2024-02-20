@@ -41,39 +41,40 @@ public:
   explicit DEV_INDUCTANCE()
     :STORAGE(), _c_model(false) {}
 public: // override virtual
-  char	   id_letter()const	{return 'L';}
-  std::string value_name()const {return "l";}
-  std::string dev_type()const	{return "inductor";}
-  int	   max_nodes()const	{return 2;}
-  int	   min_nodes()const	{return 2;}
-  int	   net_nodes()const	{return 2;}
-  int	   int_nodes()const     {return (!_c_model) ? 0 : 1;}
-  int	   matrix_nodes()const	{return net_nodes() + int_nodes();}
+  char	   id_letter()const override	{return 'L';}
+  std::string value_name()const override {return "l";}
+  std::string dev_type()const override	{return "inductor";}
+  int	   max_nodes()const override	{return 2;}
+  int	   min_nodes()const override	{return 2;}
+  int	   net_nodes()const override	{return 2;}
+  int	   int_nodes()const override     {return (!_c_model) ? 0 : 1;}
+  int	   matrix_nodes()const override	{return net_nodes() + int_nodes();}
 
-  bool	   has_inode()const	{return _c_model;}
-  bool	   has_iv_probe()const  {return true;}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_INDUCTANCE(*this);}
-  void     expand();
-  void	   tr_iwant_matrix();
-  void     tr_begin();
-  bool	   do_tr();
-  void	   tr_load();
-  void	   tr_unload();
-  double   tr_involts()const	{return tr_outvolts();}
-  double   tr_input()const;
-  double   tr_involts_limited()const {return tr_outvolts_limited();}
-  double   tr_input_limited()const;
-  double   tr_amps()const;
-  double   tr_probe_num(const std::string&)const;
-  void	   ac_iwant_matrix();
-  void	   ac_begin()		{_loss1 = _loss0 = ((!_c_model) ? 0. : 1.); _ev = _y[0].f1;}
-  void	   do_ac();
-  void	   ac_load();
-  COMPLEX  ac_involts()const	{return ac_outvolts();}
-  COMPLEX  ac_amps()const;
+  bool	   has_inode()const override	{return _c_model;}
+  bool	   has_iv_probe()const override  {return true;}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const override		{return new DEV_INDUCTANCE(*this);}
+  void     expand()override;
+  void     precalc_last()override;
+  void	   tr_iwant_matrix()override;
+  void     tr_begin()override;
+  bool	   do_tr()override;
+  void	   tr_load()override;
+  void	   tr_unload()override;
+  double   tr_involts()const override	{return tr_outvolts();}
+  double   tr_input()const override;
+  double   tr_involts_limited()const override {return tr_outvolts_limited();}
+  double   tr_input_limited()const override;
+  double   tr_amps()const override;
+  double   tr_probe_num(const std::string&)const override;
+  void	   ac_iwant_matrix()override;
+  void	   ac_begin()override;
+  void	   do_ac()override;
+  void	   ac_load()override;
+  COMPLEX  ac_involts()const override	{return ac_outvolts();}
+  COMPLEX  ac_amps()const override;
 
-  std::string port_name(int i)const {itested();
+  std::string port_name(int i)const override {itested();
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};
@@ -105,44 +106,44 @@ private:
 public:
   explicit	DEV_MUTUAL_L();
 private: // override virtual
-  char	   id_letter()const	{return 'K';}
-  bool	   print_type_in_spice()const {return false;}
-  std::string value_name()const {return "k";}
-  std::string dev_type()const	{untested(); return "mutual_inductor";}
-  int	   max_nodes()const	{return 2;}
-  int	   min_nodes()const	{return 2;}
-  int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	{return 0;}
-  int	   num_current_ports()const {return 2;}
-  bool	   has_iv_probe()const  {untested(); return false;}
-  bool	   use_obsolete_callback_parse()const {return false;}
-  CARD*	   clone()const		{return new DEV_MUTUAL_L(*this);}
-  void     expand_first();
-  void	   expand_last();
-  void	   precalc_last();
-  void     tr_iwant_matrix()	{tr_iwant_matrix_passive();}
-  void     tr_begin();
-  void     dc_advance();
-  void     tr_advance();
-  bool     do_tr()		{_sim->_late_evalq.push_back(this); return true;}
-  bool     do_tr_last();
-  void	   tr_load();
-  TIME_PAIR tr_review()		{return TIME_PAIR(NEVER,NEVER);}
-  void	   tr_unload();
-  double   tr_input()const		{return tr_involts();}
-  double   tr_input_limited()const	{untested(); return tr_involts_limited();}
-  double   tr_amps()const		{untested(); return _loss0 * tr_outvolts();}
-  double   tr_probe_num(const std::string&)const;
+  char	   id_letter()const override	{return 'K';}
+  bool	   print_type_in_spice()const override {return false;}
+  std::string value_name()const override {return "k";}
+  std::string dev_type()const override	{untested(); return "mutual_inductor";}
+  int	   max_nodes()const override	{return 2;}
+  int	   min_nodes()const override	{return 2;}
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override	{return 0;}
+  int	   num_current_ports()const override {return 2;}
+  bool	   has_iv_probe()const override  {untested(); return false;}
+  bool	   use_obsolete_callback_parse()const override {return false;}
+  CARD*	   clone()const override		{return new DEV_MUTUAL_L(*this);}
+  void     expand_first()override;
+  void	   expand_last()override;
+  void	   precalc_last()override;
+  void     tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
+  void     tr_begin()override;
+  void     dc_advance()override;
+  void     tr_advance()override;
+  bool     do_tr()override		{_sim->_late_evalq.push_back(this); return true;}
+  bool     do_tr_last()override;
+  void	   tr_load()override;
+  TIME_PAIR tr_review()override		{return TIME_PAIR(NEVER,NEVER);}
+  void	   tr_unload()override;
+  double   tr_input()const override		{return tr_involts();}
+  double   tr_input_limited()const override	{untested(); return tr_involts_limited();}
+  double   tr_amps()const override		{untested(); return _loss0 * tr_outvolts();}
+  double   tr_probe_num(const std::string&)const override;
 
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void	   ac_load();
-  COMPLEX  ac_amps()const	{untested(); return _loss0 * ac_outvolts();}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_passive();}
+  void	   ac_load()override;
+  COMPLEX  ac_amps()const override	{untested(); return _loss0 * ac_outvolts();}
 
-  void	   set_port_by_name(std::string& Name, std::string& Value)
-		{untested(); COMPONENT::set_port_by_name(Name,Value);}
-  void	   set_port_by_index(int Index, std::string& Value)
+  int	   set_port_by_name(std::string& Name, std::string& Value)override
+		{untested(); return COMPONENT::set_port_by_name(Name,Value);}
+  void	   set_port_by_index(int Index, std::string& Value)override
 		{set_current_port_by_index(Index, Value);}
-  bool	   node_is_connected(int i)const {
+  bool	   node_is_connected(int i)const override {
     switch (i) {
     case 0:  return _output_label != "";
     case 1:  return _input_label != "";
@@ -150,23 +151,23 @@ private: // override virtual
     }
   }
 
-  std::string port_name(int)const {untested();
+  std::string port_name(int)const override {untested();
     return "";
   }
-  std::string current_port_name(int i)const {untested();
+  std::string current_port_name(int i)const override {untested();
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"l1", "l2"};
     return names[i];
   }
-  const std::string current_port_value(int i)const {
+  const std::string current_port_value(int i)const override {
     switch (i) {
     case 0:  return _output_label;
     case 1:  return _input_label;
     default: unreachable(); return COMPONENT::current_port_value(i);
     }
   }
-  void set_current_port_by_index(int i, const std::string& s) {
+  void set_current_port_by_index(int i, const std::string& s) override {
     switch (i) {
     case 0:  _output_label = s;	break;
     case 1:  _input_label = s;	break;
@@ -212,6 +213,18 @@ DEV_MUTUAL_L::DEV_MUTUAL_L(const DEV_MUTUAL_L& p)
   assert(_yf1 == _yf[0]);
   assert(_yr[0].x == 0. && _yr[0].f0 == 0. && _yr[0].f1 == 0.);
   assert(_yr1 == _yr[0]);
+}
+/*--------------------------------------------------------------------------*/
+void DEV_INDUCTANCE::precalc_last()
+{
+  STORAGE::precalc_last();
+  // Something like it should be moved to ac_begin.
+  if (_sim->has_op() == s_NONE) {
+    _y[0].x  = 0.;
+    _y[0].f0 = LINEAR;
+    _y[0].f1 = value();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_INDUCTANCE::expand()
@@ -488,6 +501,14 @@ void DEV_INDUCTANCE::ac_iwant_matrix()
     _sim->_acx.iwant(_n[OUT1].m_(),_n[IN1].m_());
     _sim->_acx.iwant(_n[OUT2].m_(),_n[IN1].m_());
   }
+}
+/*--------------------------------------------------------------------------*/
+void DEV_INDUCTANCE::ac_begin()
+{
+  // STORAGE::ac_begin();
+
+  _loss1 = _loss0 = ((!_c_model) ? 0. : 1.);
+  _ev = _y[0].f1;
 }
 /*--------------------------------------------------------------------------*/
 void DEV_INDUCTANCE::do_ac()

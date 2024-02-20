@@ -58,6 +58,7 @@ protected: // create and destroy.
   explicit CARD(const CARD&);
 public:
   virtual  ~CARD();
+	  void	 purge() override;
   virtual CARD*	 clone()const = 0;
   virtual CARD*	 clone_instance()const  {return clone();}
   //--------------------------------------------------------------------
@@ -68,6 +69,7 @@ public:	// "elaborate"
   virtual void	 expand_last()		{}
   virtual void	 precalc_last()		{}
   virtual void	 map_nodes()		{}
+  virtual CARD*  deflate()		{itested(); return this;}
   //--------------------------------------------------------------------
 public:	// dc-tran
   virtual void	 tr_iwant_matrix()	{}
@@ -93,7 +95,7 @@ public:	// ac
   //--------------------------------------------------------------------
 public:	// state, aux data
   virtual char id_letter()const	{unreachable(); return '\0';}
-  virtual int  net_nodes()const	{untested();return 0;}
+  virtual int  net_nodes()const	{return 0;}
   virtual bool is_device()const	{return false;}
   virtual void set_slave()	{untested(); assert(!subckt());}
 	  bool evaluated()const;
@@ -108,14 +110,14 @@ public: // owner, scope
 
   CARD*		owner()		   {return _owner;}
   const CARD*	owner()const	   {return _owner;}
-  void		set_owner(CARD* o) {assert(!_owner||_owner==o); _owner=o;}
+  void		set_owner(CARD* o) {assert(!o||!_owner||_owner==o); _owner=o;}
   //--------------------------------------------------------------------
 public: // subckt
   CARD_LIST*	     subckt()		{return _subckt;}
   const CARD_LIST*   subckt()const	{return _subckt;}
   void	  new_subckt();
-  void	  new_subckt(const CARD* model, PARAM_LIST* p);
-  void	  renew_subckt(const CARD* model, PARAM_LIST* p);
+  void	  new_subckt(const CARD* model, PARAM_LIST const* p);
+  void	  renew_subckt(const CARD* model, PARAM_LIST const* p);
   //void     new_subckt(const CARD* model, CARD* owner, const CARD_LIST* scope, PARAM_LIST* p);
   //void     renew_subckt(const CARD* model, CARD* owner, const CARD_LIST* scope, PARAM_LIST* p);
   //--------------------------------------------------------------------
@@ -126,19 +128,24 @@ public:	// type
 public:	// label -- in CKT_BASE
   // non-virtual void set_label(const std::string& s) //BASE
   // non-virtual const std::string& short_label()const //BASE
-  /*virtual*/ const std::string long_label()const; // no further override
+  /*virtual*/ const std::string long_label()const final;
+  //--------------------------------------------------------------------
+public: // tags -- an identifier
+  const void* id_tag()const		      {return static_cast<const void*>(this);}
+  virtual const void* port_id_tag(int i)const {return(reinterpret_cast<const bool*>(this)-(i+1));}
+  virtual const void* param_id_tag(int i)const{return(reinterpret_cast<const bool*>(this)+(i+1));}
   //--------------------------------------------------------------------
 public:	// ports -- mostly defer to COMPONENT
   node_t& n_(int i)const;
   int     connects_to(const node_t& node)const;
   //--------------------------------------------------------------------
 public: // parameters
-  virtual void set_param_by_name(std::string, std::string);
+  virtual int  set_param_by_name(std::string, std::string);
   virtual void set_param_by_index(int i, std::string&, int offset)
 				{untested(); throw Exception_Too_Many(i, 0, offset);}
   virtual int  param_count_dont_print()const	   {return 0;}
   virtual int  param_count()const		   {return 0;}
-  virtual bool param_is_printable(int)const	   {untested(); return false;}
+  virtual bool param_is_printable(int)const	   {return false;}
   virtual std::string param_name(int)const	   {return "";}
   virtual std::string param_name(int i,int j)const {return (j==0) ? param_name(i) : "";}
   virtual std::string param_value(int)const	   {untested(); return "";}

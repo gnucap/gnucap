@@ -24,32 +24,41 @@
 //testing=script 2006.07.12
 #ifndef E_ELEMNT_H
 #define E_ELEMNT_H
-#include "e_node.h"
+#include "e_logicnode.h"
 #include "m_cpoly.h"
 #include "l_denoise.h"
 #include "e_compon.h"
 /*--------------------------------------------------------------------------*/
 class INTERFACE ELEMENT : public COMPONENT {
 protected:
-  explicit ELEMENT();
+  explicit ELEMENT(COMMON_COMPONENT* c=NULL);
   explicit ELEMENT(const ELEMENT& p);
   ~ELEMENT() {}
   
   void	   store_values()		{assert(_y[0]==_y[0]); _y1=_y[0];}
   //void   reject_values()		{ _y0 = _y1;}
 public:
-  double*  set__value()			{return _value.pointer_hack();}
+  void	set_value(const PARAMETER<double>& v)	{_value = v;}
+  void	set_value(double v)			{_value = v;}
+  void	set_value(const std::string& v)		{itested(); _value = v;}
+  void	set_value(double v, COMMON_COMPONENT* c);
+  const PARAMETER<double>& value()const		{return _value;}
 
   bool	   skip_dev_type(CS&);
+public: // obsolete -- do not use in new code
+  void     obsolete_move_parameters_from_common(const COMMON_COMPONENT*);
+private: // obsolete -- do not use in new code
+  void     obsolete_set_value(double v) final override{set_value(v);}
 public: // override virtual
-  bool	   print_type_in_spice()const {return false;}
-  void	   precalc_last();
-  void	   tr_begin();
-  void	   tr_restore();
-  void	   dc_advance();
-  void	   tr_advance();
-  void	   tr_regress();
-  bool	   tr_needs_eval()const {/*assert(!is_q_for_eval());*/ return !is_constant();}
+  bool	   print_type_in_spice()const override {return false;}
+  void	   precalc_last() override;
+  void	   ac_begin() override;
+  void	   tr_begin() override;
+  void	   tr_restore() override;
+  void	   dc_advance() override;
+  void	   tr_advance() override;
+  void	   tr_regress() override;
+  bool	   tr_needs_eval()const override {/*assert(!is_q_for_eval());*/ return !is_constant();}
 #if 0
   void	   tr_queue_eval()	{
     if(tr_needs_eval()) {
@@ -58,13 +67,13 @@ public: // override virtual
     }
   }
 #endif
-  TIME_PAIR tr_review();
+  TIME_PAIR tr_review() override;
 
   //void   map_nodes();
-  void	   tr_iwant_matrix() = 0;
-  void	   ac_iwant_matrix() = 0;
-  double   tr_probe_num(const std::string&)const;
-  XPROBE   ac_probe_ext(const std::string&)const;
+  void	   tr_iwant_matrix() override = 0;
+  void	   ac_iwant_matrix() override = 0;
+  double   tr_probe_num(const std::string&)const override;
+  XPROBE   ac_probe_ext(const std::string&)const override;
 
 protected: // inline, below
   double   dampdiff(double*, const double&);
@@ -145,8 +154,16 @@ public:
 
   virtual int order()const		{return OPT::trsteporder;}
   virtual double error_factor()const	{return OPT::trstepcoef[OPT::trsteporder];}
-  int param_count()const {return (0 + COMPONENT::param_count());}
 protected:
+  int param_count()const override {return (1 + COMPONENT::param_count());}
+  int  set_param_by_name(std::string, std::string)override;
+  void set_param_by_index(int, std::string&, int)override;
+  bool param_is_printable(int)const override;
+  std::string param_name(int)const override;
+  std::string param_name(int,int)const override;
+  std::string param_value(int)const override;
+protected:
+  PARAMETER<double> _value;	// value, for simple parts
   int      _loaditer;	// load iteration number
 private:
   node_t   _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
@@ -217,7 +234,7 @@ inline void ELEMENT::tr_load_shunt()
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_unload_shunt()
-{untested();
+{itested();
   _loss0 = 0.;
   _sim->mark_inc_mode_bad();
   tr_load_shunt();
@@ -251,7 +268,7 @@ inline void ELEMENT::tr_load_source()
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_unload_source()
-{untested();
+{
   _m0.c0 = _m0.c1 = 0.;
   _sim->mark_inc_mode_bad();
   tr_load_source();
@@ -444,6 +461,7 @@ inline void ELEMENT::tr_eval()
     common()->tr_eval(this);
   }else{
     // can get here if a simple device has probes
+    // ( or in value sweeps? )
     _y[0].f1 = value();
     _y[0].f0 = _y[0].x * _y[0].f1;
   }

@@ -34,6 +34,7 @@
 #include "c_comand.h"
 #include "declare.h"	/* plclose */
 /*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
 struct JMP_BUF{
   sigjmp_buf p;
 } env;
@@ -85,7 +86,9 @@ static void read_startup_files(void)
     }
   }
   //CMD::command("clear", &CARD_LIST::card_list);
-  if (!OPT::language) {
+  if (language_dispatcher.empty()) {
+    // go on without language.
+  }else if (!OPT::language) {
     OPT::language = language_dispatcher[DEFAULT_LANGUAGE];
     
     for(DISPATCHER<LANGUAGE>::const_iterator
@@ -98,7 +101,7 @@ static void read_startup_files(void)
   if (OPT::language) {
     OPT::case_insensitive = OPT::language->case_insensitive();
     OPT::units            = OPT::language->units();
-  }else{
+  }else{ untested();
     OPT::case_insensitive = false;
     OPT::units            = uSI;
   }
@@ -130,7 +133,7 @@ extern "C" {
   static void sig_int(SIGNALARGS)
   {itested();
     signal(SIGINT,sig_int);
-    if (ENV::run_mode == rBATCH) {untested();
+    if (ENV::run_mode == rBATCH) {itested();
       exit(1);
     }else{itested();
       IO::error << '\n';
@@ -184,9 +187,9 @@ static void process_cmd_line(int argc, const char *argv[])
 	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
 	}else{untested();
 	}
-      }else if (strcasecmp(argv[ii], "-i") == 0) {untested();
+      }else if (strcasecmp(argv[ii], "-i") == 0) {itested();
 	++ii;
-	if (ii < argc) {untested();
+	if (ii < argc) {itested();
 	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
 	}else{untested();
 	}
@@ -220,7 +223,7 @@ static void process_cmd_line(int argc, const char *argv[])
 	  error(bDANGER, e.message() + '\n');
 	  finish();
 	}
-	if (ii >= argc) {itested();
+	if (ii >= argc) {
 	  //CMD::command("end", &CARD_LIST::card_list);
 	  throw Exception_Quit("");
 	}else{untested();
@@ -241,6 +244,7 @@ int main(int argc, const char *argv[])
   prepare_env();
   CKT_BASE::_sim = new SIM_DATA;
   CKT_BASE::_probe_lists = new PROBE_LISTS;
+  CKT_BASE::_attribs = new INDIRECT<ATTRIB_LIST_p>;
   try {
   {
     SET_RUN_MODE xx(rBATCH);
@@ -261,7 +265,7 @@ int main(int argc, const char *argv[])
 	exit(0);
       }
 #endif
-    }else{untested();
+    }else{
       finish();		/* error clean up (from longjmp()) */
       //CMD::command("quit", &CARD_LIST::card_list);
       exit(0);
@@ -306,6 +310,8 @@ int main(int argc, const char *argv[])
   CKT_BASE::_probe_lists = NULL;
   delete CKT_BASE::_sim;
   CKT_BASE::_sim = NULL;
+  delete CKT_BASE::_attribs;
+  CKT_BASE::_attribs = NULL;
   
   return 0;
 }

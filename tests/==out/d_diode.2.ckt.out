@@ -1,3 +1,8 @@
 simple diode test 
 #           v(1)       v(2)      
  27.        10.        2.1726    
+Gnucap   System status
+iterations: op=9, dc=0, tran=0, fourier=0, total=9
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=0, model=1, total=3
+dctran density=77.8%, ac density=77.8%

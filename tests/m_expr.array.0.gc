@@ -1,0 +1,12 @@
+
+param a=1.
+param y=1.
+param b={ '{1,2,a} }
+eval b
+param c={ '{exp(1),2,exp(a)} }
+eval c
+param
+param d=" '{1,2,a, '{exp(a),y,exp(z)}, 0. } "
+eval d
+param e=" '{1,2,b, '{b,b}, 0. } "
+eval e

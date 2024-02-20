@@ -24,7 +24,8 @@
 //testing=script 2014.07.04
 #ifndef E_BASE_H
 #define E_BASE_H
-#include "md.h"
+#include "u_attrib.h"
+#include "l_indirect.h"
 /*--------------------------------------------------------------------------*/
 // external
 class XPROBE;
@@ -40,12 +41,18 @@ private:
 public:
   static SIM_DATA* _sim;
   static PROBE_LISTS* _probe_lists;
+//protected: // TODO
+  static INDIRECT<ATTRIB_LIST_p>* _attribs;
+public:
+  ATTRIB_LIST_p& attributes(const void* x) { assert(_attribs); return (*_attribs)[x];}
+  const ATTRIB_LIST_p& attributes(const void* x)const { assert(_attribs); return _attribs->at(x);}
   //--------------------------------------------------------------------
 protected: // create and destroy
   explicit CKT_BASE()			  :_probes(0), _label() {}
   explicit CKT_BASE(const std::string& s) :_probes(0), _label(s) {}
   explicit CKT_BASE(const CKT_BASE& p)	  :_probes(0), _label(p._label) {}
   virtual  ~CKT_BASE();
+  virtual void	      purge() {}
   //--------------------------------------------------------------------
 public: // user stuff
   virtual std::string help_text()const {return "";}
@@ -64,7 +71,7 @@ public: // probes
   static  WAVE*	      find_wave(const std::string& probe_name);
   //--------------------------------------------------------------------
 public: // label
-  bool operator!=(const std::string& n)const {return strcasecmp(_label.c_str(),n.c_str())!=0;}
+  bool operator!=(const std::string& n)const;
   virtual const std::string long_label()const;
   const std::string&  short_label()const {return _label;}
   void	set_label(const std::string& s) {_label = s;}

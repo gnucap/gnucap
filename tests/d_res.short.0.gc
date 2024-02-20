@@ -1,0 +1,16 @@
+spice
+
+.param r=0
+
+r1 1 0 {r}
+r2 1 0 r
+r3 1 0 0
+v1 1 0 1
+
+.tran 0.9 trace=i
+
+.print tran y(r*)
+.tran 1 trace=i
+
+.status notime
+.end

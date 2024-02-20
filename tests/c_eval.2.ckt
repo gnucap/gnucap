@@ -1,0 +1,10 @@
+* unknown parameter check
+.options trace
+.param  x='3+a+1+1+exp(b-17)-3'
+.param a = sqrt(b)
+.eval x
+.eval 3+a+1+1+exp(b-17)-3
+.param a={2+b}
+.eval x
+.eval 3+a+1+1
+.end

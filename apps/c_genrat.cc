@@ -45,8 +45,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_ : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
-  {
+  void do_it(CS& cmd, CARD_LIST*)override {
     OMSTREAM where = (cmd.more())  ?  OMSTREAM()  :  IO::mstdout;
     size_t here = cmd.cursor();
     do{

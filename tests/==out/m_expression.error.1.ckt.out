@@ -1,2 +1,3 @@
 # expression error 
-no match: foo
+.eval foo(3) 
+      ^ ? no match: foo

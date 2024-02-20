@@ -28,12 +28,21 @@
 #include "c_comand.h"
 #include "u_prblst.h"
 #include "globals.h"
+#ifdef TRACE_UNTESTED
+#include "e_cardlist.h" // not actually used.
+#endif
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
-void do_probe(CS& cmd, PROBELIST *probes)
+void do_probe(CS& cmd, PROBELIST *probes, CARD_LIST *scope)
 {
   assert(probes);
+  assert(scope);
+#ifdef TRACE_UNTESTED
+  if (scope == &CARD_LIST::card_list) {
+  }else{itested();
+  }
+#endif
 
   CKT_BASE::_sim->set_command_none();
   enum {aADD, aDELETE, aNEW} action;
@@ -77,7 +86,7 @@ void do_probe(CS& cmd, PROBELIST *probes)
     }else if (cmd.umatch("clear ")) {untested();/* clear */
       probes[simtype].clear();
     }else{					/* add/remove */
-      CKT_BASE::_sim->init();
+      CKT_BASE::_sim->init(scope);
       if (cmd.match1('-')) {itested();		/* setup cases like: */
 	action = aDELETE;			/* .probe ac + ....  */
 	cmd.skip();
@@ -103,7 +112,7 @@ void do_probe(CS& cmd, PROBELIST *probes)
 	if (action == aDELETE) {
 	  probes[simtype].remove_list(cmd);
 	}else{
-	  probes[simtype].add_list(cmd);
+	  probes[simtype].add_list(cmd, scope);
 	}
       }
     }
@@ -112,46 +121,66 @@ void do_probe(CS& cmd, PROBELIST *probes)
 /*--------------------------------------------------------------------------*/
 class CMD_STORE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
+    assert(Scope);
+#ifdef TRACE_UNTESTED
+    if (Scope == &CARD_LIST::card_list) {
+    }else{untested();
+    }
+#endif
     assert(_probe_lists);
     assert(_probe_lists->store);
-    do_probe(cmd,_probe_lists->store);
+    do_probe(cmd, _probe_lists->store, Scope);
   }
 } p0;
 DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "store", &p0);
 /*--------------------------------------------------------------------------*/
 class CMD_ALARM : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
+    assert(Scope);
+#ifdef TRACE_UNTESTED
+    if (Scope == &CARD_LIST::card_list) {
+    }else{untested();
+    }
+#endif
     assert(_probe_lists);
     assert(_probe_lists->alarm);
-    do_probe(cmd,_probe_lists->alarm);
+    do_probe(cmd, _probe_lists->alarm, Scope);
   }
 } p1;
 DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "alarm", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_PLOT : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
+    assert(Scope);
+#ifdef TRACE_UNTESTED
+    if (Scope == &CARD_LIST::card_list) {
+    }else{untested();
+    }
+#endif
     IO::plotset = true;
     assert(_probe_lists);
     assert(_probe_lists->plot);
-    do_probe(cmd,_probe_lists->plot);
+    do_probe(cmd, _probe_lists->plot, Scope);
   }
 } p2;
 DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "iplot|plot", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_PRINT : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST*)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
+    assert(Scope);
+#ifdef TRACE_UNTESTED
+    if (Scope == &CARD_LIST::card_list) {
+    }else{itested();
+    }
+#endif
     IO::plotset = false;
     assert(_probe_lists);
     assert(_probe_lists->print);
-    do_probe(cmd,_probe_lists->print);
+    do_probe(cmd, _probe_lists->print, Scope);
   }
 } p3;
 DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "iprint|print|probe", &p3);

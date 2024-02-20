@@ -1,12 +1,12 @@
 # semiconductor "resistor" test 
 r2: t1: effective length is negative or zero
-#           v(1)       v(2)       r(r1)      r(r2)     
+#           v(1)       v(2)       r(r1)      r(r2)      iter(0)   
 r2: t1: effective length is negative or zero
 r2: short circuit
 r2: short circuit
 r2: short circuit
 r2: short circuit
- 27.        2.         0.         1.K        10.u      
+ 27.        2.         20.n       1.K        10.u       4.        
 r2: t1: effective length is negative or zero
 #Freq       v(1)       v(2)      
 r2: short circuit
@@ -15,3 +15,8 @@ v1 ( 1 0 )  DC  2.  AC  5.
 r1 ( 1 2 )  1.K
 r2 ( 2 0 ) t1 l=pl w=pw
 .model t1 r ( rsh=1k narrow=1u defw=NA( 1.u) tc1=NA( 0.) tc2=NA( 0.) tnom=NA( 27.))
+Gnucap   System status
+iterations: op=4, dc=0, tran=0, fourier=0, total=5
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=100.0%, ac density=100.0%

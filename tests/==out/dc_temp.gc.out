@@ -28,3 +28,8 @@ rt3= 15.5
 rt1= 21.
 rt2= 42.
 rt3= 100.5
+Gnucap   System status
+iterations: op=0, dc=3, tran=0, fourier=0, total=18
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%

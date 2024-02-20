@@ -77,7 +77,7 @@ CS::CS(CS::WHOLE_FILE, const std::string& name)
 {
   int f = open(name.c_str(), O_RDONLY);
   if (f == EOF) {itested();
-    throw Exception_File_Open(name + ':' + strerror(errno));
+    throw Exception_File_Open(name + ": " + strerror(errno));
   }else{
   }
   _length = static_cast<size_t>(lseek(f, off_t(0), SEEK_END));
@@ -243,7 +243,7 @@ static std::string getlines(FILE *fileptr)
     }else{
       trim(buffer);
       size_t count = strlen(buffer);
-      if (buffer[count-1] == '\\') {
+      if (count && buffer[count-1] == '\\') {
 	buffer[count-1] = '\0';
       }else{
 	// look ahead at next line

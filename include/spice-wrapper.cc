@@ -93,7 +93,6 @@ enum {uGROUND=1, uFLOAT=2, uDISALLOW=3};
 const int MATRIX_NODES = (MAX_NET_NODES + INTERNAL_NODES);
 class DEV_SPICE;
 class MODEL_SPICE;
-static COMMON_PARAMLIST Default_Params(CC_STATIC);
 /*--------------------------------------------------------------------------*/
 /* function mapping: see devdefs.h
  * DEVparam	DEV_SPICE::parse_spice
@@ -167,12 +166,12 @@ public: // parameters
   std::string param_name(int)const;
   std::string param_name(int i, int j)const;
   std::string param_value(int)const; 
-  void set_param_by_name(std::string Name, std::string Value);
+  int  set_param_by_name(std::string Name, std::string Value);
   void set_param_by_index(int, std::string&, int);
   int param_count_dont_print()const {return MODEL_CARD::param_count();}
   int param_count()const { return (static_cast<int>(_params.size()) + MODEL_CARD::param_count());}
 
-  void Set_param_by_name(std::string Name, std::string Value);
+  int Set_param_by_name(std::string Name, std::string Value);
 
 public: // not virtual
   static int count()		{untested(); return _count;}
@@ -207,7 +206,7 @@ public:
 private:
   explicit DEV_SPICE(const DEV_SPICE& p);
 public:
-  explicit DEV_SPICE();
+  explicit DEV_SPICE(COMMON_COMPONENT* c=NULL);
   ~DEV_SPICE();
 protected: // override virtual
   char	  id_letter()const	{untested();return SPICE_LETTER[0];}
@@ -264,7 +263,7 @@ public:	// ports
     return port_names[i];
   }
   // const std::string& port_value(int i)const; //COMPONENT
-  //void set_port_by_name(std::string& name, std::string& value);
+  //int  set_port_by_name(std::string& name, std::string& value);
   //void set_port_by_index(int index, std::string& value);
 private: // parameters
   //bool Param_exists(int i)const; // {return Param_name(i) != "";}
@@ -272,8 +271,8 @@ private: // parameters
   //std::string Param_name(int)const;
   //std::string Param_name(int i, int j)const {return STORAGE::Param_name(i, j);}
   //std::string Param_value(int)const; 
-  void set_param_by_name(std::string Name, std::string Value);
-  void Set_param_by_name(std::string Name, std::string Value);
+  int  set_param_by_name(std::string Name, std::string Value);
+  int  Set_param_by_name(std::string Name, std::string Value);
   void Set_param_by_index(int, std::string&, int);
   int param_count_dont_print()const {return common()->COMMON_COMPONENT::param_count();}
 private:
@@ -567,7 +566,7 @@ MODEL_SPICE::~MODEL_SPICE()
   --_count;
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SPICE::Set_param_by_name(std::string Name, std::string new_value)
+int MODEL_SPICE::Set_param_by_name(std::string Name, std::string new_value)
 {
   assert_model_raw();
   assert(info.DEVpublic.numModelParms);
@@ -583,7 +582,7 @@ void MODEL_SPICE::Set_param_by_name(std::string Name, std::string new_value)
       v = new_value;
       int ok = info.DEVmodParam(Parms.id, &Value, &_spice_model._gen);
       assert(ok == OK);
-      return;
+      return MODEL_SPICE::param_count() - 1 - i;
     }else{
     }
   }
@@ -591,16 +590,17 @@ void MODEL_SPICE::Set_param_by_name(std::string Name, std::string new_value)
     throw Exception_No_Match(Name);
   }else{
   }
+  return 0; //BUG// ??
 }
 /*--------------------------------------------------------------------------*/
-void MODEL_SPICE::set_param_by_name(std::string Name, std::string Value)
+int MODEL_SPICE::set_param_by_name(std::string Name, std::string Value)
 {
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
   }else{
   }
   _params.set(Name, Value);
-  Set_param_by_name(Name, to_string(_params[Name].e_val(1,scope())));
+  return Set_param_by_name(Name, to_string(_params[Name].e_val(1,scope())));
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_SPICE::precalc_first()
@@ -696,8 +696,8 @@ void MODEL_SPICE::set_param_by_index(int, std::string&, int)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-DEV_SPICE::DEV_SPICE()
-  :STORAGE(),
+DEV_SPICE::DEV_SPICE(COMMON_COMPONENT* c)
+  :STORAGE(c),
    _inst(),
    _modelname(""),
    _model(NULL),
@@ -712,7 +712,6 @@ DEV_SPICE::DEV_SPICE()
    _num_states(0),
    _maxEqNum(0)
 {
-  attach_common(&Default_Params);
   std::fill_n(&_inst_space, sizeof(INSTANCE), '\0');
   assert_instance();
 
@@ -814,7 +813,7 @@ void DEV_SPICE::set_dev_type(const std::string& new_type)
   _modelname = new_type;
 }
 /*--------------------------------------------------------------------------*/
-void DEV_SPICE::Set_param_by_name(std::string Name, std::string new_value)
+int DEV_SPICE::Set_param_by_name(std::string Name, std::string new_value)
 {
   assert_instance();
   assert(info.DEVpublic.numInstanceParms);
@@ -826,14 +825,14 @@ void DEV_SPICE::Set_param_by_name(std::string Name, std::string new_value)
     IFparm Parms = info.DEVpublic.instanceParms[i];
     if (Name == Parms.keyword) {
       Set_param_by_index(i, new_value, 0);
-      return;
+      return i;
     }else{
     }
   }
-  mutable_common()->COMMON_COMPONENT::Set_param_by_name(Name, new_value);
+  return mutable_common()->COMMON_COMPONENT::Set_param_by_name(Name, new_value);
 }
 /*--------------------------------------------------------------------------*/
-void DEV_SPICE::set_param_by_name(std::string Name, std::string Value)
+int DEV_SPICE::set_param_by_name(std::string Name, std::string Value)
 {
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
@@ -842,7 +841,7 @@ void DEV_SPICE::set_param_by_name(std::string Name, std::string Value)
   COMPONENT::set_param_by_name(Name, Value);
   COMMON_PARAMLIST* c = dynamic_cast<COMMON_PARAMLIST*>(mutable_common());
   assert(c);
-  Set_param_by_name(Name, to_string(c->_params[Name].e_val(1,scope())));
+  return Set_param_by_name(Name, to_string(c->_params[Name].e_val(1,scope())));
 }
 /*--------------------------------------------------------------------------*/
 void DEV_SPICE::Set_param_by_index(int i, std::string& new_value, int offset)
@@ -1622,7 +1621,9 @@ extern "C" {
   double Nintegrate(double, double, double, Ndata*) {incomplete(); return NOT_VALID;} //DEVnoise
 #endif
   void NevalSrc(double*, double*, CKTcircuit*, int, int, int, double) {incomplete();} //DEVnoise
+#ifdef NGSPICE_17
   void NevalSrc2(double*, double*, CKTcircuit*, int, int, int, double, double) {incomplete();}
+#endif
   //------------------------------------------------
   // should be constants, but spice wants them to be variables.
   double CONSTroot2(sqrt(2.));
@@ -1892,7 +1893,8 @@ static struct COMPLEX_TEST {
 int MODEL_SPICE::_count = -1;
 int DEV_SPICE::_count = -1;
 
-static DEV_SPICE p0;
+static COMMON_PARAMLIST Default_Params(CC_STATIC);
+static DEV_SPICE p0(&Default_Params);
 static DISPATCHER<CARD>::INSTALL
   d0(&device_dispatcher, std::string(SPICE_LETTER) + "|" + DEVICE_TYPE, &p0);
 

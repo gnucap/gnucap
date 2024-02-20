@@ -30,8 +30,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_MARK : public CMD {
 public:
-  void do_it(CS&, CARD_LIST*)
-  {itested();
+  void do_it(CS&, CARD_LIST*)override {itested();
     _sim->_freezetime = true;
   }
 } p6;
@@ -39,8 +38,7 @@ DISPATCHER<CMD>::INSTALL d6(&command_dispatcher, "mark|freeze", &p6);
 /*--------------------------------------------------------------------------*/
 class CMD_UNMARK : public CMD {
 public:
-  void do_it(CS&, CARD_LIST*)
-  {
+  void do_it(CS&, CARD_LIST*)override {
     _sim->_freezetime = false;
   }
 } p7;

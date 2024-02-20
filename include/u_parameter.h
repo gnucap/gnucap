@@ -45,6 +45,8 @@ public:
 
 	  bool	has_hard_value()const {return (_s != "");}
   virtual bool	has_good_value()const = 0;
+          bool  is_constant()const    {untested(); return (_s == "#");}
+  virtual bool  is_given()const       {untested(); return (_s != "");}
 
   virtual void	parse(CS& cmd) = 0;
   virtual void	operator=(const std::string& s) = 0;
@@ -55,18 +57,18 @@ class PARAMETER : public PARA_BASE {
 private:
   mutable T _v;
 public:
-  explicit PARAMETER() : PARA_BASE(), _v(NOT_INPUT) {}
+  explicit PARAMETER() : PARA_BASE(), _v(not_input()) {}
 	   PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}
   
-  bool	has_good_value()const {return (_v != NOT_INPUT);}
+  bool	has_good_value()const override {return (_v != NOT_INPUT);} // BUG // T==bool?
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
   T	e_val(const T& def, const CARD_LIST* scope)const;
-  void	parse(CS& cmd);
+  void	parse(CS& cmd) override;
 
   std::string string()const {
     if (_s == "#") {
@@ -83,7 +85,7 @@ public:
   void	operator=(const T& v)		{_v = v; _s = "#";}
   //void	operator=(const std::string& s)	{untested();_s = s;}
 
-  void	operator=(const std::string& s)	{
+  void	operator=(const std::string& s)override	{
     if (strchr("'\"{", s[0])) {
       CS cmd(CS::_STRING, s);
       _s = cmd.ctos("", "'\"{", "'\"}");
@@ -97,10 +99,10 @@ public:
     return (_v == p._v  &&  _s == p._s);
   }
   bool  operator==(const T& v)const {
-    if (v != NOT_INPUT) {
+    if (v != not_input()) {
       return _v == v;
     }else{
-      return (_v == NOT_INPUT || !has_hard_value());
+      return (_v == not_input() || !has_hard_value());
     }
   }
   //bool	operator!=(const PARAMETER& p)const {untested();
@@ -109,7 +111,8 @@ public:
   //bool	operator!=(const T& v)const {untested();
   //  return !(*this == v);
   //}
-  T*	pointer_hack()	 {return &_v;}
+protected:
+  virtual T not_input() const {return T(NOT_INPUT);}
 private:
   T lookup_solve(const T& def, const CARD_LIST* scope)const;
 };
@@ -193,17 +196,23 @@ void e_val(T* p, const T& def, const CARD_LIST*)
 /*--------------------------------------------------------------------------*/
 class INTERFACE PARAM_LIST {
 private:
-  mutable std::map<std::string, PARAMETER<double> > _pl;
-  PARAM_LIST* _try_again; // if you don't find it, also look here
+  typedef std::map<std::string, PARAMETER<double> > map;
 public:
-  typedef std::map<std::string, PARAMETER<double> >::const_iterator
-		const_iterator;
-  typedef std::map<std::string, PARAMETER<double> >::iterator
-		iterator;
+  typedef map::const_iterator const_iterator;
+  typedef map::iterator iterator;
+private:
+  map _pl;
+  PARAM_LIST const* _try_again; // if you don't find it, also look here
+  mutable const_iterator _previous;
+public:
   explicit PARAM_LIST() :_try_again(NULL) {}
   explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl), _try_again(p._try_again) {}
   //explicit PARAM_LIST(PARAM_LIST* ta) :_try_again(ta) {untested();}
   ~PARAM_LIST() {}
+  PARAM_LIST& operator=(const PARAM_LIST& p) { itested();
+    _pl = p._pl;
+    return *this;
+  }
   void	parse(CS& cmd);
   void	print(OMSTREAM&, LANGUAGE*)const;
   
@@ -213,19 +222,19 @@ public:
   std::string name(int)const;
   std::string value(int)const;
 
-  void	eval_copy(PARAM_LIST&, const CARD_LIST*);
-  bool  operator==(const PARAM_LIST& p)const {return _pl == p._pl;}
+  void	eval_copy(PARAM_LIST const&, const CARD_LIST*);
+  bool  operator==(const PARAM_LIST& p)const{return _pl == p._pl;}
   const PARAMETER<double>& deep_lookup(std::string)const;
   const PARAMETER<double>& operator[](std::string i)const {return deep_lookup(i);}
+  void set(std::string, const double&);
   void set(std::string, const std::string&);
-  void set_try_again(PARAM_LIST* t) {_try_again = t;}
+  void set_try_again(PARAM_LIST const* t) {_try_again = t;}
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
-  const_iterator begin()const {untested(); return _pl.begin();}
-  const_iterator end()const {untested(); return _pl.end();}
-private:
-  mutable const_iterator _previous;
+  const_iterator begin()const {itested(); return _pl.begin();}
+  const_iterator end()const {itested(); return _pl.end();}
+  const_iterator find(std::string const& k) const {itested(); return _pl.find(k); }
 };
 /*--------------------------------------------------------------------------*/
 template <>
@@ -242,7 +251,7 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
   Expression e(cmd);
   Expression reduced(e, scope);
   T v = T(reduced.eval());
-  if (v != NOT_INPUT) {
+  if (v != not_input()) {
     return v;
   }else{
     const PARAM_LIST* pl = scope->params();
@@ -287,11 +296,12 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
       _v = lookup_solve(def, scope);
       if (_v == NOT_INPUT) {
 	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
+	//BUG// not reachable if T==bool?
 	//BUG// needs to show scope
 	//BUG// it is likely to have a numeric overflow resulting from the bad value
       }else{
       }
-    }else{untested();
+    }else{itested();
       _v = def;
       error(bDANGER, "parameter " + *first_name + " recursion too deep\n");
     }

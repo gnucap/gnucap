@@ -1,0 +1,5 @@
+"param a3={<test + stuff} "
+"eval a3 "
+<test + stuff
+             ^ ? need >
+a3=<test + stuff>

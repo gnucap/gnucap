@@ -628,3 +628,8 @@ TRANSFER curve tracer, ig-spice
  4.         4.        -5.         2.0883n    100.48u   -2.0883n    100.48u   
  4.5        4.5       -5.         17.193p    141.41u   -17.193p    141.41u   
  5.         5.        -5.         13.872p    186.13u   -13.872p    186.13u   
+Gnucap   System status
+iterations: op=0, dc=318, tran=0, fourier=0, total=2903
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=6, subckt=0, model=4, total=10
+dctran density=76.0%, ac density=76.0%

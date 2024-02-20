@@ -116,15 +116,15 @@ CS& CS::skiparg()
  * _ok = skipped something
  */
 CS& CS::skipto1(const std::string& t)
-{untested();
+{itested();
   size_t here = cursor();
-  while (ns_more() && !match1(t)) {untested();
+  while (ns_more() && !match1(t)) {itested();
     skip();
   }
   _ok = ns_more();
   if (!_ok) {untested();
     reset(here);
-  }else{untested();
+  }else{itested();
   }
   return *this;
 }
@@ -139,7 +139,7 @@ CS& CS::skipto1(char c)
     skip();
   }
   _ok = ns_more();
-  if (!_ok) {untested();
+  if (!_ok) {itested();
     reset(here);
   }else{
   }

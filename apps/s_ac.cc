@@ -33,7 +33,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class AC : public SIM {
 public:
-  void	do_it(CS&, CARD_LIST*);
+  void	do_it(CS&, CARD_LIST*)override;
 
   explicit AC():
     SIM(),
@@ -49,12 +49,12 @@ public:
   ~AC() {}
 private:
   explicit AC(const AC&):SIM() {unreachable(); incomplete();}
-  void	sweep();
+  void	sweep()override;
   void	first();
   bool	next();
   void	solve();
   void	clear();
-  void	setup(CS&);
+  void	setup(CS&)override;
 private:
   PARAMETER<double> _start;	// sweep start frequency
   PARAMETER<double> _stop;	// sweep stop frequency
@@ -68,6 +68,10 @@ private:
 /*--------------------------------------------------------------------------*/
 void AC::do_it(CS& Cmd, CARD_LIST* Scope)
 {
+  assert(Scope);
+  if (Scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   _scope = Scope;
   _sim->set_command_ac();
   reset_timers();
@@ -75,8 +79,8 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
 
   try {
     setup(Cmd);
-    _sim->init();
-    CARD_LIST::card_list.precalc_last();
+    _sim->init(Scope);
+    _scope->precalc_last();
 
     _sim->alloc_vectors();
     _sim->_acx.reallocate();
@@ -96,7 +100,6 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_acx.unallocate();
   _sim->unalloc_vectors();
 
-  _sim->_has_op = s_AC;
   _scope = NULL;
   
   ::status.ac.stop();
@@ -182,10 +185,10 @@ void AC::setup(CS& Cmd)
     needslinfix = true;		// and I am too lazy to do it
     _linswp = true;		// right.
     break;
-  case TIMES:untested();
+  case TIMES:itested();
     if (_step == 0.  &&  _start != 0.) {untested();
       _step = _stop / _start;
-    }else{untested();
+    }else{itested();
     }
     needslinfix = false;
     _linswp = false;
@@ -233,8 +236,8 @@ void AC::solve()
 
   ::status.load.start();
   _sim->count_iterations(iTOTAL);
-  CARD_LIST::card_list.do_ac();
-  CARD_LIST::card_list.ac_load();
+  _scope->do_ac();
+  _scope->ac_load();
   ::status.load.stop();
 
   ::status.lud.start();
@@ -250,11 +253,12 @@ void AC::sweep()
 {
   head(_start, _stop, "Freq");
   first();
-  CARD_LIST::card_list.ac_begin();
+  _scope->ac_begin();
   do {
     _sim->_jomega = COMPLEX(0., _sim->_freq * M_TWO_PI);
     solve();
     outdata(_sim->_freq, ofPRINT | ofSTORE);
+    _sim->_has_op = s_AC;
   } while (next());
 }
 /*--------------------------------------------------------------------------*/

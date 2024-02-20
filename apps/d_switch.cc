@@ -43,15 +43,15 @@ private:
 public:
   explicit COMMON_SWITCH(int c=0) 
     :COMMON_COMPONENT(c), _ic(_UNKNOWN) {}
-  bool operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const {return new COMMON_SWITCH(*this);}
-  std::string name()const	 {untested(); return "switch";}
+  bool operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override{return new COMMON_SWITCH(*this);}
+  std::string name()const override	 {untested(); return "switch";}
 
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int param_count()const {return (1 + COMMON_COMPONENT::param_count());}
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override {return (1 + COMMON_COMPONENT::param_count());}
 public:
   state_t	_ic;		/* initial state, belongs in common */
   //BUG// no way to set _ic
@@ -59,37 +59,37 @@ public:
 /*--------------------------------------------------------------------------*/
 class SWITCH_BASE : public ELEMENT {
 protected:
-  explicit	SWITCH_BASE();
+  explicit	SWITCH_BASE(COMMON_COMPONENT* c=NULL);
   explicit	SWITCH_BASE(const SWITCH_BASE& p);
 protected: // override virtual
-  std::string value_name()const	{return "";}
-  std::string dev_type()const {assert(common()); return common()->modelname().c_str();}
-  bool	   print_type_in_spice()const {return true;}
-  int	   tail_size()const	{return 1;}
-  int	   max_nodes()const	= 0;
-  int	   min_nodes()const	= 0;
-  int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	= 0;
-  CARD*	   clone()const		= 0;
-  void     expand();
-  void     precalc_last();
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
-  void	   tr_begin();
-  void     dc_advance();
-  void     tr_advance();
-  void     tr_regress();
-  bool	   tr_needs_eval()const {return _sim->analysis_is_static();} // also q by tr_advance
-  bool	   do_tr();
-  void	   tr_load()		{tr_load_passive();}
-  TIME_PAIR tr_review();
-  void	   tr_unload()		{untested(); tr_unload_passive();}
-  double   tr_involts()const	{untested(); return tr_outvolts();}
-  double   tr_involts_limited()const {unreachable(); return tr_outvolts_limited();}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void	   ac_begin()		{_ev = _y[0].f1; _acg = _m0.c1;}
-  void	   do_ac();
-  void	   ac_load()		{ac_load_passive();}
-  COMPLEX  ac_involts()const	{untested(); return ac_outvolts();}
+  std::string value_name()const override	{return "";}
+  std::string dev_type()const override {assert(common()); return common()->modelname().c_str();}
+  bool	   print_type_in_spice()const override {return true;}
+  int	   tail_size()const override	{return 1;}
+  int	   max_nodes()const override	= 0;
+  int	   min_nodes()const override	= 0;
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override	= 0;
+  CARD*	   clone()const override		= 0;
+  void     expand()override;
+  void     precalc_last()override;
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
+  void	   tr_begin()override;
+  void     dc_advance()override;
+  void     tr_advance()override;
+  void     tr_regress()override;
+  bool	   tr_needs_eval()const override {return _sim->analysis_is_static();} // also q by tr_advance
+  bool	   do_tr()override;
+  void	   tr_load()override		{tr_load_passive();}
+  TIME_PAIR tr_review()override;
+  void	   tr_unload()override		{untested(); tr_unload_passive();}
+  double   tr_involts()const override	{itested(); return tr_outvolts();}
+  double   tr_involts_limited()const override {unreachable(); return tr_outvolts_limited();}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_passive();}
+  void	   ac_begin()override		{_ev = _y[0].f1; _acg = _m0.c1;}
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_passive();}
+  COMPLEX  ac_involts()const override	{untested(); return ac_outvolts();}
 protected:
   const ELEMENT* _input;
 private:
@@ -101,15 +101,15 @@ class DEV_VSWITCH : public SWITCH_BASE {
 private:
   explicit  DEV_VSWITCH(const DEV_VSWITCH& p) :SWITCH_BASE(p) {}
 public:
-  explicit  DEV_VSWITCH()	:SWITCH_BASE() {}
+  explicit  DEV_VSWITCH(COMMON_COMPONENT* c=NULL) :SWITCH_BASE(c) {}
 private: // override virtual
-  int	    max_nodes()const	{return 4;}
-  int	    min_nodes()const	{return 4;}
-  int	    net_nodes()const	{return 4;}
-  CARD*	    clone()const	{return new DEV_VSWITCH(*this);}
-  char	    id_letter()const	{return 'S';}
+  int	    max_nodes()const override	{return 4;}
+  int	    min_nodes()const override	{return 4;}
+  int	    net_nodes()const override	{return 4;}
+  CARD*	    clone()const override	{return new DEV_VSWITCH(*this);}
+  char	    id_letter()const override	{return 'S';}
 
-  std::string port_name(int i)const {itested();
+  std::string port_name(int i)const override {itested();
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"p", "n", "ps", "ns"};
@@ -122,29 +122,29 @@ private:
   explicit  DEV_CSWITCH(const DEV_CSWITCH& p) 
     :SWITCH_BASE(p), _input_label(p._input_label) {}
 public:
-  explicit  DEV_CSWITCH()	:SWITCH_BASE(), _input_label() {}
+  explicit  DEV_CSWITCH(COMMON_COMPONENT* c=NULL) :SWITCH_BASE(c), _input_label() {}
 private: // override virtual
-  int	    max_nodes()const	{return 3;}
-  int	    ext_nodes()const	{return 2;}
-  int	    min_nodes()const	{return 3;}
-  int	    net_nodes()const	{return 2;}
-  int	    num_current_ports()const {return 1;}
-  const std::string current_port_value(int)const {return _input_label;};
-  CARD*	    clone()const	{return new DEV_CSWITCH(*this);}
-  void	    expand();
-  char	    id_letter()const	{return 'W';}
-  void	   set_port_by_name(std::string& Name, std::string& Value)
-		{untested(); SWITCH_BASE::set_port_by_name(Name,Value);}
-  void	   set_port_by_index(int, std::string&);
-  bool	   node_is_connected(int)const;
+  int	    max_nodes()const override	{return 3;}
+  int	    ext_nodes()const override	{return 2;}
+  int	    min_nodes()const override	{return 3;}
+  int	    net_nodes()const override	{return 2;}
+  int	    num_current_ports()const override {return 1;}
+  const std::string current_port_value(int)const override {return _input_label;};
+  CARD*	    clone()const override	{return new DEV_CSWITCH(*this);}
+  void	    expand()override;
+  char	    id_letter()const override	{return 'W';}
+  int	   set_port_by_name(std::string& Name, std::string& Value)override
+		{untested(); return SWITCH_BASE::set_port_by_name(Name,Value);}
+  void	   set_port_by_index(int, std::string&)override;
+  bool	   node_is_connected(int)const override;
 
-  std::string port_name(int i)const {itested();
+  std::string port_name(int i)const override {itested();
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};
     return names[i];
   }
-  std::string current_port_name(int i)const {
+  std::string current_port_name(int i)const override {
     assert(i >= 0);
     assert(i < 1);
     static std::string names[] = {"in"};
@@ -160,16 +160,16 @@ private:
 public:
   explicit	MODEL_SWITCH(const SWITCH_BASE*);
 private: // override virtual
-  void		set_dev_type(const std::string& nt);
-  std::string	dev_type()const;
-  CARD*		clone()const	{return new MODEL_SWITCH(*this);}
-  void		precalc_first();
-  void		set_param_by_index(int, std::string&, int);
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int param_count()const {return (6 + MODEL_CARD::param_count());}
+  void		set_dev_type(const std::string& nt)override;
+  std::string	dev_type()const override;
+  CARD*		clone()const override	{return new MODEL_SWITCH(*this);}
+  void		precalc_first()override;
+  void		set_param_by_index(int, std::string&, int)override;
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override {return (6 + MODEL_CARD::param_count());}
 public:
   PARAMETER<double> vt;		/* threshold voltage */
   PARAMETER<double> vh;		/* hysteresis voltage */
@@ -186,7 +186,6 @@ private:
   static double const _default_roff;
 };
 /*--------------------------------------------------------------------------*/
-static COMMON_SWITCH Default_SWITCH(CC_STATIC);
 double const MODEL_SWITCH::_default_vt = 0.;
 double const MODEL_SWITCH::_default_vh = 0.;
 double const MODEL_SWITCH::_default_ron = 1.;
@@ -377,11 +376,10 @@ std::string MODEL_SWITCH::param_value(int i)const
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-SWITCH_BASE::SWITCH_BASE()
-  :ELEMENT(),
+SWITCH_BASE::SWITCH_BASE(COMMON_COMPONENT* c)
+  :ELEMENT(c),
    _input(NULL)
 {
-  attach_common(&Default_SWITCH);
   std::fill_n(_in, int(OPT::_keep_time_steps), 0.);
   std::fill_n(_state, int(OPT::_keep_time_steps), _UNKNOWN);
 }
@@ -632,8 +630,9 @@ bool DEV_CSWITCH::node_is_connected(int i)const
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-DEV_VSWITCH p2;
-DEV_CSWITCH p3;
+COMMON_SWITCH Default_SWITCH(CC_STATIC);
+DEV_VSWITCH p2(&Default_SWITCH);
+DEV_CSWITCH p3(&Default_SWITCH);
 DISPATCHER<CARD>::INSTALL
   d2(&device_dispatcher, "S|vswitch", &p2),
   d3(&device_dispatcher, "W|cswitch|iswitch", &p3);

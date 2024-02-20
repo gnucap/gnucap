@@ -95,8 +95,7 @@ model BUILT_IN_MOS123 {
 	error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
 	      long_label()+": tox <= 0, treating as if not input\n");
       }
-      if (has_hard_value(nsub_cm) && nsub < NI) {
-        untested();
+      if (has_hard_value(nsub_cm) && nsub < NI) { itested();
         nsub = NA;
 	error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
 	      long_label()+": nsub < ni, treating as if not input\n");

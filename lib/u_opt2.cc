@@ -21,12 +21,12 @@
  *------------------------------------------------------------------
  * command and functions to access OPT class
  */
-//testing=script,complete 2006.07.14
+//testing=script 2006.07.14
 #include "globals.h"
 #include "c_comand.h"
 #include "u_lang.h"
 #include "l_compar.h"
-#include "ap.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 void OPT::command(CS& cmd)
 {
@@ -322,7 +322,11 @@ void OPT::print(OMSTREAM& o)
 namespace {
   class CMD_OPT : public CMD {
   public:
-    void do_it(CS& cmd, CARD_LIST*) {
+    void do_it(CS& cmd, CARD_LIST* Scope) override {
+      assert(Scope);
+      if (Scope == &CARD_LIST::card_list) {
+      }else{itested();
+      }
       static OPT o;
       o.command(cmd);
     }

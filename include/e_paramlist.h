@@ -34,21 +34,21 @@ private:
 public:
   explicit COMMON_PARAMLIST(int c=0)	:COMMON_COMPONENT(c) {++_count;}
 	   ~COMMON_PARAMLIST()		{--_count;}
-  bool operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const	{return new COMMON_PARAMLIST(*this);}
-  std::string	name()const		{untested();return "";}
+  bool operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override{return new COMMON_PARAMLIST(*this);}
+  std::string	name()const override	{untested();return "";}
   static int	count()			{untested();return _count;}
 
-  void set_param_by_name(std::string Name, std::string Value) {_params.set(Name, Value);}
-  bool		param_is_printable(int)const;
-  std::string	param_name(int)const;
-  std::string	param_name(int,int)const;
-  std::string	param_value(int)const;
-  int param_count()const
+  int  set_param_by_name(std::string Name, std::string Value) override {_params.set(Name, Value); return 0;}
+  bool		param_is_printable(int)const override;
+  std::string	param_name(int)const override;
+  std::string	param_name(int,int)const override;
+  std::string	param_value(int)const override;
+  int param_count()const override
 	{return (static_cast<int>(_params.size()) + COMMON_COMPONENT::param_count());}
 
-  void		precalc_first(const CARD_LIST*);
-  void		precalc_last(const CARD_LIST*);
+  void		precalc_first(const CARD_LIST*) override;
+  void		precalc_last(const CARD_LIST*) override;
 private:
   static int	_count;
 public:

@@ -1,0 +1,15 @@
+option list
+param a1=b[4]
+eval a1
+param a2="_[b]4"
+eval a2
+param a3="b]x]y]z]w"
+eval a3
+param a4=_]b[3
+eval a4
+param a5=_$b[3
+eval a5
+param a6=yy[[3]
+eval a6
+param a7=yy[3]]
+eval a7

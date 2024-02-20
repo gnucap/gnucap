@@ -351,3 +351,8 @@
  8.Meg      8.Meg      0.01      
  9.Meg      9.Meg      0.01      
  10.Meg     10.Meg     0.01      
+Gnucap   System status
+iterations: op=0, dc=84, tran=0, fourier=0, total=1344
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=100.0%, ac density=100.0%

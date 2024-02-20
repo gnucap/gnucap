@@ -1,5 +1,4 @@
 #!/bin/sh
-# configure for executable
 
 mkdir -p O
 #-------------  Stuff added to enable --prefix  --------------
@@ -24,36 +23,31 @@ fi
 sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 
 #----------------------------------------------------------------
-echo "CCFLAGS = \\" >Make.ccflags
-echo "-DUNIX -O2 -DNDEBUG -I. -I../include -I../../include -W" >>Make.ccflags
-
-echo "LIBS = \\" >Make.libs
-echo "-lgnucap \\" >>Make.libs
-echo "" >>Make.libs
-echo "PREFIX = " $prefix >>Make.libs
-echo "" >>Make.libs
+echo "CCFLAGS = -fPIC \\" >Make.ccflags
+echo "-std=c++11 -DUNIX -O2 -DNDEBUG \$(INCLUDE) -W \\" >>Make.ccflags
+# begin special stuff
+# end special stuff
+echo "" >>Make.ccflags
 
 cat <<CAT_EOF >Make.sys
 #------------------------------------------------------------------------
 VPATH = .:..
-CCC = c++
-TARGET_EXT =
+CXX = c++
 
-LDFLAGS = -rdynamic \
--L../../lib/O
-
-.SUFFIXES : .o .cc
-.cc.o:; \$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.SUFFIXES:
+.SUFFIXES: .so .o .cc
+.cc.o:; \$(CXX) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) -c \$<
+.cc.so:; \$(MAKE_LIB) \$<
 #------------------------------------------------------------------------
-\$(TARGET): \$(OBJS)
-	rm -f \$@
-	\$(CCC) \$(CXXFLAGS) \$(CPPFLAGS) \$(CCFLAGS) \$(OBJS) -o \$@ \$(LIBS) \$(LDFLAGS)
+MAKE_EXE = \$(CXX) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -o \$@ 
+MAKE_LIB = \$(CXX) \$(CCFLAGS) \$(OBJS) \$(LIBS) \$(LDFLAGS) -shared -o \$@ 
 #------------------------------------------------------------------------
 CAT_EOF
 
 echo \# created by $PWD/$0. do not edit >Make2
 echo \#------------------------------------------------------------------------ >>Make2
-cat Make.ccflags Make.libs Make.sys >>Make2
-rm Make.ccflags Make.libs Make.sys
+echo "PREFIX = " $prefix >>Make2
+cat Make.ccflags Make.sys >>Make2
+rm  Make.ccflags Make.sys
 
 exit 0

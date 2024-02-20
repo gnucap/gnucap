@@ -1,0 +1,7 @@
+spice
+
+E1 out 0 in 0 3
+v1 in 0 1.5
+
+.print dc v(nodes)
+.dc E1 0 2 1

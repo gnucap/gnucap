@@ -18,4 +18,5 @@ E1  2  0  1  0  TANH  gain= 100.  limit= 0.01
 .dc v1 -100k 100k 10k
 .dc v1 -1000k 1000k 100k
 .dc v1 -10000k 10000k 1000k
+*>.status notime
 .end

@@ -21,7 +21,6 @@
  *------------------------------------------------------------------
  * dc analysis top
  */
-//testing=script 2016.03.25
 #include "globals.h"
 #include "u_status.h"
 #include "u_prblst.h"
@@ -31,18 +30,83 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
+class SWEEPVAL : public COMMON_COMPONENT {
+public:
+  explicit	SWEEPVAL(int c=0)
+    :COMMON_COMPONENT(c) {}
+  explicit	SWEEPVAL(const SWEEPVAL& p)
+    :COMMON_COMPONENT(p) {}
+		~SWEEPVAL() { trace1("~SWEEPVAL", this);}
+  COMMON_COMPONENT* clone()const override{
+    return new SWEEPVAL(*this);
+  }
+
+private:
+  std::string name()const override{untested(); return "sweepval";}
+
+private: // override virtual
+  bool operator==(const COMMON_COMPONENT& p) const override {
+    return dynamic_cast<SWEEPVAL const*>(&p);
+  }
+  bool has_tr_eval()const override {return true;}
+  bool has_ac_eval()const override {untested(); return true;}
+  bool use_obsolete_callback_parse()const override {untested(); return false;}
+  bool use_obsolete_callback_print()const override {untested(); return false;}
+  bool has_parse_params_obsolete_callback()const override {untested(); return false;}
+
+private:
+  void tr_eval(ELEMENT* d)const override {
+    d->_y[0] = FPOLY1(CPOLY1(d->_y[0].x, 0., _value));
+  }
+  void ac_eval(ELEMENT* d)const override { untested();
+    tr_eval(d);
+    d->_ev = d->_y[0].f1;
+  }
+};
+/*--------------------------------------------------------------------------*/
+static SWEEPVAL p1(CC_STATIC);
+static DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher,
+       "sweepval", &p1);
+/*--------------------------------------------------------------------------*/
+}
+namespace {
+/*--------------------------------------------------------------------------*/
 class DCOP : public SIM {
 public:
-  void	finish();
+  void	finish()override;
 protected:
   void	fix_args(int);
   void	options(CS&, int);
 private:
-  void	sweep();
+  void	sweep()override;
+  void	precalc();
   void	sweep_recursive(int);
   void	first(int);
   bool	next(int);
   explicit DCOP(const DCOP&): SIM() {unreachable(); incomplete();}
+protected:
+  void set_sweepval(int i, double d){
+    ::status.set_up.start();
+    assert(_sweepval[i]);
+    std::string n = _param_name[i];
+    if(n!=""){
+      PARAM_LIST* pl = _scope->params();
+      assert(pl);
+      pl->set(n, d);
+    }else if(_zap[i]){
+      assert(_ctrl[i]);
+      auto c=prechecked_cast<SWEEPVAL*>(_ctrl[i]);
+      assert(c);
+      c->set_value(d);
+    }else{
+    }
+    *_sweepval[i] = d;
+    ::status.set_up.stop();
+  }
+  double get_sweepval(int i) const{
+    assert(_sweepval[i]);
+    return *_sweepval[i];
+  }
 protected:
   explicit DCOP();
   ~DCOP() {}
@@ -57,6 +121,10 @@ protected:
   bool _linswp[DCNEST];
   double* _sweepval[DCNEST];	/* pointer to thing to sweep, dc command */
   ELEMENT* _zap[DCNEST];	/* to branch to zap, for re-expand */
+  COMMON_COMPONENT* _ctrl[DCNEST]; /* take control */
+  std::string _param_name[DCNEST];
+  double _param[DCNEST];        // sweep this value:
+  PARAMETER<double> _param_zap[DCNEST]; // keep a backup
   CARDSTASH _stash[DCNEST];	/* store std values of elements being swept */
   bool _loop[DCNEST];		/* flag: do it again backwards */
   bool _reverse_in[DCNEST];	/* flag: sweep backwards, input */
@@ -64,15 +132,16 @@ protected:
   bool _cont;			/* flag: continue from previous run */
   TRACE _trace;			/* enum: show extended diagnostics */
   enum {ONE_PT, LIN_STEP, LIN_PTS, TIMES, OCTAVE, DECADE} _stepmode[DCNEST];
+  bool _have_param;             /* sweep a param */
 };
 /*--------------------------------------------------------------------------*/
 class DC : public DCOP {
 public:
   explicit DC(): DCOP() {}
   ~DC() {}
-  void	do_it(CS&, CARD_LIST*);
+  void	do_it(CS&, CARD_LIST*)override;
 private:
-  void	setup(CS&);
+  void	setup(CS&)override;
   explicit DC(const DC&): DCOP() {unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
@@ -80,35 +149,41 @@ class OP : public DCOP {
 public:
   explicit OP(): DCOP() {}
   ~OP() {}
-  void	do_it(CS&, CARD_LIST*);
+  void	do_it(CS&, CARD_LIST*)override;
 private:
-  void	setup(CS&);
+  void	setup(CS&)override;
   explicit OP(const OP&): DCOP() {unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 void DC::do_it(CS& Cmd, CARD_LIST* Scope)
 {
+  assert(Scope);
+  if (Scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   _scope = Scope;
   _sim->_time0 = 0.;
   _sim->set_command_dc();
   _sim->_phase = p_INIT_DC;
   ::status.dc.reset().start();
   command_base(Cmd);
-  _sim->_has_op = s_DC;
   _scope = NULL;
   ::status.dc.stop();
 }
 /*--------------------------------------------------------------------------*/
 void OP::do_it(CS& Cmd, CARD_LIST* Scope)
 {
+  assert(Scope);
+  if (Scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
   _scope = Scope;
   _sim->_time0 = 0.;
   _sim->set_command_op();
   _sim->_phase = p_INIT_DC;
   ::status.op.reset().start();
   command_base(Cmd);
-  _sim->_has_op = s_OP;
   _scope = NULL;
   ::status.op.stop();
 }
@@ -127,8 +202,10 @@ DCOP::DCOP()
     _step[ii]=0.;
     _linswp[ii]=true;
     _sweepval[ii]=&_sim->_genout;
-    _zap[ii]=NULL; 
+    _zap[ii] = NULL;
+    _ctrl[ii] = NULL;
     _stepmode[ii] = ONE_PT;
+    _param[ii] = NOT_VALID;
   }
   
   //BUG// in SIM.  should be initialized there.
@@ -140,14 +217,21 @@ DCOP::DCOP()
 void DCOP::finish(void)
 {
   for (int ii = 0;  ii < _n_sweeps;  ++ii) {
-    if (_zap[ii]) { // component
+    std::string n = _param_name[ii];
+    if (_zap[ii]) {
       _stash[ii].restore();
-      _zap[ii]->dec_probes();
       _zap[ii]->precalc_first();
       _zap[ii]->precalc_last();
       _zap[ii] = NULL;
-    }else{
+      _ctrl[ii] = NULL;
+    }else if (n != "") {
+      PARAM_LIST* pl = _scope->params();
+      assert(pl);
+      std::string previous_value = _param_zap[ii].string();
+      CS cmd(CS::_STRING, n + "=" + previous_value);
+      pl->set(n, previous_value);
     }
+    assert(!_ctrl[ii]);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -162,6 +246,7 @@ void OP::setup(CS& Cmd)
 
   _zap[0] = NULL;
   _sweepval[0] = &(_sim->_temp_c);
+  _have_param = true; // temp requires precalc
 
   if (Cmd.match1("'\"({") || Cmd.is_float()) {
     Cmd >> _start[0];
@@ -197,19 +282,36 @@ void DC::setup(CS& Cmd)
   _out = IO::mstdout;
   _out.reset(); //BUG// don't know why this is needed */
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
+  _have_param = false;
 
   if (Cmd.more()) {
     for (_n_sweeps = 0; Cmd.more() && _n_sweeps < DCNEST; ++_n_sweeps) {
-      CARD_LIST::fat_iterator ci = findbranch(Cmd, &CARD_LIST::card_list);
+      CARD_LIST::fat_iterator ci = findbranch(Cmd, _scope);
       if (!ci.is_end()) {			// sweep a component
 	if (ELEMENT* c = dynamic_cast<ELEMENT*>(*ci)) {
 	  _zap[_n_sweeps] = c;
+	  _param_name[_n_sweeps] = ""; // not used.
+	  trace2("_zap", c->value(), c->value().string());
 	}else{untested();
 	  throw Exception("dc/op: can't sweep " + (**ci).long_label() + '\n');
 	}
       }else if (Cmd.is_float()) {		// sweep the generator
 	_zap[_n_sweeps] = NULL;
-      }else{
+      }else if (Cmd.is_alpha()) {
+	std::string pname;
+
+	size_t here = Cmd.cursor();
+        Cmd >> pname;
+	PARAMETER<double> zap = _scope->params()->deep_lookup(pname);
+	if(zap.has_hard_value()){
+	  _param_zap[_n_sweeps] = zap;
+	  _param_name[_n_sweeps] = pname;
+	  _have_param = true;
+	}else{
+	  // possibly not a parameter. go on
+	  Cmd.reset(here);
+	}
+      }else{ itested();
 	// leave as it was .. repeat Cmd with no args
       }
       
@@ -225,7 +327,7 @@ void DC::setup(CS& Cmd)
       _sim->_genout = 0.;
       options(Cmd,_n_sweeps);
     }
-  }else{ 
+  }else{
   }
   Cmd.check(bWARNING, "what's this?");
 
@@ -239,10 +341,13 @@ void DC::setup(CS& Cmd)
 
     if (_zap[ii]) { // component
       _stash[ii] = _zap[ii];			// stash the std value
-      _zap[ii]->inc_probes();			// we need to keep track of it
-      _zap[ii]->set_value(_zap[ii]->value(),0);	// zap out extensions
-      _zap[ii]->set_constant(false);		// so it will be updated
-      _sweepval[ii] = _zap[ii]->set__value();	// point to value to patch
+      assert(!_ctrl[ii]);
+      _ctrl[ii] = bm_dispatcher.clone("sweepval");
+      assert(_ctrl[ii]);
+      _zap[ii]->attach_common(_ctrl[ii]);	// take control
+      _sweepval[ii] = &_param[ii];
+    }else if (_param_name[ii] != "") {
+      _sweepval[ii] = &_param[ii];
     }else{ // generator
       _sweepval[ii] = &_sim->_genout;			// point to value to patch
     }
@@ -344,12 +449,30 @@ void DCOP::sweep()
   _sim->set_inc_mode_bad();
   if (_cont) {untested();
     _sim->restore_voltages();
-    CARD_LIST::card_list.tr_restore();
+    _scope->tr_restore();
   }else{
     _sim->clear_limit();
-    CARD_LIST::card_list.tr_begin();
+    _scope->tr_begin();
   }
   sweep_recursive(_n_sweeps);
+}
+/*--------------------------------------------------------------------------*/
+void DCOP::precalc()
+{
+  ::status.set_up.start();
+  if(_have_param){
+    // do them all.
+    _scope->precalc_last();
+  }else{
+    for (int ii = 0;  ii < _n_sweeps;  ++ii) {
+      if (_zap[ii]) {
+	// only sweep elements
+	_zap[ii]->precalc_last();
+      }else{
+      }
+    }
+  }
+  ::status.set_up.stop();
 }
 /*--------------------------------------------------------------------------*/
 void DCOP::sweep_recursive(int Nest)
@@ -363,18 +486,15 @@ void DCOP::sweep_recursive(int Nest)
   first(Nest);
   do {
     if (Nest == 0) {
-      if (_sim->command_is_op()) {
-	CARD_LIST::card_list.precalc_last();
-      }else{
-      }
+      precalc();
       int converged = solve_with_homotopy(itl,_trace);
-      if (!converged) {untested();
+      if (!converged) {
 	error(bWARNING, "did not converge\n");
       }else{
       }
       ::status.accept.start();
       _sim->set_limit();
-      CARD_LIST::card_list.tr_accept();
+      _scope->tr_accept();
       ::status.accept.stop();
       _sim->_has_op = _sim->_mode;
       outdata(*_sweepval[Nest], ofPRINT | ofSTORE | ofKEEP);
@@ -393,15 +513,7 @@ void DCOP::first(int Nest)
   assert(_sweepval);
   assert(_sweepval[Nest]);
 
-  if (ELEMENT* c = dynamic_cast<ELEMENT*>(_zap[Nest])) {
-    c->set_constant(false); 
-    // because of extra precalc_last could set constant to true
-    // will be obsolete, once pointer hack is fixed
-  }else{
-    // not needed if not sweeping an element
-  }
-
-  *_sweepval[Nest] = _start[Nest];
+  set_sweepval(Nest, _start[Nest]);
   _reverse[Nest] = false;
   if (_reverse_in[Nest]) {untested();
     while (next(Nest)) {untested();
@@ -461,7 +573,7 @@ bool DCOP::next(int Nest)
       assert(sweepval == NOT_VALID);
     }else{
       if (!_reverse[Nest]) {
-	sweepval = *(_sweepval[Nest]) * _step[Nest];
+	sweepval = get_sweepval(Nest) * _step[Nest];
 	ok = in_order(_start[Nest]/fudge, sweepval, _stop[Nest]*fudge);
 	if (!ok  &&  _loop[Nest]) {untested();
 	  // turn around
@@ -477,7 +589,7 @@ bool DCOP::next(int Nest)
       if (_reverse[Nest]) {untested();
 	assert(!ok);
 	assert(sweepval == NOT_VALID);
-	sweepval = *(_sweepval[Nest]) / _step[Nest];
+	sweepval = get_sweepval(Nest) / _step[Nest];
 	ok = in_order(_start[Nest]/fudge, sweepval, _stop[Nest]*fudge);
       }else{
 	// not sure of status
@@ -487,7 +599,7 @@ bool DCOP::next(int Nest)
   _sim->_phase = p_DC_SWEEP;
   if (ok) {
     assert(sweepval != NOT_VALID);
-    *(_sweepval[Nest]) = sweepval;
+    set_sweepval(Nest, sweepval);
     return true;
   }else{
     //assert(sweepval == NOT_VALID);

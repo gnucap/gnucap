@@ -37,14 +37,14 @@ public:
   explicit      EVAL_BM_COMPLEX(int c=0);
 		~EVAL_BM_COMPLEX()	{}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const	{return new EVAL_BM_COMPLEX(*this);}
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
-  void		tr_eval(ELEMENT*)const;
-  void		ac_eval(ELEMENT*)const;
-  std::string	name()const		{return "complex";}
-  bool		ac_too()const		{untested();return true;}
-  bool		parse_numlist(CS&);
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override {return new EVAL_BM_COMPLEX(*this);}
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
+  void		tr_eval(ELEMENT*)const override;
+  void		ac_eval(ELEMENT*)const override;
+  std::string	name()const override		{return "complex";}
+  bool		ac_too()const override		{untested();return true;}
+  bool		parse_numlist(CS&)override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

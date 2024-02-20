@@ -1,0 +1,98 @@
+#$Id: Make3  $ -*- Makefile -*-
+# Copyright (C) 2001 Albert Davis
+# Author: Albert Davis <aldavis@gnu.org>
+#
+# This file is part of "Gnucap", the Gnu Circuit Analysis Package
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#------------------------------------------------------------------------
+# Part 3 of a Makefile
+#------------------------------------------------------------------------
+all: $(TARGET) ${TARGET_LIB:%=%${TARGET_LIB_EXT}} ${TARGET_EXE:%=%${TARGET_EXE_EXT}}
+#------------------------------------------------------------------------
+tags: $(HDRS) $(SRCS)
+	etags --c++ $(HDRS) $(SRCS)
+#------------------------------------------------------------------------
+checkout:
+	co $(RAW)
+#------------------------------------------------------------------------
+install-debug : install
+
+install : $(INSTALL_FILES)  $(INSTALL_FILES_1)  $(INSTALL_FILES_2)
+	[ -z "$(INSTALL_DIR)" ]   || mkdir -p $(DESTDIR)$(INSTALL_DIR)
+	[ -z "$(INSTALL_DIR_1)" ] || mkdir -p $(DESTDIR)$(INSTALL_DIR_1)
+	[ -z "$(INSTALL_DIR_2)" ] || mkdir -p $(DESTDIR)$(INSTALL_DIR_2)
+	[ -z "$(INSTALL_FILES)" ]   || cp $(INSTALL_FILES) $(DESTDIR)$(INSTALL_DIR)
+	[ -z "$(INSTALL_FILES_1)" ] || cp $(INSTALL_FILES_1) $(DESTDIR)$(INSTALL_DIR_1)
+	[ -z "$(INSTALL_FILES_2)" ] || cp $(INSTALL_FILES_2) $(DESTDIR)$(INSTALL_DIR_2)
+#------------------------------------------------------------------------
+uninstall :
+	(cd $(DESTDIR)$(INSTALL_DIR) ; rm -f $(INSTALL_FILES))
+	(cd $(DESTDIR)$(INSTALL_DIR_1) ; rm -f $(INSTALL_FILES_1))
+	(cd $(DESTDIR)$(INSTALL_DIR_2) ; rm -f $(INSTALL_FILES_2))
+#------------------------------------------------------------------------
+#unclean:
+#	rm $(ALL)
+#------------------------------------------------------------------------
+backup:
+	mkdir -p BACKUP
+	cp $(RAW) BACKUP
+#------------------------------------------------------------------------
+depend: Make.depend
+Make.depend: $(SRCS) $(HDRS)
+	$(CXX) -MM $(CCFLAGS) $(SRCS) > Make.depend
+#-----------------------------------------------------------------------------
+date:
+	date "+#define PATCHLEVEL \"`git branch | awk '/\*/ { print $$2; }'` %Y.%m.%d\"" \
+		>patchlev.h
+#-----------------------------------------------------------------------------
+header-check:
+	-$(CXX) -I../include -o /dev/null $(RAW_HDRS)
+#-----------------------------------------------------------------------------
+manifest: MANIFEST
+MANIFEST: $(DIST_FILES)
+	echo $(DIST_FILES) | sed 's/ /\n/g' >MANIFEST
+#-----------------------------------------------------------------------------
+md5sums: MD5SUMS
+MD5SUMS: $(DIST_FILES)
+	md5sum $(DIST_FILES) | grep -v MD5SUMS >MD5SUMS
+#-----------------------------------------------------------------------------
+mostlyclean:
+	rm -rf $(MOSTLYCLEANFILES)
+	rm -f */*.o */*.obj */*.h */*.cc
+clean:
+	rm -rf $(CLEANFILES)
+	rm -f */*.o */*.obj */*.h */*.cc
+distclean:
+	rm -rf $(DISTCLEANFILES)
+	rm -f */*.o */*.obj */*.h */*.cc
+	rm -f *~ \#*\#
+maintainer-clean:
+	rm -rf $(MAINTAINERCLEANFILES)
+	rm -f */*.o */*.obj */*.h */*.cc
+	rm -f *~ \#*\#
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+$(TARGET_EXE)$(TARGET_EXE_EXT): $(TARGET_DEPENDS)
+	rm -f $@
+	$(MAKE_EXE) -o $@
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+$(TARGET_LIB)$(TARGET_LIB_EXT): $(TARGET_DEPENDS)
+	rm -f $@
+	$(MAKE_LIB) -o $@
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------

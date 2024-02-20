@@ -69,7 +69,7 @@ void TRANSIENT::setup(CS& Cmd)
 	_tstart = arg1;			    /* _tstart _tstop _tstrobe */
 	_tstop  = arg2;				
 	_tstrobe  = arg3;
-      }else if (arg1 > arg3) {untested();   /* eca (logical) order: */
+      }else if (arg1 > arg3) { itested();   /* eca (logical) order: */
 	_tstart = arg1;			    /* _tstart _tstop _tstrobe */
 	_tstop  = arg2;				
 	_tstrobe  = arg3;
@@ -108,7 +108,7 @@ void TRANSIENT::setup(CS& Cmd)
 	_tstart = 0.;
 	_tstop  = oldrange;
 	/* _tstrobe unchanged */
-      }else{untested();			     /* 1 arg: _tstrobe */
+      }else{itested();			     /* 1 arg: _tstrobe */
 	assert(arg1 <= _sim->_last_time);
 	assert(arg1 > 0.);
 	double oldrange = _tstop - _tstart;

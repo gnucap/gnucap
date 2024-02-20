@@ -29,12 +29,16 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_ : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)
-  {
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
+    size_t here = cmd.cursor();
     Expression e(cmd);
     cmd.check(bDANGER, "syntax error");
-    Expression r(e, Scope);
-    std::cout << e << '=' << r << '\n';
+    try{
+      Expression r(e, Scope);
+      std::cout << e << '=' << r << '\n';
+    }catch(Exception const& ee){
+      cmd.warn(bWARNING, here, ee.message());
+    }
   }
 } p0;
 DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "exp|eval", &p0);

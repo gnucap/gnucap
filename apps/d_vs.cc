@@ -34,34 +34,35 @@ private:
 public:
   explicit DEV_VS()		:ELEMENT() {}
 private: // override virtual
-  char	   id_letter()const	{return 'V';}
-  std::string value_name()const {return "dc";}
-  std::string dev_type()const	{return "vsource";}
-  int	   max_nodes()const	{return 2;}
-  int	   min_nodes()const	{return 2;}
-  int	   matrix_nodes()const	{return 2;}
-  int	   net_nodes()const	{return 2;}
-  bool	   is_source()const	{return true;}
-  bool	   f_is_value()const	{return true;}
-  bool	   has_iv_probe()const  {return true;}
-  bool	   use_obsolete_callback_parse()const {return true;}
-  CARD*	   clone()const		{return new DEV_VS(*this);}
-  void     precalc_last();
-  void	   tr_iwant_matrix()	{tr_iwant_matrix_passive();}
-  void	   tr_begin();
-  bool	   do_tr();
-  void	   tr_load()		{tr_load_shunt(); tr_load_source();}
-  void	   tr_unload()		{untested();tr_unload_source();}
-  double   tr_involts()const	{return 0.;}
-  double   tr_involts_limited()const {unreachable(); return 0.;}
-  void	   ac_iwant_matrix()	{ac_iwant_matrix_passive();}
-  void	   ac_begin()		{_loss1 = _loss0 = 1./OPT::shortckt; _acg = _ev = 0.;}
-  void	   do_ac();
-  void	   ac_load()		{ac_load_shunt(); ac_load_source();}
-  COMPLEX  ac_involts()const	{return 0.;}
-  COMPLEX  ac_amps()const	{return (_acg + ac_outvolts()*_loss0);}
+  char	   id_letter()const override	{return 'V';}
+  std::string value_name()const override{return "dc";}
+  std::string dev_type()const override	{return "vsource";}
+  int	   max_nodes()const override	{return 2;}
+  int	   min_nodes()const override	{return 2;}
+  int	   matrix_nodes()const override	{return 2;}
+  int	   net_nodes()const override	{return 2;}
+  bool	   is_source()const override	{return true;}
+  bool	   f_is_value()const override	{return true;}
+  bool	   has_iv_probe()const override	{return true;}
+  bool	   use_obsolete_callback_parse()const override {return true;}
+  CARD*	   clone()const override	{return new DEV_VS(*this);}
+  void     precalc_last()override;
+  void     dc_advance()override;
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
+  void	   tr_begin()override;
+  bool	   do_tr()override;
+  void	   tr_load()override		{tr_load_shunt(); tr_load_source();}
+  void	   tr_unload()override		{tr_unload_source();}
+  double   tr_involts()const override	{return 0.;}
+  double   tr_involts_limited()const override{unreachable(); return 0.;}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_passive();}
+  void	   ac_begin()override		{_loss1 = _loss0 = 1./OPT::shortckt; _acg = _ev = 0.;}
+  void	   do_ac()override;
+  void	   ac_load()override		{ac_load_shunt(); ac_load_source();}
+  COMPLEX  ac_involts()const override	{return 0.;}
+  COMPLEX  ac_amps()const override	{return (_acg + ac_outvolts()*_loss0);}
 
-  std::string port_name(int i)const {
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};
@@ -72,11 +73,26 @@ private: // override virtual
 /*--------------------------------------------------------------------------*/
 void DEV_VS::precalc_last()
 {
-  //ELEMENT::precalc_last();	//BUG// skip
-  COMPONENT::precalc_last();
-  set_constant(!has_tr_eval());
+  ELEMENT::precalc_last();
+  set_constant(!using_tr_eval());
   set_converged(!has_tr_eval());
-  set_constant(false);
+}
+/*--------------------------------------------------------------------------*/
+void DEV_VS::dc_advance()
+{
+  ELEMENT::dc_advance();
+
+  if(using_tr_eval()){
+  }else{
+    _y[0].f1 = value();
+    if(_y[0].f1 != _y1.f1){
+      store_values();
+      q_load();
+      _m0.c0 = -_loss0 * _y[0].f1;
+      // set_constant(false); not needed. nothing to do in do_tr.
+    }else{
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_VS::tr_begin()
@@ -89,7 +105,7 @@ void DEV_VS::tr_begin()
   _m0.x  = 0.;
   _m0.c0 = -_loss0 * _y[0].f1;
   _m0.c1 = 0.;
-  _m1 = _m0;    
+  _m1 = _m0;
   if (!using_tr_eval()) {
     if (_n[OUT2].m_() == 0) {
       _sim->set_limit(value());

@@ -60,27 +60,56 @@ void Name_String::parse(CS& File)
       _data += File.ctoc();
     }
   }else{
-    while (File.is_alpha() || File.is_pfloat() || File.match1("_[]")) {
+    int bracket = 0;
+    while (true) {
+      if (File.is_alpha() || File.is_pfloat() || File.match1("_$")) {
+      }else if (File.match1("[")) {
+	++bracket;
+      }else if (bracket && File.match1("]")) {
+	--bracket;
+      }else{
+	break;
+      }
       _data += File.ctoc();
+    }
+    if(bracket){
+      File.warn(bDANGER, "missing ]?");
+    }else{
     }
   }
   File.skipbl();
 }
 /*--------------------------------------------------------------------------*/
+void Angled_String::parse(CS& File)
+{
+  File.skipbl();
+  _data = File.ctos("", "<", ">");
+  File.skipbl();
+}
+/*--------------------------------------------------------------------------*/
 void Quoted_String::parse(CS& File)
-{untested();
+{
   File.skipbl();
   size_t here = File.cursor();
   char quote = File.ctoc();
   _data = "";
-  for (;;) {untested();
-    if (File.skip1(quote)) {untested();
+  // TODO: extend ctos and use it.
+  for (;;) {
+    if (File.match1('\\')) { itested();
+      _data += File.ctoc();
+      if (File.match1(quote)) { itested();
+	_data += File.ctoc();
+      }else if (File.match1('\\')) { itested();
+	_data += File.ctoc();
+      }else{ itested();
+      }
+    }else if (File.skip1(quote)) {
       break;
-    }else if (!File.more()) {untested();
-      File.warn(0, "end of file in quoted string");
-      File.warn(0, here, "string begins here");
+    }else if (!File.ns_more()) {
+      File.warn(bNOERROR, "end of file in quoted string");
+      File.warn(bNOERROR, here, "string begins here");
       break;
-    }else{untested();
+    }else{
       _data += File.ctoc();
     }
   }

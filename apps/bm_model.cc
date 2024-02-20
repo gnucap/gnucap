@@ -38,16 +38,16 @@ public:
   explicit      EVAL_BM_MODEL(int c=0);
 		~EVAL_BM_MODEL()	{detach_common(&_func);}
 private: // override virtual
-  bool		operator==(const COMMON_COMPONENT&)const;
-  COMMON_COMPONENT* clone()const	{return new EVAL_BM_MODEL(*this);}
-  void		parse_common_obsolete_callback(CS&);
-  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
-  void		expand(const COMPONENT*);
-  COMMON_COMPONENT* deflate()		{return (_func) ? _func->deflate() : this;}
-  void		tr_eval(ELEMENT*d)const {assert(_func); _func->tr_eval(d);}
-  void		ac_eval(ELEMENT*d)const {assert(_func); _func->ac_eval(d);}
-  std::string	name()const		{itested();return modelname();}
-  bool		ac_too()const		{return true;}
+  bool		operator==(const COMMON_COMPONENT&)const override;
+  COMMON_COMPONENT* clone()const override	{return new EVAL_BM_MODEL(*this);}
+  void		parse_common_obsolete_callback(CS&)override;
+  void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
+  void		expand(const COMPONENT*)override;
+  COMMON_COMPONENT* deflate()override		{return (_func) ? _func->deflate() : this;}
+  void		tr_eval(ELEMENT*d)const override{assert(_func); _func->tr_eval(d);}
+  void		ac_eval(ELEMENT*d)const override{assert(_func); _func->ac_eval(d);}
+  std::string	name()const override		{itested();return modelname();}
+  bool		ac_too()const override		{return true;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
