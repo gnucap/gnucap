@@ -103,3 +103,5 @@ date:
 checkin:
 	$(MAKE) date
 	-git commit -a
+
+.PHONY: install
