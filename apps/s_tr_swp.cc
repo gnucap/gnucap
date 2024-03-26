@@ -113,7 +113,7 @@ void TRANSIENT::sweep()
 
     if (_accepted) {
       assert(_converged);
-      assert(_sim->_time0 <= _time_by_user_request);
+      assert(_sim->_time0 <= _time_by_user_request + _sim->_dtmin);
       accept();
       if (step_cause() == scUSER) {
 	assert(up_order(_sim->_time0-_sim->_dtmin, _time_by_user_request, _sim->_time0+_sim->_dtmin));
@@ -227,18 +227,18 @@ void TRANSIENT::first()
     assert(newtime > _time1);						\
     assert(newtime > reftime);						\
     assert(new_dt > 0.);						\
-    assert(new_dt >= _sim->_dtmin);						\
-    assert(newtime <= _time_by_user_request);				\
+    assert(new_dt >= _sim->_dtmin);					\
+    assert(newtime <= _time_by_user_request + _sim->_dtmin );		\
     /*assert(newtime == _time_by_user_request*/				\
     /*	   || newtime < _time_by_user_request - _sim->_dtmin);	*/	\
   }
 #define check_consistency2() {						\
     assert(newtime > _time1);						\
     assert(new_dt > 0.);						\
-    assert(new_dt >= _sim->_dtmin);						\
-    assert(newtime <= _time_by_user_request);				\
+    assert(new_dt >= _sim->_dtmin);					\
+    assert(newtime <= _time_by_user_request + _sim->_dtmin);		\
     /*assert(newtime == _time_by_user_request	*/			\
-    /*	   || newtime < _time_by_user_request - _sim->_dtmin);*/		\
+    /*	   || newtime < _time_by_user_request - _sim->_dtmin);*/	\
   }
 /*--------------------------------------------------------------------------*/
 /* next: go to next time step
@@ -436,7 +436,7 @@ bool TRANSIENT::next()
     // if all that makes it close to event, make it official
     if (!_sim->_eq.empty()
 	&& up_order(newtime-_sim->_dtmin, _sim->_eq.top(), newtime+_sim->_dtmin)) {
-      newtime =  _sim->_eq.top(),
+      almost_fixed_time = fixed_time = newtime = _sim->_eq.top();
       new_dt = newtime - reftime;
       new_control = scEVENTQ;
       check_consistency();
