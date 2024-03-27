@@ -133,6 +133,14 @@ public:
   const std::string string(const void* Owner)const {return _p->string(Owner);}
   const std::string operator[] (const std::string& Key)const {itested();return ((_p) ? (*_p)[Key] : "0");}
 
+  ATTRIB_LIST_p& operator=(const ATTRIB_LIST_p& P) {
+    if ((_p = P._p)) {untested();
+      _p->inc_ref_count();
+    }else{untested();
+    }
+    return *this;
+  }
+
   ATTRIB_LIST_p& add_to(const std::string& String, const void* Owner) {
     if (_p) {
       _p->dec_ref_count();

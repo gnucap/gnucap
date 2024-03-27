@@ -1,6 +1,11 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 2024033*
+
+- fix a bug in transient QA
+- explicit attribute list assignment op
+
 == 20240220
 
 - prepare build system files for use in extension packages
