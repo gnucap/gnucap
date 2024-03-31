@@ -530,7 +530,7 @@ void DEV_TRANSLINE::do_ac()
   lenth *= (M_PI_2);	/* now in radians */
   
   _y12 = COMPLEX(0., -1. / (c->real_z0 * sin(lenth)));
-  _y11 = COMPLEX(0., tan(lenth/2) / c->real_z0) + _y12;
+  _y11 = COMPLEX(0., -1. / (c->real_z0 * tan(lenth)));
 }
 /*--------------------------------------------------------------------------*/
 void DEV_TRANSLINE::ac_load()
