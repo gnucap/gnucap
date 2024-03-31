@@ -1,0 +1,27 @@
+
+verilog
+
+# "Qucsator style" TLIN
+module TLIN (a, b)
+  parameter Z=50
+  parameter L=100m
+  parameter Alpha=1
+  parameter Temp=26.85
+
+  // local
+  parameter c0=299792458.0
+  tline #(.z(Z), .td(1./c0), .len(L) t(a 0 b 0);
+endmodule
+
+TLIN #(.Alpha(0),.L(100m),.Temp(26.85),.Z(50)) Line1 (.a(_net0),.b(out1));
+TLIN #(.Alpha(0),.L(60m),.Temp(26.85),.Z(50)) Line1 (.a(_net0),.b(_net2));
+TLIN #(.Alpha(0),.L(40m),.Temp(26.85),.Z(50)) Line1 (.a(_net2),.b(out2));
+
+spice
+.options noinsensitive
+Vac _net0 0 ac 1
+R1 out1 0 80
+R1 out2 0 80
+
+.print ac v(out*) vp(out*)
+.ac 1e5 1e9 * 10

@@ -40,7 +40,7 @@ private:
 protected:
   explicit EVAL_BM_SEMI_BASE(const EVAL_BM_SEMI_BASE& p);
   explicit EVAL_BM_SEMI_BASE(int c=0);
-  ~EVAL_BM_SEMI_BASE() {untested();}
+  ~EVAL_BM_SEMI_BASE() {}
 protected: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
   COMMON_COMPONENT* clone()const override = 0;
@@ -58,14 +58,14 @@ protected: // override virtual
 class EVAL_BM_SEMI_CAPACITOR : public EVAL_BM_SEMI_BASE {
 private:
   explicit EVAL_BM_SEMI_CAPACITOR(const EVAL_BM_SEMI_CAPACITOR& p)
-    :EVAL_BM_SEMI_BASE(p) {untested();}
+    :EVAL_BM_SEMI_BASE(p) {}
 public:
   explicit EVAL_BM_SEMI_CAPACITOR(int c=0)
     :EVAL_BM_SEMI_BASE(c) {}
-  ~EVAL_BM_SEMI_CAPACITOR() {untested();}
+  ~EVAL_BM_SEMI_CAPACITOR() {}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
-  COMMON_COMPONENT* clone()const override{untested();return new EVAL_BM_SEMI_CAPACITOR(*this);}
+  COMMON_COMPONENT* clone()const override{return new EVAL_BM_SEMI_CAPACITOR(*this);}
   void  	expand(const COMPONENT*)override;
   void		precalc_last(const CARD_LIST*)override;
 };
@@ -73,14 +73,14 @@ private: // override virtual
 class EVAL_BM_SEMI_RESISTOR : public EVAL_BM_SEMI_BASE {
 private:
   explicit EVAL_BM_SEMI_RESISTOR(const EVAL_BM_SEMI_RESISTOR& p)
-    :EVAL_BM_SEMI_BASE(p) {untested();}
+    :EVAL_BM_SEMI_BASE(p) {}
 public:
   explicit EVAL_BM_SEMI_RESISTOR(int c=0)
     :EVAL_BM_SEMI_BASE(c) {}
-  ~EVAL_BM_SEMI_RESISTOR() {untested();}
+  ~EVAL_BM_SEMI_RESISTOR() {}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
-  COMMON_COMPONENT* clone()const override {untested();return new EVAL_BM_SEMI_RESISTOR(*this);}
+  COMMON_COMPONENT* clone()const override {return new EVAL_BM_SEMI_RESISTOR(*this);}
   void  	expand(const COMPONENT*)override;
   void		precalc_last(const CARD_LIST*)override;
 };
@@ -183,18 +183,18 @@ EVAL_BM_SEMI_BASE::EVAL_BM_SEMI_BASE(const EVAL_BM_SEMI_BASE& p)
    _length(p._length),
    _width(p._width),
    _va_lue(p._va_lue)
-{untested();
+{
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_SEMI_BASE::operator==(const COMMON_COMPONENT& x)const
-{untested();
+{
   const EVAL_BM_SEMI_BASE* p = dynamic_cast<const EVAL_BM_SEMI_BASE*>(&x);
   bool rv = p
     && _length == p->_length
     && _width == p->_width
     && EVAL_BM_ACTION_BASE::operator==(x);
   if (rv) {untested();
-  }else{untested();
+  }else{
   }
   return rv;
 }

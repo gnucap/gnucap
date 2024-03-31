@@ -1,0 +1,50 @@
+# "Qucsator style" diode
+
+simulator lang=spice
+.options noinsensitive
+.subckt spice_diode 1 2
+ .parameter area=1
+ .parameter N cjo
+ .parameter M, vj
+ .parameter rs
+ .parameter Is=1e-15
+ .parameter tt=1e-15
+
+ .model mydiode d ( is=Is rs=rs n=N tt=tt cjo=cjo vj=vj m=M )
+  D1 1 2 mydiode area=area
+.ends
+
+.verilog
+// TODO: this is actually a paramset
+module Diode(1 2);
+  parameter N=1
+  parameter Cj0=15f
+  parameter M=0.5
+  parameter Vj=0.7
+  parameter Rs=0.
+  parameter Is=1e-15
+  parameter Area=1.
+  parameter Tt=0.
+
+  // ignored, but somehow used in .net files revisit later.
+  parameter Fc=.5 Cp=0. Isr=0. Nr=2.
+  parameter Ikf=0 Kf=0. Af=1. Ffe=1. Bv=0. Ibv=1m Temp=26.85 Xti=3.
+  parameter Eg=1.11 Tbv=0. Trs=0. Ttt1=0. Ttt2=0. Tm1=0. Tm2=0.
+  parameter Tnom=26.85
+
+  spice_diode #( .area(Area) .Is(Is) .rs(Rs) .N(N) .cjo(Cj0) .vj(Vj) .M(M) .tt(Tt)) d1(2 1);
+endmodule
+
+list
+
+Diode #(.Area(2)) d1(i 1);
+Diode #(.Area(2)) d2(0 i);
+Diode #(.Area(1)) d3(0 2);
+resistor #(.r(100k)) r1 (in 1);
+resistor #(.r(100k)) r2 (in 2);
+vsource #(.dc(1)) v(in 0);
+
+print dc v 1 2
+dc
+end
+

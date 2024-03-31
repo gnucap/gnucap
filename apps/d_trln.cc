@@ -325,14 +325,14 @@ void COMMON_TRANSLINE::precalc_last(const CARD_LIST* Scope)
   nl.e_val(_default_nl, Scope);
 
   { // real_td
-    if (td.has_hard_value()) {untested();
+    if (td.has_hard_value()) {
       real_td = len * td;
       if (f.has_hard_value()) {untested(); // check for conflicts
 	if (!conchk(td, nl/f, OPT::vntol)) {untested();
 	  error(bDANGER, "td, f&nl conflict.  using td\n");
 	}else{untested();
 	}
-      }else{untested();
+      }else{
       }
     }else if (f.has_hard_value()) {
       real_td = len * nl / f;      
