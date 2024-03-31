@@ -1,10 +1,13 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 2024033*
+== 20240331
 
 - fix a bug in transient QA
+- improve trln ac formulation
+- hotfix commons clash
 - explicit attribute list assignment op
+- add CONTRIBUTE
 
 == 20240220
 

@@ -138,7 +138,7 @@ public:
 class Token_UNARY : public Token {
 protected:
   explicit Token_UNARY(std::string Name, Base const* Data)
-    : Token(Name, Data) {untested();}
+    : Token(Name, Data) {itested();}
 public:
   explicit Token_UNARY(std::string Name)
     : Token(Name, NULL) {}

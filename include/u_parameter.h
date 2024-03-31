@@ -45,7 +45,7 @@ public:
 
 	  bool	has_hard_value()const {return (_s != "");}
   virtual bool	has_good_value()const = 0;
-          bool  is_constant()const    {untested(); return (_s == "#");}
+          bool  is_constant()const    {itested(); return (_s == "#");}
   virtual bool  is_given()const       {untested(); return (_s != "");}
 
   virtual void	parse(CS& cmd) = 0;

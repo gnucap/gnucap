@@ -1,0 +1,24 @@
+Thanks for contributing to Gnucap
+
+Gnucap is designed as a modular system around a core library. The core library
+is considered stable. Most user functionality is implemented as plugins, and
+this includes all device models, (model) language support, simulation commands
+and more.
+
+Consequently, you are not generally required to request our approval for your
+contribution. You may share and distribute your own creation following common
+practice. We are always happy to give feedback and help, provided your code is
+made available under a compatible license.
+
+Sometimes changes to the core library are needed to achieve certain goals.
+Also, changes to plugins included with the main package can be worthwile. In
+either case, please get in touch, personally, or preferably through the
+developer mailing list [1].
+
+Various features are developped in separate repositories and/or distributed as
+separate packages. The most official ones can be found here [2].  For further
+resources, technical details and conventions, see [3].
+
+[1] https://savannah.gnu.org/mail/?group_id=562
+[2] https://savannah.gnu.org/git/?group=gnucap
+[3] http://gnucap.org/dokuwiki/doku.php/gnucap:manual:tech

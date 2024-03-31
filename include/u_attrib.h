@@ -87,9 +87,9 @@ public:
 	}
 	found = true;
 	// keep looking in case there is another, which will supercede
-      }else{untested();
+      }else{itested();
 	cmd.skiparg();
-	if (cmd >> "=") {untested();
+	if (cmd >> "=") {itested();
 	  cmd.ctos();
 	}else{untested();
 	}
@@ -100,7 +100,7 @@ public:
       return val;
     }else if (_up) {untested();
       return (*_up)[Key];
-    }else{untested();
+    }else{itested();
       return "0";
     }
   }
@@ -134,9 +134,9 @@ public:
   const std::string operator[] (const std::string& Key)const {itested();return ((_p) ? (*_p)[Key] : "0");}
 
   ATTRIB_LIST_p& operator=(const ATTRIB_LIST_p& P) {
-    if ((_p = P._p)) {untested();
+    if ((_p = P._p)) {itested();
       _p->inc_ref_count();
-    }else{untested();
+    }else{itested();
     }
     return *this;
   }
