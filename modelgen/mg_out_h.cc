@@ -249,7 +249,7 @@ static void make_device(std::ofstream& out, const Device& d)
       << class_name << "(*this);}\n"
     "  void      precalc_first()override {COMPONENT::precalc_first(); if(subckt()) subckt()->precalc_first();}\n"
     "  void      expand()override;\n"
-    "  void      precalc_last()override {COMPONENT::precalc_last(); assert(subckt()); subckt()->precalc_last();}\n"
+    "  void      precalc_last()override;\n"
     "  //void    map_nodes();         //BASE_SUBCKT\n"
     "  //void    tr_begin();          //BASE_SUBCKT\n"
     "  //void    tr_restore();        //BASE_SUBCKT\n";

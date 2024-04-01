@@ -124,7 +124,7 @@ public:
       if (_p->dec_ref_count()==0) {
 	delete _p;
 	_p = NULL;
-      }else{untested();
+      }else{itested();
       }
     }else{
     }

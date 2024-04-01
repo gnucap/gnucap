@@ -548,15 +548,19 @@ void COMPONENT::precalc_first()
   trace1(long_label().c_str(), _mfactor_fixed);
 }
 /*--------------------------------------------------------------------------*/
+// .. bypassed in mg_out_dev.
 void COMPONENT::precalc_last()
 {
   CARD::precalc_last();
   if (has_common()) {
+    COMMON_COMPONENT* c = common()->clone();
+    assert(c);
     try {
-      mutable_common()->precalc_last(scope());
+      c->precalc_last(scope());
     }catch (Exception_Precalc& e) {
       error(bWARNING, long_label() + ": " + e.message());
     }
+    attach_common(c);
   }else{
   }
 }
