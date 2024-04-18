@@ -67,6 +67,7 @@ struct INTERFACE SIM_DATA {
   double *_vt1;		/* dc-tran voltage, 1 time ago		*/
 			/*  used to restore after rejected step	*/
   COMPLEX *_ac;		/* ac right side			*/
+  COMPLEX *_noise;	/* noise vector				*/
   LOGIC_NODE* _nstat;	/* digital data				*/
   double *_vdc;		/* saved dc voltages			*/
   BSMATRIX<double> _aa;	/* raw matrix for DC & tran */

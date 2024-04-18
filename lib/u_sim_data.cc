@@ -56,6 +56,7 @@ SIM_DATA::SIM_DATA()
    _v0(NULL),
    _vt1(NULL),
    _ac(NULL),
+   _noise(NULL),
    _nstat(NULL),
    _vdc(NULL),
    _aa(),
@@ -102,6 +103,11 @@ SIM_DATA::~SIM_DATA()
   if (_ac) {unreachable();
     delete [] _ac;
     _ac = NULL;
+  }else{
+  }
+  if (_noise) {unreachable();
+    delete [] _noise;
+    _noise = NULL;
   }else{
   }
   if (_nstat) {unreachable();
@@ -306,10 +312,12 @@ void SIM_DATA::alloc_vectors()
   assert(!_vt1);
 
   _ac = new COMPLEX[_total_nodes+1];
+  _noise = new COMPLEX[_total_nodes+1];
   _i   = new double[_total_nodes+1];
   _v0  = new double[_total_nodes+1];
   _vt1 = new double[_total_nodes+1];
   std::fill_n(_ac, _total_nodes+1, 0);
+  std::fill_n(_noise, _total_nodes+1, 0);
   std::fill_n(_i,  _total_nodes+1, 0);
   std::fill_n(_v0, _total_nodes+1, 0);
   std::fill_n(_vt1,_total_nodes+1, 0);
@@ -327,6 +335,8 @@ void SIM_DATA::unalloc_vectors()
   _vt1 = NULL;
   delete [] _ac;
   _ac = NULL;
+  delete [] _noise;
+  _noise = NULL;
 }
 /*--------------------------------------------------------------------------*/
 /* uninit: undo all the allocation associated with any simulation
