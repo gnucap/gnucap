@@ -28,7 +28,7 @@
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMMON_PARAMLIST : public COMMON_COMPONENT {
-private:
+protected:
   explicit COMMON_PARAMLIST(const COMMON_PARAMLIST& p)
     :COMMON_COMPONENT(p), _params(p._params) {++_count;}
 public:

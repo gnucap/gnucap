@@ -155,7 +155,13 @@ public:
   virtual int order()const		{return OPT::trsteporder;}
   virtual double error_factor()const	{return OPT::trstepcoef[OPT::trsteporder];}
 protected:
-  int param_count()const override {return (1 + COMPONENT::param_count());}
+  int param_count()const override {
+    if(has_common()) {
+      return common()->param_count();
+    }else{
+      return 1 + COMPONENT::param_count();
+    }
+  }
   int  set_param_by_name(std::string, std::string)override;
   void set_param_by_index(int, std::string&, int)override;
   bool param_is_printable(int)const override;
