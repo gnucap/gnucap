@@ -1,7 +1,14 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 20240331
+== 20240430-dev
+
+- add noise to sim_data
+- code of conduct
+- fixes for spice_wrapper
+- drop spice_wrapper (moved to models repo)
+
+== 20240331-dev
 
 - fix a bug in transient QA
 - improve trln ac formulation
