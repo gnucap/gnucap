@@ -418,7 +418,7 @@ void make_h_file(const File& in)
   std::string dump_name = in.name();
   { // chop suffix .model
     std::string::size_type loc = dump_name.rfind(".model");
-    if (loc == std::string::npos) {
+    if (loc == std::string::npos) { untested();
       untested();
       loc = dump_name.rfind(".vams");
     }else{

@@ -67,12 +67,12 @@ EVAL_BM_MODEL::EVAL_BM_MODEL(const EVAL_BM_MODEL& p)
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_MODEL::operator==(const COMMON_COMPONENT& x)const
-{
+{ untested();
   const EVAL_BM_MODEL* p = dynamic_cast<const EVAL_BM_MODEL*>(&x);
   bool rv = p
     && _arglist == p->_arglist
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     incomplete();
     untested();
   }
@@ -91,7 +91,7 @@ void EVAL_BM_MODEL::parse_common_obsolete_callback(CS& cmd) //used
 void EVAL_BM_MODEL::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
   assert(lang);
-  if (_func) {
+  if (_func) { untested();
     _func->print_common_obsolete_callback(o, lang);
   }else{
     o << modelname();

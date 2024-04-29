@@ -40,7 +40,7 @@ void list_save(CS& cmd, OMSTREAM out, CARD_LIST* scope)
 
   //out.setfloatwidth(7);
   switch (ENV::run_mode) {
-  case rPRE_MAIN:
+  case rPRE_MAIN:untested();
     unreachable();
     return;
   case rPRESET:
@@ -53,7 +53,7 @@ void list_save(CS& cmd, OMSTREAM out, CARD_LIST* scope)
     break;
   }
 
-  if (!OPT::language) {
+  if (!OPT::language) { untested();
     throw Exception("no language");
   }else{
   }

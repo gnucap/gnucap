@@ -97,8 +97,7 @@ void plclose(void)
  */
 void plclear(void)
 {
-  if (active) {
-    untested();
+  if (active) { untested();
   }
   active = false;
 }

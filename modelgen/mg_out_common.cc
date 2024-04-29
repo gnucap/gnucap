@@ -140,8 +140,8 @@ void make_common_set_param_by_index(std::ofstream& out, const Device& d)
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
        p != d.common().override().end();
-       ++p) {
-    if (!((**p).user_name().empty())) {
+       ++p) { untested();
+    if (!((**p).user_name().empty())) { untested();
       out << "  case " << i++ << ":  " << (**p).code_name() << " = Value; break;\n";
     }else{unreachable();
     }
@@ -176,14 +176,14 @@ void make_common_param_is_printable(std::ofstream& out, const Device& d)
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
        p != d.common().override().end();
-       ++p) {
-    if (!((**p).user_name().empty())) {
+       ++p) { untested();
+    if (!((**p).user_name().empty())) { untested();
       out << "  case " << i++ << ":  return (";
-      if (!((**p).print_test().empty())) {
+      if (!((**p).print_test().empty())) { untested();
 	out << (**p).print_test() << ");\n";
-      }else if ((**p).default_val() == "NA") {
+      }else if ((**p).default_val() == "NA") { untested();
 	out << (**p).code_name() << " != NA);\n";
-      }else{
+      }else{ untested();
 	out << "true);\n";
       }
     }else{unreachable();
@@ -225,8 +225,8 @@ void make_common_param_name(std::ofstream& out, const Device& d)
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
        p != d.common().override().end();
-       ++p) {
-    if (!((**p).user_name().empty())) {
+       ++p) { untested();
+    if (!((**p).user_name().empty())) { untested();
       out << "  case " << i++ << ":  return \"" << to_lower((**p).user_name()) << "\";\n";
     }else{unreachable();
     }
@@ -263,8 +263,8 @@ void make_common_param_name_or_alias(std::ofstream& out, const Device& d)
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
        p != d.common().override().end();
-       ++p) {
-    if (!((**p).user_name().empty())) {
+       ++p) { untested();
+    if (!((**p).user_name().empty())) { untested();
       out << "    case " << i++ << ":  return \"" << to_lower((**p).alt_name()) << "\";\n";
     }else{unreachable();
     }
@@ -301,8 +301,8 @@ void make_common_param_value(std::ofstream& out, const Device& d)
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
        p != d.common().override().end();
-       ++p) {
-    if (!((**p).user_name().empty())) {
+       ++p) { untested();
+    if (!((**p).user_name().empty())) { untested();
       out << "  case " << i++ << ":  return " << (**p).code_name() << ".string();\n";
     }else{unreachable();
     }

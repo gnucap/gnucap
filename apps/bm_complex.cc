@@ -66,7 +66,7 @@ bool EVAL_BM_COMPLEX::operator==(const COMMON_COMPONENT& x)const
   bool rv = p
     && _value == p->_value
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     untested();
   }
   return rv;
@@ -100,7 +100,7 @@ bool EVAL_BM_COMPLEX::parse_numlist(CS& cmd)
   if (cmd.gotit(here)) {
     _value = COMPLEX(real,imag);
     return true;
-  }else{
+  }else{ untested();
     untested();
     return false;
   }

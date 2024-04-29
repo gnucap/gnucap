@@ -62,8 +62,8 @@ void load_or_unload(CS& cmd, CARD_LIST const* Scope, int flags)
     list();
   }else{
     std::string full_file_name;
-    if (short_file_name[0]=='/' || short_file_name[0]=='.'){
-      if (OS::access_ok(short_file_name, R_OK)) {
+    if (short_file_name[0]=='/' || short_file_name[0]=='.'){itested();
+      if (OS::access_ok(short_file_name, R_OK)) {itested();
 	// found it, local or root
 	full_file_name = short_file_name;
       }else{untested();
@@ -84,7 +84,7 @@ void load_or_unload(CS& cmd, CARD_LIST const* Scope, int flags)
     DIRECTORY dir(full_file_name);
     trace2("cmd_attach", full_file_name, dir.exists());
 
-    if(dir.exists()) {
+    if(dir.exists()) {itested();
       tach_dir(cmd, full_file_name, dir, Scope, flags, here);
     }else{
       if(flags){
@@ -140,25 +140,25 @@ DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
 /*--------------------------------------------------------------------------*/
 void tach_dir(CS& cmd, std::string const& dirname, DIRECTORY const& dir,
               CARD_LIST const* Scope, int flags, size_t here)
-{
+{itested();
   DIRECTORY::const_iterator i;
   std::vector<std::string> sos;
-  for(i=dir.begin(); i!=dir.end(); ++i) {
+  for(i=dir.begin(); i!=dir.end(); ++i) {itested();
     std::string fname = i->d_name;
     size_t s = fname.size();
     size_t slen = SUFFIX.size();
-    if(s<slen){
-    }else if(fname.substr(s-slen, s) == SUFFIX){
+    if(s<slen){itested();
+    }else if(fname.substr(s-slen, s) == SUFFIX){itested();
       sos.push_back(fname);
-    }else{
+    }else{itested();
     }
   }
   std::sort(sos.begin(), sos.end());
   std::vector<std::string>::const_iterator ni;
   error(bLOG, "Plugins in " + dirname + "\n");
-  for(ni=sos.begin(); ni!=sos.end(); ++ni) {
+  for(ni=sos.begin(); ni!=sos.end(); ++ni) {itested();
     error(bLOG, " .. " + *ni + "\n");
-    if(flags){
+    if(flags){itested();
       attach_file(cmd, dirname + "/" + *ni, Scope, flags, here);
     }else{ itested();
       detach_file(cmd, dirname + "/" + *ni, Scope, here);
@@ -173,8 +173,8 @@ void attach_file(CS& cmd, std::string const& file_name,
   // a name to look for
   // check if already loaded
   assert(flags);
-  if (void* handle = attach_list[file_name]) {
-    if (Scope->is_empty()) {
+  if (void* handle = attach_list[file_name]) { untested();
+    if (Scope->is_empty()) { untested();
       cmd.warn(bDANGER, here, "\"" + file_name + "\": already loaded, replacing");
       dlclose(handle);
       attach_list[file_name] = NULL;

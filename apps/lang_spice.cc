@@ -424,7 +424,7 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
 	    }else{
 	    }
 	    x->set_param_by_name(Name, value);
-	  }catch (Exception_No_Match&) {untested();
+	  }catch (Exception_No_Match&) {itested();
 	    cmd.warn(bDANGER, there, x->long_label() + ": bad parameter " + Name + " ignored");
 	  }
 	}

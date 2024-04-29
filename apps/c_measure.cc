@@ -36,7 +36,7 @@ public:
     Cmd >> assign_to >> '=' >> function >> '(';
     if (FUNCTION* f = measure_dispatcher[function]) {
       std::string value = f->eval(Cmd, Scope);
-      if (!Cmd.skip1b(')')) {
+      if (!Cmd.skip1b(')')) { untested();
 	Cmd.warn(bWARNING, "need )");
       }else{
       }
@@ -45,7 +45,7 @@ public:
       out << assign_to << '=' << value << '\n';
       PARAM_LIST* pl = Scope->params();
       pl->set(assign_to, value);
-    }else{
+    }else{ untested();
       throw Exception_No_Match(function);
     }
   }

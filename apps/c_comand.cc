@@ -34,11 +34,11 @@ public:
     switch (ENV::run_mode) {
     case rPRE_MAIN: unreachable(); break;
     case rPRESET:   untested(); break;  //BUG// this should close the file
-    case rINTERACTIVE:
+    case rINTERACTIVE:untested();
       itested();
       command("quit", Scope);
       break;
-    case rSCRIPT:
+    case rSCRIPT:untested();
       if (OPT::acct) {untested();
 	command("status", Scope);
       }else{untested();

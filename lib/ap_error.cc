@@ -61,7 +61,7 @@ CS & CS::warn(int badness, size_t spot, const std::string& message)
       IO::error.tab(40);
     }
     IO::error << "^ ? " + message + '\n';
-  }else{
+  }else{ untested();
   }
   return *this;
 }

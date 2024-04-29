@@ -82,7 +82,7 @@ public:
 private: // override virtual
   char		id_letter()const override	{return 'T';}
   std::string   value_name()const override	{return "#";}
-  std::string	dev_type()const override	{itested(); return "tline";}
+  std::string	dev_type()const override	{ return "tline";}
   int		max_nodes()const override	{return 4;}
   int		min_nodes()const override	{return 4;}
   int		matrix_nodes()const override	{return 4;}
@@ -129,7 +129,7 @@ inline double DEV_TRANSLINE::tr_involts()const
 }
 /*--------------------------------------------------------------------------*/
 inline double DEV_TRANSLINE::tr_involts_limited()const
-{
+{ untested();
   unreachable();
   return volts_limited(_n[IN1],_n[IN2]);
 }
@@ -253,7 +253,7 @@ bool COMMON_TRANSLINE::param_is_printable(int I)const
     for (int i = 0;  i < NUM_INIT_COND;  ++i) {untested();
       o << ic[i] << ' ';
     }
-  }else{
+  }else{ untested();
   }
 #endif
 }
@@ -286,7 +286,7 @@ std::string COMMON_TRANSLINE::param_name(int I, int j)const
     case 7:  return (j==1) ? "freq" : "";
     default: return "";
     }
-  }else{
+  }else{itested();
     return COMMON_COMPONENT::param_name(I, j);
   }
   //BUG// does not print IC
@@ -336,7 +336,7 @@ void COMMON_TRANSLINE::precalc_last(const CARD_LIST* Scope)
       }
     }else if (f.has_hard_value()) {
       real_td = len * nl / f;      
-    }else if (L.has_hard_value() && C.has_hard_value()) {untested();
+    }else if (L.has_hard_value() && C.has_hard_value()) {itested();
       real_td = len * sqrt(L * C);
     }else{untested();
       assert(real_td == NOT_INPUT);
@@ -351,8 +351,8 @@ void COMMON_TRANSLINE::precalc_last(const CARD_LIST* Scope)
 	error(bDANGER, "redundant specification both Z0 and LC, using Z0\n");
       }else{
       }
-    }else{untested();
-      if (L.has_hard_value() && C.has_hard_value()) {untested();
+    }else{itested();
+      if (L.has_hard_value() && C.has_hard_value()) {itested();
 	real_z0 = sqrt(L / C);
       }else{untested();
 	assert(_default_z0 == 50.);
@@ -440,7 +440,7 @@ void DEV_TRANSLINE::tr_regress()
 bool DEV_TRANSLINE::do_tr()
 {
   // code to deal with short lines goes here.
-  //if (_if0 != _if1  ||  _ir0 != _ir1) {
+  //if (_if0 != _if1  ||  _ir0 != _ir1) { untested();
   if (!conchk(_if0, _if1, OPT::abstol, OPT::reltol*.01)
        || !conchk(_ir0, _ir1, OPT::abstol, OPT::reltol*.01)) {
     q_load();

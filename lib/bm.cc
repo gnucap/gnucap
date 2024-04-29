@@ -195,7 +195,7 @@ bool EVAL_BM_ACTION_BASE::parse_params_obsolete_callback(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_ACTION_BASE::has_ext_args()const
-{
+{ untested();
   return  (_bandwidth.has_hard_value()
 	   || _delay.has_hard_value()
 	   || _phase.has_hard_value()

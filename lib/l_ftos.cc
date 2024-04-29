@@ -47,7 +47,7 @@ const int MAXLENGTH = 40;
 static double ftos_floor = 1e-99;
 /*--------------------------------------------------------------------------*/
 std::string to_string(unsigned n)
-{
+{itested();
   char s[100];
   sprintf(s, "%u", n);
   return s;
@@ -71,16 +71,13 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
 	// len = max length of new string
 	// fmt = how to format it
 {
-  if (len < 3) {
-    untested();
+  if (len < 3) { untested();
     len = 3;
   }
-  if (len > MAXLENGTH-6) {
-    untested();
+  if (len > MAXLENGTH-6) { untested();
     len = MAXLENGTH-6;
   }
-  if (fieldwidth > MAXLENGTH-1) {
-    untested();
+  if (fieldwidth > MAXLENGTH-1) { untested();
     fieldwidth = MAXLENGTH-1;
   }
   
@@ -109,17 +106,13 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
   }
   
 #ifdef HAS_NUMERIC_LIMITS
-  if (num == std::numeric_limits<double>::infinity()) {
-    untested();
+  if (num == std::numeric_limits<double>::infinity()) { untested();
     memcpy(str, " Over", 5);
-  }else if (num == -std::numeric_limits<double>::infinity()) {
-    untested();
+  }else if (num == -std::numeric_limits<double>::infinity()) { untested();
     memcpy(str, "-Over", 5);
-  }else if (num == std::numeric_limits<double>::quiet_NaN()) {
-    untested();
+  }else if (num == std::numeric_limits<double>::quiet_NaN()) { untested();
     memcpy(str, " NaN", 4);
-  }else if (num == std::numeric_limits<double>::signaling_NaN()) {
-    untested();
+  }else if (num == std::numeric_limits<double>::signaling_NaN()) { untested();
     memcpy(str, " NaN", 4);
   }else
 #endif
@@ -152,7 +145,7 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
 	if (num < 0.) {
 	  str[0] = '-';
 	  num = -num;
-	}else if (fmt & ftos_SIGN) {
+	}else if (fmt & ftos_SIGN) { untested();
 	  untested();
 	  str[0] = '+';
 	}else{
@@ -174,7 +167,7 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
 	if ((fmt&ftos_EXP && expo<-9) || expo>10 || expo<-16) {
 	  --len;			/* one less digit if 'e' notation */
 	}				/* and exp is 2 digits */
-	if (len < 3) {
+	if (len < 3) { untested();
 	  untested();
 	  ++len;
 	}
@@ -234,7 +227,7 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
 	  str[nnn] = static_cast<char>((nnn < fieldwidth) ? ' ' : '\0');
 	}
 	++nnn;
-      }else{
+      }else{ untested();
 	untested();
       }
     }

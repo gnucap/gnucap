@@ -34,7 +34,7 @@ double XPROBE::operator()(mod_t m, bool db)const
     }
     double rv = NOT_VALID;
     switch (m) {
-    case mtNONE:
+    case mtNONE:untested();
       unreachable();
       break;
     case mtMAG:

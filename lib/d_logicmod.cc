@@ -116,16 +116,16 @@ void MODEL_LOGIC::set_param_by_index(int i, std::string& value, int offset)
 bool MODEL_LOGIC::param_is_printable(int i)const
 {
   switch (MODEL_LOGIC::param_count() - 1 - i) {
-  case 0: 
-  case 1: 
-  case 2: 
-  case 3: 
-  case 4: 
-  case 5: 
-  case 6: 
-  case 7: 
-  case 8: 
-  case 9: 
+  case 0:
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  case 5:
+  case 6:
+  case 7:
+  case 8:
+  case 9:
   case 10:
   case 11:
   case 12: return true;
@@ -159,7 +159,7 @@ std::string MODEL_LOGIC::param_name(int i, int j)const
     return param_name(i);
   }else if (i >= MODEL_CARD::param_count()) {
     return "";
-  }else{
+  }else{ untested();
     return MODEL_CARD::param_name(i, j);
   }
 }

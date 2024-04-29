@@ -86,7 +86,7 @@ static void read_startup_files(void)
     }
   }
   //CMD::command("clear", &CARD_LIST::card_list);
-  if (language_dispatcher.empty()) {
+  if (language_dispatcher.empty()) { untested();
     // go on without language.
   }else if (!OPT::language) {
     OPT::language = language_dispatcher[DEFAULT_LANGUAGE];
@@ -174,15 +174,15 @@ static void process_cmd_line(int argc, const char *argv[])
 {
   for (int ii = 1;  ii < argc;  /*inside*/) {
     try {
-      if (strncmp(argv[ii], "--", 2) == 0) {
-	if (ii < argc) {
+      if (strncmp(argv[ii], "--", 2) == 0) { untested();
+	if (ii < argc) { untested();
 	  CS cmd(CS::_STRING, argv[ii++]+2); // command line
 	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
 	}else{untested();
 	}
-      }else if (strcasecmp(argv[ii], "-c") == 0) {
+      }else if (strcasecmp(argv[ii], "-c") == 0) { untested();
 	++ii;
-	if (ii < argc) {
+	if (ii < argc) { untested();
 	  CS cmd(CS::_STRING, argv[ii++]); // command line
 	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
 	}else{untested();
@@ -210,9 +210,9 @@ static void process_cmd_line(int argc, const char *argv[])
 	  throw Exception_Quit("");
 	}else{untested();
 	}
-      }else if (strcasecmp(argv[ii], "-a") == 0) {
+      }else if (strcasecmp(argv[ii], "-a") == 0) {itested();
 	++ii;
-	if (ii < argc) {
+	if (ii < argc) {itested();
 	  CMD::command(std::string("attach ") + argv[ii++], &CARD_LIST::card_list);
 	}else{untested();
 	}
@@ -265,30 +265,30 @@ int main(int argc, const char *argv[])
 	exit(0);
       }
 #endif
-    }else{
+    }else{ untested();
       finish();		/* error clean up (from longjmp()) */
       //CMD::command("quit", &CARD_LIST::card_list);
       exit(0);
     }
   }
-  {
+  {itested();
     SET_RUN_MODE xx(rINTERACTIVE);
     CS cmd(CS::_STDIN);
-    for (;;) {
-      if (!sigsetjmp(env.p, true)) {
-	try {
-	  if (OPT::language) {
+    for (;;) {itested();
+      if (!sigsetjmp(env.p, true)) {itested();
+	try {itested();
+	  if (OPT::language) {itested();
 	    OPT::language->parse_top_item(cmd, &CARD_LIST::card_list);
 	  }else{untested();
 	    CMD::cmdproc(cmd.get_line(I_PROMPT), &CARD_LIST::card_list);
 	  }
-	}catch (Exception_End_Of_Input& e) {
+	}catch (Exception_End_Of_Input& e) {itested();
 	  error(bDANGER, e.message() + '\n');
 	  finish();
 	  //CMD::command("quit", &CARD_LIST::card_list);
 	  //exit(0);
 	  break;
-	}catch (Exception& e) {
+	}catch (Exception& e) { untested();
 	  error(bDANGER, e.message() + '\n');
 	  finish();
 	}

@@ -29,7 +29,7 @@
  * "only" wins over non-only.  local (_method_u) wins over opt.
  */
 //                     OPT::method    _method_u
-METHOD STORAGE::method_select[meNUM_METHODS][meNUM_METHODS] = {
+METHOD STORAGE::method_select[meNUM_METHODS][meNUM_METHODS] = { //
   /*vv OPT vv*/
   //local>>>EULER,EULERONLY,TRAP,TRAPONLY,GEAR2,GEAR2ONLY,TRAPGEAR,TRAPEULER
   /*meUNKNOWN*/
@@ -143,7 +143,7 @@ FPOLY1 differentiate(const FPOLY1* q, const FPOLY1* i, double* time, METHOD meth
     double dt = time[0] - time[1];
     assert(dt > 0.);
     switch (method) {
-    case mTRAPGEAR:
+    case mTRAPGEAR:untested();
       incomplete();
       // fall through
     case mGEAR:
@@ -152,7 +152,7 @@ FPOLY1 differentiate(const FPOLY1* q, const FPOLY1* i, double* time, METHOD meth
 		    (3./2.) * (q[0].f0 - q[1].f0) / dt 
 		    - (1./2.) * (q[1].f0 - q[2].f0) / (time[1] - time[2]),
 		    q[0].f1 * (3./2.) / dt);
-    case mTRAPEULER:
+    case mTRAPEULER:untested();
       incomplete();
       // fall through
     case mEULER:

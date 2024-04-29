@@ -52,7 +52,7 @@ CKT_BASE::~CKT_BASE()
   trace1("", _probes);
   assert(_probes==0);
 
-  if(!_attribs){ itested();
+  if(!_attribs){
   }else if (_attribs->count(this) > 0) {
     _attribs->erase(this, this);
   }else{
@@ -137,7 +137,7 @@ double CKT_BASE::ac_probe_num(const std::string& what)const
     xp = ac_probe_ext(what);
     if (!xp.exists()) {
       // Still didn't find anything.  Print "??".
-    }else{untested();
+    }else{itested();
       // The second attempt worked.
     }
   }

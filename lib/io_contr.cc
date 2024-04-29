@@ -47,7 +47,7 @@ void initio(OMSTREAM& Where)
   }else{
   }
 #if 0
-  if (Whence) {
+  if (Whence) { untested();
     char buf[BUFLEN];
     if (!fgets(buf, BUFLEN, Whence))	/* if the first line deciphers to   */
       return;				/* the cipher tag, it is encrypted  */
@@ -65,17 +65,16 @@ void initio(OMSTREAM& Where)
 /* decipher: un-encrypt a line of text in place
  */
 void decipher(char *buf)
-{
-  untested();
-  if (IO::incipher) {
-    for ( ; isprint(buf[1]); buf++ ) {
+{ untested();
+  if (IO::incipher) { untested();
+    for ( ; isprint(buf[1]); buf++ ) { untested();
       int fixed = static_cast<int>(buf[1]) - static_cast<int>(buf[0]);
       while (!isascii(fixed) || !isprint(fixed))
 	fixed += (0x7f-0x20);
       buf[0] = static_cast<char>(fixed);
     }
     buf[0] = '\0';
-  }else{
+  }else{ untested();
   }
   
 }
@@ -85,8 +84,7 @@ void decipher(char *buf)
  */
 void outreset(void)
 {
-  if (to_pipe) {
-    untested();
+  if (to_pipe) { untested();
     pclose(to_pipe);
     to_pipe = NULL;
   }else{
@@ -134,7 +132,7 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
 	(*out).detach(IO::mstdout);
       }else{untested();
       }
-    }else if (cmd.umatch(">")) {itested();
+    }else if (cmd.umatch(">")) {
       // open a file for write or append
       const char *rwaflag;
       rwaflag = (cmd.umatch(">")) ? "a" : "w";
@@ -142,7 +140,7 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
       (*out).attach(fn);
       IO::formaat = ftos_EXP;
       (*out).setformat(ftos_EXP);
-      if (!echo) {itested();
+      if (!echo) {
 	(*out).detach(IO::mstdout);
       }else{untested();
       }
@@ -160,12 +158,12 @@ static FILE *file_open(
 	const char *ext,
 	const char *rwaflag,
 	FILE *fileptr)
-{itested();
+{
   xclose(&fileptr);
   fileptr = xopen(cmd,ext,rwaflag);
   if (!fileptr) {itested();
     throw Exception_File_Open("");
-  }else{itested();
+  }else{
   }
   return fileptr;
 }

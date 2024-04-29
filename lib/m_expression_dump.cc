@@ -65,7 +65,7 @@ void Expression::dump(std::ostream& out)const
 	    been_here = true;
 	  }
 	  tmp = t->full_name() + tmp;
-	}else{
+	}else{ untested();
 	  unreachable();
 	}
       }
@@ -126,7 +126,7 @@ void Expression::dump(std::ostream& out)const
       Token* n = new Token_SYMBOL(tmp.str());
       locals.push_back(n);
       stack.push_back(n);
-    }else{
+    }else{ untested();
       unreachable();
     }
   }

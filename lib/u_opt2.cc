@@ -296,10 +296,10 @@ void OPT::print(OMSTREAM& o)
   o << "  defw="   << defw;
   o << "  defad="  << defad;
   o << "  defas="  << defas;
-  if (diodeflags) {
+  if (diodeflags) { untested();
     o << "  diodeflags="  << octal(diodeflags);
   }
-  if (mosflags) {
+  if (mosflags) { untested();
     o << "  mosflags="    << octal(mosflags);
   }
   o << "\n\n";

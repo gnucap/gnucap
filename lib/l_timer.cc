@@ -68,8 +68,7 @@ TIMER& TIMER::reset()
 TIMER& TIMER::start()
 {
   assert(!_running);
-  if (_running) {
-    untested();
+  if (_running) { untested();
     stop();
   }
   _ref = run_time();
@@ -90,14 +89,13 @@ TIMER& TIMER::stop()
 }
 /*--------------------------------------------------------------------------*/
 TIMER& TIMER::check()
-{
+{ untested();
   itested();
-  if (_running) {
+  if (_running) { untested();
     itested();
     stop();
     start();
-  }else{
-    untested();
+  }else{ untested();
   }
   return *this;
 }

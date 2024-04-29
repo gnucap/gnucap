@@ -54,7 +54,7 @@ public:
 	  CMD::cmdproc(file.get_line(""), Scope);
 	}
       }
-    }catch (Exception_File_Open& e) {
+    }catch (Exception_File_Open& e) {itested();
       cmd.warn(bDANGER, here, e.message() + '\n');
     }catch (Exception_End_Of_Input& e) {
       // done
@@ -81,21 +81,21 @@ public:
     
     if (cmd.more()) {			/* a file name .. open it */
       const char *access = "w";
-      while (cmd.match1('>')) {
+      while (cmd.match1('>')) { untested();
 	access = "a";
 	cmd.skip();
 	cmd.skipbl();
       }
       FILE* newfile = xopen(cmd,"",access);
-      if (newfile) {
+      if (newfile) { untested();
         filestack.push_back(newfile);
 	mlog.attach(newfile);
-      }else{
+      }else{ untested();
       }
     }else{				/* empty command -- close a file */
-      if (filestack.empty()) {
+      if (filestack.empty()) { untested();
 	error(bWARNING, "no files open\n");
-      }else{
+      }else{ untested();
 	FILE* oldfile = filestack.back();
 	filestack.pop_back();
 	mlog.detach(oldfile);
@@ -124,22 +124,22 @@ public:
     
     if (cmd.more()) {			/* a file name .. open it */
       const char* access = "w";
-      while (cmd.match1('>')) {
+      while (cmd.match1('>')) { untested();
 	access = "a";
 	cmd.skip();
 	cmd.skipbl();
       }
       FILE* newfile = xopen(cmd,"",access);
-      if (newfile) {
+      if (newfile) { untested();
 	filestack.push_back(newfile);
 	mout.attach(newfile);
 	IO::mstdout.attach(newfile);
-      }else{
+      }else{ untested();
       }
     }else{				/* empty command -- close a file */
-      if (filestack.empty()) {
+      if (filestack.empty()) { untested();
 	error(bWARNING, "no files open\n");
-      }else{
+      }else{ untested();
 	FILE* oldfile = filestack.back();
 	filestack.pop_back();
 	mout.detach(oldfile);

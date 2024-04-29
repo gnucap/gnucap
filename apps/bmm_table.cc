@@ -100,7 +100,7 @@ bool EVAL_BM_TABLE::operator==(const COMMON_COMPONENT& x)const
 {
   const EVAL_BM_TABLE* p = dynamic_cast<const EVAL_BM_TABLE*>(&x);
   bool rv = p && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     untested();
   }else{
   }
@@ -108,7 +108,7 @@ bool EVAL_BM_TABLE::operator==(const COMMON_COMPONENT& x)const
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_TABLE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
-{
+{ untested();
   assert(lang);
   o << modelname();
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
@@ -183,10 +183,10 @@ bool MODEL_TABLE::parse_params_obsolete_callback(CS& cmd)
 	}
       }
     }
-    if (got_opening_paren && !cmd.skip1b(')')) {
+    if (got_opening_paren && !cmd.skip1b(')')) { untested();
       untested();
       cmd.warn(bWARNING, "need )");
-    }else if (!got_opening_paren && cmd.skip1b(')')) {
+    }else if (!got_opening_paren && cmd.skip1b(')')) { untested();
       untested();
       cmd.warn(bWARNING, here, "need (");
     }
@@ -225,7 +225,7 @@ void MODEL_TABLE::precalc_first()
 	   iterator p = _table.begin();  p != _table.end();  ++p) {
       p->first.e_val(0, par_scope);
       p->second.e_val(0, par_scope);
-      if (last > p->first) {
+      if (last > p->first) { untested();
 	untested();
 	error(bWARNING, "%s: table is out of order: (%g, %g)\n",
 	      long_label().c_str(), last, double(p->first));

@@ -101,7 +101,7 @@ OMSTREAM & OMSTREAM::operator<<(const char *str)
 {
   assert(str);
 
-  if (_mask & 1) {
+  if (_mask & 1) { untested();
     unreachable(); 
     _mask &= ~1;
     error(bDANGER, "internal error: out to stdin\n");
@@ -160,7 +160,7 @@ OMSTREAM & OMSTREAM::operator<<(const char *str)
  */
 OMSTREAM & OMSTREAM::operator<<(char chr)
 {
-  if (_mask & 1) {
+  if (_mask & 1) { untested();
     unreachable(); 
     _mask &= ~1;
     error(bDANGER, "internal error: out to stdin\n");
@@ -171,7 +171,7 @@ OMSTREAM & OMSTREAM::operator<<(char chr)
   static int cchr = 'w';		/* starting encryption seed	    */
 					/* arbitrary printable character    */
   bool count;
-  if (chr=='\t') {itested();
+  if (chr=='\t') {
     chr = ' ';
     count = false;
   }else{
@@ -197,7 +197,7 @@ OMSTREAM & OMSTREAM::operator<<(char chr)
 	fflush(_stream[ii]);
       }else if (count) {
 	++_cpos[ii];
-      }else{itested();
+      }else{
       }
       
       if (chr=='\n') {

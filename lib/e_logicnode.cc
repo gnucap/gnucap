@@ -157,11 +157,11 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
 	    dont_set_quality("continuing good rise");
 	  }
 	  break;
-	case lvFALLING:
+	case lvFALLING:untested();
 	  untested();
 	  set_bad_quality("positive glitch in fall");
 	  break;
-	case lvSTABLE1:
+	case lvSTABLE1:untested();
 	  untested();
 	  set_bad_quality("negative glitch in 1");
 	  break;
@@ -172,7 +172,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
 	set_lv(lvRISING);
       }else if (diff < 0) {	/* falling */
 	switch (lv()) {
-	case lvSTABLE0:
+	case lvSTABLE0:untested();
 	  untested();
 	  set_bad_quality("positive glitch in 0");
 	  break;
@@ -189,7 +189,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
 	case lvSTABLE1:
 	  dont_set_quality("begin good fall");
 	  break;
-	case lvUNKNOWN:
+	case lvUNKNOWN:untested();
 	  untested();
 	  set_bad_quality("initial fall");
 	  break;
@@ -254,8 +254,7 @@ double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)
 
   if (_sim->_time0 <= (final_time()-risefall)) {
     return start;
-  }else if (_sim->_time0 >= final_time()) {
-    untested();
+  }else if (_sim->_time0 >= final_time()) { untested();
     return end;
   }else{
     return end - ((end-start) * (final_time()-_sim->_time0) / risefall);

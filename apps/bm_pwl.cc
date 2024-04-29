@@ -86,7 +86,7 @@ bool EVAL_BM_PWL::operator==(const COMMON_COMPONENT& x)const
     && _raw_table == p->_raw_table
     && _num_table == p->_num_table
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     untested();
   }
   return rv;
@@ -184,7 +184,7 @@ bool EVAL_BM_PWL::parse_numlist(CS& cmd)
       break;
     }else{
       cmd >> p.second; // value
-      if (cmd.stuck(&here)) {
+      if (cmd.stuck(&here)) { untested();
 	// ran out, but already have half of the pair
 	// back up one, hoping somebody else knows what to do with it
 	cmd.reset(start_of_pair);
@@ -195,7 +195,7 @@ bool EVAL_BM_PWL::parse_numlist(CS& cmd)
     }
   }
   if (cmd.gotit(start)) {
-  }else{
+  }else{ untested();
     untested();
   }
   return cmd.gotit(start);

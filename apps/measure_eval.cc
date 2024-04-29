@@ -28,7 +28,7 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class MEASURE : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> arg;
     Cmd >> arg;
     arg.e_val(BIGBIG, Scope);

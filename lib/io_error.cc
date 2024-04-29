@@ -43,7 +43,7 @@ Exception_CS::Exception_CS(const std::string& Message, const CS& cmd)
   :Exception(Message),
    _cmd(cmd.fullstring()),
    _cursor(cmd.cursor())
-{itested();
+{
 }
 /*--------------------------------------------------------------------------*/
 const std::string Exception_CS::message()const

@@ -58,7 +58,7 @@ void PARAM_LIST::print(OMSTREAM& o, LANGUAGE* lang)const
   for (const_iterator i = _pl.begin(); i != _pl.end(); ++i) {
     if (i->second.has_hard_value()) {
       print_pair(o, lang, i->first, i->second);
-    }else{
+    }else{ untested();
     }
   }
 }
@@ -116,10 +116,10 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 	_pl[i->first] = i->second.e_val(NOT_INPUT, scope);
       }else if(j->second.has_hard_value()) {untested();
 	j->second = i->second.e_val(j->second, scope);
-      }else{
+      }else{ untested();
 	// this is not needed.
       }
-    }else{
+    }else{ untested();
     }
   }
 }

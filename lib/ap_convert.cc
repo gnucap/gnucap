@@ -88,7 +88,7 @@ std::string CS::ctos(const std::string& term,
     char the_begin_quote = begin_quote[which_quote];
     char the_end_quote = end_quote[which_quote];
     for (;;) {
-      if (!ns_more()) {itested();
+      if (!ns_more()) {
 	end_string = cursor();
 	warn(bDANGER, std::string("need ") + the_end_quote);
 	break;
@@ -173,7 +173,7 @@ int CS::ctoi()
 
   skipbl();
   size_t here = cursor();
-  if (skip1("-")) {
+  if (skip1("-")) { untested();
     sign = -1;
   }else{
     skip1("+");
@@ -308,7 +308,7 @@ double CS::ctof()
     }else{				// plain m (milli)
       power *= 1e-3;
     }
-  }else if (skip1("M")) {
+  }else if (skip1("M")) {itested();
     assert(OPT::units == uSI);
     power *= 1e6;
   }else if (skip1("m")) {
@@ -324,7 +324,7 @@ double CS::ctof()
     power *= ((OPT::units == uSI) ? (1e15) : 1e-12);
   }else if (skip1("fF")) {
     power *= 1e-15;
-  }else if (skip1("aA")) {
+  }else if (skip1("aA")) { untested();
     power *= 1e-18;
   }else if (skip1("kK")) {
     power *= 1e3;

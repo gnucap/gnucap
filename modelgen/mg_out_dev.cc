@@ -30,7 +30,7 @@ static void make_dev_dispatcher(std::ofstream& out, const Device& d)
     "    d0(&device_dispatcher, \"";
   if (d.id_letter() != "") {
     out << d.id_letter() << '|';
-  }else{
+  }else{ untested();
   }
   out << d.parse_name() << "\", &p0);\n"
     "}\n"

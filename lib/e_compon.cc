@@ -63,7 +63,7 @@ void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
   assert(to);
   if (c == *to) {
     // The new and old are the same object.  Do nothing.
-  }else if (!c) {
+  }else if (!c) {itested();
     // There is no new common.  probably a simple element
     detach_common(to);
   }else if (!*to) {
@@ -336,16 +336,16 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 // It is called during expansion only.
 
 int COMMON_COMPONENT::Set_param_by_name(std::string Name, std::string Value)
-{untested();
+{itested();
   assert(!has_parse_params_obsolete_callback());
   
   //BUG// ugly linear search
-  for (int i = COMMON_COMPONENT::param_count() - 1;  i >= 0;  --i) {untested();
-    for (int j = 0;  COMMON_COMPONENT::param_name(i,j) != "";  ++j) {untested();
-      if (Umatch(Name, COMMON_COMPONENT::param_name(i,j) + ' ')) {untested();
+  for (int i = COMMON_COMPONENT::param_count() - 1;  i >= 0;  --i) {itested();
+    for (int j = 0;  COMMON_COMPONENT::param_name(i,j) != "";  ++j) {itested();
+      if (Umatch(Name, COMMON_COMPONENT::param_name(i,j) + ' ')) {itested();
 	COMMON_COMPONENT::set_param_by_index(i, Value, 0/*offset*/);
 	return i; //success
-      }else{untested();
+      }else{itested();
 	//keep looking
       }
     }
@@ -656,7 +656,7 @@ void COMPONENT::set_param_by_index(int i, std::string& Value, int offset)
     attach_common(c);
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
-    case 0:itested(); _mfactor = Value; break;
+    case 0: _mfactor = Value; break;
     default:untested(); CARD::set_param_by_index(i, Value, offset);
     }
   }
@@ -692,9 +692,9 @@ std::string COMPONENT::param_name(int i, int j)const
   if (has_common()) {untested();
     return common()->param_name(i,j);
   }else{
-    if (j == 0) {
+    if (j == 0) { untested();
       return param_name(i);
-    }else if (i >= CARD::param_count()) {itested();
+    }else if (i >= CARD::param_count()) {
       return "";
     }else{untested();
       return CARD::param_name(i,j);

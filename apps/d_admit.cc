@@ -66,7 +66,7 @@ protected: // override virtual
   void	   ac_load()override		{ac_load_passive();}
   COMPLEX  ac_involts()const override	{untested();return ac_outvolts();}
 
-  std::string port_name(int i)const override {
+  std::string port_name(int i)const override { untested();
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};

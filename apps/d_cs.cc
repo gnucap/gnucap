@@ -62,7 +62,7 @@ private: // override virtual
   COMPLEX  ac_involts()const override	{untested();return 0.;}
   COMPLEX  ac_amps()const override	{return _acg;}
 
-  std::string port_name(int i)const override {
+  std::string port_name(int i)const override {itested();
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"p", "n"};
@@ -120,7 +120,7 @@ bool DEV_CS::do_tr()
     q_load();
     _m0.c0 = _y[0].f1;
     assert(_m0.c1 == 0.);
-  }else{
+  }else{ untested();
     assert(_y[0].x  == 0.);
     assert(_y[0].f0 == 0.);
     assert(_y[0].f1 == value());

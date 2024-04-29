@@ -419,7 +419,7 @@ void make_model_param_is_printable(std::ofstream& out, const Model& m)
 	out << (**p).print_test() << ");\n";
 	//}else if ((**p).default_val() == "NA" && (**p).final_default().empty()) {untested();
 	//out << (**p).code_name() << ".has_hard_value());\n"; //" != NA);\n";
-      }else if ((**p).default_val() == "NA") {
+      }else if ((**p).default_val() == "NA") { untested();
 	out << (**p).code_name() << ".has_hard_value());\n";
       }else{
 	out << "true);\n";
@@ -435,7 +435,7 @@ void make_model_param_is_printable(std::ofstream& out, const Model& m)
        p != m.size_dependent().raw().end();
        ++p) {
     out << "  case " << i++ << ":  return (";
-    if (!((**p).print_test().empty())) {
+    if (!((**p).print_test().empty())) { untested();
       out << (**p).print_test() << ");\n";
     }else if ((**p).default_val() == "NA") {
       out << (**p).code_name() << ".has_value());\n";
@@ -455,7 +455,7 @@ void make_model_param_is_printable(std::ofstream& out, const Model& m)
     out << "  case " << i++ << ":  return (";
     if (!((**p).print_test().empty())) {
       out << (**p).print_test() << ");\n";
-      //}else if ((**p).default_val() == "NA" && (**p).final_default().empty()) {
+      //}else if ((**p).default_val() == "NA" && (**p).final_default().empty()) { untested();
       //out << (**p).code_name() << ".has_hard_value());\n"; //" != NA);\n";
     }else if ((**p).default_val() == "NA") {
       out << (**p).code_name() << ".has_hard_value());\n";
@@ -568,7 +568,7 @@ void make_model_param_name_or_alias(std::ofstream& out, const Model& m)
        p != m.size_dependent().raw().end();
        ++p) {
     if (!((**p).user_name().empty())) {
-      if (!((**p).alt_name().empty())) {
+      if (!((**p).alt_name().empty())) { untested();
 	out << "    case " << i++ << ":  return \""  << to_lower((**p).alt_name()) << "\";\n";
 	out << "    case " << i++ << ":  return \"w" << to_lower((**p).alt_name()) << "\";\n";
 	out << "    case " << i++ << ":  return \"l" << to_lower((**p).alt_name()) << "\";\n";

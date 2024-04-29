@@ -45,7 +45,7 @@ public:
 
     if (!w) {
       Cmd.reset(here);
-    }else{
+    }else{ untested();
     }
 
     here = Cmd.cursor();
@@ -68,7 +68,7 @@ public:
 
     if (!w) {
       w = find_wave(probe_name);
-    }else{
+    }else{ untested();
     }
     
     if (w) {
@@ -102,7 +102,7 @@ public:
 	    WAVE::const_iterator upper = i;
 	    double position = (start_val - lower->second) / (upper->second - lower->second);
 	    try_start_time = lower->first + position * (upper->first - lower->first);
-	  }else if (in_order(double(start_val), double(stop_val), val)) {
+	  }else if (in_order(double(start_val), double(stop_val), val)) { untested();
 	    // not accurate, was never IN_RANGE
 	    stat = DONE;
 	    double position = (start_val - lower->second) / (i->second - lower->second);
@@ -114,7 +114,7 @@ public:
 	  }
 	  break;
 	case IN_RANGE:
-	  if (in_order(val, double(start_val), double(stop_val))) {
+	  if (in_order(val, double(start_val), double(stop_val))) { untested();
 	    // false start
 	    stat = READY;
 	  }else if (in_order(double(start_val), val, double(stop_val))) {
@@ -128,7 +128,7 @@ public:
 	    // something is wrong
 	  }
 	  break;
-	case DONE:
+	case DONE:untested();
 	  break;
 	};
 	lower = i;
@@ -141,10 +141,10 @@ public:
 	}else{
 	  return to_string((stop_val-start_val)/(stop_time-start_time));
 	}
-      }else{
+      }else{ untested();
 	return to_string(BIGBIG);
       }
-    }else{
+    }else{ untested();
       throw Exception_No_Match(probe_name);
     }
   }

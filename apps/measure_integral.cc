@@ -38,7 +38,7 @@ public:
     Cmd >> probe_name;
     WAVE* w = find_wave(probe_name);
 
-    if (!w) {
+    if (!w) { untested();
       Cmd.reset(here);
     }else{
     }
@@ -54,7 +54,7 @@ public:
 	;
     }while (Cmd.more() && !Cmd.stuck(&here));
 
-    if (!w) {
+    if (!w) { untested();
       w = find_wave(probe_name);
     }else{
     }
@@ -73,7 +73,7 @@ public:
 	lower = i;
       }
       return to_string(area);
-    }else{
+    }else{ untested();
       throw Exception_No_Match(probe_name);
     }
   }

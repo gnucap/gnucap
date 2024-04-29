@@ -143,7 +143,7 @@ CARD* DEV_SUBCKT_PROTO::clone_instance()const
 #else
   DEV_SUBCKT* new_instance = dynamic_cast<DEV_SUBCKT*>(DEV_SUBCKT::clone());
   assert(new_instance);
-  for (int ii = 0;  ii < net_nodes();  ++ii) {
+  for (int ii = 0;  ii < net_nodes();  ++ii) { untested();
     new_instance->_nodes[ii] = node_t();
   }
   new_instance->_net_nodes = 0;
