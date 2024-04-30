@@ -104,7 +104,7 @@ bool EVAL_BM_EXP::operator==(const COMMON_COMPONENT& x)const
     && _tau2== p->_tau2
     && _period== p->_period
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     untested();
   }
   return rv;
@@ -193,12 +193,12 @@ bool EVAL_BM_EXP::parse_numlist(CS& cmd)
     cmd >> val;
     if (cmd.stuck(&here)) {
       break;
-    }else{
+    }else{ untested();
       *i = val;
       untested();
     }
   }
-  if (cmd.gotit(start)) {
+  if (cmd.gotit(start)) { untested();
     untested();
   }
   return cmd.gotit(start);

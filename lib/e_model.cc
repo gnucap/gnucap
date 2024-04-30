@@ -32,7 +32,7 @@ MODEL_CARD::MODEL_CARD(const COMPONENT* p)
 {
   if (_sim) {
     _sim->uninit();
-  }else{
+  }else{ untested();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -80,12 +80,12 @@ std::string MODEL_CARD::param_name(int i)const
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_CARD::param_name(int i, int j)const
-{
-  if (j == 0) {
+{ untested();
+  if (j == 0) { untested();
     return param_name(i);
-  }else if (i >= CARD::param_count()) {
+  }else if (i >= CARD::param_count()) { untested();
     return "";
-  }else{
+  }else{ untested();
     return MODEL_CARD::param_name(i, j);
   }
 }

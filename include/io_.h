@@ -69,8 +69,8 @@ public:
     }
   }
   OMSTREAM& operator=(const OMSTREAM& x)  {_mask = x._mask; return *this;}
-  OMSTREAM& attach(const OMSTREAM& x)	{itested();_mask |= x._mask; return *this;}
-  OMSTREAM& attach(FILE* f)		{itested();return attach(OMSTREAM(f));}
+  OMSTREAM& attach(const OMSTREAM& x)	{_mask |= x._mask; return *this;}
+  OMSTREAM& attach(FILE* f)		{return attach(OMSTREAM(f));}
   OMSTREAM& detach(const OMSTREAM& x)	{_mask &= ~(x._mask); return *this;}
   OMSTREAM& detach(FILE* f)		{itested();return detach(OMSTREAM(f));}
 

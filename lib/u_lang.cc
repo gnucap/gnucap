@@ -133,7 +133,7 @@ CARD* LANGUAGE::parse_item(CS& cmd, CARD* c)
   if (c->is_device()){
     assert(dynamic_cast<COMPONENT*>(c));
     return parse_instance(cmd, prechecked_cast<COMPONENT*>(c));
-  }else if (BASE_SUBCKT* s = dynamic_cast<BASE_SUBCKT*>(c)) {
+  }else if (BASE_SUBCKT* s = dynamic_cast<BASE_SUBCKT*>(c)) { untested();
     return parse_module(cmd, s);
   }else if (MODEL_CARD* m = dynamic_cast<MODEL_CARD*>(c)) {untested();
     return parse_paramset(cmd, m);

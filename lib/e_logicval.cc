@@ -24,7 +24,7 @@
 //testing=none
 #include "e_logicval.h"
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::or_truth[lvNUM_STATES][lvNUM_STATES] = {
+const _LOGICVAL LOGICVAL::or_truth[lvNUM_STATES][lvNUM_STATES] = { //
   {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
   {lvRISING,  lvRISING,  lvRISING,  lvSTABLE1, lvRISING},
   {lvFALLING, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
@@ -32,7 +32,7 @@ const _LOGICVAL LOGICVAL::or_truth[lvNUM_STATES][lvNUM_STATES] = {
   {lvUNKNOWN, lvRISING,  lvUNKNOWN, lvSTABLE1, lvUNKNOWN}
 };
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::xor_truth[lvNUM_STATES][lvNUM_STATES] = {
+const _LOGICVAL LOGICVAL::xor_truth[lvNUM_STATES][lvNUM_STATES] = { //
   {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
   {lvRISING,  lvFALLING, lvRISING,  lvFALLING, lvUNKNOWN},
   {lvFALLING, lvRISING,  lvFALLING, lvRISING,  lvUNKNOWN},
@@ -40,7 +40,7 @@ const _LOGICVAL LOGICVAL::xor_truth[lvNUM_STATES][lvNUM_STATES] = {
   {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN}
 };
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::and_truth[lvNUM_STATES][lvNUM_STATES] = {
+const _LOGICVAL LOGICVAL::and_truth[lvNUM_STATES][lvNUM_STATES] = { //
   {lvSTABLE0, lvSTABLE0, lvSTABLE0, lvSTABLE0, lvSTABLE0},
   {lvSTABLE0, lvRISING,  lvFALLING, lvRISING,  lvUNKNOWN},
   {lvSTABLE0, lvFALLING, lvFALLING, lvFALLING, lvFALLING},
@@ -48,11 +48,11 @@ const _LOGICVAL LOGICVAL::and_truth[lvNUM_STATES][lvNUM_STATES] = {
   {lvSTABLE0, lvUNKNOWN, lvFALLING, lvUNKNOWN, lvUNKNOWN}
 };
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::not_truth[lvNUM_STATES] = {
-  lvSTABLE1, lvFALLING, lvRISING,  lvSTABLE0, lvUNKNOWN  
+const _LOGICVAL LOGICVAL::not_truth[lvNUM_STATES] = { //
+  lvSTABLE1, lvFALLING, lvRISING,  lvSTABLE0, lvUNKNOWN
 };
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::prop_truth[lvNUM_STATES][lvNUM_STATES] = {
+const _LOGICVAL LOGICVAL::prop_truth[lvNUM_STATES][lvNUM_STATES] = { //
   {lvSTABLE0, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
   {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
   {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},

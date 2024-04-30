@@ -40,7 +40,7 @@ public:
 
     if (!w) {
       Cmd.reset(here);
-    }else{
+    }else{ untested();
     }
 
     here = Cmd.cursor();
@@ -55,13 +55,13 @@ public:
 
     if (!w) {
       w = find_wave(probe_name);
-    }else{
+    }else{ untested();
     }
     
     if (w) {
       x.e_val(BIGBIG, Scope);
       return to_string((derivative) ? (w->v_out(x).f1) : (w->v_out(x).f0));
-    }else{
+    }else{ untested();
       throw Exception_No_Match(probe_name);
     }
   }

@@ -95,7 +95,7 @@ bool EVAL_BM_POSY::operator==(const COMMON_COMPONENT& x)const
     && _even == p->_even
     && _table == p->_table
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     untested();
   }
   return rv;
@@ -157,7 +157,7 @@ void EVAL_BM_POSY::tr_eval(ELEMENT* d)const
     assert(x == 0);
     for (std::vector<std::pair<PARAMETER<double>,PARAMETER<double> > >::
 	   const_iterator p = _table.begin();  p != _table.end();  ++p) {
-      if (p->first == 0.) {
+      if (p->first == 0.) { untested();
 	f0 += 1;
 	untested();
       }
@@ -169,23 +169,23 @@ void EVAL_BM_POSY::tr_eval(ELEMENT* d)const
   if (_odd && x_raw < 0) {
     f0 = -f0;
   }
-  if (_even && x_raw < 0) {
+  if (_even && x_raw < 0) { untested();
     f1 = -f1;
     untested();
   }
   trace3("after", x, f0, f1);
 
-  if (_abs && f0 < 0) {
+  if (_abs && f0 < 0) { untested();
     f0 = -f0;
     f1 = -f1;
     untested();
   }
 
-  if (f0 > _max) {
+  if (f0 > _max) { untested();
     f0 = _max;
     f1 = 0;
     untested();
-  }else if (f0 < _min) {
+  }else if (f0 < _min) { untested();
     f0 = _min;
     f1 = 0;
     untested();
@@ -220,7 +220,7 @@ bool EVAL_BM_POSY::parse_numlist(CS& cmd)
     }
   }
   if (cmd.gotit(start)) {
-  }else{
+  }else{ untested();
     untested();
   }
   return cmd.gotit(start);

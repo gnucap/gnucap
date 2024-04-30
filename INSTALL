@@ -6,13 +6,13 @@ that provides a subset with a similar interface.
 
 In most cases, you can do:
 =======
-./configure
-make
-sudo make install
+$ ./configure
+$ make
+$ make install # (requires write permissions to /usr/local, maybe use sudo)
 =======
 
 The scripts are recursive, so you can cd to any of the subdirectories
-and do the same.
+and run make there, once configure is done.
 
 By default, it installs in /usr/local .  To change it, you can specify a prefix:
 
@@ -21,7 +21,32 @@ By default, it installs in /usr/local .  To change it, you can specify a prefix:
 If you have already compiled it, you do not need to recompile to
 change the install directory.  Just ./configure and make install.
 
-Other targets:
+== Dynamic library search path
+
+When a using a non-default prefix for installation, you may have to help the
+dynamic loader to find the library during startup. Try the following.
+
+$ export LD_LIBRARY_PATH=/some/other/prefix/lib
+$ gnucap
+[..]
+gnucap> _
+
+On some systems not even /usr/local/lib (where libgnucap.so is installed by
+default) is searched for libraries. On these systems, an environment variable
+may be used to run gnucap anyway.
+
+$ export LD_LIBRARY_PATH=/usr/local/lib
+
+Sometimes, /usr/local/lib is a system library path, but the cache is dirty.
+On Linux ldconfig may help.
+
+$ ldconfig -p |grep gnucap
+[nothing]
+# ldconfig (with root permissions, e.g. sudo)
+$ ldconfig -p |grep gnucap
+[..] /usr/local/lib/libgnucap.so [..]
+
+== Other targets:
 
 "make clean" removes object files.
 

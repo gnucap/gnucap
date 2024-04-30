@@ -81,7 +81,7 @@ void Name_String::parse(CS& File)
 }
 /*--------------------------------------------------------------------------*/
 void Angled_String::parse(CS& File)
-{
+{ untested();
   File.skipbl();
   _data = File.ctos("", "<", ">");
   File.skipbl();
@@ -95,13 +95,13 @@ void Quoted_String::parse(CS& File)
   _data = "";
   // TODO: extend ctos and use it.
   for (;;) {
-    if (File.match1('\\')) { itested();
+    if (File.match1('\\')) {itested();
       _data += File.ctoc();
-      if (File.match1(quote)) { itested();
+      if (File.match1(quote)) {itested();
 	_data += File.ctoc();
-      }else if (File.match1('\\')) { itested();
+      }else if (File.match1('\\')) {itested();
 	_data += File.ctoc();
-      }else{ itested();
+      }else{itested();
       }
     }else if (File.skip1(quote)) {
       break;

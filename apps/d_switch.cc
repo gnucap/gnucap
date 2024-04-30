@@ -144,7 +144,7 @@ private: // override virtual
     static std::string names[] = {"p", "n"};
     return names[i];
   }
-  std::string current_port_name(int i)const override {
+  std::string current_port_name(int i)const override { untested();
     assert(i >= 0);
     assert(i < 1);
     static std::string names[] = {"in"};
@@ -206,7 +206,7 @@ bool COMMON_SWITCH::param_is_printable(int i)const
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_SWITCH::param_name(int i)const
-{
+{ untested();
   switch (COMMON_SWITCH::param_count() - 1 - i) {
   case 0:  return "ic";
   default: return COMMON_COMPONENT::param_name(i);
@@ -357,7 +357,7 @@ std::string MODEL_SWITCH::param_name(int i, int j)const
     return param_name(i);
   }else if (i >= MODEL_CARD::param_count()) {
     return "";
-  }else{
+  }else{ untested();
     return MODEL_CARD::param_name(i, j);
   }
 }

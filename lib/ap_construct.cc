@@ -44,7 +44,7 @@ CS::CS(CS::STDIN)
    _end_match(0),
    _ok(true),
    _line_number(0)
-{
+{itested();
 }
 /*--------------------------------------------------------------------------*/
 CS::CS(CS::INC_FILE, const std::string& name)
@@ -174,49 +174,49 @@ CS& CS::get_line(const std::string& prompt)
  * Also, actually do logging, echo, etc.
  */
 char *getcmd(const char *prompt, char *buffer, int buflen)
-{
+{ untested();
   assert(prompt);
   assert(buffer);
-  if (isatty(fileno(stdin))) {
+  if (isatty(fileno(stdin))) { untested();
     // stdin is keyboard
 #if defined(HAVE_LIBREADLINE)
-    if (OPT::edit) {
+    if (OPT::edit) { untested();
       char* line_read = readline(prompt);
       if (!line_read) {itested();
 	throw Exception_End_Of_Input("EOF on stdin");
-      }else{
+      }else{ untested();
       }
       // readline gets a new buffer every time, so copy it to where we want it
       char* end_of_line = (char*)memccpy(buffer, line_read, 0, static_cast<size_t>(buflen-1));
-      if (!end_of_line) {
+      if (!end_of_line) { untested();
 	buffer[buflen-1] = '\0';
-      }else{
+      }else{ untested();
 	*end_of_line = '\0';
       }
       free(line_read);
       
-      if (*buffer) {
+      if (*buffer) { untested();
 	add_history(buffer);
-      }else{
+      }else{ untested();
       }
     }else
 #endif
-      {
+      { untested();
 	IO::mstdout << prompt;	/* prompt & flush buffer */
 	if (!fgets(buffer, buflen, stdin)) {untested();	/* read line */
 	  throw Exception_End_Of_Input("EOF on stdin");
-	}else{
+	}else{ untested();
 	}
       }
     (IO::mstdout - mout) << '\r';	/* reset col counter */
     trim(buffer);
     (mlog + mout) << buffer << '\n';
     return buffer;
-  }else{
+  }else{ untested();
     // stdin is file
     if (!fgets(buffer, buflen, stdin)) {itested();	/* read line */
       throw Exception_End_Of_Input("EOF on stdin");
-    }else{
+    }else{ untested();
     }
     trim(buffer);
     (mlog + mout) << buffer << '\n';

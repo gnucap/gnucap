@@ -26,8 +26,8 @@
 extern int errorcount;
 /*--------------------------------------------------------------------------*/
 static void tab(size_t n)
-{
-  for (unsigned i=0; i<n; ++i) {
+{ untested();
+  for (unsigned i=0; i<n; ++i) { untested();
     std::cout << ' ';
   }
 }
@@ -40,33 +40,33 @@ static void tab(size_t n)
 // losing the error messages
 #if !defined(__WIN32__)
 CS & CS::warn(int badness, size_t spot, const std::string& message)
-{
-  if (badness >= 0) {
+{ untested();
+  if (badness >= 0) { untested();
     ++errorcount;
 
     size_t linestart = spot;
-    for (;;) {
+    for (;;) { untested();
       if (linestart == 0) {untested();
 	break;
-      }else if (_cmd[linestart] == '\n') {
+      }else if (_cmd[linestart] == '\n') { untested();
 	++linestart;
 	break;
-      }else{
+      }else{ untested();
 	--linestart;
       }
     }
 
     int lineno = 1;
-    for (size_t i=0; i<linestart; ++i) {
-      if (_cmd[i] == '\n') {
+    for (size_t i=0; i<linestart; ++i) { untested();
+      if (_cmd[i] == '\n') { untested();
 	++lineno;
-      }else{
+      }else{ untested();
       }
     }
 
     std::cout << _name << ':' << lineno << ":\n";
-    if (spot-linestart < 20) {
-      for (size_t i=linestart; _cmd[i] && _cmd[i]!='\n'; ++i) {
+    if (spot-linestart < 20) { untested();
+      for (size_t i=linestart; _cmd[i] && _cmd[i]!='\n'; ++i) { untested();
 	std::cout << _cmd[i];
       }
       std::cout << '\n';

@@ -245,7 +245,7 @@ void DEV_CPOLY_G::set_parameters(const std::string& Label, CARD *Owner,
     }else{
       // use the default node list, already set
     }      
-  }else{
+  }else{ untested();
     assert(_n_ports == n_states-1);
     assert(_old_values);
     assert(net_nodes() == n_nodes);

@@ -790,21 +790,21 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
  */
 template <class T>
 void BSMATRIX<T>::fbsubt(T* v) const
-{untested();
+{itested();
   assert(_lownode);
   assert(v);
 
   // forward substitution
-  for (int ii = 1; ii <= size(); ++ii) {untested();
-    for (int jj = _lownode[ii]; jj < ii; ++jj) {untested();
+  for (int ii = 1; ii <= size(); ++ii) {itested();
+    for (int jj = _lownode[ii]; jj < ii; ++jj) {itested();
       v[ii] -= u(jj,ii) * v [jj];
     }
   }
 
   // back substitution
-  for (int jj = size(); jj > 1; --jj) {untested();
+  for (int jj = size(); jj > 1; --jj) {itested();
     v[jj] /= d(jj,jj);
-    for (int ii = _lownode[jj]; ii < jj; ++ii) {untested();
+    for (int ii = _lownode[jj]; ii < jj; ++ii) {itested();
       v[ii] -= l(jj,ii) * v[jj];
     }
   }

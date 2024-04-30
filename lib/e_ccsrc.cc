@@ -72,7 +72,7 @@ void CCSRC_BASE::set_parameters_cc(const std::string& Label, CARD *Owner,
 			       COMMON_COMPONENT *Common, double Value,
 			       const node_t& N0, const node_t& N1,
 			       ELEMENT* Input)
-{
+{ untested();
   node_t nodes[] = {N0, N1};
   COMPONENT::set_parameters(Label, Owner, Common, Value, 0, 0, 2, nodes);
   _input = Input;

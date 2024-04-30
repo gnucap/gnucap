@@ -46,7 +46,7 @@ NODE::NODE(const NODE& p)
    _user_number(p._user_number)
    //_flat_number(p._flat_number)
    //_matrix_number(INVALID_NODE)
-{
+{ untested();
   unreachable();
 }
 /*--------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ NODE::NODE(const NODE* p)
    _user_number(p->_user_number)
    //_flat_number(p->_flat_number)
    //_matrix_number(INVALID_NODE)
-{
+{ untested();
   unreachable();
 }
 /*--------------------------------------------------------------------------*/
@@ -146,7 +146,7 @@ double NODE::tr_probe_num(const std::string& x)const
     double z1 = tr_probe_num("zero ");
     double z2 = tr_probe_num("zero ");
     return z1/z2;
-  }else{untested();
+  }else{itested();
     return CKT_BASE::tr_probe_num(x);
   }
 }

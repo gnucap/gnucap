@@ -138,7 +138,7 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
 	  c = bm_dispatcher.clone("eval_bm_value");
 	}else{
 	}
-      }else{
+      }else{ untested();
 	// no more
       }
     }else{
@@ -155,7 +155,7 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
 
     if (c) {
       c->parse_common_obsolete_callback(cmd); //BUG//callback
-    }else{
+    }else{ untested();
       c = &func_zero;
     }
     assert(c);

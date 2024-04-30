@@ -110,7 +110,7 @@ bool EVAL_BM_SFFM::operator==(const COMMON_COMPONENT& x)const
     && _zero == p->_zero
     && _peak == p->_peak
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     untested();
   }
   return rv;
@@ -203,12 +203,12 @@ bool EVAL_BM_SFFM::parse_numlist(CS& cmd)
     cmd >> val;
     if (cmd.stuck(&here)) {
       break;
-    }else{
+    }else{ untested();
       untested();
       *i = val;
     }
   }
-  if (cmd.gotit(start)) {
+  if (cmd.gotit(start)) { untested();
     untested();
   }
   return cmd.gotit(start);

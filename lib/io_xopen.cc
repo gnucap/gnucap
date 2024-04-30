@@ -70,7 +70,7 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
 	fname[i++] = c;			/* if it doesn't already have one,  */
 	if (c == '.') {		/* as determined by a '.'	    */
 	  defalt = false;		/* not before the directory	    */
-	}else if (strchr(ENDDIR,c)) {	/* separator-terminator character   */
+	}else if (strchr(ENDDIR,c)) {itested();	/* separator-terminator character   */
 	  itested();
 	  defalt = true;		/* '\' or '/' for msdos,	    */
 	}
@@ -86,7 +86,7 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
   }
   
   trim(fname);
-  if (strlen(fname)==0) {
+  if (strlen(fname)==0) { untested();
     return NULL;
   }
 

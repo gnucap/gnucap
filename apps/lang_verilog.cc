@@ -636,7 +636,7 @@ class CMD_PARAMSET : public CMD {
 	assert(!new_card->owner());
 	lang_verilog.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
-      }else{
+      }else{ untested();
 	delete(cl);
 	cmd.warn(bDANGER, here, "paramset: base has incorrect type");
       }

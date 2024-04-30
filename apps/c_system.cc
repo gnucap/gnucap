@@ -35,13 +35,13 @@ class CMD_EDIT : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {itested();
     std::string editor(OS::getenv("EDITOR"));
-    if (editor == "") {
+    if (editor == "") { untested();
       throw Exception("no editor defined\n"
 	    "You need to set the EDITOR environment variable.");
-    }else{
+    }else{ untested();
       if (cmd.more()) {itested();
 	OS::system(editor + ' ' + cmd.tail());
-      }else{
+      }else{ untested();
 	std::string temp_file("/tmp/gnucap" + to_string(unsigned(time(NULL))));
 	command("save " + temp_file + " quiet", Scope);
 	OS::system(editor + ' ' + temp_file);
@@ -58,7 +58,7 @@ public:
   void do_it(CS& cmd, CARD_LIST*)override {itested();
     if (cmd.more()) {itested();
       OS::system(cmd.tail());
-    }else{
+    }else{ untested();
       OS::system(SHELL);
     }
   }
@@ -68,9 +68,9 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "system|!", &p2);
 class CMD_CHDIR : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST*)override {itested();
-    if (cmd.more()) {
+    if (cmd.more()) { untested();
       OS::chdir(cmd.ctos(""));
-    }else{
+    }else{ untested();
     }
     IO::mstdout << OS::getcwd() << '\n';
   }

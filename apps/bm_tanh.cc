@@ -75,7 +75,7 @@ bool EVAL_BM_TANH::operator==(const COMMON_COMPONENT& x)const
     && _gain == p->_gain
     && _limit == p->_limit
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     untested();
   }
   return rv;

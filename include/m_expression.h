@@ -118,8 +118,8 @@ protected:
 public:
   explicit Token_ARRAY(std::string Name, Base* L=NULL)
     : Token(Name, L) {}
-  explicit Token_ARRAY(const Token_ARRAY& P) : Token(P) {itested();}
-  Token* clone()const override{itested();return new Token_ARRAY(*this);}
+  explicit Token_ARRAY(const Token_ARRAY& P) : Token(P) {}
+  Token* clone()const override{return new Token_ARRAY(*this);}
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
@@ -130,8 +130,8 @@ protected:
 public:
   explicit Token_PARLIST(std::string Name, Base* L=NULL)
     : Token(Name, L) {}
-  explicit Token_PARLIST(const Token_PARLIST& P) : Token(P) {itested();}
-  Token* clone()const override{itested();return new Token_PARLIST(*this);}
+  explicit Token_PARLIST(const Token_PARLIST& P) : Token(P) {}
+  Token* clone()const override{return new Token_PARLIST(*this);}
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/

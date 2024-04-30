@@ -51,7 +51,7 @@ private: // override virtual
   double   tr_probe_num(const std::string&)const override;
   XPROBE   ac_probe_ext(const std::string&)const override;
 
-  std::string port_name(int i)const override {
+  std::string port_name(int i)const override { untested();
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"outp", "outn", "inp", "inn"};
@@ -61,26 +61,26 @@ private: // override virtual
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 void DEV::precalc_last()
-{
+{ untested();
   ELEMENT::precalc_last();
   set_constant(true);
   set_converged();
 }
 /*--------------------------------------------------------------------------*/
 double DEV::tr_probe_num(const std::string& x)const
-{
-  if (Umatch(x, "gain ")) {
+{ untested();
+  if (Umatch(x, "gain ")) { untested();
     return tr_outvolts() / tr_involts();
-  }else{
+  }else{ untested();
     return ELEMENT::tr_probe_num(x);
   }
 }
 /*--------------------------------------------------------------------------*/
 XPROBE DEV::ac_probe_ext(const std::string& x)const
-{
-  if (Umatch(x, "gain ")) {
+{ untested();
+  if (Umatch(x, "gain ")) { untested();
     return XPROBE(ac_outvolts() / ac_involts());
-  }else{
+  }else{ untested();
     return ELEMENT::ac_probe_ext(x);
   }
 }

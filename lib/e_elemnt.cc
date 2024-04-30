@@ -102,7 +102,7 @@ int ELEMENT::set_param_by_name(std::string Name, std::string Value)
 /*--------------------------------------------------------------------------*/
 void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
 {
-  if (has_common()) {untested();
+  if (has_common()) {itested();
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     c->set_param_by_index(i, Value, offset);
@@ -111,7 +111,7 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
     switch (ELEMENT::param_count() - 1 - i) {
     case 0:
       _value = Value; break;
-    default: itested();
+    default:
       COMPONENT::set_param_by_index(i, Value, offset);
     }
   }
@@ -148,12 +148,12 @@ std::string ELEMENT::param_name(int i, int j)const
 {
   if (has_common()) {untested();
     return common()->param_name(i,j);
-  }else{ itested();
-    if (j == 0) { itested();
+  }else{
+    if (j == 0) {
       return param_name(i);
     }else if (i >= ELEMENT::param_count()) {untested();
       return "";
-    }else{itested();
+    }else{
       return COMPONENT::param_name(i,j);
     }
   }
@@ -425,9 +425,9 @@ double ELEMENT::tr_probe_num(const std::string& x)const
     return _m0.x;
   }else if (Umatch(x, "y ")) {
     return _m0.c1;
-  }else if (Umatch(x, "is{tamp} ")) {
+  }else if (Umatch(x, "is{tamp} ")) { untested();
     return _m0.f0();
-  }else if (Umatch(x, "iof{fset} ")) {itested();
+  }else if (Umatch(x, "iof{fset} ")) {
     return _m0.c0;
   }else if (Umatch(x, "ip{assive} ")) {itested();
     return _m0.c1 * tr_involts();

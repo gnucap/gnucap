@@ -28,7 +28,7 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
-  static DISPATCHER_BASE* dispatchers[] = {
+  static DISPATCHER_BASE* dispatchers[] = { //
     &help_dispatcher,
     &language_dispatcher,
     &command_dispatcher,

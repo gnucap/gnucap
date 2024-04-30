@@ -61,8 +61,7 @@ void fft(COMPLEX* x, int n, int inv)
     for (int i = 0;  i < n;  ++i) {
       x[i] /= n;
     }
-  }else{
-    untested();
+  }else{ untested();
   }
 }
 /*--------------------------------------------------------------------------*/

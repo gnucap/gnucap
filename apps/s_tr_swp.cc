@@ -37,7 +37,7 @@
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 namespace TR {
-  static std::string step_cause[] = {
+  static std::string step_cause[] = { //
     "impossible",
     "user requested",
     "event queue",
@@ -197,7 +197,7 @@ void TRANSIENT::first()
   ::status.review.start();
 
   //_eq.Clear();					/* empty the queue */
-  while (!_sim->_eq.empty()) {untested();
+  while (!_sim->_eq.empty()) {itested();
     _sim->_eq.pop();
   }
   _stepno = 0;

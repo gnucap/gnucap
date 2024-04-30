@@ -103,7 +103,7 @@ bool EVAL_BM_FIT::operator==(const COMMON_COMPONENT& x)const
     && _smooth == p->_smooth
     && _table == p->_table
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {
+  if (rv) { untested();
     untested();
   }
   return rv;
@@ -191,7 +191,7 @@ bool EVAL_BM_FIT::parse_numlist(CS& cmd)
     }
   }
   if (cmd.gotit(start)) {
-  }else{
+  }else{ untested();
     untested();
   }
   return cmd.gotit(start);

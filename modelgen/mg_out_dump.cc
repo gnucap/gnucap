@@ -24,12 +24,12 @@
 #include "mg_out.h"
 /*--------------------------------------------------------------------------*/
 static void make_header(std::ofstream& out, const File& in)
-{
+{ untested();
   out << in.head();
 }
 /*--------------------------------------------------------------------------*/
 static void make_tail(std::ofstream& out)
-{
+{ untested();
   out <<
     "/*--------------------------------------"
     "------------------------------------*/\n"
@@ -39,32 +39,32 @@ static void make_tail(std::ofstream& out)
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 void make_dump_file(const File& in)
-{
+{ untested();
   std::string dump_name = in.name();
   { // chop suffix .model
     std::string::size_type loc = dump_name.rfind(".model");
-    if (loc == std::string::npos) {
+    if (loc == std::string::npos) { untested();
       untested();
       loc = dump_name.rfind(".vams");
-    }else{
+    }else{ untested();
     }
-    if (loc != std::string::npos) {
+    if (loc != std::string::npos) { untested();
       dump_name.erase(loc);
-    }else{
+    }else{ untested();
       untested();
     }
   }
   { // chop prefix path
     std::string::size_type loc = dump_name.find_last_of(ENDDIR);
-    if (loc != std::string::npos) {
+    if (loc != std::string::npos) { untested();
       dump_name.erase(0, loc+1);
-    }else{
+    }else{ untested();
     }
   }
 
   // open file
   std::ofstream out((dump_name+".dump").c_str());
-  if (!out) {
+  if (!out) { untested();
     untested();
     os_error(dump_name);
   }

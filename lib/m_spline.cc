@@ -48,7 +48,7 @@ SPLINE::SPLINE(const std::vector<DPAIR>& table,
 
   // set up h --------------------------------------------------
   double* h = new double[_n+1];
-  for (int i=0; i<_n; ++i) {
+  for (int i=0; i<_n; ++i) { untested();
     h[i] = _x[i+1] - _x[i];
     if (h[i] == 0.) {untested();
       throw Exception("duplicate points in spline: " 
@@ -63,8 +63,7 @@ SPLINE::SPLINE(const std::vector<DPAIR>& table,
   case 2: construct_order_2(h, d0, dn); break;
   case 1: construct_order_1(h, d0, dn); break;
   case 0: untested(); /* nothing to do */   break;
-  default:
-    untested();
+  default: untested();
     error(bDANGER, "illegal spline order (%d), must be 0, 1, 2, 3\n", _order);
     break;
   }
@@ -107,8 +106,7 @@ SPLINE::SPLINE(const std::vector<std::pair<PARAMETER<double>, PARAMETER<double> 
   case 2: construct_order_2(h, d0, dn); break;
   case 1: construct_order_1(h, d0, dn); break;
   case 0: untested(); /* nothing to do */   break;
-  default:
-    untested();
+  default: untested();
     error(bDANGER, "illegal spline order (%d), must be 0, 1, 2, 3\n", _order);
     break;
   }
@@ -289,15 +287,14 @@ FPOLY1 SPLINE::at(double x)const
       double f1 = _f1[i];
       return FPOLY1(x, f0, f1);
     }
-    case 0:
-      untested();
+    case 0: untested();
       return FPOLY1(x, _f0[i], 0.);
-    default:
-      untested();
+    default: untested();
       assert(!"spline problem");
       return FPOLY1();
     }
-    untested();
+    { untested();
+    }
     //trace4("", x, _x[i], dx, i);
     //trace4("", _f0[i],   _f1[i],   _f2[i],   _f3[i]);
     //trace4("", _f0[i+1], _f1[i+1], _f2[i+1], _f3[i+1]);

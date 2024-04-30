@@ -61,17 +61,17 @@ void Parameter::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Parameter::print(std::ostream& out)const
-{
+{ untested();
   out << "\n"
     "      " << type() << " " << code_name() << " \"" << comment() << "\"\n        "
     "name=\"" << user_name() << "\" "
     "alt_name=\"" << alt_name() << "\" "
     "default=\"" << default_val() << "\" "
     "offset=\"" << offset() << "\"\n        ";
-  if (positive()) {
+  if (positive()) { untested();
     out << "positive ";
   }
-  if (octal()) {
+  if (octal()) { untested();
     out << "octal ";
   }
   out <<
@@ -172,9 +172,9 @@ void Parameter_Block::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Parameter_Block::print(std::ostream& out)const
-{
+{ untested();
   out << "{\n";
-  if (unnamed_value() != "") {
+  if (unnamed_value() != "") { untested();
     out << "    unnamed " << unnamed_value() << ";\n";
   }
   out <<
@@ -193,7 +193,7 @@ void Eval::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Eval::print(std::ostream& out)const
-{
+{ untested();
   out << "  eval " << name() << " {"
       << code() <<
     "  }\n";
@@ -207,7 +207,7 @@ void Function::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Function::print(std::ostream& out)const
-{
+{ untested();
   out << "  function " << name() << " {"
       << code() <<
     "  }\n";
@@ -242,24 +242,24 @@ void Element::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Element::print(std::ostream& out)const
-{
+{ untested();
   out << "    " << dev_type() << " " << name() << " " << ports();
-  if (eval() != "") {
+  if (eval() != "") { untested();
     out << " eval=\"" << eval() << "\"";
   }
-  if (value() != "") {
+  if (value() != "") { untested();
     out << " value=\"" << value() << "\"";
   }
-  if (args() != "") {
+  if (args() != "") { untested();
     out << " args=\"" << args() << "\"";
   }
-  if (omit() != "") {
+  if (omit() != "") { untested();
     out << " omit=\"" << omit() << "\"";
   }
-  if (reverse() != "") {
+  if (reverse() != "") { untested();
     out << " reverse=\"" << reverse() << "\"";
   }
-  if (state() != "") {
+  if (state() != "") { untested();
     out << " state=\"" << state() << "\"";
   }
   out << ";\n";
@@ -308,9 +308,9 @@ void Circuit::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Circuit::print(std::ostream& out)const
-{
+{ untested();
   out << " {\n";
-  if (sync()) {
+  if (sync()) { untested();
     out << "  sync;\n";
   }
   out <<
@@ -357,9 +357,9 @@ void Model::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Model::print(std::ostream& out)const
-{
+{ untested();
   out << "model " << name() << " {\n";
-  if (hide_base()) {
+  if (hide_base()) { untested();
     out << "  hide_base;\n";
   }
   out << 
@@ -411,7 +411,7 @@ void Device::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Device::print(std::ostream& out)const
-{
+{ untested();
   out <<
     "device " << name() << " {\n"
     "  parse_name " << parse_name() << ";\n"
@@ -475,11 +475,11 @@ void Port::parse(CS& file)
 }
 /*--------------------------------------------------------------------------*/
 void Port::print(std::ostream& out)const
-{
-  if (short_to() != "" || short_if() != "") {
+{ untested();
+  if (short_to() != "" || short_if() != "") { untested();
     out << name() << " short_to=\"" << short_to() 
 	<< "\" short_if=\"" << short_if() << "\";\n";
-  }else{
+  }else{ untested();
     out << name() << "; ";
   }
 }

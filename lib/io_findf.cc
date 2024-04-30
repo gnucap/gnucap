@@ -52,7 +52,7 @@ INTERFACE std::string findfile(const std::string& filename, const std::string& p
     }
     if (!target.empty() &&  !strchr(ENDDIR,p_ptr[-1])) {
       target += *ENDDIR;		// append '/' if needed
-    }else{
+    }else{ untested();
     }
     
     target += filename;

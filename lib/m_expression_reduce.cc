@@ -67,7 +67,7 @@ Token* Token_BINOP::op(const Token* T1, const Token* T2)const
     b = (T1->data())->logic_or(T2->data());
   }else if (name() == "&&") {
     b = (T1->data())->logic_and(T2->data());
-  }else{
+  }else{ untested();
     // op (name()) not one of those listed
     unreachable();
     return NULL;
@@ -93,7 +93,7 @@ Token* Token_UNARY::op(const Token* T1)const
     b = (T1->data())->plus();
   }else if (name() == "!") {
     b = (T1->data())->logic_not();
-  }else{
+  }else{ untested();
     // op (name()) not one of those listed
     unreachable();
     return NULL;
@@ -258,7 +258,7 @@ void Token_TERNARY::stack_op(Expression* E)const
 }
 /*--------------------------------------------------------------------------*/
 void Token_BINOP::stack_op(Expression* E)const
-{ itested();
+{
   assert(E);
   // replace 2 tokens (binop) with 1 (result)
   Token* t1 = E->back();
@@ -372,11 +372,11 @@ void Token_CONSTANT::stack_op(Expression* E)const
   trace2("stackop constant", name(), dynamic_cast<Float const*>(data()));
 
   assert(E);
-  if(auto f = dynamic_cast<Float const*>(data())){
+  if(auto f = dynamic_cast<Float const*>(data())){itested();
     E->push_back(new Token_CONSTANT(name(), new Float(*f)));
   }else if(auto s = dynamic_cast<String const*>(data())){
     E->push_back(new Token_CONSTANT(name(), new String(*s)));
-  }else{
+  }else{ untested();
     assert(false);
     unreachable();
   }

@@ -132,7 +132,7 @@ void SIM::alarm(void)
   _out.setfloatwidth(OPT::numdgt, OPT::numdgt+6);
   for (PROBELIST::const_iterator
 	 p=alarmlist().begin();  p!=alarmlist().end();  ++p) {
-    if (!p->in_range()) {
+    if (!p->in_range()) { untested();
       _out << p->label() << '=' << p->value() << '\n';
     }else{
     }

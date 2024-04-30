@@ -85,7 +85,7 @@ public:
       CKT_BASE* c = i->second;
       if (c) {
 	IO::mstdout << c->status();
-      }else{
+      }else{ untested();
       }
     }
     IO::mstdout

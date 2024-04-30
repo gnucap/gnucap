@@ -39,10 +39,10 @@ std::list<CARDSTASH> faultstack;
  */
 void faultbranch(CARD* brh, double value)
 {
-  if (!brh->is_device()) {
+  if (!brh->is_device()) { untested();
     untested();
     error(bWARNING, brh->long_label() + ": not a device, can't fault:\n");
-  }else if (brh->subckt()) {
+  }else if (brh->subckt()) { untested();
     untested();
     error(bWARNING, brh->long_label() + " has subckt, can't fault:\n");
   }else{
@@ -62,22 +62,22 @@ double sweep_fix(CS& cmd, const CARD *brh)
 {
   double start = cmd.ctof();
   double value = start;
-  if (swp_steps[swp_nest] != 0   &&   cmd.is_float()) {
+  if (swp_steps[swp_nest] != 0   &&   cmd.is_float()) { untested();
     untested();
     double last = cmd.ctof();
     double offset = static_cast<double>(swp_count[swp_nest]) 
       / static_cast<double>(swp_steps[swp_nest]);
-    if (swp_type[swp_nest]=='L') {
+    if (swp_type[swp_nest]=='L') { untested();
       untested();
-      if (start == 0.) {
+      if (start == 0.) { untested();
 	untested();
 	throw Exception("log sweep can't pass zero");
 	value = 0;
-      }else{
+      }else{ untested();
 	untested();
 	value = start * pow( (last/start), offset );
       }
-    }else{
+    }else{ untested();
       untested();
       value = start + (last-start) * offset;
     }
@@ -119,7 +119,7 @@ void modify_fault(CS& cmd, WHATTODO command, CARD_LIST* scope)
       ++ci;
     }
     cmd.reset(cmax);
-    if (mark == cmax) {
+    if (mark == cmax) { untested();
       untested();
       cmd.check(bWARNING, "what's this?");
       cmd.skiparg();

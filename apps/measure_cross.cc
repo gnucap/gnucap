@@ -98,12 +98,12 @@ public:
 	    lower = i;
 	  }
 	  break;
-	case DONE:
+	case DONE:untested();
 	  break;
 	};
       }
       return to_string(x_time);
-    }else{
+    }else{ untested();
       throw Exception_No_Match(probe_name);
     }
   }

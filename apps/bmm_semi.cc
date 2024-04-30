@@ -271,7 +271,7 @@ void EVAL_BM_SEMI_CAPACITOR::expand(const COMPONENT* d)
   EVAL_BM_SEMI_BASE::expand(d);
 
   const MODEL_SEMI_CAPACITOR* m = dynamic_cast<const MODEL_SEMI_CAPACITOR*>(model());
-  if (!m) {
+  if (!m) { untested();
     unreachable();
     throw Exception_Model_Type_Mismatch(d->long_label(), modelname(), "semi-capacitor (C)");
   }else{
@@ -319,7 +319,7 @@ void EVAL_BM_SEMI_RESISTOR::expand(const COMPONENT* d)
   EVAL_BM_SEMI_BASE::expand(d);
 
   const MODEL_SEMI_RESISTOR* m = dynamic_cast<const MODEL_SEMI_RESISTOR*>(model());
-  if (!m) {
+  if (!m) { untested();
     unreachable();
     throw Exception_Model_Type_Mismatch(d->long_label(), modelname(), "semi-resistor (R)");
   }else{

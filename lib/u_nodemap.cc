@@ -39,16 +39,13 @@ NODE_MAP::NODE_MAP()
  */
 NODE_MAP::NODE_MAP(const NODE_MAP& p)
   : _node_map(p._node_map)
-{
+{ untested();
   unreachable();
-  for (iterator i = _node_map.begin(); i != _node_map.end(); ++i) {
-    untested();
-    if (i->first != "0") {
-      untested();
+  for (iterator i = _node_map.begin(); i != _node_map.end(); ++i) { untested();
+    if (i->first != "0") { untested();
       assert(i->second);
       i->second = new NODE(i->second);
-    }else{
-      untested();
+    }else{ untested();
     }
   }
 }
