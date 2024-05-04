@@ -439,15 +439,15 @@ CARD_LIST& CARD_LIST::ac_load()
 /* noise_num: collect noise contributions
  */
 double CARD_LIST::noise_num(std::string const& what) const
-{ untested();
+{itested();
   double ret = 0.;
-  for (const_iterator ci=begin(); ci!=end(); ++ci) { untested();
+  for (const_iterator ci=begin(); ci!=end(); ++ci) {itested();
     trace_func_comp();
-    if ((**ci).is_device()) { untested();
+    if ((**ci).is_device()) {itested();
       double pwr = (**ci).noise_num(what);
       trace2("CARD_LIST::noise_num", (*ci)->long_label(), pwr);
       ret += pwr;
-    }else{ untested();
+    }else{itested();
     }
   }
   trace1("CARD_LIST::noise_num total", ret);

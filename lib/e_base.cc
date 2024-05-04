@@ -35,7 +35,7 @@ static char fix_case(char c)
 /*--------------------------------------------------------------------------*/
 double CKT_BASE::tr_probe_num(const std::string&)const {return NOT_VALID;}
 XPROBE CKT_BASE::ac_probe_ext(const std::string&)const {return XPROBE(NOT_VALID, mtNONE);}
-double CKT_BASE::noise_num(const std::string&)const { untested(); return 0.;}
+double CKT_BASE::noise_num(const std::string&)const {itested(); return 0.;}
 /*--------------------------------------------------------------------------*/
 INDIRECT<ATTRIB_LIST_p>* CKT_BASE::_attribs;
 SIM_DATA* CKT_BASE::_sim = NULL; 

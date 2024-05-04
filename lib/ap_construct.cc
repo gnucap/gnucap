@@ -174,28 +174,28 @@ CS& CS::get_line(const std::string& prompt)
  * Also, actually do logging, echo, etc.
  */
 char *getcmd(const char *prompt, char *buffer, int buflen)
-{ untested();
+{itested();
   assert(prompt);
   assert(buffer);
-  if (isatty(fileno(stdin))) { untested();
+  if (isatty(fileno(stdin))) {itested();
     // stdin is keyboard
 #if defined(HAVE_LIBREADLINE)
-    if (OPT::edit) { untested();
+    if (OPT::edit) {itested();
       char* line_read = readline(prompt);
       if (!line_read) {itested();
 	throw Exception_End_Of_Input("EOF on stdin");
-      }else{ untested();
+      }else{itested();
       }
       // readline gets a new buffer every time, so copy it to where we want it
       char* end_of_line = (char*)memccpy(buffer, line_read, 0, static_cast<size_t>(buflen-1));
       if (!end_of_line) { untested();
 	buffer[buflen-1] = '\0';
-      }else{ untested();
+      }else{itested();
 	*end_of_line = '\0';
       }
       free(line_read);
       
-      if (*buffer) { untested();
+      if (*buffer) {itested();
 	add_history(buffer);
       }else{ untested();
       }
