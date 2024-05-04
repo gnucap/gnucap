@@ -67,6 +67,7 @@ public: // probes
 	  void	      inc_probes()const	{++_probes;}
 	  void	      dec_probes()const	{assert(_probes>0); --_probes;}
 	  bool	      has_probes()const	{return _probes > 0;}
+  virtual double      noise_num(const std::string&)const;
   static  double      probe(const CKT_BASE*,const std::string&);
   static  WAVE*	      find_wave(const std::string& probe_name);
   //--------------------------------------------------------------------

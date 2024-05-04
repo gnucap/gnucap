@@ -74,8 +74,8 @@ struct INTERFACE SIM_DATA {
   BSMATRIX<double> _lu;	/* decomposed matrix for DC & tran */
   BSMATRIX<COMPLEX> _acx;/* raw & decomposed matrix for AC */
   std::priority_queue<double, std::vector<double>, std::greater<double> > _eq; /*event queue*/
-  std::vector<CARD*> _loadq;
-  std::vector<CARD*> _acceptq;
+  std::deque<CARD*> _loadq;
+  std::deque<CARD*> _acceptq;
   std::deque<CARD*>  _evalq1; /* evaluate queues -- alternate between */
   std::deque<CARD*>  _evalq2; /* build one while other is processed */
   std::deque<CARD*>  _late_evalq; /* eval after everything else */
