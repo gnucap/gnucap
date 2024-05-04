@@ -436,6 +436,24 @@ CARD_LIST& CARD_LIST::ac_load()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+/* noise_num: collect noise contributions
+ */
+double CARD_LIST::noise_num(std::string const& what) const
+{ untested();
+  double ret = 0.;
+  for (const_iterator ci=begin(); ci!=end(); ++ci) { untested();
+    trace_func_comp();
+    if ((**ci).is_device()) { untested();
+      double pwr = (**ci).noise_num(what);
+      trace2("CARD_LIST::noise_num", (*ci)->long_label(), pwr);
+      ret += pwr;
+    }else{ untested();
+    }
+  }
+  trace1("CARD_LIST::noise_num total", ret);
+  return ret;
+}
+/*--------------------------------------------------------------------------*/
 void CARD_LIST::attach_params(PARAM_LIST const* p, const CARD_LIST* scope)
 {
   if (p) {
