@@ -60,7 +60,7 @@ bool EVAL_BM_VALUE::is_trivial()const
 void EVAL_BM_VALUE::precalc_first(const CARD_LIST* Scope)
 {
   if (modelname() != "") {
-    _value = modelname();
+    (_value = "") = modelname();
   }else{
   }
   EVAL_BM_ACTION_BASE::precalc_first(Scope);

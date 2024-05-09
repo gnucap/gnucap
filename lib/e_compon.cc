@@ -649,7 +649,7 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
     return CARD::set_param_by_name(Name, Value);
   }else if(!common()->is_shared()) {
     // it's us!
-    mutable_common()->set_param_by_name(Name, Value);
+    return mutable_common()->set_param_by_name(Name, Value);
   }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);

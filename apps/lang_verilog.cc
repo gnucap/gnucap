@@ -189,6 +189,9 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	}catch (Exception_No_Match&) {
 	  cmd.warn(bDANGER, c_arg, x->long_label() + ": bad parameter " + Name + " ignored");
 	  erase_attributes(&cmd);
+	}catch (Exception_Clash&) {
+	  cmd.warn(bDANGER, c_arg, x->long_label() + ": already set " + Name + ", ignored");
+	  erase_attributes(&cmd);
 	}
 	parse_attributes(cmd, &cmd);
 	c_arg = cmd.cursor();
@@ -203,7 +206,13 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	  parse_attributes(cmd, &cmd);
 	}catch (Exception_Too_Many& e) {untested();
 	  cmd.warn(bDANGER, c_arg, e.message());
+	  erase_attributes(&cmd);
+	}catch (Exception_Clash&) { untested();
+	  // reachable?
+	  cmd.warn(bDANGER, c_arg, x->long_label() + ": already set, ignored");
+	  erase_attributes(&cmd);
 	}
+	parse_attributes(cmd, &cmd);
 	c_arg = cmd.cursor();
       }
     }
