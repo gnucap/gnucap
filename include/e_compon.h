@@ -261,7 +261,7 @@ public: // parameters
   int  set_param_by_name(std::string, std::string) override;
   void set_param_by_index(int, std::string&, int) override;
   int  param_count()const override
-	{return ((has_common()) ? (common()->param_count()) : (2 + CARD::param_count()));}
+	{return ((has_common()) ? (common()->param_count()) : (1 + CARD::param_count()));}
   bool param_is_printable(int)const override;
   std::string param_name(int)const override;
   std::string param_name(int,int)const override;
