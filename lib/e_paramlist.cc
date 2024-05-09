@@ -80,8 +80,6 @@ void COMMON_PARAMLIST::precalc_first(const CARD_LIST* Scope)
 {
   assert(Scope);
   COMMON_COMPONENT::precalc_first(Scope);
-  _mfactor = _params.deep_lookup("$mfactor");
-  //BUG//  _mfactor must be in precalc_first
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_PARAMLIST::precalc_last(const CARD_LIST* Scope)

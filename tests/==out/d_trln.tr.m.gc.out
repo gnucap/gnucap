@@ -1,4 +1,4 @@
-#Transmission lines 
+*#Transmission lines 
 V1 ( 1 0 ) generator scale= 1.
 *# matched 
 R1s ( 1 11 )  50.
@@ -11,7 +11,9 @@ T2b ( 21 0 22 0 )  z0=100 f=10meg nl=.25
 R2l ( 22 0 )  50.
 *# n=2 
 R3s ( 1 31 )  50.
-T3 ( 31 0 32 0 )  z0=100 f=10meg nl=.25 $mfactor=2
+*# T3 31 0 32 0 z=100 f=10meg nl=.25 $mfactor=2 
+*// BUG: mfactor not represented in spice dump 
+T3 ( 31 0 32 0 )  z0=100 f=10meg nl=.25
 R3l ( 32 0 )  50.
 *# not 
 R4s ( 1 41 )  50.

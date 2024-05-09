@@ -185,6 +185,7 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	cmd >> ',';
 	try{
 	  int Index = x->set_param_by_name(Name, value);
+	  trace3("pai", Index, Name, value);
 	  move_attributes(&cmd, x->param_id_tag(Index));
 	}catch (Exception_No_Match&) {
 	  cmd.warn(bDANGER, c_arg, x->long_label() + ": bad parameter " + Name + " ignored");

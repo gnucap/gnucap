@@ -152,7 +152,7 @@ void PARAM_LIST::set(std::string Name, const double& Value)
     notstd::to_lower(&Name);
   }else{
   }
-  try{ untested();
+  try{
     _pl[Name] = Value;
   }catch(Exception_Clash const&){ untested();
     (_pl[Name] = "") = Value;
@@ -166,9 +166,9 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
     notstd::to_lower(&Name);
   }else{
   }
-  try{ untested();
+  try{
     _pl[Name] = Value;
-  }catch(Exception_Clash const&){ untested();
+  }catch(Exception_Clash const&){
     (_pl[Name] = "") = Value;
     error(bTRACE, Name + " already set. replacing\n");
   }

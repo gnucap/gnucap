@@ -7,7 +7,10 @@ Rx ( 1 2 ) R
 V1 ( 1 0 )  DC  10.
 R1 ( 1 2 )  10.K
 X1 ( 2 0 )  xx  r=10k
-R2 ( 1 3 )  10.K $mfactor= 2.
+* todo: element. inaccessible mfactor due to obsolete callback 
+* R2 (1 3) 10k $mfactor=2 
+R2 ( 1 3 )  10.K
+R2 ( 1 3 )  10.K
 X2 ( 3 0 )  xx  r=5k
 R3 ( 1 4 )  10.K
 X3 ( 4 0 )  xx  $mfactor=2 r=20k

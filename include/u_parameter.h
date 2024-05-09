@@ -92,11 +92,11 @@ public:
   //void	operator=(const std::string& s)	{untested();_s = s;}
 
   PARAMETER& operator=(const std::string& s)override	{
-    if (!s.size()) { untested();
+    if (!s.size()) {
       _s = "";
     }else if (s == "NA") {
       _s = "";
-    }else if (s.size() && _s.size()) { untested();
+    }else if (s.size() && _s.size()) {
       throw Exception_Clash("already set: " + _s + " vs " + s );
     }else if (strchr("'\"{", s[0])) {
       CS cmd(CS::_STRING, s);

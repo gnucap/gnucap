@@ -88,13 +88,7 @@ int ELEMENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(Name == value_name()){
     _value = Value;
-    return ELEMENT::param_count() - 1;
-  }else if (has_common()) {
-    COMMON_COMPONENT* c = common()->clone();
-    assert(c);
-    int index = c->set_param_by_name(Name, Value);
-    attach_common(c);
-    return index;
+    return ELEMENT::param_count() - 1; // BUG?
   }else{
     return COMPONENT::set_param_by_name(Name, Value);
   }
@@ -597,7 +591,7 @@ void ELEMENT::obsolete_move_parameters_from_common(const COMMON_COMPONENT* dc)
   assert(dc);
 
   _value   = dc->value();
-  _mfactor = dc->mfactor();
+  // _mfactor = dc->mfactor();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

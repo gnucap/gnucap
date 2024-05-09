@@ -33,6 +33,8 @@
 class COMMON_COMPONENT;
 class COMPONENT;
 /*--------------------------------------------------------------------------*/
+static const int sysparams_count = 8;
+/*--------------------------------------------------------------------------*/
 // external
 class MODEL_CARD;
 class CS;
@@ -56,12 +58,11 @@ enum {CC_STATIC=27342}; // mid-sized arbitrary positive int
 // so it won't be deleted
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMMON_COMPONENT : public CKT_BASE {
-protected:
+protected: // probably obsolete
   PARAMETER<double>	_tnom_c;  // specification temperature
   PARAMETER<double>	_dtemp;   // rise over enclosing temperature
   PARAMETER<double>	_temp_c;  // actual temperature of device
-  PARAMETER<double>	_mfactor; // number of devices in parallel
-  PARAMETER<double>	_value;
+  PARAMETER<double>	_value; // not counted in param_count
   std::string	_modelname;
 private:
   mutable const MODEL_CARD* _model;
@@ -101,7 +102,7 @@ public:
   virtual int  set_param_by_name(std::string, std::string);
   int Set_param_by_name(std::string, std::string); //BUG// see implementation
   virtual void set_param_by_index(int, std::string&, int);
-  virtual int param_count()const {return 4;}
+  virtual int param_count()const {return 3;}
 public:
   virtual void precalc_first(const CARD_LIST*)	{}
   virtual void expand(const COMPONENT*)		{}
@@ -126,7 +127,6 @@ public:
   std::string	      modelname()const	{return _modelname;}
   const MODEL_CARD*   model()const	{assert(_model); return _model;}
   bool		      has_model()const	{return _model;}
-  const PARAMETER<double>& mfactor()const {return _mfactor;}
   void set_value(double v) {_value = v;}
   const PARAMETER<double>& value()const {return _value;}
 private:
@@ -148,11 +148,12 @@ private:
  * //BUG// possible portability problem.  What is deletion order?
  */
 /*--------------------------------------------------------------------------*/
+class HS_PARAM;
+/*--------------------------------------------------------------------------*/
 class INTERFACE COMPONENT : public CARD {
 private:
-  COMMON_COMPONENT* _common;
-protected:
-  PARAMETER<double> _mfactor;	// number of devices in parallel
+  COMMON_COMPONENT* _common{NULL};
+  HS_PARAM* _hsparam{NULL}; // possibly indirect. later.
 private:
   double _mfactor_fixed;	// composite, including subckt mfactor
   bool	 _converged;
@@ -195,10 +196,10 @@ public:	// state, aux data
     assert(_mfactor_fixed != NOT_VALID);
 #ifndef NDEBUG
     if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
-      assert(_mfactor_fixed == o->mfactor() * _mfactor);
+      assert(_mfactor_fixed == o->mfactor() * my_mfactor());
     }else{
       assert(!owner());
-      assert(_mfactor_fixed == _mfactor);
+      assert(_mfactor_fixed == my_mfactor());
     }
 #endif
     return _mfactor_fixed;
@@ -261,8 +262,13 @@ public:	// ports
 public: // parameters
   int  set_param_by_name(std::string, std::string) override;
   void set_param_by_index(int, std::string&, int) override;
-  int  param_count()const override
-	{return ((has_common()) ? (common()->param_count()) : (1 + CARD::param_count()));}
+  int  param_count()const override {
+    if (has_common()) {
+      return sysparams_count + common()->param_count();
+    }else{
+      return sysparams_count + CARD::param_count();
+    }
+  }
   bool param_is_printable(int)const override;
   std::string param_name(int)const override;
   std::string param_name(int,int)const override;
@@ -272,6 +278,10 @@ public: // parameters
 			      COMMON_COMPONENT* Common, double Value,
 			      int state_count, double state[],
 			      int node_count, const node_t nodes[]);
+private: // implementation
+  int set_hsparam(std::string const&, std::string const&);
+  HS_PARAM& hsparam();
+  double my_mfactor()const;
   //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code
   virtual bool print_type_in_spice()const = 0;
