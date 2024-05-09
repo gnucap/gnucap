@@ -473,12 +473,15 @@ void COMPONENT::set_port_to_ground(int num)
 void COMPONENT::set_dev_type(const std::string& new_type)
 {
   if (common()) {
-    if (new_type != dev_type()) {
+    if (new_type == dev_type()) { untested();
+    }else if(!common()->is_shared()) { untested();
+      // it's us!
+      mutable_common()->set_modelname(new_type);
+    }else{ untested();
       COMMON_COMPONENT* c = common()->clone();
       assert(c);
       c->set_modelname(new_type);
       attach_common(c);
-    }else{
     }
   }else{
     CARD::set_dev_type(new_type);
@@ -636,29 +639,35 @@ void COMPONENT::set_slave()
 /*--------------------------------------------------------------------------*/
 int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
-  if (has_common()) {
+  if (!has_common()) {
+    return CARD::set_param_by_name(Name, Value);
+  }else if(!common()->is_shared()) {
+    // it's us!
+    mutable_common()->set_param_by_name(Name, Value);
+  }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     int index = c->set_param_by_name(Name, Value);
     attach_common(c);
     return index;
-  }else{
-    return CARD::set_param_by_name(Name, Value);
   }
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_param_by_index(int i, std::string& Value, int offset)
 {
-  if (has_common()) {itested();
-    COMMON_COMPONENT* c = common()->clone();
-    assert(c);
-    c->set_param_by_index(i, Value, offset);
-    attach_common(c);
-  }else{
+  if (!has_common()) { untested();
     switch (COMPONENT::param_count() - 1 - i) {
     case 0: _mfactor = Value; break;
     default:untested(); CARD::set_param_by_index(i, Value, offset);
     }
+  }else if(!common()->is_shared()) { untested();
+    // it's us!
+    mutable_common()->set_param_by_index(i, Value, offset);
+  }else{ untested();
+    COMMON_COMPONENT* c = common()->clone();
+    assert(c);
+    c->set_param_by_index(i, Value, offset);
+    attach_common(c);
   }
 }
 /*--------------------------------------------------------------------------*/
