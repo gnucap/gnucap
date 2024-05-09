@@ -250,14 +250,20 @@ std::string COMMON_COMPONENT::param_name(int i)const
   case 0:itested();  return "tnom";
   case 1:itested();  return "dtemp";
   case 2:itested();  return "temp";
-  case 3:  return "m";
+  case 3:  return "$mfactor";
   default:untested(); return "";
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i, int j)const
 {itested();
-  return (j==0) ? param_name(i) : "";
+  if(i==3 && j==1){ untested();
+    return "m";
+  }else if(j==0){ untested();
+    return param_name(i);
+  }else{ untested();
+    return "";
+  }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_value(int i)const
@@ -364,8 +370,8 @@ bool COMMON_COMPONENT::parse_params_obsolete_callback(CS& cmd)
     || Get(cmd, "tnom",   &_tnom_c)
     || Get(cmd, "dtemp",  &_dtemp)
     || Get(cmd, "temp",   &_temp_c)
-    || Get(cmd, "m",	  &_mfactor)
-    || Get(cmd, "mfactor",&_mfactor)
+    || Get(cmd, "$mfactor",&_mfactor)
+    || Get(cmd, "m",      &_mfactor) // alias?
     ;
 }
 /*--------------------------------------------------------------------------*/
@@ -689,7 +695,7 @@ std::string COMPONENT::param_name(int i)const
     return common()->param_name(i);
   }else{
     switch (COMPONENT::param_count() - 1 - i) {
-    case 0:  return "m";
+    case 0:  return "$mfactor";
     default:itested(); return CARD::param_name(i);
     }
   }

@@ -423,7 +423,11 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
 	      cmd.warn(bDANGER, there, x->long_label() + ": " + Name + " has no value?");
 	    }else{
 	    }
-	    x->set_param_by_name(Name, value);
+	    if(xx && Name=="m"){
+	      x->set_param_by_name("$mfactor", value);
+	    }else{
+	      x->set_param_by_name(Name, value);
+	    }
 	  }catch (Exception_No_Match&) {itested();
 	    cmd.warn(bDANGER, there, x->long_label() + ": bad parameter " + Name + " ignored");
 	  }
@@ -769,7 +773,12 @@ void LANG_SPICE_BASE::print_args(OMSTREAM& o, const COMPONENT* x)
       if (x->param_is_printable(ii)) {
 	if ((ii != x->param_count() - 1) || (x->param_name(ii) != x->value_name())) {
 	  // skip name if plain value
-	  o << " " << x->param_name(ii) << "=";
+//	  if(x->param_name(ii) == "$mfactor"){
+//	    o << " m";
+//	  }else{
+	    o << " " << x->param_name(ii);
+//	  }
+	  o << "=";
 	}else{
 	}
 	o << x->param_value(ii);
