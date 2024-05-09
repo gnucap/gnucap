@@ -159,14 +159,14 @@ static void move_attributes(void* from, void const* to)
   assert(!has_attributes(to)); //for now.
   if(has_attributes(from)){
     (*CKT_BASE::_attribs)[to] = (*CKT_BASE::_attribs)[from].chown(from, to);
-    CKT_BASE::_attribs->erase(from, from);
+    CKT_BASE::_attribs->erase(from, reinterpret_cast<bool*>(from)+1);
   }else{
   }
 }
 /*--------------------------------------------------------------------------*/
 static void erase_attributes(void* from)
 {
-  CKT_BASE::_attribs->erase(from, from);
+  CKT_BASE::_attribs->erase(from, reinterpret_cast<bool*>(from)+1);
 }
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)

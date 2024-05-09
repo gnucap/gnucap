@@ -61,7 +61,7 @@ class INDIRECT {
   size_t erase(void* b, void* e) {
     size_t c=0;
     assert(b <= e);
-    for (void* i=b; i<=e; i=reinterpret_cast<bool*>(i)+1) {
+    for (void* i=b; i<e; i=reinterpret_cast<bool*>(i)+1) {
       c += _map.erase(i);
     }
     return c;

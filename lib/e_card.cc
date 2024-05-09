@@ -58,7 +58,8 @@ CARD::~CARD()
 void CARD::purge()
 {
   assert(_attribs);
-  _attribs->erase(reinterpret_cast<bool*>(this)-net_nodes(), reinterpret_cast<bool*>(this)+param_count());
+  // param_id_tag?
+  _attribs->erase(reinterpret_cast<bool*>(this)-net_nodes(), reinterpret_cast<bool*>(this)+param_count()+1);
   CKT_BASE::purge();
 }
 /*--------------------------------------------------------------------------*/
