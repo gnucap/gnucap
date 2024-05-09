@@ -21,7 +21,6 @@ R2l 22 0 50
 R3s 1 31 50
 # T3 31 0 32 0 z=100 f=10meg nl=.25 $mfactor=2
 .verilog
-// BUG: mfactor not represented in spice dump
 tline #(.z(100) .f(10meg) .nl(.25) .$mfactor(2)) T3 (31 0 32 0);
 spice
 R3l 32 0 50

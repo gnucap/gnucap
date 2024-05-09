@@ -114,7 +114,7 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
 bool ELEMENT::param_is_printable(int i)const
 {
   if (has_common()) {
-    return common()->param_is_printable(i);
+    return COMPONENT::param_is_printable(i);
   }else{
     switch (ELEMENT::param_count() - 1 - i) {
     case 0:
@@ -128,7 +128,7 @@ bool ELEMENT::param_is_printable(int i)const
 std::string ELEMENT::param_name(int i)const
 {
   if (has_common()) {
-    return common()->param_name(i);
+    return COMPONENT::param_name(i);
   }else{
     switch (ELEMENT::param_count() - 1 - i) {
     case 0:  return value_name();
@@ -141,7 +141,7 @@ std::string ELEMENT::param_name(int i)const
 std::string ELEMENT::param_name(int i, int j)const
 {
   if (has_common()) {untested();
-    return common()->param_name(i,j);
+    return COMPONENT::param_name(i);
   }else{
     if (j == 0) {
       return param_name(i);
@@ -156,7 +156,7 @@ std::string ELEMENT::param_name(int i, int j)const
 std::string ELEMENT::param_value(int i)const
 {
   if (has_common()) {
-    return common()->param_value(i);
+    return COMPONENT::param_value(i);
   }else{
     switch (ELEMENT::param_count() - 1 - i) {
     case 0:

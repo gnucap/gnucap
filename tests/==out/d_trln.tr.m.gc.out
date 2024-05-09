@@ -12,8 +12,7 @@ R2l ( 22 0 )  50.
 *# n=2 
 R3s ( 1 31 )  50.
 *# T3 31 0 32 0 z=100 f=10meg nl=.25 $mfactor=2 
-*// BUG: mfactor not represented in spice dump 
-T3 ( 31 0 32 0 )  z0=100 f=10meg nl=.25
+T3 ( 31 0 32 0 )  $mfactor=2 z0=100 f=10meg nl=.25
 R3l ( 32 0 )  50.
 *# not 
 R4s ( 1 41 )  50.
