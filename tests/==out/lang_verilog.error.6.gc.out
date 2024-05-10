@@ -1,0 +1,3 @@
+nmos2 #(.w(5), (* error=1 *) .doesntexist(5)) m3(.d(d), .g(g), .s(s),.
+                             ^ ? : bad parameter doesntexist ignored
+nmos2 #(.l(NA( 100.u)),.w(5)) m3 (.d(d),.g(g),.s(s),.b(b));

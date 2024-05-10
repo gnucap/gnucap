@@ -88,13 +88,7 @@ int ELEMENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(Name == value_name()){
     _value = Value;
-    return ELEMENT::param_count() - 1;
-  }else if (has_common()) {
-    COMMON_COMPONENT* c = common()->clone();
-    assert(c);
-    int index = c->set_param_by_name(Name, Value);
-    attach_common(c);
-    return index;
+    return ELEMENT::param_count() - 1; // BUG?
   }else{
     return COMPONENT::set_param_by_name(Name, Value);
   }
@@ -120,7 +114,7 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
 bool ELEMENT::param_is_printable(int i)const
 {
   if (has_common()) {
-    return common()->param_is_printable(i);
+    return COMPONENT::param_is_printable(i);
   }else{
     switch (ELEMENT::param_count() - 1 - i) {
     case 0:
@@ -134,7 +128,7 @@ bool ELEMENT::param_is_printable(int i)const
 std::string ELEMENT::param_name(int i)const
 {
   if (has_common()) {
-    return common()->param_name(i);
+    return COMPONENT::param_name(i);
   }else{
     switch (ELEMENT::param_count() - 1 - i) {
     case 0:  return value_name();
@@ -147,7 +141,7 @@ std::string ELEMENT::param_name(int i)const
 std::string ELEMENT::param_name(int i, int j)const
 {
   if (has_common()) {untested();
-    return common()->param_name(i,j);
+    return COMPONENT::param_name(i);
   }else{
     if (j == 0) {
       return param_name(i);
@@ -162,7 +156,7 @@ std::string ELEMENT::param_name(int i, int j)const
 std::string ELEMENT::param_value(int i)const
 {
   if (has_common()) {
-    return common()->param_value(i);
+    return COMPONENT::param_value(i);
   }else{
     switch (ELEMENT::param_count() - 1 - i) {
     case 0:
@@ -425,7 +419,7 @@ double ELEMENT::tr_probe_num(const std::string& x)const
     return _m0.x;
   }else if (Umatch(x, "y ")) {
     return _m0.c1;
-  }else if (Umatch(x, "is{tamp} ")) { untested();
+  }else if (Umatch(x, "is{tamp} ")) {itested();
     return _m0.f0();
   }else if (Umatch(x, "iof{fset} ")) {
     return _m0.c0;
@@ -597,7 +591,7 @@ void ELEMENT::obsolete_move_parameters_from_common(const COMMON_COMPONENT* dc)
   assert(dc);
 
   _value   = dc->value();
-  _mfactor = dc->mfactor();
+  // _mfactor = dc->mfactor();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

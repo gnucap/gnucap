@@ -148,13 +148,33 @@ void LANG_VERILOG::parse_args_paramset(CS& cmd, MODEL_CARD* x)
   }
 }
 /*--------------------------------------------------------------------------*/
+static bool has_attributes(void const* x)
+{
+  assert(CKT_BASE::_attribs);
+  return CKT_BASE::_attribs->at(x);
+}
+/*--------------------------------------------------------------------------*/
+static void move_attributes(void* from, void const* to)
+{
+  assert(!has_attributes(to)); //for now.
+  if(has_attributes(from)){
+    (*CKT_BASE::_attribs)[to] = (*CKT_BASE::_attribs)[from].chown(from, to);
+    CKT_BASE::_attribs->erase(from, reinterpret_cast<bool*>(from)+1);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+static void erase_attributes(void* from)
+{
+  CKT_BASE::_attribs->erase(from, reinterpret_cast<bool*>(from)+1);
+}
+/*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 {
   assert(x);
 
   if (cmd >> "#(") {
-    size_t c_attrib = cmd.cursor();
-    skip_attributes(cmd);
+    parse_attributes(cmd, &cmd);
     size_t c_arg = cmd.cursor();
     
     if (cmd.match1('.')) {
@@ -165,22 +185,16 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	cmd >> ',';
 	try{
 	  int Index = x->set_param_by_name(Name, value);
-
-	  if (c_attrib != c_arg) {
-	    // has attributes
-	    size_t here = cmd.cursor();
-	    cmd.reset(c_attrib);
-	    parse_attributes(cmd, x->param_id_tag(Index));
-	    assert(cmd.cursor() == c_arg);
-	    cmd.reset(here);
-	  }else{
-	    // no attributes
-	  }
-	}catch (Exception_No_Match&) {untested();
+	  trace3("pai", Index, Name, value);
+	  move_attributes(&cmd, x->param_id_tag(Index));
+	}catch (Exception_No_Match&) {
 	  cmd.warn(bDANGER, c_arg, x->long_label() + ": bad parameter " + Name + " ignored");
+	  erase_attributes(&cmd);
+	}catch (Exception_Clash&) {
+	  cmd.warn(bDANGER, c_arg, x->long_label() + ": already set " + Name + ", ignored");
+	  erase_attributes(&cmd);
 	}
-	c_attrib = cmd.cursor();
-	skip_attributes(cmd);
+	parse_attributes(cmd, &cmd);
 	c_arg = cmd.cursor();
       }
     }else{
@@ -189,22 +203,17 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	try{
 	  std::string value = cmd.ctos(",)", "", "");
 	  x->set_param_by_index(Index, value, 0/*offset*/);
-
-	  if (c_attrib != c_arg) {
-	    // has attributes
-	    size_t here = cmd.cursor();
-	    cmd.reset(c_attrib);
-	    parse_attributes(cmd, x->param_id_tag(Index));
-	    assert(cmd.cursor() == c_arg);
-	    cmd.reset(here);
-	  }else{
-	    // no attributes
-	  }
+	  move_attributes(&cmd, x->param_id_tag(Index));
+	  parse_attributes(cmd, &cmd);
 	}catch (Exception_Too_Many& e) {untested();
 	  cmd.warn(bDANGER, c_arg, e.message());
+	  erase_attributes(&cmd);
+	}catch (Exception_Clash&) { untested();
+	  // reachable?
+	  cmd.warn(bDANGER, c_arg, x->long_label() + ": already set, ignored");
+	  erase_attributes(&cmd);
 	}
-	c_attrib = cmd.cursor();
-	skip_attributes(cmd);
+	parse_attributes(cmd, &cmd);
 	c_arg = cmd.cursor();
       }
     }

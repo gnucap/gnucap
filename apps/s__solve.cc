@@ -120,7 +120,7 @@ bool SIM::solve_with_homotopy(OPT::ITL itl, TRACE trace)
     solve(itl, trace);
     if (!converged) {
       trace2("final fail", _sim->_iter[iSTEP], OPT::gmin);
-    }else{ untested();
+    }else{itested();
       trace2("final success", _sim->_iter[iSTEP], OPT::gmin);
     }
   }else{

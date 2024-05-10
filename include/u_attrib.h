@@ -104,6 +104,17 @@ public:
       return "0";
     }
   }
+  ATTRIB_LIST& chown(const void* Old, const void* New) {
+    if(_owner == Old){
+      _owner = New;
+      if(_up){
+	_up->chown(Old, New);
+      }else{
+      }
+    }else{
+    }
+    return *this;
+  }
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE ATTRIB_LIST_p {
@@ -149,6 +160,14 @@ public:
     _p = new ATTRIB_LIST(String, _p, Owner);
     assert(_p);
     _p->inc_ref_count();
+    return *this;
+  }
+
+  ATTRIB_LIST_p& chown(const void* Old, const void* New) {
+    if (_p) {
+      _p->chown(Old, New);
+    }else{
+    }
     return *this;
   }
 };

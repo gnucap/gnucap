@@ -12,8 +12,8 @@ endmodule;
 
 module bbb ((*b*)e,f);
         resistor #((*a*)100) r1(a,b);
-	resistor #((*d*).m(2),.r(200)) r2(a,b);
-	resistor #(.m(2),(*d*).r(200)) r2a(a,b);
+	resistor #((*d*).$mfactor(2),.r(200)) r2(a,b);
+	resistor #(.$mfactor(2),(*d*).r(200)) r2a(a,b);
 	r1 r3(a,b);
 	r2 r4(a,b);
 	r1 r5(a,b);

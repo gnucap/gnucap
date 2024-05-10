@@ -55,7 +55,7 @@ CKT_BASE::~CKT_BASE()
 
   if(!_attribs){
   }else if (_attribs->count(this) > 0) {
-    _attribs->erase(this, this);
+    _attribs->erase(this, reinterpret_cast<bool*>(this)+1);
   }else{
   }
   assert(!_attribs || _attribs->count(this)==0);

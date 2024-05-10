@@ -1,0 +1,5 @@
+verilog
+
+nmos2 #(.w(5), (* error=1 *) .doesntexist(5)) m3(.d(d), .g(g), .s(s),.b(b));
+
+list

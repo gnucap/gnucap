@@ -173,7 +173,7 @@ int CS::ctoi()
 
   skipbl();
   size_t here = cursor();
-  if (skip1("-")) { untested();
+  if (skip1("-")) {itested();
     sign = -1;
   }else{
     skip1("+");

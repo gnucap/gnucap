@@ -1,7 +1,7 @@
 simple diode test 
 V1 ( 1 0 )  DC  10.
 R1 ( 1 2 )  100.K
-D1 ( 2 0 )  ddd 2 m=2
+D1 ( 2 0 )  ddd  $mfactor=2 area=2
 .model ddd d ( tnom=NA( 27.) is=10.f rs=0. n=1. tt=0. cjo=1.p pb=1. mj=0.5 egap=1.11 xti=3. kf=0. af=1. fc=0.5)
 #           v(1)       v(2)       i(V1)      i(R1)      id(D1)     vd(D1)     req(D1)    cap(D1)    z(D1)      zraw(D1)   y(D1)      z(2)      
  27.        10.        0.5582    -94.418u    94.418u    47.209u    0.5582     547.87     2.9931p    100.K      273.18     0.0018253  273.18    

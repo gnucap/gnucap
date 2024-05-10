@@ -4,7 +4,7 @@ R1 ( a b ) r
 .ends dumb_resistor
 .subckt foo ( vcc in out )
 Rc ( c vcc ) z
-q1 ( c b e )  Zz NA( 1.)
+q1 ( c b e )  Zz  area=NA( 1.)
 XRe ( e 0 )  dumb_resistor  r=abs(-z)/10
 Rb1 ( b vcc ) 100k
 XRb2 ( b 0 )  dumb_resistor  r=r

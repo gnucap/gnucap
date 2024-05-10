@@ -34,6 +34,9 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
+static const bool add_mfactor = true; // allow $mfactor
+static const bool alias_m_mfactor = true; // treat m as mfactor when rejected.
+/*--------------------------------------------------------------------------*/
 class LANG_SPICE_BASE : public LANGUAGE {
 public:
   LANG_SPICE_BASE() {}
@@ -423,8 +426,18 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
 	      cmd.warn(bDANGER, there, x->long_label() + ": " + Name + " has no value?");
 	    }else{
 	    }
-	    x->set_param_by_name(Name, value);
-	  }catch (Exception_No_Match&) {itested();
+	    if(Name=="$mfactor" && xx && add_mfactor) {
+	      xx->COMPONENT::set_param_by_name("$mfactor", value);
+	    }else if(Name == "m" && xx && alias_m_mfactor) {
+	      try{
+		x->set_param_by_name(Name, value);
+	      }catch(Exception_No_Match const&){
+		xx->COMPONENT::set_param_by_name("$mfactor", value);
+	      }
+	    }else{
+	      x->set_param_by_name(Name, value);
+	    }
+	  }catch (Exception_No_Match const&) {itested();
 	    cmd.warn(bDANGER, there, x->long_label() + ": bad parameter " + Name + " ignored");
 	  }
 	}
@@ -566,7 +579,7 @@ COMPONENT* LANG_SPICE_BASE::parse_instance(CS& cmd, COMPONENT* x)
     cmd.reset().umatch(ANTI_COMMENT);
     
     // ACS dot type specifier
-    if (cmd.skip1b('.')) {
+    if (cmd.skip1b('.')) {itested();
       parse_type(cmd, x);
     }else{
     }
@@ -648,7 +661,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 void LANG_SPICE::parse_top_item(CS& cmd, CARD_LIST* Scope)
-{
+{itested();
   if (0 && cmd.is_file()
       && cmd.is_first_read()
       && (Scope == &CARD_LIST::card_list)
@@ -657,7 +670,7 @@ void LANG_SPICE::parse_top_item(CS& cmd, CARD_LIST* Scope)
     cmd.get_line("gnucap-spice-title>");
     head = cmd.fullstring();
     IO::mstdout << head << '\n';
-  }else{
+  }else{itested();
     cmd.get_line("gnucap-spice>");
     new__instance(cmd, NULL, Scope);
   }
@@ -952,7 +965,7 @@ DISPATCHER<CMD>::INSTALL d33(&command_dispatcher, ".lib|lib", &p33);
  */
 class CMD_INCLUDE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)override {untested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {itested();
     getmerge(cmd, NO_HEADER, Scope);
   }
 } p3;
@@ -1024,7 +1037,7 @@ DISPATCHER<CMD>::INSTALL d7(&command_dispatcher, ".build|build", &p7);
 /*--------------------------------------------------------------------------*/
 class CMD_SPICE : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)override {
+  void do_it(CS&, CARD_LIST* Scope)override {itested();
     command("options lang=spice", Scope);
   }
 } p8;

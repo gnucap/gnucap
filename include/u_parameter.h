@@ -33,6 +33,12 @@
 /*--------------------------------------------------------------------------*/
 class LANGUAGE;
 /*--------------------------------------------------------------------------*/
+class Exception_Clash : public Exception{
+public:
+  explicit Exception_Clash(std::string const& what) :
+    Exception(what) {}
+};
+/*--------------------------------------------------------------------------*/
 class PARA_BASE {
 protected:
   std::string _s;
@@ -49,7 +55,7 @@ public:
   virtual bool  is_given()const       {untested(); return (_s != "");}
 
   virtual void	parse(CS& cmd) = 0;
-  virtual void	operator=(const std::string& s) = 0;
+  virtual PARA_BASE& operator=(const std::string& s) = 0;
 };
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -85,15 +91,20 @@ public:
   void	operator=(const T& v)		{_v = v; _s = "#";}
   //void	operator=(const std::string& s)	{untested();_s = s;}
 
-  void	operator=(const std::string& s)override	{
-    if (strchr("'\"{", s[0])) {
-      CS cmd(CS::_STRING, s);
-      _s = cmd.ctos("", "'\"{", "'\"}");
+  PARAMETER& operator=(const std::string& s)override {
+    if (!s.size()) {
+      _s = "";
     }else if (s == "NA") {
       _s = "";
+    }else if (s.size() && _s.size()) {
+      throw Exception_Clash("already set");
+    }else if (strchr("'\"{", s[0])) {
+      CS cmd(CS::_STRING, s);
+      _s = cmd.ctos("", "'\"{", "'\"}");
     }else{
       _s = s;
     }
+    return *this;
   }
   bool  operator==(const PARAMETER& p)const {
     return (_v == p._v  &&  _s == p._s);

@@ -1,0 +1,8 @@
+verilog
+
+// duplicate param is an error, c.f. 6.3.3:
+// Let's just ignore it for now, and warn
+nmos2 #(.w(5), .w(5)) m3(.d(d), .g(g), .s(s),.b(b));
+nmos2 #((*A*).w(5),(*B*) .w(5)) m4(.d(d), .g(g), .s(s),.b(b));
+
+list

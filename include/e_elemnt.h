@@ -157,8 +157,9 @@ public:
 protected:
   int param_count()const override {
     if(has_common()) {
-      return common()->param_count();
+      return COMPONENT::param_count();
     }else{
+      // add /*value*/
       return 1 + COMPONENT::param_count();
     }
   }

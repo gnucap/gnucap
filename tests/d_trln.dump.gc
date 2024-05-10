@@ -1,0 +1,8 @@
+#Transmission lines
+
+verilog
+tline #(.z(100) .f(10meg) .nl(.25) .$mfactor(2)) T3 (31 0 32 0);
+list
+spice
+.list
+.end
