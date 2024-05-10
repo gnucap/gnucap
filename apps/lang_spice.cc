@@ -34,6 +34,9 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
+static const bool add_mfactor = true; // allow $mfactor
+static const bool alias_m_mfactor = true; // treat m as mfactor when rejected.
+/*--------------------------------------------------------------------------*/
 class LANG_SPICE_BASE : public LANGUAGE {
 public:
   LANG_SPICE_BASE() {}
@@ -141,7 +144,7 @@ static int count_ports(CS& cmd, int maxnodes, int minnodes, int leave_tail, int 
       break;
     }else if (cmd.is_end()) {
       // found the end, no '='
-      if (i <= minnodes) { untested();
+      if (i <= minnodes) {
 	num_nodes = i;
       }else if (i <= minnodes + leave_tail) {
 	num_nodes = minnodes;
@@ -263,9 +266,9 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 	  break; // illegal node name, might be proper exit.
 	}else{
 	  if (all_new) {
-	    if (x->node_is_grounded(index)) { untested();
+	    if (x->node_is_grounded(index)) {
 	      cmd.warn(bDANGER, here1, "node 0 not allowed here");
-	    }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) { untested();
+	    }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {
 	      cmd.warn(bDANGER, here1, "duplicate port name, skipping");
 	    }else{
 	      ++index;
@@ -423,11 +426,13 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
 	      cmd.warn(bDANGER, there, x->long_label() + ": " + Name + " has no value?");
 	    }else{
 	    }
-	    if(xx && Name=="m"){
+	    if(Name=="$mfactor" && xx && add_mfactor) {
+	      xx->COMPONENT::set_param_by_name("$mfactor", value);
+	    }else if(Name == "m" && xx && alias_m_mfactor) {
 	      try{
 		x->set_param_by_name(Name, value);
 	      }catch(Exception_No_Match const&){
-		x->set_param_by_name("$mfactor", value);
+		xx->COMPONENT::set_param_by_name("$mfactor", value);
 	      }
 	    }else{
 	      x->set_param_by_name(Name, value);
@@ -615,7 +620,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
   char id_letter = cmd.peek();
   if (OPT::case_insensitive) {
     id_letter = static_cast<char>(toupper(id_letter));
-  }else{ untested();
+  }else{
   }
   switch (id_letter) {
   case '\0':untested();
@@ -633,7 +638,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
     break;
   case 'G':
     here = cmd.cursor();
-    if (cmd.scan("vccap |vcg |vcr |vccs ")) { untested();
+    if (cmd.scan("vccap |vcg |vcr |vccs ")) {
       s = cmd.trimmed_last_match();
     }else{
       s = "G";
@@ -759,7 +764,7 @@ void LANG_SPICE_BASE::print_type(OMSTREAM& o, const COMPONENT* x)
     }else{
       o << "  " << x->dev_type();
     }
-  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) { untested();
+  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {
     o << "  " << x->dev_type();
   }else{
     // don't print type

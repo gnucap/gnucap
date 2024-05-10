@@ -217,7 +217,6 @@ void COMMON_COMPONENT::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lan
   print_pair(o, lang, "tnom", _tnom_c,  _tnom_c.has_hard_value());
   print_pair(o, lang, "dtemp",_dtemp,   _dtemp.has_hard_value());
   print_pair(o, lang, "temp", _temp_c,  _temp_c.has_hard_value());
-//  print_pair(o, lang, "m",    _mfactor, _mfactor.has_hard_value());
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::set_param_by_index(int i, std::string& Value, int Offset)
@@ -727,7 +726,7 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
   if(int idx = set_hsparam(Name, Value)){
     trace3("COMPONENT::spbn", Name, Value, idx);
     return COMPONENT::param_count() - idx;
-  }else if (!has_common()) { untested();
+  }else if (!has_common()) { itested();
     return CARD::set_param_by_name(Name, Value);
   }else if(!common()->is_shared()) {
     // it's us!
