@@ -1,7 +1,7 @@
 simple diode test 
 V1 ( 1 0 )  DC  10.  AC  1.
 R1 ( 1 2 )  100.K
-D1 ( 2 0 )  ddd 1
+D1 ( 2 0 )  ddd  area=1
 .model ddd d ( tnom=NA( 27.) is=10.f rs=0. n=1. tt=0. cjo=1.p pb=1. mj=0.5 egap=1.11 xti=3. kf=0. af=1. fc=0.5 bv=50 ibv=0.001)
 #           v(1)       v(2)       i(V1)      i(R1)      id(D1)     vd(D1)     req(D1)    cd(D1)     z(D1)      zraw(D1)   gd(D1)     z(2)      
  27.        10.        0.59396   -94.061u    94.06u     94.06u     0.59396    274.97     1.5471p    100.K      274.22     0.0036367  274.22    
