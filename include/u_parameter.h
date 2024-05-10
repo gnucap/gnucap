@@ -91,13 +91,13 @@ public:
   void	operator=(const T& v)		{_v = v; _s = "#";}
   //void	operator=(const std::string& s)	{untested();_s = s;}
 
-  PARAMETER& operator=(const std::string& s)override	{
+  PARAMETER& operator=(const std::string& s)override {
     if (!s.size()) {
       _s = "";
     }else if (s == "NA") {
       _s = "";
     }else if (s.size() && _s.size()) {
-      throw Exception_Clash("already set: " + _s + " vs " + s );
+      throw Exception_Clash("already set");
     }else if (strchr("'\"{", s[0])) {
       CS cmd(CS::_STRING, s);
       _s = cmd.ctos("", "'\"{", "'\"}");

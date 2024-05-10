@@ -141,7 +141,7 @@ static int count_ports(CS& cmd, int maxnodes, int minnodes, int leave_tail, int 
       break;
     }else if (cmd.is_end()) {
       // found the end, no '='
-      if (i <= minnodes) {
+      if (i <= minnodes) { untested();
 	num_nodes = i;
       }else if (i <= minnodes + leave_tail) {
 	num_nodes = minnodes;
@@ -263,9 +263,9 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 	  break; // illegal node name, might be proper exit.
 	}else{
 	  if (all_new) {
-	    if (x->node_is_grounded(index)) {
+	    if (x->node_is_grounded(index)) { untested();
 	      cmd.warn(bDANGER, here1, "node 0 not allowed here");
-	    }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {
+	    }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) { untested();
 	      cmd.warn(bDANGER, here1, "duplicate port name, skipping");
 	    }else{
 	      ++index;
@@ -424,11 +424,15 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
 	    }else{
 	    }
 	    if(xx && Name=="m"){
-	      x->set_param_by_name("$mfactor", value);
+	      try{
+		x->set_param_by_name(Name, value);
+	      }catch(Exception_No_Match const&){
+		x->set_param_by_name("$mfactor", value);
+	      }
 	    }else{
 	      x->set_param_by_name(Name, value);
 	    }
-	  }catch (Exception_No_Match&) {itested();
+	  }catch (Exception_No_Match const&) {itested();
 	    cmd.warn(bDANGER, there, x->long_label() + ": bad parameter " + Name + " ignored");
 	  }
 	}
@@ -570,7 +574,7 @@ COMPONENT* LANG_SPICE_BASE::parse_instance(CS& cmd, COMPONENT* x)
     cmd.reset().umatch(ANTI_COMMENT);
     
     // ACS dot type specifier
-    if (cmd.skip1b('.')) {
+    if (cmd.skip1b('.')) {itested();
       parse_type(cmd, x);
     }else{
     }
@@ -611,7 +615,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
   char id_letter = cmd.peek();
   if (OPT::case_insensitive) {
     id_letter = static_cast<char>(toupper(id_letter));
-  }else{
+  }else{ untested();
   }
   switch (id_letter) {
   case '\0':untested();
@@ -629,7 +633,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
     break;
   case 'G':
     here = cmd.cursor();
-    if (cmd.scan("vccap |vcg |vcr |vccs ")) {
+    if (cmd.scan("vccap |vcg |vcr |vccs ")) { untested();
       s = cmd.trimmed_last_match();
     }else{
       s = "G";
@@ -652,7 +656,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 void LANG_SPICE::parse_top_item(CS& cmd, CARD_LIST* Scope)
-{
+{itested();
   if (0 && cmd.is_file()
       && cmd.is_first_read()
       && (Scope == &CARD_LIST::card_list)
@@ -661,7 +665,7 @@ void LANG_SPICE::parse_top_item(CS& cmd, CARD_LIST* Scope)
     cmd.get_line("gnucap-spice-title>");
     head = cmd.fullstring();
     IO::mstdout << head << '\n';
-  }else{
+  }else{itested();
     cmd.get_line("gnucap-spice>");
     new__instance(cmd, NULL, Scope);
   }
@@ -755,7 +759,7 @@ void LANG_SPICE_BASE::print_type(OMSTREAM& o, const COMPONENT* x)
     }else{
       o << "  " << x->dev_type();
     }
-  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) {
+  }else if (fix_case(x->short_label()[0]) != fix_case(x->id_letter())) { untested();
     o << "  " << x->dev_type();
   }else{
     // don't print type
@@ -961,7 +965,7 @@ DISPATCHER<CMD>::INSTALL d33(&command_dispatcher, ".lib|lib", &p33);
  */
 class CMD_INCLUDE : public CMD {
 public:
-  void do_it(CS& cmd, CARD_LIST* Scope)override {untested();
+  void do_it(CS& cmd, CARD_LIST* Scope)override {itested();
     getmerge(cmd, NO_HEADER, Scope);
   }
 } p3;
@@ -1033,7 +1037,7 @@ DISPATCHER<CMD>::INSTALL d7(&command_dispatcher, ".build|build", &p7);
 /*--------------------------------------------------------------------------*/
 class CMD_SPICE : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)override {
+  void do_it(CS&, CARD_LIST* Scope)override {itested();
     command("options lang=spice", Scope);
   }
 } p8;

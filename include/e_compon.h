@@ -281,6 +281,8 @@ public: // parameters
 private: // implementation
   int set_hsparam(std::string const&, std::string const&);
   HS_PARAM& hsparam();
+protected: // former _mfactor
+  void set_mfactor(double);
   double my_mfactor()const;
   //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code

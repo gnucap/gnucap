@@ -226,7 +226,7 @@ void COMMON_COMPONENT::set_param_by_index(int i, std::string& Value, int Offset)
   case 0:untested();  _tnom_c = Value; break;
   case 1:untested();  _dtemp = Value; break;
   case 2:itested();  _temp_c = Value; break;
-  default:untested(); throw Exception_Too_Many(i, 2, Offset); break;
+  default:untested(); assert(0); throw Exception_Too_Many(i, 2, Offset); break;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -243,18 +243,18 @@ bool COMMON_COMPONENT::param_is_printable(int i)const
 std::string COMMON_COMPONENT::param_name(int i)const
 {
   switch (i) {
-  case 0:itested();  return "tnom";
-  case 1:itested();  return "dtemp";
-  case 2:itested();  return "temp";
+  case 0:  return "tnom";
+  case 1:  return "dtemp";
+  case 2:  return "temp";
   default:untested(); return "";
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i, int j)const
 {itested();
-  if(j==0){ untested();
+  if(j==0){itested();
     return param_name(i);
-  }else{ untested();
+  }else{itested();
     return "";
   }
 }
@@ -383,6 +383,9 @@ public:
   double mfactor() const{
     return _p[0];
   }
+  void set_mfactor(double x) {itested();
+    _p[0] = x;
+  }
   void precalc(CARD_LIST const* scope){
     _p[0].e_val(1., scope);
     for(int i=1; i< sysparams_count; ++i){
@@ -500,7 +503,7 @@ void COMPONENT::set_dev_type(const std::string& new_type)
 {
   if (common()) {
     if (new_type == dev_type()) {
-    }else if(!common()->is_shared()) { untested();
+    }else if(!common()->is_shared()) {itested();
       // it's us!
       mutable_common()->set_modelname(new_type);
     }else{
@@ -676,6 +679,11 @@ HS_PARAM& COMPONENT::hsparam()
   return(*_hsparam);
 }
 /*--------------------------------------------------------------------------*/
+void COMPONENT::set_mfactor(double x)
+{itested();
+  hsparam().set_mfactor(x);
+}
+/*--------------------------------------------------------------------------*/
 int COMPONENT::set_hsparam(std::string const& Name, std::string const& Value)
 {
   int which = -1;
@@ -719,12 +727,12 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
   if(int idx = set_hsparam(Name, Value)){
     trace3("COMPONENT::spbn", Name, Value, idx);
     return COMPONENT::param_count() - idx;
-  }else if (!has_common()) {
+  }else if (!has_common()) { untested();
     return CARD::set_param_by_name(Name, Value);
   }else if(!common()->is_shared()) {
     // it's us!
     return mutable_common()->set_param_by_name(Name, Value);
-  }else{
+  }else{itested();
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     int index = c->set_param_by_name(Name, Value);
@@ -773,13 +781,13 @@ std::string COMPONENT::param_name(int i)const
   assert(sysparams_count == 8);
   switch (COMPONENT::param_count() - 1 - i) {
   case 0: return "$mfactor";
-  case 1:untested(); return "$xposition";
-  case 2:untested(); return "$yposition";
-  case 3:untested(); return "$zposition";
-  case 4:untested(); return "$angle";
-  case 5:untested(); return "$hflip";
-  case 6:untested(); return "$vflip";
-  case 7:untested(); return "$sflip"; // 's' for "stack"
+  case 1:itested(); return "$xposition";
+  case 2:itested(); return "$yposition";
+  case 3:itested(); return "$zposition";
+  case 4:itested(); return "$angle";
+  case 5:itested(); return "$hflip";
+  case 6:itested(); return "$vflip";
+  case 7:itested(); return "$sflip"; // 's' for "stack"
   // case 7:untested(); return "$nflip"; // 'n' for "normal"
   default:
     if (has_common()) {
@@ -792,10 +800,10 @@ std::string COMPONENT::param_name(int i)const
 }
 /*--------------------------------------------------------------------------*/
 std::string COMPONENT::param_name(int i, int j)const
-{ untested();
+{itested();
   trace3("COMPONENT::param_name", long_label(), i, j);
   int I = COMPONENT::param_count() - 1 - i;
-  if(I < sysparams_count && j) { untested();
+  if(I < sysparams_count && j) {itested();
     return "";
   }else if(I < sysparams_count) { untested();
     return param_name(i);

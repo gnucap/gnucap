@@ -419,7 +419,7 @@ double ELEMENT::tr_probe_num(const std::string& x)const
     return _m0.x;
   }else if (Umatch(x, "y ")) {
     return _m0.c1;
-  }else if (Umatch(x, "is{tamp} ")) { untested();
+  }else if (Umatch(x, "is{tamp} ")) {itested();
     return _m0.f0();
   }else if (Umatch(x, "iof{fset} ")) {
     return _m0.c0;
