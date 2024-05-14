@@ -34,7 +34,7 @@ CCFLAGS = \
 -Wall -Wextra \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
 -Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
--Winit-self -Wmissing-include-dirs -Winvalid-pch \
+-Winit-self -Winvalid-pch \
 -Wvolatile-register-var -Wstack-protector \
 -Wvla -Woverlength-strings -Wno-sign-conversion
 #last line not in 4.1

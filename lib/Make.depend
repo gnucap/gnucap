@@ -64,7 +64,7 @@ l_pmatch.o: l_pmatch.cc ../include/ap.h ../include/md.h \
 l_timer.o: l_timer.cc ../include/l_timer.h ../include/io_.h \
  ../include/l_lib.h ../include/md.h ../include/io_trace.h \
  ../include/io_error.h
-l_trim.o: l_trim.cc
+l_trim.o: l_trim.cc ../include/io_trace.h
 l_wmatch.o: l_wmatch.cc ../include/u_opt.h ../include/mode.h \
  ../include/io_.h ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/l_lib.h

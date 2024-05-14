@@ -28,18 +28,18 @@
 int main(int argc, char** argv)
 {
   try {
-    if (argc > 2 && strcmp(argv[1],"-h")==0) { untested();
-      for (int i=2; i<argc; ++i) { untested();
+    if (argc > 2 && strcmp(argv[1],"-h")==0) {
+      for (int i=2; i<argc; ++i) {
 	File f(argv[i]);
 	make_h_file(f);
       }
-    }else if (argc > 2 && strcmp(argv[1],"-cc")==0) { untested();
-      for (int i=2; i<argc; ++i) { untested();
+    }else if (argc > 2 && strcmp(argv[1],"-cc")==0) {
+      for (int i=2; i<argc; ++i) {
 	File f(argv[i]);
 	make_cc_file(f);
       }
-    }else if (argc > 2 && strcmp(argv[1],"-dump")==0) { untested();
-      for (int i=2; i<argc; ++i) { untested();
+    }else if (argc > 2 && strcmp(argv[1],"-dump")==0) {
+      for (int i=2; i<argc; ++i) {
 	File f(argv[i]);
 	make_dump_file(f);
       }
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
     }else{untested();
       throw Exception("no input files");
     }
-  }catch (Exception const& e) { untested();
+  }catch (Exception const& e) {
     std::cout << e.message() << '\n';
   }
   return errorcount;
