@@ -54,11 +54,11 @@ CKT_BASE::~CKT_BASE()
   assert(_probes==0);
 
   if(!_attribs){
-  }else if (_attribs->count(this) > 0) {
-    _attribs->erase(this, reinterpret_cast<bool*>(this)+1);
+  }else if (_attribs->count(id_tag()) > 0) {
+    _attribs->erase(id_tag(), id_tag()+1);
   }else{
   }
-  assert(!_attribs || _attribs->count(this)==0);
+  assert(!_attribs || _attribs->count(id_tag())==0);
 }
 /*--------------------------------------------------------------------------*/
 const std::string CKT_BASE::long_label()const

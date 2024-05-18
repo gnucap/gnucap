@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  *------------------------------------------------------------------
- * real base for anything to do with a circuit
+ * storage for attributes, not the same as parameters
  */
 //testing=script 2023.10.25
 #ifndef U_ATTRIB_H
@@ -27,17 +27,19 @@
 #include "ap.h"
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+typedef ptrdiff_t tag_t;
+
 class INTERFACE ATTRIB_LIST {
 private:
-  std::string _s;
+  std::string _s;	// comma separated, key=value
   int _ref_count;
-  ATTRIB_LIST* _up;
-  const void* _owner;
+  ATTRIB_LIST* _up;	// up the hierarchy, for more.
+  tag_t _owner;
 
   ATTRIB_LIST(const ATTRIB_LIST&) = delete;
   ATTRIB_LIST() = delete;
 public:
-  ATTRIB_LIST(const std::string& S, ATTRIB_LIST* UP, const void* Owner) 
+  ATTRIB_LIST(const std::string& S, ATTRIB_LIST* UP, tag_t Owner) 
     :_s(S), _ref_count(0), _up(UP), _owner(Owner) {
     if (_up) {
       _up->inc_ref_count();
@@ -61,7 +63,7 @@ public:
   int   dec_ref_count() {assert(_ref_count>0); return --_ref_count;}
   //int   ref_count()const {untested(); return _ref_count;}
 
-  const std::string string(const void* Owner)const {
+  const std::string string(tag_t Owner)const {
     if (Owner == _owner || !Owner) {
       if (_up) {
 	return _up->string(Owner) + ", " + _s;
@@ -73,45 +75,46 @@ public:
     }
   }
 
-  const std::string operator[] (const std::string& Key)const {itested();
+  const std::string operator[] (const std::string& Key)const {untested();
     CS cmd(CS::_STRING, _s);
     bool found = false;
     std::string val("0");
 
-    while (cmd.more()) {itested();
-      if (cmd >> Key) {itested();
-	if (cmd >> "=") {itested();
+    while (cmd.more()) {untested();
+      if (cmd >> Key) {untested();
+	if (cmd >> "=") {untested();
 	  cmd >> val;
 	}else{untested();
 	  val = "1";
 	}
 	found = true;
 	// keep looking in case there is another, which will supercede
-      }else{itested();
+	// finds right-most match using left-right search
+      }else{untested();
 	cmd.skiparg();
-	if (cmd >> "=") {itested();
+	if (cmd >> "=") {untested();
 	  cmd.ctos();
 	}else{untested();
 	}
       }
     }
 
-    if (found) {itested();
+    if (found) {untested();
       return val;
     }else if (_up) {untested();
       return (*_up)[Key];
-    }else{itested();
+    }else{untested();
       return "0";
     }
   }
-  ATTRIB_LIST& chown(const void* Old, const void* New) {
+  ATTRIB_LIST& chown(tag_t Old, tag_t New) {
     if(_owner == Old){
       _owner = New;
-      if(_up){
+      if(_up){untested();
 	_up->chown(Old, New);
       }else{
       }
-    }else{
+    }else{untested();
     }
     return *this;
   }
@@ -135,24 +138,32 @@ public:
       if (_p->dec_ref_count()==0) {
 	delete _p;
 	_p = NULL;
-      }else{itested();
+      }else{
       }
     }else{
     }
   }
+
   operator bool()const {return _p;}
-  const std::string string(const void* Owner)const {return _p->string(Owner);}
-  const std::string operator[] (const std::string& Key)const {itested();return ((_p) ? (*_p)[Key] : "0");}
+
+  const std::string string(tag_t Owner)const {
+    assert(_p);
+    return _p->string(Owner);
+  }
+
+  const std::string operator[] (const std::string& Key)const {untested();
+    return ((_p) ? (*_p)[Key] : "0");
+  }
 
   ATTRIB_LIST_p& operator=(const ATTRIB_LIST_p& P) {
-    if ((_p = P._p)) {itested();
+    if ((_p = P._p)) {
       _p->inc_ref_count();
-    }else{itested();
+    }else{untested();
     }
     return *this;
   }
 
-  ATTRIB_LIST_p& add_to(const std::string& String, const void* Owner) {
+  ATTRIB_LIST_p& add_to(const std::string& String, tag_t Owner) {
     if (_p) {
       _p->dec_ref_count();
     }else{
@@ -163,10 +174,10 @@ public:
     return *this;
   }
 
-  ATTRIB_LIST_p& chown(const void* Old, const void* New) {
+  ATTRIB_LIST_p& chown(tag_t Old, tag_t New) {
     if (_p) {
       _p->chown(Old, New);
-    }else{
+    }else{untested();
     }
     return *this;
   }

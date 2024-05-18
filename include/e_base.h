@@ -41,11 +41,11 @@ private:
 public:
   static SIM_DATA* _sim;
   static PROBE_LISTS* _probe_lists;
-//protected: // TODO
+  //protected: //BUG// encapsulation
   static INDIRECT<ATTRIB_LIST_p>* _attribs;
 public:
-  ATTRIB_LIST_p& attributes(const void* x) { assert(_attribs); return (*_attribs)[x];}
-  const ATTRIB_LIST_p& attributes(const void* x)const { assert(_attribs); return _attribs->at(x);}
+  ATTRIB_LIST_p& set_attributes(tag_t x) {assert(_attribs); return (*_attribs)[x];}
+  const ATTRIB_LIST_p& attributes(tag_t x)const {assert(_attribs); return _attribs->at(x);}
   //--------------------------------------------------------------------
 protected: // create and destroy
   explicit CKT_BASE()			  :_probes(0), _label() {}
@@ -53,6 +53,11 @@ protected: // create and destroy
   explicit CKT_BASE(const CKT_BASE& p)	  :_probes(0), _label(p._label) {}
   virtual  ~CKT_BASE();
   virtual void	      purge() {}
+  //--------------------------------------------------------------------
+public: // tags -- an identifier
+	  tag_t id_tag()const			{return tag_t(this)<<16;}
+  virtual tag_t port_id_tag(int i)const		{return id_tag()-(i+1);}
+  virtual tag_t param_id_tag(int i)const	{return id_tag()+(i+1);}
   //--------------------------------------------------------------------
 public: // user stuff
   virtual std::string help_text()const {return "";}

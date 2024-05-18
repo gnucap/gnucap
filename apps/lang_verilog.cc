@@ -78,7 +78,7 @@ public: // override virtual, called by commands
   std::string	find_type_in_string(CS&)override;
 private: // local
   void skip_attributes(CS& cmd);
-  void parse_attributes(CS& cmd, const void* x);
+  void parse_attributes(CS& cmd, tag_t x);
   void parse_type(CS& cmd, CARD* x);
   void parse_args_paramset(CS& cmd, MODEL_CARD* x);
   void parse_args_instance(CS& cmd, CARD* x); 
@@ -92,7 +92,7 @@ private: // override virtual, called by print_item
   void print_comment(OMSTREAM&, const DEV_COMMENT*)override;
   void print_command(OMSTREAM& o, const DEV_DOT*)override;
 private: // local
-  void print_attributes(OMSTREAM&, const void*);
+  void print_attributes(OMSTREAM&, tag_t);
   void print_args(OMSTREAM&, const MODEL_CARD*);
   void print_args(OMSTREAM&, const COMPONENT*);
   void print_type(OMSTREAM& o, const COMPONENT* x);
@@ -112,7 +112,7 @@ void LANG_VERILOG::skip_attributes(CS& cmd)
   }
 }
 /*--------------------------------------------------------------------------*/
-void LANG_VERILOG::parse_attributes(CS& cmd, const void* x)
+void LANG_VERILOG::parse_attributes(CS& cmd, tag_t x)
 {
   assert(x);
   while (cmd >> "(*") {
@@ -120,7 +120,7 @@ void LANG_VERILOG::parse_attributes(CS& cmd, const void* x)
     while(cmd.ns_more() && !(cmd >> "*)")) {
       attrib_string += cmd.ctoc();
     }
-    attributes(x).add_to(attrib_string, x);
+    set_attributes(x).add_to(attrib_string, x);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -148,25 +148,28 @@ void LANG_VERILOG::parse_args_paramset(CS& cmd, MODEL_CARD* x)
   }
 }
 /*--------------------------------------------------------------------------*/
-static bool has_attributes(void const* x)
+static bool has_attributes(tag_t x)
 {
   assert(CKT_BASE::_attribs);
   return CKT_BASE::_attribs->at(x);
 }
 /*--------------------------------------------------------------------------*/
-static void move_attributes(void* from, void const* to)
+static void move_attributes(tag_t from, tag_t to)
 {
   assert(!has_attributes(to)); //for now.
   if(has_attributes(from)){
     (*CKT_BASE::_attribs)[to] = (*CKT_BASE::_attribs)[from].chown(from, to);
-    CKT_BASE::_attribs->erase(from, reinterpret_cast<bool*>(from)+1);
+    //assert(!has_attributes(from)); // still there.  did a copy.
+    CKT_BASE::_attribs->erase(from, from+1);
+    assert(!has_attributes(from));
   }else{
   }
 }
 /*--------------------------------------------------------------------------*/
-static void erase_attributes(void* from)
+static void erase_attributes(tag_t from)
 {
-  CKT_BASE::_attribs->erase(from, reinterpret_cast<bool*>(from)+1);
+  CKT_BASE::_attribs->erase(from, from+1);
+  assert(!has_attributes(from));
 }
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
@@ -174,7 +177,7 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
   assert(x);
 
   if (cmd >> "#(") {
-    parse_attributes(cmd, &cmd);
+    parse_attributes(cmd, tag_t(&cmd));
     size_t c_arg = cmd.cursor();
     
     if (cmd.match1('.')) {
@@ -186,15 +189,15 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	try{
 	  int Index = x->set_param_by_name(Name, value);
 	  trace3("pai", Index, Name, value);
-	  move_attributes(&cmd, x->param_id_tag(Index));
+	  move_attributes(tag_t(&cmd), x->param_id_tag(Index));
 	}catch (Exception_No_Match&) {
 	  cmd.warn(bDANGER, c_arg, x->long_label() + ": bad parameter " + Name + " ignored");
-	  erase_attributes(&cmd);
+	  erase_attributes(tag_t(&cmd));
 	}catch (Exception_Clash&) {
 	  cmd.warn(bDANGER, c_arg, x->long_label() + ": already set " + Name + ", ignored");
-	  erase_attributes(&cmd);
+	  erase_attributes(tag_t(&cmd));
 	}
-	parse_attributes(cmd, &cmd);
+	parse_attributes(cmd, tag_t(&cmd));
 	c_arg = cmd.cursor();
       }
     }else{
@@ -203,17 +206,17 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	try{
 	  std::string value = cmd.ctos(",)", "", "");
 	  x->set_param_by_index(Index, value, 0/*offset*/);
-	  move_attributes(&cmd, x->param_id_tag(Index));
-	  parse_attributes(cmd, &cmd);
+	  move_attributes(tag_t(&cmd), x->param_id_tag(Index));
+	  parse_attributes(cmd, tag_t(&cmd));
 	}catch (Exception_Too_Many& e) {untested();
 	  cmd.warn(bDANGER, c_arg, e.message());
-	  erase_attributes(&cmd);
-	}catch (Exception_Clash&) { untested();
+	  erase_attributes(tag_t(&cmd));
+	}catch (Exception_Clash&) {untested();
 	  // reachable?
 	  cmd.warn(bDANGER, c_arg, x->long_label() + ": already set, ignored");
-	  erase_attributes(&cmd);
+	  erase_attributes(tag_t(&cmd));
 	}
-	parse_attributes(cmd, &cmd);
+	parse_attributes(cmd, tag_t(&cmd));
 	c_arg = cmd.cursor();
       }
     }
@@ -466,11 +469,11 @@ void LANG_VERILOG::parse_top_item(CS& cmd, CARD_LIST* Scope)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-void LANG_VERILOG::print_attributes(OMSTREAM& o, const void* x)
+void LANG_VERILOG::print_attributes(OMSTREAM& o, tag_t x)
 {
   assert(x);
   if (attributes(x)) {
-    o << "(* " << attributes(x).string(NULL) << " *) ";
+    o << "(* " << attributes(x).string(tag_t(0)) << " *) ";
   }else{
   }
 }
@@ -541,7 +544,7 @@ void LANG_VERILOG::print_ports_long(OMSTREAM& o, const COMPONENT* x)
   }
   for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
     o << sep;
-    //////print_attributes(o, x->param_id_tag(ii));
+    //////print_attributes(o, x->port_id_tag(ii));
     o << '.' << x->current_port_name(ii) << '(' << x->current_port_value(ii) << ')';
     sep = ',';
   }
@@ -563,7 +566,7 @@ void LANG_VERILOG::print_ports_short(OMSTREAM& o, const COMPONENT* x)
   }
   for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
     o << sep;
-    //////print_attributes(o, tag-(ii+1+x->net_nodes()));
+    //////print_attributes(o, x->port_id_tag(ii));
     o << x->current_port_value(ii);
     sep = ',';
   }
@@ -645,7 +648,7 @@ class CMD_PARAMSET : public CMD {
 	assert(!new_card->owner());
 	lang_verilog.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
-      }else{ untested();
+      }else{untested();
 	delete(cl);
 	cmd.warn(bDANGER, here, "paramset: base has incorrect type");
       }
