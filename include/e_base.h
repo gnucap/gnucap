@@ -41,11 +41,8 @@ private:
 public:
   static SIM_DATA* _sim;
   static PROBE_LISTS* _probe_lists;
-  //protected: //BUG// encapsulation
-  static INDIRECT<ATTRIB_LIST_p>* _attribs;
-public:
-  ATTRIB_LIST_p& set_attributes(tag_t x) {assert(_attribs); return (*_attribs)[x];}
-  const ATTRIB_LIST_p& attributes(tag_t x)const {assert(_attribs); return _attribs->at(x);}
+private:
+  static INDIRECT<ATTRIB_LIST_p> _attribs;
   //--------------------------------------------------------------------
 protected: // create and destroy
   explicit CKT_BASE()			  :_probes(0), _label() {}
@@ -54,10 +51,16 @@ protected: // create and destroy
   virtual  ~CKT_BASE();
   virtual void	      purge() {}
   //--------------------------------------------------------------------
-public: // tags -- an identifier
-	  tag_t id_tag()const			{return tag_t(this)<<16;}
-  virtual tag_t port_id_tag(int i)const		{return id_tag()-(i+1);}
-  virtual tag_t param_id_tag(int i)const	{return id_tag()+(i+1);}
+public: // tags and attributes (meta-data)
+  tag_t			id_tag()const		{return tag_t(this)<<16;}
+  tag_t		   port_id_tag(int i)const	{return id_tag()-(i+1);}
+  tag_t		  param_id_tag(int i)const	{return id_tag()+(i+1);}
+protected:
+  const ATTRIB_LIST_p& attributes(tag_t x)const {return _attribs.at(x);}
+  ATTRIB_LIST_p&   set_attributes(tag_t x)	{return _attribs[x];}
+  bool		   has_attributes(tag_t x)const {return attributes(x);}
+  void		 erase_attributes(tag_t x)	{_attribs.erase(x);}
+  void	     erase_attributes(tag_t b, tag_t e) {_attribs.erase(b,e);}
   //--------------------------------------------------------------------
 public: // user stuff
   virtual std::string help_text()const {return "";}

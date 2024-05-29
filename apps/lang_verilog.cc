@@ -81,6 +81,7 @@ private: // local
   void parse_attributes(CS& cmd, tag_t x);
   void parse_type(CS& cmd, CARD* x);
   void parse_args_paramset(CS& cmd, MODEL_CARD* x);
+  void move_attributes(tag_t from, tag_t to);
   void parse_args_instance(CS& cmd, CARD* x); 
   void parse_label(CS& cmd, CARD* x);
   void parse_ports(CS& cmd, COMPONENT* x, bool all_new);
@@ -148,28 +149,15 @@ void LANG_VERILOG::parse_args_paramset(CS& cmd, MODEL_CARD* x)
   }
 }
 /*--------------------------------------------------------------------------*/
-static bool has_attributes(tag_t x)
-{
-  assert(CKT_BASE::_attribs);
-  return CKT_BASE::_attribs->at(x);
-}
-/*--------------------------------------------------------------------------*/
-static void move_attributes(tag_t from, tag_t to)
+void LANG_VERILOG::move_attributes(tag_t from, tag_t to)
 {
   assert(!has_attributes(to)); //for now.
   if(has_attributes(from)){
-    (*CKT_BASE::_attribs)[to] = (*CKT_BASE::_attribs)[from].chown(from, to);
-    //assert(!has_attributes(from)); // still there.  did a copy.
-    CKT_BASE::_attribs->erase(from, from+1);
+    set_attributes(to).add_to(attributes(from)->string(from), to);
+    erase_attributes(from);
     assert(!has_attributes(from));
   }else{
   }
-}
-/*--------------------------------------------------------------------------*/
-static void erase_attributes(tag_t from)
-{
-  CKT_BASE::_attribs->erase(from, from+1);
-  assert(!has_attributes(from));
 }
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
@@ -366,6 +354,7 @@ DEV_DOT* LANG_VERILOG::parse_command(CS& cmd, DEV_DOT* x)
   cmd.reset();
   parse_attributes(cmd, x->id_tag());
   CMD::cmdproc(cmd, scope);
+  x->purge();
   delete x;
   return NULL;
 }
@@ -473,7 +462,7 @@ void LANG_VERILOG::print_attributes(OMSTREAM& o, tag_t x)
 {
   assert(x);
   if (attributes(x)) {
-    o << "(* " << attributes(x).string(tag_t(0)) << " *) ";
+    o << "(* " << attributes(x)->string(tag_t(0)) << " *) ";
   }else{
   }
 }

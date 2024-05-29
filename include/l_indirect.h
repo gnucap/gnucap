@@ -60,11 +60,14 @@ public:
       return _map.at(x);
     }
   }
+  size_t erase(tag_t x) {
+    return _map.erase(x);
+  }
   size_t erase(tag_t b, tag_t e) {
     size_t c=0;
     assert(b <= e);
     for (tag_t i=b; i<e; ++i) {
-      c += _map.erase(i);
+      c += erase(i);
     }
     return c;
   }

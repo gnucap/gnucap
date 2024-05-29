@@ -21,13 +21,13 @@
  *------------------------------------------------------------------
  * storage for attributes, not the same as parameters
  */
-//testing=script 2023.10.25
+//testing=script 2024.05.26
 #ifndef U_ATTRIB_H
 #define U_ATTRIB_H
 #include "ap.h"
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-typedef ptrdiff_t tag_t;
+typedef intptr_t tag_t;
 
 class INTERFACE ATTRIB_LIST {
 private:
@@ -39,8 +39,8 @@ private:
   ATTRIB_LIST(const ATTRIB_LIST&) = delete;
   ATTRIB_LIST() = delete;
 public:
-  ATTRIB_LIST(const std::string& S, ATTRIB_LIST* UP, tag_t Owner) 
-    :_s(S), _ref_count(0), _up(UP), _owner(Owner) {
+  ATTRIB_LIST(const std::string& S, ATTRIB_LIST* Up, tag_t Owner) 
+    :_s(S), _ref_count(0), _up(Up), _owner(Owner) {
     if (_up) {
       _up->inc_ref_count();
     }else{
@@ -62,6 +62,20 @@ public:
   int   inc_ref_count() {return ++_ref_count;}
   int   dec_ref_count() {assert(_ref_count>0); return --_ref_count;}
   //int   ref_count()const {untested(); return _ref_count;}
+
+  tag_t owner()const {return _owner;}
+
+  ATTRIB_LIST& chown(tag_t Old, tag_t New) {
+    if(_owner == Old){
+      _owner = New;
+      if(_up){
+	_up->chown(Old, New);
+      }else{
+      }
+    }else{untested();
+    }
+    return *this;
+  }
 
   const std::string string(tag_t Owner)const {
     if (Owner == _owner || !Owner) {
@@ -107,17 +121,6 @@ public:
       return "0";
     }
   }
-  ATTRIB_LIST& chown(tag_t Old, tag_t New) {
-    if(_owner == Old){
-      _owner = New;
-      if(_up){untested();
-	_up->chown(Old, New);
-      }else{
-      }
-    }else{untested();
-    }
-    return *this;
-  }
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE ATTRIB_LIST_p {
@@ -144,19 +147,23 @@ public:
     }
   }
 
-  operator bool()const {return _p;}
+  operator bool()const                 {return _p;}
 
-  const std::string string(tag_t Owner)const {
-    assert(_p);
-    return _p->string(Owner);
-  }
-
-  const std::string operator[] (const std::string& Key)const {untested();
-    return ((_p) ? (*_p)[Key] : "0");
-  }
+  ATTRIB_LIST const* operator->()const {return _p;}
+  ATTRIB_LIST*       operator->()      {return _p;}
 
   ATTRIB_LIST_p& operator=(const ATTRIB_LIST_p& P) {
-    if ((_p = P._p)) {
+    if (_p) {untested();
+      if (_p->dec_ref_count()==0) {untested();
+	delete _p;
+	_p = NULL;
+      }else{untested();
+      }
+    }else{
+    }
+    assert(!_p);
+    _p = P._p;
+    if (_p) {
       _p->inc_ref_count();
     }else{untested();
     }
@@ -165,20 +172,15 @@ public:
 
   ATTRIB_LIST_p& add_to(const std::string& String, tag_t Owner) {
     if (_p) {
+      if (_p->owner() == Owner) {
+      }else{untested();
+      }
       _p->dec_ref_count();
     }else{
     }
     _p = new ATTRIB_LIST(String, _p, Owner);
     assert(_p);
     _p->inc_ref_count();
-    return *this;
-  }
-
-  ATTRIB_LIST_p& chown(tag_t Old, tag_t New) {
-    if (_p) {
-      _p->chown(Old, New);
-    }else{untested();
-    }
     return *this;
   }
 };

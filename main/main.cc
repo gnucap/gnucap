@@ -244,7 +244,6 @@ int main(int argc, const char *argv[])
   prepare_env();
   CKT_BASE::_sim = new SIM_DATA;
   CKT_BASE::_probe_lists = new PROBE_LISTS;
-  CKT_BASE::_attribs = new INDIRECT<ATTRIB_LIST_p>;
   try {
   {
     SET_RUN_MODE xx(rBATCH);
@@ -310,8 +309,6 @@ int main(int argc, const char *argv[])
   CKT_BASE::_probe_lists = NULL;
   delete CKT_BASE::_sim;
   CKT_BASE::_sim = NULL;
-  delete CKT_BASE::_attribs;
-  CKT_BASE::_attribs = NULL;
   
   return 0;
 }

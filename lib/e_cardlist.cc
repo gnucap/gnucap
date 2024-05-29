@@ -103,7 +103,7 @@ CARD_LIST& CARD_LIST::erase(iterator ci)
   if (*ci) {
     (*ci)->purge();
     delete *ci;
-  }else{itested();
+  }else{untested();
   }
   _cl.erase(ci);
   return *this;
@@ -129,7 +129,7 @@ CARD_LIST& CARD_LIST::erase_all()
     if (_cl.back()) {
       _cl.back()->purge();
       delete _cl.back();
-    }else{itested();
+    }else{untested();
     }
     _cl.pop_back();
   }
