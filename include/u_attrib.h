@@ -171,16 +171,19 @@ public:
   }
 
   ATTRIB_LIST_p& add_to(const std::string& String, tag_t Owner) {
-    if (_p) {
-      if (_p->owner() == Owner) {
-      }else{untested();
+    if (String != "") {
+      if (_p) {
+	if (_p->owner() == Owner) {
+	}else{untested();
+	}
+	_p->dec_ref_count();
+      }else{
       }
-      _p->dec_ref_count();
+      _p = new ATTRIB_LIST(String, _p, Owner);
+      assert(_p);
+      _p->inc_ref_count();
     }else{
     }
-    _p = new ATTRIB_LIST(String, _p, Owner);
-    assert(_p);
-    _p->inc_ref_count();
     return *this;
   }
 };
