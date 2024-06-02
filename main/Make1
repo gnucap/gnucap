@@ -24,7 +24,7 @@ TARGET_EXE = gnucap
 INSTALL_FILES = $(TARGET_EXE)$(TARGET_EXE_EXT)
 INSTALL_DIR = $(PREFIX)/bin
 #------------------------------------------------------------------------
-LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
+LIBS = -lgnucap -L../../lib/O-DEBUG -L../../lib/O
 INCLUDE = -I. -I../include -I../../include
 #------------------------------------------------------------------------
 DELETED =

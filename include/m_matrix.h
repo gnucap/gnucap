@@ -118,8 +118,6 @@ private:
   mutable bool* _changed;// flag: this node changed value
   int*	_lownode;	// lowest node connecting to this one
   T*	_space;		// ptr to actual memory space used
-  T**	_rowptr;	// ptrs to col 0 of every row
-  T**	_colptr;	// ptrs to row 0 of every col
   T**	_diaptr;	// ptrs to diagonal
   int	_nzcount;	// count of non-zero elements
   int	_size;		// # of rows and columns
@@ -188,8 +186,6 @@ template <class T>
 void BSMATRIX<T>::init(int ss)
 {
   assert(!_lownode);
-  assert(!_colptr);
-  assert(!_rowptr);
   assert(!_diaptr);
   assert(!_space);
 
@@ -217,8 +213,8 @@ T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd)
   int len = dd - kk;
   T& dot = m(rr, cc);
   if (len > 0) {
-    T* row = &(l(rr,kk));
-    T* col = &(u(kk,cc));
+    T* row = &(l(rr,kk));	// _diaptr[r][r-c];
+    T* col = &(u(kk,cc));	// _diaptr[c][r-c];
     /* for (ii = kk;   ii < dd;   ++ii) */
     for (int ii = 0;   ii < len;   ++ii) {
       dot -= row[-ii] * col[ii];
@@ -255,8 +251,6 @@ BSMATRIX<T>::BSMATRIX(int ss)
   :_changed(NULL),
    _lownode(NULL),
    _space(NULL),
-   _rowptr(NULL),
-   _colptr(NULL),
    _diaptr(NULL),
    _nzcount(0),
    _size(ss),
@@ -305,12 +299,10 @@ template <class T>
 void BSMATRIX<T>::unallocate()
 {
   assert (_zero == 0.);
-  delete [] _rowptr;
-  delete [] _colptr;
   delete [] _diaptr;
   delete [] _space;
 
-  _rowptr = _colptr = _diaptr = NULL;
+  _diaptr = NULL;
   _space = NULL;
 }
 /*--------------------------------------------------------------------------*/
@@ -320,8 +312,6 @@ template <class T>
 void BSMATRIX<T>::allocate()
 {
   assert(_lownode);
-  assert(!_colptr);
-  assert(!_rowptr);
   assert(!_diaptr);
   assert(!_space);
 
@@ -330,13 +320,9 @@ void BSMATRIX<T>::allocate()
     _nzcount += 2 * (ii - _lownode[ii]) + 1;
   }
 
-  _colptr = new T*[size()+1];
-  _rowptr = new T*[size()+1];
   _diaptr = new T*[size()+1];
   _space  = new T[_nzcount];
 
-  assert(_colptr);
-  assert(_rowptr);
   assert(_diaptr);
 
   zero();
@@ -344,9 +330,7 @@ void BSMATRIX<T>::allocate()
   {
     T* point = _space;
     for (int ii = 0;   ii <= size();   ++ii) {
-      _colptr[ii] = point - _lownode[ii];
-      _rowptr[ii] = _colptr[ii] + 2*ii;
-      _diaptr[ii] = _colptr[ii] + ii;
+      _diaptr[ii] = point + ii - _lownode[ii];
       point += 2 * (ii - _lownode[ii]) + 1;
     }
   }
@@ -422,7 +406,7 @@ T& BSMATRIX<T>::d(int r, int c)
 template <class T>
 T BSMATRIX<T>::u(int r, int c) const
 {
-  assert(_colptr);
+  assert(_diaptr);
   assert(_lownode);
   assert(0 < r);
   assert(r <= c);
@@ -430,14 +414,14 @@ T BSMATRIX<T>::u(int r, int c) const
   assert(1 <= _lownode[c]);
   assert(_lownode[c] <= r);
 
-  return _colptr[c][r];
+  return _diaptr[c][r-c];
 }
 /*--------------------------------------------------------------------------*/
 /* u: as above, but lvalue */
 template <class T>
 T& BSMATRIX<T>::u(int r, int c)
 {
-  assert(_colptr);
+  assert(_diaptr);
   assert(_lownode);
   assert(0 < r);
   assert(r <= c);
@@ -445,7 +429,7 @@ T& BSMATRIX<T>::u(int r, int c)
   assert(1 <= _lownode[c]);
   assert(_lownode[c] <= r);
 
-  return _colptr[c][r];
+  return _diaptr[c][r-c];
 }
 /*--------------------------------------------------------------------------*/
 /* l: fast matrix entry access
@@ -454,7 +438,7 @@ T& BSMATRIX<T>::u(int r, int c)
 template <class T>
 T BSMATRIX<T>::l(int r, int c) const
 {
-  assert(_rowptr);
+  assert(_diaptr);
   assert(_lownode);
   assert(0 < c);
   assert(c <= r);
@@ -462,14 +446,14 @@ T BSMATRIX<T>::l(int r, int c) const
   assert(1 <= _lownode[r]);
   assert(_lownode[r] <= c);
 
-  return _rowptr[r][-c];
+  return _diaptr[r][r-c];
 }
 /*--------------------------------------------------------------------------*/
 /* l: as above, but lvalue */
 template <class T>
 T& BSMATRIX<T>::l(int r, int c)
 {
-  assert(_rowptr);
+  assert(_diaptr);
   assert(_lownode);
   assert(0 < c);
   assert(c <= r);
@@ -477,7 +461,7 @@ T& BSMATRIX<T>::l(int r, int c)
   assert(1 <= _lownode[r]);
   assert(_lownode[r] <= c);
 
-  return _rowptr[r][-c];
+  return _diaptr[r][r-c];
 }
 /*--------------------------------------------------------------------------*/
 /* m: semi-fast matrix entry access
@@ -487,7 +471,18 @@ T& BSMATRIX<T>::l(int r, int c)
 template <class T>
 T& BSMATRIX<T>::m(int r, int c)
 {
-  return (c>=r) ? u(r,c) : l(r,c);
+  assert(_diaptr);
+  assert(_lownode);
+  assert(0 < r);
+  assert(r <= _size);
+  assert(1 <= _lownode[r]);
+  assert(_lownode[r] <= c);
+  assert(0 < c);
+  assert(c <= _size);
+  assert(1 <= _lownode[c]);
+  assert(_lownode[c] <= r);
+
+  return _diaptr[(c>=r)?c:r][r-c];
 }
 /*--------------------------------------------------------------------------*/
 /* s: general matrix entry access (read-only)

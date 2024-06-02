@@ -49,7 +49,7 @@ DISPATCHER<CKT_BASE> status_dispatcher;
 DISPATCHER<CKT_BASE> help_dispatcher;
 DISPATCHER<PROBELIST> probe_dispatcher;
 
-// for the rest, order should not matter, but it is convenient here
+INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
 CARD_LIST CARD_LIST::card_list;	// root circuit 
 
 // the rest of this should not be here, is residue of old stuff

@@ -21,23 +21,25 @@
  *------------------------------------------------------------------
  * indirect storage of data
  */
-//testing=script 2023.10.25
+//testing=script 2024.05.16
 #ifndef L_INDIRECT_H
 #define L_INDIRECT_H
 #include "md.h"
 /*--------------------------------------------------------------------------*/
+typedef intptr_t tag_t;
+
 template <class T>
 class INDIRECT {
- private:
-  std::map<const void*, T> _map;
+private:
+  std::map<tag_t, T> _map;
   INDIRECT(const INDIRECT&) = delete;
- public:
-  INDIRECT() : _map() {_map[NULL];}
+public:
+  INDIRECT() : _map() {_map[tag_t(0)];}
   ~INDIRECT() {}
-
-  size_t count(const void* x)const {return _map.count(x);}
+  
+  size_t count(tag_t x)const {return _map.count(x);}
     
-  T& operator[](const void* x) {
+  T& operator[](tag_t x) {
     if (!x) {untested();
       // null tag, not allowed here
     }else if (_map.count(x) == 0) {
@@ -49,20 +51,23 @@ class INDIRECT {
     assert(x);
     return _map[x];
   }
-  const T& at(const void* x)const {
+  const T& at(tag_t x)const {
     if (!x) {untested();
-      return _map.at(NULL);
+      return _map.at(tag_t(0));
     }else if (_map.count(x) == 0) {
-      return _map.at(NULL);
+      return _map.at(tag_t(0));
     }else{
       return _map.at(x);
     }
   }
-  size_t erase(void* b, void* e) {
+  size_t erase(tag_t x) {
+    return _map.erase(x);
+  }
+  size_t erase(tag_t b, tag_t e) {
     size_t c=0;
     assert(b <= e);
-    for (void* i=b; i<e; i=reinterpret_cast<bool*>(i)+1) {
-      c += _map.erase(i);
+    for (tag_t i=b; i<e; ++i) {
+      c += erase(i);
     }
     return c;
   }

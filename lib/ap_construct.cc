@@ -197,7 +197,7 @@ char *getcmd(const char *prompt, char *buffer, int buflen)
       
       if (*buffer) {itested();
 	add_history(buffer);
-      }else{ untested();
+      }else{itested();
       }
     }else
 #endif
