@@ -81,10 +81,12 @@ void DEV_VCVS::dc_advance()
   }else{
     _y[0].f1 = value();
 
-    if(_y1.f1 != _y[0].f1){ untested();
+    if(_y1.f1 != _y[0].f1){
       store_values();
       q_load();
-      _m0.c0 = _y[0].f1;
+      _m0.c1 = -_loss0 * _y[0].f1;
+      _m0.c0 = 0.;
+      trace1("DEV_VCVS::dc_advance", _m0.c0);
       // set_constant(false); not needed. nothing to do in do_tr.
     }else{
     }
