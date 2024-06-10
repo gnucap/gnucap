@@ -28,16 +28,16 @@
  * out:
  *   c = "divided differences" (mult by n! to get derivative)
  */
-//testing=script,complete 2006.07.13
 /*--------------------------------------------------------------------------*/
+#include <io_trace.h>
 #if 0
 template<class T1, class T2>
 inline void divided_differences(T1 c[], int n, const T2 t[])
-{
+{ untested();
   untested();
-  for (int d=1; d<n; ++d) {
+  for (int d=1; d<n; ++d) { untested();
     untested();
-    for (int i=n-1; i>=d; --i) {
+    for (int i=n-1; i>=d; --i) { untested();
       untested();
       c[i] = (c[i-1] - c[i]) / (t[i-d] - t[i]);
     }

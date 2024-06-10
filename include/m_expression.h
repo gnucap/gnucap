@@ -29,9 +29,7 @@
 class CARD_LIST;
 class Expression;
 /*--------------------------------------------------------------------------*/
-class Token
-  :public Base
-{
+class Token : public Base {
 private:
   std::string _name;
   const Base* _data;
@@ -153,7 +151,7 @@ public:
   explicit Token_CONSTANT(std::string Name, Base const* Data, std::string Args="")
     : Token(Name, Data) {assert(Args=="");}
   explicit Token_CONSTANT(const Token_CONSTANT& P) : Token(P) {untested();}
-  Token* clone()const override {
+  Token* clone()const override { untested();
     if (auto s = dynamic_cast<String const*>(data())) {itested();
       return new Token_CONSTANT(name(), new String(*s)); // BUG?
     }else{ untested();
@@ -163,9 +161,7 @@ public:
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
-class INTERFACE Expression
-  :public List_Base<Token>
-{
+class INTERFACE Expression : public List_Base<Token> {
 public:
   const CARD_LIST* _scope;
 public:

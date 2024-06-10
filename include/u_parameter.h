@@ -305,7 +305,7 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
     // anything else means look up the value
     if (recursion <= OPT::recursion) {
       _v = lookup_solve(def, scope);
-      if (_v == NOT_INPUT) {
+      if (_v == NOT_INPUT) {itested();
 	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
 	//BUG// not reachable if T==bool?
 	//BUG// needs to show scope

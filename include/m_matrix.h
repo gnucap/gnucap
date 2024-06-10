@@ -532,12 +532,12 @@ T BSMATRIX<T>::s(int row, int col)const
 /*--------------------------------------------------------------------------*/
 template <class T>
 void BSMATRIX<T>::load_point(int i, int j, T value)
-{
-  if (i > 0 && j > 0) {
+{itested();
+  if (i > 0 && j > 0) {itested();
     set_changed(j);
     set_changed(i);
     m(i,j) += value;
-  }else{
+  }else{itested();
   }
 }
 /*--------------------------------------------------------------------------*/

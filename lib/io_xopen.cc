@@ -71,7 +71,6 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
 	if (c == '.') {		/* as determined by a '.'	    */
 	  defalt = false;		/* not before the directory	    */
 	}else if (strchr(ENDDIR,c)) {itested();	/* separator-terminator character   */
-	  itested();
 	  defalt = true;		/* '\' or '/' for msdos,	    */
 	}
       }  				/* ']' or '/' for vms,		    */

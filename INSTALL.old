@@ -1,0 +1,37 @@
+INSTALL.old: in-tree build system
+
+WARNING: this procedure may create files that interfere with out-of-tree builds
+as described in INSTALL.
+
+In most cases, you can do:
+=======
+./configure.old
+make
+sudo make install
+=======
+
+The scripts are recursive, so you can cd to any of the subdirectories
+and do the same.
+
+By default, it installs in /usr/local .  To change it, you can specify a prefix:
+
+./configure.old --prefix=/usr/share
+
+If you have already compiled it, you do not need to recompile to
+change the install directory.  Just ./configure.old and make install.
+
+== Other targets:
+
+"make clean" removes object files.
+
+"make debug" builds a development version with additional debugging
+code enabled.  It runs about 2x slower than the standard build.
+
+"make depend" builds the files "Make.depend" which are used to decide
+what to rebuild.  You need to do this only if you modify the code in a
+way that changes what files are included by #include.
+
+"make tags" builds cross reference files that can be used by some
+editors, such as emacs, to navigate the code.
+
+"make manifest" builds a list of the files included in a distribution.

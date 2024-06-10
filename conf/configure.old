@@ -1,10 +1,6 @@
 #!/bin/sh
 # conf/configure
 # configure for config
-#
-echo -n '# ' > config.log
-date >> config.log
-echo $0 "$@" >> config.log
 
 #-------------  Stuff added to enable --prefix  --------------
 if test "x$1" != "x"; then
@@ -25,17 +21,7 @@ else
     prefix=/usr/local
 fi
 
-shift
-
-if test "x${1#--srcdir=}" != "x$1"; then
-    srcdir=${1#--srcdir=}
-    # echo "Found --srcdir in input args.  Setting srcdir $srcdir."
-else
-    echo need srcdir >&2
-    exit 1
-fi
-
-top_srcdir=$srcdir/..
+sed -e "s#/usr/local#$prefix#" ../Makefile.template > Makefile
 #----------------------------------------------------------------
 pkglibdir='${prefix}/lib/gnucap'
 pkglibdir_expanded="${prefix}/lib/gnucap"
@@ -57,11 +43,12 @@ sed -e "s#@prefix@#$prefix#" \
     -e "s#@pkglibdir_expanded@#$pkglibdir_expanded#" \
     -e "s#@CXXFLAGS@#$CCFLAGS#" \
     -e "s#@GNUCAP_LIBS@#-lgnucap#" \
-    -e "s#@CXX@#$CXX#"
+    -e "s#@CXX@#$CXX#" < $1.in > $1
 }
 
-fill_template < $srcdir/config.h.in > config.h
-fill_template < $srcdir/gnucap-conf.in > gnucap-conf
+fill_template config.h
+fill_template gnucap-conf
+fill_template gnucap.conf
 
 chmod +x gnucap-conf
 
@@ -69,12 +56,6 @@ echo \# created by $PWD/$0. do not edit >Make2
 echo \#------------------------------------------------------------------------ >>Make2
 echo "PREFIX = " $prefix >>Make2
 echo "CXX = c++" >>Make2
-#----------------------------------------------------------------
-echo "srcdir = ${srcdir}" > Makefile
-[ "${srcdir}" = "." ] || echo "VPATH = \${srcdir}" >> Makefile
-echo include ${srcdir}/Make1 >> Makefile
-echo include Make2 >> Makefile
-echo "include ${top_srcdir}/include/Make3" >> Makefile
-#----------------------------------------------------------------
+cat Make1 Make2 ../include/Make3 >Makefile
 
 exit 0

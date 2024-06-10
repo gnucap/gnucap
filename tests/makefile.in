@@ -1,0 +1,12 @@
+# makefile for mgvams tests
+#TODO
+#srcdir = @SRCDIR@
+#top_srcdir = @TOP_SRCDIR@
+
+CXX = $(shell $(GNUCAP_CONF) --cxx)
+GNUCAP_CPPFLAGS = $(shell $(GNUCAP_CONF) --cppflags) -DADD_VERSION -DPIC
+GNUCAP_CXXFLAGS = $(shell $(GNUCAP_CONF) --cxxflags) -std=c++11
+MAKE_CPPFLAGS = -I${top_srcdir}/src
+LN_S = ln -sf
+DIFF = diff -rup
+

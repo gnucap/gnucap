@@ -30,8 +30,7 @@
 class Float;
 class String;
 /*--------------------------------------------------------------------------*/
-class Base
-{
+class Base {
 private:
   explicit Base(const Base&) {unreachable();}
   // This private base copy constructor inhibits generation of
@@ -100,9 +99,7 @@ inline std::ostream& operator<<(std::ostream& out, const Base& d)
 					{d.dump(out); return out;}
 /*--------------------------------------------------------------------------*/
 template <class T>
-class List_Base
-  :public Base
-{
+class List_Base :public Base {
 private:
   std::list<T*> _list;
 public:
@@ -130,9 +127,7 @@ public:
 };
 /*--------------------------------------------------------------------------*/
 template <class T>
-class List
-  :public List_Base<T>
-{
+class List :public List_Base<T> {
 protected:
   explicit List() {untested();}
 public:
@@ -143,7 +138,7 @@ public:
 template <class T>
 class Collection
   :public List_Base<T>
-{
+{ untested();
 protected:
   explicit Collection() {untested();}
 public:
@@ -151,9 +146,7 @@ public:
 };
 #endif
 /*--------------------------------------------------------------------------*/
-class Float
-  :public Base
-{
+class Float :public Base {
 private:
   double _data;
   void dump(std::ostream& o)const override {itested();
@@ -225,9 +218,7 @@ public:
   bool  is_NA()const			{untested();return _data == NOT_INPUT;}
 };
 /*--------------------------------------------------------------------------*/
-class String
-  :public Base
-{
+class String :public Base {
 protected:
   std::string _data;
 public:
@@ -292,9 +283,8 @@ public:
   Base* r_modulo(const Float*)const override	{untested();return NULL;}
 };
 /*--------------------------------------------------------------------------*/
-class Name_String	// a string that contains only alnum and _[]
-  :public String
-{
+// a string that contains only alnum and _[]
+class Name_String : public String {
 public:
   void parse(CS&) override;
 public:
@@ -302,9 +292,8 @@ public:
   explicit Name_String()		{untested();}
 };
 /*--------------------------------------------------------------------------*/
-class Angled_String	// <alphanumeric> string
-  :public String
-{
+// <alphanumeric> string
+class Angled_String : public String {
 public:
   void parse(CS&) override;
 public:
@@ -312,9 +301,9 @@ public:
   explicit Angled_String()		{}
 };
 /*--------------------------------------------------------------------------*/
-class Quoted_String	// the first non-blank character is a quote
-  :public String	// a repeat of the same character terminates it
-{
+// the first non-blank character is a quote
+// a repeat of the same character terminates it
+class Quoted_String : public String {
 public:
   void parse(CS&) override;
 public:
@@ -322,9 +311,8 @@ public:
   explicit Quoted_String()		{}
 };
 /*--------------------------------------------------------------------------*/
-class Tail_String	// a string that is parsed to the end of a line
-  :public String
-{
+// a string that is parsed to the end of a line
+class Tail_String : public String {
 public:
   void parse(CS&) override;
   explicit Tail_String(CS& file)	{untested();parse(file);}

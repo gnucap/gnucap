@@ -21,17 +21,20 @@
 #------------------------------------------------------------------------
 TARGET_EXE = gnucap
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET_EXE)$(TARGET_EXE_EXT)
-INSTALL_DIR = $(PREFIX)/bin
+INSTALL_FILES_1 = $(TARGET_EXE)$(TARGET_EXE_EXT)
+INSTALL_DIR_1 = $(PREFIX)/bin
 #------------------------------------------------------------------------
-LIBS = -lgnucap -L../../lib/O-DEBUG -L../../lib/O
+# BUG: -L belongs to LDFLAGS.
+LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
+#------------------------------------------------------------------------
+# BUG: include paths are probably wrong. (Workaround: override in Make2)
 INCLUDE = -I. -I../include -I../../include
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
 RAW_SRCS = main.cc 
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 configure
+RAW_OTHER = Make1
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------

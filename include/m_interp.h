@@ -35,7 +35,7 @@ FPOLY1 interpolate(Iterator begin, Iterator end, double x,
 {
   double f1 = NOT_VALID;
   double f0 = NOT_VALID;
-  if (begin == end) {
+  if (begin == end) { untested();
     untested();
     throw Exception("interpolate table is empty");
   }
@@ -62,7 +62,7 @@ FPOLY1 interpolate(Iterator begin, Iterator end, double x,
     if ((upper == end) && (x > (*upper).first) && (above != NOT_INPUT)) {
       // x is out of bounds, above
       lower = upper;
-      if (above != 0.) {
+      if (above != 0.) { untested();
 	untested();
       }
       f1 = above;

@@ -21,6 +21,10 @@
 #------------------------------------------------------------------------
 # Part 3 of a Makefile
 #------------------------------------------------------------------------
+MKDIR_P = mkdir -p
+am__base_list = cat # for now
+INSTALL = install -m 644
+#------------------------------------------------------------------------
 all: $(TARGET) ${TARGET_LIB:%=%${TARGET_LIB_EXT}} ${TARGET_EXE:%=%${TARGET_EXE_EXT}}
 #------------------------------------------------------------------------
 tags: $(HDRS) $(SRCS)
@@ -30,12 +34,25 @@ checkout:
 	co $(RAW)
 #------------------------------------------------------------------------
 install-debug : install
-
-install : $(INSTALL_FILES)  $(INSTALL_FILES_1)  $(INSTALL_FILES_2)
-	[ -z "$(INSTALL_DIR)" ]   || mkdir -p $(DESTDIR)$(INSTALL_DIR)
-	[ -z "$(INSTALL_DIR_1)" ] || mkdir -p $(DESTDIR)$(INSTALL_DIR_1)
-	[ -z "$(INSTALL_DIR_2)" ] || mkdir -p $(DESTDIR)$(INSTALL_DIR_2)
-	[ -z "$(INSTALL_FILES)" ]   || cp $(INSTALL_FILES) $(DESTDIR)$(INSTALL_DIR)
+#------------------------------------------------------------------------
+install-files: $(INSTALL_FILES)
+	@list='$(INSTALL_FILES)'; test -n "$(INSTALL_DIR)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(INSTALL_DIR)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(INSTALL_DIR)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL) $$files '$(DESTDIR)$(INSTALL_DIR)'"; \
+	  $(INSTALL) $$files "$(DESTDIR)$(INSTALL_DIR)" || exit $$?; \
+	done
+#------------------------------------------------------------------------
+install : install-files  $(INSTALL_FILES_1)  $(INSTALL_FILES_2)
+	[ -z "$(INSTALL_DIR_1)" ] || ${MKDIR_P} $(DESTDIR)$(INSTALL_DIR_1)
+	[ -z "$(INSTALL_DIR_2)" ] || ${MKDIR_P} $(DESTDIR)$(INSTALL_DIR_2)
 	[ -z "$(INSTALL_FILES_1)" ] || cp $(INSTALL_FILES_1) $(DESTDIR)$(INSTALL_DIR_1)
 	[ -z "$(INSTALL_FILES_2)" ] || cp $(INSTALL_FILES_2) $(DESTDIR)$(INSTALL_DIR_2)
 #------------------------------------------------------------------------
@@ -51,9 +68,27 @@ backup:
 	mkdir -p BACKUP
 	cp $(RAW) BACKUP
 #------------------------------------------------------------------------
-depend: Make.depend
-Make.depend: $(SRCS) $(HDRS)
-	$(CXX) -MM $(CCFLAGS) $(SRCS) > Make.depend
+#   depend: Make.depend
+#   Make.depend: $(SRCS) $(HDRS)
+#   	[ -z "$+" ] ||	(cd ${srcdir}; $(CXX) -MM $(CCFLAGS) ${MAKE_CPPFLAGS} ${CPPFLAGS} $(SRCS) > Make.depend)
+#   #	[ -z "$+" ] || $(CXX) -MM $(CCFLAGS) ${MAKE_CPPFLAGS} ${CPPFLAGS} $+ > ${srcdir}/Make.depend
+#------------------------------------------------------------------------
+depend ${srcdir}/Make.depend: # $(SRCS) ${GENERATED_SRCS} $(HDRS)
+	: > ${srcdir}/Make.depend
+	if [ -n "$(RAW_SRCS)" ]; then \
+		( cd ${srcdir}; $(CXX) -MM $(CXXFLAGS) -I../include ${CPPFLAGS} \
+		${MAKE_CPPFLAGS} ${RAW_SRCS} -DDEPEND ) \
+		>> ${srcdir}/Make.depend; \
+	fi
+	for i in $(GENERATED_SRCS); do \
+		echo $${i%cc}o: $${i} >> ${srcdir}/Make.depend; \
+		( cd ${srcdir}; $(CXX) -xc++ -MT $${i%cc}o -MM $(CXXFLAGS) -I ../include -isystem ${CURDIR}  ${CPPFLAGS} \
+		${MAKE_CPPFLAGS} -DDEPEND - < ${CURDIR}/$$i >> Make.depend ); \
+		$(CXX) -MM $(CXXFLAGS) -isystem ${top_srcdir}/include ${CPPFLAGS} \
+		${MAKE_CPPFLAGS} $$i -DDEPEND \
+		>> ${srcdir}/Make.depend; \
+	done
+	
 #-----------------------------------------------------------------------------
 date:
 	date "+#define PATCHLEVEL \"`git branch | awk '/\*/ { print $$2; }'` %Y.%m.%d\"" \
@@ -88,11 +123,17 @@ maintainer-clean:
 #-----------------------------------------------------------------------------
 $(TARGET_EXE)$(TARGET_EXE_EXT): $(TARGET_DEPENDS)
 	rm -f $@
-	$(MAKE_EXE) -o $@
+	$(MAKE_EXE) # -o $@
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
 $(TARGET_LIB)$(TARGET_LIB_EXT): $(TARGET_DEPENDS)
 	rm -f $@
-	$(MAKE_LIB) -o $@
+	$(MAKE_LIB) # -o $@
 #------------------------------------------------------------------------
+#------------------------------------------------------------------------
+%.cc %.h: %.model
+	${ENV} $(MODELGEN) $< #  Make3 rule
+	@touch $*.cc
+#------------------------------------------------------------------------
+.PHONY: depend install-files install
 #------------------------------------------------------------------------

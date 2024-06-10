@@ -1,0 +1,5 @@
+
+SUBDIRS = conf include lib modelgen main apps tests
+
+# run these recursively in an attempt to provide legacy functionality.
+EXTRA_RECURSIVE_TARGETS = debug g++

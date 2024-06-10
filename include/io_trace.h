@@ -164,8 +164,15 @@
 
 #ifdef __cplusplus
 
+#ifdef TRACE_UNTESTED_ONCE
+#define untested() { static bool x ## __LINE__; if(!x ## __LINE__){ std::cerr <<  "@@#\n@@@:"<< __FILE__ << ":"<< __LINE__ \
+          <<":" << __func__ << "\n"; x ## __LINE__ =true;} }
+#else
 #define untested() ( std::cerr <<  "@@#\n@@@:"<< __FILE__ << ":"<< __LINE__ \
           <<":" << __func__ << "\n" )
+#endif
+
+// are these used anywhere?
 #define untested1(s,x) ( std::cerr <<  "@@#\n@@@:"<< __FILE__ << ":"<< __LINE__ \
           <<":" << __func__ << ": "  << s << "  " << #x << "=" << (x) << "\n" )
 #define untested2(s,x,y) ( std::cerr <<  "@@#\n@@@:"<< __FILE__ << ":"<< __LINE__ \
@@ -185,6 +192,7 @@
 
 #else
 #define untested()
+// are these used anywhere?
 #define untested1(s,x)
 #define untested2(s,x,y)
 #define untested3(s,x,y,z)

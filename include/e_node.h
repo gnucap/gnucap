@@ -94,9 +94,9 @@ class INTERFACE node_t {
 private:
   static bool node_is_valid(int i) {
     if (i == INVALID_NODE) {
-    }else if (i < 0) {
+    }else if (i < 0) { untested();
       unreachable();
-    }else if (i > NODE::_sim->_total_nodes) {
+    }else if (i > NODE::_sim->_total_nodes) { untested();
       unreachable();
     }else{
     }

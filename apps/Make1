@@ -84,7 +84,7 @@ $(LANG_SRCS) \
 $(FUNC_SRCS) \
 $(OTHER_SRCS)
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 configure test_readline.cc
+RAW_OTHER = Make1 test_readline.cc
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER) $(MODELS)
 #------------------------------------------------------------------------
@@ -121,10 +121,8 @@ MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 LIBPATH = `pwd | sed 's/\(.*\)apps/\1lib/'`
 MODELGEN = `pwd | sed 's/\(.*\)apps/\1modelgen/'`/gnucap-modelgen
 #------------------------------------------------------------------------
-%.h : %.model
-	(export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -h $<)
+${MAKE1_FIX}%.h : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -h $<) # Make1
 #------------------------------------------------------------------------
-%.cc : %.model
-	(export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<)
+${MAKE1_FIX}%.cc : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<) # Make1
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------

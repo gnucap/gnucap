@@ -1,25 +1,35 @@
 Installation Instructions
 *************************
 
-This program does not use "autoconf" but rather uses a simple script
-that provides a subset with a similar interface.
-
-In most cases, you can do:
-=======
-$ ./configure
-$ make
-$ make install # (requires write permissions to /usr/local, maybe use sudo)
-=======
+This program does not use "autoconf" but configure imitates most of its
+behaviour. There is no need to generate a build system.
 
 The scripts are recursive, so you can cd to any of the subdirectories
 and run make there, once configure is done.
 
-By default, it installs in /usr/local .  To change it, you can specify a prefix:
+$ mkdir build # or any other directory name
+$ cd build
+$ ../configure
+$ make
 
-./configure --prefix=/usr/share
+additional options:
 
-If you have already compiled it, you do not need to recompile to
-change the install directory.  Just ./configure and make install.
+--prefix=...   set installation prefix, default: /usr/local
+--preset=...   select preset for flags.
+               "default": normal build (default).
+               "Debug": extra warnings and debugging.
+               "g++": don't know.
+--enable-debug shorthand for --preset=Debug
+
+Installation:
+
+To make full use of the package, we recommend to install it. Make sure that
+$prefix/bin is in your PATH environment, and $prefix/lib is either a system
+path, or added to LD_LIBRARY_PATH. (details will vary across platforms.).
+
+== Old build system
+
+See INSTALL.old, configure.old etc.
 
 == Dynamic library search path
 
@@ -47,17 +57,7 @@ $ ldconfig -p |grep gnucap
 [..] /usr/local/lib/libgnucap.so [..]
 
 == Other targets:
+$ make install              # installs to prefix.
+$ make install DESTDIR=...  # staged install (nih).
 
-"make clean" removes object files.
-
-"make debug" builds a development version with additional debugging
-code enabled.  It runs about 2x slower than the standard build.
-
-"make depend" builds the files "Make.depend" which are used to decide
-what to rebuild.  You need to do this only if you modify the code in a
-way that changes what files are included by #include.
-
-"make tags" builds cross reference files that can be used by some
-editors, such as emacs, to navigate the code.
-
-"make manifest" builds a list of the files included in a distribution.
+Additional targets (TODO, sync)

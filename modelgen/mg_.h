@@ -55,8 +55,7 @@ inline void os_error(const std::string& name)
   error(name + ':' + strerror(errno));
 }
 /*--------------------------------------------------------------------------*/
-class Base
-{
+class Base {
 public:
   virtual void parse(CS&) = 0;
   virtual void print(std::ostream& f)const {unreachable(); f << "Base::print";}
@@ -68,9 +67,7 @@ inline std::ostream& operator<<(std::ostream& f, const Base& d)
 				{d.print(f); return f;}
 /*--------------------------------------------------------------------------*/
 template <class T>
-class List_Base
-  :public Base
-{
+class List_Base : public Base {
 protected:
   typedef typename std::list<T*> _Std_List_T;
   _Std_List_T _list;
@@ -91,16 +88,12 @@ public:
   size_t	 size()const	 {return _list.size();}
 };
 /*--------------------------------------------------------------------------*/
-class C_Comment
-  :public Base
-{
+class C_Comment : public Base {
 public:
   void parse(CS& f)override;
 };
 /*--------------------------------------------------------------------------*/
-class Cxx_Comment
-  :public Base
-{
+class Cxx_Comment : public Base {
 public:
   void parse(CS& f)override;
 };
@@ -114,9 +107,7 @@ public:
  * A "List" is usually parsed once.
  */
 template <class T, char BEGIN, char END>
-class List
-  :public List_Base<T>
-{
+class List : public List_Base<T> {
   using List_Base<T>::_list;
 public:
   //BUG//  why not inherited?
@@ -152,9 +143,9 @@ public:
       }
     }
   }
-  void print(std::ostream& f)const override {
+  void print(std::ostream& f)const override { untested();
     f << BEGIN;
-    for (const_iterator i = begin(); i != end(); ++i) {
+    for (const_iterator i = begin(); i != end(); ++i) { untested();
       f << (**i);
     }
     f << END;
@@ -170,9 +161,7 @@ public:
  * A "List" is usually parsed once.
  */
 template <class T>
-class Collection
-  :public List_Base<T>
-{
+class Collection : public List_Base<T> {
   using List_Base<T>::_list;
 public:
   //BUG//  why not inherited?
@@ -190,16 +179,14 @@ public:
       file.warn(0, "what's this??");
     }
   }
-  void print(std::ostream& f)const override{
-    for (const_iterator i = begin(); i != end(); ++i) {
+  void print(std::ostream& f)const override{ untested();
+    for (const_iterator i = begin(); i != end(); ++i) { untested();
       f << (**i);
     }
   }
 };
 /*--------------------------------------------------------------------------*/
-class Key
-  :public Base
-{
+class Key : public Base {
   std::string _name;
   std::string _var;
   std::string _value;
@@ -214,9 +201,7 @@ public:
 };
 typedef List<Key, '{', '}'> Key_List;
 /*--------------------------------------------------------------------------*/
-class String_Arg
-  :public Base
-{
+class String_Arg : public Base {
   std::string	_s;
 public:
   void parse(CS& f)override {f >> _s >> ';';}
@@ -229,9 +214,7 @@ public:
   const std::string&	to_string()const {return _s;}
 };
 /*--------------------------------------------------------------------------*/
-class Bool_Arg
-  :public Base
-{
+class Bool_Arg : public Base {
   bool _s;
 public:
   void parse(CS& f)override {_s = true; f.skip1b(";");}
@@ -240,9 +223,7 @@ public:
   operator bool()const {return _s;}
 };
 /*--------------------------------------------------------------------------*/
-class Parameter
-  :public Base
-{
+class Parameter : public Base {
   std::string _type;
   std::string _code_name;
   std::string _user_name;
@@ -289,9 +270,7 @@ public:
 };
 typedef List<Parameter, '{', '}'> Parameter_List;
 /*--------------------------------------------------------------------------*/
-class Code_Block
-  :public Base
-{
+class Code_Block : public Base {
   std::string s;
 public:
   void parse(CS& f)override;
@@ -300,9 +279,7 @@ public:
   bool is_empty()const {return s.length() < 2;}
 };
 /*--------------------------------------------------------------------------*/
-class Parameter_Block
-  :public Base
-{
+class Parameter_Block : public Base {
   String_Arg	 _unnamed_value;
   Parameter_List _override;
   Parameter_List _raw;
@@ -329,9 +306,7 @@ public:
   void fill_in_default_values();
 };
 /*--------------------------------------------------------------------------*/
-class Eval
-  :public Base
-{
+class Eval : public Base {
 protected:
   String_Arg _name;
   Code_Block _code;
@@ -345,9 +320,7 @@ public:
 };
 typedef Collection<Eval> Eval_List;
 /*--------------------------------------------------------------------------*/
-class Function
-  :public Eval
-{
+class Function : public Eval {
 public:
   void parse(CS& f)override;
   void print(std::ostream& f)const override;
@@ -355,9 +328,7 @@ public:
 };
 typedef Collection<Function> Function_List;
 /*--------------------------------------------------------------------------*/
-class Port
-  :public Base
-{
+class Port : public Base {
   std::string _name;
   std::string _short_to;
   std::string _short_if;
@@ -372,9 +343,7 @@ public:
 };
 typedef List<Port, '{', '}'> Port_List;
 /*--------------------------------------------------------------------------*/
-class Element
-  :public Base
-{
+class Element : public Base {
   std::string _dev_type;
   std::string _name;
   Port_List _port_list;
@@ -402,9 +371,7 @@ public:
 };
 typedef Collection<Element> Element_List;
 /*--------------------------------------------------------------------------*/
-class Arg
-  :public Base
-{
+class Arg : public Base {
   std::string _arg;
 public:
   void parse(CS& f)override;
@@ -414,9 +381,7 @@ public:
 };
 typedef List<Arg, '{', '}'> Arg_List;
 /*--------------------------------------------------------------------------*/
-class Args
-  :public Base
-{
+class Args : public Base {
   String_Arg _name;
   String_Arg _type;
   Arg_List   _arg_list;
@@ -435,9 +400,7 @@ public:
 };
 typedef Collection<Args> Args_List;
 /*--------------------------------------------------------------------------*/
-class Circuit
-  :public Base
-{
+class Circuit : public Base {
   Port_List	_required_nodes;
   Port_List	_optional_nodes;
   Port_List	_local_nodes;
@@ -459,9 +422,7 @@ public:
 	size_t	      net_nodes()const	 {untested();return max_nodes();}
 };
 /*--------------------------------------------------------------------------*/
-class Probe
-  :public Base
-{
+class Probe : public Base {
   std::string _name;
   std::string _expression;
 public:
@@ -476,9 +437,7 @@ public:
 typedef List<Probe, '{', '}'> Probe_List;
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-class Model
-  :public Base
-{
+class Model : public Base {
   String_Arg		_name;
   String_Arg		_level;
   String_Arg		_dev_type;
@@ -510,9 +469,7 @@ public:
 };
 typedef Collection<Model> Model_List;
 /*--------------------------------------------------------------------------*/
-class Device
-  :public Base
-{
+class Device : public Base {
   String_Arg		_name;
   String_Arg		_parse_name;
   String_Arg		_id_letter;
@@ -546,9 +503,7 @@ public:
 typedef Collection<Device> Device_List;
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-class Head
-  :public Base
-{
+class Head : public Base {
   std::string s;
 public:
   void parse(CS& f)override;
@@ -557,9 +512,7 @@ public:
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-class Attribute
-  :public Base
-{
+class Attribute : public Base {
   String_Arg _name;
   String_Arg _value;
 public:
@@ -571,8 +524,7 @@ public:
 typedef Collection<Attribute> Attribute_List;
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-class File
-{
+class File {
   std::string	_name;
   CS		_file;
   Head		_head;

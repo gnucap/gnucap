@@ -1,6 +1,5 @@
 
-
-gnucap:
+gnucap: deprecate
 	#(cd conf; ${MAKE} -k)
 	#(cd include; ${MAKE} -k)
 	(cd lib; ${MAKE} -k)
@@ -8,7 +7,10 @@ gnucap:
 	(cd main; ${MAKE} -k)
 	(cd apps; ${MAKE} -k)
 
-debug:
+deprecate:
+	@echo old build system. better run configure first.
+
+debug: deprecate
 	#(cd conf; ${MAKE} debug)
 	#(cd include; ${MAKE} debug)
 	(cd lib; ${MAKE} debug)
@@ -16,7 +18,7 @@ debug:
 	(cd main; ${MAKE} debug)
 	(cd apps; ${MAKE} debug)
 
-g++:
+g++: deprecate
 	#(cd conf; ${MAKE} g++)
 	#(cd include; ${MAKE} g++)
 	(cd lib; ${MAKE} g++)
@@ -24,7 +26,7 @@ g++:
 	(cd main; ${MAKE} g++)
 	(cd apps; ${MAKE} g++)
 
-clean:
+clean: deprecate
 	#(cd conf; ${MAKE} clean)
 	#(cd include; ${MAKE} clean)
 	(cd lib; ${MAKE} clean)
@@ -33,7 +35,7 @@ clean:
 	(cd apps; ${MAKE} clean)
 	-rm *~ \#*\#
 
-depend:
+depend: deprecate
 	#(cd conf; ${MAKE} depend)
 	#(cd include; ${MAKE} depend)
 	(cd lib; ${MAKE} depend)
@@ -41,7 +43,7 @@ depend:
 	(cd main; ${MAKE} depend)
 	(cd apps; ${MAKE} depend)
 
-tags:
+tags: deprecate
 	#(cd conf; ${MAKE} tags)
 	#(cd include; ${MAKE} tags)
 	(cd lib; ${MAKE} tags)
@@ -49,7 +51,7 @@ tags:
 	(cd main; ${MAKE} tags)
 	(cd apps; ${MAKE} tags)
 
-unconfig:
+unconfig: deprecate
 	#(cd conf; ${MAKE} unconfig)
 	#(cd include; ${MAKE} unconfig)
 	(cd lib; ${MAKE} unconfig)
@@ -57,7 +59,7 @@ unconfig:
 	(cd main; ${MAKE} unconfig)
 	(cd apps; ${MAKE} unconfig)
 
-install:
+install: deprecate
 	(cd conf; ${MAKE} install)
 	(cd include; ${MAKE} install)
 	(cd lib; ${MAKE} install)
@@ -65,7 +67,7 @@ install:
 	(cd main; ${MAKE} install)
 	(cd apps; ${MAKE} install)
 
-install-debug:
+install-debug: deprecate
 	(cd conf; ${MAKE} install-debug)
 	(cd include; ${MAKE} install-debug)
 	(cd lib; ${MAKE} install-debug)
@@ -73,7 +75,7 @@ install-debug:
 	(cd main; ${MAKE} install-debug)
 	(cd apps; ${MAKE} install-debug)
 
-uninstall:
+uninstall: deprecate
 	(cd conf; ${MAKE} uninstall)
 	(cd include; ${MAKE} uninstall)
 	(cd lib; ${MAKE} uninstall)
@@ -81,7 +83,7 @@ uninstall:
 	(cd main; ${MAKE} uninstall)
 	(cd apps; ${MAKE} uninstall)
 
-manifest:
+manifest: deprecate
 	(cd conf; ${MAKE} manifest)
 	(cd include; ${MAKE} manifest)
 	(cd lib; ${MAKE} manifest)
@@ -89,7 +91,7 @@ manifest:
 	(cd main; ${MAKE} manifest)
 	(cd apps; ${MAKE} manifest)
 
-header-check:
+header-check: deprecate
 	(cd conf; ${MAKE} header-check)
 	(cd include; ${MAKE} header-check)
 	(cd lib; ${MAKE} header-check)
@@ -97,11 +99,31 @@ header-check:
 	(cd main; ${MAKE} header-check)
 	(cd apps; ${MAKE} header-check)
 
-date:
+date: deprecate
 	(cd include; ${MAKE} date)
 
-checkin:
+checkin: deprecate
 	$(MAKE) date
 	-git commit -a
 
-.PHONY: install
+untest_exclude = \(\[\]\)\|\(extern\)\|\(switch\)\|\(enum\)\|\(union\)\|\(constexpr\)\|\(struct\)\|\(class\)\|\(namespace\)\|\(untested\)\|\(itested\)
+colon_exclude = \(public\)\|\(protected\)\|\(private\)\|\(vim\)\|\(::$$\)\|\(\/\/.*:\)\|\(^.\*\)\|\(explicit\)
+
+# place test calls at test hooks
+untest:
+	sed -i '/${untest_exclude}/!s/{$$/{ untested();/' */*.cc
+	sed -i '/${untest_exclude}/!s/{$$/{ untested();/' */*.h
+	sed -i '/tested/!s/{\(.*\)}$$/{ untested();\1}/' */*.h
+	sed -i '/${colon_exclude}/!s/:$$/:untested();/' */*.cc
+	sed -i '/{[[:space:]]\/\*.*\*\/$$/s/{/{untested();/' */*.cc
+
+# build with test-calls enabled.
+# This could be a case for --preset=retest, but I don't get it.
+build-retest:
+	mkdir -p retest
+	cd retest; ../configure
+#	${MAKE} -C retest clean
+	${MAKE} -C retest CPPFLAGS=-DTRACE_UNTESTED\ -DTRACE_ITESTED\ -DTRACE_UNTESTED_ONCE \
+	                  CXXFLAGS=-Wno-implicit-fallthrough\ -O0
+
+.PHONY: install deprecate

@@ -19,24 +19,22 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-INSTALL_FILES = gnucap-conf
-INSTALL_DIR = $(PREFIX)/bin
+all: # nothing
 #------------------------------------------------------------------------
-INSTALL_FILES_1 = gnucap.conf
-INSTALL_DIR_1 = $(PREFIX)/etc
+INSTALL_FILES_1 = gnucap-conf
+INSTALL_DIR_1 = $(PREFIX)/bin
 #------------------------------------------------------------------------
-# suspended. intent: remove it entirely.
-# INSTALL_FILES_2 = config.h
-# INSTALL_DIR_2 = $(PREFIX)/include
+# INSTALL_FILES_2 = gnucap.conf
+# INSTALL_DIR_2 = $(PREFIX)/etc
 #------------------------------------------------------------------------
 LIBS =
 INCLUDE = -I. -I../include -I../../include
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
-RAW_SRCS = gnucap-conf.in gnucap.conf.in config.h.in
+RAW_SRCS =
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 configure
+RAW_OTHER = Make1 configure gnucap-conf.in gnucap.conf.in config.h.in
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------

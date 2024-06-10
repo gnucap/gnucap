@@ -35,10 +35,10 @@ public:
     friend class DIRECTORY;
   private:
     const_iterator(const_iterator const& o) : _d(o._d), _de(o._de) {untested();}
-    const_iterator(::DIR* d) : _d(d) {
-      if(d) {
+    const_iterator(::DIR* d) : _d(d) {itested();
+      if(d) {itested();
 	_de = ::readdir(d);
-      }else{
+      }else{itested();
 	_de = NULL;
       }
     }
@@ -50,7 +50,7 @@ public:
     const_iterator& operator++() {assert(_d); _de = ::readdir(_d); return *this;}
     bool operator==(const_iterator const& o)const {return _de == o._de;}
     bool operator!=(const_iterator const& o)const {return !operator==(o);}
-    const_iterator& operator=(const_iterator const& o) {
+    const_iterator& operator=(const_iterator const& o) {itested();
       _d = o._d;
       _de = o._de;
       return *this;
@@ -62,7 +62,7 @@ public:
   DIRECTORY(const DIRECTORY&) = delete;
   explicit DIRECTORY(const std::string& s) : _d(::opendir(s.c_str())) {}
   ~DIRECTORY() {
-    if(_d) {
+    if(_d) {itested();
       ::closedir(_d);
       //delete(_d); // done by closedir?
       _d = NULL;

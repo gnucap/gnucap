@@ -111,10 +111,10 @@ inline double WAVE::v_reflect(double t, double v_total)const
 }
 /*--------------------------------------------------------------------------*/
 inline WAVE& WAVE::operator+=(const WAVE& x)
-{
+{ untested();
   untested();
   for (std::deque<DPAIR>::iterator
-	 i = _w.begin(); i != _w.end(); ++i) {
+	 i = _w.begin(); i != _w.end(); ++i) { untested();
     untested();
     (*i).second += x.v_out((*i).first).f0;
   }
@@ -122,10 +122,10 @@ inline WAVE& WAVE::operator+=(const WAVE& x)
 }
 /*--------------------------------------------------------------------------*/
 inline WAVE& WAVE::operator+=(double x)
-{
+{ untested();
   untested();
   for (std::deque<DPAIR>::iterator
-	 i = _w.begin(); i != _w.end(); ++i) {
+	 i = _w.begin(); i != _w.end(); ++i) { untested();
     untested();
     (*i).second += x;
   }
@@ -133,10 +133,10 @@ inline WAVE& WAVE::operator+=(double x)
 }
 /*--------------------------------------------------------------------------*/
 inline WAVE& WAVE::operator*=(const WAVE& x)
-{
+{ untested();
   untested();
   for (std::deque<DPAIR>::iterator
-	 i = _w.begin(); i != _w.end(); ++i) {
+	 i = _w.begin(); i != _w.end(); ++i) { untested();
     untested();
     (*i).second *= x.v_out((*i).first).f0;
   }
@@ -144,10 +144,10 @@ inline WAVE& WAVE::operator*=(const WAVE& x)
 }
 /*--------------------------------------------------------------------------*/
 inline WAVE& WAVE::operator*=(double x)
-{
+{ untested();
   untested();
   for (std::deque<DPAIR>::iterator
-	 i = _w.begin(); i != _w.end(); ++i) {
+	 i = _w.begin(); i != _w.end(); ++i) { untested();
     untested();
     (*i).second *= x;
   }

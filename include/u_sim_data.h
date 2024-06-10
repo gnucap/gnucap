@@ -122,7 +122,7 @@ struct INTERFACE SIM_DATA {
   void new_event(double etime) {
     if (etime <= BIGBIG) {
       _eq.push(etime);
-    }else{
+    }else{ untested();
     }
   }
   void set_command_none() {_mode = s_NONE;}

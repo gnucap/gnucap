@@ -60,10 +60,10 @@ public: // override virtual
   void	   tr_regress() override;
   bool	   tr_needs_eval()const override {/*assert(!is_q_for_eval());*/ return !is_constant();}
 #if 0
-  void	   tr_queue_eval()	{
-    if(tr_needs_eval()) {
+  void	   tr_queue_eval()	{ untested();
+    if(tr_needs_eval()) { untested();
       q_eval();
-    }else{
+    }else{ untested();
     }
   }
 #endif
@@ -387,7 +387,7 @@ inline void ELEMENT::tr_load_source_point(node_t& no1,
   if (d != 0.) {
     if (no1.m_() != 0) {
       no1.i() += d;
-    }else{
+    }else{itested();
     }
   }else{
   }
@@ -420,11 +420,11 @@ inline void ELEMENT::ac_load_diagonal_point(const node_t& no1, COMPLEX new_value
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_point(const node_t& no1, const node_t& no2,
 				   double* new_value, double* old_value)
-{
+{itested();
   double d = dampdiff(new_value, *old_value);
-  if (d != 0.) {
+  if (d != 0.) {itested();
     _sim->_aa.load_point(no1.m_(), no2.m_(), d);
-  }else{
+  }else{itested();
   }
   *old_value = *new_value;
 }

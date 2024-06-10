@@ -85,7 +85,7 @@ void print_pair(OMSTREAM& o, LANGUAGE* lang, const std::string& name,
     if (lang) {
       std::string front = lang->arg_front() + name + lang->arg_mid();
       o << front << value << lang->arg_back();
-    }else{
+    }else{ untested();
       o << ' ' + name + '=' << value;
     }
   }else{

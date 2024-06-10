@@ -72,7 +72,7 @@ namespace OS {
     char* ev = ::getenv(s.c_str());
     if (ev) {
       return ev;
-    }else{itested();
+    }else{
       return "";
     }
   }

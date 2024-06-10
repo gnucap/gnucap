@@ -220,11 +220,11 @@ e_logicnode.o: e_logicnode.cc ../include/e_logicmod.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/l_stlextra.h
 e_logicval.o: e_logicval.cc ../include/e_logicval.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h
-e_elemnt.o: e_elemnt.cc ../include/m_divdiff.h ../include/u_xprobe.h \
- ../include/constant.h ../include/md.h ../include/io_trace.h \
- ../include/io_error.h ../include/e_aux.h ../include/e_node.h \
- ../include/u_sim_data.h ../include/l_compar.h ../include/u_opt.h \
- ../include/mode.h ../include/io_.h ../include/l_lib.h \
+e_elemnt.o: e_elemnt.cc ../include/m_divdiff.h ../include/io_trace.h \
+ ../include/u_xprobe.h ../include/constant.h ../include/md.h \
+ ../include/io_trace.h ../include/io_error.h ../include/e_aux.h \
+ ../include/e_node.h ../include/u_sim_data.h ../include/l_compar.h \
+ ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/m_matrix.h ../include/l_stlextra.h ../include/e_base.h \
  ../include/u_attrib.h ../include/ap.h ../include/l_indirect.h \
  ../include/e_elemnt.h ../include/e_logicnode.h ../include/e_logicval.h \

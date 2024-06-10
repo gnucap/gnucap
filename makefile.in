@@ -1,0 +1,31 @@
+# Makefile fragment for gnucap
+# ... for use with configure & GNU Make aka. "gmake"
+# Author: Felix Salfelder 2024
+#-----------------------------------------------------------------------------
+include ${srcdir}/Make1
+RECURSIVE_TARGETS = all install clean depend ${EXTRA_RECURSIVE_TARGETS}
+#-----------------------------------------------------------------------------
+${RECURSIVE_TARGETS:%=%-recursive}: %-recursive:
+	for i in ${SUBDIRS}; do \
+	  $(MAKE) -C $${i} $*; \
+	done
+#-----------------------------------------------------------------------------
+${RECURSIVE_TARGETS}: %: %-recursive
+#-----------------------------------------------------------------------------
+check: all
+	${MAKE} -C tests check
+#-----------------------------------------------------------------------------
+checkin: check-git
+	$(MAKE) date
+	-git commit -a
+
+check-git:
+	@if [ ! -d .git ]; then\
+		echo need git repository; \
+		exit 1; \
+	fi
+
+.PHONY: check-git install
+#-----------------------------------------------------------------------------
+.PHONY: ${RECURSIVE_TARGETS} ${RECURSIVE_TARGETS:%=%-recursive} \
+        install install-here check all

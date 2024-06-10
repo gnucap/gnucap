@@ -12,12 +12,19 @@ programme, under the aegis of DG Communications Networks, Content and
 Technology under grant agreement No 101069594. See
 https://nlnet.nl/project/Gnucap-VerilogAMS/
 
-== old Readme, development snapshot 2013-04-23
+== Build and Installation
 
-This is a development snapshot.  As such, there may be problems due to
-new work.
+See INSTALL. (INSTALL.old for old notes)
 
-This snapshot splits the code into sections "lib", "apps", "main".
+== Release notes
+
+See NEWS
+
+== Structure, since 2013-04-23
+
+The code is split into sections "include", "lib", "apps", "main", "modelgen"
+
+"include" contains the headers defining the public interface.
 
 "main" is a simple main program "gnucap" that dynamically links to
 libgnucap.
@@ -37,13 +44,3 @@ can be extracted and built separately.
 Installation (still "make install") installs the parts as expected.
 It also installs the header files in $PREFIX/include/gnucap, to build
 plugins.
-
-Although it does not use autoconf, the configure/make procedure is the
-same as it would be with autoconf.
-
-Model plugin tarballs have not been updated yet, but have been
-repackaged for date consistency.
-
-This snapshot lifts the biggest block that has been getting in the way
-of a stable release.
-

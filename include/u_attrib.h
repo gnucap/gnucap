@@ -89,14 +89,14 @@ public:
     }
   }
 
-  const std::string operator[] (const std::string& Key)const {untested();
+  const std::string operator[] (const std::string& Key)const {itested();
     CS cmd(CS::_STRING, _s);
     bool found = false;
     std::string val("0");
 
-    while (cmd.more()) {untested();
-      if (cmd >> Key) {untested();
-	if (cmd >> "=") {untested();
+    while (cmd.more()) {itested();
+      if (cmd >> Key) {itested();
+	if (cmd >> "=") {itested();
 	  cmd >> val;
 	}else{untested();
 	  val = "1";
@@ -113,7 +113,7 @@ public:
       }
     }
 
-    if (found) {untested();
+    if (found) {itested();
       return val;
     }else if (_up) {untested();
       return (*_up)[Key];
@@ -165,7 +165,7 @@ public:
     _p = P._p;
     if (_p) {
       _p->inc_ref_count();
-    }else{untested();
+    }else{itested();
     }
     return *this;
   }

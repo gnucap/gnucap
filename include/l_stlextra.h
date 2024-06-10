@@ -57,9 +57,9 @@ inline void to_lower(std::string* s)
 }
 /*--------------------------------------------------------------------------*/
 inline void to_upper(std::string* s)
-{
+{ untested();
   assert(s);
-  for (std::string::iterator i = s->begin(); i != s->end(); ++i) {
+  for (std::string::iterator i = s->begin(); i != s->end(); ++i) { untested();
     *i = static_cast<char>(toupper(*i));
   }
 }

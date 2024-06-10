@@ -1,43 +1,186 @@
 #!/bin/sh
+# top level configure for Gnucap
 
-#---------------------------------------------------
-#  This stuff introduced by SDB to enable --prefix
-#  at configure time
+echo -n '# ' > config.log
+date >> config.log
+echo $0 "$@" >> config.log
 
-# echo Input flag = $1
-if test "x$1" != "x"; then
-    # echo Found input parameter -- $1
-    #  Now see if the parameter is --prefix=
-    if test "x${1#--prefix=}" != "x$1"; then
-	# echo "Found --prefix in input args.  Setting prefix directory."
-	prefix=${1#--prefix=}
-    else
-	# echo "Found unrecognized parameter in input args."
-	#  Just use the default prefix dir.
-	prefix=/usr/local
-    fi
+#-------------  transition
+# stale. make sure to avoid interference
+find . -name makefile -delete
 
+#-------------  Stuff added to enable --prefix  --------------
+prefix=/usr/local
+prefix_given=no
+srcdir_given=no
+preset=default
+force_in_tree=no
+srcdir=$(dirname $0)
+
+while [ 0 -ne $# ]; do
+	case "$1" in
+		--prefix=*)
+			  prefix=${1#--prefix=}
+			  prefix_given=yes
+			  ;;
+		--enable-debug)
+			  preset=Debug
+			  ;;
+		--srcdir=*)
+			  srcdir=${1#--srcdir=}
+			  srcdir_given=yes
+			  ;;
+		--force-in-tree)
+			  force_in_tree=yes
+			  ;;
+		--preset=*)
+			  preset=${1#--preset=}
+			  ;;
+		*)
+			echo unrecognised: "$1"
+			;;
+	esac
+	shift
+done
+#----------------------------------------------------------------
+# abs_srcdir=$(cd $srcdir; pwd)
+if [ -f $srcdir/NEWS ]; then
+	: # OK
+elif [ $srcdir_given = "yes" ]; then
+	: # OK
 else
-    # echo "No input parameter found."
-    #  Just use the default prefix dir
-    prefix=/usr/local
+	echo could not find source directory
+	exit 1
 fi
+#----------------------------------------------------------------
+top_srcdir=$(dirname $0)
+#----------------------------------------------------------------
+if [ -f $top_srcdir/NEWS ]; then
+	: # OK
+else
+	echo could not find source directory
+	exit 1
+fi
+#----------------------------------------------------------------
+MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/Make1 | sed 's/^.*= //g')
+SUBDIRS="${MAKE1_SUBDIRS}"
+#----------------------------------------------------------------
+if [ ! -f $top_srcdir/include/Make2.$preset ]; then
+	echo "invalid preset" >&2
+	echo "can't find $srcdir/include/Make2.$preset" >&2
+	exit 1;
+fi
+#----------------------------------------------------------------
+echo prefix is $prefix
+echo preset is $preset
 
-args="--prefix=$prefix"
 
-echo "Configuring gnucap using $args"
-#---------------------------------------------------
-echo conf
-(cd conf; ./configure $args)
-echo include
-(cd include; ./configure $args)
-echo lib
-(cd lib; ./configure $args)
-echo modelgen
-(cd modelgen; ./configure $args)
-echo main
-(cd main; ./configure $args)
-echo apps
-(cd apps; ./configure $args)
-echo done
+echo \# created by $PWD/$0. do not edit >makefile
+echo \#------------------------------------------------------------------------ >>makefile
+echo "srcdir = $srcdir" >> makefile
+echo "VPATH = \${srcdir}" >> makefile
+cat $srcdir/makefile.in >> makefile
+#----------------------------------------------------------------
+out_of_tree=yes
+top_srcdir_=top_srcdir
+case $srcdir in
+	[\\/]* | ?:[\\/]*)
+		top_srcdir_="$srcdir"
+		;;
+	\.)
+		top_srcdir_=".."
+		out_of_tree=no
+		;;
+	*)
+		top_srcdir_="../$srcdir"
+		;;
+esac
+#------------------------------------------------------------------------
+if [ $out_of_tree = "yes" ]; then
+	: # OK
+elif [ $force_in_tree = "yes" ]; then
+	: # OK
+else
+	echo "Really configure in-tree?" >&2
+   echo "Hit ^C to avoid or wait for 1 minute." >&2
+   echo "Bypass this check with --force-in-tree." >&2
+	for i in `seq 60`; do sleep 1; echo -n '.'; done
+	echo;
+fi
+#------------------------------------------------------------------------
+echo \# created by $PWD/$0. do not edit >Make2
+echo \#------------------------------------------------------------------------ >>Make2
+echo "CXX = c++" >>Make2
+echo "PREFIX = " $prefix >>Make2
+echo "ENV = LD_LIBRARY_PATH=../lib\${LD_LIBRARY_PATH:%=:%}" >>Make2
+echo "LDFLAGS = -L../lib" >>Make2
+echo "GNUCAP_CONF = ../conf/gnucap-conf" >>Make2
+#------------------------------------------------------------------------
+# "MAKE_CPPFLAGS": hardwired, not overridden in Make2.*
+#                  and not a user variable, like CPPFLAGS
+echo "MAKE_CPPFLAGS = -I${top_srcdir_}/include" >>Make2
+#------------------------------------------------------------------------
+echo "PRESET = ${preset}" >> Make2
+echo "include ${top_srcdir_}/include/Make2.\${PRESET}" >>Make2
+#------------------------------------------------------------------------
+sub_configure() {
+	echo sub_configure $1
+	m="$1/Makefile"
+	if [ "$top_srcdir_" = ".." ]; then
+		srcdir_=".";
+	else
+		srcdir_="$top_srcdir_/$1";
+	fi
+	echo '#stub. need to run configure first' > $m
+	echo "srcdir = $srcdir_" >> $m
+	echo "prefix = $prefix" >> $m
+	echo '%: ; ${srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE} $@' >> $m
+	echo 'all: ; ${srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE}' >> $m
+	echo '.PHONY: all' >> $m
+}
+#------------------------------------------------------------------------
+subdir_configure() {
+	echo subdir_configure $1
+	m="$1/Makefile"
+	if [ "$top_srcdir_" = ".." ]; then
+		srcdir_=".";
+	else
+		srcdir_="$top_srcdir_/$1";
+	fi
+	echo '#stub. need to run configure first' > $m
+	echo "top_srcdir = $top_srcdir_" >> $m
+	echo "srcdir = $srcdir_" >> $m
+	echo "prefix = $prefix" >> $m
+	echo '%: ; ${top_srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE} $@' >> $m
+	echo 'all: ; ${top_srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE}' >> $m
+	echo '.PHONY: all' >> $m
+}
+#------------------------------------------------------------------------
+sub_makefile() {
+	echo sub_makefile $1
+	echo \# created by $0 do not edit >$1
+	echo \#------------------------------------------------------------------------ >>Make2
+	echo "top_srcdir = $top_srcdir_" >> $1
+	echo "srcdir = $top_srcdir_/$i" >> $1
+	echo "VPATH = \${srcdir}" >> $1
+	echo "MAKE1_FIX = #" >> $1
+	echo "include \${srcdir}/Make1" >> $1
+	echo "INCLUDE = " >> $1
+	echo "PRESET = default" >> $1
+	echo "include ../Make2" >> $1
+	echo "include $top_srcdir_/include/Make3" >> $1
+	echo "-include \${srcdir}/Make.depend" >> $1
+}
+#------------------------------------------------------------------------
+for i in ${SUBDIRS}; do
+	mkdir -p $i;
+	if [ -f $srcdir/$i/configure ]; then
+		sub_configure $i;
+	elif grep ^SUBDIRS $srcdir/$i/Make1 > /dev/null; then
+		subdir_configure $i;
+	else
+		sub_makefile $i/makefile;
+	fi
+done
+#------------------------------------------------------------------------
 exit 0

@@ -57,7 +57,7 @@ inline double dn_diff(double a, double b)
 #if 0
 /* dn_sum: de-noised sum */
 inline double dn_sum(double a, double b)
-{
+{ untested();
   untested();
   assert(a == a);
   assert(b == b);

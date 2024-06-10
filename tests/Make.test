@@ -1,0 +1,93 @@
+
+CXX = $(shell $(GNUCAP_CONF) --cxx)
+GNUCAP_CPPFLAGS = $(shell $(GNUCAP_CONF) --cppflags) -DADD_VERSION -DPIC
+GNUCAP_CXXFLAGS = $(shell $(GNUCAP_CONF) --cxxflags) -std=c++11
+MAKE_CPPFLAGS = -I${top_srcdir}/src
+LN_S = ln -sf
+DIFF = diff -rup
+
+# include Make3?
+all: ${TEST_PLUGINS}
+TESTCASES =
+
+# untested;
+TARGETDIR = check
+
+ref = ${REFDIR}
+
+GNUCAP = ../main/gnucap
+ENV = GNUCAP_PLUGPATH=${top_builddir}:${top_builddir}/apps \
+	   LD_LIBRARY_PATH=${top_builddir}/lib${LD_LIBRARY_PATH:%=:%}
+
+glob_ckt = $(shell cd ${srcdir}; ls *.ckt)
+glob_gc = $(shell cd ${srcdir}; ls *.gc)
+
+filt_ckt = $(filter ${TESTCASES}%, ${glob_ckt})
+filt_gc = $(filter ${TESTCASES}%, ${glob_gc})
+
+ckt_out = ${filt_ckt:%=${TARGETDIR}/%.out}
+gc_out = ${filt_gc:%=${TARGETDIR}/%.out}
+
+ckt_diff = ${ckt_out:%.out=%.diff}
+gc_diff = ${gc_out:%.out=%.diff}
+
+diff = ${ckt_diff} ${gc_diff}
+
+# TODO: maybe cat the diff, so it can be logged?
+check: ${TARGETDIR}/${TESTCASES}.diff
+	@find ${TARGETDIR} -size 0 -delete;
+	@echo ==
+	@if [ -s ${TARGETDIR}/${TESTCASES}.diff ]; then \
+		echo test failures:; \
+		ls -larS ${TARGETDIR}/${TESTCASES}*.diff; \
+	else \
+		echo all ${TESTCASES} passed; \
+	fi
+
+${TARGETDIR}/${TESTCASES}.diff : ${diff}
+	@-cat $+ > $@
+
+${gc_out}: ${TEST_PLUGINS} prep
+${ckt_out}: ${TEST_PLUGINS} prep
+
+${diff}: ${TARGETDIR}/%.diff: ${TARGETDIR}/%.out
+	@if [ ! -f ${ref}/$*.out ]; then \
+	  echo MISS: $*; \
+	elif ${DIFF} ${ref}/$*.out ${TARGETDIR}/$*.out > $@; then \
+	  echo pass: $*; \
+	else \
+	  echo FAIL: $*; \
+	fi
+
+# makefile: makefile.in
+# 	source config.log
+#
+prep: symlinks ${TEST_PLUGINS}
+	echo ${TEST_SYMLINKS}
+	# @[ ! -s "${TARGETDIR}" ]
+	-mkdir -p ${TARGETDIR}
+
+${gc_out}: ${TARGETDIR}/%.gc.out: prep
+	@-${ENV} ${GNUCAP} ${GNUCAP_ARGS} ${srcdir}/$*.gc |tail -n +12 | \
+		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
+
+${ckt_out}: ${TARGETDIR}/%.ckt.out: prep
+	@-${ENV} ${GNUCAP} ${GNUCAP_ARGS} -b ${srcdir}/$*.ckt |tail -n +12 | \
+		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
+
+${PWD}/disciplines.vams:
+	-${LN_S} ${top_srcdir}/vams/disciplines.vams
+${PWD}/constants.vams:
+	-${LN_S} ${top_srcdir}/vams/constants.vams
+${PWD}/sub:
+	-${LN_S} ${srcdir}/sub
+
+include ${top_srcdir}/include/Make3
+
+symlinks: ${TEST_SYMLINKS:%=${PWD}/%}
+
+${TEST_SYMLINKS:%=${PWD}/%} : ${PWD}/%:
+	[ ${srcdir} = "." ] || ${LN_S} ${srcdir}/$*
+
+.PHONY: ${diff} ${v_out} ${gc_out} ${dump_out} check diff prep symlinks
+.DELETE_ON_ERROR:

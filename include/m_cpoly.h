@@ -105,7 +105,7 @@ inline CPOLY1::CPOLY1(const FPOLY1& p)
 }
 /*--------------------------------------------------------------------------*/
 inline FPOLY1& FPOLY1::operator*=(const FPOLY1& s)
-{
+{ untested();
   untested();
   assert(x == s.x);
   *this *= s.f0;
@@ -114,28 +114,28 @@ inline FPOLY1& FPOLY1::operator*=(const FPOLY1& s)
 }
 /*--------------------------------------------------------------------------*/
 inline FPOLY1 operator*(FPOLY1 a, const FPOLY1& b)
-{
+{ untested();
   untested();
   a *= b;
   return a;
 }
 /*--------------------------------------------------------------------------*/
 inline FPOLY1 operator+(FPOLY1 a, const FPOLY1& b)
-{
+{ untested();
   untested();
   a += b;
   return a;
 }
 /*--------------------------------------------------------------------------*/
 inline FPOLY1 operator+(FPOLY1 a, double b)
-{
+{ untested();
   untested();
   a += b;
   return a;
 }
 /*--------------------------------------------------------------------------*/
 inline FPOLY1 operator-(double a, const FPOLY1& b)
-{
+{ untested();
   untested();
   return -b + a;
 }

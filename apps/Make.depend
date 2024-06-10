@@ -680,7 +680,8 @@ measure_at.o: measure_at.cc ../include/globals.h \
  ../include/u_function.h
 signon.o: signon.cc ../include/io_.h ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/patchlev.h
-d_mos1.o: d_mos1.cc ../include/globals.h ../include/l_dispatcher.h \
+d_mos1.o: d_mos1.cc
+d_mos1.o: ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/u_attrib.h ../include/ap.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \
  ../include/l_indirect.h ../include/l_stlextra.h ../include/u_opt.h \
@@ -690,12 +691,12 @@ d_mos1.o: d_mos1.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/m_cpoly.h \
  ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
  ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_mos1.h d_mos123.h \
- d_mos_base.h d_mos.h d_diode.h ../include/u_sdp.h ../include/e_node.h \
- ../include/e_subckt.h ../include/e_model.h
-d_mos2.o: d_mos2.cc ../include/l_compar.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/l_denoise.h \
- ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
+ ../include/e_cardlist.h ../include/e_card.h
+d_mos1.o: d_mos1.cc d_mos1.h d_mos123.h d_mos_base.h d_mos.h d_diode.h
+d_mos2.o: d_mos2.cc
+d_mos2.o: ../include/l_compar.h ../include/md.h ../include/io_trace.h \
+ ../include/io_error.h ../include/l_denoise.h ../include/u_opt.h \
+ ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/globals.h ../include/l_dispatcher.h ../include/e_base.h \
  ../include/u_attrib.h ../include/ap.h ../include/l_indirect.h \
  ../include/l_stlextra.h ../include/e_elemnt.h ../include/e_logicnode.h \
@@ -704,11 +705,11 @@ d_mos2.o: d_mos2.cc ../include/l_compar.h ../include/md.h \
  ../include/m_cpoly.h ../include/l_denoise.h ../include/e_compon.h \
  ../include/u_time_pair.h ../include/u_parameter.h \
  ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
- ../include/e_card.h d_mos2.h d_mos123.h d_mos_base.h d_mos.h d_diode.h \
- ../include/u_sdp.h ../include/e_node.h ../include/e_subckt.h \
- ../include/e_model.h
-d_mos3.o: d_mos3.cc ../include/l_denoise.h ../include/u_opt.h \
- ../include/mode.h ../include/io_.h ../include/l_lib.h ../include/md.h \
+ ../include/e_card.h
+d_mos2.o: d_mos2.cc d_mos2.h d_mos123.h d_mos_base.h d_mos.h d_diode.h
+d_mos3.o: d_mos3.cc
+d_mos3.o: ../include/l_denoise.h ../include/u_opt.h ../include/mode.h \
+ ../include/io_.h ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/globals.h \
  ../include/l_dispatcher.h ../include/e_base.h ../include/u_attrib.h \
  ../include/ap.h ../include/l_indirect.h ../include/l_stlextra.h \
@@ -717,10 +718,10 @@ d_mos3.o: d_mos3.cc ../include/l_denoise.h ../include/u_opt.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/m_cpoly.h \
  ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
  ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_mos3.h d_mos123.h \
- d_mos_base.h d_mos.h d_diode.h ../include/u_sdp.h ../include/e_node.h \
- ../include/e_subckt.h ../include/e_model.h
-d_mos4.o: d_mos4.cc ../include/globals.h ../include/l_dispatcher.h \
+ ../include/e_cardlist.h ../include/e_card.h
+d_mos3.o: d_mos3.cc d_mos3.h d_mos123.h d_mos_base.h d_mos.h d_diode.h
+d_mos4.o: d_mos4.cc
+d_mos4.o: ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/u_attrib.h ../include/ap.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \
  ../include/l_indirect.h ../include/l_stlextra.h ../include/u_opt.h \
@@ -730,10 +731,10 @@ d_mos4.o: d_mos4.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/m_cpoly.h \
  ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
  ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_mos4.h d_mos_base.h \
- d_mos.h d_diode.h ../include/u_sdp.h ../include/e_node.h \
- ../include/e_subckt.h ../include/e_model.h
-d_mos5.o: d_mos5.cc ../include/globals.h ../include/l_dispatcher.h \
+ ../include/e_cardlist.h ../include/e_card.h
+d_mos4.o: d_mos4.cc d_mos4.h d_mos_base.h d_mos.h d_diode.h
+d_mos5.o: d_mos5.cc
+d_mos5.o: ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/u_attrib.h ../include/ap.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \
  ../include/l_indirect.h ../include/l_stlextra.h ../include/u_opt.h \
@@ -743,11 +744,11 @@ d_mos5.o: d_mos5.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/m_cpoly.h \
  ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
  ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_mos5.h d_mos_base.h \
- d_mos.h d_diode.h ../include/u_sdp.h ../include/e_node.h \
- ../include/e_subckt.h ../include/e_model.h
-d_mos6.o: d_mos6.cc ../include/l_denoise.h ../include/u_opt.h \
- ../include/mode.h ../include/io_.h ../include/l_lib.h ../include/md.h \
+ ../include/e_cardlist.h ../include/e_card.h
+d_mos5.o: d_mos5.cc d_mos5.h d_mos_base.h d_mos.h d_diode.h
+d_mos6.o: d_mos6.cc
+d_mos6.o: ../include/l_denoise.h ../include/u_opt.h ../include/mode.h \
+ ../include/io_.h ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/globals.h \
  ../include/l_dispatcher.h ../include/e_base.h ../include/u_attrib.h \
  ../include/ap.h ../include/l_indirect.h ../include/l_stlextra.h \
@@ -756,12 +757,12 @@ d_mos6.o: d_mos6.cc ../include/l_denoise.h ../include/u_opt.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/m_cpoly.h \
  ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
  ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_mos6.h d_mos123.h \
- d_mos_base.h d_mos.h d_diode.h ../include/u_sdp.h ../include/e_node.h \
- ../include/e_subckt.h ../include/e_model.h
-d_mos7.o: d_mos7.cc ../include/l_compar.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/l_denoise.h \
- ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
+ ../include/e_cardlist.h ../include/e_card.h
+d_mos6.o: d_mos6.cc d_mos6.h d_mos123.h d_mos_base.h d_mos.h d_diode.h
+d_mos7.o: d_mos7.cc
+d_mos7.o: ../include/l_compar.h ../include/md.h ../include/io_trace.h \
+ ../include/io_error.h ../include/l_denoise.h ../include/u_opt.h \
+ ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/globals.h ../include/l_dispatcher.h ../include/e_base.h \
  ../include/u_attrib.h ../include/ap.h ../include/l_indirect.h \
  ../include/l_stlextra.h ../include/e_elemnt.h ../include/e_logicnode.h \
@@ -770,12 +771,12 @@ d_mos7.o: d_mos7.cc ../include/l_compar.h ../include/md.h \
  ../include/m_cpoly.h ../include/l_denoise.h ../include/e_compon.h \
  ../include/u_time_pair.h ../include/u_parameter.h \
  ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
- ../include/e_card.h d_mos7.h d_mos_base.h d_mos.h d_diode.h \
- ../include/u_sdp.h ../include/e_node.h ../include/e_subckt.h \
- ../include/e_model.h
-d_mos8.o: d_mos8.cc ../include/l_compar.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/l_denoise.h \
- ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
+ ../include/e_card.h
+d_mos7.o: d_mos7.cc d_mos7.h d_mos_base.h d_mos.h d_diode.h
+d_mos8.o: d_mos8.cc
+d_mos8.o: ../include/l_compar.h ../include/md.h ../include/io_trace.h \
+ ../include/io_error.h ../include/l_denoise.h ../include/u_opt.h \
+ ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/globals.h ../include/l_dispatcher.h ../include/e_base.h \
  ../include/u_attrib.h ../include/ap.h ../include/l_indirect.h \
  ../include/l_stlextra.h ../include/e_elemnt.h ../include/e_logicnode.h \
@@ -784,10 +785,10 @@ d_mos8.o: d_mos8.cc ../include/l_compar.h ../include/md.h \
  ../include/m_cpoly.h ../include/l_denoise.h ../include/e_compon.h \
  ../include/u_time_pair.h ../include/u_parameter.h \
  ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
- ../include/e_card.h d_mos8.h d_mos_base.h d_mos.h d_diode.h \
- ../include/u_sdp.h ../include/e_node.h ../include/e_subckt.h \
- ../include/e_model.h
-d_mos123.o: d_mos123.cc ../include/globals.h ../include/l_dispatcher.h \
+ ../include/e_card.h
+d_mos8.o: d_mos8.cc d_mos8.h d_mos_base.h d_mos.h d_diode.h
+d_mos123.o: d_mos123.cc
+d_mos123.o: ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/u_attrib.h ../include/ap.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \
  ../include/l_indirect.h ../include/l_stlextra.h ../include/u_opt.h \
@@ -797,53 +798,53 @@ d_mos123.o: d_mos123.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/m_cpoly.h \
  ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
  ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_mos123.h d_mos_base.h \
- d_mos.h d_diode.h ../include/u_sdp.h ../include/e_node.h \
- ../include/e_subckt.h ../include/e_model.h
-d_mos_base.o: d_mos_base.cc ../include/globals.h \
- ../include/l_dispatcher.h ../include/e_base.h ../include/u_attrib.h \
- ../include/ap.h ../include/md.h ../include/io_trace.h \
- ../include/io_error.h ../include/l_indirect.h ../include/l_stlextra.h \
- ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
+ ../include/e_cardlist.h ../include/e_card.h
+d_mos123.o: d_mos123.cc d_mos123.h d_mos_base.h d_mos.h d_diode.h
+d_mos_base.o: d_mos_base.cc
+d_mos_base.o: ../include/globals.h ../include/l_dispatcher.h \
+ ../include/e_base.h ../include/u_attrib.h ../include/ap.h \
+ ../include/md.h ../include/io_trace.h ../include/io_error.h \
+ ../include/l_indirect.h ../include/l_stlextra.h ../include/u_opt.h \
+ ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/e_elemnt.h ../include/e_logicnode.h ../include/e_logicval.h \
  ../include/e_node.h ../include/u_sim_data.h ../include/constant.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/m_cpoly.h \
  ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
  ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_mos_base.h d_mos.h \
- d_diode.h ../include/u_sdp.h ../include/e_node.h ../include/e_subckt.h \
- ../include/e_model.h
-d_mos.o: d_mos.cc ../include/u_limit.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/e_storag.h \
- ../include/e_elemnt.h ../include/e_logicnode.h ../include/e_logicval.h \
- ../include/e_node.h ../include/u_sim_data.h ../include/constant.h \
- ../include/l_compar.h ../include/u_opt.h ../include/mode.h \
- ../include/io_.h ../include/l_lib.h ../include/m_matrix.h \
- ../include/l_stlextra.h ../include/e_base.h ../include/u_attrib.h \
- ../include/ap.h ../include/l_indirect.h ../include/m_cpoly.h \
- ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
- ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_mos_base.h d_mos.h \
- d_diode.h ../include/u_sdp.h ../include/e_node.h ../include/e_subckt.h \
- ../include/e_model.h ../include/globals.h ../include/l_dispatcher.h \
+ ../include/e_cardlist.h ../include/e_card.h
+d_mos_base.o: d_mos_base.cc d_mos_base.h d_mos.h d_diode.h
+d_mos.o: d_mos.cc
+d_mos.o: ../include/u_limit.h ../include/md.h ../include/io_trace.h \
+ ../include/io_error.h ../include/e_storag.h ../include/e_elemnt.h \
+ ../include/e_logicnode.h ../include/e_logicval.h ../include/e_node.h \
+ ../include/u_sim_data.h ../include/constant.h ../include/l_compar.h \
+ ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
+ ../include/m_matrix.h ../include/l_stlextra.h ../include/e_base.h \
+ ../include/u_attrib.h ../include/ap.h ../include/l_indirect.h \
+ ../include/m_cpoly.h ../include/l_denoise.h ../include/e_compon.h \
+ ../include/u_time_pair.h ../include/u_parameter.h \
+ ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
+ ../include/e_card.h ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_elemnt.h
-d_bjt.o: d_bjt.cc ../include/u_limit.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/globals.h \
- ../include/l_dispatcher.h ../include/e_base.h ../include/u_attrib.h \
- ../include/ap.h ../include/l_indirect.h ../include/l_stlextra.h \
- ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
+d_mos.o: d_mos.cc d_mos_base.h d_mos.h d_diode.h
+d_bjt.o: d_bjt.cc
+d_bjt.o: ../include/u_limit.h ../include/md.h ../include/io_trace.h \
+ ../include/io_error.h ../include/globals.h ../include/l_dispatcher.h \
+ ../include/e_base.h ../include/u_attrib.h ../include/ap.h \
+ ../include/l_indirect.h ../include/l_stlextra.h ../include/u_opt.h \
+ ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/e_elemnt.h ../include/e_logicnode.h ../include/e_logicval.h \
  ../include/e_node.h ../include/u_sim_data.h ../include/constant.h \
  ../include/l_compar.h ../include/m_matrix.h ../include/m_cpoly.h \
  ../include/l_denoise.h ../include/e_compon.h ../include/u_time_pair.h \
  ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
- ../include/e_cardlist.h ../include/e_card.h d_bjt.h d_diode.h \
- ../include/u_sdp.h ../include/e_node.h ../include/e_subckt.h \
- ../include/e_model.h
-d_diode.o: d_diode.cc ../include/e_aux.h ../include/e_node.h \
- ../include/u_sim_data.h ../include/constant.h ../include/md.h \
- ../include/io_trace.h ../include/io_error.h ../include/l_compar.h \
- ../include/u_opt.h ../include/mode.h ../include/io_.h ../include/l_lib.h \
+ ../include/e_cardlist.h ../include/e_card.h
+d_bjt.o: d_bjt.cc d_bjt.h d_diode.h
+d_diode.o: d_diode.cc
+d_diode.o: ../include/e_aux.h ../include/e_node.h ../include/u_sim_data.h \
+ ../include/constant.h ../include/md.h ../include/io_trace.h \
+ ../include/io_error.h ../include/l_compar.h ../include/u_opt.h \
+ ../include/mode.h ../include/io_.h ../include/l_lib.h \
  ../include/m_matrix.h ../include/l_stlextra.h ../include/e_base.h \
  ../include/u_attrib.h ../include/ap.h ../include/l_indirect.h \
  ../include/e_storag.h ../include/e_elemnt.h ../include/e_logicnode.h \
@@ -851,5 +852,5 @@ d_diode.o: d_diode.cc ../include/e_aux.h ../include/e_node.h \
  ../include/e_compon.h ../include/u_time_pair.h ../include/u_parameter.h \
  ../include/m_expression.h ../include/m_base.h ../include/e_cardlist.h \
  ../include/e_card.h ../include/globals.h ../include/l_dispatcher.h \
- ../include/e_elemnt.h d_diode.h ../include/u_sdp.h ../include/e_node.h \
- ../include/e_subckt.h ../include/e_model.h
+ ../include/e_elemnt.h
+d_diode.o: d_diode.cc d_diode.h

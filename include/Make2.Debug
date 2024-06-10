@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-VPATH = .:..
+# BUG: VPATH = .:..
 PREFIX =  /usr/local
 
 # Standard base for g++, debugging, no optimization
@@ -41,7 +41,7 @@ CCFLAGS = \
 
 .SUFFIXES:
 .SUFFIXES: .so .o .cc
-.cc.o:; $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
+.cc.o:; $(CXX) $(CXXFLAGS) ${MAKE_CPPFLAGS} $(CPPFLAGS) $(CCFLAGS) -c $<
 .cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
 MAKE_EXE = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 

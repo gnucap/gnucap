@@ -129,20 +129,20 @@ typedef std::pair<double,double> DPAIR;
   #endif
 
 inline void* dlopen(const char* f, int)
-{
+{ untested();
   return LoadLibrary(const_cast<char*>(f));
 }
 
 inline void dlclose(void* h)
-{
+{ untested();
   FreeLibrary((HINSTANCE)h);
 }
 
 inline char* dlerror()
-{
+{ untested();
   static LPVOID lpMsgBuf = NULL;
   // free the error message buffer
-  if (lpMsgBuf) {
+  if (lpMsgBuf) { untested();
     LocalFree(lpMsgBuf);
   }
   // get the error code

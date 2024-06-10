@@ -110,7 +110,7 @@ struct Exception_Quit :public Exception{
 };
 struct Exception_File_Open :public Exception{
   Exception_File_Open(const std::string& Message) 
-    :Exception(Message) {
+    :Exception(Message) {itested();
   }
 };
 /*--------------------------------------------------------------------------*/

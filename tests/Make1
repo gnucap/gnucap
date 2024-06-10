@@ -1,0 +1,2 @@
+TEST_SYMLINKS = d_cccs.1.ckt c_lib.1.ckt
+REFDIR = ${srcdir}/==out
