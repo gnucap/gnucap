@@ -1,1 +1,1 @@
-#define PATCHLEVEL "build 2024.06.10"
+#define PATCHLEVEL "snapshot 2024.07.02"
