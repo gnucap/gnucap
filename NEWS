@@ -1,6 +1,16 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 20240523-dev
+
+- fix trace header for use in C
+- hierarchical system params
+- noise_num: device interface
+- matrix: eliminate edge vectors
+- refactored port & parameter attribute
+- avoid copy in set_param_by_name
+- new build system
+
 == 20240430-dev
 
 - add noise to sim_data
