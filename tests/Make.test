@@ -16,7 +16,7 @@ TARGETDIR = check
 ref = ${REFDIR}
 
 GNUCAP = ../main/gnucap
-ENV = GNUCAP_PLUGPATH=${top_builddir}:${top_builddir}/apps \
+TESTENV = GNUCAP_PLUGPATH=${top_builddir}:${top_builddir}/apps \
 	   LD_LIBRARY_PATH=${top_builddir}/lib${LD_LIBRARY_PATH:%=:%}
 
 glob_ckt = $(shell cd ${srcdir}; ls *.ckt)
@@ -68,11 +68,11 @@ prep: symlinks ${TEST_PLUGINS}
 	-mkdir -p ${TARGETDIR}
 
 ${gc_out}: ${TARGETDIR}/%.gc.out: prep
-	@-${ENV} ${GNUCAP} ${GNUCAP_ARGS} ${srcdir}/$*.gc |tail -n +12 | \
+	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} ${srcdir}/$*.gc |tail -n +12 | \
 		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
 
 ${ckt_out}: ${TARGETDIR}/%.ckt.out: prep
-	@-${ENV} ${GNUCAP} ${GNUCAP_ARGS} -b ${srcdir}/$*.ckt |tail -n +12 | \
+	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} -b ${srcdir}/$*.ckt |tail -n +12 | \
 		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
 
 ${PWD}/disciplines.vams:
@@ -81,8 +81,6 @@ ${PWD}/constants.vams:
 	-${LN_S} ${top_srcdir}/vams/constants.vams
 ${PWD}/sub:
 	-${LN_S} ${srcdir}/sub
-
-include ${top_srcdir}/include/Make3
 
 symlinks: ${TEST_SYMLINKS:%=${PWD}/%}
 
