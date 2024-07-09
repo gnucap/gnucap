@@ -215,6 +215,12 @@
 #define itested()
 #endif
 
+#ifdef TRAP_UNREACHABLE
+# ifdef unreachable
+#  undef unreachable
+# endif
+#define unreachable() assert(0 && "unreachable")
+#endif
 
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
