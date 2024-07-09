@@ -78,4 +78,10 @@ v1 ( a b ) exp iv= 0. pv= 1. td1=p/20 tau1=p/4 td2=p/2 tau2=p/4 period=p
 .ends esource
 x1 ( 1 0 )  esource  p=ppp
 *x2 (2 0) esource p=20n 
+"*>.status notime "
+Gnucap   System status
+iterations: op=0, dc=0, tran=56, fourier=0, total=229
+transient timesteps: accepted=58, rejected=0, total=58
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%
 ".end "

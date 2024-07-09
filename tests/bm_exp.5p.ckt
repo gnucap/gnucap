@@ -13,4 +13,5 @@ x1 (1 0) esource p=ppp
 .param ppp=50n
 .tran  trace all
 .list
+*>.status notime
 .end

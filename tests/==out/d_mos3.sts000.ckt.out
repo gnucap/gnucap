@@ -8,3 +8,9 @@ cmosn: is - js conflict
 #           v(1)       v(2)       v(3)       v(4)       iter(0)   
 new max = 5, new limit = 5.5
  27.        0.23673    4.9998     5.        -1.2349     5.        
+>>>>>*>.status notime 
+Gnucap   System status
+iterations: op=5, dc=0, tran=0, fourier=0, total=5
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=4, subckt=0, model=0, total=4
+dctran density=75.0%, ac density=75.0%

@@ -21,3 +21,8 @@ R4 ( 3 0 )  1.
 r5 ( 3 4 )  1.
 r6 ( 4 0 )  1.
 .ends zzz
+Gnucap   System status
+iterations: op=4, dc=0, tran=0, fourier=0, total=7
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=5, subckt=2, model=0, total=7
+dctran density=75.5%, ac density=75.5%

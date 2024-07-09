@@ -33,4 +33,5 @@ Vbs   4  0 -1.234875
 .op
 .print op vd(m1) vg(m1) vb(m1) vs(m1)
 .op
+*>.status notime
 .end

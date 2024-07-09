@@ -24,3 +24,8 @@ cmosn: rsh - rs - rd conflict: using rsh
  27.       -2.0069    -62.853n    126.14n    0.         31.93Meg  -1.        
 #           v(M1.Dsb)  i(M1.Dsb)  p(M1.Dsb)  cap(M1.Dsb) r(M1.Dsb)  region(M1.Dsb)
  27.        628.53f    20.E-21    0.         0.         31.93Meg   1.        
+Gnucap   System status
+iterations: op=7, dc=0, tran=0, fourier=0, total=84
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=77.8%, ac density=77.8%
