@@ -1,0 +1,25 @@
+.title mos1 inverter
+
+.width out=150
+.options itl4=40
+
+.model nmos nmos level=1 vto=0.7
+.model pmos pmos level=1 vto=-0.7
+
+.subckt n 1 2 3 4
+Mn1 1 2 3 4 NMOS W=8e-6 L=600e-9 
+.ends
+
+X1 3 2 0 0 n
+Mn1 3 2 0 0 NMOS W=8e-6 L=600e-9 
+Mp1 3 2 1 1 PMOS W=8e-6 L=600e-9 
+
+
+vdd 1 0 5
+vin 2 0 PWL (0 0, 1n 0, 3n 5, 10n 5, 12n 0, 20n 0)
+
+.print dc v(X1.Mn1.dsb) v(Mn1.dsb) v(Mp1.dsb) v(3)
+.dc vin 0 5 1
+
+.status notime
+.end
