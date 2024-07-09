@@ -54,12 +54,19 @@ else
 fi
 #----------------------------------------------------------------
 top_srcdir=$(dirname $0)
-#----------------------------------------------------------------
 if [ -f $top_srcdir/NEWS ]; then
 	: # OK
 else
 	echo could not find source directory
 	exit 1
+fi
+#----------------------------------------------------------------
+if [ -d .git ]; then
+	:
+elif [ -f ../.gitignore ]; then
+	:
+else
+	echo \* > .gitignore
 fi
 #----------------------------------------------------------------
 MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/Make1 | sed 's/^.*= //g')
