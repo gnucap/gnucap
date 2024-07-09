@@ -4,8 +4,8 @@ simulator lang=spice
 .options noinsensitive
 .subckt spice_diode 1 2
  .parameter area=1
- .parameter N cjo
- .parameter M, vj
+ .parameter N=1, cjo=10f
+ .parameter M=1, vj=.6
  .parameter rs
  .parameter Is=1e-15
  .parameter tt=1e-15
