@@ -87,6 +87,10 @@ inline bool LOGIC_NODE::just_reached_stable()const
  */
 void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
 {
+  if (is_analog()){
+    set_a_iter();
+  }else{
+  }
   assert(f);
   if (process() && process() != f) {untested();
     set_bad_quality("logic process mismatch");
