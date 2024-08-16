@@ -225,17 +225,21 @@ T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd)
   assert(_lownode);
   int kk = std::max(_lownode[rr], _lownode[cc]);
   int len = dd - kk;
-  T& dot = m(rr, cc);
+  T& in = m(rr, cc);
+  typedef typename longer<T>::type longertype;
+  longertype dot = 0.;
+
   if (len > 0) {
     T* row = &(l(rr,kk));	// _diaptr[r][r-c];
     T* col = &(u(kk,cc));	// _diaptr[c][r-c];
     /* for (ii = kk;   ii < dd;   ++ii) */
     for (int ii = 0;   ii < len;   ++ii) {
-      dot -= row[-ii] * col[ii];
+      dot += row[-ii] * col[ii];
     }
   }else{
   }
-  return dot;
+  in -= T(dot);
+  return in;
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
