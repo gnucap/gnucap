@@ -131,7 +131,10 @@ std::string LANG_VERILOG::parse_attributes(CS& cmd)
 void LANG_VERILOG::store_attributes(std::string attrib_string, tag_t x)
 {
   assert(x);
-  set_attributes(x).add_to(attrib_string, x);
+  if(attrib_string!=""){
+    set_attributes(x).add_to(attrib_string, x);
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_attributes(CS& cmd, tag_t x)
