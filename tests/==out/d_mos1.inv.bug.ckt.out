@@ -1,0 +1,17 @@
+.title mos1 inverter 
+.print dc v(X1.Mn1.dsb) v(Mn1.dsb) v(Mp1.dsb) v(3) 
+                          ^ ? no match
+.print dc v(X1.Mn1.dsb) v(Mn1.dsb) v(Mp1.dsb) v(3) 
+                                     ^ ? no match
+#           v(X1.Mn1.Dsb) v(3)      
+ 0.         0.         5.        
+ 1.         0.         4.9726    
+ 2.         0.         4.082     
+ 3.         0.         0.19168   
+ 4.         0.         0.0068252 
+ 5.         0.         3.0232n   
+Gnucap   System status
+iterations: op=0, dc=44, tran=0, fourier=0, total=44
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=100.0%, ac density=100.0%

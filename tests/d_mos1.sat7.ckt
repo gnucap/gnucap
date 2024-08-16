@@ -30,4 +30,5 @@ Rds   2  3  100.K
 .op
 .print op vd(m1) vg(m1) vb(m1) vs(m1)
 .op
+*>.status notime
 .end

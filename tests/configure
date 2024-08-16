@@ -55,5 +55,7 @@ CAT_EOF
 # fill_template??
 cat ${srcdir}/makefile.in >> makefile
 echo "include ${srcdir}/Make.test" >> makefile
+echo "include ../Make2" >> makefile
+echo "include ${top_srcdir}/include/Make3" >> makefile
 
 [ -d \=\=out ] || ln -sf ${srcdir}/\=\=out

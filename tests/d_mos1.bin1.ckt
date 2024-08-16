@@ -36,4 +36,5 @@ vin 2 0 PWL (0 0, 1n 0, 3n 5, 10n 5, 12n 0, 20n 0)
 .print tran v(1) v(2) v(3) v(4) v(5) v(6) v(7)
 .tran 0.1n 5n
 
+*>.status notime
 .end

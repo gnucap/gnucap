@@ -17,5 +17,5 @@ R10   9  0  1.
 .op
 .print ac v nodes
 .ac 1k
+*>.status notime
 .end
-

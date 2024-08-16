@@ -17,4 +17,5 @@ r6 4 0 1
 .op
 .print
 .list
+*>.status notime
 .end

@@ -35,4 +35,5 @@ Vbs   4  0  0.
 .op
 .print op v(dsb.m1) i(dsb.m1) p(dsb.m1) cap(dsb.m1) r(dsb.m1) region(dsb.m1)
 .op
+*>.status notime
 .end

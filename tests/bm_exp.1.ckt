@@ -4,4 +4,5 @@ v1 1 0 exp  iv= 0.  pv= 1.  td1= 1.n  tau1= 5.n  td2= 10.n  tau2= 5.n
 .print tran v 1
 .tran 0 20n .05n
 .list
+*>.status notime
 .end

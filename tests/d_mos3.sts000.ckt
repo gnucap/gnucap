@@ -16,4 +16,5 @@ Vbs   4  0 -1.234875
 .options trace
 .print op v(nodes) iter(0)
 .op
+*>.status notime
 .end

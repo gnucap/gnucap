@@ -1,5 +1,6 @@
-/*$Id: m_matrix.h 2017/06/07 $ -*- C++ -*-
+/*                             -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
+ *               2023, 2024 Felix Salfelder
  * Author: Albert Davis <aldavis@gnu.org>
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
@@ -205,23 +206,40 @@ void BSMATRIX<T>::init(int ss)
   }
 }
 /*--------------------------------------------------------------------------*/
+template<class T>
+struct longer{
+  typedef T type;
+};
+template<>
+struct longer< std::complex<double> > {
+  typedef std::complex<long double> type;
+};
+template<>
+struct longer<double> {
+  typedef long double type;
+};
+/*--------------------------------------------------------------------------*/
 template <class T>
 T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd)
 {
   assert(_lownode);
   int kk = std::max(_lownode[rr], _lownode[cc]);
   int len = dd - kk;
-  T& dot = m(rr, cc);
+  T& in = m(rr, cc);
+  typedef typename longer<T>::type longertype;
+  longertype dot = 0.;
+
   if (len > 0) {
     T* row = &(l(rr,kk));	// _diaptr[r][r-c];
     T* col = &(u(kk,cc));	// _diaptr[c][r-c];
     /* for (ii = kk;   ii < dd;   ++ii) */
     for (int ii = 0;   ii < len;   ++ii) {
-      dot -= row[-ii] * col[ii];
+      dot += row[-ii] * col[ii];
     }
   }else{
   }
-  return dot;
+  in -= T(dot);
+  return in;
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -230,18 +248,20 @@ T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd, const T& in)
   assert(_lownode);
   int kk = std::max(_lownode[rr], _lownode[cc]);
   int len = dd - kk;
-  T& dot = m(rr, cc);
-  dot = in;
+  typedef typename longer<T>::type longertype;
+  longertype dot = 0.;
   if (len > 0) {
     T* row = &(l(rr,kk));
     T* col = &(u(kk,cc));
     /* for (ii = kk;   ii < dd;   ++ii) */
     for (int ii = 0;   ii < len;   ++ii) {
-      dot -= row[-ii] * col[ii];
+      dot += row[-ii] * col[ii];
     }
   }else{
   }
-  return dot;
+  T& result = m(rr, cc);
+  result = T(in - dot);
+  return result;
 }
 /*--------------------------------------------------------------------------*/
 // public implementations

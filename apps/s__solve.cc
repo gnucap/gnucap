@@ -280,16 +280,6 @@ void SIM::solve_equations()
   ::status.back.start();
   _sim->_lu.fbsub(_sim->_v0, _sim->_i, _sim->_v0);
   ::status.back.stop();
-  
-  if (_sim->_nstat) {
-    // mixed mode
-    for (int ii = _sim->_lu.size(); ii >= 1; --ii) {
-      _sim->_nstat[ii].set_a_iter();
-    }
-  }else{ untested();
-    // pure analog
-    untested();
-  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
