@@ -1,3 +1,8 @@
 */Make2
 */Makefile
+makefile
+config.log
+Make2
 *~
+*.o
+*.so

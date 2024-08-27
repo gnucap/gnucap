@@ -58,7 +58,7 @@ IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
 #------------------------------------------------------------------------
 GENERATED_SRCS =
 GENERATED_HDRS =
-GENERATED_OTHER = Make.aux
+GENERATED_OTHER =
 GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
@@ -75,7 +75,7 @@ TARGET_DEPENDS = $(OBJS) $(RAW)
 #------------------------------------------------------------------------
 MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
 CLEANFILES = $(MOSTLYCLEANFILES)
-DISTCLEANFILES = $(CLEANFILES)
+DISTCLEANFILES = $(CLEANFILES) config.log makefile Makefile
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------

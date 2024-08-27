@@ -63,9 +63,7 @@ fi
 #----------------------------------------------------------------
 if [ -d .git ]; then
 	:
-elif [ -f ../.gitignore ]; then
-	:
-else
+elif [ -f $srcdir/NEWS ]; then
 	echo \* > .gitignore
 fi
 #----------------------------------------------------------------
@@ -80,13 +78,6 @@ fi
 #----------------------------------------------------------------
 echo prefix is $prefix
 echo preset is $preset
-
-
-echo \# created by $PWD/$0. do not edit >makefile
-echo \#------------------------------------------------------------------------ >>makefile
-echo "srcdir = $srcdir" >> makefile
-echo "VPATH = \${srcdir}" >> makefile
-cat $srcdir/makefile.in >> makefile
 #----------------------------------------------------------------
 out_of_tree=yes
 top_srcdir_=top_srcdir
@@ -102,17 +93,45 @@ case $srcdir in
 		top_srcdir_="../$srcdir"
 		;;
 esac
+#----------------------------------------------------------------
+sub_makefile() {
+	echo sub_makefile $1
+	echo \# created by $0 do not edit >$1
+	echo \#------------------------------------------------------------------------ >>Make2
+	echo "top_srcdir = $top_srcdir" >> $1
+	echo "srcdir = ${srcdir}" >> $1
+	echo "VPATH = \${srcdir}" >> $1
+	echo "MAKE1_FIX = #" >> $1
+	echo "include \${srcdir}/Make1" >> $1
+	echo "INCLUDE = " >> $1
+	echo "PRESET = default" >> $1
+	echo "include ../Make2" >> $1
+	echo "include $top_srcdir/include/Make3" >> $1
+	echo "-include \${srcdir}/Make.depend" >> $1
+}
+#------------------------------------------------------------------------
+if [ -f $srcdir/makefile.in ]; then
+	echo \# created by $PWD/$0. do not edit >makefile
+	echo \#------------------------------------------------------------------------ >>makefile
+	echo "srcdir = $srcdir" >> makefile
+	echo "VPATH = \${srcdir}" >> makefile
+	cat $srcdir/makefile.in >> makefile
+else
+	sub_makefile makefile
+fi
 #------------------------------------------------------------------------
 if [ $out_of_tree = "yes" ]; then
 	: # OK
 elif [ $force_in_tree = "yes" ]; then
 	: # OK
-else
+elif [ -f NEWS ]; then
 	echo "Really configure in-tree?" >&2
    echo "Hit ^C to avoid or wait for 1 minute." >&2
    echo "Bypass this check with --force-in-tree." >&2
 	for i in `seq 60`; do sleep 1; echo -n '.'; done
 	echo;
+else
+	: # configuring some subdir
 fi
 #------------------------------------------------------------------------
 echo \# created by $PWD/$0. do not edit >Make2
@@ -123,9 +142,10 @@ echo "ENV = LD_LIBRARY_PATH=../lib\${LD_LIBRARY_PATH:%=:%}" >>Make2
 echo "LDFLAGS = -L../lib" >>Make2
 echo "GNUCAP_CONF = ../conf/gnucap-conf" >>Make2
 #------------------------------------------------------------------------
-# "MAKE_CPPFLAGS": hardwired, not overridden in Make2.*
-#                  and not a user variable, like CPPFLAGS
-echo "MAKE_CPPFLAGS = -I${top_srcdir_}/include" >>Make2
+# "MAKE_CPPFLAGS": not a user variable like CPPFLAGS
+#                  add ${INCLUDE} when overriding in Make2.*
+echo "INCLUDE = -I${top_srcdir_}/include -I../conf -I../../conf" >>Make2
+echo "MAKE_CPPFLAGS = \${INCLUDE}" >>Make2
 #------------------------------------------------------------------------
 echo "PRESET = ${preset}" >> Make2
 echo "include ${top_srcdir_}/include/Make2.\${PRESET}" >>Make2
@@ -163,30 +183,12 @@ subdir_configure() {
 	echo '.PHONY: all' >> $m
 }
 #------------------------------------------------------------------------
-sub_makefile() {
-	echo sub_makefile $1
-	echo \# created by $0 do not edit >$1
-	echo \#------------------------------------------------------------------------ >>Make2
-	echo "top_srcdir = $top_srcdir_" >> $1
-	echo "srcdir = $top_srcdir_/$i" >> $1
-	echo "VPATH = \${srcdir}" >> $1
-	echo "MAKE1_FIX = #" >> $1
-	echo "include \${srcdir}/Make1" >> $1
-	echo "INCLUDE = " >> $1
-	echo "PRESET = default" >> $1
-	echo "include ../Make2" >> $1
-	echo "include $top_srcdir_/include/Make3" >> $1
-	echo "-include \${srcdir}/Make.depend" >> $1
-}
-#------------------------------------------------------------------------
 for i in ${SUBDIRS}; do
 	mkdir -p $i;
 	if [ -f $srcdir/$i/configure ]; then
 		sub_configure $i;
-	elif grep ^SUBDIRS $srcdir/$i/Make1 > /dev/null; then
-		subdir_configure $i;
 	else
-		sub_makefile $i/makefile;
+		subdir_configure $i;
 	fi
 done
 #------------------------------------------------------------------------

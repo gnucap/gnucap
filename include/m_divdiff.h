@@ -29,7 +29,7 @@
  *   c = "divided differences" (mult by n! to get derivative)
  */
 /*--------------------------------------------------------------------------*/
-#include <io_trace.h>
+#include "io_trace.h"
 #if 0
 template<class T1, class T2>
 inline void divided_differences(T1 c[], int n, const T2 t[])

@@ -28,11 +28,13 @@ INSTALL_DIR_1 = $(PREFIX)/bin
 LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
 #------------------------------------------------------------------------
 # BUG: include paths are probably wrong. (Workaround: override in Make2)
-INCLUDE = -I. -I../include -I../../include
+INCLUDE = -I. -I../include -I../../include -I../conf
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
 RAW_SRCS = main.cc 
+#------------------------------------------------------------------------
+main.o : ../conf/config.h
 #------------------------------------------------------------------------
 RAW_OTHER = Make1
 #------------------------------------------------------------------------
@@ -47,7 +49,7 @@ IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
 #------------------------------------------------------------------------
 GENERATED_SRCS =
 GENERATED_HDRS =
-GENERATED_OTHER = Make.aux
+GENERATED_OTHER =
 GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
@@ -64,7 +66,7 @@ TARGET_DEPENDS = $(OBJS) $(RAW)
 #------------------------------------------------------------------------
 MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
 CLEANFILES = $(MOSTLYCLEANFILES)
-DISTCLEANFILES = $(CLEANFILES)
+DISTCLEANFILES = $(CLEANFILES) config.log makefile Makefile
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
