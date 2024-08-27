@@ -104,11 +104,11 @@ public:
 	found = true;
 	// keep looking in case there is another, which will supercede
 	// finds right-most match using left-right search
-      }else{untested();
+      }else{itested();
 	cmd.skiparg();
-	if (cmd >> "=") {untested();
+	if (cmd >> "=") {itested();
 	  cmd.ctos();
-	}else{untested();
+	}else{itested();
 	}
       }
     }
