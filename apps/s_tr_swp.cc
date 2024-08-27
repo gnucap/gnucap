@@ -227,7 +227,7 @@ void TRANSIENT::first()
     assert(newtime > _time1);						\
     assert(newtime > reftime);						\
     assert(new_dt > 0.);						\
-    assert(new_dt >= _sim->_dtmin);					\
+    assert(new_dt >= _sim->_dtmin * .9999999);				\
     assert(newtime <= _time_by_user_request + _sim->_dtmin );		\
     /*assert(newtime == _time_by_user_request*/				\
     /*	   || newtime < _time_by_user_request - _sim->_dtmin);	*/	\
@@ -235,7 +235,7 @@ void TRANSIENT::first()
 #define check_consistency2() {						\
     assert(newtime > _time1);						\
     assert(new_dt > 0.);						\
-    assert(new_dt >= _sim->_dtmin);					\
+    assert(new_dt >= _sim->_dtmin * .9999999);				\
     assert(newtime <= _time_by_user_request + _sim->_dtmin);		\
     /*assert(newtime == _time_by_user_request	*/			\
     /*	   || newtime < _time_by_user_request - _sim->_dtmin);*/	\
@@ -300,6 +300,7 @@ bool TRANSIENT::next()
     // Pop happens in accept.
     if (!_sim->_eq.empty() && _sim->_eq.top() < newtime) {
       newtime = _sim->_eq.top();
+      trace2("trswp", newtime, _sim->_eq.size());
       new_dt = newtime - reftime;
       if (new_dt < _sim->_dtmin) {untested();
 	//new_dt = _sim->_dtmin;
@@ -569,11 +570,17 @@ void TRANSIENT::accept()
     trace1("eq", _sim->_eq.top());
     _sim->_eq.pop();
   }
+  bool pruned = false;
   while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {itested();
     // near duplicate events in the queue.  overclocked?
-    incomplete(); //BUG// does this result in events being ignored?
-    trace1("eq-extra", _sim->_eq.top());
+    trace1("eq-prune", _sim->_eq.top());
     _sim->_eq.pop();
+    pruned = true;
+  }
+  if(pruned){itested();
+    // comment out to put devices under stress
+    _sim->_eq.push(_sim->_time0 + _sim->_dtmin);
+  }else{
   }
 
   _sim->set_limit();
