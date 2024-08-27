@@ -199,14 +199,14 @@ void CARD::new_subckt()
 {
   assert(!_subckt);
   delete _subckt;
-  _subckt = NULL;
+  _subckt = nullptr;
   _subckt = new CARD_LIST;
 }
 /*--------------------------------------------------------------------------*/
 void CARD::new_subckt(const CARD* Model, PARAM_LIST const* Params)
 {
   delete _subckt;
-  _subckt = NULL;
+  _subckt = nullptr;
   _subckt = new CARD_LIST(Model, this, scope(), Params);
 }
 /*--------------------------------------------------------------------------*/

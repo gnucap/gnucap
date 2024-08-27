@@ -171,13 +171,13 @@ static void make_set_parameters(std::ofstream& out, const Element& e)
   }else if (e.args() != "") {
     out << "c->_" << e.args();
   }else{
-    out << "NULL";
+    out << "nullptr";
   }
   out << ", " << ((e.value() != "") ? e.value() : "0.");
   if (e.state() != "") {
     out << ", " << e.num_nodes()/2+1 << ", &" << e.state();
   }else{
-    out << ", 0, NULL";
+    out << ", 0, nullptr";
   }
   out << ", " << e.num_nodes() << ", nodes);\n";
 }
@@ -190,7 +190,7 @@ static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
       "    if (" << e.omit() << ") {\n"
       "      if (_" << e.name() << ") {\n"
       "        subckt()->erase(_" << e.name() << ");\n"
-      "        _" << e.name() << " = NULL;\n"
+      "        _" << e.name() << " = nullptr;\n"
       "      }else{\n"
       "      }\n"
       "    }else{\n";

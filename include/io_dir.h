@@ -39,11 +39,11 @@ public:
       if(d) {itested();
 	_de = ::readdir(d);
       }else{itested();
-	_de = NULL;
+	_de = nullptr;
       }
     }
   public:
-    explicit const_iterator() : _d(NULL), _de(NULL) {}
+    explicit const_iterator() : _d(nullptr), _de(nullptr) {}
     ~const_iterator() {}
   public:
     ::dirent const* operator->() {return _de;}
@@ -65,14 +65,14 @@ public:
     if(_d) {itested();
       ::closedir(_d);
       //delete(_d); // done by closedir?
-      _d = NULL;
+      _d = nullptr;
     }else{
     }
   }
   void rewinddir()const {::rewinddir(_d);}
   bool exists()const {return _d;}
   const_iterator begin()const {rewinddir(); return const_iterator(_d);}
-  const_iterator end()const {return const_iterator(NULL);}
+  const_iterator end()const {return const_iterator(nullptr);}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

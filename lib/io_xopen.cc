@@ -35,7 +35,7 @@ void xclose(FILE **fn)
 {
   if (*fn) {
     fclose(*fn);
-    *fn = NULL;
+    *fn = nullptr;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -86,12 +86,12 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
   
   trim(fname);
   if (strlen(fname)==0) { untested();
-    return NULL;
+    return nullptr;
   }
 
   cmd.skipcom();
   
-  FILE *code = NULL;	/* a file pointer for the file we found */
+  FILE *code = nullptr;	/* a file pointer for the file we found */
   if (!OPT::clobber && (*how == 'w') && (access(fname,F_OK) == FILE_OK)) {untested();
     char buffer[BUFLEN];
     std::string msg = std::string(fname) + " exists.  replace? ";
@@ -99,7 +99,7 @@ FILE *xopen(CS& cmd, const char *ext, const char *how)
     if (Umatch(buffer,"y{es} ")) {untested(); 	/* should be new file, but	    */
       code = fopen(fname,how);		/* file already exists,  ask	    */
     }else{untested();
-      return NULL;
+      return nullptr;
     }
   }else{
     code = fopen(fname,how);

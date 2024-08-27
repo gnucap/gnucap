@@ -141,7 +141,7 @@ void Expression::leaf(CS& File)
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 void Expression::factor(CS& File)
 {
-  Token* t = NULL;
+  Token* t = nullptr;
   if (File >> "-|+|!") {
     std::string name(File.last_match());
     t = new Token_UNARY(name);
@@ -166,8 +166,8 @@ void Expression::factor(CS& File)
 void Expression::ternary(CS& File)
 {
   std::string name(File.last_match());
-  Expression* true_part = NULL;
-  Expression* false_part = NULL;
+  Expression* true_part = nullptr;
+  Expression* false_part = nullptr;
 
   true_part = new Expression(File);
 

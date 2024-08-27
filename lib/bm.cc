@@ -218,7 +218,7 @@ COMMON_COMPONENT* EVAL_BM_ACTION_BASE::parse_func_type(CS& cmd)
     p->skip_type_tail(cmd);
     return p->clone();
   }else{
-    return NULL;
+    return nullptr;
   }
 }
 /*--------------------------------------------------------------------------*/

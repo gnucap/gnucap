@@ -52,7 +52,7 @@ public:
 
 public: // override virtuals
   char	id_letter()const override	{untested();return '\0';}
-  CARD*	clone_instance()const override	{return (_component_proto) ? _component_proto->clone() : NULL;}
+  CARD*	clone_instance()const override	{return (_component_proto) ? _component_proto->clone() : nullptr;}
   void	precalc_first()override;
   void	set_param_by_index(int, std::string&, int)override;
   bool  param_is_printable(int)const override;

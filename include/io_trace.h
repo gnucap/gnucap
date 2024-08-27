@@ -42,6 +42,7 @@
 #undef untested
 #undef itested
 #undef unreachable
+#undef unreachable_trap
 #undef incomplete
 /*--------------------------------------------------------------------------*/
 #ifdef DO_TRACE
@@ -140,11 +141,18 @@
 #define trace8(r,s,t,u,v,w,x,y,z) USE(r);USE(s);USE(t);USE(u);USE(v);USE(w);USE(x);USE(y);USE(z)
 #endif
 
+#ifdef TRAP_UNREACHABLE
+#define unreachable_trap() assert(0 && "unreachable")
+#else
+#define unreachable_trap()
+#endif
+
 #ifdef __cplusplus
 
 #define unreachable() ( \
     std::cerr << "@@#\n@@@\nunreachable:" \
-              << __FILE__ << ":" << __LINE__ << ":" << __func__ << "\n" )
+              << __FILE__ << ":" << __LINE__ << ":" << __func__ << "\n"); \
+    unreachable_trap()
 
 #define incomplete() ( \
     std::cerr << "@@#\n@@@\nincomplete:" \
@@ -153,7 +161,8 @@
 #else // no __cplusplus
 
 #define unreachable() (fprintf(stderr,"@@#\n@@@unreachable:%s:%u:%s\n", \
-			   __FILE__, __LINE__, __func__))
+			   __FILE__, __LINE__, __func__)); \
+			   unreachable_trap()
 
 #define incomplete() (fprintf(stderr,"@@#\n@@@incomplete:%s:%u:%s\n", \
 			   __FILE__, __LINE__, __func__))
@@ -213,13 +222,6 @@
 
 #else
 #define itested()
-#endif
-
-#ifdef TRAP_UNREACHABLE
-# ifdef unreachable
-#  undef unreachable
-# endif
-#define unreachable() assert(0 && "unreachable")
 #endif
 
 /*--------------------------------------------------------------------------*/

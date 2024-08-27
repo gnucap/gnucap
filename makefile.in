@@ -3,7 +3,8 @@
 # Author: Felix Salfelder 2024
 #-----------------------------------------------------------------------------
 include ${srcdir}/Make1
-RECURSIVE_TARGETS = all install clean depend ${EXTRA_RECURSIVE_TARGETS}
+RECURSIVE_TARGETS = all install clean depend distclean \
+                    ${EXTRA_RECURSIVE_TARGETS}
 #-----------------------------------------------------------------------------
 ${RECURSIVE_TARGETS:%=%-recursive}: %-recursive:
 	for i in ${SUBDIRS}; do \
@@ -24,8 +25,14 @@ check-git:
 		echo need git repository; \
 		exit 1; \
 	fi
-
+#-----------------------------------------------------------------------------
+distclean: distclean-local
+distclean-local:
+	@if [ ! -d .git ]; then\
+		rm -rf .gitignore; \
+	fi
+#-----------------------------------------------------------------------------
 .PHONY: check-git install
 #-----------------------------------------------------------------------------
 .PHONY: ${RECURSIVE_TARGETS} ${RECURSIVE_TARGETS:%=%-recursive} \
-        install install-here check all
+        install install-here check all distclean-local

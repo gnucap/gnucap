@@ -44,51 +44,51 @@ public:
   virtual std::string val_string()const		{untested(); return "error";}
   virtual bool to_bool()const			{unreachable(); return false;}
 
-  virtual Base* minus()const			{untested(); return NULL;}
-  virtual Base* plus()const			{untested(); return NULL;}
+  virtual Base* minus()const			{untested(); return nullptr;}
+  virtual Base* plus()const			{untested(); return nullptr;}
 
-  virtual Base* less(const Base*)const		{untested(); return NULL;}
-  virtual Base* less(const Float*)const		{untested(); return NULL;}
-  virtual Base* less(const String*)const	{untested(); return NULL;}
-  virtual Base* greater(const Base*)const	{untested(); return NULL;}
-  virtual Base* greater(const Float*)const	{untested(); return NULL;}
-  virtual Base* greater(const String*)const	{untested(); return NULL;}
-  virtual Base* leq(const Base*)const		{untested(); return NULL;}
-  virtual Base* leq(const Float*)const		{untested(); return NULL;}
-  virtual Base* leq(const String*)const 	{untested(); return NULL;}
-  virtual Base* geq(const Base*)const		{untested(); return NULL;}
-  virtual Base* geq(const Float*)const		{untested(); return NULL;}
-  virtual Base* geq(const String*)const 	{untested(); return NULL;}
-  virtual Base* not_equal(const Base*)const	{untested(); return NULL;}
-  virtual Base* not_equal(const Float*)const	{untested(); return NULL;}
-  virtual Base* not_equal(const String*)const	{untested(); return NULL;}
-  virtual Base* equal(const Base*)const		{untested(); return NULL;}
-  virtual Base* equal(const Float*)const	{untested(); return NULL;}
-  virtual Base* equal(const String*)const	{untested(); return NULL;}
-  virtual Base* add(const Base*)const		{untested(); return NULL;}
-  virtual Base* add(const Float*)const		{untested(); return NULL;}
-  virtual Base* add(const String*)const		{untested(); return NULL;}
-  virtual Base* multiply(const Base*)const	{untested(); return NULL;}
-  virtual Base* multiply(const Float*)const	{untested(); return NULL;}
-  virtual Base* multiply(const String*)const	{untested(); return NULL;}
-  virtual Base* subtract(const Base*)const	{untested(); return NULL;}
-  virtual Base* subtract(const Float*)const	{untested(); return NULL;}
-  virtual Base* subtract(const String*)const	{untested(); return NULL;}
-  virtual Base* r_subtract(const Base*)const	{untested(); return NULL;}
-  virtual Base* r_subtract(const Float*)const	{untested(); return NULL;}
-  virtual Base* r_subtract(const String*)const	{untested(); return NULL;}
-  virtual Base* divide(const Base*)const	{untested(); return NULL;}
-  virtual Base* divide(const Float*)const	{untested(); return NULL;}
-  virtual Base* divide(const String*)const	{untested(); return NULL;}
-  virtual Base* r_divide(const Base*)const	{untested(); return NULL;}
-  virtual Base* r_divide(const Float*)const	{untested(); return NULL;}
-  virtual Base* r_divide(const String*)const	{untested(); return NULL;}
-  virtual Base* modulo(const Base*)const	{untested(); return NULL;}
-  virtual Base* modulo(const Float*)const	{untested(); return NULL;}
-  virtual Base* modulo(const String*)const	{untested(); return NULL;}
-  virtual Base* r_modulo(const Base*)const	{untested(); return NULL;}
-  virtual Base* r_modulo(const Float*)const	{untested(); return NULL;}
-  virtual Base* r_modulo(const String*)const	{untested(); return NULL;}
+  virtual Base* less(const Base*)const		{untested(); return nullptr;}
+  virtual Base* less(const Float*)const		{untested(); return nullptr;}
+  virtual Base* less(const String*)const	{untested(); return nullptr;}
+  virtual Base* greater(const Base*)const	{untested(); return nullptr;}
+  virtual Base* greater(const Float*)const	{untested(); return nullptr;}
+  virtual Base* greater(const String*)const	{untested(); return nullptr;}
+  virtual Base* leq(const Base*)const		{untested(); return nullptr;}
+  virtual Base* leq(const Float*)const		{untested(); return nullptr;}
+  virtual Base* leq(const String*)const 	{untested(); return nullptr;}
+  virtual Base* geq(const Base*)const		{untested(); return nullptr;}
+  virtual Base* geq(const Float*)const		{untested(); return nullptr;}
+  virtual Base* geq(const String*)const 	{untested(); return nullptr;}
+  virtual Base* not_equal(const Base*)const	{untested(); return nullptr;}
+  virtual Base* not_equal(const Float*)const	{untested(); return nullptr;}
+  virtual Base* not_equal(const String*)const	{untested(); return nullptr;}
+  virtual Base* equal(const Base*)const		{untested(); return nullptr;}
+  virtual Base* equal(const Float*)const	{untested(); return nullptr;}
+  virtual Base* equal(const String*)const	{untested(); return nullptr;}
+  virtual Base* add(const Base*)const		{untested(); return nullptr;}
+  virtual Base* add(const Float*)const		{untested(); return nullptr;}
+  virtual Base* add(const String*)const		{untested(); return nullptr;}
+  virtual Base* multiply(const Base*)const	{untested(); return nullptr;}
+  virtual Base* multiply(const Float*)const	{untested(); return nullptr;}
+  virtual Base* multiply(const String*)const	{untested(); return nullptr;}
+  virtual Base* subtract(const Base*)const	{untested(); return nullptr;}
+  virtual Base* subtract(const Float*)const	{untested(); return nullptr;}
+  virtual Base* subtract(const String*)const	{untested(); return nullptr;}
+  virtual Base* r_subtract(const Base*)const	{untested(); return nullptr;}
+  virtual Base* r_subtract(const Float*)const	{untested(); return nullptr;}
+  virtual Base* r_subtract(const String*)const	{untested(); return nullptr;}
+  virtual Base* divide(const Base*)const	{untested(); return nullptr;}
+  virtual Base* divide(const Float*)const	{untested(); return nullptr;}
+  virtual Base* divide(const String*)const	{untested(); return nullptr;}
+  virtual Base* r_divide(const Base*)const	{untested(); return nullptr;}
+  virtual Base* r_divide(const Float*)const	{untested(); return nullptr;}
+  virtual Base* r_divide(const String*)const	{untested(); return nullptr;}
+  virtual Base* modulo(const Base*)const	{untested(); return nullptr;}
+  virtual Base* modulo(const Float*)const	{untested(); return nullptr;}
+  virtual Base* modulo(const String*)const	{untested(); return nullptr;}
+  virtual Base* r_modulo(const Base*)const	{untested(); return nullptr;}
+  virtual Base* r_modulo(const Float*)const	{untested(); return nullptr;}
+  virtual Base* r_modulo(const String*)const	{untested(); return nullptr;}
 
   Base* logic_not()const;
   Base* logic_or(const Base* X)const;
@@ -185,35 +185,35 @@ public:
   Base* modulo(const Float* X)const override	{untested();assert(X); return new Float(fmod(_data, X->_data));}
   Base* r_modulo(const Float* X)const override	{           assert(X); return new Float(fmod(X->_data, _data));}
 
-  Base* less(const Base* X)const override	{return ((X) ? (X->greater(this))   : (NULL));}
-  Base* greater(const Base* X)const override	{return ((X) ? (X->less(this))      : (NULL));}
-  Base* leq(const Base* X)const override	{return ((X) ? (X->geq(this))       : (NULL));}
-  Base* geq(const Base* X)const override	{return ((X) ? (X->leq(this))       : (NULL));}
-  Base* not_equal(const Base* X)const override	{return ((X) ? (X->not_equal(this)) : (NULL));}
-  Base* equal(const Base* X)const override	{return ((X) ? (X->equal(this))	    : (NULL));}
-  Base* add(const Base* X)const override	{return ((X) ? (X->add(this))       : (NULL));}
-  Base* multiply(const Base* X)const override	{return ((X) ? (X->multiply(this))  : (NULL));}
-  Base* subtract(const Base* X)const override	{return ((X) ? (X->r_subtract(this)): (NULL));}
-  Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (NULL));}
-  Base* divide(const Base* X)const override	{return ((X) ? (X->r_divide(this))  : (NULL));}
-  Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (NULL));}
-  Base* modulo(const Base* X)const override	{return ((X) ? (X->r_modulo(this))  : (NULL));}
-  Base* r_modulo(const Base* X)const override	{untested();return ((X) ? (X->modulo(this))    : (NULL));}
+  Base* less(const Base* X)const override	{return ((X) ? (X->greater(this))   : (nullptr));}
+  Base* greater(const Base* X)const override	{return ((X) ? (X->less(this))      : (nullptr));}
+  Base* leq(const Base* X)const override	{return ((X) ? (X->geq(this))       : (nullptr));}
+  Base* geq(const Base* X)const override	{return ((X) ? (X->leq(this))       : (nullptr));}
+  Base* not_equal(const Base* X)const override	{return ((X) ? (X->not_equal(this)) : (nullptr));}
+  Base* equal(const Base* X)const override	{return ((X) ? (X->equal(this))	    : (nullptr));}
+  Base* add(const Base* X)const override	{return ((X) ? (X->add(this))       : (nullptr));}
+  Base* multiply(const Base* X)const override	{return ((X) ? (X->multiply(this))  : (nullptr));}
+  Base* subtract(const Base* X)const override	{return ((X) ? (X->r_subtract(this)): (nullptr));}
+  Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (nullptr));}
+  Base* divide(const Base* X)const override	{return ((X) ? (X->r_divide(this))  : (nullptr));}
+  Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (nullptr));}
+  Base* modulo(const Base* X)const override	{return ((X) ? (X->r_modulo(this))  : (nullptr));}
+  Base* r_modulo(const Base* X)const override	{untested();return ((X) ? (X->modulo(this))    : (nullptr));}
 
-  Base* less(const String*)const override	{untested();return NULL;}
-  Base* greater(const String*)const override	{untested();return NULL;}
-  Base* leq(const String*)const override 	{untested();return NULL;}
-  Base* geq(const String*)const override 	{untested();return NULL;}
-  Base* not_equal(const String*)const override	{return NULL;}
-  Base* equal(const String*)const override	{return NULL;}
-  Base* add(const String*)const override 	{           return NULL;}
-  Base* multiply(const String*)const override	{untested();return NULL;}
-  Base* subtract(const String*)const override	{untested();return NULL;}
-  Base* r_subtract(const String*)const override	{           return NULL;}
-  Base* divide(const String*)const override	{untested();return NULL;}
-  Base* r_divide(const String*)const override	{	    return NULL;}
-  Base* modulo(const String*)const override	{untested();return NULL;}
-  Base* r_modulo(const String*)const override	{untested();return NULL;}
+  Base* less(const String*)const override	{untested();return nullptr;}
+  Base* greater(const String*)const override	{untested();return nullptr;}
+  Base* leq(const String*)const override 	{untested();return nullptr;}
+  Base* geq(const String*)const override 	{untested();return nullptr;}
+  Base* not_equal(const String*)const override	{return nullptr;}
+  Base* equal(const String*)const override	{return nullptr;}
+  Base* add(const String*)const override 	{           return nullptr;}
+  Base* multiply(const String*)const override	{untested();return nullptr;}
+  Base* subtract(const String*)const override	{untested();return nullptr;}
+  Base* r_subtract(const String*)const override	{           return nullptr;}
+  Base* divide(const String*)const override	{untested();return nullptr;}
+  Base* r_divide(const String*)const override	{	    return nullptr;}
+  Base* modulo(const String*)const override	{untested();return nullptr;}
+  Base* r_modulo(const String*)const override	{untested();return nullptr;}
 
   bool  is_NA()const			{untested();return _data == NOT_INPUT;}
 };
@@ -234,8 +234,8 @@ public:
   std::string val_string()const override		{return _data;}
   bool to_bool()const override			{untested();return (_data != "");}
 
-  Base* minus()const override			{untested(); return NULL;}
-  Base* plus()const override			{untested(); return NULL;}
+  Base* minus()const override			{untested(); return nullptr;}
+  Base* plus()const override			{untested(); return nullptr;}
 
   Base* less(const String* X)const override	{untested();assert(X); return new Float((_data < X->_data)?1.:0.);}
   Base* greater(const String* X)const override	{untested();assert(X); return new Float((_data > X->_data)?1.:0.);}
@@ -243,44 +243,44 @@ public:
   Base* geq(const String* X)const override	{untested();assert(X); return new Float((_data >= X->_data)?1.:0.);}
   Base* not_equal(const String* X)const override{untested();assert(X); return new Float((_data != X->_data)?1.:0.);}
   Base* equal(const String* X)const override	{assert(X); return new Float((_data == X->_data)?1.:0.);}
-  Base* add(const String*)const override	{	    return NULL;}
-  Base* multiply(const String*)const override	{           return NULL;}
-  Base* subtract(const String*)const override	{untested(); return NULL;}
-  Base* r_subtract(const String*)const override	{itested(); return NULL;}
-  Base* divide(const String*)const override	{untested(); return NULL;}
-  Base* r_divide(const String*)const override	{itested(); return NULL;}
-  Base* modulo(const String*)const override	{untested(); return NULL;}
-  Base* r_modulo(const String*)const override	{untested(); return NULL;}
+  Base* add(const String*)const override	{	    return nullptr;}
+  Base* multiply(const String*)const override	{           return nullptr;}
+  Base* subtract(const String*)const override	{untested(); return nullptr;}
+  Base* r_subtract(const String*)const override	{itested(); return nullptr;}
+  Base* divide(const String*)const override	{untested(); return nullptr;}
+  Base* r_divide(const String*)const override	{itested(); return nullptr;}
+  Base* modulo(const String*)const override	{untested(); return nullptr;}
+  Base* r_modulo(const String*)const override	{untested(); return nullptr;}
 
-  Base* less(const Base* X)const override	{untested();return ((X) ? (X->greater(this))   : (NULL));}
-  Base* greater(const Base* X)const override	{untested();return ((X) ? (X->less(this))      : (NULL));}
-  Base* leq(const Base* X)const override	{untested();return ((X) ? (X->geq(this))       : (NULL));}
-  Base* geq(const Base* X)const override	{untested();return ((X) ? (X->leq(this))       : (NULL));}
-  Base* not_equal(const Base* X)const override	{           return ((X) ? (X->not_equal(this)) : (NULL));}
-  Base* equal(const Base* X)const override	{           return ((X) ? (X->equal(this))     : (NULL));}
-  Base* add(const Base* X)const override 	{	    return ((X) ? (X->add(this))       : (NULL));}
-  Base* multiply(const Base* X)const override	{           return ((X) ? (X->multiply(this))  : (NULL));}
-  Base* subtract(const Base* X)const override	{           return ((X) ? (X->r_subtract(this)): (NULL));}
-  Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (NULL));}
-  Base* divide(const Base* X)const override	{	    return ((X) ? (X->r_divide(this))  : (NULL));}
-  Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (NULL));}
-  Base* modulo(const Base* X)const override	{	    return ((X) ? (X->r_modulo(this))  : (NULL));}
-  Base* r_modulo(const Base* X)const override	{untested();return ((X) ? (X->modulo(this))    : (NULL));}
+  Base* less(const Base* X)const override	{untested();return ((X) ? (X->greater(this))   : (nullptr));}
+  Base* greater(const Base* X)const override	{untested();return ((X) ? (X->less(this))      : (nullptr));}
+  Base* leq(const Base* X)const override	{untested();return ((X) ? (X->geq(this))       : (nullptr));}
+  Base* geq(const Base* X)const override	{untested();return ((X) ? (X->leq(this))       : (nullptr));}
+  Base* not_equal(const Base* X)const override	{           return ((X) ? (X->not_equal(this)) : (nullptr));}
+  Base* equal(const Base* X)const override	{           return ((X) ? (X->equal(this))     : (nullptr));}
+  Base* add(const Base* X)const override 	{	    return ((X) ? (X->add(this))       : (nullptr));}
+  Base* multiply(const Base* X)const override	{           return ((X) ? (X->multiply(this))  : (nullptr));}
+  Base* subtract(const Base* X)const override	{           return ((X) ? (X->r_subtract(this)): (nullptr));}
+  Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (nullptr));}
+  Base* divide(const Base* X)const override	{	    return ((X) ? (X->r_divide(this))  : (nullptr));}
+  Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (nullptr));}
+  Base* modulo(const Base* X)const override	{	    return ((X) ? (X->r_modulo(this))  : (nullptr));}
+  Base* r_modulo(const Base* X)const override	{untested();return ((X) ? (X->modulo(this))    : (nullptr));}
 
-  Base* less(const Float*)const override 	{untested();return NULL;}
-  Base* greater(const Float*)const override	{untested();return NULL;}
-  Base* leq(const Float*)const override 	{untested();return NULL;}
-  Base* geq(const Float*)const override		{untested();return NULL;}
-  Base* not_equal(const Float*)const override	{untested();return NULL;}
-  Base* equal(const Float*)const override	{return NULL;}
-  Base* add(const Float*)const override 	{           return NULL;}
-  Base* multiply(const Float*)const override	{untested();return NULL;}
-  Base* subtract(const Float*)const override	{untested();return NULL;}
-  Base* r_subtract(const Float*)const override	{untested();return NULL;}
-  Base* divide(const Float*)const override	{untested();return NULL;}
-  Base* r_divide(const Float*)const override	{ itested();return NULL;}
-  Base* modulo(const Float*)const override	{untested();return NULL;}
-  Base* r_modulo(const Float*)const override	{untested();return NULL;}
+  Base* less(const Float*)const override 	{untested();return nullptr;}
+  Base* greater(const Float*)const override	{untested();return nullptr;}
+  Base* leq(const Float*)const override 	{untested();return nullptr;}
+  Base* geq(const Float*)const override		{untested();return nullptr;}
+  Base* not_equal(const Float*)const override	{untested();return nullptr;}
+  Base* equal(const Float*)const override	{return nullptr;}
+  Base* add(const Float*)const override 	{           return nullptr;}
+  Base* multiply(const Float*)const override	{untested();return nullptr;}
+  Base* subtract(const Float*)const override	{untested();return nullptr;}
+  Base* r_subtract(const Float*)const override	{untested();return nullptr;}
+  Base* divide(const Float*)const override	{untested();return nullptr;}
+  Base* r_divide(const Float*)const override	{ itested();return nullptr;}
+  Base* modulo(const Float*)const override	{untested();return nullptr;}
+  Base* r_modulo(const Float*)const override	{untested();return nullptr;}
 };
 /*--------------------------------------------------------------------------*/
 // a string that contains only alnum and _[]

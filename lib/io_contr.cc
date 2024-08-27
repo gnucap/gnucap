@@ -86,7 +86,7 @@ void outreset(void)
 {
   if (to_pipe) { untested();
     pclose(to_pipe);
-    to_pipe = NULL;
+    to_pipe = nullptr;
   }else{
   }
   xclose(&fn);

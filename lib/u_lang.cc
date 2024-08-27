@@ -31,7 +31,7 @@
 LANGUAGE::~LANGUAGE()
 {
   if (OPT::language == this) {
-    OPT::language = NULL;
+    OPT::language = nullptr;
   }else{
   }
 }
@@ -44,7 +44,7 @@ void LANGUAGE::parse_top_item(CS& cmd, CARD_LIST* Scope)
 /*--------------------------------------------------------------------------*/
 const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
 {
-  const CARD* p = NULL;
+  const CARD* p = nullptr;
   if (Scope) {
     try {
       p = Scope->find_looking_out(Name);
@@ -94,7 +94,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
     if ((command_dispatcher[s])) {
       return new DEV_DOT; //BUG// we will look it up twice, //BUG// memory leak
     }else{
-      return NULL;
+      return nullptr;
     }
   }
 }
@@ -144,7 +144,7 @@ CARD* LANGUAGE::parse_item(CS& cmd, CARD* c)
   }else{untested();
     incomplete();
     unreachable();
-    return NULL;
+    return nullptr;
   }
 }
 /*--------------------------------------------------------------------------*/

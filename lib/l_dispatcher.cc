@@ -42,7 +42,7 @@ CKT_BASE* DISPATCHER_BASE::operator[](std::string s)
     }
     return rv;
   }else{
-    return NULL;
+    return nullptr;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ void DISPATCHER_BASE::uninstall(CKT_BASE* p)
     for (typename std::map<std::string, CKT_BASE*>::iterator
 	   ii = _map->begin();  ii != _map->end();  ++ii) {
       if (ii->second == p) {
-	ii->second = NULL;
+	ii->second = nullptr;
       }else{
       }
     }

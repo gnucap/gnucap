@@ -61,7 +61,7 @@ NODE_MAP::~NODE_MAP()
 }
 /*--------------------------------------------------------------------------*/
 /* return a pointer to a node given a string
- * returns NULL pointer if no match
+ * returns nullptr pointer if no match
  */
 NODE* NODE_MAP::operator[](std::string s)
 {
@@ -72,9 +72,9 @@ NODE* NODE_MAP::operator[](std::string s)
     notstd::to_lower(&s);
     i = _node_map.find(s);
   }else{
-    return NULL;
+    return nullptr;
   }
-  return (i != _node_map.end()) ? i->second : NULL;
+  return (i != _node_map.end()) ? i->second : nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /* return a pointer to a node given a string

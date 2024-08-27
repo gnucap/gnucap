@@ -65,7 +65,7 @@ CS::CS(CS::INC_FILE, const std::string& name)
 }
 /*--------------------------------------------------------------------------*/
 CS::CS(CS::WHOLE_FILE, const std::string& name)
-  :_file(NULL),
+  :_file(nullptr),
    _name(name),
    _cmd(),
    _cnt(0),
@@ -92,7 +92,7 @@ CS::CS(CS::WHOLE_FILE, const std::string& name)
 }
 /*--------------------------------------------------------------------------*/
 CS::CS(CS::STRING, const std::string& s)
-  :_file(NULL),
+  :_file(nullptr),
    _name(),
    _cmd(s),
    _cnt(0),
@@ -106,7 +106,7 @@ CS::CS(CS::STRING, const std::string& s)
 /*--------------------------------------------------------------------------*/
 #if 0
 CS::CS(const CS& p)
-  :_file(NULL),
+  :_file(nullptr),
    _name(p._name),
    _cmd(p._cmd),
    _cnt(p._cnt),

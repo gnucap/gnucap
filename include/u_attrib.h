@@ -51,7 +51,7 @@ public:
     if (_up) {
       if (_up->dec_ref_count()==0) {
 	delete _up;
-	_up = NULL;
+	_up = nullptr;
       }else{untested();
       }
     }else{
@@ -104,11 +104,11 @@ public:
 	found = true;
 	// keep looking in case there is another, which will supercede
 	// finds right-most match using left-right search
-      }else{untested();
+      }else{itested();
 	cmd.skiparg();
-	if (cmd >> "=") {untested();
+	if (cmd >> "=") {itested();
 	  cmd.ctos();
-	}else{untested();
+	}else{itested();
 	}
       }
     }
@@ -127,7 +127,7 @@ class INTERFACE ATTRIB_LIST_p {
 private:
   ATTRIB_LIST* _p;
 public:
-  ATTRIB_LIST_p() :_p(NULL) {}
+  ATTRIB_LIST_p() :_p(nullptr) {}
 
   ATTRIB_LIST_p(const ATTRIB_LIST_p& P) :_p(P._p) {untested();
     if (_p) {untested();
@@ -140,7 +140,7 @@ public:
     if (_p) {
       if (_p->dec_ref_count()==0) {
 	delete _p;
-	_p = NULL;
+	_p = nullptr;
       }else{
       }
     }else{
@@ -156,7 +156,7 @@ public:
     if (_p) {untested();
       if (_p->dec_ref_count()==0) {untested();
 	delete _p;
-	_p = NULL;
+	_p = nullptr;
       }else{untested();
       }
     }else{

@@ -114,7 +114,7 @@ TARGET_DEPENDS = $(OBJS) $(RAW) $(MODELS)
 #------------------------------------------------------------------------
 MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
 CLEANFILES = $(MOSTLYCLEANFILES)
-DISTCLEANFILES = $(CLEANFILES)
+DISTCLEANFILES = $(CLEANFILES) config.log makefile Makefile
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------

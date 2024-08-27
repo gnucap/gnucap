@@ -216,7 +216,7 @@ private:
   PARAM_LIST const* _try_again; // if you don't find it, also look here
   mutable const_iterator _previous;
 public:
-  explicit PARAM_LIST() :_try_again(NULL) {}
+  explicit PARAM_LIST() :_try_again(nullptr) {}
   explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl), _try_again(p._try_again) {}
   //explicit PARAM_LIST(PARAM_LIST* ta) :_try_again(ta) {untested();}
   ~PARAM_LIST() {}
@@ -285,7 +285,7 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
   assert(scope);
 
   static int recursion=0;
-  static const std::string* first_name = NULL;
+  static const std::string* first_name = nullptr;
   if (recursion == 0) {
     first_name = &_s;
   }else{

@@ -51,14 +51,14 @@ SIM_DATA::SIM_DATA()
    _inc_mode(tsNO),
    _mode(s_NONE),
    _phase(p_NONE),
-   _nm(NULL),
-   _i(NULL),
-   _v0(NULL),
-   _vt1(NULL),
-   _ac(NULL),
-   _noise(NULL),
-   _nstat(NULL),
-   _vdc(NULL),
+   _nm(nullptr),
+   _i(nullptr),
+   _v0(nullptr),
+   _vt1(nullptr),
+   _ac(nullptr),
+   _noise(nullptr),
+   _nstat(nullptr),
+   _vdc(nullptr),
    _aa(),
    _lu(),
    _acx(),
@@ -68,9 +68,9 @@ SIM_DATA::SIM_DATA()
    _evalq1(),
    _evalq2(),
    _late_evalq(),
-   _evalq(NULL),
-   _evalq_uc(NULL),
-   _waves(NULL),
+   _evalq(nullptr),
+   _evalq_uc(nullptr),
+   _waves(nullptr),
    _has_op(s_NONE)
 {
   _evalq = &_evalq1;
@@ -82,42 +82,42 @@ SIM_DATA::~SIM_DATA()
 {
   if (_nm) {unreachable();
     delete [] _nm;
-    _nm = NULL;
+    _nm = nullptr;
   }else{
   }
   if (_i) {unreachable();
     delete [] _i;
-    _i = NULL;
+    _i = nullptr;
   }else{
   }
   if (_v0) {unreachable();
     delete [] _v0;
-    _v0 = NULL;
+    _v0 = nullptr;
   }else{
   }
   if (_vt1) {unreachable();
     delete [] _vt1;
-    _vt1 = NULL;
+    _vt1 = nullptr;
   }else{
   }
   if (_ac) {unreachable();
     delete [] _ac;
-    _ac = NULL;
+    _ac = nullptr;
   }else{
   }
   if (_noise) {unreachable();
     delete [] _noise;
-    _noise = NULL;
+    _noise = nullptr;
   }else{
   }
   if (_nstat) {unreachable();
     delete [] _nstat;
-    _nstat = NULL;
+    _nstat = nullptr;
   }else{
   }
   if (_vdc) {unreachable();
     delete [] _vdc;
-    _vdc = NULL;
+    _vdc = nullptr;
   }else{
   }
   //assert(_eq.empty()); //not empty means an analysis ended with an unhandled event
@@ -129,12 +129,12 @@ SIM_DATA::~SIM_DATA()
   assert(_late_evalq.empty());
   assert(_evalq);
   assert(_evalq_uc);
-  _evalq = NULL;
-  _evalq_uc = NULL;
+  _evalq = nullptr;
+  _evalq_uc = nullptr;
 
   if (_waves) {
     delete [] _waves;
-    _waves = NULL;
+    _waves = nullptr;
   }else{
   }
 }
@@ -328,15 +328,15 @@ void SIM_DATA::unalloc_vectors()
   _evalq1.clear();
   _evalq2.clear();
   delete [] _i;
-  _i = NULL;
+  _i = nullptr;
   delete [] _v0;
-  _v0 = NULL;
+  _v0 = nullptr;
   delete [] _vt1;
-  _vt1 = NULL;
+  _vt1 = nullptr;
   delete [] _ac;
-  _ac = NULL;
+  _ac = nullptr;
   delete [] _noise;
-  _noise = NULL;
+  _noise = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /* uninit: undo all the allocation associated with any simulation
@@ -350,11 +350,11 @@ void SIM_DATA::uninit()
     _lu.reinit(0);
     _aa.reinit(0);
     delete [] _vdc;
-    _vdc = NULL;
+    _vdc = nullptr;
     delete [] _nstat;
-    _nstat = NULL;
+    _nstat = nullptr;
     delete [] _nm;
-    _nm = NULL;
+    _nm = nullptr;
   }else{
     assert(_acx.size() == 0);
     assert(_lu.size() == 0);

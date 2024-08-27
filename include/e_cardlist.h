@@ -60,7 +60,7 @@ public:
     fat_iterator& operator=(const fat_iterator& p)
 					{_list = p._list, _iter = p._iter; return *this;}
     bool	  is_end()const		{return _iter == _list->end();}
-    CARD*	  operator*()		{return (is_end()) ? NULL : *_iter;}
+    CARD*	  operator*()		{return (is_end()) ? nullptr : *_iter;}
     fat_iterator& operator++()		{assert(!is_end()); ++_iter; return *this;}
     fat_iterator  operator++(int)
 				{assert(!is_end()); fat_iterator t(*this); ++_iter; return t;}

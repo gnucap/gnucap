@@ -64,9 +64,9 @@ private:
   virtual void	finish()	{}
   virtual bool	is_step_rejected()const {return false;}
 
-  explicit SIM(const SIM&):CMD(),_scope(NULL) {unreachable(); incomplete();}
+  explicit SIM(const SIM&):CMD(),_scope(nullptr) {unreachable(); incomplete();}
 protected:
-  explicit SIM(): CMD(),_scope(NULL) {}
+  explicit SIM(): CMD(),_scope(nullptr) {}
 public:
   ~SIM();
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 

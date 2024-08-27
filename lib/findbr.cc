@@ -59,7 +59,7 @@ CARD_LIST::fat_iterator findbranch(CS& cmd, CARD_LIST::fat_iterator here)
       local_part = labelwanted;
     }else{
       last_part = labelwanted;
-      local_part = NULL;
+      local_part = nullptr;
     }
   }
 

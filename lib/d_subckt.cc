@@ -49,7 +49,7 @@ class DEV_SUBCKT : public BASE_SUBCKT {
 private:
   explicit	DEV_SUBCKT(const DEV_SUBCKT&);
 public:
-  explicit	DEV_SUBCKT(COMMON_COMPONENT* c=NULL);
+  explicit	DEV_SUBCKT(COMMON_COMPONENT* c=nullptr);
 		~DEV_SUBCKT()		{--_count;}
   CARD*		clone()const override	{return new DEV_SUBCKT(*this);}
 private: // override virtual
@@ -84,7 +84,7 @@ class DEV_SUBCKT_PROTO : public DEV_SUBCKT {
 private:
   explicit	DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO&p);
 public:
-  explicit	DEV_SUBCKT_PROTO(COMMON_COMPONENT* c=NULL);
+  explicit	DEV_SUBCKT_PROTO(COMMON_COMPONENT* c=nullptr);
 		~DEV_SUBCKT_PROTO(){}
 public: // override virtual
   char		id_letter()const override	{untested();return '\0';}
@@ -122,7 +122,7 @@ private: // no-ops for prototype
   void tr_queue_eval()override {}
   std::string port_name(int i)const override{return port_value(i);}
 } pp(&Default_SUBCKT);
-DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt", &pp);
+DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt|module", &pp);
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO& p)
   :DEV_SUBCKT(p)
@@ -164,7 +164,7 @@ CARD* DEV_SUBCKT_PROTO::clone_instance()const
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT::DEV_SUBCKT(COMMON_COMPONENT* c)
   :BASE_SUBCKT(c),
-   _parent(NULL)
+   _parent(nullptr)
 {
   _n = _nodes;
   ++_count;

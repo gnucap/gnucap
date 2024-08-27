@@ -82,7 +82,7 @@ void PROBE::detach()
   }else{
   }
   _what = "";
-  _brh = NULL;
+  _brh = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /* label: returns a string corresponding to a possible probe point
