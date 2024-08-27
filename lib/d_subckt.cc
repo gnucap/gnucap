@@ -122,7 +122,7 @@ private: // no-ops for prototype
   void tr_queue_eval()override {}
   std::string port_name(int i)const override{return port_value(i);}
 } pp(&Default_SUBCKT);
-DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt", &pp);
+DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt|module", &pp);
 /*--------------------------------------------------------------------------*/
 DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(const DEV_SUBCKT_PROTO& p)
   :DEV_SUBCKT(p)
