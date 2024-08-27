@@ -152,8 +152,8 @@ class HS_PARAM;
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMPONENT : public CARD {
 private:
-  COMMON_COMPONENT* _common{NULL};
-  HS_PARAM* _hsparam{NULL}; // possibly indirect. later.
+  COMMON_COMPONENT* _common{nullptr};
+  HS_PARAM* _hsparam{nullptr}; // possibly indirect. later.
 private:
   double _mfactor_fixed;	// composite, including subckt mfactor
   bool	 _converged;
@@ -162,7 +162,7 @@ public:
   TIME_PAIR _time_by;
   //--------------------------------------------------------------------
 protected: // create and destroy.
-  explicit   COMPONENT(COMMON_COMPONENT* c=NULL);
+  explicit   COMPONENT(COMMON_COMPONENT* c=nullptr);
   explicit   COMPONENT(const COMPONENT& p);
 	     ~COMPONENT();
   //--------------------------------------------------------------------

@@ -231,7 +231,7 @@ void EVAL_BM_COND::precalc_first(const CARD_LIST* Scope)
   //BUG// calls the individual precalc more than once
   // wastes time and makes multiple "has no value" warnings
   // when there should be only one
-  COMMON_COMPONENT* did_this = NULL;
+  COMMON_COMPONENT* did_this = nullptr;
   for (int i = 1; i < sCOUNT; ++i) {
     assert(_func[i]);
     if (_func[i] != did_this) {
@@ -248,7 +248,7 @@ void EVAL_BM_COND::precalc_last(const CARD_LIST* Scope)
   //BUG// calls the individual precalc more than once
   // wastes time and makes multiple "has no value" warnings
   // when there should be only one
-  COMMON_COMPONENT* did_this = NULL;
+  COMMON_COMPONENT* did_this = nullptr;
   for (int i = 1; i < sCOUNT; ++i) {
     assert(_func[i]);
     if (_func[i] != did_this) {

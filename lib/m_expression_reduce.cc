@@ -70,13 +70,13 @@ Token* Token_BINOP::op(const Token* T1, const Token* T2)const
   }else{ untested();
     // op (name()) not one of those listed
     unreachable();
-    return NULL;
+    return nullptr;
   }
   if (b) {
     return new Token_CONSTANT(b->val_string(), b);
   }else{
     // can get here if either T1 or T2 has no data
-    return new Token_CONSTANT("false", NULL);
+    return new Token_CONSTANT("false", nullptr);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -96,13 +96,13 @@ Token* Token_UNARY::op(const Token* T1)const
   }else{ untested();
     // op (name()) not one of those listed
     unreachable();
-    return NULL;
+    return nullptr;
   }
   if (b) {
     return new Token_CONSTANT(b->val_string(), b);
   }else{untested();
     // can get here if T1 has no data
-    return new Token_CONSTANT("false", NULL);
+    return new Token_CONSTANT("false", nullptr);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -213,10 +213,10 @@ void Token_SYMBOL::stack_op(Expression* E)const
 Token_TERNARY::~Token_TERNARY()
 {
   delete _true;
-  _true = NULL;
+  _true = nullptr;
 
   delete _false;
-  _false = NULL;
+  _false = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 void Token_TERNARY::stack_op(Expression* E)const

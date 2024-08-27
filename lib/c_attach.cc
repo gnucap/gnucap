@@ -177,7 +177,7 @@ void attach_file(CS& cmd, std::string const& file_name,
     if (Scope->is_empty()) { untested();
       cmd.warn(bDANGER, here, "\"" + file_name + "\": already loaded, replacing");
       dlclose(handle);
-      attach_list[file_name] = NULL;
+      attach_list[file_name] = nullptr;
     }else{untested();
       cmd.reset(here);
       throw Exception_CS("already loaded, cannot replace when there is a circuit", cmd);
@@ -202,7 +202,7 @@ void detach_file(CS& cmd, std::string const& file_name,
     void* handle = attach_list[file_name];
     if (handle) {itested();
       dlclose(handle);
-      attach_list[file_name] = NULL;
+      attach_list[file_name] = nullptr;
     }else{untested();
       cmd.reset(here);
       throw Exception_CS("plugin not attached", cmd);
@@ -252,7 +252,7 @@ public:
 	void* handle = ii->second;
 	if (handle) {
 	  dlclose(handle);
-	  ii->second = NULL;
+	  ii->second = nullptr;
 	}else{itested();
 	  // name still in list, but has been detached already
 	}

@@ -122,7 +122,7 @@ TT* DISPATCHER<TT>::clone(std::string s)
     assert(c);
     return c;
   }else{untested();
-    return NULL;
+    return nullptr;
   }
 }
 /*--------------------------------------------------------------------------*/

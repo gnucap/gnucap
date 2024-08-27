@@ -101,7 +101,7 @@ void COMMON_COMPONENT::detach_common(COMMON_COMPONENT** from)
     }else{
       trace1("nodelete", (**from)._attach_count);
     }
-    *from = NULL;
+    *from = nullptr;
   }else{
   }
 }
@@ -874,9 +874,9 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
   if (modelname == "") {
     throw Exception(long_label() + ": missing args -- need model name");
     unreachable();
-    return NULL;
+    return nullptr;
   }else{
-    const CARD* c = NULL;
+    const CARD* c = nullptr;
     {
       int bin_count = 0;
       for (const CARD* Scope = this; Scope && !c; Scope = Scope->owner()) {
@@ -893,7 +893,7 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
 	      c = Scope->find_in_my_scope(extended_name);
 	    }catch (Exception_Cant_Find& e2) {
 	      // that's all .. looked at all of them
-	      c = NULL;
+	      c = nullptr;
 	      break;
 	    }
 	    const MODEL_CARD* m = dynamic_cast<const MODEL_CARD*>(c);

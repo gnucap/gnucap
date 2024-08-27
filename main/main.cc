@@ -306,9 +306,9 @@ int main(int argc, const char *argv[])
   assert(CARD_LIST::card_list.is_empty());
   CMD::command("detach_all", &CARD_LIST::card_list);
   delete CKT_BASE::_probe_lists;
-  CKT_BASE::_probe_lists = NULL;
+  CKT_BASE::_probe_lists = nullptr;
   delete CKT_BASE::_sim;
-  CKT_BASE::_sim = NULL;
+  CKT_BASE::_sim = nullptr;
   
   return 0;
 }

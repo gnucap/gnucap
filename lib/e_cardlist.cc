@@ -31,17 +31,17 @@
 #define trace_func_comp() trace0((__func__ + (":" + (**ci).long_label())).c_str())
 /*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST()
-  :_parent(NULL),
+  :_parent(nullptr),
    _nm(new NODE_MAP),
-   _params(NULL)
+   _params(nullptr)
 {
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
 		     const CARD_LIST* scope, PARAM_LIST const* p)
-  :_parent(NULL),
+  :_parent(nullptr),
    _nm(new NODE_MAP),
-   _params(NULL)
+   _params(nullptr)
 {
   assert(model);
   assert(model->subckt());
@@ -460,7 +460,7 @@ void CARD_LIST::attach_params(PARAM_LIST const* p, const CARD_LIST* scope)
     assert(scope);
     if (_params) {
       delete _params;
-      _params = NULL;
+      _params = nullptr;
     }else{
     }
     _params = new PARAM_LIST;

@@ -34,7 +34,7 @@ INTERFACE FPOLY1 differentiate(const FPOLY1* q, const FPOLY1* i, double* time,
 class INTERFACE STORAGE : public ELEMENT {
 private:
 protected:
-  explicit STORAGE(COMMON_COMPONENT* c=NULL)
+  explicit STORAGE(COMMON_COMPONENT* c=nullptr)
     :ELEMENT(c), _method_u(meUNKNOWN), _method_a(mTRAPGEAR)  {}
   explicit STORAGE(const STORAGE& p)
     :ELEMENT(p), _method_u(p._method_u), _method_a(p._method_a) {}

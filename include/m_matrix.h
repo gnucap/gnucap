@@ -167,7 +167,7 @@ public:
   void		lu_decomp(const BSMATRIX<T>&, bool do_partial);
   void		lu_decomp();
   void		fbsub(T* v) const;
-  void		fbsub(T* x, const T* b, T* c = NULL) const;
+  void		fbsub(T* x, const T* b, T* c = nullptr) const;
   void		fbsubt(T* v) const;
 };
 /*--------------------------------------------------------------------------*/
@@ -178,9 +178,9 @@ void BSMATRIX<T>::uninit()
 {
   unallocate();
   delete [] _lownode;
-  _lownode = NULL;
+  _lownode = nullptr;
   delete [] _changed;
-  _changed = NULL;
+  _changed = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -272,10 +272,10 @@ T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd, const T& in)
 /*--------------------------------------------------------------------------*/
 template <class T>
 BSMATRIX<T>::BSMATRIX(int ss)
-  :_changed(NULL),
-   _lownode(NULL),
-   _space(NULL),
-   _diaptr(NULL),
+  :_changed(nullptr),
+   _lownode(nullptr),
+   _space(nullptr),
+   _diaptr(nullptr),
    _nzcount(0),
    _size(ss),
    _zero(0.),
@@ -326,8 +326,8 @@ void BSMATRIX<T>::unallocate()
   delete [] _diaptr;
   delete [] _space;
 
-  _diaptr = NULL;
-  _space = NULL;
+  _diaptr = nullptr;
+  _space = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /* allocate: really get the space to work

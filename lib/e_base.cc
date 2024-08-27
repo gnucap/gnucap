@@ -37,8 +37,8 @@ double CKT_BASE::tr_probe_num(const std::string&)const {return NOT_VALID;}
 XPROBE CKT_BASE::ac_probe_ext(const std::string&)const {return XPROBE(NOT_VALID, mtNONE);}
 double CKT_BASE::noise_num(const std::string&)const {itested(); return 0.;}
 /*--------------------------------------------------------------------------*/
-SIM_DATA* CKT_BASE::_sim = NULL; 
-PROBE_LISTS* CKT_BASE::_probe_lists = NULL;
+SIM_DATA* CKT_BASE::_sim = nullptr; 
+PROBE_LISTS* CKT_BASE::_probe_lists = nullptr;
 /*--------------------------------------------------------------------------*/
 CKT_BASE::~CKT_BASE()
 {
@@ -166,7 +166,7 @@ double CKT_BASE::ac_probe_num(const std::string& what)const
     }
     ++ii;
   }
-  return NULL;
+  return nullptr;
 }
 /*--------------------------------------------------------------------------*/
 bool CKT_BASE::operator!=(const std::string& n)const
