@@ -206,6 +206,8 @@ void BSMATRIX<T>::init(int ss)
   }
 }
 /*--------------------------------------------------------------------------*/
+namespace {
+/*--------------------------------------------------------------------------*/
 template<class T>
 struct longer{
   typedef T type;
@@ -218,6 +220,8 @@ template<>
 struct longer<double> {
   typedef long double type;
 };
+/*--------------------------------------------------------------------------*/
+}
 /*--------------------------------------------------------------------------*/
 template <class T>
 T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd)
