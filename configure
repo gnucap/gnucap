@@ -144,8 +144,8 @@ echo "GNUCAP_CONF = ../conf/gnucap-conf" >>Make2
 #------------------------------------------------------------------------
 # "MAKE_CPPFLAGS": not a user variable like CPPFLAGS
 #                  add ${INCLUDE} when overriding in Make2.*
-echo "INCLUDE = -I${top_srcdir_}/include -I../conf -I../../conf" >>Make2
-echo "MAKE_CPPFLAGS = \${INCLUDE}" >>Make2
+echo "INCLUDE = -I${top_srcdir_}/include -I../conf" >>Make2
+###//BUG// echo "MAKE_CPPFLAGS = \${INCLUDE}" >>Make2
 #------------------------------------------------------------------------
 echo "PRESET = ${preset}" >> Make2
 echo "include ${top_srcdir_}/include/Make2.\${PRESET}" >>Make2
