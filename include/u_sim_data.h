@@ -34,8 +34,24 @@ class WAVE;
 class CARD;
 class CARD_LIST;
 class LOGIC_NODE;
+class CKT_BASE;
 /*--------------------------------------------------------------------------*/
 enum TRI_STATE {tsNO=0, tsYES=1, tsBAD=-1};
+class EVENT {
+private:
+  double    _time  {NEVER};
+  const CKT_BASE* _owner {nullptr};
+  EVENT() = delete;
+public:
+  EVENT(double Time, const CKT_BASE* Owner)
+    : _time(Time), _owner(Owner) {assert(Owner);}
+  EVENT(const EVENT& E)
+    : _time(E._time), _owner(E._owner) {assert(E._owner);}
+  ~EVENT() {}
+  operator double() const {return _time;}
+  double time() const     {return _time;}
+  const CKT_BASE* owner() const {untested(); return _owner;}
+};
 /*--------------------------------------------------------------------------*/
 struct INTERFACE SIM_DATA {
   double _time0;	/* time now */
@@ -73,7 +89,7 @@ struct INTERFACE SIM_DATA {
   BSMATRIX<double> _aa;	/* raw matrix for DC & tran */
   BSMATRIX<double> _lu;	/* decomposed matrix for DC & tran */
   BSMATRIX<COMPLEX> _acx;/* raw & decomposed matrix for AC */
-  std::priority_queue<double, std::vector<double>, std::greater<double> > _eq; /*event queue*/
+  std::priority_queue<EVENT, std::deque<EVENT>, std::greater<double> > _eq; /*event queue*/
   std::deque<CARD*> _loadq;
   std::deque<CARD*> _acceptq;
   std::deque<CARD*>  _evalq1; /* evaluate queues -- alternate between */
@@ -119,11 +135,10 @@ struct INTERFACE SIM_DATA {
     case tsNO:  break;
     }
   }
-  void new_event(double etime) {
-    if (etime <= BIGBIG) {
-      _eq.push(etime);
-    }else{ untested();
-    }
+  void new_event(double Time, const CKT_BASE* Owner) {
+    assert(Time <= BIGBIG);
+    assert(Owner);
+    _eq.push(EVENT(Time, Owner));
   }
   void set_command_none() {_mode = s_NONE;}
   void set_command_ac()	  {_mode = s_AC;}

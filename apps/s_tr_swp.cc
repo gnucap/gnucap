@@ -436,7 +436,7 @@ bool TRANSIENT::next()
 
     // if all that makes it close to event, make it official
     if (!_sim->_eq.empty()
-	&& up_order(newtime-_sim->_dtmin, _sim->_eq.top(), newtime+_sim->_dtmin)) {
+	&& up_order(newtime-_sim->_dtmin, _sim->_eq.top().time(), newtime+_sim->_dtmin)) {
       almost_fixed_time = fixed_time = newtime = _sim->_eq.top();
       new_dt = newtime - reftime;
       new_control = scEVENTQ;
@@ -571,15 +571,16 @@ void TRANSIENT::accept()
     _sim->_eq.pop();
   }
   bool pruned = false;
-  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {itested();
+  while (!_sim->_eq.empty() && _sim->_eq.top() < _sim->_time0 + _sim->_dtmin) {untested();
     // near duplicate events in the queue.  overclocked?
     trace1("eq-prune", _sim->_eq.top());
     _sim->_eq.pop();
     pruned = true;
   }
-  if(pruned){itested();
+  if(pruned){untested();
     // comment out to put devices under stress
-    _sim->_eq.push(_sim->_time0 + _sim->_dtmin);
+    //_sim->_eq.push(_sim->_time0 + _sim->_dtmin);
+    _sim->new_event(_sim->_time0 + _sim->_dtmin, this);
   }else{
   }
 
