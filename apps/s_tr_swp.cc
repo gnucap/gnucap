@@ -300,16 +300,11 @@ bool TRANSIENT::next()
     // Pop happens in accept.
     if (!_sim->_eq.empty() && _sim->_eq.top() < newtime) {
       newtime = _sim->_eq.top();
-      trace2("trswp", newtime, _sim->_eq.size());
+      fixed_time = newtime;		// now const
+      almost_fixed_time = newtime;	// still can change
       new_dt = newtime - reftime;
-      if (new_dt < _sim->_dtmin) {untested();
-	//new_dt = _sim->_dtmin;
-	//newtime = reftime + new_dt;
-      }else{
-      }
       new_control = scEVENTQ;
-      fixed_time = newtime;
-      almost_fixed_time = newtime;
+      trace2("trswp", newtime, _sim->_eq.size());
       check_consistency();
     }else{
     }
@@ -318,19 +313,10 @@ bool TRANSIENT::next()
     // not sure of exact time.  will be rescheduled if wrong.
     // ok to move by _sim->_dtmin.  time is not that accurate anyway.
     if (_time_by_ambiguous_event < newtime - _sim->_dtmin) {  
-      if (_time_by_ambiguous_event < _time1 + 2*_sim->_dtmin) {untested();
-	double mintime = _time1 + 2*_sim->_dtmin;
-	if (newtime - _sim->_dtmin < mintime) {untested();
-	  newtime = mintime;
-	  new_control = scAMBEVENT;
-	}else{untested();
-	}
-      }else{
-	newtime = _time_by_ambiguous_event;
-	new_control = scAMBEVENT;
-      }
+      newtime = _time_by_ambiguous_event;
+      almost_fixed_time = newtime;     // now const
       new_dt = newtime - reftime;
-      almost_fixed_time = newtime;
+      new_control = scAMBEVENT;
       check_consistency();
     }else{
     }
@@ -529,28 +515,30 @@ bool TRANSIENT::review()
   _sim->count_iterations(iTOTAL);
 
   TIME_PAIR time_by = _scope->tr_review();
-  _time_by_error_estimate = time_by._error_estimate;
 
-  // limit minimum time step
-  // 2*_sim->_dtmin because _time[1] + _sim->_dtmin might be == _time[0].
-  if (time_by._event < _time1 + 2*_sim->_dtmin) {
-    _time_by_ambiguous_event = _time1 + 2*_sim->_dtmin;
+  double mintime    = _time1       + 2*_sim->_dtmin;
+  double rejecttime = _sim->_time0 - 2*_sim->_dtmin;
+  double creeptime  = _sim->_time0 + 2*_sim->_dtmin;
+
+  if (time_by._event < mintime) {
+    _time_by_ambiguous_event = mintime;
   }else{
     _time_by_ambiguous_event = time_by._event;
   }
-  // force advance when time too close to previous
-  if (std::abs(_time_by_ambiguous_event - _sim->_time0) < 2*_sim->_dtmin) {
-    _time_by_ambiguous_event = _sim->_time0 + 2*_sim->_dtmin;
+  if (up_order(rejecttime, _time_by_ambiguous_event, creeptime)) {
+    _time_by_ambiguous_event = creeptime;
   }else{
   }
 
-  if (time_by._error_estimate < _time1 + 2*_sim->_dtmin) {
-    _time_by_error_estimate = _time1 + 2*_sim->_dtmin;
+  rejecttime = _sim->_time0 - 1.1*_sim->_dtmin;
+  creeptime  = _sim->_time0 + 1.1*_sim->_dtmin;
+  if (time_by._error_estimate < mintime) {
+    _time_by_error_estimate = mintime;
   }else{
     _time_by_error_estimate = time_by._error_estimate;
   }
-  if (std::abs(_time_by_error_estimate - _sim->_time0) < 1.1*_sim->_dtmin) {
-    _time_by_error_estimate = _sim->_time0 + 1.1*_sim->_dtmin;
+  if (up_order(rejecttime, _time_by_error_estimate, creeptime)) {
+    _time_by_error_estimate = creeptime;
   }else{
   }
 
