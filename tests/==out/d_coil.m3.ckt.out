@@ -32,7 +32,7 @@ Mutual inductance test circuit
  0.009     -0.19052    0.2044     0.14992   -0.19052    0.2044     0.14992   -0.19052    0.2044     0.14992   -0.19052    0.2044     0.14992   
  0.01      -0.15703    0.13834    0.092477  -0.15703    0.13834    0.092477  -0.15703    0.13834    0.092477  -0.15703    0.13834    0.092477  
 Gnucap   System status
-iterations: op=0, dc=0, tran=372, fourier=0, total=516
-transient timesteps: accepted=123, rejected=3, total=126
+iterations: op=0, dc=0, tran=368, fourier=0, total=511
+transient timesteps: accepted=122, rejected=3, total=125
 nodes: user=16, subckt=15, model=6, total=37
 dctran density=41.9%, ac density=41.9%

@@ -54,7 +54,6 @@ public:
     _cold(false),
     _cont(false),
     _trace(tNONE),
-    _time_by_iteration_count(0.),
     _time_by_user_request(0.),
     _time_by_error_estimate(0.),
     _time_by_ambiguous_event(0.),
@@ -105,7 +104,6 @@ protected:
   int _stepno;		// count of visible (saved) steps
 private:
   TRACE _trace;		// enum: show extended diagnostics
-  double _time_by_iteration_count;
   double _time_by_user_request;
   double _time_by_error_estimate;
   double _time_by_ambiguous_event;

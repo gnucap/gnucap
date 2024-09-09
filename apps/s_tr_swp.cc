@@ -264,8 +264,9 @@ bool TRANSIENT::next()
     newtime = _sim->_time0 + new_dt;
     new_control = scINITIAL;
   }else if (!_converged) {
+    assert(!_accepted);
     new_dt = old_dt / OPT::trstepshrink;
-    newtime = _time_by_iteration_count = _time1 + new_dt;
+    newtime = _time1 + new_dt;
     new_control = scITER_R;
   }else{
   }
@@ -282,15 +283,25 @@ bool TRANSIENT::next()
     trace3("", _time1, _sim->_time0, reftime);
 
     if (_time_by_user_request < newtime) {
+      assert(new_control != scINITIAL && new_control != scITER_R);
       newtime = _time_by_user_request;
       new_dt = newtime - reftime;
       new_control = scUSER;
     }else{
+      assert(new_control == scINITIAL || new_control == scITER_R);
     }
     double fixed_time = _time_by_user_request;
     double almost_fixed_time = _time_by_user_request;
     check_consistency();
 
+    // skip, dtmax user parameter
+    if (_dtmax < new_dt - _sim->_dtmin) {
+      new_dt = _dtmax;
+      newtime = reftime + new_dt;
+      new_control = scSKIP;
+      check_consistency();
+    }else{
+    }
     
     // event queue, events that absolutely will happen
     // exact time.  NOT ok to move or omit, even by _sim->_dtmin
@@ -326,18 +337,6 @@ bool TRANSIENT::next()
       newtime = _time_by_error_estimate;
       new_dt = newtime - reftime;
       new_control = scTE;
-      check_consistency();
-    }else{
-    }
-    
-    // skip parameter
-    if (new_dt > _dtmax) {
-      if (new_dt > _dtmax + _sim->_dtmin) {
-	new_control = scSKIP;
-      }else{
-      }
-      new_dt = _dtmax;
-      newtime = reftime + new_dt;
       check_consistency();
     }else{
     }

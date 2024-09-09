@@ -60,7 +60,7 @@ e3a ( 9 10 11 0 )  0.631454018
 e3b ( 12 11 10 0 )  0.890801204
 r3b ( 12 0 )  75.
 Gnucap   System status
-iterations: op=0, dc=0, tran=366, fourier=0, total=499
-transient timesteps: accepted=121, rejected=3, total=124
+iterations: op=0, dc=0, tran=362, fourier=0, total=494
+transient timesteps: accepted=120, rejected=3, total=123
 nodes: user=12, subckt=0, model=3, total=15
 dctran density=37.8%, ac density=37.8%
