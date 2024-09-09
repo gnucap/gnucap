@@ -176,7 +176,7 @@ void TRANSIENT::set_step_cause(STEP_CAUSE C)
       // fall through
   case scZERO:untested();
       // fall through
-  case scSMALL:untested();
+  case scSMALL:
       // fall through
   case scREJECT:
     ::status.control += C;
@@ -227,7 +227,7 @@ void TRANSIENT::first()
     assert(newtime > _time1);						\
     assert(newtime > reftime);						\
     assert(new_dt > 0.);						\
-    assert(new_dt >= _sim->_dtmin * .9999999);				\
+    /*assert(new_dt >= _sim->_dtmin * .9999999);*/			\
     assert(newtime <= _time_by_user_request + _sim->_dtmin );		\
     /*assert(newtime == _time_by_user_request*/				\
     /*	   || newtime < _time_by_user_request - _sim->_dtmin);	*/	\
@@ -394,7 +394,7 @@ bool TRANSIENT::next()
 	//assert(reftime > _time1); // _time1==_time0 on restart, ok
 	double target_dt = fixed_time - reftime;
 	assert(target_dt >= new_dt);
-	double steps = 1 + floor((target_dt - _sim->_dtmin) / new_dt);
+	double steps = ceil(target_dt / new_dt);
 	assert(steps > 0);
 	new_dt = target_dt / steps;
 	newtime = reftime + new_dt;
@@ -405,7 +405,7 @@ bool TRANSIENT::next()
     }
 
     // trap time step too small
-    if (!_accepted && new_dt < _sim->_dtmin) {untested();
+    if (new_dt < _sim->_dtmin) {
       new_dt = _sim->_dtmin;
       newtime = reftime + new_dt;
       new_control = scSMALL;
