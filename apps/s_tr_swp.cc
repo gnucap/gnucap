@@ -362,22 +362,16 @@ bool TRANSIENT::next()
     }
 
     // quantize
+    // Try to adjust time stepping to minimize changes in time step,
+    // removing minor changes that are supposedly irrelevant.
+    // Solution is faster when time step stays the same over multiple steps.
     if (newtime < almost_fixed_time) {
+      // do not quantize if event or user controlled.
+      // quantize only when tolerance controlled.
       assert(new_dt >= 0);
       if (newtime < _sim->_time0) {
-	assert(reftime == _time1);
-	assert(reftime < _sim->_time0); // not moving forward
-	// try to pick a step that will end up repeating the rejected step
-	// with an integer number of same size steps
-	double target_dt = _sim->_time0 - reftime;
-	assert(target_dt > new_dt);
-	double steps = 1 + floor((target_dt - _sim->_dtmin) / new_dt);
-	assert(steps > 0);
-	new_dt = target_dt / steps;
-	newtime = reftime + new_dt;
-	check_consistency();
-      }else if (newtime > reftime + old_dt*.8
-	  && newtime < reftime + old_dt*1.5
+	// reject .. quantize has no benefit
+      }else if (up_order(old_dt*.8, new_dt, old_dt*1.5)
 	  && reftime + old_dt <= almost_fixed_time) {
 	// new_dt is close enough to old_dt.
 	// use old_dt, to avoid a step change.
