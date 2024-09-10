@@ -373,6 +373,11 @@ bool TRANSIENT::next()
 	// reject .. quantize has no benefit
       }else if (up_order(old_dt*.8, new_dt, old_dt*1.5)
 	  && reftime + old_dt <= almost_fixed_time) {
+	if (new_control == scTE) {
+	}else if (new_control == scSKIP) {
+	}else{untested();
+	  std::cerr << "@q1 " << new_control << '\n';
+	}
 	// new_dt is close enough to old_dt.
 	// use old_dt, to avoid a step change.
 	assert(reftime == _sim->_time0); // moving forward
@@ -387,6 +392,12 @@ bool TRANSIENT::next()
 	}
 	check_consistency();
       }else{
+	if (new_control == scTE) {
+	}else if (new_control == scSKIP) {
+	}else if (new_control == scINITIAL) {
+	}else{untested();
+	  std::cerr << "@q2 " << new_control << '\n';
+	}
 	// There will be a step change.
 	// Try to choose one that we will keep for a while.
 	// Choose new_dt to be in integer fraction of target_dt.
@@ -414,24 +425,63 @@ bool TRANSIENT::next()
     }
 
     // if all that makes it close to event, make it official
-    if (!_sim->_eq.empty()
-	&& up_order(newtime-_sim->_dtmin, _sim->_eq.top().time(), newtime+_sim->_dtmin)) {
-      almost_fixed_time = fixed_time = newtime = _sim->_eq.top();
-      new_dt = newtime - reftime;
-      new_control = scEVENTQ;
-      check_consistency();
+    if (new_control != scUSER && !_sim->_eq.empty()) {
+      if (new_control == scEVENTQ) {
+	// absolute match, time and control
+	assert(newtime == _sim->_eq.top());
+	check_consistency();
+      }else if (newtime == _sim->_eq.top()) {untested();
+	// absolute time match, other control
+	if (new_control == scTE) {untested();
+	}else{untested();
+	}
+	new_control = scEVENTQ;
+	check_consistency();
+      }else if (up_order(newtime-_sim->_dtmin, _sim->_eq.top().time(), newtime+_sim->_dtmin)) {
+	// approx time match, other control
+	if (new_control == scTE) {
+	}else{untested();
+	}
+	newtime = _sim->_eq.top();
+	new_dt = newtime - reftime;
+	new_control = scEVENTQ;
+	check_consistency();
+      }else{
+	// something in queue, not using it.
+	assert(new_control != scEVENTQ);
+	check_consistency();
+      }
     }else{
+      // queue empty or scUSER
+      assert(new_control != scEVENTQ);
     }
 
     // if all that makes it close to user_requested, make it official
-    if (up_order(newtime-_sim->_dtmin, _time_by_user_request, newtime+_sim->_dtmin)) {
-      //newtime = _time_by_user_request;
-      //new_dt = newtime - reftime;
+    if (new_control == scUSER) {
+      // absolute match, time and control
+      assert(newtime == _time_by_user_request);
+      check_consistency();
+    }else if (newtime == _time_by_user_request) {
+      // absolute time match, other control
+      if (new_control == scTE) {
+      }else{untested();
+      }
       new_control = scUSER;
-      check_consistency();			   
+      check_consistency();
+    }else if (up_order(newtime-_sim->_dtmin, _time_by_user_request, newtime+_sim->_dtmin)) {
+      // approx time match, other control
+      if (new_control == scTE) {
+      }else{untested();
+      }
+      newtime = _time_by_user_request;
+      new_dt = newtime - reftime;
+      new_control = scUSER;
+      check_consistency();
     }else{
+      // not a user time.
+      assert(new_control != scUSER);
+      check_consistency();
     }
-    check_consistency();
     assert(!_accepted || newtime > _sim->_time0);
     assert(_accepted || newtime <= _sim->_time0);
   }
