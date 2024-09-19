@@ -44,13 +44,13 @@ private:
   EVENT() = delete;
 public:
   EVENT(double Time, const CKT_BASE* Owner)
-    : _time(Time), _owner(Owner) {assert(Owner);}
+    : _time(Time), _owner(Owner) {}
   EVENT(const EVENT& E)
-    : _time(E._time), _owner(E._owner) {assert(E._owner);}
+    : _time(E._time), _owner(E._owner) {}
   ~EVENT() {}
   operator double() const {return _time;}
   double time() const     {return _time;}
-  const CKT_BASE* owner() const {untested(); return _owner;}
+  const CKT_BASE* owner() const {untested(); assert(_owner); return _owner;}
 };
 /*--------------------------------------------------------------------------*/
 struct INTERFACE SIM_DATA {
@@ -135,9 +135,8 @@ struct INTERFACE SIM_DATA {
     case tsNO:  break;
     }
   }
-  void new_event(double Time, const CKT_BASE* Owner) {
+  void new_event(double Time, const CKT_BASE* Owner=NULL) {
     assert(Time <= BIGBIG);
-    assert(Owner);
     _eq.push(EVENT(Time, Owner));
   }
   void set_command_none() {_mode = s_NONE;}
