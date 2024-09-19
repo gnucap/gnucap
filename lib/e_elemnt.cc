@@ -253,7 +253,7 @@ void ELEMENT::tr_advance()
   assert(_time[0] < _sim->_time0); // moving forward
   
   for (int i=OPT::_keep_time_steps-1; i>0; --i) {
-    assert(_time[i] < _time[i-1] || _time[i] == 0.);
+    assert(_time[i] <= _time[i-1]);
     _time[i] = _time[i-1];
     _y[i] = _y[i-1];
   }
@@ -268,7 +268,7 @@ void ELEMENT::tr_regress()
   assert(_time[1] <= _sim->_time0); // but not too far backwards
 
   for (int i=OPT::_keep_time_steps-1; i>0; --i) {
-    assert(_time[i] < _time[i-1] || _time[i] == 0.);
+    assert(_time[i] <= _time[i-1]);
   }
   _time[0] = _sim->_time0;
 
@@ -506,9 +506,12 @@ double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
     }else{
       error_deriv = order()+1;
     }
-    while (_time[error_deriv-1] <= 0.) {
-      // not enough info to use that derivative, use a lower order derivative
-      --error_deriv;
+    for (int i=error_deriv; i>0; --i) {
+      if (_time[i-1] <= _time[i]) {
+	// not enough info to use that derivative, use a lower order derivative
+	error_deriv = i-1;
+      }else{
+      }
     }
     assert(error_deriv > 0);
     assert(error_deriv < OPT::_keep_time_steps);
