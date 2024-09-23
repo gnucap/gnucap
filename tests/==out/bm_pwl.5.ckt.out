@@ -7,8 +7,8 @@ v1 ( 1 0 ) pwl( 0., 0.  1., 1.  4., 2.  9., 0.  16., 4.  25., 0. )
  4.         2.         0.         9.        
  9.         0.         0.         16.       
  16.        4.         0.         25.       
- 25.        1.f        0.         0.        
- 30.        1.f        0.         0.        
+ 25.        4.4444n    0.         0.        
+ 30.        0.         0.         0.        
 Gnucap   System status
 iterations: op=0, dc=0, tran=23, fourier=0, total=31
 transient timesteps: accepted=8, rejected=0, total=8

@@ -181,8 +181,7 @@ void EVAL_BM_PULSE::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 TIME_PAIR EVAL_BM_PULSE::tr_review(COMPONENT* d)const
 {
-  double raw_time = d->_sim->_time0 + d->_sim->_dtmin * .01;
-				    // hack to avoid duplicate events from numerical noise
+  double raw_time = d->_sim->_time0 + d->_sim->_dtmin * 2;
 
   if (raw_time <= _delay) {
     d->_time_by.min_event(_delay);
@@ -205,6 +204,12 @@ TIME_PAIR EVAL_BM_PULSE::tr_review(COMPONENT* d)const
       d->_time_by.min_event(_period + time_offset);
     }
   }
+
+  trace3("bm_pulse", d->_sim->_time0, d->_time_by._event, d->_time_by._error_estimate);
+  assert(d->_time_by._event >  d->_sim->_time0);
+  assert(d->_time_by._error_estimate > d->_sim->_time0);
+  assert(d->_time_by._event >  d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by._error_estimate > d->_sim->_time0 + d->_sim->_dtmin);
 
   return d->_time_by;
 }

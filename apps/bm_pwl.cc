@@ -148,24 +148,30 @@ TIME_PAIR EVAL_BM_PWL::tr_review(COMPONENT* d)const
     // index (x) is time
     ELEMENT* dd = prechecked_cast<ELEMENT*>(d);
     assert(dd);
-    double x = dd->_y[0].x + d->_sim->_dtmin * .01;
+    double x = dd->_y[0].x + d->_sim->_dtmin * 2;
     DPAIR here(x, BIGBIG);
     std::vector<DPAIR>::const_iterator begin = _num_table.begin();
     std::vector<DPAIR>::const_iterator end   = _num_table.end();
     std::vector<DPAIR>::const_iterator upper = upper_bound(begin, end, here);
     std::vector<DPAIR>::const_iterator lower = upper - 1;
-    assert(x > lower->first);
+    assert(x >= lower->first);
     if(upper==end){
     }else if(x < upper->first){
       d->_time_by.min_event(upper->first);
     }else{ untested();
       // this is a no-op.
- //     d->_time_by.min_event(NEVER);
+      // d->_time_by.min_event(NEVER);
     }
   }else{itested();
     // index (x) is input
     // It's really needed here too, more work needed
   }
+
+  trace3("bm_pwl", d->_sim->_time0, d->_time_by._event, d->_time_by._error_estimate);
+  assert(d->_time_by._event >  d->_sim->_time0);
+  assert(d->_time_by._error_estimate > d->_sim->_time0);
+  assert(d->_time_by._event >  d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by._error_estimate > d->_sim->_time0 + d->_sim->_dtmin);
 
   return d->_time_by;
 }

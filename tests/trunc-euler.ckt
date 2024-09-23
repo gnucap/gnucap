@@ -1,5 +1,5 @@
 ;'trunc error check
-V1   1  0  ac 1 pwl (0 0 1p 1)
+V1   1  0  ac 1 pwl (0 0 1n 1)
 L3   1  2  .1
 R4   2  0  1.
 R5   1  3  1.

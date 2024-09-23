@@ -42,7 +42,7 @@ r3b ( 12 0 ) Rload
  0.007      0.2731     0.38866    0.2731     0.38866    0.2731     0.38866   
  0.008     -0.20913    0.31634   -0.20913    0.31634   -0.20913    0.31634   
  0.009     -0.17675    0.22132   -0.17675    0.22132   -0.17675    0.22132   
- 0.01      -0.15163    0.14979   -0.15163    0.14979   -0.15163    0.14979   
+ 0.01      -0.15162    0.14978   -0.15162    0.14978   -0.15162    0.14978   
 v1 ( 1 0 ) pulse iv= 0. pv= 1. delay= 0.002 rise= 0.002 fall= 0.002 width= 0.002 period= 0.01  AC  1.
 r1a ( 1 2 ) Rsource
 k1 ( l1a l1b ) K12
@@ -63,7 +63,7 @@ e3a ( 9 10 11 0 ) M12/L2
 e3b ( 12 11 10 0 ) M12/L1
 r3b ( 12 0 ) Rload
 Gnucap   System status
-iterations: op=0, dc=0, tran=347, fourier=0, total=474
-transient timesteps: accepted=115, rejected=3, total=118
+iterations: op=0, dc=0, tran=360, fourier=0, total=491
+transient timesteps: accepted=119, rejected=3, total=122
 nodes: user=12, subckt=0, model=3, total=15
 dctran density=37.8%, ac density=37.8%
