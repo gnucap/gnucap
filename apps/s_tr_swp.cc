@@ -59,10 +59,15 @@ void TRANSIENT::sweep()
   _sim->set_inc_mode_bad();
   
   if (_cont) {  // use the data from last time
+    // keep event queue contents
+    assert(_sim->_eq.empty() || _sim->_eq.top() >= _sim->_time0);
     _sim->_phase = p_RESTORE;
     _sim->restore_voltages();
     _scope->tr_restore();
   }else{
+    while (!_sim->_eq.empty()) {untested();
+      _sim->_eq.pop();
+    }
     _sim->clear_limit();
     _scope->tr_begin();
   }
@@ -196,10 +201,6 @@ void TRANSIENT::first()
   assert(_sim->_time0 <= _tstart);
   ::status.review.start();
 
-  //_eq.Clear();					/* empty the queue */
-  while (!_sim->_eq.empty()) {untested();
-    _sim->_eq.pop();
-  }
   _stepno = 0;
 
   //_time_by_user_request = _sim->_time0 + _tstrobe;	/* set next user step */

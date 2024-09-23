@@ -1,0 +1,30 @@
+;'trunc error check 
+V1 ( 1 0 ) pwl( 0., 0.  1.p, 1. )  AC  1.
+L3 ( 1 2 )  0.1
+R4 ( 2 0 )  1.
+R5 ( 1 3 )  1.
+C6 ( 3 0 )  0.1
+#Time       iter(0)    v(1)       v(2)       v(3)       z(C6)      zraw(C6)   z(3)       control(0) timef(C6)  timef(L3)  dt(C6)     dtr(C6)   
+ 0.         3.         0.         0.         0.         1.         1.         1.         1.         Inf        Inf        ??         Inf       
+ 20.p       4.         1.         0.         200.p      1.         200.p      200.p      7.         Inf        Inf        20.p       Inf       
+ 0.01       4.         1.         0.090909   0.090909   1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.02       4.         1.         0.17355    0.17355    1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.03       4.         1.         0.24869    0.24869    1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.04       4.         1.         0.31699    0.31699    1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.05       4.         1.         0.37908    0.37908    1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.06       4.         1.         0.43553    0.43553    1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.07       4.         1.         0.48684    0.48684    1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.08       4.         1.         0.53349    0.53349    1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.09       4.         1.         0.5759     0.5759     1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+ 0.1        4.         1.         0.61446    0.61446    1.         0.090909   0.090909   1.         Inf        Inf        0.01       Inf       
+V1 ( 1 0 ) pwl( 0., 0.  1.p, 1. )  AC  1.
+L3 ( 1 2 )  0.1
+R4 ( 2 0 )  1.
+R5 ( 1 3 )  1.
+C6 ( 3 0 )  0.1
+* exact=0.632120559 
+Gnucap   System status
+iterations: op=0, dc=0, tran=47, fourier=0, total=59
+transient timesteps: accepted=12, rejected=0, total=12
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=77.8%, ac density=77.8%
