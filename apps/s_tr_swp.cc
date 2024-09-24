@@ -52,7 +52,7 @@ namespace TR {
 }
 /*--------------------------------------------------------------------------*/
 class TIME_t {
-  static double _dtmin;
+  static double _dtmin; // TODO: duplicate in SIM_DATA
   double _t {0};
   explicit TIME_t(int, const double& T) : _t(T) {}
 public:
@@ -290,7 +290,7 @@ bool TRANSIENT::next()
     reftime = time1;
     trace0("rejected");
   }
-  trace3("", _time1, _sim->_time0, reftime);
+  trace3("", _time1, _sim->_time0, reftime.to_double());
   
   // start with user time step
   TIME_t newtime(_time_by_user_request);

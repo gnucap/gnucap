@@ -135,9 +135,16 @@ struct INTERFACE SIM_DATA {
     case tsNO:  break;
     }
   }
-  void new_event(double Time, const CKT_BASE* Owner=NULL) {
+  double new_event(double Time, const CKT_BASE* Owner=NULL) {
     assert(Time <= BIGBIG);
     _eq.push(EVENT(Time, Owner));
+    if(_dtmin){
+    }else{
+      // getting here in d_logic_nand-dc.ckt
+      // does no harm, but cannot quantise.
+    }
+    // TODO: move to future EVENT_QUEUE. For now, quantize here, to get the effect.
+    return std::round(Time/_dtmin) * _dtmin;
   }
   void set_command_none() {_mode = s_NONE;}
   void set_command_ac()	  {_mode = s_AC;}
