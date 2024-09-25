@@ -79,7 +79,7 @@ Rprobe ( 7 8 )  1.K
 Vprobe ( 8 0 )  DC  0.
 .model sss csw ( it=0. ih=.002 ion=NA( 0.002) ioff=NA(-0.002) ron=1.K roff=1.E+12 tnom=NA( 27.))
 Gnucap   System status
-iterations: op=0, dc=84, tran=195, fourier=0, total=348
-transient timesteps: accepted=58, rejected=9, total=67
+iterations: op=0, dc=84, tran=185, fourier=0, total=332
+transient timesteps: accepted=54, rejected=7, total=61
 nodes: user=8, subckt=0, model=0, total=8
 dctran density=25.0%, ac density=25.0%

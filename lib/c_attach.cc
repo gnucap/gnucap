@@ -190,7 +190,7 @@ void attach_file(CS& cmd, std::string const& file_name,
   if (!flags) { untested();
   }else if (void* handle = dlopen(file_name.c_str(), flags)) {
     attach_list[file_name] = handle;
-  }else{untested();
+  }else{itested();
     throw Exception_CS(dlerror(), cmd);
   }
 }

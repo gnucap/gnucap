@@ -1,7 +1,18 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 20240523-dev
+== 202409**-dev
+
+- quantize time in tr_swp
+- reschedule pruned events
+- event owner
+- longer double in lu decomp
+- fix oversight in vsvs advance
+- "module" alias for "subckt"
+- avoid global _nstat use
+- simplify configure invocation
+
+== 20240702-dev
 
 - fix trace header for use in C
 - hierarchical system params

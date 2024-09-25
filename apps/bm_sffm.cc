@@ -155,7 +155,7 @@ void EVAL_BM_SFFM::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 TIME_PAIR EVAL_BM_SFFM::tr_review(COMPONENT* d)const
 {
-  double time = d->_sim->_time0 + d->_sim->_dtmin * .01;
+  double time = d->_sim->_time0 + 1e-6/_carrier;
   double old_time;
   double N = 0;
   trace2("", time, N);
@@ -190,6 +190,12 @@ TIME_PAIR EVAL_BM_SFFM::tr_review(COMPONENT* d)const
 
   d->_time_by.min_error_estimate(d->_sim->_time0 + 1. / (_samples * _carrier));
   d->_time_by.min_event(old_time);
+
+  trace3("bm_sffm", d->_sim->_time0, d->_time_by._event, d->_time_by._error_estimate);
+  assert(d->_time_by._event >  d->_sim->_time0);
+  assert(d->_time_by._error_estimate > d->_sim->_time0);
+  assert(d->_time_by._event >  d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by._error_estimate > d->_sim->_time0 + d->_sim->_dtmin);
   
   return d->_time_by;
 }

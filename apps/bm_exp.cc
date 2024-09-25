@@ -155,8 +155,7 @@ void EVAL_BM_EXP::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 TIME_PAIR EVAL_BM_EXP::tr_review(COMPONENT* d)const
 {
-  double time = d->_sim->_time0;
-  time += d->_sim->_dtmin * .01;  // hack to avoid duplicate events from numerical noise
+  double time = d->_sim->_time0 + d->_sim->_dtmin * 2;
   double raw_time = time;
 
   if (0 < _period && _period < BIGBIG) {
@@ -180,6 +179,12 @@ TIME_PAIR EVAL_BM_EXP::tr_review(COMPONENT* d)const
     dt = (_tau2 > 0) ? _tau2 : NEVER;
   }
   d->_time_by.min_error_estimate(d->_sim->_time0 + dt);
+
+  trace3("bm_exp", d->_sim->_time0, d->_time_by._event, d->_time_by._error_estimate);
+  assert(d->_time_by._event >  d->_sim->_time0);
+  assert(d->_time_by._error_estimate > d->_sim->_time0);
+  assert(d->_time_by._event >  d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by._error_estimate > d->_sim->_time0 + d->_sim->_dtmin);
 
   return d->_time_by;
 }

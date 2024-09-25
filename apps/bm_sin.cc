@@ -172,7 +172,7 @@ void EVAL_BM_SIN::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 TIME_PAIR EVAL_BM_SIN::tr_review(COMPONENT* d)const
 {
-  double reltime = ioffset(d->_sim->_time0) + d->_sim->_dtmin * .01;
+  double reltime = ioffset(d->_sim->_time0) + 1e-6/_actual_frequency;
 
   if (reltime > _delay) {
     if (_peak && _zero) {
@@ -187,6 +187,12 @@ TIME_PAIR EVAL_BM_SIN::tr_review(COMPONENT* d)const
   }else{
     d->_time_by.min_event(_delay);
   }
+
+  trace3("bm_sin", d->_sim->_time0, d->_time_by._event, d->_time_by._error_estimate);
+  assert(d->_time_by._event >  d->_sim->_time0);
+  assert(d->_time_by._error_estimate > d->_sim->_time0);
+  assert(d->_time_by._event >  d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by._error_estimate > d->_sim->_time0 + d->_sim->_dtmin);
 
   return d->_time_by;
 }
