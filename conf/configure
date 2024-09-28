@@ -72,7 +72,7 @@ echo "CXX = c++" >>Make2
 #----------------------------------------------------------------
 echo "srcdir = ${srcdir}" > Makefile
 [ "${srcdir}" = "." ] || echo "VPATH = \${srcdir}" >> Makefile
-echo include ${srcdir}/Make1 >> Makefile
+echo include ${srcdir}/MakeList >> Makefile
 echo include Make2 >> Makefile
 echo "include ${top_srcdir}/include/Make3" >> Makefile
 #----------------------------------------------------------------

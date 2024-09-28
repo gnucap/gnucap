@@ -1,4 +1,4 @@
-#$Id: modelgen/Make1 $ -*- Makefile -*-
+#$Id: modelgen/MakeList $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -36,7 +36,7 @@ mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc
 #------------------------------------------------------------------------
 RAW_HDRS = mg_.h mg_out.h
 #------------------------------------------------------------------------
-RAW_OTHER = Make1
+RAW_OTHER = MakeList
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------

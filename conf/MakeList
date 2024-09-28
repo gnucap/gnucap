@@ -1,4 +1,4 @@
-#$Id: lib/Make1 $ -*- Makefile -*-
+#$Id: conf/MakeList $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -19,37 +19,22 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET_LIB = libgnucap
-TARGET_LIB_EXT = .so
+all: # nothing
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
-INSTALL_DIR = $(PREFIX)/lib
+INSTALL_FILES_1 = gnucap-conf
+INSTALL_DIR_1 = $(PREFIX)/bin
 #------------------------------------------------------------------------
-LIBS = \
--lreadline -ltermcap \
--ldl
+# INSTALL_FILES_2 = gnucap.conf
+# INSTALL_DIR_2 = $(PREFIX)/etc
+#------------------------------------------------------------------------
+LIBS =
 INCLUDE = -I. -I../include -I../../include
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
-RAW_SRCS = \
-globals.cc \
-m_expression_dump.cc m_expression_in.cc m_expression_reduce.cc \
-m_base_in.cc m_base_math.cc m_fft.cc  m_spline.cc \
-ap_construct.cc ap_convert.cc ap_error.cc ap_get.cc ap_match.cc ap_skip.cc \
-l_dispatcher.cc l_ftos.cc l_pmatch.cc l_timer.cc l_trim.cc l_wmatch.cc \
-io.cc io_contr.cc io_error.cc io_findf.cc io_out.cc io_xopen.cc \
-u_lang.cc u_nodemap.cc u_opt1.cc u_opt2.cc \
-u_parameter.cc u_prblst.cc u_probe.cc u_sim_data.cc u_xprobe.cc \
-d_subckt.cc d_logicmod.cc \
-e_base.cc e_card.cc e_node.cc e_model.cc e_compon.cc \
-e_logicnode.cc e_logicval.cc \
-e_elemnt.cc e_ccsrc.cc e_storag.cc e_paramlist.cc e_cardlist.cc \
-bm_cond.cc bm_value.cc bm.cc \
-c__cmd.cc c_attach.cc c_file.cc \
-findbr.cc plot.cc
+RAW_SRCS =
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 test_readline.cc
+RAW_OTHER = MakeList configure gnucap-conf.in gnucap.conf.in config.h.in
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------

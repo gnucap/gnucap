@@ -2,7 +2,7 @@
 # ... for use with configure & GNU Make aka. "gmake"
 # Author: Felix Salfelder 2024
 #-----------------------------------------------------------------------------
-include ${srcdir}/Make1
+include ${srcdir}/MakeList
 RECURSIVE_TARGETS = all install clean depend distclean \
                     ${EXTRA_RECURSIVE_TARGETS}
 #-----------------------------------------------------------------------------

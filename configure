@@ -67,7 +67,7 @@ elif [ -f $srcdir/NEWS ]; then
 	echo \* > .gitignore
 fi
 #----------------------------------------------------------------
-MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/Make1 | sed 's/^.*= //g')
+MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/MakeList | sed 's/^.*= //g')
 SUBDIRS="${MAKE1_SUBDIRS}"
 #----------------------------------------------------------------
 if [ ! -f $top_srcdir/include/Make2.$preset ]; then
@@ -102,7 +102,7 @@ sub_makefile() {
 	echo "srcdir = ${srcdir}" >> $1
 	echo "VPATH = \${srcdir}" >> $1
 	echo "MAKE1_FIX = #" >> $1
-	echo "include \${srcdir}/Make1" >> $1
+	echo "include \${srcdir}/MakeList" >> $1
 	echo "INCLUDE = " >> $1
 	echo "PRESET = default" >> $1
 	echo "include ../Make2" >> $1
