@@ -41,7 +41,7 @@ u_cardst.h u_function.h u_lang.h u_limit.h u_nodemap.h u_opt.h \
 u_parameter.h u_prblst.h u_probe.h u_sdp.h u_sim_data.h u_status.h \
 u_time_pair.h u_xprobe.h u_attrib.h
 #------------------------------------------------------------------------
-RAW_OTHER_INSTALL = Make2.g++ Make2.Debug Make3
+RAW_OTHER_INSTALL = MakeConf.default MakeConf.g++ MakeConf.Debug MakeBase
 RAW_OTHER_NO_INSTALL = MakeList configure config.h
 # -- config.h is installed by conf
 #    symlink here to mimic post-install during pre-install build

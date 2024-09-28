@@ -101,9 +101,9 @@ else
 	:
 fi
 #----------------------------------------------------------------
-if [ ! -f $top_srcdir/include/Make2.$preset ]; then
+if [ ! -f $top_srcdir/include/MakeConf.$preset ]; then
 	echo "invalid preset" >&2
-	echo "can't find $srcdir/include/Make2.$preset" >&2
+	echo "can't find $srcdir/include/MakeConf.$preset" >&2
 	exit 1;
 fi
 #----------------------------------------------------------------
@@ -128,7 +128,7 @@ esac
 sub_makefile() {
 	echo sub_makefile $1
 	echo \# created by $0 do not edit >$1
-	echo \#------------------------------------------------------------------------ >>Make2
+	echo \#------------------------------------------------------------------------ >>MakeConf
 	echo "top_srcdir = $top_srcdir" >> $1
 	echo "srcdir = ${srcdir}" >> $1
 	echo "VPATH = \${srcdir}" >> $1
@@ -136,20 +136,20 @@ sub_makefile() {
 	echo "include \${srcdir}/MakeList" >> $1
 	echo "INCLUDE = " >> $1
 	echo "PRESET = default" >> $1
-	echo "include ../Make2" >> $1
-	echo "include $top_srcdir/include/Make3" >> $1
+	echo "include ../MakeConf" >> $1
+	echo "include $top_srcdir/include/MakeBase" >> $1
 	echo "-include \${srcdir}/Make.depend" >> $1
 }
 #------------------------------------------------------------------------
-if [ -f $srcdir/makefile.in ]; then
-	echo \# created by $PWD/$0. do not edit >makefile
-	echo \#------------------------------------------------------------------------ >>makefile
-	echo "srcdir = $srcdir" >> makefile
-	echo "VPATH = \${srcdir}" >> makefile
-	echo "SUBMODULES = ${SUBMODULES}" >> makefile
-	cat $srcdir/makefile.in >> makefile
+if [ -f $srcdir/Makefile.in ]; then
+	echo \# created by $PWD/$0. do not edit >Makefile
+	echo \#------------------------------------------------------------------------ >>Makefile
+	echo "srcdir = $srcdir" >> Makefile
+	echo "VPATH = \${srcdir}" >> Makefile
+	echo "SUBMODULES = ${SUBMODULES}" >> Makefile
+	cat $srcdir/Makefile.in >> Makefile
 else
-	sub_makefile makefile
+	sub_makefile Makefile
 fi
 #------------------------------------------------------------------------
 if [ $out_of_tree = "yes" ]; then
@@ -166,20 +166,20 @@ else
 	: # configuring some subdir
 fi
 #------------------------------------------------------------------------
-echo \# created by $PWD/$0. do not edit >Make2
-echo \#------------------------------------------------------------------------ >>Make2
-echo "CXX = c++" >>Make2
-echo "PREFIX = " $prefix >>Make2
-echo "ENV = LD_LIBRARY_PATH=../lib\${LD_LIBRARY_PATH:%=:%}" >>Make2
-echo "LDFLAGS = -L../lib" >>Make2
-echo "GNUCAP_CONF = ../conf/gnucap-conf" >>Make2
+echo \# created by $PWD/$0. do not edit >MakeConf
+echo \#------------------------------------------------------------------------ >>MakeConf
+echo "CXX = c++" >>MakeConf
+echo "PREFIX = " $prefix >>MakeConf
+echo "ENV = LD_LIBRARY_PATH=../lib\${LD_LIBRARY_PATH:%=:%}" >>MakeConf
+echo "LDFLAGS = -L../lib" >>MakeConf
+echo "GNUCAP_CONF = ../conf/gnucap-conf" >>MakeConf
 #------------------------------------------------------------------------
 # "MAKE_CPPFLAGS": not a user variable like CPPFLAGS
-#                  add ${INCLUDE} when overriding in Make2.*
-echo "INCLUDE = -I${top_srcdir_}/include -I../conf" >>Make2
+#                  add ${INCLUDE} when overriding in MakeConf.*
+echo "INCLUDE = -I${top_srcdir_}/include -I../conf" >>MakeConf
 #------------------------------------------------------------------------
-echo "PRESET = ${preset}" >> Make2
-echo "include ${top_srcdir_}/include/Make2.\${PRESET}" >>Make2
+echo "PRESET = ${preset}" >> MakeConf
+echo "include ${top_srcdir_}/include/MakeConf.\${PRESET}" >>MakeConf
 #------------------------------------------------------------------------
 sub_configure() {
 	m="$1/Makefile"
