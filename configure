@@ -188,6 +188,7 @@ echo "include ${top_srcdir_}/include/MakeConf.\${PRESET}" >>MakeConf
 #------------------------------------------------------------------------
 sub_configure() {
 	m="$1/Makefile"
+	echo creating $m
 	if [ "$top_srcdir_" = ".." ]; then
 		srcdir_=".";
 	else
@@ -198,44 +199,27 @@ sub_configure() {
 	echo "top_builddir = .." >> $m
 	echo "srcdir = $srcdir_" >> $m
 	echo "prefix = $prefix" >> $m
-	args='--prefix="${prefix}" --srcdir="${srcdir}" --top-builddir="${top_builddir}" --top-srcdir="${top_srcdir}"'
-	echo '%: ; ${srcdir}/configure '${args}' && ${MAKE} $@' >> $m
-	echo 'all: ; ${srcdir}/configure '${args}' && ${MAKE}' >> $m
-	echo '.PHONY: all' >> $m
-}
-#------------------------------------------------------------------------
-subdir_configure() {
-	m="$1/Makefile"
-	if [ "$top_srcdir_" = ".." ]; then
-		srcdir_=".";
+	echo 'CONFIGURE_ARGS = --prefix="${prefix}" --srcdir="${srcdir}" \\' >> $m
+	echo '                 --top-builddir="${top_builddir}" --top-srcdir="${top_srcdir}"' >> $m
+
+	if [ -f $srcdir/$i/configure ]; then
+		echo 'CONFIGURE = "${srcdir}/configure"' >> $m
 	else
-		srcdir_="$top_srcdir_/$1";
+		echo 'CONFIGURE = "${top_srcdir}/configure"' >> $m
 	fi
-	echo '#stub. need to run configure first' > $m
-	echo "top_srcdir = $top_srcdir_" >> $m
-	echo "srcdir = $srcdir_" >> $m
-	echo "prefix = $prefix" >> $m
-	args='--prefix="${prefix}" --srcdir="${srcdir}" --top-srcdir="${top_srcdir}"'
-	echo '%: ; ${top_srcdir}/configure '${args}' && ${MAKE} $@' >> $m
-	echo 'all: ; ${top_srcdir}/configure '${args}' && ${MAKE}' >> $m
+
+	echo '%: ; ${CONFIGURE} ${CONFIGURE_ARGS} && ${MAKE} $@' >> $m
+	echo 'all: ; ${CONFIGURE} ${CONFIGURE_ARGS} && ${MAKE}' >> $m
 	echo '.PHONY: all' >> $m
 }
 #------------------------------------------------------------------------
 for i in ${SUBDIRS}; do
 	mkdir -p $i;
-	if [ -f $srcdir/$i/configure ]; then
-		echo configure $i
-		sub_configure $i
-	else
-		echo subdir $i
-		subdir_configure $i;
-	fi
+	sub_configure $i
 done
 #------------------------------------------------------------------------
-# don't use foreign configure scripts
 for i in ${SUBMODULES}; do
 	mkdir -p $i;
-	echo submodule $i
 	sub_configure $i
 done
 #------------------------------------------------------------------------
