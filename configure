@@ -55,7 +55,7 @@ while [ 0 -ne $# ]; do
 			  preset=${1#--preset=}
 			  ;;
 		*)
-			echo unrecognised: "$1"
+			echo Warning: unrecognised: "$1", ignored. >&2
 			;;
 	esac
 	shift
@@ -170,7 +170,7 @@ elif [ -f NEWS ]; then
 	echo "Really configure in-tree?" >&2
    echo "Hit ^C to avoid or wait for 1 minute." >&2
    echo "Bypass this check with --force-in-tree." >&2
-	for i in `seq 60`; do sleep 1; echo -n '.'; done
+	for i in `seq 60`; do sleep 1; echo -n '.' >&2 ; done
 	echo;
 else
 	: # configuring some subdir
