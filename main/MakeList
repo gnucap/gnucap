@@ -27,9 +27,6 @@ INSTALL_DIR_1 = $(PREFIX)/bin
 # BUG: -L belongs to LDFLAGS.
 LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
 #------------------------------------------------------------------------
-# BUG: include paths are probably wrong. (Workaround: override in Make2)
-INCLUDE = -I. -I../include -I../../include -I../conf
-#------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
 RAW_SRCS = main.cc 
