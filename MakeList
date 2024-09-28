@@ -1,5 +1,7 @@
 
-SUBDIRS = conf include lib modelgen main apps tests
+# fragile syntax, see configure
+SUBDIRS = conf include lib modelgen main apps tests \
+			${SUBMODULES}
 
 # run these recursively in an attempt to provide legacy functionality.
 EXTRA_RECURSIVE_TARGETS = debug g++

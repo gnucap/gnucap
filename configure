@@ -16,6 +16,7 @@ srcdir_given=no
 preset=default
 force_in_tree=no
 srcdir=$(dirname $0)
+submodules=
 
 while [ 0 -ne $# ]; do
 	case "$1" in
@@ -25,6 +26,12 @@ while [ 0 -ne $# ]; do
 			  ;;
 		--enable-debug)
 			  preset=Debug
+			  ;;
+		--enable-submodules)
+			  submodules="yes"
+			  ;;
+		--disable-submodules)
+			  submodules="no"
 			  ;;
 		--srcdir=*)
 			  srcdir=${1#--srcdir=}
@@ -68,7 +75,31 @@ elif [ -f $srcdir/NEWS ]; then
 fi
 #----------------------------------------------------------------
 MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/MakeList | sed 's/^.*= //g')
-SUBDIRS="${MAKE1_SUBDIRS}"
+SUBDIRS="${MAKE1_SUBDIRS%%\\}"
+#----------------------------------------------------------------
+SUBMODULES=
+if [ x$submodules != xno ]; then
+	for r in $(cd $srcdir; ls */NEWS 2>/dev/null ); do
+		dirname=$(dirname $r)
+		if [ -d ${srcdir}/${dirname} \
+		  -a -f ${srcdir}/${dirname}/MakeList \
+		  -a -x ${srcdir}/${dirname}/configure ]; then
+			SUBMODULES="$SUBMODULES $dirname"
+		else
+			:
+		fi
+	done
+else
+	:
+fi
+if [ "$SUBMODULES" ]; then
+	echo "found submodules (disable with --disable-submodules)"
+	for s in $SUBMODULES; do
+		echo " $s"
+	done
+else
+	:
+fi
 #----------------------------------------------------------------
 if [ ! -f $top_srcdir/include/Make2.$preset ]; then
 	echo "invalid preset" >&2
@@ -115,6 +146,7 @@ if [ -f $srcdir/makefile.in ]; then
 	echo \#------------------------------------------------------------------------ >>makefile
 	echo "srcdir = $srcdir" >> makefile
 	echo "VPATH = \${srcdir}" >> makefile
+	echo "SUBMODULES = ${SUBMODULES}" >> makefile
 	cat $srcdir/makefile.in >> makefile
 else
 	sub_makefile makefile
@@ -150,7 +182,6 @@ echo "PRESET = ${preset}" >> Make2
 echo "include ${top_srcdir_}/include/Make2.\${PRESET}" >>Make2
 #------------------------------------------------------------------------
 sub_configure() {
-	echo sub_configure $1
 	m="$1/Makefile"
 	if [ "$top_srcdir_" = ".." ]; then
 		srcdir_=".";
@@ -166,7 +197,6 @@ sub_configure() {
 }
 #------------------------------------------------------------------------
 subdir_configure() {
-	echo subdir_configure $1
 	m="$1/Makefile"
 	if [ "$top_srcdir_" = ".." ]; then
 		srcdir_=".";
@@ -185,10 +215,19 @@ subdir_configure() {
 for i in ${SUBDIRS}; do
 	mkdir -p $i;
 	if [ -f $srcdir/$i/configure ]; then
-		sub_configure $i;
+		echo configure $i
+		sub_configure $i
 	else
+		echo subdir $i
 		subdir_configure $i;
 	fi
+done
+#------------------------------------------------------------------------
+# don't use foreign configure scripts
+for i in ${SUBMODULES}; do
+	mkdir -p $i;
+	echo submodule $i
+	subdir_configure $i
 done
 #------------------------------------------------------------------------
 exit 0
