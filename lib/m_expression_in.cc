@@ -113,7 +113,7 @@ CS& Expression::array(CS& File)
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 void Expression::leaf(CS& File)
 {
-    trace1("leaf?", File.tail());
+  trace1("leaf?", File.tail().substr(0,20));
   size_t here = File.cursor();
   if (File.peek() == '"') {
     Quoted_String* s = new Quoted_String(File);
@@ -133,7 +133,7 @@ void Expression::leaf(CS& File)
       arglist(File);
       push_back(new Token_SYMBOL(name));
     }else{itested();
-      trace1("leafstuck", File.tail());
+      trace1("leafstuck", File.tail().substr(0,20));
       throw Exception_CS("what's this?", File);
     }
   }
@@ -160,7 +160,7 @@ void Expression::factor(CS& File)
     push_back(t);
   }else{
   }
-  trace1("factor1", File.tail());
+  trace1("factor1", File.tail().substr(0,20));
 }
 /*--------------------------------------------------------------------------*/
 void Expression::ternary(CS& File)
@@ -197,9 +197,9 @@ void Expression::termtail(CS& File)
 /*--------------------------------------------------------------------------*/
 void Expression::term(CS& File)
 {
-  trace1("term0", File.tail());
+  trace1("term0", File.tail().substr(0,20));
   factor(File);
-  trace1("term1", File.tail());
+  trace1("term1", File.tail().substr(0,20));
   termtail(File);
 }
 /*--------------------------------------------------------------------------*/
