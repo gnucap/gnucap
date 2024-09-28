@@ -13,9 +13,11 @@ find . -name makefile -delete
 prefix=/usr/local
 prefix_given=no
 srcdir_given=no
+top_srcdir_given=no
 preset=default
 force_in_tree=no
 srcdir=$(dirname $0)
+top_srcdir=$(dirname $0)
 submodules=
 
 while [ 0 -ne $# ]; do
@@ -36,6 +38,10 @@ while [ 0 -ne $# ]; do
 		--srcdir=*)
 			  srcdir=${1#--srcdir=}
 			  srcdir_given=yes
+			  ;;
+		--top-srcdir=*)
+			  top_srcdir=${1#--top-srcdir=}
+			  top_srcdir_given=yes
 			  ;;
 		--force-in-tree)
 			  force_in_tree=yes
@@ -60,11 +66,10 @@ else
 	exit 1
 fi
 #----------------------------------------------------------------
-top_srcdir=$(dirname $0)
 if [ -f $top_srcdir/NEWS ]; then
 	: # OK
 else
-	echo could not find source directory
+	echo could not find top source directory
 	exit 1
 fi
 #----------------------------------------------------------------
@@ -189,10 +194,13 @@ sub_configure() {
 		srcdir_="$top_srcdir_/$1";
 	fi
 	echo '#stub. need to run configure first' > $m
+	echo "top_srcdir = $top_srcdir_" >> $m
+	echo "top_builddir = .." >> $m
 	echo "srcdir = $srcdir_" >> $m
 	echo "prefix = $prefix" >> $m
-	echo '%: ; ${srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE} $@' >> $m
-	echo 'all: ; ${srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE}' >> $m
+	args='--prefix="${prefix}" --srcdir="${srcdir}" --top-builddir="${top_builddir}" --top-srcdir="${top_srcdir}"'
+	echo '%: ; ${srcdir}/configure '${args}' && ${MAKE} $@' >> $m
+	echo 'all: ; ${srcdir}/configure '${args}' && ${MAKE}' >> $m
 	echo '.PHONY: all' >> $m
 }
 #------------------------------------------------------------------------
@@ -207,8 +215,9 @@ subdir_configure() {
 	echo "top_srcdir = $top_srcdir_" >> $m
 	echo "srcdir = $srcdir_" >> $m
 	echo "prefix = $prefix" >> $m
-	echo '%: ; ${top_srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE} $@' >> $m
-	echo 'all: ; ${top_srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE}' >> $m
+	args='--prefix="${prefix}" --srcdir="${srcdir}" --top-srcdir="${top_srcdir}"'
+	echo '%: ; ${top_srcdir}/configure '${args}' && ${MAKE} $@' >> $m
+	echo 'all: ; ${top_srcdir}/configure '${args}' && ${MAKE}' >> $m
 	echo '.PHONY: all' >> $m
 }
 #------------------------------------------------------------------------
@@ -227,7 +236,7 @@ done
 for i in ${SUBMODULES}; do
 	mkdir -p $i;
 	echo submodule $i
-	subdir_configure $i
+	sub_configure $i
 done
 #------------------------------------------------------------------------
 exit 0
