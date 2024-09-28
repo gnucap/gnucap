@@ -18,6 +18,7 @@ preset=default
 force_in_tree=no
 srcdir=$(dirname $0)
 top_srcdir=$(dirname $0)
+top_builddir=.
 submodules=
 
 while [ 0 -ne $# ]; do
@@ -42,6 +43,10 @@ while [ 0 -ne $# ]; do
 		--top-srcdir=*)
 			  top_srcdir=${1#--top-srcdir=}
 			  top_srcdir_given=yes
+			  ;;
+		--top-builddir=*)
+			  top_builddir=${1#--top-srcdir=}
+			  top_builddir_given=yes
 			  ;;
 		--force-in-tree)
 			  force_in_tree=yes
