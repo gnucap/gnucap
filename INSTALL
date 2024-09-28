@@ -1,18 +1,26 @@
 Installation Instructions
 *************************
 
-This program does not use "autoconf" but configure imitates most of its
-behaviour. There is no need to generate a build system.
+This program does not use "autoconf" but the configure script imitates some of
+its behaviour. There is no need to generate the build system.
 
-The scripts are recursive, so you can cd to any of the subdirectories
-and run make there, once configure is done.
+The scripts are recursive, so you can change to any of the subdirectories and
+run make there, once configure is done.
 
+The configure invocation will be logged in config.log in each subdirectory.
+
+== Basic build instructions
+
+The following commands will compile the package. The top level source directory
+is the one containing these instructions.
+
+$ (cd top_level_source_directory)
 $ mkdir build # or any other directory name
 $ cd build
 $ ../configure
 $ make
 
-additional options:
+Additional options are
 
 --prefix=...   set installation prefix, default: /usr/local
 --preset=...   select preset for flags.
@@ -23,9 +31,38 @@ additional options:
 
 Installation:
 
-To make full use of the package, we recommend to install it. Make sure that
-$prefix/bin is in your PATH environment, and $prefix/lib is either a system
-path, or added to LD_LIBRARY_PATH. (details will vary across platforms.).
+To make full use of the package, we recommend to install it using
+
+$ make install
+
+Make sure that $prefix/bin is in your PATH environment variable, and
+$prefix/lib is either a system path, or added to LD_LIBRARY_PATH. (details will
+vary across platforms.).
+
+Afterwards the main program should run. The versions should match those in
+include/patchlev.h.
+
+$ gnucap
+[..]
+main version: [..]
+core-lib version: [..]
+default plugins: [..]
+gnucap> _
+
+== Submodules
+
+Additional packages can be compiled/installed using a similar method once this
+package has been installed into the system.
+
+Alternatively, suitable packages located at the top level source directory will
+be included in the build process. For example
+
+$ (cd top_level_source_directory)
+$ git clone https://git.savannah.gnu.org/cgit/gnucap/gnucap-modelgen-verilog.git modelgen-v
+$ mkdir build # or any other directory name
+$ cd build
+$ ../configure
+$ make
 
 == Old build system
 
