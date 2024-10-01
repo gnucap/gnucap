@@ -1,4 +1,4 @@
-#$Id: apps/Make1 $ -*- Makefile -*-
+#$Id: apps/MakeList $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -24,7 +24,6 @@ TARGET_LIB_EXT = .so
 #------------------------------------------------------------------------
 INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
 INSTALL_DIR = $(PREFIX)/lib/gnucap
-INCLUDE = -I. -I../include -I../../include
 #------------------------------------------------------------------------
 # These source files can be omitted, and supplied as plugins.
 # device models defined in high level .model files
@@ -84,7 +83,7 @@ $(LANG_SRCS) \
 $(FUNC_SRCS) \
 $(OTHER_SRCS)
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 test_readline.cc
+RAW_OTHER = MakeList test_readline.cc
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER) $(MODELS)
 #------------------------------------------------------------------------
@@ -121,8 +120,8 @@ MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 LIBPATH = `pwd | sed 's/\(.*\)apps/\1lib/'`
 MODELGEN = `pwd | sed 's/\(.*\)apps/\1modelgen/'`/gnucap-modelgen
 #------------------------------------------------------------------------
-${MAKE1_FIX}%.h : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -h $<) # Make1
+${MAKE1_FIX}%.h : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -h $<) # MakeList
 #------------------------------------------------------------------------
-${MAKE1_FIX}%.cc : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<) # Make1
+${MAKE1_FIX}%.cc : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<) # MakeList
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------

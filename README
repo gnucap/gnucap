@@ -36,7 +36,7 @@ front-ends, possibly in other languages.
 "apps" is a set of plugins that are loaded by default.  It builds
 "libgnucap-default-plugins.so".  The ".cc" files here are mostly
 independent of each other.  To add or remove one of them from the
-build, just edit "Make1" and recompile.  Alternatively, any of them
+build, just edit "MakeList" and recompile.  Alternatively, any of them
 can be extracted and built separately.
 
 "modelgen" is the old model compiler, which now links to libgnucap.so.

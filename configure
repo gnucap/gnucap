@@ -6,16 +6,21 @@ date >> config.log
 echo $0 "$@" >> config.log
 
 #-------------  transition
-# stale. make sure to avoid interference
-find . -name makefile -delete
+find . -name makefile -exec false {} + || \
+	 echo "stale (lower case) makefiles. these may interfere."
+find . -name makefile >&2
 
 #-------------  Stuff added to enable --prefix  --------------
 prefix=/usr/local
 prefix_given=no
 srcdir_given=no
+top_srcdir_given=no
 preset=default
 force_in_tree=no
 srcdir=$(dirname $0)
+top_srcdir=$(dirname $0)
+top_builddir=.
+submodules=
 
 while [ 0 -ne $# ]; do
 	case "$1" in
@@ -26,9 +31,23 @@ while [ 0 -ne $# ]; do
 		--enable-debug)
 			  preset=Debug
 			  ;;
+		--enable-submodules)
+			  submodules="yes"
+			  ;;
+		--disable-submodules)
+			  submodules="no"
+			  ;;
 		--srcdir=*)
 			  srcdir=${1#--srcdir=}
 			  srcdir_given=yes
+			  ;;
+		--top-srcdir=*)
+			  top_srcdir=${1#--top-srcdir=}
+			  top_srcdir_given=yes
+			  ;;
+		--top-builddir=*)
+			  top_builddir=${1#--top-srcdir=}
+			  top_builddir_given=yes
 			  ;;
 		--force-in-tree)
 			  force_in_tree=yes
@@ -37,7 +56,7 @@ while [ 0 -ne $# ]; do
 			  preset=${1#--preset=}
 			  ;;
 		*)
-			echo unrecognised: "$1"
+			echo Warning: unrecognised: "$1", ignored. >&2
 			;;
 	esac
 	shift
@@ -53,11 +72,10 @@ else
 	exit 1
 fi
 #----------------------------------------------------------------
-top_srcdir=$(dirname $0)
 if [ -f $top_srcdir/NEWS ]; then
 	: # OK
 else
-	echo could not find source directory
+	echo could not find top source directory
 	exit 1
 fi
 #----------------------------------------------------------------
@@ -67,12 +85,36 @@ elif [ -f $srcdir/NEWS ]; then
 	echo \* > .gitignore
 fi
 #----------------------------------------------------------------
-MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/Make1 | sed 's/^.*= //g')
-SUBDIRS="${MAKE1_SUBDIRS}"
+MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/MakeList | sed 's/^.*= //g')
+SUBDIRS="${MAKE1_SUBDIRS%%\\}"
 #----------------------------------------------------------------
-if [ ! -f $top_srcdir/include/Make2.$preset ]; then
+SUBMODULES=
+if [ x$submodules != xno ]; then
+	for r in $(cd $srcdir; ls */NEWS 2>/dev/null ); do
+		dirname=$(dirname $r)
+		if [ -d ${srcdir}/${dirname} \
+		  -a -f ${srcdir}/${dirname}/MakeList \
+		  -a -x ${srcdir}/${dirname}/configure ]; then
+			SUBMODULES="$SUBMODULES $dirname"
+		else
+			:
+		fi
+	done
+else
+	:
+fi
+if [ "$SUBMODULES" ]; then
+	echo "found submodules (disable with --disable-submodules)"
+	for s in $SUBMODULES; do
+		echo " $s"
+	done
+else
+	:
+fi
+#----------------------------------------------------------------
+if [ ! -f $top_srcdir/include/MakeConf.$preset ]; then
 	echo "invalid preset" >&2
-	echo "can't find $srcdir/include/Make2.$preset" >&2
+	echo "can't find $srcdir/include/MakeConf.$preset" >&2
 	exit 1;
 fi
 #----------------------------------------------------------------
@@ -97,27 +139,28 @@ esac
 sub_makefile() {
 	echo sub_makefile $1
 	echo \# created by $0 do not edit >$1
-	echo \#------------------------------------------------------------------------ >>Make2
+	echo \#------------------------------------------------------------------------ >>MakeConf
 	echo "top_srcdir = $top_srcdir" >> $1
 	echo "srcdir = ${srcdir}" >> $1
 	echo "VPATH = \${srcdir}" >> $1
 	echo "MAKE1_FIX = #" >> $1
-	echo "include \${srcdir}/Make1" >> $1
+	echo "include \${srcdir}/MakeList" >> $1
 	echo "INCLUDE = " >> $1
 	echo "PRESET = default" >> $1
-	echo "include ../Make2" >> $1
-	echo "include $top_srcdir/include/Make3" >> $1
+	echo "include ../MakeConf" >> $1
+	echo "include $top_srcdir/include/MakeBase" >> $1
 	echo "-include \${srcdir}/Make.depend" >> $1
 }
 #------------------------------------------------------------------------
-if [ -f $srcdir/makefile.in ]; then
-	echo \# created by $PWD/$0. do not edit >makefile
-	echo \#------------------------------------------------------------------------ >>makefile
-	echo "srcdir = $srcdir" >> makefile
-	echo "VPATH = \${srcdir}" >> makefile
-	cat $srcdir/makefile.in >> makefile
+if [ -f $srcdir/Makefile.in ]; then
+	echo \# created by $PWD/$0. do not edit >Makefile
+	echo \#------------------------------------------------------------------------ >>Makefile
+	echo "srcdir = $srcdir" >> Makefile
+	echo "VPATH = \${srcdir}" >> Makefile
+	echo "SUBMODULES = ${SUBMODULES}" >> Makefile
+	cat $srcdir/Makefile.in >> Makefile
 else
-	sub_makefile makefile
+	sub_makefile Makefile
 fi
 #------------------------------------------------------------------------
 if [ $out_of_tree = "yes" ]; then
@@ -128,47 +171,30 @@ elif [ -f NEWS ]; then
 	echo "Really configure in-tree?" >&2
    echo "Hit ^C to avoid or wait for 1 minute." >&2
    echo "Bypass this check with --force-in-tree." >&2
-	for i in `seq 60`; do sleep 1; echo -n '.'; done
+	for i in `seq 60`; do sleep 1; echo -n '.' >&2 ; done
 	echo;
 else
 	: # configuring some subdir
 fi
 #------------------------------------------------------------------------
-echo \# created by $PWD/$0. do not edit >Make2
-echo \#------------------------------------------------------------------------ >>Make2
-echo "CXX = c++" >>Make2
-echo "PREFIX = " $prefix >>Make2
-echo "ENV = LD_LIBRARY_PATH=../lib\${LD_LIBRARY_PATH:%=:%}" >>Make2
-echo "LDFLAGS = -L../lib" >>Make2
-echo "GNUCAP_CONF = ../conf/gnucap-conf" >>Make2
+echo \# created by $PWD/$0. do not edit >MakeConf
+echo \#------------------------------------------------------------------------ >>MakeConf
+echo "CXX = c++" >>MakeConf
+echo "PREFIX = " $prefix >>MakeConf
+echo "ENV = LD_LIBRARY_PATH=../lib\${LD_LIBRARY_PATH:%=:%}" >>MakeConf
+echo "LDFLAGS = -L../lib" >>MakeConf
+echo "GNUCAP_CONF = ../conf/gnucap-conf" >>MakeConf
 #------------------------------------------------------------------------
 # "MAKE_CPPFLAGS": not a user variable like CPPFLAGS
-#                  add ${INCLUDE} when overriding in Make2.*
-echo "INCLUDE = -I${top_srcdir_}/include -I../conf" >>Make2
-###//BUG// echo "MAKE_CPPFLAGS = \${INCLUDE}" >>Make2
+#                  add ${INCLUDE} when overriding in MakeConf.*
+echo "INCLUDE = -I${top_srcdir_}/include -I../conf" >>MakeConf
 #------------------------------------------------------------------------
-echo "PRESET = ${preset}" >> Make2
-echo "include ${top_srcdir_}/include/Make2.\${PRESET}" >>Make2
+echo "PRESET = ${preset}" >> MakeConf
+echo "include ${top_srcdir_}/include/MakeConf.\${PRESET}" >>MakeConf
 #------------------------------------------------------------------------
 sub_configure() {
-	echo sub_configure $1
 	m="$1/Makefile"
-	if [ "$top_srcdir_" = ".." ]; then
-		srcdir_=".";
-	else
-		srcdir_="$top_srcdir_/$1";
-	fi
-	echo '#stub. need to run configure first' > $m
-	echo "srcdir = $srcdir_" >> $m
-	echo "prefix = $prefix" >> $m
-	echo '%: ; ${srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE} $@' >> $m
-	echo 'all: ; ${srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE}' >> $m
-	echo '.PHONY: all' >> $m
-}
-#------------------------------------------------------------------------
-subdir_configure() {
-	echo subdir_configure $1
-	m="$1/Makefile"
+	echo creating $m
 	if [ "$top_srcdir_" = ".." ]; then
 		srcdir_=".";
 	else
@@ -176,20 +202,31 @@ subdir_configure() {
 	fi
 	echo '#stub. need to run configure first' > $m
 	echo "top_srcdir = $top_srcdir_" >> $m
+	echo "top_builddir = .." >> $m
 	echo "srcdir = $srcdir_" >> $m
 	echo "prefix = $prefix" >> $m
-	echo '%: ; ${top_srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE} $@' >> $m
-	echo 'all: ; ${top_srcdir}/configure --prefix="${prefix}" --srcdir="${srcdir}" && ${MAKE}' >> $m
+	echo 'CONFIGURE_ARGS = --prefix="${prefix}" --srcdir="${srcdir}" \\' >> $m
+	echo '                 --top-builddir="${top_builddir}" --top-srcdir="${top_srcdir}"' >> $m
+
+	if [ -f $srcdir/$i/configure ]; then
+		echo 'CONFIGURE = "${srcdir}/configure"' >> $m
+	else
+		echo 'CONFIGURE = "${top_srcdir}/configure"' >> $m
+	fi
+
+	echo '%: ; ${CONFIGURE} ${CONFIGURE_ARGS} && ${MAKE} $@' >> $m
+	echo 'all: ; ${CONFIGURE} ${CONFIGURE_ARGS} && ${MAKE}' >> $m
 	echo '.PHONY: all' >> $m
 }
 #------------------------------------------------------------------------
 for i in ${SUBDIRS}; do
 	mkdir -p $i;
-	if [ -f $srcdir/$i/configure ]; then
-		sub_configure $i;
-	else
-		subdir_configure $i;
-	fi
+	sub_configure $i
+done
+#------------------------------------------------------------------------
+for i in ${SUBMODULES}; do
+	mkdir -p $i;
+	sub_configure $i
 done
 #------------------------------------------------------------------------
 exit 0

@@ -65,16 +65,16 @@ fill_template < $srcdir/gnucap-conf.in > gnucap-conf
 
 chmod +x gnucap-conf
 
-echo \# created by $PWD/$0. do not edit >Make2
-echo \#------------------------------------------------------------------------ >>Make2
-echo "PREFIX = " $prefix >>Make2
-echo "CXX = c++" >>Make2
+echo \# created by $PWD/$0. do not edit >MakeConf
+echo \#------------------------------------------------------------------------ >>MakeConf
+echo "PREFIX = " $prefix >>MakeConf
+echo "CXX = c++" >>MakeConf
 #----------------------------------------------------------------
 echo "srcdir = ${srcdir}" > Makefile
 [ "${srcdir}" = "." ] || echo "VPATH = \${srcdir}" >> Makefile
-echo include ${srcdir}/Make1 >> Makefile
-echo include Make2 >> Makefile
-echo "include ${top_srcdir}/include/Make3" >> Makefile
+echo include ${srcdir}/MakeList >> Makefile
+echo include MakeConf >> Makefile
+echo "include ${top_srcdir}/include/MakeBase" >> Makefile
 #----------------------------------------------------------------
 
 exit 0

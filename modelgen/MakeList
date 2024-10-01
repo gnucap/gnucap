@@ -1,4 +1,4 @@
-#$Id: conf/Make1 $ -*- Makefile -*-
+#$Id: modelgen/MakeList $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -19,22 +19,23 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-all: # nothing
+TARGET_EXE = gnucap-modelgen
 #------------------------------------------------------------------------
-INSTALL_FILES_1 = gnucap-conf
+INSTALL_FILES_1 = $(TARGET_EXE)$(TARGET_EXE_EXT)
 INSTALL_DIR_1 = $(PREFIX)/bin
 #------------------------------------------------------------------------
-# INSTALL_FILES_2 = gnucap.conf
-# INSTALL_DIR_2 = $(PREFIX)/etc
-#------------------------------------------------------------------------
-LIBS =
-INCLUDE = -I. -I../include -I../../include
+LIBS = -lgnucap
+#{MAKE1_FIX}LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
-RAW_SRCS =
+RAW_SRCS = \
+mg_main.cc mg_error.cc mg_in.cc mg_out_h.cc mg_out_dump.cc \
+mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc
 #------------------------------------------------------------------------
-RAW_OTHER = Make1 configure gnucap-conf.in gnucap.conf.in config.h.in
+RAW_HDRS = mg_.h mg_out.h
+#------------------------------------------------------------------------
+RAW_OTHER = MakeList
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------

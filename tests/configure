@@ -36,7 +36,7 @@ fi
 top_srcdir=$srcdir/..
 plugpath=`gnucap-conf --pkglibdir`
 
-echo "include ${srcdir}/Make1" > makefile
+echo "include ${srcdir}/MakeList" > makefile
 cat <<CAT_EOF >>makefile
 #------------------------------------------------------------------------
 # created by $0 do not edit
@@ -53,9 +53,9 @@ VPATH = \${srcdir}
 CAT_EOF
 
 # fill_template??
-cat ${srcdir}/makefile.in >> makefile
+cat ${srcdir}/Makefile.in >> makefile
 echo "include ${srcdir}/Make.test" >> makefile
-echo "include ../Make2" >> makefile
-echo "include ${top_srcdir}/include/Make3" >> makefile
+echo "include ../MakeConf" >> makefile
+echo "include ${top_srcdir}/include/MakeBase" >> makefile
 
 [ -d \=\=out ] || ln -sf ${srcdir}/\=\=out

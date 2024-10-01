@@ -1,4 +1,4 @@
-#$Id: modelgen/Make1 $ -*- Makefile -*-
+#$Id: main/MakeList $ -*- Makefile -*-
 # Copyright (C) 2001 Albert Davis
 # Author: Albert Davis <aldavis@gnu.org>
 #
@@ -19,24 +19,21 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET_EXE = gnucap-modelgen
+TARGET_EXE = gnucap
 #------------------------------------------------------------------------
 INSTALL_FILES_1 = $(TARGET_EXE)$(TARGET_EXE_EXT)
 INSTALL_DIR_1 = $(PREFIX)/bin
 #------------------------------------------------------------------------
-LIBS = -lgnucap
-#{MAKE1_FIX}LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
-INCLUDE = -I. -I../include -I../../include
+# BUG: -L belongs to LDFLAGS.
+LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
-RAW_SRCS = \
-mg_main.cc mg_error.cc mg_in.cc mg_out_h.cc mg_out_dump.cc \
-mg_out_common.cc mg_out_dev.cc mg_out_lib.cc mg_out_model.cc mg_out_root.cc
+RAW_SRCS = main.cc 
 #------------------------------------------------------------------------
-RAW_HDRS = mg_.h mg_out.h
+main.o : ../conf/config.h
 #------------------------------------------------------------------------
-RAW_OTHER = Make1
+RAW_OTHER = MakeList
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
@@ -49,7 +46,7 @@ IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
 #------------------------------------------------------------------------
 GENERATED_SRCS =
 GENERATED_HDRS =
-GENERATED_OTHER = Make.aux
+GENERATED_OTHER =
 GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
@@ -66,7 +63,7 @@ TARGET_DEPENDS = $(OBJS) $(RAW)
 #------------------------------------------------------------------------
 MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
 CLEANFILES = $(MOSTLYCLEANFILES)
-DISTCLEANFILES = $(CLEANFILES)
+DISTCLEANFILES = $(CLEANFILES) config.log makefile Makefile
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
