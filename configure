@@ -6,8 +6,9 @@ date >> config.log
 echo $0 "$@" >> config.log
 
 #-------------  transition
-# stale. make sure to avoid interference
-find . -name makefile -delete
+find . -name makefile -exec false {} + || \
+	 echo "stale (lower case) makefiles. these may interfere."
+find . -name makefile >&2
 
 #-------------  Stuff added to enable --prefix  --------------
 prefix=/usr/local
