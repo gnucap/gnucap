@@ -64,6 +64,10 @@ $ cd build
 $ ../configure
 $ make
 
+The programs will run directly from the build directory given a suitable
+environment. It should be sufficient to set PATH, LD_LIBRARY_PATH and
+GNUCAP_PLUGPATH to the corresponding locations in the build tree.
+
 == Old build system
 
 See INSTALL.old, configure.old etc.
