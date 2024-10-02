@@ -1,7 +1,7 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 202409**-dev
+== 20241002-dev
 
 - quantize time in tr_swp
 - reschedule pruned events

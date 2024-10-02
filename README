@@ -1,16 +1,17 @@
-This directory contains the 20240131 Gnucap Release
+This directory contains the 20241002 Gnucap snapshot
 
 Gnucap is a modular mixed-signal circuit simulator that partially implements
 Verilog-AMS, that aspires to eventually implement the complete language.
 
 The full manual is available as a wiki at http://gnucap.org.
 
-Combined with Modelgen-Verilog, this release concludes the project on
-Verilog-AMS funded through the NGI0 Entrust Fund, a fund established by NLnet
-with financial support from the European Commission's Next Generation Internet
-programme, under the aegis of DG Communications Networks, Content and
-Technology under grant agreement No 101069594. See
+This project is funded through the NGI0 Entrust Fund, a fund established by
+NLnet with financial support from the European Commission's Next Generation
+Internet programme, under the aegis of DG Communications Networks, Content and
+Technology under grant agreement No 101069594.
+
 https://nlnet.nl/project/Gnucap-VerilogAMS/
+https://nlnet.nl/project/Gnucap-MixedSignals/
 
 == Build and Installation
 
