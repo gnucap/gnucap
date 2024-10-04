@@ -50,6 +50,15 @@ void TRANSIENT::do_it(CS& Cmd, CARD_LIST* Scope)
   ::status.tran.stop();
 }
 /*--------------------------------------------------------------------------*/
+void TRANSIENT::finish()
+{
+  assert(_scope);
+  if (_scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
+  _scope->tr_final();
+}
+/*--------------------------------------------------------------------------*/
 std::string TRANSIENT::status()const
 {
   return "transient timesteps: accepted=" + to_string(steps_accepted())

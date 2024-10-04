@@ -392,6 +392,28 @@ CARD_LIST& CARD_LIST::tr_unload()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+/* dc_final: run after a simulation has completed
+ */
+CARD_LIST& CARD_LIST::dc_final()
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    trace_func_comp();
+    (**ci).dc_final();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+/* tr_final: run after a simulation has completed
+ */
+CARD_LIST& CARD_LIST::tr_final()
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    trace_func_comp();
+    (**ci).tr_final();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
 /* ac_iwant_matrix: allocate solution matrix
  */
 CARD_LIST& CARD_LIST::ac_iwant_matrix()
@@ -434,6 +456,17 @@ CARD_LIST& CARD_LIST::ac_load()
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
     (**ci).ac_load();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+/* ac_final: run after a simulation has completed
+ */
+CARD_LIST& CARD_LIST::ac_final()
+{ untested();
+  for (iterator ci=begin(); ci!=end(); ++ci) { untested();
+    trace_func_comp();
+    (**ci).ac_final();
   }
   return *this;
 }

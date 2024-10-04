@@ -61,9 +61,12 @@ protected: // override virtual
   TIME_PAIR tr_review()override	{assert(subckt()); return _time_by = subckt()->tr_review();}
   void	  tr_accept()override	{assert(subckt()); subckt()->tr_accept();}
   void	  tr_unload()override	{assert(subckt()); subckt()->tr_unload();}
+  void	  dc_final()override	{if(subckt()){ subckt()->dc_final();}else{untested();}}
+  void	  tr_final()override	{if(subckt()){ subckt()->tr_final();}else{untested();}}
   void	  ac_begin()override	{assert(subckt()); subckt()->ac_begin();}
   void	  do_ac()override	{assert(subckt()); subckt()->do_ac();}
   void	  ac_load()override	{assert(subckt()); subckt()->ac_load();}
+  void	  ac_final()override	{if(subckt()){untested(); subckt()->ac_final();}else{untested();}}
   double  noise_num(std::string const& n)const override {itested(); assert(subckt()); return subckt()->noise_num(n);}
 };
 /*--------------------------------------------------------------------------*/

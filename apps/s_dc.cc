@@ -216,6 +216,12 @@ DCOP::DCOP()
 /*--------------------------------------------------------------------------*/
 void DCOP::finish(void)
 {
+  assert(_scope);
+  if (_scope == &CARD_LIST::card_list) {
+  }else{untested();
+  }
+  _scope->dc_final();
+
   for (int ii = 0;  ii < _n_sweeps;  ++ii) {
     std::string n = _param_name[ii];
     if (_zap[ii]) {

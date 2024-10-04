@@ -52,6 +52,7 @@ private:
   void	sweep()override;
   void	first();
   bool	next();
+  void	finish()override;
   void	solve();
   void	clear();
   void	setup(CS&)override;
@@ -285,6 +286,15 @@ bool AC::next()
   }else{
     return true;
   }
+}
+/*--------------------------------------------------------------------------*/
+void AC::finish()
+{
+  assert(_scope);
+  if (_scope == &CARD_LIST::card_list) {untested();
+  }else{untested();
+  }
+  _scope->ac_final();
 }
 /*--------------------------------------------------------------------------*/
 static AC p1;

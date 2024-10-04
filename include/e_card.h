@@ -86,12 +86,15 @@ public:	// dc-tran
   virtual TIME_PAIR tr_review();	//{return TIME_PAIR(NEVER,NEVER);}
   virtual void	 tr_accept()		{}
   virtual void	 tr_unload()		{untested();}
+  virtual void	 dc_final()		{}
+  virtual void	 tr_final()		{}
   //--------------------------------------------------------------------
 public:	// ac
   virtual void	 ac_iwant_matrix()	{}
   virtual void	 ac_begin()		{}
   virtual void	 do_ac()		{}
   virtual void	 ac_load()		{}
+  virtual void	 ac_final()		{untested();}
   //--------------------------------------------------------------------
 public:	// state, aux data
   virtual char id_letter()const	{unreachable(); return '\0';}

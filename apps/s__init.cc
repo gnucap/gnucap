@@ -66,8 +66,8 @@ void SIM::command_base(CS& cmd)
     _sim->_lu.unallocate();
     _sim->_aa.unallocate();
   }
-  _sim->unalloc_vectors();
   finish();
+  _sim->unalloc_vectors();
 
   ::status.total.stop();
 }
