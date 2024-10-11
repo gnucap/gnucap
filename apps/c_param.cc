@@ -27,6 +27,51 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
+void parse(CS& cmd, PARAM_LIST* pl)
+{
+  assert(pl);
+  int type = 0;
+  if(cmd >> "real"){ untested();
+    type = 1;
+  }else if(cmd >> "integer"){ untested();
+    type = 2;
+  }else{ untested();
+  }
+  size_t here = cmd.cursor();
+  for (;;) { untested();
+    if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) { untested();
+      break;
+    }else{ untested();
+    }
+    std::string Name;
+    PARAM_INSTANCE par;
+      PARAMETER<double> Value;
+    switch(type){
+    case 2: untested();
+	    incomplete();
+      par = PARAMETER<int>();
+      break;
+    default: untested();
+      par = PARAMETER<double>();
+      cmd >> Name >> '=' >> Value;
+      break;
+    }
+
+    trace1("parsed", par.string());
+    if (cmd.stuck(&here)) {untested();
+      break;
+    }else{ untested();
+    }
+    if (OPT::case_insensitive) { untested();
+      notstd::to_lower(&Name);
+    }else{ untested();
+    }
+    pl->set(Name, Value);
+   // pl->set(Name, par);
+  }
+  cmd.check(bDANGER, "syntax error");
+}
+/*--------------------------------------------------------------------------*/
 class CMD_PARAM : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {
@@ -35,7 +80,7 @@ public:
       pl->print(IO::mstdout, OPT::language);
       IO::mstdout << '\n';
     }else{
-      pl->parse(cmd);
+      parse(cmd, pl);
     }
   }
 } p;

@@ -311,6 +311,9 @@ public:
     incomplete();
     return NOT_VALID;
   }
+  void parse(CS& cmd) { untested();
+    _data.base()->parse(cmd);
+  }
   operator PARAMETER<double> const&()const {
     if(auto d = dynamic_cast<PARAMETER<double> const*>(base())){
       return *d;
@@ -366,6 +369,7 @@ public:
   const PARAMETER<double>& operator[](std::string i)const {return deep_lookup(i);}
   void set(std::string, const double&);
   void set(std::string, const std::string&);
+  void set(std::string, const PARAMETER<double>&);
   void set_try_again(PARAM_LIST const* t) {_try_again = t;}
 
   iterator begin() {return _pl.begin();}

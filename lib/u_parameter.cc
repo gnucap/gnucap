@@ -185,6 +185,20 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
   }
 }
 /*--------------------------------------------------------------------------*/
+void PARAM_LIST::set(std::string Name, const PARAMETER<double>& Value) // INSTANCE
+{
+  if (OPT::case_insensitive) {
+    notstd::to_lower(&Name);
+  }else{
+  }
+  try{
+    _pl[Name] = Value;
+  }catch(Exception_Clash const&){ untested();
+    (_pl[Name] = "") = Value;
+    error(bTRACE, Name + " already set. replacing\n");
+  }
+}
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 bool Get(CS& cmd, const std::string& key, PARAMETER<bool>* val)
 {
