@@ -73,10 +73,10 @@ Token* Token_BINOP::op(const Token* T1, const Token* T2)const
     return nullptr;
   }
   if (b) {
-    return new Token_CONSTANT(b->val_string(), b);
+    return new Token_CONSTANT(b);
   }else{
     // can get here if either T1 or T2 has no data
-    return new Token_CONSTANT("false", nullptr);
+    return new Token_CONSTANT(nullptr);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -99,11 +99,10 @@ Token* Token_UNARY::op(const Token* T1)const
     return nullptr;
   }
   if (b) {
-    return new Token_CONSTANT(b->val_string(), b);
   }else{untested();
     // can get here if T1 has no data
-    return new Token_CONSTANT("false", nullptr);
   }
+  return new Token_CONSTANT(b);
 }
 /*--------------------------------------------------------------------------*/
 static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
@@ -155,8 +154,11 @@ void Token_SYMBOL::stack_op(Expression* E)const
     if (strchr("0123456789.", name()[0])) {
       // a number
       bool is_int = true;
-      for(std::string::const_iterator c = name().begin();
-	  is_int && c != name().end(); ++c){
+      trace2("type", name(), name().size());
+      std::string sn = name();
+      for(std::string::const_iterator c = sn.begin();
+	  is_int && c != sn.end(); ++c){
+	trace3("type", name(), *c, isdigit(*c));
 	is_int = isdigit(*c);
       }
 
@@ -168,7 +170,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	n = new Float(name());
 	trace1("found Float", name());
       }
-      E->push_back(new Token_CONSTANT(name(), n));
+      E->push_back(new Token_CONSTANT(n));
     }else{
       // a name
       PARAM_INSTANCE const& p = (*(E->_scope->params()))[name()];
@@ -184,7 +186,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	Base* n = eval_base(p, e);
 
 	if(n){
-	  E->push_back(new Token_CONSTANT(n->val_string(), n));
+	  E->push_back(new Token_CONSTANT(n));
 	}else{
 	  // keep expression
 	  for (Expression::const_iterator i = e.begin(); i != e.end(); ++i) {
@@ -197,11 +199,9 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	}
 
       }else{
-	// no value - push name (and accept incomplete solution later)
+	// no value - keep name (and accept incomplete solution later)
 	trace1("no value", name());
-	// why string? is it not a SYMBOL anymore?
-	String* s = new String(name());
-	E->push_back(new Token_CONSTANT(name(), s));
+	E->push_back(clone());
       }
     }
   }
@@ -251,7 +251,7 @@ void Token_TERNARY::stack_op(Expression* E)const
   }else{
     Expression* te = new Expression(*true_part(), E->_scope);
     Expression* fe = new Expression(*false_part(), E->_scope);
-    E->push_back(new Token_TERNARY(name(), te, fe));
+    E->push_back(new Token_TERNARY(te, fe));
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -276,15 +276,19 @@ void Token_BINOP::stack_op(Expression* E)const
       }else{
 	// fail - one arg is unknown, push back args
 	if (!strchr("+*", name()[0])) {
+	  trace3("order unchanged0", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
 	}else if (dynamic_cast<const Integer*>(t1->data())) {
+	  trace3("order unchanged1", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
 	}else if (dynamic_cast<const Float*>(t1->data())) {
+	  trace3("order unchanged2", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
 	}else{
+	  trace3("order changed", t2->name(), name(), t1->name());
 	  // change order to enable later optimization
 	  E->push_back(t1);
 	  E->push_back(t2);
@@ -377,11 +381,11 @@ void Token_CONSTANT::stack_op(Expression* E)const
 
   assert(E);
   if(auto f = dynamic_cast<Float const*>(data())){untested();
-    E->push_back(new Token_CONSTANT(name(), new Float(*f)));
+    E->push_back(new Token_CONSTANT(new Float(*f)));
   }else if(auto i = dynamic_cast<Integer const*>(data())){untested();
-    E->push_back(new Token_CONSTANT(name(), new Integer(*i)));
+    E->push_back(new Token_CONSTANT(new Integer(*i)));
   }else if(auto s = dynamic_cast<String const*>(data())){
-    E->push_back(new Token_CONSTANT(name(), new String(*s)));
+    E->push_back(new Token_CONSTANT(new String(*s)));
   }else{ untested();
     assert(false);
     unreachable();
@@ -394,7 +398,7 @@ void Expression::reduce_copy(const Expression& Proto)
   // The Proto._list is the expression in RPN.
   // Attempt to build a reduced _list here, hopefully with only one item.
   for (const_iterator i = Proto.begin(); i != Proto.end(); ++i) {
-    trace2("reducecopy", (**i).name(), (**i).data() );
+    trace3("reducecopy", (**i).name(), (**i).name().size(), (**i).data() );
     trace1("reducecopy", dynamic_cast<const Token_CONSTANT*>(*i));
     trace1("reducecopy", dynamic_cast<const Token_SYMBOL*>(*i));
     (**i).stack_op(this);

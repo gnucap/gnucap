@@ -11,22 +11,22 @@ b=("bbb" + "aaa")
 c= 0.
 "param d={"aaa" == a} "
 "eval d "
-d= 1.
+d=("aaa" == aaa)
 "param e={exp("0.")} "
 "eval e "
 e=exp("0.")
 "param f={exp(1.+"0.")} "
 "eval f "
-f=exp(("0." + 1.))
+f=exp(("0." +  1.))
 "param g={exp("aaa" == 0.)} "
 "eval g "
-g=exp(("aaa" == 0.))
+g=exp(("aaa" ==  0.))
 "param h={exp(0. == "aaa")} "
 "eval h "
-h=exp((0. == "aaa"))
+h=exp(( 0. == "aaa"))
 "param i={exp(a == "aaa")} "
 "eval i "
-i= 2.71828182845905
+i=exp((aaa == "aaa"))
 "param j={exp(0. != 0.)} "
 "eval j "
 j= 1.

@@ -182,7 +182,7 @@ public:
   void parse(CS&) override;
   int32_t value()const			{return _data;}
   operator int32_t()const		{untested();return _data;}
-  std::string val_string()const override{return " "+std::to_string(_data);}
+  std::string val_string()const override{return std::to_string(_data);}
   bool to_bool()const override		{return (_input && _data != 0);}
 
   Base* minus()const override		{return new Integer(-_data);}
@@ -367,7 +367,7 @@ public:
   explicit String(const std::string& s) :_data(s) {}
   explicit String(const String& s) : Base(), _data(s._data) {}
   operator const std::string&()const	{return _data;}
-  std::string val_string()const override		{return _data;}
+  std::string val_string()const override	{return '"' + _data + '"';} // BUG: missing escape
   bool to_bool()const override			{untested();return (_data != "");}
 
   Base* minus()const override			{untested(); return nullptr;}

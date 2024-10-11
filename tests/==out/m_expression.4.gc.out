@@ -9,4 +9,4 @@ a2=test2
 a3=<test2>
 "param a4={exp(<test2>) * 17.} "
 "eval a4 "
-a4=(exp(<test2>) * 17.)
+a4=(exp(<test2>) *  17.)

@@ -77,7 +77,7 @@ void FUNCTION::stack_op(Expression* E) const
     delete(E->back());
     E->pop_back();
     const Float* v = new Float(ret); // BUG. what if integer?
-    E->push_back(new Token_CONSTANT(ret, v));
+    E->push_back(new Token_CONSTANT(v));
   }
 
 }

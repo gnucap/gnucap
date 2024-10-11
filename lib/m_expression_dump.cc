@@ -26,7 +26,12 @@
 /*--------------------------------------------------------------------------*/
 void Token::dump(std::ostream& out)const
 {itested();
-  out << _name << ' ';
+  out << val_string() << ' ';
+}
+/*--------------------------------------------------------------------------*/
+void Token_CONSTANT::dump(std::ostream& out)const
+{itested();
+  out << val_string();
 }
 /*--------------------------------------------------------------------------*/
 void Expression::dump(std::ostream& out)const
@@ -73,7 +78,7 @@ void Expression::dump(std::ostream& out)const
       if (dynamic_cast<const Token_PARLIST*>(*i)){
 	t = new Token_PARLIST(tmp);
       }else{
-	t = new Token_ARRAY(tmp);
+	t = new Token_SYMBOL(tmp);
       }
       locals.push_back(t);
       stack.push_back(t);

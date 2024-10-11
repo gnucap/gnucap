@@ -39,10 +39,10 @@ l= 1.
 m= 2.
 "param n={(xx==0)?1/2:1/3} "
 "eval n "
-n=((xx == 0))? ( 0):( 0)
+n=((xx == 0))? (0):(0)
 "param o={ (QEpercent != 0) ? QEpercent*Lambda/1.2398e5:Responsivity } "
 "eval o "
-o=((QEpercent != 0))? (((Lambda * QEpercent) / 1.2398e5)):(Responsivity)
+o=((QEpercent != 0))? (((QEpercent * Lambda) /  123.98E+3)):(Responsivity)
 "param p={0?1:1+0?2} "
 "eval p "
 eval p 

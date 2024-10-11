@@ -52,30 +52,26 @@ public:
       if(auto f = dynamic_cast<Float const*>(arg0->data())) {
 	double result = std::abs(f->value());
 	v = new Float(result);
-	name = to_string(result);
       }else if(auto i = dynamic_cast<Integer const*>(arg0->data())) {
 	int result = std::abs(i->value());
 	v = new Integer(result);
-	name = to_string(result);
       }else{ untested();
-	if(par){
+	if(par){ untested();
 	  E->push_back(par);
-	}else{
+	}else{ untested();
 	}
 	throw(Exception("wrong type"));
       }
 
       if(!par){ untested();
 	delete arg0;
-	E->push_back(new Token_CONSTANT(name, v));
-	trace2("abs2a", name, v);
+	E->push_back(new Token_CONSTANT(v));
       }else if(dynamic_cast<Token_STOP const*>(E->back())) {
 	delete arg0;
 	delete E->back();
 	E->pop_back();
 	delete par;
-	E->push_back(new Token_CONSTANT(name, v));
-	trace2("abs2b", name, v);
+	E->push_back(new Token_CONSTANT(v));
       }else{
 	// wrong number of args, forget about it.
 	E->push_back(arg0);
@@ -119,10 +115,10 @@ public:
       }else if(auto i = dynamic_cast<Integer const*>(arg0->data())) {
 	result = std::sqrt(i->value());
 	name = to_string(result);
-      }else{
-	if(par){
+      }else{ untested();
+	if(par){ untested();
 	  E->push_back(par);
-	}else{
+	}else{ untested();
 	}
 	throw(Exception("wrong type"));
       }
@@ -132,14 +128,14 @@ public:
 
       if(!par){ untested();
 	delete arg0;
-	E->push_back(new Token_CONSTANT(name, v));
+	E->push_back(new Token_CONSTANT(v));
 	trace2("sqrt2a", name, v);
       }else if(dynamic_cast<Token_STOP const*>(E->back())) {
 	delete arg0;
 	delete E->back();
 	E->pop_back();
 	delete par;
-	E->push_back(new Token_CONSTANT(name, v));
+	E->push_back(new Token_CONSTANT(v));
 	trace2("sqrt2b", name, v);
       }else{
 	// wrong number of args, forget about it.
@@ -148,7 +144,7 @@ public:
 	throw(Exception("wrong argcount"));
       }
 
-    }else if(par) { untested();
+    }else if(par) {
       E->push_back(par);
       throw(Exception("unsuitable paramlist"));
     }else{ untested();
