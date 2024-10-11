@@ -40,9 +40,9 @@ public:
   UNITS units()const override {return uSI;}
 
 public: // override virtual, used by callback
-  std::string arg_front()const override {unreachable();return " ";}
-  std::string arg_mid()const override {unreachable();return "=";}
-  std::string arg_back()const override {unreachable();return "";}
+  std::string arg_front()const override { untested();unreachable();return " ";}
+  std::string arg_mid()const override { untested();unreachable();return "=";}
+  std::string arg_back()const override { untested();unreachable();return "";}
 
 public: // override virtual, called by commands
   void		parse_top_item(CS&, CARD_LIST*)override;

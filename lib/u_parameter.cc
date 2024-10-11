@@ -40,6 +40,7 @@ void PARAM_LIST::parse(CS& cmd)
     std::string Name;
     PARAMETER<double> Value;
     cmd >> Name >> '=' >> Value;
+    trace2("parsed", Value, Value.string());
     if (cmd.stuck(&here)) {untested();
       break;
     }else{
@@ -49,6 +50,7 @@ void PARAM_LIST::parse(CS& cmd)
     }else{
     }
     _pl[Name] = Value;
+    trace4("assigned", _pl[Name].string(), Value.string(), &_pl[Name], _pl[Name].operator->());
   }
   cmd.check(bDANGER, "syntax error");
 }
@@ -113,10 +115,10 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
       if(j == _pl.end()){
 	// spice feature: create parameters from arglist
 	// should not get here in verilog mode
-	_pl[i->first] = i->second.e_val(NOT_INPUT, scope);
+	_pl[i->first].set_fixed(i->second.e_val(NOT_INPUT, scope));
       }else if(j->second.has_hard_value()) {untested();
-	j->second = i->second.e_val(j->second, scope);
-      }else{ untested();
+	j->second.set_fixed(i->second.e_val(j->second, scope));
+      }else{
 	// this is not needed.
       }
     }else{ untested();
@@ -147,6 +149,14 @@ const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
   }
 }
 /*--------------------------------------------------------------------------*/
+double PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope)const {
+  if(auto d = dynamic_cast<PARAMETER<double> const*>(base())){
+    return d->e_val(def, scope);
+  }else{ untested();
+    return NOT_VALID;
+  }
+}
+/*--------------------------------------------------------------------------*/
 void PARAM_LIST::set(std::string Name, const double& Value)
 {
   if (OPT::case_insensitive) {
@@ -154,9 +164,9 @@ void PARAM_LIST::set(std::string Name, const double& Value)
   }else{
   }
   try{
-    _pl[Name] = Value;
+    _pl[Name].set_fixed(Value);
   }catch(Exception_Clash const&){ untested();
-    (_pl[Name] = "") = Value;
+    (_pl[Name] = "").set_fixed(Value);
     error(bTRACE, Name + " already set. replacing\n");
   }
 }

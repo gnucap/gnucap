@@ -85,6 +85,11 @@ io_xopen.o: io_xopen.cc ../include/u_opt.h ../include/mode.h \
  ../include/io_.h ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/constant.h \
  ../include/ap.h
+u_function.o: u_function.cc ../include/u_function.h ../include/e_base.h \
+ ../include/u_attrib.h ../include/ap.h ../include/md.h \
+ ../include/io_trace.h ../include/io_error.h ../include/l_indirect.h \
+ ../include/m_expression.h ../include/m_base.h ../include/l_lib.h \
+ ../include/constant.h
 u_lang.o: u_lang.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/u_attrib.h ../include/ap.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \

@@ -48,14 +48,19 @@ public:
   explicit PARA_BASE(const PARA_BASE& p): _s(p._s) {}
   explicit PARA_BASE(const std::string s): _s(s){untested();}
   virtual ~PARA_BASE(){}
+  virtual PARA_BASE* clone()const = 0;
+  virtual PARA_BASE* pclone(void*)const = 0;
+  virtual bool operator==(const PARA_BASE&) const = 0;
 
 	  bool	has_hard_value()const {return (_s != "");}
   virtual bool	has_good_value()const = 0;
           bool  is_constant()const    {itested(); return (_s == "#");}
   virtual bool  is_given()const       {untested(); return (_s != "");}
+  void	print(OMSTREAM& o)const       { o << string();}
 
   virtual void	parse(CS& cmd) = 0;
   virtual PARA_BASE& operator=(const std::string& s) = 0;
+  virtual std::string string()const = 0;
 };
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -68,6 +73,12 @@ public:
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
   ~PARAMETER() {}
+  PARAMETER* clone()const override{ untested();
+    return new PARAMETER(*this);
+  }
+  PARAMETER* pclone(void* p)const override{
+    return new(p) PARAMETER(*this);
+  }
   
   bool	has_good_value()const override {return (_v != NOT_INPUT);} // BUG // T==bool?
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
@@ -76,7 +87,7 @@ public:
   T	e_val(const T& def, const CARD_LIST* scope)const;
   void	parse(CS& cmd) override;
 
-  std::string string()const {
+  std::string string()const override{
     if (_s == "#") {
       return to_string(_v);
     }else if (_s == "") {
@@ -85,10 +96,10 @@ public:
       return _s;
     }
   }
-  void	print(OMSTREAM& o)const		{o << string();}
   void	set_default(const T& v)		{_v = v; _s = "";}
+  void	set_fixed(const T& v)		{_v = v; _s = "#";}
   void	operator=(const PARAMETER& p)	{_v = p._v; _s = p._s;}
-  void	operator=(const T& v)		{_v = v; _s = "#";}
+  void	operator=(const T& v)		{_v = v; _s = "#";} // !
   //void	operator=(const std::string& s)	{untested();_s = s;}
 
   PARAMETER& operator=(const std::string& s)override {
@@ -106,8 +117,9 @@ public:
     }
     return *this;
   }
-  bool  operator==(const PARAMETER& p)const {
-    return (_v == p._v  &&  _s == p._s);
+  bool  operator==(const PARA_BASE& b)const override {
+    PARAMETER const* p = dynamic_cast<PARAMETER const*>(&b);
+    return (p && _v == p->_v  &&  _s == p->_s);
   }
   bool  operator==(const T& v)const {
     if (v != not_input()) {
@@ -123,7 +135,7 @@ public:
   //  return !(*this == v);
   //}
 protected:
-  virtual T not_input() const {return T(NOT_INPUT);}
+  virtual T not_input() const { return T(NOT_INPUT);}
 private:
   T lookup_solve(const T& def, const CARD_LIST* scope)const;
 };
@@ -205,9 +217,124 @@ void e_val(T* p, const T& def, const CARD_LIST*)
 }
 #endif
 /*--------------------------------------------------------------------------*/
+// envelope for PARAMETER<T>
+class PARAM_INSTANCE {
+private:
+  // needed. PARA_BASE is abstract.
+  class PARA_NONE : public PARA_BASE {
+  public:
+    explicit PARA_NONE() : PARA_BASE() {}
+    explicit PARA_NONE(PARA_NONE const&p) : PARA_BASE(p) {}
+    PARA_BASE* clone()const override { untested();unreachable(); return NULL;}
+    PARA_BASE* pclone(void* p)const override {untested(); return new(p) PARA_NONE(*this);}
+    bool operator==(const PARA_BASE&)const override { untested();unreachable(); return false;}
+    bool has_good_value()const override { untested();unreachable(); return false;}
+    void parse(CS&)override { untested();unreachable();}
+    PARA_NONE& operator=(const std::string&)override { untested();unreachable(); return *this;}
+    std::string string()const override{ untested();unreachable(); return "";}
+  };
+  union{
+    char _mem;
+    PARAMETER<double> _space; // placeholder: biggest allowed type.
+  };
+private:
+  PARA_BASE const* base()const { return reinterpret_cast<PARA_BASE const*>(&_mem);}
+  PARA_BASE* base() { return reinterpret_cast<PARA_BASE*>(&_mem);}
+public:
+  explicit PARAM_INSTANCE() { untested();
+    new(&_mem) PARA_NONE();
+  }
+  /*explicit*/ PARAM_INSTANCE(PARAM_INSTANCE const& p) { untested();
+    p.base()->pclone(&_mem);
+  }
+  ~PARAM_INSTANCE() {
+    base()->~PARA_BASE();
+  }
+
+public:
+  bool operator==(PARAM_INSTANCE const& p)const { untested();
+    return (*base()) == (*p.base());
+  }
+  PARAM_INSTANCE& operator=(PARAM_INSTANCE const&p) {
+    base()->~PARA_BASE();
+    p.base()->pclone(&_mem);
+    return *this;
+  }
+  PARAM_INSTANCE& operator=(std::string const& s) { untested();
+    // BUG. why double?
+    auto p = new(&_mem) PARAMETER<double>();
+    *p = s;
+    return *this;
+  }
+  template<class T>
+  PARAM_INSTANCE& operator=(PARAMETER<T> const& p) {
+    p.pclone(&_mem);
+    return *this;
+  }
+  template<class T>
+  void set_fixed(T v){ untested();
+    if(auto d = dynamic_cast<PARAMETER<T>*>(base())) {
+      d->set_fixed(v);
+    }else{ untested();
+      PARAMETER<T> pp;
+      pp.set_fixed(v);
+      *this = pp;
+    }
+  }
+#if 1
+  PARAM_INSTANCE& operator=(double const& p) = delete;
+#else
+  // not what it appears to be. call set_fixed instead.
+  PARAM_INSTANCE& operator=(double const& p){ untested();
+    if(auto d = dynamic_cast<PARAMETER<double>*>(_p)){ untested();
+      *d = p;
+    }else{ untested();
+      delete _p;
+      PARAMETER<double>* pp = new PARAMETER<double>();
+      *pp = p;
+      _p = pp;
+    }
+    return *this;
+  }
+#endif
+public:
+  std::string const string() const{
+    assert(base());
+    return base()->string();
+  }
+  bool has_hard_value() const{
+    assert(base());
+    return base()->has_hard_value();
+  }
+  double e_val(const double& def, const CARD_LIST* scope)const;
+  operator double() const{ untested();
+    incomplete();
+    return NOT_VALID;
+  }
+  operator PARAMETER<double> const&()const {
+    if(auto d = dynamic_cast<PARAMETER<double> const*>(base())){
+      return *d;
+    }else{ untested();
+      throw Exception("not a double");
+    }
+  }
+  void parse(CS& cmd) {
+    base()->parse(cmd);
+  }
+ //  operator PARAMETER<double> const&()const {
+ //    if(auto d = dynamic_cast<PARAMETER<double> const*>(_data.base())){
+ //      return *d;
+ //    }else{ untested();
+ //      throw Exception("not a double");
+ //    }
+ //  }
+  PARA_BASE const* operator->()const {return base();}
+  PARA_BASE const* operator*()const {return base();}
+}; // PARAM_INSTANCE
+/*--------------------------------------------------------------------------*/
 class INTERFACE PARAM_LIST {
 private:
-  typedef std::map<std::string, PARAMETER<double> > map;
+  typedef std::map<std::string, PARAM_INSTANCE> map;
 public:
   typedef map::const_iterator const_iterator;
   typedef map::iterator iterator;
@@ -243,6 +370,7 @@ public:
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
+  iterator find(std::string const& k) {itested(); return _pl.find(k); }
   const_iterator begin()const {itested(); return _pl.begin();}
   const_iterator end()const {itested(); return _pl.end();}
   const_iterator find(std::string const& k) const {itested(); return _pl.find(k); }
@@ -388,6 +516,13 @@ template <class T>
 inline OMSTREAM& operator<<(OMSTREAM& o, const PARAMETER<T> p)
 {
   p.print(o);
+  return o;
+}
+/*--------------------------------------------------------------------------*/
+inline OMSTREAM& operator<<(OMSTREAM& o, PARAM_INSTANCE const& p)
+{
+  trace3("PI << ", p.string(), p.operator->(), &p);
+  p->print(o);
   return o;
 }
 /*--------------------------------------------------------------------------*/
