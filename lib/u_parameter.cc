@@ -157,9 +157,9 @@ double PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
   }else if(auto i = dynamic_cast<PARAMETER<int> const*>(base())){
     incomplete();
     return i->e_val(def, scope);
-  }else if(auto i = dynamic_cast<PARA_NONE const*>(base())){
+  }else if(auto n = dynamic_cast<PARA_NONE const*>(base())){
     trace2("e_val NONE", base(), base()->string());
-    error(bWARNING, "parameter " +  base()->string() +  " not specified, using default\n");
+    error(bWARNING, "parameter " +  n->string() +  " not specified, using default\n");
     incomplete();
     return def;
   }else{ untested();
