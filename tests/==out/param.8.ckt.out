@@ -1,11 +1,8 @@
 'parameter test 
  a= 1. b= 2. c= 3.
-parameter d not specified, using default
-parameter c+d not specified, using default
-#           v(1)       v(2)       v(3)       iter(0)    r(r3)     
-r3: short circuit
-parameter d not specified, using default
-parameter c+d not specified, using default
+parameter  not specified, using default
+#           v(1)       v(2)       iter(0)   
+parameter  not specified, using default
 r2: short circuit
 r3: short circuit
 r2: short circuit

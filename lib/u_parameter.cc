@@ -126,7 +126,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
+const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
 {
   trace1("PARAM_LIST::deep_lookup", Name);
   if (OPT::case_insensitive) {
@@ -134,26 +134,38 @@ const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
   }else{
   }
   const_iterator i = _pl.find(Name);
-  if (i!=_pl.end() && i->second.has_hard_value()) { untested();
+  if (i!=_pl.end() && i->second.has_hard_value()) {
     // found a value, return it
     return i->second;
-  }else if (_try_again) { untested();
+  }else if (_try_again) {
     // didn't find one, look in enclosing scope
     return _try_again->deep_lookup(Name);
-  }else{ untested();
+  }else{
     // no enclosing scope to look in
     // really didn't find it, give up
     // return garbage value (NOT_INPUT)
-    static PARAMETER<double> garbage;
+    static PARAM_INSTANCE garbage;
     return garbage;
   }
 }
 /*--------------------------------------------------------------------------*/
-double PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope)const {
+double PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
+{
+  // static int recursion=0; and stuff see PARAMETER<T>::e_val
   if(auto d = dynamic_cast<PARAMETER<double> const*>(base())){
     return d->e_val(def, scope);
+  }else if(auto i = dynamic_cast<PARAMETER<int> const*>(base())){
+    incomplete();
+    return i->e_val(def, scope);
+  }else if(auto i = dynamic_cast<PARA_NONE const*>(base())){
+    trace2("e_val NONE", base(), base()->string());
+    error(bWARNING, "parameter " +  base()->string() +  " not specified, using default\n");
+    incomplete();
+    return def;
   }else{ untested();
-    return NOT_VALID;
+    trace2("e_val", base(), base()->string());
+    incomplete();
+    return NOT_INPUT;
   }
 }
 /*--------------------------------------------------------------------------*/

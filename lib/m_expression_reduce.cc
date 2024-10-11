@@ -106,6 +106,31 @@ Token* Token_UNARY::op(const Token* T1)const
   }
 }
 /*--------------------------------------------------------------------------*/
+static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
+{
+
+  if(dynamic_cast<PARAMETER<double> const*>(*p)){
+    Base const* v = e.value();
+    if(auto f = dynamic_cast<Float const*>(v)){
+      return new Float(f->value());
+    }else if(auto i = dynamic_cast<Integer const*>(v)){
+      return new Float(i->value());
+    }else{
+    }
+  }else if(dynamic_cast<PARAMETER<int> const*>(*p)) {
+    Base const* v = e.value();
+    if(auto f = dynamic_cast<Float const*>(v)){ untested();
+      return new Integer(int32_t(f->value()));
+    }else if(auto i = dynamic_cast<Integer const*>(v)){
+      return new Integer(i->value());
+    }else{ untested();
+    }
+  }else if(dynamic_cast<PARAMETER<bool> const*>(*p)) { untested();
+    incomplete();
+  }
+  return nullptr;
+}
+/*--------------------------------------------------------------------------*/
 void Token_SYMBOL::stack_op(Expression* E)const
 {
   assert(E);
@@ -144,23 +169,23 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	trace1("found Float", name());
       }
       E->push_back(new Token_CONSTANT(name(), n));
-    }else{ untested();
+    }else{
       // a name
-      PARAMETER<double> p = (*(E->_scope->params()))[name()];
-      if (p.has_hard_value()) { untested();
+      PARAM_INSTANCE const& p = (*(E->_scope->params()))[name()];
+      // TODO? Token based PARAMETER
+      if (p.has_hard_value()) {
 	trace1("hard value", name());
 	assert((*(E->_scope->params()))[name()].has_hard_value());
 	CS cmd(CS::_STRING, p.string());
 	Expression pp(cmd);
 	Expression e(pp, E->_scope);
-	double v = e.eval();
 
-	if(v!=NOT_INPUT){ untested();
-	  // it's a float constant.
-	  Float* n = new Float(v);
+	Base* n = eval_base(p, e);
+
+	if(n){
 	  E->push_back(new Token_CONSTANT(n->val_string(), n));
-	}else{ untested();
-	  // not a float. keep expression
+	}else{
+	  // keep expression
 	  for (Expression::const_iterator i = e.begin(); i != e.end(); ++i) {
 	    E->push_back(*i);
 	  }
@@ -169,9 +194,11 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	    e.pop_back();
 	  }
 	}
+
       }else{
 	// no value - push name (and accept incomplete solution later)
 	trace1("no value", name());
+	// why string? is it not a SYMBOL anymore?
 	String* s = new String(name());
 	E->push_back(new Token_CONSTANT(name(), s));
       }

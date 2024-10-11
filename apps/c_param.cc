@@ -33,7 +33,7 @@ void parse(CS& cmd, PARAM_LIST* pl)
   int type = 0;
   if(cmd >> "real"){
     type = 1;
-  }else if(cmd >> "integer"){ untested();
+  }else if(cmd >> "integer"){
     type = 2;
   }else{
   }
@@ -46,7 +46,7 @@ void parse(CS& cmd, PARAM_LIST* pl)
     std::string Name;
     PARAM_INSTANCE par;
     switch(type){
-    case 2: untested();
+    case 2:
       par = PARAMETER<int>();
       break;
     default:

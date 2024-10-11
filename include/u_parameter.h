@@ -226,12 +226,12 @@ private:
     explicit PARA_NONE() : PARA_BASE() {}
     explicit PARA_NONE(PARA_NONE const&p) : PARA_BASE(p) {}
     PARA_BASE* clone()const override { untested();unreachable(); return NULL;}
-    PARA_BASE* pclone(void* p)const override {untested(); return new(p) PARA_NONE(*this);}
+    PARA_BASE* pclone(void* p)const override { return new(p) PARA_NONE(*this);}
     bool operator==(const PARA_BASE&)const override { untested();unreachable(); return false;}
     bool has_good_value()const override { untested();unreachable(); return false;}
     void parse(CS&)override { untested();unreachable();}
     PARA_NONE& operator=(const std::string&)override { untested();unreachable(); return *this;}
-    std::string string()const override{ untested();unreachable(); return "";}
+    std::string string()const override{unreachable(); return "";}
   };
   union{
     char _mem;
@@ -314,13 +314,6 @@ public:
   void parse(CS& cmd) {
     base()->parse(cmd);
   }
-  operator PARAMETER<double> const&()const {
-    if(auto d = dynamic_cast<PARAMETER<double> const*>(base())){
-      return *d;
-    }else{ untested();
-      throw Exception("not a double");
-    }
-  }
  //  operator PARAMETER<double> const&()const {
  //    if(auto d = dynamic_cast<PARAMETER<double> const*>(_data.base())){
  //      return *d;
@@ -362,8 +355,8 @@ public:
 
   void	eval_copy(PARAM_LIST const&, const CARD_LIST*);
   bool  operator==(const PARAM_LIST& p)const{return _pl == p._pl;}
-  const PARAMETER<double>& deep_lookup(std::string)const;
-  const PARAMETER<double>& operator[](std::string i)const {return deep_lookup(i);}
+  const PARAM_INSTANCE& deep_lookup(std::string)const;
+  const PARAM_INSTANCE& operator[](std::string i)const {return deep_lookup(i);}
   void set(std::string, const double&);
   void set(std::string, const std::string&);
   void set(std::string, const PARAM_INSTANCE&);
@@ -391,12 +384,15 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
   Expression e(cmd);
   Expression reduced(e, scope);
   T v = T(reduced.eval());
-  trace2("los", _s, v);
   if (v != not_input()) {
+    trace2("los0", _s, v);
     return v;
   }else{
     const PARAM_LIST* pl = scope->params();
-    return T(pl->deep_lookup(_s).e_val(def, scope));
+    trace2("los1", _s, v);
+    T ret(pl->deep_lookup(_s).e_val(def, scope));
+    trace3("los1", _s, v, ret);
+    return ret;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -427,7 +423,7 @@ T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
   if (_s == "") {
     // blank string means to use default value
     _v = def;
-    if (recursion > 1) {
+    if (recursion > 1) { untested();
       error(bWARNING, "parameter " + *first_name + " not specified, using default\n");
       //BUG// needs to show scope
     }else{

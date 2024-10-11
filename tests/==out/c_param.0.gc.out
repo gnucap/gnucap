@@ -1,3 +1,2 @@
 a= 2.
-eval b 
-     ^ ? not a double
+b= 3
