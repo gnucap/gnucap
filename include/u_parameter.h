@@ -241,10 +241,10 @@ private:
   PARA_BASE const* base()const { return reinterpret_cast<PARA_BASE const*>(&_mem);}
   PARA_BASE* base() { return reinterpret_cast<PARA_BASE*>(&_mem);}
 public:
-  explicit PARAM_INSTANCE() { untested();
+  explicit PARAM_INSTANCE() {
     new(&_mem) PARA_NONE();
   }
-  /*explicit*/ PARAM_INSTANCE(PARAM_INSTANCE const& p) { untested();
+  /*explicit*/ PARAM_INSTANCE(PARAM_INSTANCE const& p) {
     p.base()->pclone(&_mem);
   }
   ~PARAM_INSTANCE() {
@@ -252,7 +252,7 @@ public:
   }
 
 public:
-  bool operator==(PARAM_INSTANCE const& p)const { untested();
+  bool operator==(PARAM_INSTANCE const& p)const {
     return (*base()) == (*p.base());
   }
   PARAM_INSTANCE& operator=(PARAM_INSTANCE const&p) {
@@ -260,7 +260,7 @@ public:
     p.base()->pclone(&_mem);
     return *this;
   }
-  PARAM_INSTANCE& operator=(std::string const& s) { untested();
+  PARAM_INSTANCE& operator=(std::string const& s) {
     // BUG. why double?
     auto p = new(&_mem) PARAMETER<double>();
     *p = s;
@@ -271,14 +271,35 @@ public:
     p.pclone(&_mem);
     return *this;
   }
-  template<class T>
-  void set_fixed(T v){ untested();
-    if(auto d = dynamic_cast<PARAMETER<T>*>(base())) {
-      d->set_fixed(v);
-    }else{ untested();
-      PARAMETER<T> pp;
-      pp.set_fixed(v);
-      *this = pp;
+  void set_fixed(Base const* v) {
+    if(auto d = dynamic_cast<PARAMETER<double>*>(base())) {
+      if(auto f = dynamic_cast<Float const*>(v)){
+	d->set_fixed(f->value());
+      }else if(auto i = dynamic_cast<Integer const*>(v)){
+	d->set_fixed(double(i->value()));
+      }else{
+	unreachable();
+      }
+    }else if(auto pi = dynamic_cast<PARAMETER<int>*>(base())) {
+      if(auto f = dynamic_cast<Float const*>(v)){
+	pi->set_fixed(int(f->value()));
+      }else if(auto i = dynamic_cast<Integer const*>(v)){
+	pi->set_fixed(i->value());
+      }else{
+	unreachable();
+      }
+    }else{
+      if(auto f = dynamic_cast<Float const*>(v)){
+	PARAMETER<double> pp;
+	pp.set_fixed(f->value());
+	*this = pp;
+      }else if(auto i = dynamic_cast<Integer const*>(v)){
+	PARAMETER<int> pp;
+	pp.set_fixed(i->value());
+	*this = pp;
+      }else{
+	unreachable();
+      }
     }
   }
 #if 1
@@ -306,7 +327,7 @@ public:
     assert(base());
     return base()->has_hard_value();
   }
-  double e_val(const double& def, const CARD_LIST* scope)const;
+  Base* e_val(const double& def, const CARD_LIST* scope)const;
   operator double() const{ untested();
     incomplete();
     return NOT_VALID;
@@ -378,6 +399,27 @@ inline bool PARAMETER<bool>::lookup_solve(const bool&, const CARD_LIST*)const
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
+T get(Base const*)
+{
+  unreachable();
+  return T();
+}
+template <>
+inline double get<double>(Base const* t)
+{
+  auto f = prechecked_cast<Float const*>(t);
+  assert(f);
+  return f->value();
+}
+template <>
+inline int get<int>(Base const* t)
+{
+  auto f = prechecked_cast<Integer const*>(t);
+  assert(f);
+  return f->value();
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
 inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
 {
   CS cmd(CS::_STRING, _s);
@@ -390,7 +432,7 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
   }else{
     const PARAM_LIST* pl = scope->params();
     trace2("los1", _s, v);
-    T ret(pl->deep_lookup(_s).e_val(def, scope));
+    T ret = get<T>(pl->deep_lookup(_s).e_val(def, scope));
     trace3("los1", _s, v, ret);
     return ret;
   }

@@ -149,23 +149,24 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
   }
 }
 /*--------------------------------------------------------------------------*/
-double PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
+Base* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
 {
   // static int recursion=0; and stuff see PARAMETER<T>::e_val
   if(auto d = dynamic_cast<PARAMETER<double> const*>(base())){
-    return d->e_val(def, scope);
+    double f = d->e_val(def, scope);
+    return new Float(f);
   }else if(auto i = dynamic_cast<PARAMETER<int> const*>(base())){
-    incomplete();
-    return i->e_val(def, scope);
+    int n = i->e_val(int(def), scope);
+    return new Integer(n);
   }else if(auto n = dynamic_cast<PARA_NONE const*>(base())){
     trace2("e_val NONE", base(), base()->string());
     error(bWARNING, "parameter " +  n->string() +  " not specified, using default\n");
     incomplete();
-    return def;
+    return new Float(def);
   }else{ untested();
     trace2("e_val", base(), base()->string());
     incomplete();
-    return NOT_INPUT;
+    return nullptr;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -175,10 +176,11 @@ void PARAM_LIST::set(std::string Name, const double& Value)
     notstd::to_lower(&Name);
   }else{
   }
+  Float v(Value);
   try{
-    _pl[Name].set_fixed(Value);
+    _pl[Name].set_fixed(&v);
   }catch(Exception_Clash const&){ untested();
-    (_pl[Name] = "").set_fixed(Value);
+    (_pl[Name] = "").set_fixed(&v);
     error(bTRACE, Name + " already set. replacing\n");
   }
 }

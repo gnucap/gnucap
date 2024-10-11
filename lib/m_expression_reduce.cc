@@ -173,6 +173,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
       // a name
       PARAM_INSTANCE const& p = (*(E->_scope->params()))[name()];
       // TODO? Token based PARAMETER
+      // p.eval(E->_scope) ... ?
       if (p.has_hard_value()) {
 	trace1("hard value", name());
 	assert((*(E->_scope->params()))[name()].has_hard_value());
