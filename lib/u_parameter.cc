@@ -128,19 +128,19 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 /*--------------------------------------------------------------------------*/
 const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
 {
-  trace1("lookup", Name);
+  trace1("PARAM_LIST::deep_lookup", Name);
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
   }else{
   }
   const_iterator i = _pl.find(Name);
-  if (i!=_pl.end() && i->second.has_hard_value()) {
+  if (i!=_pl.end() && i->second.has_hard_value()) { untested();
     // found a value, return it
     return i->second;
-  }else if (_try_again) {
+  }else if (_try_again) { untested();
     // didn't find one, look in enclosing scope
     return _try_again->deep_lookup(Name);
-  }else{
+  }else{ untested();
     // no enclosing scope to look in
     // really didn't find it, give up
     // return garbage value (NOT_INPUT)
@@ -185,7 +185,7 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
   }
 }
 /*--------------------------------------------------------------------------*/
-void PARAM_LIST::set(std::string Name, const PARAMETER<double>& Value) // INSTANCE
+void PARAM_LIST::set(std::string Name, const PARAM_INSTANCE& Value)
 {
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);

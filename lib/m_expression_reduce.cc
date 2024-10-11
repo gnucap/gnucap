@@ -144,20 +144,22 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	trace1("found Float", name());
       }
       E->push_back(new Token_CONSTANT(name(), n));
-    }else{
+    }else{ untested();
       // a name
       PARAMETER<double> p = (*(E->_scope->params()))[name()];
-      if (p.has_hard_value()) {
+      if (p.has_hard_value()) { untested();
+	trace1("hard value", name());
+	assert((*(E->_scope->params()))[name()].has_hard_value());
 	CS cmd(CS::_STRING, p.string());
 	Expression pp(cmd);
 	Expression e(pp, E->_scope);
 	double v = e.eval();
 
-	if(v!=NOT_INPUT){
+	if(v!=NOT_INPUT){ untested();
 	  // it's a float constant.
 	  Float* n = new Float(v);
 	  E->push_back(new Token_CONSTANT(n->val_string(), n));
-	}else{
+	}else{ untested();
 	  // not a float. keep expression
 	  for (Expression::const_iterator i = e.begin(); i != e.end(); ++i) {
 	    E->push_back(*i);

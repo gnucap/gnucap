@@ -31,43 +31,41 @@ void parse(CS& cmd, PARAM_LIST* pl)
 {
   assert(pl);
   int type = 0;
-  if(cmd >> "real"){ untested();
+  if(cmd >> "real"){
     type = 1;
   }else if(cmd >> "integer"){ untested();
     type = 2;
-  }else{ untested();
+  }else{
   }
   size_t here = cmd.cursor();
-  for (;;) { untested();
-    if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) { untested();
+  for (;;) {
+    if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
       break;
-    }else{ untested();
+    }else{
     }
     std::string Name;
     PARAM_INSTANCE par;
-      PARAMETER<double> Value;
     switch(type){
     case 2: untested();
-	    incomplete();
       par = PARAMETER<int>();
       break;
-    default: untested();
+    default:
       par = PARAMETER<double>();
-      cmd >> Name >> '=' >> Value;
       break;
     }
+
+    cmd >> Name >> '=' >> par;
 
     trace1("parsed", par.string());
     if (cmd.stuck(&here)) {untested();
       break;
-    }else{ untested();
+    }else{
     }
-    if (OPT::case_insensitive) { untested();
+    if (OPT::case_insensitive) {
       notstd::to_lower(&Name);
-    }else{ untested();
+    }else{
     }
-    pl->set(Name, Value);
-   // pl->set(Name, par);
+    pl->set(Name, par);
   }
   cmd.check(bDANGER, "syntax error");
 }

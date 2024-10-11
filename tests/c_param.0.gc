@@ -1,0 +1,7 @@
+verilog
+
+parameter real a = 2;
+parameter integer b = 3;
+
+eval a
+eval b
