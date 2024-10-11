@@ -463,8 +463,8 @@ CARD_LIST& CARD_LIST::ac_load()
 /* ac_final: run after a simulation has completed
  */
 CARD_LIST& CARD_LIST::ac_final()
-{ untested();
-  for (iterator ci=begin(); ci!=end(); ++ci) { untested();
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
     (**ci).ac_final();
   }

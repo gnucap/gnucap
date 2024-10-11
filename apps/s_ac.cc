@@ -90,14 +90,15 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
 
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();	break;
-    case rBATCH:
-    case rINTERACTIVE:
+    case rBATCH:	sweep();	break;
+    case rINTERACTIVE:	itested();sweep();	break;
     case rSCRIPT:	sweep();	break;
     case rPRESET:	/*nothing*/	break;
     }
   }catch (Exception& e) {untested();
     error(bDANGER, e.message() + '\n');
   }
+  finish();
   _sim->_acx.unallocate();
   _sim->unalloc_vectors();
 
@@ -291,7 +292,7 @@ bool AC::next()
 void AC::finish()
 {
   assert(_scope);
-  if (_scope == &CARD_LIST::card_list) {untested();
+  if (_scope == &CARD_LIST::card_list) {
   }else{untested();
   }
   _scope->ac_final();

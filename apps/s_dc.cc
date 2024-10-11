@@ -236,6 +236,7 @@ void DCOP::finish(void)
       std::string previous_value = _param_zap[ii].string();
       CS cmd(CS::_STRING, n + "=" + previous_value);
       pl->set(n, previous_value);
+    }else{
     }
     assert(!_ctrl[ii]);
   }

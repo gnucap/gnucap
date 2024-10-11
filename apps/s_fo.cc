@@ -52,7 +52,7 @@ private:
   void	setup(CS&)override;	/* s_fo_set.cc */
   void	fftallocate();
   void	fftunallocate();
-  void	foout();	/* s_fo_out.cc */
+  void	finish();		/* s_fo_out.cc */
   void	fohead(const PROBE&);
   void	foprint(COMPLEX*);
   void	store_results(double)override; // override virtual
@@ -97,16 +97,15 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
 
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();		break;
-    case rBATCH:	untested();
-      // fall through
-    case rINTERACTIVE:  itested();
-      // fall through
-    case rSCRIPT:	sweep(); foout();	break;
-    case rPRESET:	untested(); /*nothing*/ break;
+    case rBATCH:	untested();sweep();		break;
+    case rINTERACTIVE:  itested();sweep();		break;
+    case rSCRIPT:	sweep();		break;
+    case rPRESET:	untested();/*nothing*/	break;
     }
   }catch (Exception& e) {untested();
     error(bDANGER, e.message() + '\n');
   }
+  finish(); // was foout();
   fftunallocate();
   _sim->unalloc_vectors();
   _sim->_lu.unallocate();
@@ -141,7 +140,7 @@ void FOURIER::store_results(double X)
 /*--------------------------------------------------------------------------*/
 /* foout:  print out the results of the transform
  */
-void FOURIER::foout()
+void FOURIER::finish()
 {
   plclose();
   plclear();

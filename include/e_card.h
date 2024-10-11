@@ -94,7 +94,7 @@ public:	// ac
   virtual void	 ac_begin()		{}
   virtual void	 do_ac()		{}
   virtual void	 ac_load()		{}
-  virtual void	 ac_final()		{untested();}
+  virtual void	 ac_final()		{}
   //--------------------------------------------------------------------
 public:	// state, aux data
   virtual char id_letter()const	{unreachable(); return '\0';}
