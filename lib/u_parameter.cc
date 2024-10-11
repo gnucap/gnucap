@@ -134,7 +134,7 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
   }else{
   }
   const_iterator i = _pl.find(Name);
-  if (i!=_pl.end() && i->second.has_hard_value()) { untested();
+  if (i!=_pl.end() && i->second.has_hard_value()) {
     // found a value, return it
     return i->second;
   }else if (_try_again) { untested();
@@ -155,23 +155,21 @@ Base* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
   if (++recursion > OPT::recursion) { untested();
     recursion = 0;
     throw Exception("recursion too deep");
-  }else{ untested();
+  }else{
   }
   // try {
-  if(auto d = dynamic_cast<PARAMETER<double> const*>(base())){
+  if(auto d = dynamic_cast<PARAMETER<double> const*>(base())) {
     double f = d->e_val_(def, scope, 1);
     --recursion;
     return new Float(f);
-  }else if(auto i = dynamic_cast<PARAMETER<int> const*>(base())){
-    int n = i->e_val_(int(def), scope, 1);
+  }else if(auto i = dynamic_cast<PARAMETER<int> const*>(base())) {
+    int n = i->e_val_(int(def), scope, 1); // BUG: def is a double.
     --recursion;
     return new Integer(n);
-  }else if(auto n = dynamic_cast<PARA_NONE const*>(base())){
+  }else if(dynamic_cast<PARA_NONE const*>(base())) {
     --recursion;
     return nullptr; // "not specified"
-		    // return new Float(NOT_INPUT);
   }else{ untested();
-    trace2("e_val", base(), base()->string());
     incomplete();
     --recursion;
     return nullptr;

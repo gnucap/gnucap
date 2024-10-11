@@ -460,14 +460,7 @@ template <class T>
 T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
 {
   trace2("e_val", def, typeid(T).name());
-  T v;
-  try{ untested();
-    v = e_val_(def,scope,0);
-  }catch(Exception& e){ untested();
-    //BUG// needs to show scope
-    error(bWARNING, "parameter " + _s + " " + e.message() + '\n');
-  }
-
+  T v = e_val_(def, scope, 0);
 
   return v;
 }
@@ -477,6 +470,10 @@ T PARAMETER<T>::e_val_(const T& def, const CARD_LIST* scope, int recurse)const
 {
   trace2("e_val", _v, _s);
   assert(scope);
+
+  if (recurse) {
+  }else{
+  }
 
   if (_s == "") {
     // blank string means to use default value
@@ -488,20 +485,14 @@ T PARAMETER<T>::e_val_(const T& def, const CARD_LIST* scope, int recurse)const
     }
   }else if (_s != "#") {
     // anything else means look up the value
-    if (recurse <= OPT::recursion) {
-      _v = lookup_solve(def, scope);
-      if (_v == NOT_INPUT) {untested();
-	//BUG// needs to show scope
-	//BUG// T==bool?
-	//BUG// it is likely to have a numeric overflow resulting from the bad value
-	error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
-	// throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
-      }else{ untested();
-      }
-    }else{untested();
-      _v = def;
-      unreachable();
-      // throw Exception("recursion too deep");
+    _v = lookup_solve(def, scope);
+    if (_v == NOT_INPUT) {
+      //BUG// needs to show scope
+      //BUG// T==bool?
+      //BUG// it is likely to have a numeric overflow resulting from the bad value
+      error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
+      // throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
+    }else{
     }
   }else{
     // start with # means we have a final value
