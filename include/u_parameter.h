@@ -136,9 +136,11 @@ public:
   //}
 protected:
   virtual T not_input() const { return T(NOT_INPUT);}
+  T	e_val_(const T& def, const CARD_LIST* scope, int recursion=0)const;
+  friend class PARAM_INSTANCE;
 private:
   T lookup_solve(const T& def, const CARD_LIST* scope)const;
-};
+}; // PARAMETER
 /*--------------------------------------------------------------------------*/
 /* non-class interface, so non-paramaters can have same syntax */
 /* It is needed by the model compiler */
@@ -431,8 +433,15 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
     return v;
   }else{
     const PARAM_LIST* pl = scope->params();
-    trace2("los1", _s, v);
-    T ret = get<T>(pl->deep_lookup(_s).e_val(def, scope));
+    trace2("los0", _s, v);
+    Base const* b = pl->deep_lookup(_s).e_val(def, scope);
+    T ret;
+    if(b){
+      ret = get<T>(b);
+    }else{
+      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
+      ret = def;
+    }
     trace3("los1", _s, v, ret);
     return ret;
   }
@@ -450,45 +459,53 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
 template <class T>
 T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
 {
+  trace2("e_val", def, typeid(T).name());
+  T v;
+  try{ untested();
+    v = e_val_(def,scope,0);
+  }catch(Exception& e){ untested();
+    //BUG// needs to show scope
+    error(bWARNING, "parameter " + _s + " " + e.message() + '\n');
+  }
+
+
+  return v;
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+T PARAMETER<T>::e_val_(const T& def, const CARD_LIST* scope, int recurse)const
+{
   trace2("e_val", _v, _s);
   assert(scope);
 
-  static int recursion=0;
-  static const std::string* first_name = nullptr;
-  if (recursion == 0) {
-    first_name = &_s;
-  }else{
-  }
-  assert(first_name);
-  
-  ++recursion;
   if (_s == "") {
     // blank string means to use default value
     _v = def;
-    if (recursion > 1) { untested();
-      error(bWARNING, "parameter " + *first_name + " not specified, using default\n");
-      //BUG// needs to show scope
+    if (recurse) { untested();
+      // reachable?
+      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
     }else{
     }
   }else if (_s != "#") {
     // anything else means look up the value
-    if (recursion <= OPT::recursion) {
+    if (recurse <= OPT::recursion) {
       _v = lookup_solve(def, scope);
-      if (_v == NOT_INPUT) {
-	error(bDANGER, "parameter " + *first_name + " value is \"NOT_INPUT\"\n");
-	//BUG// not reachable if T==bool?
+      if (_v == NOT_INPUT) {untested();
 	//BUG// needs to show scope
+	//BUG// T==bool?
 	//BUG// it is likely to have a numeric overflow resulting from the bad value
-      }else{
+	error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
+	// throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
+      }else{ untested();
       }
-    }else{itested();
+    }else{untested();
       _v = def;
-      error(bDANGER, "parameter " + *first_name + " recursion too deep\n");
+      unreachable();
+      // throw Exception("recursion too deep");
     }
   }else{
     // start with # means we have a final value
   }
-  --recursion;
   return _v;
 }
 /*--------------------------------------------------------------------------*/

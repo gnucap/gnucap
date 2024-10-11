@@ -134,10 +134,10 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
   }else{
   }
   const_iterator i = _pl.find(Name);
-  if (i!=_pl.end() && i->second.has_hard_value()) {
+  if (i!=_pl.end() && i->second.has_hard_value()) { untested();
     // found a value, return it
     return i->second;
-  }else if (_try_again) {
+  }else if (_try_again) { untested();
     // didn't find one, look in enclosing scope
     return _try_again->deep_lookup(Name);
   }else{
@@ -151,23 +151,35 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
 /*--------------------------------------------------------------------------*/
 Base* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
 {
-  // static int recursion=0; and stuff see PARAMETER<T>::e_val
+  static int recursion;
+  if (++recursion > OPT::recursion) { untested();
+    recursion = 0;
+    throw Exception("recursion too deep");
+  }else{ untested();
+  }
+  // try {
   if(auto d = dynamic_cast<PARAMETER<double> const*>(base())){
-    double f = d->e_val(def, scope);
+    double f = d->e_val_(def, scope, 1);
+    --recursion;
     return new Float(f);
   }else if(auto i = dynamic_cast<PARAMETER<int> const*>(base())){
-    int n = i->e_val(int(def), scope);
+    int n = i->e_val_(int(def), scope, 1);
+    --recursion;
     return new Integer(n);
   }else if(auto n = dynamic_cast<PARA_NONE const*>(base())){
-    trace2("e_val NONE", base(), base()->string());
-    error(bWARNING, "parameter " +  n->string() +  " not specified, using default\n");
-    incomplete();
-    return new Float(def);
+    --recursion;
+    return nullptr; // "not specified"
+		    // return new Float(NOT_INPUT);
   }else{ untested();
     trace2("e_val", base(), base()->string());
     incomplete();
+    --recursion;
     return nullptr;
   }
+  // }catch(Exception const& e){
+  //   unreachable();
+  //   return nullptr;
+  // }
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::set(std::string Name, const double& Value)

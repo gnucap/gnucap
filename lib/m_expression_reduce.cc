@@ -106,15 +106,15 @@ Token* Token_UNARY::op(const Token* T1)const
 }
 /*--------------------------------------------------------------------------*/
 static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
-{
-
-  if(dynamic_cast<PARAMETER<double> const*>(*p)){
+{ untested();
+  if(dynamic_cast<PARAMETER<double> const*>(*p)){ untested();
     Base const* v = e.value();
-    if(auto f = dynamic_cast<Float const*>(v)){
+    if(auto f = dynamic_cast<Float const*>(v)){ untested();
       return new Float(f->value());
-    }else if(auto i = dynamic_cast<Integer const*>(v)){
+    }else if(auto i = dynamic_cast<Integer const*>(v)){ untested();
       return new Float(i->value());
-    }else{
+    }else{ untested();
+      trace1("name lost?", p.string());
     }
   }else if(dynamic_cast<PARAMETER<int> const*>(*p)) {
     Base const* v = e.value();
@@ -131,7 +131,7 @@ static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
 }
 /*--------------------------------------------------------------------------*/
 void Token_SYMBOL::stack_op(Expression* E)const
-{
+{ untested();
   assert(E);
   // replace single token with its value
   if (!E->is_empty() && dynamic_cast<const Token_PARLIST*>(E->back())) {
@@ -171,23 +171,26 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	trace1("found Float", name());
       }
       E->push_back(new Token_CONSTANT(n));
-    }else{
+    }else{ untested();
       // a name
-      PARAM_INSTANCE const& p = (*(E->_scope->params()))[name()];
+      PARAM_INSTANCE p = (*(E->_scope->params()))[name()];
+      assert(name().size());
       // TODO? Token based PARAMETER
       // p.eval(E->_scope) ... ?
-      if (p.has_hard_value()) {
+      if (p.has_hard_value()) { untested();
 	trace1("hard value", name());
 	assert((*(E->_scope->params()))[name()].has_hard_value());
 	CS cmd(CS::_STRING, p.string());
 	Expression pp(cmd);
 	Expression e(pp, E->_scope);
 
+	trace1("eval_base", name());
 	Base* n = eval_base(p, e);
+	trace1("/eval_base", name());
 
-	if(n){
+	if(n){ untested();
 	  E->push_back(new Token_CONSTANT(n));
-	}else{
+	}else{ untested();
 	  // keep expression
 	  for (Expression::const_iterator i = e.begin(); i != e.end(); ++i) {
 	    E->push_back(*i);
@@ -198,7 +201,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	  }
 	}
 
-      }else{
+      }else{ untested();
 	// no value - keep name (and accept incomplete solution later)
 	trace1("no value", name());
 	E->push_back(clone());

@@ -16,7 +16,7 @@ capacitor #(.c(a3)) r1 (.p(1),.n(0));
 capacitor #(.c(<aaa>)) r1 (.p(1),.n(0));
 capacitor #()  <test> + 4  (.p(0),.n(0));
 "dc "
-parameter  not specified, using default
-parameter  not specified, using default
+parameter <test> not specified, using default
+parameter <aaa> not specified, using default
 #          
  0.        
