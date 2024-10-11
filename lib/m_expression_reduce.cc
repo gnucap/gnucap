@@ -116,12 +116,12 @@ static std::string call_function(FUNCTION const* F, Expression const* E)
 
   std::string arg;
   std::string comma = "";
-  bool all_float = true;
+  bool all_num = true;
   while (!dynamic_cast<const Token_STOP*>(*input)) {
-    Float const* f = dynamic_cast<Float const*>((*input)->data());
-    all_float = f;
-    if(!all_float){
-      trace1("not float", (*input)->name());
+    all_num = dynamic_cast<Float const*>((*input)->data())
+            ||dynamic_cast<Integer const*>((*input)->data());
+    if(!all_num){
+      trace1("not numerical", (*input)->name());
       break;
     }else{
       assert(dynamic_cast<Token_CONSTANT const*>(*input));
@@ -133,7 +133,7 @@ static std::string call_function(FUNCTION const* F, Expression const* E)
     --input;
   }
 
-  if(all_float){
+  if(all_num){
     // function call as usual
     CS cmd(CS::_STRING, arg);
     return F->eval(cmd, E->_scope);
@@ -162,7 +162,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	}
 	delete(E->back());
 	E->pop_back();
-	const Float* v = new Float(result);
+	const Float* v = new Float(result); // BUG. what if integer?
 	E->push_back(new Token_CONSTANT(result, v));
       }
     }else{
@@ -175,8 +175,20 @@ void Token_SYMBOL::stack_op(Expression* E)const
     // has no parameters (scalar)
     if (strchr("0123456789.", name()[0])) {
       // a number
-      Float* n = new Float(name());
-      trace1("found number", name());
+      bool is_int = true;
+      for(std::string::const_iterator c = name().begin();
+	  is_int && c != name().end(); ++c){
+	is_int = isdigit(*c);
+      }
+
+      Base* n;
+      if(is_int) {
+	n = new Integer(name());
+	trace1("found Integer", name());
+      }else{
+	n = new Float(name());
+	trace1("found Float", name());
+      }
       E->push_back(new Token_CONSTANT(name(), n));
     }else{
       // a name
@@ -203,6 +215,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	}
       }else{
 	// no value - push name (and accept incomplete solution later)
+	trace1("no value", name());
 	String* s = new String(name());
 	E->push_back(new Token_CONSTANT(name(), s));
       }
@@ -225,15 +238,16 @@ void Token_TERNARY::stack_op(Expression* E)const
   Token const* t = E->back();
   auto constant = dynamic_cast<Token_CONSTANT const*>(t);
 
-  bool is_float = false;
+  bool is_num = false;
   if(constant){
-    is_float = dynamic_cast<Float const*>(constant->data());
+    is_num = dynamic_cast<Float const*>(constant->data())
+           ||dynamic_cast<Integer const*>(constant->data());
   }else{
   }
 
   assert(true_part());
   assert(false_part());
-  if (is_float) {
+  if (is_num) {
     assert(constant->data());
     bool select = constant->data()->to_bool();
     delete t;
@@ -277,13 +291,19 @@ void Token_BINOP::stack_op(Expression* E)const
 	delete t1;
       }else{
 	// fail - one arg is unknown, push back args
-	if (strchr("+*", name()[0]) && !dynamic_cast<const Float*>(t1->data())) {
+	if (!strchr("+*", name()[0])) {
+	  E->push_back(t2);
+	  E->push_back(t1);
+	}else if (dynamic_cast<const Integer*>(t1->data())) {
+	  E->push_back(t2);
+	  E->push_back(t1);
+	}else if (dynamic_cast<const Float*>(t1->data())) {
+	  E->push_back(t2);
+	  E->push_back(t1);
+	}else{
 	  // change order to enable later optimization
 	  E->push_back(t1);
 	  E->push_back(t2);
-	}else{
-	  E->push_back(t2);
-	  E->push_back(t1);
 	}
 	E->push_back(clone()); //op
 	delete t;
@@ -372,8 +392,10 @@ void Token_CONSTANT::stack_op(Expression* E)const
   trace2("stackop constant", name(), dynamic_cast<Float const*>(data()));
 
   assert(E);
-  if(auto f = dynamic_cast<Float const*>(data())){itested();
+  if(auto f = dynamic_cast<Float const*>(data())){untested();
     E->push_back(new Token_CONSTANT(name(), new Float(*f)));
+  }else if(auto i = dynamic_cast<Integer const*>(data())){untested();
+    E->push_back(new Token_CONSTANT(name(), new Integer(*i)));
   }else if(auto s = dynamic_cast<String const*>(data())){
     E->push_back(new Token_CONSTANT(name(), new String(*s)));
   }else{ untested();

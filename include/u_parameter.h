@@ -262,6 +262,7 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
   Expression e(cmd);
   Expression reduced(e, scope);
   T v = T(reduced.eval());
+  trace2("los", _s, v);
   if (v != not_input()) {
     return v;
   }else{
@@ -282,6 +283,7 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
 template <class T>
 T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
 {
+  trace2("e_val", _v, _s);
   assert(scope);
 
   static int recursion=0;

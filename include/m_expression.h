@@ -194,8 +194,13 @@ public:
 public: // other
   bool as_bool()const {untested();return (!is_empty() && back()->data());}
   double eval()const {
-    const Float* f = dynamic_cast<const Float*>(back()->data());
-    return ((f && size()==1) ? (f->value()) : (NOT_INPUT));
+    if(auto f = dynamic_cast<const Float*>(back()->data())) {
+      return (size()==1) ? (f->value()) : NOT_INPUT;
+    }else if(auto i = dynamic_cast<const Integer*>(back()->data())) {
+      return (size()==1) ? (i->value()) : NOT_INPUT;
+    }else{
+      return NOT_INPUT; // bug, why double?
+    }
   }
 };
 /*--------------------------------------------------------------------------*/

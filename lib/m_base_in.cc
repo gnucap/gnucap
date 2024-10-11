@@ -23,6 +23,21 @@
 //testing=script,sparse 2009.08.13
 #include "m_base.h"
 /*--------------------------------------------------------------------------*/
+void Integer::parse(CS& File)
+{
+  if (File >> "NA") { untested();
+    _input = false;
+  }else{
+    size_t here = File.cursor();
+    File >> _data;
+    if (File.stuck(&here)) {untested();
+      _input = false;
+    }else{
+      _input = true;
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
 void Float::parse(CS& File)
 {
   if (File >> "NA") {

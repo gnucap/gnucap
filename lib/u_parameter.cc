@@ -126,6 +126,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 /*--------------------------------------------------------------------------*/
 const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
 {
+  trace1("lookup", Name);
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
   }else{
