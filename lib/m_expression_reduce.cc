@@ -106,42 +106,6 @@ Token* Token_UNARY::op(const Token* T1)const
   }
 }
 /*--------------------------------------------------------------------------*/
-static std::string call_function(FUNCTION const* F, Expression const* E)
-{
-  assert(!E->is_empty());
-  Expression::const_iterator input = E->end();
-  --input;
-  assert(dynamic_cast<const Token_PARLIST*>(*input));
-  --input;
-
-  std::string arg;
-  std::string comma = "";
-  bool all_num = true;
-  while (!dynamic_cast<const Token_STOP*>(*input)) {
-    all_num = dynamic_cast<Float const*>((*input)->data())
-            ||dynamic_cast<Integer const*>((*input)->data());
-    if(!all_num){
-      trace1("not numerical", (*input)->name());
-      break;
-    }else{
-      assert(dynamic_cast<Token_CONSTANT const*>(*input));
-    }
-
-    arg = (*input)->name() + comma + arg;
-    comma = ", ";
-    assert(input != E->begin());
-    --input;
-  }
-
-  if(all_num){
-    // function call as usual
-    CS cmd(CS::_STRING, arg);
-    return F->eval(cmd, E->_scope);
-  }else{
-    return "";
-  }
-}
-/*--------------------------------------------------------------------------*/
 void Token_SYMBOL::stack_op(Expression* E)const
 {
   assert(E);
@@ -150,27 +114,17 @@ void Token_SYMBOL::stack_op(Expression* E)const
     trace1("SYM stackop", name());
     // has parameters (table or function)
     if (FUNCTION* f = function_dispatcher[name()]) {
-      std::string result = call_function(f, E);
-      trace2("callf", result, name());
-      if(result==""){
+      try{
+	f->stack_op(E);
+      }catch (Exception const& e) {
+	// didnt work. put back function token
 	E->push_back(clone());
-      }else{
-	while (!dynamic_cast<const Token_STOP*>(E->back())) {
-	  delete(E->back());
-	  E->pop_back();
-	  assert(!E->is_empty());
-	}
-	delete(E->back());
-	E->pop_back();
-	const Float* v = new Float(result); // BUG. what if integer?
-	E->push_back(new Token_CONSTANT(result, v));
       }
     }else{
       throw Exception_No_Match(name()); //BUG// memory leak
       unreachable();
       E->push_back(clone());
     }
-
   }else{
     // has no parameters (scalar)
     if (strchr("0123456789.", name()[0])) {

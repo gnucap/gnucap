@@ -26,12 +26,18 @@
 #include "e_base.h"
 /*--------------------------------------------------------------------------*/
 class CARD_LIST;
+class Expression;
 /*--------------------------------------------------------------------------*/
 class FUNCTION : public CKT_BASE {
+#ifndef NDEBUG
+  mutable int _which{0}; // catch infinite loop
+#endif
+
   //BUG//needs constructors
   //BUG//need label support
 public:
-  virtual std::string eval(CS&, const CARD_LIST*)const = 0;
+  virtual std::string eval(CS&, const CARD_LIST*)const;
+  virtual void stack_op(Expression*)const;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
