@@ -1,0 +1,18 @@
+verilog
+
+module main(1,2);
+  parameter v
+  vsource #(.dc(v)) v1(2 1)
+endmodule
+
+main #(.v(1)) m1(0 1)
+main #(.v(2)) m2(0 2)
+main #(.v(a)) m2(0 3)
+
+print dc v(nodes)
+param a=1
+dc
+param a=2
+dc
+param a=3
+dc

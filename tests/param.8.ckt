@@ -2,9 +2,10 @@
 v1 1 0 dc a ac b
 r1 1 2 c
 r2 2 0 d
+r3 3 0 {c+d}
 .param a=1 b=2 c=3
 .param
-.print op v(nodes) iter(0)
+.print op v(nodes) iter(0) r(r3)
 .op
 .status notime
 .end
