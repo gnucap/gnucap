@@ -149,7 +149,7 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
   }
 }
 /*--------------------------------------------------------------------------*/
-Base* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
+Base const* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
 {
   static int recursion;
   if (++recursion > OPT::recursion) { untested();
@@ -159,16 +159,16 @@ Base* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
   }
   // try {
   if(auto d = dynamic_cast<PARAMETER<double> const*>(base())) {
-    double f = d->e_val_(def, scope, 1);
+    Base const* f = d->e_val_(def, scope, 1);
     --recursion;
-    return new Float(f);
+    return f;
   }else if(auto i = dynamic_cast<PARAMETER<int> const*>(base())) {
-    int n = i->e_val_(int(def), scope, 1); // BUG: def is a double.
+    Base const* n = i->e_val_(int(def), scope, 1); // BUG: def is a double.
     --recursion;
-    return new Integer(n);
+    return n;
   }else if(dynamic_cast<PARA_NONE const*>(base())) {
     --recursion;
-    return nullptr; // "not specified"
+    return nullptr;
   }else{ untested();
     incomplete();
     --recursion;

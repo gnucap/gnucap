@@ -182,6 +182,7 @@ public:
   void parse(CS&) override;
   int32_t value()const			{return _data;}
   operator int32_t()const		{untested();return _data;}
+  Integer& operator=(Integer const& o) { _data = o._data; return *this; }
   std::string val_string()const override{return std::to_string(_data);}
   bool to_bool()const override		{return (_input && _data != 0);}
 
@@ -270,6 +271,7 @@ public:
   void parse(CS&) override;
   double value()const			{return _data;}
   operator double()const		{untested();return _data;}
+  Float& operator=(Float const& o) { _data = o._data; return *this; }
   std::string val_string()const override{return ftos(_data, 0, 15, ftos_EXP);}
   bool to_bool()const override		{return (_data != 0.);}
 

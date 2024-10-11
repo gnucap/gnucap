@@ -63,10 +63,29 @@ public:
   virtual std::string string()const = 0;
 };
 /*--------------------------------------------------------------------------*/
+// maps PARAMETER<double> PARAMETER<int>
+//   to PARAMETER<Float> PARAMETER<Integer>
+template<class T>
+struct data_type {
+  typedef T type_name;
+};
+template<>
+struct data_type<double> {
+  typedef Float type_name;
+};
+template<>
+struct data_type<int> {
+  typedef Integer type_name;
+};
+template<>
+struct data_type<bool> {
+  typedef Integer type_name;
+};
+/*--------------------------------------------------------------------------*/
 template <class T>
 class PARAMETER : public PARA_BASE {
-private:
-  mutable T _v;
+  typedef typename data_type<T>::type_name type_name;
+  mutable type_name _v;
 public:
   explicit PARAMETER() : PARA_BASE(), _v(not_input()) {}
 	   PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
@@ -84,7 +103,8 @@ public:
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
-  T	e_val(const T& def, const CARD_LIST* scope)const;
+  T e_val(const T& def, const CARD_LIST* scope)const;
+  Base const* value()const {untested(); return &_v;}
   void	parse(CS& cmd) override;
 
   std::string string()const override{
@@ -136,7 +156,7 @@ public:
   //}
 protected:
   virtual T not_input() const { return T(NOT_INPUT);}
-  T	e_val_(const T& def, const CARD_LIST* scope, int recursion=0)const;
+  Base const* e_val_(const T& def, const CARD_LIST* scope, int recursion=0)const;
   friend class PARAM_INSTANCE;
 private:
   T lookup_solve(const T& def, const CARD_LIST* scope)const;
@@ -329,7 +349,8 @@ public:
     assert(base());
     return base()->has_hard_value();
   }
-  Base* e_val(const double& def, const CARD_LIST* scope)const;
+  Base const* e_val(const double& def, const CARD_LIST* scope)const;
+ // Base const* e_val(Base const* def, const CARD_LIST* scope)const;
   operator double() const{ untested();
     incomplete();
     return NOT_VALID;
@@ -460,13 +481,12 @@ template <class T>
 T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
 {
   trace2("e_val", def, typeid(T).name());
-  T v = e_val_(def, scope, 0);
-
-  return v;
+  Base const* t = e_val_(def, scope, 0);
+  return get<T>(t);
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-T PARAMETER<T>::e_val_(const T& def, const CARD_LIST* scope, int recurse)const
+Base const* PARAMETER<T>::e_val_(const T& def, const CARD_LIST* scope, int recurse)const
 {
   trace2("e_val", _v, _s);
   assert(scope);
@@ -497,7 +517,7 @@ T PARAMETER<T>::e_val_(const T& def, const CARD_LIST* scope, int recurse)const
   }else{
     // start with # means we have a final value
   }
-  return _v;
+  return &_v;
 }
 /*--------------------------------------------------------------------------*/
 template <>
