@@ -95,6 +95,18 @@ public:
   explicit vReal(CS& file)		{untested();parse(file);}
   explicit vReal(const std::string& s)	{CS cs(CS::_STRING, s); parse(cs);}
 
+  void dump(std::ostream& o)const override {itested();
+    if (_data >= BIGBIG) {
+      o<<"inf";
+    }else if (_data <= -BIGBIG) {
+      o<<"-inf";
+    // }else if (_data==NOT_INPUT) { untested();
+    //   o<<"NA";
+    }else{ untested();
+      o<<_data;
+    }
+  }
+
   vReal& operator=(vReal const& o) { Float::operator=(o); return *this; }
 
   vReal* assign(const Base*X)   const override { return new vReal(X?X->to_Float():Float());}
