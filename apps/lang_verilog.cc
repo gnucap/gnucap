@@ -495,6 +495,7 @@ public:
     return _value;
   }
   bool has_good_value()const override { untested();unreachable(); return false;}
+  Base const* e_val_(const Base*, const CARD_LIST*, int)const {unreachable(); return nullptr;}
 }param_any;
 /*--------------------------------------------------------------------------*/
 void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)

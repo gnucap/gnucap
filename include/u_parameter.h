@@ -64,38 +64,36 @@ public:
   virtual PARA_BASE& operator=(Base const*) = 0;
   virtual std::string string()const = 0;
 
+  virtual Base const* e_val_(const Base* def, const CARD_LIST* scope, int recursion=0)const = 0;
   virtual Base const* value()const = 0;
 };
 /*--------------------------------------------------------------------------*/
-// maps PARAMETER<double> PARAMETER<int>
-//   to PARAMETER<Float> PARAMETER<Integer>
+// essentially map PARAMETER<double> PARAMETER<int>     PARAMETER<bool>
+//              to PARAMETER<Float>  PARAMETER<Integer> PARAMETER<Integer>
+// for backwards compatibility only
 template<class T>
 struct data_type {
-  typedef T type_name;
- // bool has_good_value(type_name const& v)const { return v != NOT_INPUT; }
+  typedef T value_type;
 };
 template<>
 struct data_type<double> {
-  typedef Float type_name;
- // bool has_good_value(type_name const& v)const { return v != NOT_INPUT; }
+  typedef Float value_type;
 };
 template<>
 struct data_type<int> {
-  typedef Integer type_name;
- // bool has_good_value(type_name const& v)const { return v != NOT_INPUT; }
+  typedef Integer value_type;
 };
 template<>
 struct data_type<bool> {
-  typedef Integer type_name;
- // bool has_good_value(type_name const& v)const { return v != NOT_INPUT; }
+  typedef Integer value_type;
 };
 /*--------------------------------------------------------------------------*/
 template <class T>
 class PARAMETER : public PARA_BASE {
-  typedef typename data_type<T>::type_name type_name;
-  mutable type_name _v;
+  typedef typename data_type<T>::value_type value_type;
+  mutable value_type _v;
 public:
-  explicit PARAMETER() : PARA_BASE(), _v(type_name().not_input()) {}
+  explicit PARAMETER() : PARA_BASE(), _v(value_type().not_input()) {}
 	   PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
@@ -111,7 +109,7 @@ public:
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
-  T e_val(const T& def, const CARD_LIST* scope)const;
+  T e_val(const T& def, const CARD_LIST* scope, int recurse=0)const;
   Base const* value()const { return &_v;}
   void	parse(CS& cmd) override;
 
@@ -127,7 +125,7 @@ public:
   void	set_default(const T& v)		{_v = v; _s = "";}
   void	set_fixed(const T& v)		{_v = v; _s = "#";}
   PARAMETER& operator=(Base const* v) override {
-    type_name* x = _v.assign(v);
+    value_type* x = _v.assign(v);
     assert(x);
     _v = *x;
     delete x;
@@ -158,10 +156,10 @@ public:
     return (p && _v == p->_v  &&  _s == p->_s);
   }
   bool  operator==(const T& v)const {
-    if (v != type_name().not_input()) {
+    if (v != value_type().not_input()) {
       return _v == v;
     }else{
-      return (_v == type_name().not_input() || !has_hard_value());
+      return (_v == value_type().not_input() || !has_hard_value());
     }
   }
   //bool	operator!=(const PARAMETER& p)const {untested();
@@ -171,8 +169,8 @@ public:
   //  return !(*this == v);
   //}
 protected:
-  virtual type_name not_input()const { return type_name().not_input(); }
-  Base const* e_val_(const T& def, const CARD_LIST* scope, int recursion=0)const;
+  virtual value_type not_input()const { return value_type().not_input(); }
+  Base const* e_val_(const Base* def, const CARD_LIST* scope, int recursion=0)const;
   friend class PARAM_INSTANCE;
 private:
   T lookup_solve(const T& def, const CARD_LIST* scope)const;
@@ -272,6 +270,7 @@ private:
     PARA_NONE& operator=(const Base*)override { untested();unreachable(); return *this;}
     std::string string()const override{unreachable(); return "";}
     Base const* value()const override{return nullptr;}
+    Base const* e_val_(const Base*, const CARD_LIST*, int)const{return nullptr;}
   };
   union{
     char _mem;
@@ -337,11 +336,9 @@ public:
       }else{
 	unreachable();
       }
-    }else if(dynamic_cast<PARA_NONE*>(base())) {
-      incomplete();
+    }else if(dynamic_cast<PARA_BASE*>(base())) {
       *base() = v;
     }else{
-      // TODO, get rid of this //
       *base() = v;
     }
   }
@@ -379,8 +376,7 @@ public:
     assert(base());
     return base()->has_hard_value();
   }
-  Base const* e_val(const double& def, const CARD_LIST* scope)const;
- // Base const* e_val(Base const* def, const CARD_LIST* scope)const;
+  Base const* e_val(Base const* def, const CARD_LIST* scope)const;
   operator double() const{ untested();
     assert(0);
     incomplete();
@@ -498,19 +494,30 @@ inline bool get<bool>(Base const* t)
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
+inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
 {
   CS cmd(CS::_STRING, _s);
   Expression e(cmd);
   Expression reduced(e, scope);
-  T v = T(reduced.eval());
-  if (v != type_name().not_input()) {
+  value_type def(Def);
+
+ // T v = T(reduced.eval());
+  value_type const* v = def.assign(reduced.value());
+  if(v && v->value() == not_input()){
+    delete v;
+    v = nullptr;
+  }else{
+  }
+
+  if (v) {
     trace2("los0a", _s, v);
-    return v;
+    value_type ret = *v;
+    delete v;
+    return ret;
   }else{
     const PARAM_LIST* pl = scope->params();
     trace2("los0b", _s, v);
-    Base const* b = pl->deep_lookup(_s).e_val(def, scope);
+    Base const* b = pl->deep_lookup(_s).e_val(&def, scope);
     T ret;
     if(b){
       ret = get<T>(b);
@@ -533,18 +540,27 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
 #endif
 /*--------------------------------------------------------------------------*/
 template <class T>
-T PARAMETER<T>::e_val(const T& def, const CARD_LIST* scope)const
+T PARAMETER<T>::e_val(const T& Def, const CARD_LIST* scope, int recurse)const
 {
-  trace2("e_val", def, typeid(T).name());
-  Base const* t = e_val_(def, scope, 0);
+  trace2("e_val", Def, typeid(T).name());
+  value_type def = Def;
+  Base const* t = e_val_(&def, scope, recurse);
   return get<T>(t);
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-Base const* PARAMETER<T>::e_val_(const T& def, const CARD_LIST* scope, int recurse)const
+Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int recurse)const
 {
   trace2("e_val", _v, _s);
   assert(scope);
+
+  auto d = dynamic_cast<value_type const*>(Def);
+
+  T def = not_input();
+  if(d){
+    def = *d;
+  }else{
+  }
 
   if (recurse) {
   }else{

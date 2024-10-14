@@ -241,7 +241,8 @@ public:
   explicit Expression(const Expression&, const CARD_LIST*);
 public: // other
   bool as_bool()const {untested();return (!is_empty() && back()->data());}
-  double eval()const {
+  double eval()const { untested();
+    unreachable();
     if(size() == 1){
       if(auto f = dynamic_cast<const Float*>(back()->data())) {
 	return f->value();

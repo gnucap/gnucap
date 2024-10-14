@@ -135,13 +135,13 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 
 	}
 
-	Base const* b = i->second.e_val(NOT_INPUT, scope);
+	Base const* b = i->second.e_val(nullptr, scope);
 	trace1("eval_copy value", typeid(*b).name());
 
 	pi.set_fixed(b);
 
       }else if(j->second.has_hard_value()) {untested();
-	j->second.set_fixed(i->second.e_val(j->second, scope));
+	j->second.set_fixed(i->second.e_val(j->second.value(), scope));
       }else{ untested();
 	// this is not needed.
       }
@@ -173,7 +173,7 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
   }
 }
 /*--------------------------------------------------------------------------*/
-Base const* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) const
+Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
 {
   static int recursion;
   if (++recursion > OPT::recursion) { untested();
@@ -181,34 +181,23 @@ Base const* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) con
     throw Exception("recursion too deep");
   }else{
   }
-  // try {
-  /// TODO ///
-  if(auto d = dynamic_cast<PARAMETER<double> const*>(base())) {
-    Base const* f = d->e_val_(def, scope, 1);
-    --recursion;
-    return f;
-  }else if(auto i = dynamic_cast<PARAMETER<int> const*>(base())) {
-    Base const* n = i->e_val_(int(def), scope, 1); // BUG: def is a double.
-    --recursion;
-    return n;
-  }else if(auto f2 = dynamic_cast<PARAMETER<Float> const*>(base())) {
-    Base const* n = f2->e_val_(def, scope, 1); // BUG: def is a double.
-    --recursion;
-    return n;
-  }else if(auto f3 = dynamic_cast<PARAMETER<Integer> const*>(base())) {
-    Base const* n = f3->e_val_(int(def), scope, 1); // BUG: def is a double.
-    --recursion;
-    return n;
-  }else if(dynamic_cast<PARA_NONE const*>(base())) {
-    --recursion;
-    return nullptr;
+  if(dynamic_cast<PARA_NONE const*>(base())) { untested();
+    assert(!base()->e_val_(def, scope, 1));
   }else{ untested();
-    unreachable();
-    incomplete();
-    assert(0);
-    --recursion;
-    return nullptr;
   }
+
+  // try {
+
+  Base const* ret = nullptr;
+
+  if(base()) {
+    ret = base()->e_val_(def, scope, 1);
+  }else{ untested();
+  }
+
+  --recursion;
+  return ret;
+
   // }catch(Exception const& e){
   //   unreachable();
   //   return nullptr;
