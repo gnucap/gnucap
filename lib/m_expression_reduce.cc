@@ -108,41 +108,7 @@ Token* Token_UNARY::op(const Token* T1)const
 static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
 {
   assert(e._scope);
-  bool verilog_math = e._scope->is_verilog_math();
-  if(dynamic_cast<PARAMETER<double> const*>(*p)){
-    Base const* v = e.value();
-    if(auto r = dynamic_cast<vReal const*>(v)){ untested();
-      return new vReal(r->value());
-    }else if(auto f = dynamic_cast<Float const*>(v)){
-      return new Float(f->value());
-    }else if(auto i = dynamic_cast<vInteger const*>(v)){ untested();
-      return new Float(i->value());
-    }else if(auto ii = dynamic_cast<Integer const*>(v)){ untested();
-      return new Float(ii->value());
-    }else{ untested();
-      assert(0); // for now.
-      incomplete();
-    }
-  }else if(dynamic_cast<PARAMETER<int> const*>(*p)) { untested();
-    Base const* v = e.value();
-    if(auto f = dynamic_cast<Float const*>(v)){ untested();
-      if(verilog_math) {
-	return new vInteger(int32_t(f->value()));
-      }else{
-	return new Integer(int32_t(f->value()));
-      }
-    }else if(auto i = dynamic_cast<vInteger const*>(v)){ untested();
-      if(verilog_math) {
-	return new vInteger(i->value());
-      }else{
-	return new Integer(i->value());
-      }
-    }else{ untested();
-      incomplete();
-    }
-  }else if(dynamic_cast<PARAMETER<bool> const*>(*p)) { untested();
-    incomplete();
-  }else if(!p->value()){
+  if(!p->value()){
     // parameter without type?
     Base const* v = e.value();
     if(v){
@@ -160,7 +126,7 @@ static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
     }else{
     }
 //       p = *v;
-//     }else{
+//     }else{ untested();
 //       incomplete();
 //       // p = v;
 //     }
@@ -335,11 +301,11 @@ void Token_BINOP::stack_op(Expression* E)const
 	  trace3("order unchanged0", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
-	}else if (dynamic_cast<const Integer*>(t1->data())) {
+	}else if (dynamic_cast<const Integer*>(t1->data())) { untested();
 	  trace3("order unchanged1", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
-	}else if (dynamic_cast<const Float*>(t1->data())) {
+	}else if (dynamic_cast<const Float*>(t1->data())) { untested();
 	  trace3("order unchanged2", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
@@ -365,7 +331,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	E->push_back(t2);
 	delete t3;
 	delete t1;
-      }else{
+      }else{ untested();
 	// fail - push all
 	E->push_back(t3);
 	E->push_back(t2);

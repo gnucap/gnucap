@@ -181,9 +181,9 @@ Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
     throw Exception("recursion too deep");
   }else{
   }
-  if(dynamic_cast<PARA_NONE const*>(base())) { untested();
+  if(dynamic_cast<PARA_NONE const*>(base())) {
     assert(!base()->e_val_(def, scope, 1));
-  }else{ untested();
+  }else{
   }
 
   // try {
