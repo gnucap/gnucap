@@ -49,13 +49,13 @@ public:
   ~AC() {}
 private:
   explicit AC(const AC&):SIM() {unreachable(); incomplete();}
+  void	setup(CS&)override;
   void	sweep()override;
   void	first();
   bool	next();
-  void	finish()override;
   void	solve();
-  void	clear();
-  void	setup(CS&)override;
+  void	final()override		{_scope->ac_final();}
+  void	finish()override	{}
 private:
   PARAMETER<double> _start;	// sweep start frequency
   PARAMETER<double> _stop;	// sweep stop frequency
@@ -90,9 +90,9 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
 
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();	break;
-    case rBATCH:	sweep();	break;
-    case rINTERACTIVE:	itested();sweep();	break;
-    case rSCRIPT:	sweep();	break;
+    case rBATCH:	sweep(); final(); break;
+    case rINTERACTIVE:	itested();sweep(); final(); break;
+    case rSCRIPT:	sweep(); final(); break;
     case rPRESET:	/*nothing*/	break;
     }
   }catch (Exception& e) {untested();
@@ -256,12 +256,16 @@ void AC::sweep()
   head(_start, _stop, "Freq");
   first();
   _scope->ac_begin();
-  do {
-    _sim->_jomega = COMPLEX(0., _sim->_freq * M_TWO_PI);
-    solve();
-    outdata(_sim->_freq, ofPRINT | ofSTORE);
-    _sim->_has_op = s_AC;
-  } while (next());
+  try {
+    do {
+      _sim->_jomega = COMPLEX(0., _sim->_freq * M_TWO_PI);
+      solve();
+      outdata(_sim->_freq, ofPRINT | ofSTORE);
+      _sim->_has_op = s_AC;
+    } while (next());
+  }catch (Exception& e) {untested();
+    error(bDANGER, e.message() + '\n');
+  }
 }
 /*--------------------------------------------------------------------------*/
 void AC::first()
@@ -287,15 +291,6 @@ bool AC::next()
   }else{
     return true;
   }
-}
-/*--------------------------------------------------------------------------*/
-void AC::finish()
-{
-  assert(_scope);
-  if (_scope == &CARD_LIST::card_list) {
-  }else{untested();
-  }
-  _scope->ac_final();
 }
 /*--------------------------------------------------------------------------*/
 static AC p1;

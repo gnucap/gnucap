@@ -55,9 +55,9 @@ void SIM::command_base(CS& cmd)
 
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();	break;
-    case rBATCH:	sweep();	break;
-    case rINTERACTIVE:	itested();sweep();	break;
-    case rSCRIPT:	sweep();	break;
+    case rBATCH:	sweep(); final(); break;
+    case rINTERACTIVE:	itested();sweep(); final(); break;
+    case rSCRIPT:	sweep(); final(); break;
     case rPRESET:	/*nothing*/	break;
     }
   }catch (Exception& e) {
