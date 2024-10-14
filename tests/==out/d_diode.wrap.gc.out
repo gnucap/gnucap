@@ -1,3 +1,27 @@
+parameter N=1 
+          ^ ? missing type assuming real
+parameter Cj0=15f 
+          ^ ? missing type assuming real
+parameter M=0.5 
+          ^ ? missing type assuming real
+parameter Vj=0.7 
+          ^ ? missing type assuming real
+parameter Rs=0. 
+          ^ ? missing type assuming real
+parameter Is=1e-15 
+          ^ ? missing type assuming real
+parameter Area=1. 
+          ^ ? missing type assuming real
+parameter Tt=0. 
+          ^ ? missing type assuming real
+parameter Fc=.5 Cp=0. Isr=0. Nr=2. 
+          ^ ? missing type assuming real
+parameter Ikf=0 Kf=0. Af=1. Ffe=1. Bv=0. Ibv=1m Temp=26.85 Xti=3. 
+          ^ ? missing type assuming real
+parameter Eg=1.11 Tbv=0. Trs=0. Ttt1=0. Ttt2=0. Tm1=0. Tm2=0. 
+          ^ ? missing type assuming real
+parameter Tnom=26.85 
+          ^ ? missing type assuming real
 module spice_diode (1,2);
 paramset mydiode d;
  .tnom=NA( 27.); .is=Is; .rs=rs; .n=N; .tt=tt; .cjo=cjo; .pb=vj; .mj=M; .egap=NA( 1.11); .xti=NA( 3.); .fc=NA( 0.5);

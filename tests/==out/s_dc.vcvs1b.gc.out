@@ -1,3 +1,5 @@
+parameter ee=3; 
+          ^ ? missing type assuming real
 #           v(in)      v(out)    
  0.         1.5        4.5       
 #           v(in)      v(out)    

@@ -137,7 +137,7 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
   if (i!=_pl.end() && i->second.has_hard_value()) {
     // found a value, return it
     return i->second;
-  }else if (_try_again) { untested();
+  }else if (_try_again) {
     // didn't find one, look in enclosing scope
     return _try_again->deep_lookup(Name);
   }else{

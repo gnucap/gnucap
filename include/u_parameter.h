@@ -422,11 +422,21 @@ inline bool PARAMETER<bool>::lookup_solve(const bool&, const CARD_LIST*)const
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-T get(Base const*)
+T get(Base const* t)
 {
-  unreachable();
-  return T();
+  auto f = prechecked_cast<T const*>(t);
+  assert(f);
+  return *f;
 }
+
+// template <>
+// inline Float get<Float>(Base const* t)
+// {
+//   auto f = prechecked_cast<Float const*>(t);
+//   assert(f);
+//   return *f;
+// }
+
 template <>
 inline double get<double>(Base const* t)
 {
@@ -434,8 +444,22 @@ inline double get<double>(Base const* t)
   assert(f);
   return f->value();
 }
+// template <>
+// inline Integer get<Integer>(Base const* t)
+// {
+//   auto f = prechecked_cast<Integer const*>(t);
+//   assert(f);
+//   return *f;
+// }
 template <>
 inline int get<int>(Base const* t)
+{
+  auto f = prechecked_cast<Integer const*>(t);
+  assert(f);
+  return f->value();
+}
+template <>
+inline bool get<bool>(Base const* t)
 {
   auto f = prechecked_cast<Integer const*>(t);
   assert(f);

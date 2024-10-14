@@ -174,14 +174,14 @@ private:
     }
   }
 public:
-  /*implicit*/ Integer(const Integer& p) :Base(), _data(p._data), _input(p._input) { untested();}
+  /*implicit*/ Integer(const Integer& p) :Base(), _data(p._data), _input(p._input) { }
   explicit Integer(CS& file)		{untested();parse(file);}
   explicit Integer(const std::string& s)	{CS cs(CS::_STRING, s); parse(cs);}
   Integer(int32_t x) :_data(x), _input(true) {}
-  Integer() : _input(false) { untested();}
+  Integer() : _input(false) {}
   void parse(CS&) override;
   int32_t value()const			{return _data;}
-  operator int32_t()const		{untested();return _data;}
+  operator int32_t()const		{return _data;}
   Integer& operator=(Integer const& o) { _data = o._data; return *this; }
   std::string val_string()const override{return std::to_string(_data);}
   bool to_bool()const override		{return (_input && _data != 0);}
@@ -264,13 +264,13 @@ private:
     }
   }
 public:
-  /*implicit*/ Float(const Float& p) :Base(), _data(p._data) { untested();}
+  /*implicit*/ Float(const Float& p) :Base(), _data(p._data) {}
   explicit Float(CS& file)		{untested();parse(file);}
   explicit Float(const std::string& s)	{CS cs(CS::_STRING, s); parse(cs);}
   Float(double x=NOT_INPUT) :_data(x) {}
   void parse(CS&) override;
   double value()const			{return _data;}
-  operator double()const		{untested();return _data;}
+  operator double()const		{return _data;}
   Float& operator=(Float const& o) { _data = o._data; return *this; }
   std::string val_string()const override{return ftos(_data, 0, 15, ftos_EXP);}
   bool to_bool()const override		{return (_data != 0.);}

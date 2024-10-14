@@ -1,3 +1,21 @@
+parameter I=1m 
+          ^ ? missing type assuming real
+parameter U=1m 
+          ^ ? missing type assuming real
+parameter Temp 
+          ^ ? missing type assuming real
+parameter R 
+          ^ ? missing type assuming real
+parameter Temp=26.85 
+          ^ ? missing type assuming real
+parameter Tnom=26.85 
+          ^ ? missing type assuming real
+parameter Tc1=0 
+          ^ ? missing type assuming real
+parameter Tc2=0 
+          ^ ? missing type assuming real
+parameter dT={Temp-Tnom} 
+          ^ ? missing type assuming real
 *// qucs style component macros. 
 .subckt Idc ( 1 2 )
 dev ( 2 1 )  isource I

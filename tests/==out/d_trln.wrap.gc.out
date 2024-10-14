@@ -1,3 +1,13 @@
+parameter Z=50 
+          ^ ? missing type assuming real
+parameter L=100m 
+          ^ ? missing type assuming real
+parameter Alpha=1 
+          ^ ? missing type assuming real
+parameter Temp=26.85 
+          ^ ? missing type assuming real
+parameter c0=299792458.0 
+          ^ ? missing type assuming real
 #Freq       v(out1)    v(out2)    vp(out1)   vp(out2)  
  100.K      1.         1.        -0.0075052 -0.0075052 
  1.Meg      1.         1.        -0.075052  -0.075052  

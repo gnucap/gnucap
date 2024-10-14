@@ -111,9 +111,9 @@ static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
     Base const* v = e.value();
     if(auto f = dynamic_cast<Float const*>(v)){
       return new Float(f->value());
-    }else if(auto i = dynamic_cast<Integer const*>(v)){ untested();
+    }else if(auto i = dynamic_cast<Integer const*>(v)){
       return new Float(i->value());
-    }else{ untested();
+    }else{
       incomplete();
     }
   }else if(dynamic_cast<PARAMETER<int> const*>(*p)) {
@@ -189,7 +189,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 
 	if(n){
 	  E->push_back(new Token_CONSTANT(n));
-	}else{ untested();
+	}else{
 	  // keep expression
 	  for (Expression::const_iterator i = e.begin(); i != e.end(); ++i) {
 	    E->push_back(*i);

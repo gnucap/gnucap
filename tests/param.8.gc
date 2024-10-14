@@ -1,8 +1,9 @@
 verilog
 
 module main(1,2);
-  parameter v
-  vsource #(.dc(v)) v1(2 1)
+  parameter real v;
+  parameter integer test = 2;
+  vsource #(.dc(v + test / 3)) v1(2 1)
 endmodule
 
 main #(.v(1)) m1(0 1)

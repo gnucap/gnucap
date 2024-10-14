@@ -45,7 +45,7 @@ void Float::parse(CS& File)
   }else{
     size_t here = File.cursor();
     File >> _data;
-    if (File.stuck(&here)) {untested();
+    if (File.stuck(&here)) {
       _data = NOT_INPUT;
     }else{
     }
