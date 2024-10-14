@@ -320,21 +320,16 @@ public:
     return *this;
   }
   void set_fixed(Base const* v) {
-    if(auto d = dynamic_cast<PARAMETER<double>*>(base())) {
-      if(auto f = dynamic_cast<Float const*>(v)){
-	d->set_fixed(f->value());
-      }else if(auto i = dynamic_cast<Integer const*>(v)){
-	d->set_fixed(double(i->value()));
+    if(dynamic_cast<PARA_NONE*>(base())) {
+      // BUG?
+      if(dynamic_cast<Float const*>(v)){
+	*this = PARAMETER<Float>();
+	*base() = v;
+      }else if(dynamic_cast<Integer const*>(v)){
+	*this = PARAMETER<Integer>();
+	*base() = v;
       }else{
-	unreachable();
-      }
-    }else if(auto pi = dynamic_cast<PARAMETER<int>*>(base())) {
-      if(auto f = dynamic_cast<Float const*>(v)){
-	pi->set_fixed(int(f->value()));
-      }else if(auto i = dynamic_cast<Integer const*>(v)){
-	pi->set_fixed(i->value());
-      }else{
-	unreachable();
+	incomplete();
       }
     }else if(dynamic_cast<PARA_BASE*>(base())) {
       *base() = v;

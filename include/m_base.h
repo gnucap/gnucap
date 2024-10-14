@@ -42,7 +42,7 @@ public:
   virtual void parse(CS&) = 0;
   virtual void dump(std::ostream& o)const = 0;
   virtual ~Base() {}
-  virtual std::string val_string()const		{untested(); return "error";}
+  virtual std::string val_string()const		{ return "error";}
   virtual bool to_bool()const			{ untested();unreachable(); return false;}
 
   virtual Base* minus()const			{untested(); return nullptr;}
@@ -422,7 +422,7 @@ public:
   Base* minus()const override			{untested(); return nullptr;}
   Base* plus()const override			{untested(); return nullptr;}
 
-  String* assign(const Base*X)const override    {untested(); return X?new String(String(X->to_String())) : nullptr;}
+  String* assign(const Base*X)const override    { return X?new String(String(X->to_String())) : nullptr;}
   String* assign(const Integer*)const override  {untested(); return nullptr;}
   String* assign(const Float*)const override    {untested(); return nullptr;}
   String* assign(const String*X)const override  {untested(); return X?new String(*X) : nullptr; }
