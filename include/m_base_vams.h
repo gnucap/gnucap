@@ -97,8 +97,8 @@ public:
 
   vReal& operator=(vReal const& o) { Float::operator=(o); return *this; }
 
-  vReal* assign(const Base*X)   const override { return new vReal(X?X->to_float():Float());}
-  vReal* assign(const Integer*X)const override {untested(); return new vReal(X?X->to_float():Float());}
+  vReal* assign(const Base*X)   const override { return new vReal(X?X->to_Float():Float());}
+  vReal* assign(const Integer*X)const override {untested(); return new vReal(X?X->to_Float():Float());}
   vReal* assign(const Float*X)  const override {untested(); return new vReal(X?(*X):Float());}
   vReal* assign(const String*)  const override {untested(); return nullptr;}
 
@@ -118,9 +118,9 @@ public:
   Float* r_modulo(const Float* X)const override	{ untested();           assert(X); return new Float(fmod(X->_data, _data));}
 };
 /*--------------------------------------------------------------------------*/
-inline vInteger* vInteger::assign(const Base*X)	 const { return new vInteger(X?Integer(X->to_integer()):Integer());}
+inline vInteger* vInteger::assign(const Base*X)	 const { return new vInteger(X?Integer(X->to_Integer()):Integer());}
 inline vInteger* vInteger::assign(const Integer*X)const {untested(); return new vInteger(X?*X:Integer());}
-inline vInteger* vInteger::assign(const Float*X)  const {untested(); return new vInteger(X?Integer(X->to_integer()):Integer());}
+inline vInteger* vInteger::assign(const Float*X)  const {untested(); return new vInteger(X?Integer(X->to_Integer()):Integer());}
 inline vInteger* vInteger::assign(const String*)  const {untested(); return nullptr;}
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -435,22 +435,12 @@ void Token_CONSTANT::stack_op(Expression* E)const
   // unreachable(); no. restoring arg expression??
   trace2("stackop constant", name(), dynamic_cast<Float const*>(data()));
 
-  assert(E);
-  if(auto r = dynamic_cast<vReal const*>(data())){untested();
-    E->push_back(new Token_CONSTANT(new vReal(*r)));
-  }else if(auto vi = dynamic_cast<vInteger const*>(data())){untested();
-    E->push_back(new Token_CONSTANT(new vInteger(*vi)));
-  }else if(auto f = dynamic_cast<Float const*>(data())){untested();
-    assert(0);
-    E->push_back(new Token_CONSTANT(new Float(*f)));
-  }else if(auto i = dynamic_cast<Integer const*>(data())){untested();
-    assert(0);
-    E->push_back(new Token_CONSTANT(new Integer(*i)));
-  }else if(auto s = dynamic_cast<String const*>(data())){
-    E->push_back(new Token_CONSTANT(new String(*s)));
-  }else{ untested();
-    assert(false);
-    unreachable();
+  if(data()){
+    Base* cl = data()->clone();
+    assert(cl);
+    assert(E);
+    E->push_back(new Token_CONSTANT(cl));
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/

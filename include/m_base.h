@@ -48,7 +48,8 @@ public:
   virtual Base* minus()const			{untested(); return nullptr;}
   virtual Base* plus()const			{untested(); return nullptr;}
 
-  virtual Base* assign(const Base*)const	{untested(); return nullptr;}
+  Base* clone()const {untested(); return assign(this); }
+  virtual Base* assign(const Base*)const        {untested(); return nullptr;}
   virtual Base* assign(const Integer*)const	{untested(); return nullptr;}
   virtual Base* assign(const Float*)const	{untested(); return nullptr;}
   virtual Base* assign(const String*)const	{untested(); return nullptr;}
@@ -117,6 +118,7 @@ public:
 public:
   virtual Integer to_Integer()const;
   virtual Float to_Float()const;
+  virtual String to_String()const;
 };
 inline CS&	     operator>>(CS& f, Base& b)	{itested();b.parse(f); return f;}
 inline std::ostream& operator<<(std::ostream& out, const Base& d)
@@ -412,13 +414,18 @@ public:
   explicit String(CS& file) {untested();parse(file);}
   explicit String()	    {}
   explicit String(const std::string& s) :_data(s) { untested();}
-  explicit String(const String& s) : Base(), _data(s._data) {}
+  /*explicit*/ String(const String& s) : Base(), _data(s._data) {}
   operator const std::string&()const	{return _data;}
   std::string val_string()const override	{return '"' + _data + '"';} // BUG: missing escape
   bool to_bool()const override			{untested();return (_data != "");}
 
   Base* minus()const override			{untested(); return nullptr;}
   Base* plus()const override			{untested(); return nullptr;}
+
+  String* assign(const Base*X)const override    {untested(); return X?new String(String(X->to_String())) : nullptr;}
+  String* assign(const Integer*)const override  {untested(); return nullptr;}
+  String* assign(const Float*)const override    {untested(); return nullptr;}
+  String* assign(const String*X)const override  {untested(); return X?new String(*X) : nullptr; }
 
   Base* less(const String* X)const override	{untested();assert(X); return new Float((_data < X->_data)?1.:0.);}
   Base* greater(const String* X)const override	{untested();assert(X); return new Float((_data > X->_data)?1.:0.);}
@@ -479,17 +486,21 @@ public:
   Base* r_divide  (const Integer*)const override { untested();return nullptr;}
   Base* modulo    (const Integer*)const override {untested();return nullptr;}
   Base* r_modulo  (const Integer*)const override {untested();return nullptr;}
+
+  String to_String()const{ return *this; }
 }; // String
 /*--------------------------------------------------------------------------*/
 inline Base* Integer::divide(const Integer* X)  const  { untested(); assert(X); return new Float(double(_data) / double(X->_data));}
 inline Base* Integer::r_divide(const Integer* X)const  { assert(X); return new Float(double(X->_data) / double(_data));}
 /*--------------------------------------------------------------------------*/
 inline Integer Base::to_Integer()const	{untested(); throw Exception("can't convert to integer");}
-inline Float Base::to_float()const  	{ throw Exception("can't convert to float");}
-inline Integer* Integer::assign(const Base*X)   const { return X? new Integer(Integer(X->to_Integer())) : nullptr; }
+inline Float Base::to_Float()const  	{ throw Exception("can't convert to float");}
+inline String Base::to_String()const  	{ throw Exception("can't convert to string");}
+/*--------------------------------------------------------------------------*/
+inline Integer* Integer::assign(const Base*X)   const { return X? new Integer(X->to_Integer()) : nullptr; }
 inline Integer* Integer::assign(const Integer*X)const {untested(); return X? new Integer(*X) : nullptr; }
-inline Integer* Integer::assign(const Float*X)  const {untested(); return X? new Integer(Integer(X->to_Integer())) : nullptr; }
-inline Integer* Integer::assign(const String*)  const {untested(); return nullptr;}
+inline Integer* Integer::assign(const Float*X)  const {untested(); return X? new Integer(X->to_Integer()) : nullptr; }
+inline Integer* Integer::assign(const String*X)   const {untested(); return nullptr; }
 /*--------------------------------------------------------------------------*/
 // a string that contains only alnum and _[]
 class Name_String : public String {
