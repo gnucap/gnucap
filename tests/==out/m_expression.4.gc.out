@@ -1,6 +1,6 @@
 "param a1={<test> + 2} "
 "eval a1 "
-a1=(<test> + 2)
+a1=(2 + <test>)
 "param a2={test2# + stuff} "
 "eval a2 "
 a2=test2

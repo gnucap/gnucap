@@ -1,11 +1,11 @@
 * unknown parameter check 
 x=max(a, 2)
 y=min(a, 2)
-z=(zz + 3)
+z=(3 + zz)
 max(a, 2)=max(a, 2)
 min(a, 2)=min(a, 2)
 min(exp((- 1)), exp((- 2)))= 0.135335283236613
 min(exp(a), exp(b))=min(exp(a), exp(b))
 x= 2.
 max(a, 2)= 2.
-min(exp(a), exp((b + a)))=min( 7.38905609893066, exp((b +  2.)))
+min(exp(a), exp((b + a)))=min( 7.38905609893066, exp(( 2. + b)))

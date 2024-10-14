@@ -285,7 +285,25 @@ void Token_BINOP::stack_op(Expression* E)const
   E->pop_back();
   Token* t2 = E->back();
   E->pop_back();
-  if (dynamic_cast<Token_CONSTANT*>(t1)) {
+  if (dynamic_cast<Token_SYMBOL*>(t1)) {
+    if (dynamic_cast<Token_CONSTANT*>(t2)) {
+      if (strchr("+*", name()[0])) {
+	trace3("order changed0", t2->name(), name(), t1->name());
+	// change order to enable later optimization
+	E->push_back(t1);
+	E->push_back(t2);
+      }else{
+	trace3("order unchanged.", t2->name(), name(), t1->name());
+	E->push_back(t2);
+	E->push_back(t1);
+      }
+    }else{
+      // two symbols.
+      E->push_back(t2);
+      E->push_back(t1);
+    }
+    E->push_back(clone()); //op
+  }else if (dynamic_cast<Token_CONSTANT*>(t1)) {
     if (dynamic_cast<Token_CONSTANT*>(t2)) {
       // have # # + .. becomes result (the usual)
       Token* t = op(t2, t1);
@@ -318,6 +336,22 @@ void Token_BINOP::stack_op(Expression* E)const
 	E->push_back(clone()); //op
 	delete t;
       }
+    }else if (dynamic_cast<Token_SYMBOL*>(t2)) {
+      if (!E->is_empty() && dynamic_cast<const Token_PARLIST*>(E->back())) {
+	trace3("order unchanged3b", t2->name(), name(), t1->name());
+	E->push_back(t2);
+	E->push_back(t1);
+      }else if (strchr("+*", name()[0])) {
+	trace3("order changed2", t2->name(), name(), t1->name());
+	// change order to enable later optimization
+	E->push_back(t1);
+	E->push_back(t2);
+      }else{
+	trace3("order unchanged3", t2->name(), name(), t1->name());
+	E->push_back(t2);
+	E->push_back(t1);
+      }
+      E->push_back(clone()); //op
     }else if (((*t2) == (*this)) && strchr("+*", name()[0])
 	      && dynamic_cast<Token_CONSTANT*>(E->back())) {
       // have # + # + .. becomes result + (previous unknown, try to optimize)
