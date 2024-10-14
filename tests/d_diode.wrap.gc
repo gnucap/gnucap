@@ -1,7 +1,7 @@
 # "Qucsator style" diode
 
-simulator lang=spice
-.options noinsensitive
+* simulator lang=spice
+* .options noinsensitive
 .subckt spice_diode 1 2
  .parameter area=1
  .parameter N=1, cjo=10f
@@ -14,7 +14,7 @@ simulator lang=spice
   D1 1 2 mydiode area=area
 .ends
 
-.verilog
+verilog
 // TODO: this is actually a paramset
 module Diode(1 2);
   parameter N=1

@@ -47,10 +47,10 @@ void parse(CS& cmd, PARAM_LIST* pl)
     PARAM_INSTANCE par;
     switch(type){
     case 2:
-      par = PARAMETER<int>();
+      par = PARAMETER<Integer>();
       break;
     default:
-      par = PARAMETER<double>();
+      par = PARAMETER<Float>();
       break;
     }
 

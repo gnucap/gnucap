@@ -96,7 +96,7 @@ double const MICRON2METER = 1e-6;	/*	microns to meters	 */
 double const BIGBIG    =  (MAXDBL)*(.9247958);	/* unlikely number	  */
 //double const OVERDUE   = -(MAXDBL)*(.9347958);/* unlikely number	  */
 double const NEVER     =  (MAXDBL)*(.9447958);	/* unlikely number	  */
-double const NOT_INPUT = -(MAXDBL)*(.9547658);	/* unlikely number	  */
+double constexpr NOT_INPUT = -(MAXDBL)*(.9547658);	/* unlikely number	  */
 double const NOT_VALID = -(MAXDBL)*(.9647958);	/* unlikely number	  */
 double const LINEAR    = -(MAXDBL)*(.9747958);	/* unlikely number	  */
 

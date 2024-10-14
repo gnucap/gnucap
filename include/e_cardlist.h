@@ -42,6 +42,7 @@ private:
   mutable NODE_MAP* _nm;
   mutable PARAM_LIST* _params;
   std::list<CARD*> _cl;
+  bool _verilog_math{false};
 public:
   // internal types
   typedef std::list<CARD*>::iterator iterator;
@@ -72,6 +73,10 @@ public:
     fat_iterator  end()const		{return fat_iterator(_list, _list->end());}
     void	  insert(CARD* c)	{_list->insert(iter(),c);}
   };
+
+  // influence arithmetics
+  bool is_verilog_math()const {return _verilog_math;}
+  void set_verilog_math(bool m=true) { _verilog_math = m; }
 
   // status queries
   bool is_empty()const			{return _cl.empty();}

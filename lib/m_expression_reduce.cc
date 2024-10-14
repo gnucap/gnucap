@@ -107,27 +107,66 @@ Token* Token_UNARY::op(const Token* T1)const
 /*--------------------------------------------------------------------------*/
 static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
 {
+  assert(e._scope);
+  bool verilog_math = e._scope->is_verilog_math();
   if(dynamic_cast<PARAMETER<double> const*>(*p)){
     Base const* v = e.value();
-    if(auto f = dynamic_cast<Float const*>(v)){
+    if(auto r = dynamic_cast<vReal const*>(v)){ untested();
+      return new vReal(r->value());
+    }else if(auto f = dynamic_cast<Float const*>(v)){
       return new Float(f->value());
-    }else if(auto i = dynamic_cast<Integer const*>(v)){
+    }else if(auto i = dynamic_cast<vInteger const*>(v)){ untested();
       return new Float(i->value());
-    }else{
+    }else if(auto ii = dynamic_cast<Integer const*>(v)){ untested();
+      return new Float(ii->value());
+    }else{ untested();
+      assert(0); // for now.
       incomplete();
     }
-  }else if(dynamic_cast<PARAMETER<int> const*>(*p)) {
+  }else if(dynamic_cast<PARAMETER<int> const*>(*p)) { untested();
     Base const* v = e.value();
     if(auto f = dynamic_cast<Float const*>(v)){ untested();
-      return new Integer(int32_t(f->value()));
-    }else if(auto i = dynamic_cast<Integer const*>(v)){
-      return new Integer(i->value());
+      if(verilog_math) {
+	return new vInteger(int32_t(f->value()));
+      }else{
+	return new Integer(int32_t(f->value()));
+      }
+    }else if(auto i = dynamic_cast<vInteger const*>(v)){ untested();
+      if(verilog_math) {
+	return new vInteger(i->value());
+      }else{
+	return new Integer(i->value());
+      }
     }else{ untested();
       incomplete();
     }
   }else if(dynamic_cast<PARAMETER<bool> const*>(*p)) { untested();
     incomplete();
+  }else if(!p->value()){
+    // parameter without type?
+    Base const* v = e.value();
+    if(v){
+      return v->assign(v);
+    }else{ untested();
+    }
+
+  }else{
+    Base const* v = e.value();
+
+    if(v){
+      assert(p.operator->());
+      assert(p->value());
+      return p->value()->assign(v);
+    }else{
+    }
+//       p = *v;
+//     }else{
+//       incomplete();
+//       // p = v;
+//     }
+//     return p.value();
   }
+
   return nullptr;
 }
 /*--------------------------------------------------------------------------*/
@@ -153,6 +192,8 @@ void Token_SYMBOL::stack_op(Expression* E)const
   }else{
     // has no parameters (scalar)
     if (strchr("0123456789.", name()[0])) {
+      assert(E->_scope);
+      bool verilog_math = E->_scope->is_verilog_math();
       // a number
       bool is_int = true;
       trace2("type", name(), name().size());
@@ -165,16 +206,25 @@ void Token_SYMBOL::stack_op(Expression* E)const
 
       Base* n;
       if(is_int) {
-	n = new Integer(name());
+	if(verilog_math) {
+	  n = new vInteger(name());
+	}else{
+	  n = new Integer(name());
+	}
 	trace1("found Integer", name());
       }else{
-	n = new Float(name());
-	trace1("found Float", name());
+	if(verilog_math) {
+	  n = new vReal(name());
+	}else{
+	  n = new Float(name());
+	}
+	trace2("found Float", name(), typeid(*n).name());
       }
       E->push_back(new Token_CONSTANT(n));
     }else{
       // a name
       PARAM_INSTANCE p = (*(E->_scope->params()))[name()];
+      trace2("PARAM_INSTANCE", name(), typeid(**p).name());
       assert(name().size());
       if (p.has_hard_value()) {
 	trace1("hard value", name());
@@ -185,7 +235,10 @@ void Token_SYMBOL::stack_op(Expression* E)const
 
 	trace1("eval_base", name());
 	Base* n = eval_base(p, e);
-	trace1("/eval_base", name());
+	if(n){
+	  trace2("/eval_base", name(), typeid(*n).name());
+	}else{
+	}
 
 	if(n){
 	  E->push_back(new Token_CONSTANT(n));
@@ -228,6 +281,7 @@ void Token_TERNARY::stack_op(Expression* E)const
   if(constant){
     is_num = dynamic_cast<Float const*>(constant->data())
            ||dynamic_cast<Integer const*>(constant->data());
+    // bool?
   }else{
   }
 
@@ -382,9 +436,15 @@ void Token_CONSTANT::stack_op(Expression* E)const
   trace2("stackop constant", name(), dynamic_cast<Float const*>(data()));
 
   assert(E);
-  if(auto f = dynamic_cast<Float const*>(data())){untested();
+  if(auto r = dynamic_cast<vReal const*>(data())){untested();
+    E->push_back(new Token_CONSTANT(new vReal(*r)));
+  }else if(auto vi = dynamic_cast<vInteger const*>(data())){untested();
+    E->push_back(new Token_CONSTANT(new vInteger(*vi)));
+  }else if(auto f = dynamic_cast<Float const*>(data())){untested();
+    assert(0);
     E->push_back(new Token_CONSTANT(new Float(*f)));
   }else if(auto i = dynamic_cast<Integer const*>(data())){untested();
+    assert(0);
     E->push_back(new Token_CONSTANT(new Integer(*i)));
   }else if(auto s = dynamic_cast<String const*>(data())){
     E->push_back(new Token_CONSTANT(new String(*s)));

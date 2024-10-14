@@ -48,6 +48,8 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
   assert(owner);
   assert(!p || scope);
 
+  set_verilog_math(model->subckt()->is_verilog_math());
+
   attach_params(p, scope);
   shallow_copy(model->subckt());
   set_owner(owner);

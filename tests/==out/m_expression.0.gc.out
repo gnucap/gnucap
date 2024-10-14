@@ -32,11 +32,13 @@ i=exp((aaa == "aaa"))
 j= 1.
 "param k={"aaa bbb"} "
 "eval k "
-k="aaa bbb"
+eval k 
+     ^ ? can't convert to float
 "* //BUG// does not work with spice get_line "
 "param l={"aaa\"bbb"} "
 "eval l "
-l="aaa"
+eval l 
+     ^ ? can't convert to float
 "* //BUG// totally does not work with spice get_line "
 "* param m=exp("aaa\"bbb") "
 "* eval m "
@@ -49,4 +51,5 @@ l="aaa"
               ^ ? end of file in quoted string
 "missing quote
 ^ ? string begins here
-n="missing quote"
+eval n 
+     ^ ? can't convert to float

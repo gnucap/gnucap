@@ -194,7 +194,7 @@ std::string DEV_SUBCKT::port_name(int i)const
   }else if(_parent){untested(); untested();
     // reachable?
     return "";
-  }else{untested();
+  }else{
     return "";
   }
 }

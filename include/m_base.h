@@ -48,6 +48,11 @@ public:
   virtual Base* minus()const			{untested(); return nullptr;}
   virtual Base* plus()const			{untested(); return nullptr;}
 
+  virtual Base* assign(const Base*)const	{untested(); return nullptr;}
+  virtual Base* assign(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* assign(const Float*)const	{untested(); return nullptr;}
+  virtual Base* assign(const String*)const	{untested(); return nullptr;}
+
   virtual Base* less(const Base*)const		{untested(); return nullptr;}
   virtual Base* less(const Integer*)const	{untested(); return nullptr;}
   virtual Base* less(const Float*)const		{untested(); return nullptr;}
@@ -108,6 +113,10 @@ public:
   Base* logic_not()const;
   Base* logic_or(const Base* X)const;
   Base* logic_and(const Base* X)const;
+
+public:
+  virtual Integer to_Integer()const;
+  virtual Float to_Float()const;
 };
 inline CS&	     operator>>(CS& f, Base& b)	{itested();b.parse(f); return f;}
 inline std::ostream& operator<<(std::ostream& out, const Base& d)
@@ -161,11 +170,15 @@ public:
 };
 #endif
 /*--------------------------------------------------------------------------*/
+// integer with legacy arithmetics.
+// e.g. 1/2 is Double(.5)
 class Integer : public Base {
-private:
   friend class Float;
+  friend class vInteger;
+protected:
   int32_t _data;
   bool _input;
+private:
   void dump(std::ostream& o)const override {itested();
     if (!_input) { untested();
       o << "NA";
@@ -186,6 +199,13 @@ public:
   std::string val_string()const override{return std::to_string(_data);}
   bool to_bool()const override		{return (_input && _data != 0);}
 
+  int not_input() const { return static_cast<int>(NOT_INPUT);}
+
+  Integer* assign(const Base*X)const override;
+  Integer* assign(const Integer*X)const override;
+  Integer* assign(const Float*X)const override;
+  Integer* assign(const String*X)const override;
+
   Base* minus()const override		{return new Integer(-_data);}
   Base* plus()const override		{return new Integer(_data);}
 
@@ -199,8 +219,8 @@ public:
   Integer* multiply(const Integer* X)const override { assert(X); return new Integer(_data * X->_data);}
   Integer* subtract(const Integer* X)const override {untested(); assert(X); return new Integer(_data - X->_data);}
   Integer* r_subtract(const Integer* X)const override{assert(X); return new Integer(X->_data - _data);}
-  Integer* divide(const Integer* X)const override	 {untested(); assert(X); return new Integer(_data / X->_data);}
-  Integer* r_divide(const Integer* X)const override { assert(X); return new Integer(X->_data / _data);}
+  Base* divide(const Integer* X)const override;
+  Base* r_divide(const Integer* X)const override;
   Integer* modulo(const Integer* X)const override	 {untested(); assert(X); return new Integer(_data % X->_data);}
   Integer* r_modulo(const Integer* X)const override { assert(X); return new Integer(X->_data % _data);}
 
@@ -238,28 +258,36 @@ public:
   Base* greater(const String*)const override	{untested();return nullptr;}
   Base* leq(const String*)const override 	{untested();return nullptr;}
   Base* geq(const String*)const override 	{untested();return nullptr;}
-  Base* not_equal(const String*)const override	{return nullptr;}
-  Base* equal(const String*)const override	{return nullptr;}
-  Base* add(const String*)const override 	{return nullptr;}
+  Base* not_equal(const String*)const override	{ untested();return nullptr;}
+  Base* equal(const String*)const override	{ untested();return nullptr;}
+  Base* add(const String*)const override 	{ untested();return nullptr;}
   Base* multiply(const String*)const override	{untested();return nullptr;}
   Base* subtract(const String*)const override	{untested();return nullptr;}
-  Base* r_subtract(const String*)const override	{return nullptr;}
+  Base* r_subtract(const String*)const override	{ untested();return nullptr;}
   Base* divide(const String*)const override	{untested();return nullptr;}
   Base* r_divide(const String*)const override	{untested();return nullptr;}
   Base* modulo(const String*)const override	{untested();return nullptr;}
   Base* r_modulo(const String*)const override	{untested();return nullptr;}
 
   bool  is_NA()const			{untested();return !_input;}
+
+public:
+  Integer to_Integer()const	{ return *this; }
+  Float to_Float()const;
 };
 /*--------------------------------------------------------------------------*/
+// floating point value with legacy arithmetics
+// e.g. log is base \e
 class Float : public Base {
-private:
   friend class Integer;
+  friend class vReal;
+protected:
   double _data;
+private:
   void dump(std::ostream& o)const override {itested();
-    if (_data==NOT_INPUT) {untested();
+    if (_data==NOT_INPUT) { untested();
       o<<"NA";
-    }else{untested();
+    }else{ untested();
       o<<_data;
     }
   }
@@ -274,6 +302,13 @@ public:
   Float& operator=(Float const& o) { _data = o._data; return *this; }
   std::string val_string()const override{return ftos(_data, 0, 15, ftos_EXP);}
   bool to_bool()const override		{return (_data != 0.);}
+
+  double not_input() const { return NOT_INPUT;}
+
+  Float* assign(const Base*X)   const override { return X ? new Float(X->to_Float()) : nullptr;}
+  Float* assign(const Integer*X)const override {untested(); return X ? new Float(X->to_Float()) : nullptr;}
+  Float* assign(const Float*X)  const override {untested(); return X ? new Float(*X) : nullptr;}
+  Float* assign(const String*)  const override {untested(); return nullptr;}
 
   Base* minus()const override		{return new Float(-_data);}
   Base* plus()const override		{ untested();return new Float(_data);}
@@ -329,7 +364,7 @@ public:
   Base* geq(const String*)const override 	{untested();return nullptr;}
   Base* not_equal(const String*)const override	{return nullptr;} //?
   Base* equal(const String*)const override	{return nullptr;} //?
-  Base* add(const String*)const override 	{           return nullptr;}
+  Base* add(const String*)const override 	{ untested();           return nullptr;}
   Base* multiply(const String*)const override	{untested();return nullptr;}
   Base* subtract(const String*)const override	{untested();return nullptr;}
   Base* r_subtract(const String*)const override	{ untested();           return nullptr;}
@@ -339,7 +374,17 @@ public:
   Base* r_modulo(const String*)const override	{untested();return nullptr;}
 
   bool  is_NA()const			{untested();return _data == NOT_INPUT;}
+
+public:
+  Integer to_Integer()const	{ return Integer(static_cast<int32_t>(_data)); }
+  Float to_Float()const   { return *this; }
 }; // Float
+/*--------------------------------------------------------------------------*/
+inline Float Integer::to_Float() const
+{
+  // assert(NOT_INPUT == (double)(int32_t)NOT_INPUT); not sure of the consequences.
+  return Float(static_cast<double>(_data));
+}
 /*--------------------------------------------------------------------------*/
 inline Base* Integer::less      (const Float* X) const { assert(X); return new Integer((_data < X->_data)?1:0);}
 inline Base* Integer::greater   (const Float* X) const {untested(); assert(X); return new Integer((_data > X->_data)?1:0);}
@@ -351,7 +396,7 @@ inline Base* Integer::add       (const Float* X) const { assert(X); return X? X-
 inline Base* Integer::multiply  (const Float* X) const { assert(X); return X? X->multiply(this) : nullptr;}
 inline Base* Integer::subtract  (const Float* X) const {untested(); assert(X); return X? X->r_subtract(this) : nullptr;}
 inline Base* Integer::r_subtract(const Float* X) const { assert(X); return X? X->subtract(this) : nullptr;}
-inline Base* Integer::divide    (const Float* X) const {untested(); assert(X); return X? X->r_divide(this) : nullptr;}
+inline Base* Integer::divide    (const Float* X) const {assert(0); untested(); assert(X); return X? X->r_divide(this) : nullptr;}
 inline Base* Integer::r_divide  (const Float* X) const { assert(X); return X? X->divide(this) : nullptr;}
 inline Base* Integer::modulo    (const Float* X) const {untested(); assert(X); return X? X->r_modulo(this) : nullptr;}
 inline Base* Integer::r_modulo  (const Float* X) const {untested(); assert(X); return X? X->modulo(this) : nullptr;}
@@ -366,7 +411,7 @@ private:
 public:
   explicit String(CS& file) {untested();parse(file);}
   explicit String()	    {}
-  explicit String(const std::string& s) :_data(s) {}
+  explicit String(const std::string& s) :_data(s) { untested();}
   explicit String(const String& s) : Base(), _data(s._data) {}
   operator const std::string&()const	{return _data;}
   std::string val_string()const override	{return '"' + _data + '"';} // BUG: missing escape
@@ -382,7 +427,7 @@ public:
   Base* not_equal(const String* X)const override{untested();assert(X); return new Float((_data != X->_data)?1.:0.);}
   Base* equal(const String* X)const override	{assert(X); return new Float((_data == X->_data)?1.:0.);}
   Base* add(const String*)const override	{	    return nullptr;}
-  Base* multiply(const String*)const override	{           return nullptr;}
+  Base* multiply(const String*)const override	{ untested();           return nullptr;}
   Base* subtract(const String*)const override	{untested(); return nullptr;}
   Base* r_subtract(const String*)const override	{itested(); return nullptr;}
   Base* divide(const String*)const override	{untested(); return nullptr;}
@@ -394,11 +439,11 @@ public:
   Base* greater(const Base* X)const override	{untested();return ((X) ? (X->less(this))      : (nullptr));}
   Base* leq(const Base* X)const override	{untested();return ((X) ? (X->geq(this))       : (nullptr));}
   Base* geq(const Base* X)const override	{untested();return ((X) ? (X->leq(this))       : (nullptr));}
-  Base* not_equal(const Base* X)const override	{           return ((X) ? (X->not_equal(this)) : (nullptr));}
+  Base* not_equal(const Base* X)const override	{ untested();           return ((X) ? (X->not_equal(this)) : (nullptr));}
   Base* equal(const Base* X)const override	{           return ((X) ? (X->equal(this))     : (nullptr));}
   Base* add(const Base* X)const override 	{	    return ((X) ? (X->add(this))       : (nullptr));}
-  Base* multiply(const Base* X)const override	{           return ((X) ? (X->multiply(this))  : (nullptr));}
-  Base* subtract(const Base* X)const override	{           return ((X) ? (X->r_subtract(this)): (nullptr));}
+  Base* multiply(const Base* X)const override	{ untested();           return ((X) ? (X->multiply(this))  : (nullptr));}
+  Base* subtract(const Base* X)const override	{ untested();           return ((X) ? (X->r_subtract(this)): (nullptr));}
   Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (nullptr));}
   Base* divide(const Base* X)const override	{ untested();	    return ((X) ? (X->r_divide(this))  : (nullptr));}
   Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (nullptr));}
@@ -426,15 +471,25 @@ public:
   Base* geq       (const Integer*)const override {untested();return nullptr;}
   Base* not_equal (const Integer*)const override {untested();return nullptr;} //?
   Base* equal     (const Integer*)const override {untested();return nullptr;} //?
-  Base* add       (const Integer*)const override {return nullptr;}
+  Base* add       (const Integer*)const override { untested();return nullptr;}
   Base* multiply  (const Integer*)const override {untested(); incomplete(); return nullptr;}
   Base* subtract  (const Integer*)const override {untested();return nullptr;}
   Base* r_subtract(const Integer*)const override {untested();return nullptr;}
   Base* divide    (const Integer*)const override {untested();return nullptr;}
-  Base* r_divide  (const Integer*)const override {return nullptr;}
+  Base* r_divide  (const Integer*)const override { untested();return nullptr;}
   Base* modulo    (const Integer*)const override {untested();return nullptr;}
   Base* r_modulo  (const Integer*)const override {untested();return nullptr;}
 }; // String
+/*--------------------------------------------------------------------------*/
+inline Base* Integer::divide(const Integer* X)  const  { untested(); assert(X); return new Float(double(_data) / double(X->_data));}
+inline Base* Integer::r_divide(const Integer* X)const  { assert(X); return new Float(double(X->_data) / double(_data));}
+/*--------------------------------------------------------------------------*/
+inline Integer Base::to_Integer()const	{untested(); throw Exception("can't convert to integer");}
+inline Float Base::to_float()const  	{ throw Exception("can't convert to float");}
+inline Integer* Integer::assign(const Base*X)   const { return X? new Integer(Integer(X->to_Integer())) : nullptr; }
+inline Integer* Integer::assign(const Integer*X)const {untested(); return X? new Integer(*X) : nullptr; }
+inline Integer* Integer::assign(const Float*X)  const {untested(); return X? new Integer(Integer(X->to_Integer())) : nullptr; }
+inline Integer* Integer::assign(const String*)  const {untested(); return nullptr;}
 /*--------------------------------------------------------------------------*/
 // a string that contains only alnum and _[]
 class Name_String : public String {

@@ -29,6 +29,7 @@
 #include "u_opt.h"
 #include "io_.h"
 #include "m_expression.h"
+#include "m_base_vams.h"
 #include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 class LANGUAGE;
@@ -60,7 +61,10 @@ public:
 
   virtual void	parse(CS& cmd) = 0;
   virtual PARA_BASE& operator=(const std::string& s) = 0;
+  virtual PARA_BASE& operator=(Base const*) = 0;
   virtual std::string string()const = 0;
+
+  virtual Base const* value()const = 0;
 };
 /*--------------------------------------------------------------------------*/
 // maps PARAMETER<double> PARAMETER<int>
@@ -68,18 +72,22 @@ public:
 template<class T>
 struct data_type {
   typedef T type_name;
+ // bool has_good_value(type_name const& v)const { return v != NOT_INPUT; }
 };
 template<>
 struct data_type<double> {
   typedef Float type_name;
+ // bool has_good_value(type_name const& v)const { return v != NOT_INPUT; }
 };
 template<>
 struct data_type<int> {
   typedef Integer type_name;
+ // bool has_good_value(type_name const& v)const { return v != NOT_INPUT; }
 };
 template<>
 struct data_type<bool> {
   typedef Integer type_name;
+ // bool has_good_value(type_name const& v)const { return v != NOT_INPUT; }
 };
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -87,7 +95,7 @@ class PARAMETER : public PARA_BASE {
   typedef typename data_type<T>::type_name type_name;
   mutable type_name _v;
 public:
-  explicit PARAMETER() : PARA_BASE(), _v(not_input()) {}
+  explicit PARAMETER() : PARA_BASE(), _v(type_name().not_input()) {}
 	   PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
@@ -99,12 +107,12 @@ public:
     return new(p) PARAMETER(*this);
   }
   
-  bool	has_good_value()const override {return (_v != NOT_INPUT);} // BUG // T==bool?
+  bool	has_good_value()const override {return _v != not_input();}
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
   T e_val(const T& def, const CARD_LIST* scope)const;
-  Base const* value()const {untested(); return &_v;}
+  Base const* value()const { return &_v;}
   void	parse(CS& cmd) override;
 
   std::string string()const override{
@@ -118,6 +126,14 @@ public:
   }
   void	set_default(const T& v)		{_v = v; _s = "";}
   void	set_fixed(const T& v)		{_v = v; _s = "#";}
+  PARAMETER& operator=(Base const* v) override {
+    type_name* x = _v.assign(v);
+    assert(x);
+    _v = *x;
+    delete x;
+    _s = "#";
+    return *this;
+  }
   void	operator=(const PARAMETER& p)	{_v = p._v; _s = p._s;}
   void	operator=(const T& v)		{_v = v; _s = "#";} // !
   //void	operator=(const std::string& s)	{untested();_s = s;}
@@ -142,10 +158,10 @@ public:
     return (p && _v == p->_v  &&  _s == p->_s);
   }
   bool  operator==(const T& v)const {
-    if (v != not_input()) {
+    if (v != type_name().not_input()) {
       return _v == v;
     }else{
-      return (_v == not_input() || !has_hard_value());
+      return (_v == type_name().not_input() || !has_hard_value());
     }
   }
   //bool	operator!=(const PARAMETER& p)const {untested();
@@ -155,7 +171,7 @@ public:
   //  return !(*this == v);
   //}
 protected:
-  virtual T not_input() const { return T(NOT_INPUT);}
+  virtual type_name not_input()const { return type_name().not_input(); }
   Base const* e_val_(const T& def, const CARD_LIST* scope, int recursion=0)const;
   friend class PARAM_INSTANCE;
 private:
@@ -253,7 +269,9 @@ private:
     bool has_good_value()const override { untested();unreachable(); return false;}
     void parse(CS&)override { untested();unreachable();}
     PARA_NONE& operator=(const std::string&)override { untested();unreachable(); return *this;}
+    PARA_NONE& operator=(const Base*)override { untested();unreachable(); return *this;}
     std::string string()const override{unreachable(); return "";}
+    Base const* value()const override{return nullptr;}
   };
   union{
     char _mem;
@@ -282,14 +300,23 @@ public:
     p.base()->pclone(&_mem);
     return *this;
   }
+ // PARAM_INSTANCE& operator=(Base const&b) {
+ //   assert(base());
+ //   *base() = &b;
+ //   return *this;
+ // }
   PARAM_INSTANCE& operator=(std::string const& s) {
+#if 0
     // BUG. why double?
     auto p = new(&_mem) PARAMETER<double>();
     *p = s;
+#else
+    assert(base());
+    *base() = s;
+#endif
     return *this;
   }
-  template<class T>
-  PARAM_INSTANCE& operator=(PARAMETER<T> const& p) {
+  PARAM_INSTANCE& operator=(PARA_BASE const& p) {
     p.pclone(&_mem);
     return *this;
   }
@@ -310,18 +337,12 @@ public:
       }else{
 	unreachable();
       }
+    }else if(dynamic_cast<PARA_NONE*>(base())) {
+      incomplete();
+      *base() = v;
     }else{
-      if(auto f = dynamic_cast<Float const*>(v)){
-	PARAMETER<double> pp;
-	pp.set_fixed(f->value());
-	*this = pp;
-      }else if(auto i = dynamic_cast<Integer const*>(v)){
-	PARAMETER<int> pp;
-	pp.set_fixed(i->value());
-	*this = pp;
-      }else{
-	unreachable();
-      }
+      // TODO, get rid of this //
+      *base() = v;
     }
   }
 #if 1
@@ -341,9 +362,18 @@ public:
   }
 #endif
 public:
+  Base const* value()const {untested(); return base()->value();}
   std::string const string() const{
     assert(base());
     return base()->string();
+  }
+  bool exists() const{
+    assert(base());
+    if(dynamic_cast<PARA_NONE const*>(base())){
+      return false;
+    }else{
+      return true;
+    }
   }
   bool has_hard_value() const{
     assert(base());
@@ -352,6 +382,7 @@ public:
   Base const* e_val(const double& def, const CARD_LIST* scope)const;
  // Base const* e_val(Base const* def, const CARD_LIST* scope)const;
   operator double() const{ untested();
+    assert(0);
     incomplete();
     return NOT_VALID;
   }
@@ -473,12 +504,12 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
   Expression e(cmd);
   Expression reduced(e, scope);
   T v = T(reduced.eval());
-  if (v != not_input()) {
-    trace2("los0", _s, v);
+  if (v != type_name().not_input()) {
+    trace2("los0a", _s, v);
     return v;
   }else{
     const PARAM_LIST* pl = scope->params();
-    trace2("los0", _s, v);
+    trace2("los0b", _s, v);
     Base const* b = pl->deep_lookup(_s).e_val(def, scope);
     T ret;
     if(b){

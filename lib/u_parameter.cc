@@ -39,6 +39,7 @@ void PARAM_LIST::parse(CS& cmd)
     }
     std::string Name;
     PARAMETER<double> Value;
+    assert(0);
     cmd >> Name >> '=' >> Value;
     trace2("parsed", Value, Value.string());
     if (cmd.stuck(&here)) {untested();
@@ -106,6 +107,7 @@ std::string PARAM_LIST::value(int i)const
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 {
+  assert(scope);
   assert(!_try_again);
   _try_again = p._try_again;
 
@@ -113,12 +115,34 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
     if (i->second.has_hard_value()) {
       auto j = _pl.find(i->first);
       if(j == _pl.end()){
-	// spice feature: create parameters from arglist
-	// should not get here in verilog mode
-	_pl[i->first].set_fixed(i->second.e_val(NOT_INPUT, scope));
+	PARAM_INSTANCE& pi = _pl[i->first]; // create one.
+	
+	trace2("eval_copy not there", i->first, _pl.size());
+	if(!_try_again){ untested();
+	}else{
+	  auto k = _try_again->find(i->first);
+	  if(k == _try_again->end()){
+	    trace0("not again");
+	    // spice feature: create parameters from arglist
+	    // should not get here in verilog mode
+	    static PARAMETER<double> f;
+	    pi = f; // what it used to be.
+	  }else{
+	    trace1("got one", i->first);
+	    // get type from proto
+	    pi = k->second;
+	  }
+
+	}
+
+	Base const* b = i->second.e_val(NOT_INPUT, scope);
+	trace1("eval_copy value", typeid(*b).name());
+
+	pi.set_fixed(b);
+
       }else if(j->second.has_hard_value()) {untested();
 	j->second.set_fixed(i->second.e_val(j->second, scope));
-      }else{
+      }else{ untested();
 	// this is not needed.
       }
     }else{ untested();
@@ -158,6 +182,7 @@ Base const* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) con
   }else{
   }
   // try {
+  /// TODO ///
   if(auto d = dynamic_cast<PARAMETER<double> const*>(base())) {
     Base const* f = d->e_val_(def, scope, 1);
     --recursion;
@@ -166,11 +191,21 @@ Base const* PARAM_INSTANCE::e_val(const double& def, const CARD_LIST* scope) con
     Base const* n = i->e_val_(int(def), scope, 1); // BUG: def is a double.
     --recursion;
     return n;
+  }else if(auto f2 = dynamic_cast<PARAMETER<Float> const*>(base())) {
+    Base const* n = f2->e_val_(def, scope, 1); // BUG: def is a double.
+    --recursion;
+    return n;
+  }else if(auto f3 = dynamic_cast<PARAMETER<Integer> const*>(base())) {
+    Base const* n = f3->e_val_(int(def), scope, 1); // BUG: def is a double.
+    --recursion;
+    return n;
   }else if(dynamic_cast<PARA_NONE const*>(base())) {
     --recursion;
     return nullptr;
   }else{ untested();
+    unreachable();
     incomplete();
+    assert(0);
     --recursion;
     return nullptr;
   }
@@ -201,11 +236,18 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
     notstd::to_lower(&Name);
   }else{
   }
-  try{
-    _pl[Name] = Value;
-  }catch(Exception_Clash const&){
-    (_pl[Name] = "") = Value;
-    error(bTRACE, Name + " already set. replacing\n");
+  PARAM_INSTANCE& p = _pl[Name];
+  if(p.exists()){
+    try{
+      p = Value;
+    }catch(Exception_Clash const&){
+      (p = "") = Value;
+      error(bTRACE, Name + " already set. replacing\n");
+    }
+  }else{
+    // spice fallback.
+    p = PARAMETER<double>();
+    p = Value;
   }
 }
 /*--------------------------------------------------------------------------*/
