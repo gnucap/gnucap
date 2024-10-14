@@ -30,7 +30,7 @@ void Integer::parse(CS& File)
   }else{
     size_t here = File.cursor();
     File >> _data;
-    if (File.stuck(&here)) {untested();
+    if (File.stuck(&here)) {
       _input = false;
     }else{
       _input = true;

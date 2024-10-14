@@ -168,12 +168,67 @@ DISPATCHER<FUNCTION>::INSTALL d_ln(&function_dispatcher, "ln", &p_ln);
 /*--------------------------------------------------------------------------*/
 class log : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
-    error(bDEBUG, "log("+Cmd.fullstring() + "): Ambiguous. Use 'ln', or 'log10'\n");
-    PARAMETER<double> x;
-    Cmd >> x;
-    x.e_val(NOT_INPUT, Scope);
-    return to_string(std::log(x));
+  void stack_op(Expression* E)const override {
+    error(bDEBUG, "log: Ambiguous. Use 'ln', or 'log10'\n");
+    auto par = dynamic_cast<Token_PARLIST*>(E->back());
+    if(par){
+      E->pop_back();
+    }else{ untested();
+      // probably not needed.
+    }
+
+    if(auto arg0 = dynamic_cast<Token_CONSTANT*>(E->back())) {
+
+      Base* v;
+      std::string name;
+      double result;
+
+      if(auto r = dynamic_cast<vReal const*>(arg0->data())) {
+	result = std::log10(r->value());
+	name = to_string(result);
+      }else if(auto f = dynamic_cast<Float const*>(arg0->data())) {
+	result = std::log(f->value());
+	name = to_string(result);
+      }else if(auto vi = dynamic_cast<vInteger const*>(arg0->data())) {
+	result = std::log10(vi->value());
+	name = to_string(result);
+      }else if(auto i = dynamic_cast<Integer const*>(arg0->data())) {
+	result = std::log(i->value());
+	name = to_string(result);
+      }else{ untested();
+	if(par){ untested();
+	  E->push_back(par);
+	}else{ untested();
+	}
+	throw(Exception("wrong type"));
+      }
+
+      E->pop_back();
+      v = new Float(result);
+
+      if(!par){ untested();
+	delete arg0;
+	E->push_back(new Token_CONSTANT(v));
+      }else if(dynamic_cast<Token_STOP const*>(E->back())) {
+	delete arg0;
+	delete E->back();
+	E->pop_back();
+	delete par;
+	E->push_back(new Token_CONSTANT(v));
+      }else{ untested();
+	// wrong number of args, forget about it.
+	E->push_back(arg0);
+	E->push_back(par);
+	throw(Exception("wrong argcount"));
+      }
+
+    }else if(par) { untested();
+      E->push_back(par);
+      throw(Exception("unsuitable paramlist"));
+    }else{ untested();
+      // invalid arg. no action.
+      throw(Exception("unsuitable argument"));
+    }
   }
 } p_log;
 DISPATCHER<FUNCTION>::INSTALL d_log(&function_dispatcher, "log", &p_log);

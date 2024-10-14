@@ -1,5 +1,5 @@
-"param a2=ln(3) "
 "param a1=log(3) "
+"param a2=ln(3) "
 "param a3=log10(3) "
 "param "
  a1=log(3) a2=ln(3) a3=log10(3)
@@ -9,11 +9,47 @@ a1= 1.09861228866811
 a2= 1.09861228866811
 "eval a3 "
 a3= 0.477121254719662
-"option debug "
+"eval 1/3 "
+(1 / 3)= 0.333333333333333
+"options debug "
 "eval a1 "
-log(3): Ambiguous. Use 'ln', or 'log10'
+log: Ambiguous. Use 'ln', or 'log10'
 a1= 1.09861228866811
 "eval a2 "
 a2= 1.09861228866811
 "eval a3 "
 a3= 0.477121254719662
+"parameter integer one = 1; "
+"parameter integer two = 2; "
+"eval one/two "
+(one / two)= 0.5
+"verilog "
+"options nodebug "
+"parameter a1=log(3) "
+"parameter a2=ln(3) "
+"parameter a3=log10(3) "
+"eval a1 "
+a1= 0.477121254719662
+"eval a2 "
+a2= 1.09861228866811
+"eval a3 "
+a3= 0.477121254719662
+"parameter integer a1=log(3.) "
+"parameter integer a2=ln(3.) "
+"parameter integer a3=log10(3.) "
+"eval a1 "
+a1=0
+"eval a2 "
+a2=1
+"eval a3 "
+a3=0
+"eval 1/3 "
+(1 / 3)=0
+"parameter integer one = 1; "
+"parameter integer two = 2; "
+"eval one/two "
+(one / two)=0
+"options log nolist "
+Top level parameter. Not within spec, use with care
+Top level parameter. Not within spec, use with care
+(one / two)= 0.5

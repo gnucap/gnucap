@@ -27,14 +27,24 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
-void parse(CS& cmd, PARAM_LIST* pl)
+void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
 {
   assert(pl);
+  assert(Scope);
   int type = 0;
   if(cmd >> "real"){
     type = 1;
   }else if(cmd >> "integer"){
     type = 2;
+  }else{
+  }
+  assert(Scope);
+  if(Scope->is_verilog_math()){
+    type += 10;
+    if(Scope == &CARD_LIST::card_list) {
+      error(bLOG, "Top level parameter. Not within spec, use with care\n");
+    }else{ untested();
+    }
   }else{
   }
   size_t here = cmd.cursor();
@@ -46,8 +56,21 @@ void parse(CS& cmd, PARAM_LIST* pl)
     std::string Name;
     PARAM_INSTANCE par;
     switch(type){
+    case 1: untested();
+      par = PARAMETER<Float>();
+      break;
+    case 11:
+      par = PARAMETER<vReal>();
+      break;
     case 2:
       par = PARAMETER<Integer>();
+      break;
+    case 12:
+      par = PARAMETER<vInteger>();
+      break;
+    case 10:
+      par = PARAMETER<vReal>();
+      // fallback. see lang_verilog.
       break;
     default:
       par = PARAMETER<Float>();
@@ -78,7 +101,7 @@ public:
       pl->print(IO::mstdout, OPT::language);
       IO::mstdout << '\n';
     }else{
-      parse(cmd, pl);
+      parse(cmd, pl, Scope);
     }
   }
 } p;

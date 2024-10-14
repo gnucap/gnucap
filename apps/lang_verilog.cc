@@ -41,6 +41,7 @@ public:
   std::string name()const override {return "verilog";}
   bool case_insensitive()const override {return false;}
   UNITS units()const override {return uSI;}
+  bool is_verilog()const override {return true;}
 
 public: // override virtual, used by callback
   std::string arg_front()const override {
@@ -826,6 +827,9 @@ DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "module|macromodule", &p2);
 class CMD_VERILOG : public CMD {
 public:
   void do_it(CS&, CARD_LIST* Scope)override {
+    if(Scope == &CARD_LIST::card_list) {
+    }else{ untested();
+    }
     command("options lang=verilog", Scope);
   }
 } p8;
