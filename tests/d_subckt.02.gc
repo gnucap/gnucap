@@ -1,0 +1,51 @@
+
+
+module r (a, b);
+parameter real x=0;
+parameter integer y=1;
+resistor #(x+y) r1(a, b);
+endmodule
+
+module rr (a, b);
+parameter integer x=4;
+r #(.x(x/3)) r0(a, b);
+endmodule
+
+simulator lang=verilog
+
+vsource #(1) v1(1,0);
+rr #()        s0(1,0);
+rr #(.x(4))   s1(1,0);
+rr #(.x(4.))  s2(1,0);
+rr #(.x(6.1)) s3(1,0);
+
+list
+
+print op v(nodes) r(s*.r0.r1)
+op
+
+delete r rr s*
+
+.subckt r 1 2
+  .parameter Y=1
+  .parameter X=0
+  R1 1 2 {X+Y}
+.ends
+
+.subckt rr 1 2
+.parameter X=4
+X0 1 2 r X={X/3}
+.ends
+
+rr #()        s0(1,0);
+rr #(.X(4))   s1(1,0);
+rr #(.X(4.))  s2(1,0);
+rr #(.X(4.8)) s3(1,0);
+
+list
+
+print op v(nodes) r(s*.X0.R1)
+op
+
+status notime
+end

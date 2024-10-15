@@ -31,3 +31,5 @@ eval l
 options nag
 param n={"missing quote}
 eval n
+param mid={"aaa" + x + "bbb"}
+eval mid

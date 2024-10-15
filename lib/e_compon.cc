@@ -731,7 +731,7 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
   }else if(!common()->is_shared()) {
     // it's us!
     return mutable_common()->set_param_by_name(Name, Value);
-  }else{itested();
+  }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     int index = c->set_param_by_name(Name, Value);

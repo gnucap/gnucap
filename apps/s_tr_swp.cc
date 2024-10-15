@@ -100,7 +100,7 @@ void TRANSIENT::sweep()
     _sim->restore_voltages();
     _scope->tr_restore();
   }else{//292
-    while (!_sim->_eq.empty()) {untested();
+    while (!_sim->_eq.empty()) {itested();
       _sim->_eq.pop();
     }
     _sim->clear_limit();

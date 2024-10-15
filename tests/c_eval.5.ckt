@@ -1,0 +1,15 @@
+* function eval check
+.eval sqrt(1)
+.eval sqrt(2-5)
+.eval sqrt(-2.)
+.eval sqrt(1,2,3)
+.eval sqrt(4)
+.eval sqrt(4.)
+
+.eval abs(1)
+.eval abs(-5)
+.eval abs(-2.)
+.eval abs(1,2,3)
+.eval abs(4)
+.eval abs(4.)
+.end

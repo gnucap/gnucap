@@ -5,38 +5,41 @@
 a=aaa
 "param b={"aaa" + "bbb"} "
 "eval b "
-b=("bbb" + "aaa")
+eval b 
+     ^ ? can't convert to float
 "param c={"aaa" == "bbb"} "
 "eval c "
 c= 0.
 "param d={"aaa" == a} "
 "eval d "
-d= 1.
+d=("aaa" == aaa)
 "param e={exp("0.")} "
 "eval e "
 e=exp("0.")
 "param f={exp(1.+"0.")} "
 "eval f "
-f=exp(("0." + 1.))
+f=exp(("0." +  1.))
 "param g={exp("aaa" == 0.)} "
 "eval g "
-g=exp(("aaa" == 0.))
+g=exp(("aaa" ==  0.))
 "param h={exp(0. == "aaa")} "
 "eval h "
-h=exp((0. == "aaa"))
+h=exp(( 0. == "aaa"))
 "param i={exp(a == "aaa")} "
 "eval i "
-i= 2.71828182845905
+i=exp((aaa == "aaa"))
 "param j={exp(0. != 0.)} "
 "eval j "
 j= 1.
 "param k={"aaa bbb"} "
 "eval k "
-k="aaa bbb"
+eval k 
+     ^ ? can't convert to float
 "* //BUG// does not work with spice get_line "
 "param l={"aaa\"bbb"} "
 "eval l "
-l="aaa"
+eval l 
+     ^ ? can't convert to float
 "* //BUG// totally does not work with spice get_line "
 "* param m=exp("aaa\"bbb") "
 "* eval m "
@@ -49,4 +52,10 @@ l="aaa"
               ^ ? end of file in quoted string
 "missing quote
 ^ ? string begins here
-n="missing quote"
+eval n 
+     ^ ? can't convert to float
+"param mid={"aaa" + x + "bbb"} "
+>>>>>param mid={"aaa" + x + "bbb"} 
+"eval mid "
+>>>>>eval mid 
+mid=(("aaa" + x) + "bbb")

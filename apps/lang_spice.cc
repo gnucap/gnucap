@@ -579,7 +579,7 @@ COMPONENT* LANG_SPICE_BASE::parse_instance(CS& cmd, COMPONENT* x)
     cmd.reset().umatch(ANTI_COMMENT);
     
     // ACS dot type specifier
-    if (cmd.skip1b('.')) {itested();
+    if (cmd.skip1b('.')) {
       parse_type(cmd, x);
     }else{
     }
@@ -661,7 +661,7 @@ std::string LANG_SPICE_BASE::find_type_in_string(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 void LANG_SPICE::parse_top_item(CS& cmd, CARD_LIST* Scope)
-{itested();
+{
   if (0 && cmd.is_file()
       && cmd.is_first_read()
       && (Scope == &CARD_LIST::card_list)
@@ -670,7 +670,7 @@ void LANG_SPICE::parse_top_item(CS& cmd, CARD_LIST* Scope)
     cmd.get_line("gnucap-spice-title>");
     head = cmd.fullstring();
     IO::mstdout << head << '\n';
-  }else{itested();
+  }else{
     cmd.get_line("gnucap-spice>");
     new__instance(cmd, NULL, Scope);
   }
@@ -1037,7 +1037,7 @@ DISPATCHER<CMD>::INSTALL d7(&command_dispatcher, ".build|build", &p7);
 /*--------------------------------------------------------------------------*/
 class CMD_SPICE : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)override {itested();
+  void do_it(CS&, CARD_LIST* Scope)override {
     command("options lang=spice", Scope);
   }
 } p8;

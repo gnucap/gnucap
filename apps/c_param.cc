@@ -27,6 +27,72 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
+void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
+{
+  assert(pl);
+  assert(Scope);
+  int type = 0;
+  if(cmd >> "real"){
+    type = 1;
+  }else if(cmd >> "integer"){
+    type = 2;
+  }else{
+  }
+  assert(Scope);
+  if(Scope->is_verilog_math()){
+    type += 10;
+    if(Scope == &CARD_LIST::card_list) {
+      error(bLOG, "Top level parameter. Not within spec, use with care\n");
+    }else{ untested();
+    }
+  }else{
+  }
+  size_t here = cmd.cursor();
+  for (;;) {
+    if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
+      break;
+    }else{
+    }
+    std::string Name;
+    PARAM_INSTANCE par;
+    switch(type){
+    case 1: untested();
+      par = PARAMETER<Float>();
+      break;
+    case 11:
+      par = PARAMETER<vReal>();
+      break;
+    case 2:
+      par = PARAMETER<Integer>();
+      break;
+    case 12:
+      par = PARAMETER<vInteger>();
+      break;
+    case 10:
+      par = PARAMETER<vReal>();
+      // fallback. see lang_verilog.
+      break;
+    default:
+      par = PARAMETER<Float>();
+      break;
+    }
+
+    cmd >> Name >> '=' >> par;
+
+    trace1("parsed", par.string());
+    if (cmd.stuck(&here)) {untested();
+      break;
+    }else{
+    }
+    if (OPT::case_insensitive) {
+      notstd::to_lower(&Name);
+    }else{
+    }
+    pl->set(Name, par);
+  }
+  cmd.check(bDANGER, "syntax error");
+}
+/*--------------------------------------------------------------------------*/
 class CMD_PARAM : public CMD {
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {
@@ -35,7 +101,7 @@ public:
       pl->print(IO::mstdout, OPT::language);
       IO::mstdout << '\n';
     }else{
-      pl->parse(cmd);
+      parse(cmd, pl, Scope);
     }
   }
 } p;

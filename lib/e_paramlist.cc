@@ -88,7 +88,7 @@ void COMMON_PARAMLIST::precalc_last(const CARD_LIST* Scope)
   COMMON_COMPONENT::precalc_last(Scope);
 
   for (PARAM_LIST::iterator i = _params.begin(); i != _params.end(); ++i) {
-    i->second.e_val(NOT_INPUT,Scope);
+    i->second.e_val(nullptr, Scope);
   }
 }
 /*--------------------------------------------------------------------------*/

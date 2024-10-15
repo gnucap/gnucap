@@ -35,20 +35,22 @@ void PARAM_LIST::parse(CS& cmd)
   for (;;) {
     if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
       break;
-    }else{
+    }else{itested();
     }
     std::string Name;
     PARAMETER<double> Value;
     cmd >> Name >> '=' >> Value;
+    trace2("parsed", Value, Value.string());
     if (cmd.stuck(&here)) {untested();
       break;
-    }else{
+    }else{itested();
     }
-    if (OPT::case_insensitive) {
+    if (OPT::case_insensitive) { untested();
       notstd::to_lower(&Name);
-    }else{
+    }else{itested();
     }
     _pl[Name] = Value;
+    trace4("assigned", _pl[Name].string(), Value.string(), &_pl[Name], _pl[Name].operator->());
   }
   cmd.check(bDANGER, "syntax error");
 }
@@ -104,6 +106,7 @@ std::string PARAM_LIST::value(int i)const
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 {
+  assert(scope);
   assert(!_try_again);
   _try_again = p._try_again;
 
@@ -111,11 +114,33 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
     if (i->second.has_hard_value()) {
       auto j = _pl.find(i->first);
       if(j == _pl.end()){
-	// spice feature: create parameters from arglist
-	// should not get here in verilog mode
-	_pl[i->first] = i->second.e_val(NOT_INPUT, scope);
+	PARAM_INSTANCE& pi = _pl[i->first]; // create one.
+	
+	trace2("eval_copy not there", i->first, _pl.size());
+	if(!_try_again){itested();
+	}else{
+	  auto k = _try_again->find(i->first);
+	  if(k == _try_again->end()){
+	    trace0("not again");
+	    // spice feature: create parameters from arglist
+	    // should not get here in verilog mode
+	    static PARAMETER<double> f;
+	    pi = f; // what it used to be.
+	  }else{
+	    trace1("got one", i->first);
+	    // get type from proto
+	    pi = k->second;
+	  }
+
+	}
+
+	Base const* b = i->second.e_val(nullptr, scope);
+	trace1("eval_copy value", typeid(*b).name());
+
+	pi.set_fixed(b);
+
       }else if(j->second.has_hard_value()) {untested();
-	j->second = i->second.e_val(j->second, scope);
+	j->second.set_fixed(i->second.e_val(j->second.value(), scope));
       }else{ untested();
 	// this is not needed.
       }
@@ -124,8 +149,9 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
+const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
 {
+  trace1("PARAM_LIST::deep_lookup", Name);
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
   }else{
@@ -141,9 +167,40 @@ const PARAMETER<double>& PARAM_LIST::deep_lookup(std::string Name)const
     // no enclosing scope to look in
     // really didn't find it, give up
     // return garbage value (NOT_INPUT)
-    static PARAMETER<double> garbage;
+    static PARAM_INSTANCE garbage;
     return garbage;
   }
+}
+/*--------------------------------------------------------------------------*/
+Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
+{
+  static int recursion;
+  if (++recursion > OPT::recursion) {itested();
+    recursion = 0;
+    throw Exception("recursion too deep");
+  }else{
+  }
+  if(dynamic_cast<PARA_NONE const*>(base())) {
+    assert(!base()->e_val_(def, scope, 1));
+  }else{
+  }
+
+  // try { untested();
+
+  Base const* ret = nullptr;
+
+  if(base()) {
+    ret = base()->e_val_(def, scope, 1);
+  }else{ untested();
+  }
+
+  --recursion;
+  return ret;
+
+  // }catch(Exception const& e){ untested();
+  //   unreachable();
+  //   return nullptr;
+  // }
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::set(std::string Name, const double& Value)
@@ -152,10 +209,11 @@ void PARAM_LIST::set(std::string Name, const double& Value)
     notstd::to_lower(&Name);
   }else{
   }
+  Float v(Value);
   try{
-    _pl[Name] = Value;
+    _pl[Name].set_fixed(&v);
   }catch(Exception_Clash const&){ untested();
-    (_pl[Name] = "") = Value;
+    (_pl[Name] = "").set_fixed(&v);
     error(bTRACE, Name + " already set. replacing\n");
   }
 }
@@ -166,9 +224,30 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
     notstd::to_lower(&Name);
   }else{
   }
+  PARAM_INSTANCE& p = _pl[Name];
+  if(p.exists()){
+    try{
+      p = Value;
+    }catch(Exception_Clash const&){
+      (p = "") = Value;
+      error(bTRACE, Name + " already set. replacing\n");
+    }
+  }else{
+    // spice fallback.
+    p = PARAMETER<double>();
+    p = Value;
+  }
+}
+/*--------------------------------------------------------------------------*/
+void PARAM_LIST::set(std::string Name, const PARAM_INSTANCE& Value)
+{
+  if (OPT::case_insensitive) {
+    notstd::to_lower(&Name);
+  }else{
+  }
   try{
     _pl[Name] = Value;
-  }catch(Exception_Clash const&){
+  }catch(Exception_Clash const&){ untested();
     (_pl[Name] = "") = Value;
     error(bTRACE, Name + " already set. replacing\n");
   }

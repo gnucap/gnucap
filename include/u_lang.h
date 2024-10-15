@@ -44,6 +44,7 @@ public:
   virtual std::string name()const = 0;
   virtual bool case_insensitive()const = 0;
   virtual UNITS units()const = 0;
+  virtual bool is_verilog()const {return false;}
 public: // used by obsolete_callback
   virtual std::string arg_front()const = 0;
   virtual std::string arg_mid()const = 0;

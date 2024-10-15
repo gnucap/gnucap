@@ -34,27 +34,35 @@ std::string new_name()
 Base* Base::logic_not()const
 {
   if (to_bool()) {
-    return new Float(0.);
+    return new Integer(0.);
   }else{itested();
-    return new Float(1.);
+    return new Integer(1.);
   }
 }
 /*--------------------------------------------------------------------------*/
 Base* Base::logic_or(const Base* X)const
 {
-  if ((to_bool()) || (X && X->to_bool())) {
-    return new Float(1.);
+  if (to_bool()) {
+    return new Integer(1.);
+  }else if (!X) { untested();
+    return new Integer(0.);
+  }else if (X->to_bool()) {
+    return new Integer(1.);
   }else{
-    return new Float(0.);
+    return new Integer(0.);
   }
 }
 /*--------------------------------------------------------------------------*/
 Base* Base::logic_and(const Base* X)const
 {
-  if (!to_bool() || !X || !X->to_bool()) {
-    return new Float(0.);
+  if (!to_bool()) {
+    return new Integer(0.);
+  }else if(!X) { untested();
+    return new Integer(0.);
+  }else if(!X->to_bool()) {
+    return new Integer(0.);
   }else{
-    return new Float(1.);
+    return new Integer(1.);
   }
 }
 /*--------------------------------------------------------------------------*/

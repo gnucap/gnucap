@@ -121,7 +121,7 @@ void Expression::leaf(CS& File)
       delete s;
       throw Exception_CS("what's this?", File);
     }else{
-      push_back(new Token_CONSTANT("\"" + s->val_string() + "\"", s));
+      push_back(new Token_CONSTANT(s));
     }
   }else if (File.peek() == '<') {
     std::string s = File.ctos("", "<", ">");
@@ -181,7 +181,8 @@ void Expression::ternary(CS& File)
 
  // andarg(File);
 
-  push_back(new Token_TERNARY(name, true_part, false_part));
+  assert(name == "?");
+  push_back(new Token_TERNARY(true_part, false_part));
 }
 /*--------------------------------------------------------------------------*/
 void Expression::termtail(CS& File)

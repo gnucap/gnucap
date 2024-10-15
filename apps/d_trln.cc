@@ -107,7 +107,7 @@ private: // override virtual
   void		ac_load()override;
   COMPLEX	ac_involts()const override;
 
-  std::string port_name(int i)const override {itested();
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < 4);
     static std::string names[] = {"t1", "b1", "t2", "b2"};

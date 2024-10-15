@@ -62,11 +62,11 @@ void load_or_unload(CS& cmd, CARD_LIST const* Scope, int flags)
     list();
   }else{
     std::string full_file_name;
-    if (short_file_name[0]=='/' || short_file_name[0]=='.'){itested();
-      if (OS::access_ok(short_file_name, R_OK)) {itested();
+    if (short_file_name[0]=='/' || short_file_name[0]=='.'){
+      if (OS::access_ok(short_file_name, R_OK)) {
 	// found it, local or root
 	full_file_name = short_file_name;
-      }else{untested();
+      }else{itested();
 	cmd.reset(here);
 	throw Exception_CS(std::string("plugin not found in ") + short_file_name[0], cmd);
       }
@@ -190,7 +190,7 @@ void attach_file(CS& cmd, std::string const& file_name,
   if (!flags) { untested();
   }else if (void* handle = dlopen(file_name.c_str(), flags)) {
     attach_list[file_name] = handle;
-  }else{itested();
+  }else{
     throw Exception_CS(dlerror(), cmd);
   }
 }
@@ -253,7 +253,7 @@ public:
 	if (handle) {
 	  dlclose(handle);
 	  ii->second = nullptr;
-	}else{itested();
+	}else{
 	  // name still in list, but has been detached already
 	}
       }

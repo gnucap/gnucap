@@ -124,7 +124,7 @@ protected:
   COMMON_COMPONENT* _ctrl[DCNEST]; /* take control */
   std::string _param_name[DCNEST];
   double _param[DCNEST];        // sweep this value:
-  PARAMETER<double> _param_zap[DCNEST]; // keep a backup
+  PARAM_INSTANCE _param_zap[DCNEST]; // keep a backup
   CARDSTASH _stash[DCNEST];	/* store std values of elements being swept */
   bool _loop[DCNEST];		/* flag: do it again backwards */
   bool _reverse_in[DCNEST];	/* flag: sweep backwards, input */
@@ -302,7 +302,7 @@ void DC::setup(CS& Cmd)
 
 	size_t here = Cmd.cursor();
         Cmd >> pname;
-	PARAMETER<double> zap = _scope->params()->deep_lookup(pname);
+	PARAM_INSTANCE zap = _scope->params()->deep_lookup(pname);
 	if(zap.has_hard_value()){
 	  _param_zap[_n_sweeps] = zap;
 	  _param_name[_n_sweeps] = pname;

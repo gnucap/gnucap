@@ -1,0 +1,13 @@
+* function eval check 
+sqrt(1)= 1.
+sqrt((2 - 5))= NaN
+sqrt((- 2.))= NaN
+sqrt(1, 2, 3)=sqrt(1, 2, 3)
+sqrt(4)= 2.
+sqrt(4.)= 2.
+abs(1)=1
+abs((- 5))=5
+abs((- 2.))= 2.
+abs(1, 2, 3)=abs(1, 2, 3)
+abs(4)=4
+abs(4.)= 4.

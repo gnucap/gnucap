@@ -28,6 +28,7 @@
 /*--------------------------------------------------------------------------*/
 class CS;
 class LANGUAGE;
+class CARD_LIST;
 /*--------------------------------------------------------------------------*/
 /* integration method selector -- not all methods are implemented */
 enum method_t {meUNKNOWN=0,	// no method set
@@ -72,9 +73,9 @@ private:
 public:
   explicit OPT() {}
   ~OPT() {}
-  void command(CS& cmd);
+  void command(CS& cmd, CARD_LIST* Scope);
 private:
-  bool set_values(CS& cmd);
+  bool set_values(CS& cmd, CARD_LIST* Scope);
   void print(OMSTREAM& where);
 public:
   enum ITL {DCBIAS=1, DCXFER=2, TRLOW=3, TRHIGH=4, TRTOTAL=5, SSTEP=6,
