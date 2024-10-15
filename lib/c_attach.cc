@@ -66,7 +66,7 @@ void load_or_unload(CS& cmd, CARD_LIST const* Scope, int flags)
       if (OS::access_ok(short_file_name, R_OK)) {itested();
 	// found it, local or root
 	full_file_name = short_file_name;
-      }else{untested();
+      }else{itested();
 	cmd.reset(here);
 	throw Exception_CS(std::string("plugin not found in ") + short_file_name[0], cmd);
       }

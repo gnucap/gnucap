@@ -118,7 +118,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 	PARAM_INSTANCE& pi = _pl[i->first]; // create one.
 	
 	trace2("eval_copy not there", i->first, _pl.size());
-	if(!_try_again){ untested();
+	if(!_try_again){itested();
 	}else{
 	  auto k = _try_again->find(i->first);
 	  if(k == _try_again->end()){

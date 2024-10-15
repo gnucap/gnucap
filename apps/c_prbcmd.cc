@@ -83,7 +83,7 @@ void do_probe(CS& cmd, PROBELIST *probes, CARD_LIST *scope)
   }else{
     if (cmd.is_end()) {untested();		/* list */
       probes[simtype].listing("");
-    }else if (cmd.umatch("clear ")) {untested();/* clear */
+    }else if (cmd.umatch("clear ")) {itested();/* clear */
       probes[simtype].clear();
     }else{					/* add/remove */
       CKT_BASE::_sim->init(scope);

@@ -268,7 +268,7 @@ private:
     void parse(CS&)override { untested();unreachable();}
     PARA_NONE& operator=(const std::string&)override { untested();unreachable(); return *this;}
     PARA_NONE& operator=(const Base*)override { untested();unreachable(); return *this;}
-    std::string string()const override{unreachable(); return "";}
+    std::string string()const override{untested(); return _s;}
     Base const* value()const override{return nullptr;}
     Base const* e_val_(const Base*, const CARD_LIST*, int)const{return nullptr;}
   };

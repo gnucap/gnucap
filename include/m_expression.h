@@ -241,14 +241,15 @@ public:
   explicit Expression(const Expression&, const CARD_LIST*);
 public: // other
   bool as_bool()const {untested();return (!is_empty() && back()->data());}
-  double eval()const {
-    unreachable();
+  double eval()const { itested();
+    // unreachable(); obsolete.
     if(size() == 1){
       if(auto f = dynamic_cast<const Float*>(back()->data())) {
 	return f->value();
       }else if(auto i = dynamic_cast<const Integer*>(back()->data())) {
 	return i->value();
       }else{
+	incomplete(); // call value instead.
       }
     }else{
     }

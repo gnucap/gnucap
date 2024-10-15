@@ -57,7 +57,7 @@ public:
   vInteger* less(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data < X->_data)?1:0);}
   vInteger* greater(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data > X->_data)?1:0);}
   vInteger* leq(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data <= X->_data)?1:0);}
-  vInteger* geq(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data >= X->_data)?1:0);}
+  vInteger* geq(const Integer* X)const override	 {itested(); assert(X); return new vInteger((_data >= X->_data)?1:0);}
   vInteger* not_equal(const Integer* X)const override { untested(); assert(X); return new vInteger((_data != X->_data)?1:0);}
   vInteger* equal(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data == X->_data)?1:0);}
   vInteger* add(const Integer* X)const override	 { untested(); assert(X); return new vInteger(_data + X->_data);}
@@ -96,9 +96,9 @@ public:
   explicit vReal(const std::string& s)	{CS cs(CS::_STRING, s); parse(cs);}
 
   void dump(std::ostream& o)const override {itested();
-    if (_data >= BIGBIG) {
+    if (_data >= BIGBIG) { untested();
       o<<"inf";
-    }else if (_data <= -BIGBIG) {
+    }else if (_data <= -BIGBIG) { untested();
       o<<"-inf";
     // }else if (_data==NOT_INPUT) { untested();
     //   o<<"NA";
@@ -117,10 +117,10 @@ public:
   Integer* less(const Float* X)const override	{ untested();assert(X); return new Integer((_data < X->_data)?1:0);}
   Integer* greater(const Float* X)const override{ untested();assert(X); return new Integer((_data > X->_data)?1:0);}
   Integer* leq(const Float* X)const override	{ untested();assert(X); return new Integer((_data <= X->_data)?1:0);}
-  Integer* geq(const Float* X)const override	{ untested();assert(X); return new Integer((_data >= X->_data)?1:0);}
+  Integer* geq(const Float* X)const override	{itested();assert(X); return new Integer((_data >= X->_data)?1:0);}
   Integer* not_equal(const Float* X)const override { untested();assert(X); return new Integer((_data != X->_data)?1:0);}
   Integer* equal(const Float* X)const override	{ untested();assert(X); return new Integer((_data == X->_data)?1:0);}
-  Float* add(const Float* X)const override	{ untested();assert(X); return new Float(_data + X->_data);}
+  Float* add(const Float* X)const override	{itested();assert(X); return new Float(_data + X->_data);}
   Float* multiply(const Float* X)const override	{ untested();assert(X); return new Float(_data * X->_data);}
   Float* subtract(const Float* X)const override	{untested();assert(X); return new Float(_data - X->_data);}
   Float* r_subtract(const Float* X)const override{assert(X); return new Float(X->_data - _data);}

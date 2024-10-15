@@ -117,7 +117,7 @@ public:
       return val;
     }else if (_up) {untested();
       return (*_up)[Key];
-    }else{untested();
+    }else{
       return "0";
     }
   }
