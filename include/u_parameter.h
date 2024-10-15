@@ -107,6 +107,7 @@ public:
     return new PARAMETER(*this);
   }
   PARAMETER* pclone(void* p)const override{
+    assert(sizeof(PARAMETER) <= sizeof(PARAMETER<double>));
     return new(p) PARAMETER(*this);
   }
   
@@ -278,10 +279,7 @@ private:
     Base const* value()const override{return nullptr;}
     Base const* e_val_(const Base*, const CARD_LIST*, int)const override{return nullptr;}
   };
-  union{
-    char _mem;
-    PARAMETER<double> _space; // placeholder: biggest allowed type.
-  };
+  char _mem[sizeof(PARAMETER<double>)]{'\0'}; // biggest allowed type...
 private:
   PARA_BASE const* base()const { return reinterpret_cast<PARA_BASE const*>(&_mem);}
   PARA_BASE* base() { return reinterpret_cast<PARA_BASE*>(&_mem);}
@@ -322,6 +320,7 @@ public:
     return *this;
   }
   PARAM_INSTANCE& operator=(PARA_BASE const& p) {
+    base()->~PARA_BASE();
     p.pclone(&_mem);
     return *this;
   }
@@ -393,10 +392,14 @@ public:
     }
     return ret;
   }
-  operator double() const{ untested();
-    assert(0);
-    incomplete();
-    return NOT_VALID;
+  operator double() const{ itested();
+    // still used in Gnucsator.
+    Base const* v = base()->value();
+    if(auto f = dynamic_cast<Float const*>(v)){ untested();
+      return *f;
+    }else{ untested();
+      return NOT_VALID;
+    }
   }
   void parse(CS& cmd) {
     base()->parse(cmd);
@@ -451,7 +454,7 @@ public:
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
-  iterator find(std::string const& k) {itested(); return _pl.find(k); }
+  iterator find(std::string const& k) {untested(); return _pl.find(k); }
   const_iterator begin()const {itested(); return _pl.begin();}
   const_iterator end()const { return _pl.end();}
   const_iterator find(std::string const& k) const { return _pl.find(k); }

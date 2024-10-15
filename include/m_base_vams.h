@@ -121,7 +121,7 @@ public:
   Integer* not_equal(const Float* X)const override { untested();assert(X); return new Integer((_data != X->_data)?1:0);}
   Integer* equal(const Float* X)const override	{ untested();assert(X); return new Integer((_data == X->_data)?1:0);}
   Float* add(const Float* X)const override	{itested();assert(X); return new Float(_data + X->_data);}
-  Float* multiply(const Float* X)const override	{ untested();assert(X); return new Float(_data * X->_data);}
+  Float* multiply(const Float* X)const override	{itested();assert(X); return new Float(_data * X->_data);}
   Float* subtract(const Float* X)const override	{untested();assert(X); return new Float(_data - X->_data);}
   Float* r_subtract(const Float* X)const override{assert(X); return new Float(X->_data - _data);}
   Float* divide(const Float* X)const override	{untested();assert(X); return new Float(_data / X->_data);}

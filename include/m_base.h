@@ -405,21 +405,56 @@ inline Base* Integer::r_modulo  (const Float* X) const {untested(); assert(X); r
 /*--------------------------------------------------------------------------*/
 class String : public Base {
 protected:
-  std::string _data;
+  char* _data{NULL};
 public:
   void parse(CS&) override { untested();unreachable(); incomplete();}
 private:
   void dump(std::ostream& o)const override { untested();o << _data;}
+  explicit String(char* x) : _data(x) {}
 public:
   explicit String(CS& file) {untested();parse(file);}
-  explicit String(const std::string s = to_string(::NOT_INPUT)) :_data(s) {}
-  explicit String(Base::NOT_INPUT) :_data(to_string(::NOT_INPUT)) {}
-  /*explicit*/ String(const String& s) : Base(), _data(s._data) {}
-  operator const std::string&()const	{return _data;}
-  std::string val_string()const override	{return '"' + _data + '"';} // BUG: missing escape
-  bool to_bool()const override			{untested();return (_data != "");}
-  bool operator==(String const& s)const { untested(); return _data == s._data; }
-  bool operator!=(String const& s)const { untested(); return _data != s._data; }
+  explicit String(std::string const& s) { operator=(s); }
+  explicit String() { assert(!is_NA()); }
+  explicit String(Base::NOT_INPUT) { untested(); assert(!is_NA());}
+  /*explicit*/ String(const String& s) : Base() {
+    if(s._data){
+      _data = strdup(s._data);
+    }else{itested();
+      assert(!_data);
+    }
+  }
+  ~String() {
+    free(const_cast<char*>(_data));
+    _data = nullptr;
+  }
+  String& operator=(std::string const& data) {
+    free(_data);
+    _data = nullptr;
+    _data = strndup(data.c_str(), data.size());
+    if(!_data){ untested();
+      throw("String operator=, errno " + to_string(errno));
+    }else{
+    }
+    return *this;
+  }
+  operator std::string()const {
+    if(_data){
+      return std::string(_data);
+    }else{ untested();
+      return "nul"; // uh. make sure to query is_NA;
+    }
+  }
+  std::string val_string()const override	{
+    if(_data){
+      // BUG: missing escape
+      return '"' + std::string(_data) + '"';
+    }else{ untested();
+      return "nul"; // uh. make sure to query is_NA;
+    }
+  }
+  bool to_bool()const override			{untested();return (_data && *_data);}
+  bool operator==(String const& s)const { untested(); return _data && s._data && !strcmp(_data, s._data); }
+  bool operator!=(String const& s)const { untested(); return !operator==(s); }
 
   Base* minus()const override			{untested(); return nullptr;}
   Base* plus()const override			{untested(); return nullptr;}
@@ -429,14 +464,29 @@ public:
   String* assign(const Float*)const override    {untested(); return nullptr;}
   String* assign(const String*X)const override  {untested(); return X?new String(*X) : nullptr; }
 
-  Base* less(const String* X)const override	{untested();assert(X); return new Float((_data < X->_data)?1.:0.);}
-  Base* greater(const String* X)const override	{untested();assert(X); return new Float((_data > X->_data)?1.:0.);}
-  Base* leq(const String* X)const override	{untested();assert(X); return new Float((_data <= X->_data)?1.:0.);}
-  Base* geq(const String* X)const override	{untested();assert(X); return new Float((_data >= X->_data)?1.:0.);}
-  Base* not_equal(const String* X)const override{untested();assert(X); return new Float((_data != X->_data)?1.:0.);}
-  Base* equal(const String* X)const override	{assert(X); return new Float((_data == X->_data)?1.:0.);}
-  Base* add(const String*)const override	{	    return nullptr;}
-  Base* multiply(const String*)const override	{ untested();           return nullptr;}
+  Integer* less(const String* X)const override	   {untested(); return _data && X && X->_data?new Integer(  strcmp(_data, X->_data) <  0) : nullptr;}
+  Integer* greater(const String* X)const override  {untested(); return _data && X && X->_data?new Integer(  strcmp(_data, X->_data) >  0) : nullptr;}
+  Integer* leq(const String* X)const override	   {untested(); return _data && X && X->_data?new Integer(  strcmp(_data, X->_data) <= 0) : nullptr;}
+  Integer* geq(const String* X)const override	   {untested(); return _data && X && X->_data?new Integer(  strcmp(_data, X->_data) >= 0) : nullptr;}
+  Integer* not_equal(const String* X)const override{untested(); return _data && X && X->_data?new Integer(!!strcmp(_data, X->_data)     ) : nullptr;}
+  Integer* equal(const String* X)const override	   { return _data && X && X->_data?new Integer( !strcmp(_data, X->_data)     ) : nullptr;}
+  String* add(const String* X)const override	   {
+    /// move to some lib eventually ///
+    if(_data && X && X->_data) {
+      size_t len = strlen(_data);
+      char* buf = (char*) malloc(len+strlen(X->_data)+1);
+      if(!buf){ untested();
+	throw Exception("concat errno " + to_string(errno));
+      }else{
+      }
+      char* mid = (char*) mempcpy(buf, _data, len);
+      strcpy(mid, X->_data);
+      return new String(buf);
+    }else{ untested();
+      return nullptr;
+    }
+  }
+  Base* multiply(const String*)const override	{incomplete(); untested();           return nullptr;}
   Base* subtract(const String*)const override	{untested(); return nullptr;}
   Base* r_subtract(const String*)const override	{itested(); return nullptr;}
   Base* divide(const String*)const override	{untested(); return nullptr;}
@@ -489,7 +539,7 @@ public:
   Base* modulo    (const Integer*)const override {untested();return nullptr;}
   Base* r_modulo  (const Integer*)const override {untested();return nullptr;}
 
-  bool  is_NA()const			{return _data == to_string(::NOT_INPUT); } // fix later.
+  bool  is_NA()const			{return _data; }
 
   String to_String()const override { return *this; }
 }; // String

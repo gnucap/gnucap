@@ -55,24 +55,24 @@ void Float::parse(CS& File)
 void Name_String::parse(CS& File)
 {
   File.skipbl();
-  _data = "";
+  std::string data;
   if (File.is_pfloat()) {
     while (File.is_pfloat()) {
-      _data += File.ctoc();
+      data += File.ctoc();
     }
     if (File.match1("eE")) {
-      _data += File.ctoc();
+      data += File.ctoc();
       if (File.match1("+-")) {
-	_data += File.ctoc();
+	data += File.ctoc();
       }else{
       }
       while (File.is_digit()) {
-	_data += File.ctoc();
+	data += File.ctoc();
       }
     }else{
     }
     while (File.is_alpha()) {
-      _data += File.ctoc();
+      data += File.ctoc();
     }
   }else{
     int bracket = 0;
@@ -85,20 +85,28 @@ void Name_String::parse(CS& File)
       }else{
 	break;
       }
-      _data += File.ctoc();
+      data += File.ctoc();
     }
     if(bracket){
       File.warn(bDANGER, "missing ]?");
     }else{
     }
   }
+
+  String::operator=(data);
   File.skipbl();
 }
 /*--------------------------------------------------------------------------*/
 void Angled_String::parse(CS& File)
 { untested();
   File.skipbl();
-  _data = File.ctos("", "<", ">");
+  free(const_cast<char*>(_data));
+  _data = nullptr;
+  _data = strdup(File.ctos("", "<", ">").c_str());
+  if(!_data){ untested();
+    throw(Exception("strdup " + to_string(errno)));
+  }else{
+  }
   File.skipbl();
 }
 /*--------------------------------------------------------------------------*/
@@ -107,15 +115,15 @@ void Quoted_String::parse(CS& File)
   File.skipbl();
   size_t here = File.cursor();
   char quote = File.ctoc();
-  _data = "";
+  std::string data;
   // TODO: extend ctos and use it.
   for (;;) {
     if (File.match1('\\')) {itested();
-      _data += File.ctoc();
+      data += File.ctoc();
       if (File.match1(quote)) {itested();
-	_data += File.ctoc();
+	data += File.ctoc();
       }else if (File.match1('\\')) {itested();
-	_data += File.ctoc();
+	data += File.ctoc();
       }else{itested();
       }
     }else if (File.skip1(quote)) {
@@ -125,9 +133,10 @@ void Quoted_String::parse(CS& File)
       File.warn(bNOERROR, here, "string begins here");
       break;
     }else{
-      _data += File.ctoc();
+      data += File.ctoc();
     }
   }
+  String::operator=(data);
   File.skipbl();
 }
 /*--------------------------------------------------------------------------*/
@@ -145,7 +154,16 @@ void Tail_String::parse(CS& File)
   ++end;
   assert(end >= begin);
 
-  _data = std::string(begin, static_cast<size_t>(end-begin));
+  free(_data);
+  _data = nullptr;
+  char* data;
+  _data = data = (char*) malloc(static_cast<size_t>(end-begin)+1);
+  if(!_data){ untested();
+    throw Exception("malloc " + to_string(errno));
+  }else{
+  }
+  strncpy(data, begin, end-begin);
+  data[end-begin] = '\0';
 }
 /*--------------------------------------------------------------------------*/
 #if 0

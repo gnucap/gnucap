@@ -35,7 +35,7 @@ void PARAM_LIST::parse(CS& cmd)
   for (;;) {
     if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
       break;
-    }else{ untested();
+    }else{itested();
     }
     std::string Name;
     PARAMETER<double> Value;
@@ -43,11 +43,11 @@ void PARAM_LIST::parse(CS& cmd)
     trace2("parsed", Value, Value.string());
     if (cmd.stuck(&here)) {untested();
       break;
-    }else{ untested();
+    }else{itested();
     }
     if (OPT::case_insensitive) { untested();
       notstd::to_lower(&Name);
-    }else{ untested();
+    }else{itested();
     }
     _pl[Name] = Value;
     trace4("assigned", _pl[Name].string(), Value.string(), &_pl[Name], _pl[Name].operator->());
@@ -175,7 +175,7 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
 Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
 {
   static int recursion;
-  if (++recursion > OPT::recursion) { untested();
+  if (++recursion > OPT::recursion) {itested();
     recursion = 0;
     throw Exception("recursion too deep");
   }else{

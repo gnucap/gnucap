@@ -287,15 +287,19 @@ void Token_BINOP::stack_op(Expression* E)const
   E->pop_back();
   if (dynamic_cast<Token_SYMBOL*>(t1)) {
     if (dynamic_cast<Token_CONSTANT*>(t2)) {
-      if (strchr("+*", name()[0])) {
+      if (!strchr("+*", name()[0])) {
+	trace3("order unchanged.", t2->name(), name(), t1->name());
+	E->push_back(t2);
+	E->push_back(t1);
+      }else if (dynamic_cast<String const*>(t2->data())) {
+	trace3("string order unchanged.", t2->name(), name(), t1->name());
+	E->push_back(t2);
+	E->push_back(t1);
+      }else{
 	trace3("order changed0", t2->name(), name(), t1->name());
 	// change order to enable later optimization
 	E->push_back(t1);
 	E->push_back(t2);
-      }else{
-	trace3("order unchanged.", t2->name(), name(), t1->name());
-	E->push_back(t2);
-	E->push_back(t1);
       }
     }else{
       // two symbols.
@@ -440,7 +444,7 @@ void Token_CONSTANT::stack_op(Expression* E)const
     assert(cl);
     assert(E);
     E->push_back(new Token_CONSTANT(cl));
-  }else{
+  }else{ untested();
   }
 }
 /*--------------------------------------------------------------------------*/
