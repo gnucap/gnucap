@@ -41,12 +41,12 @@ void Integer::parse(CS& File)
 void Float::parse(CS& File)
 {
   if (File >> "NA") {
-    _data = NOT_INPUT;
+    _data = ::NOT_INPUT;
   }else{
     size_t here = File.cursor();
     File >> _data;
     if (File.stuck(&here)) {
-      _data = NOT_INPUT;
+      _data = ::NOT_INPUT;
     }else{
     }
   }

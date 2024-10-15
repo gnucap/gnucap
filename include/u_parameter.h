@@ -70,22 +70,27 @@ public:
 /*--------------------------------------------------------------------------*/
 // essentially map PARAMETER<double> PARAMETER<int>     PARAMETER<bool>
 //              to PARAMETER<Float>  PARAMETER<Integer> PARAMETER<Integer>
+// handle comparison with NOT_INPUT. only works with doubles.
 // for backwards compatibility only
 template<class T>
 struct data_type {
   typedef T value_type;
+  bool is_input(T)const {unreachable(); untested(); return true; }
 };
 template<>
 struct data_type<double> {
   typedef Float value_type;
+  bool is_input(double const& x)const { return x != NOT_INPUT; }
 };
 template<>
 struct data_type<int> {
   typedef Integer value_type;
+  bool is_input(int)const { /* unreachable(); incomplete(); */ return true; }
 };
 template<>
 struct data_type<bool> {
   typedef Integer value_type;
+  bool is_input(bool)const {unreachable(); untested(); return true; }
 };
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -93,7 +98,7 @@ class PARAMETER : public PARA_BASE {
   typedef typename data_type<T>::value_type value_type;
   mutable value_type _v;
 public:
-  explicit PARAMETER() : PARA_BASE(), _v(value_type().not_input()) {}
+  explicit PARAMETER() : PARA_BASE(), _v(Base::_NOT_INPUT) {}
 	   PARAMETER(const PARAMETER<T>& p) : PARA_BASE(p), _v(p._v) {}
   explicit PARAMETER(T v) :PARA_BASE(), _v(v) {}
   //explicit PARAMETER(T v, const std::string& s) :_v(v), _s(s) {untested();}
@@ -105,7 +110,7 @@ public:
     return new(p) PARAMETER(*this);
   }
   
-  bool	has_good_value()const override {return _v != not_input();}
+  bool	has_good_value()const override {return !_v.is_NA();}
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
@@ -156,10 +161,11 @@ public:
     return (p && _v == p->_v  &&  _s == p->_s);
   }
   bool  operator==(const T& v)const {
-    if (v != value_type().not_input()) {
+    if (data_type<T>().is_input(v)) {
       return _v == v;
     }else{
-      return (_v == value_type().not_input() || !has_hard_value());
+      // deal with PARAMETER<double> x; "x == NOT_INPUT".
+      return (_v.is_NA() || !has_hard_value());
     }
   }
   //bool	operator!=(const PARAMETER& p)const {untested();
@@ -169,7 +175,7 @@ public:
   //  return !(*this == v);
   //}
 protected:
-  virtual value_type not_input()const { return value_type().not_input(); }
+  // virtual value_type not_input()const { return value_type().not_input(); }
   Base const* e_val_(const Base* def, const CARD_LIST* scope, int recursion=0)const;
   friend class PARAM_INSTANCE;
 private:
@@ -432,8 +438,8 @@ public:
   iterator end() {return _pl.end();}
   iterator find(std::string const& k) {itested(); return _pl.find(k); }
   const_iterator begin()const {itested(); return _pl.begin();}
-  const_iterator end()const {itested(); return _pl.end();}
-  const_iterator find(std::string const& k) const {itested(); return _pl.find(k); }
+  const_iterator end()const { return _pl.end();}
+  const_iterator find(std::string const& k) const { return _pl.find(k); }
 };
 /*--------------------------------------------------------------------------*/
 template <>
@@ -498,7 +504,7 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
 
  // T v = T(reduced.eval());
   value_type const* v = def.assign(reduced.value());
-  if(v && v->value() == not_input()){
+  if(v && v->is_NA()) { untested();
     delete v;
     v = nullptr;
   }else{
@@ -551,7 +557,7 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int re
 
   auto d = dynamic_cast<value_type const*>(Def);
 
-  T def = not_input();
+  value_type def(Base::_NOT_INPUT);
   if(d){
     def = *d;
   }else{
@@ -572,9 +578,8 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int re
   }else if (_s != "#") {
     // anything else means look up the value
     _v = lookup_solve(def, scope);
-    if (_v == NOT_INPUT) {
+    if (_v.is_NA()) {
       //BUG// needs to show scope
-      //BUG// T==bool?
       //BUG// it is likely to have a numeric overflow resulting from the bad value
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
       // throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");

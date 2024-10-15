@@ -35,7 +35,7 @@ void PARAM_LIST::parse(CS& cmd)
   for (;;) {
     if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
       break;
-    }else{
+    }else{ untested();
     }
     std::string Name;
     PARAMETER<double> Value;
@@ -44,11 +44,11 @@ void PARAM_LIST::parse(CS& cmd)
     trace2("parsed", Value, Value.string());
     if (cmd.stuck(&here)) {untested();
       break;
-    }else{
+    }else{ untested();
     }
-    if (OPT::case_insensitive) {
+    if (OPT::case_insensitive) { untested();
       notstd::to_lower(&Name);
-    }else{
+    }else{ untested();
     }
     _pl[Name] = Value;
     trace4("assigned", _pl[Name].string(), Value.string(), &_pl[Name], _pl[Name].operator->());
@@ -186,7 +186,7 @@ Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
   }else{
   }
 
-  // try {
+  // try { untested();
 
   Base const* ret = nullptr;
 
@@ -198,7 +198,7 @@ Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
   --recursion;
   return ret;
 
-  // }catch(Exception const& e){
+  // }catch(Exception const& e){ untested();
   //   unreachable();
   //   return nullptr;
   // }

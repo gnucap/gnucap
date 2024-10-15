@@ -90,7 +90,7 @@ class vReal : public Float {
   using Float::r_modulo;
 
 public:
-  vReal(double x=NOT_INPUT) : Float(x) {}
+  vReal(double x=::NOT_INPUT) : Float(x) {}
   /*implicit*/ vReal(const vReal& p) : Float(p) {}
   explicit vReal(CS& file)		{untested();parse(file);}
   explicit vReal(const std::string& s)	{CS cs(CS::_STRING, s); parse(cs);}

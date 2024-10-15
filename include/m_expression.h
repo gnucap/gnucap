@@ -253,7 +253,7 @@ public: // other
       }
     }else{
     }
-    return NOT_INPUT; // bug, why double?
+    return ::NOT_INPUT; // bug, why double?
   }
   Base const* value()const {
     if(size() == 1){
