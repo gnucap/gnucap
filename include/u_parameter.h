@@ -115,7 +115,7 @@ public:
 
   operator T()const {return _v;}
   T e_val(const T& def, const CARD_LIST* scope, int recurse=0)const;
-  Base const* value()const { return &_v;}
+  Base const* value()const override { return &_v;}
   void	parse(CS& cmd) override;
 
   std::string string()const override{
@@ -176,7 +176,7 @@ public:
   //}
 protected:
   // virtual value_type not_input()const { return value_type().not_input(); }
-  Base const* e_val_(const Base* def, const CARD_LIST* scope, int recursion=0)const;
+  Base const* e_val_(const Base* def, const CARD_LIST* scope, int recursion=0)const override;
   friend class PARAM_INSTANCE;
 private:
   T lookup_solve(const T& def, const CARD_LIST* scope)const;
@@ -276,7 +276,7 @@ private:
     PARA_NONE& operator=(const Base*)override { untested();unreachable(); return *this;}
     std::string string()const override{untested(); return _s;}
     Base const* value()const override{return nullptr;}
-    Base const* e_val_(const Base*, const CARD_LIST*, int)const{return nullptr;}
+    Base const* e_val_(const Base*, const CARD_LIST*, int)const override{return nullptr;}
   };
   union{
     char _mem;
@@ -378,6 +378,21 @@ public:
     return base()->has_hard_value();
   }
   Base const* e_val(Base const* def, const CARD_LIST* scope)const;
+  double e_val(int def, const CARD_LIST* scope)const{itested();
+    return e_val(double(def), scope);
+  }
+  double e_val(double def, const CARD_LIST* scope)const{itested();
+    Float d(def);
+    Base const* v = e_val(&d, scope);
+    Float* x = d.assign(v);
+    double ret;
+    if(x){ itested();
+      ret = *x;
+    }else{ untested();
+      ret = ::NOT_INPUT;
+    }
+    return ret;
+  }
   operator double() const{ untested();
     assert(0);
     incomplete();
@@ -570,9 +585,8 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int re
   if (_s == "") {
     // blank string means to use default value
     _v = def;
-    if (recurse) { untested();
-      // reachable?
-      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
+    if (recurse) { itested();
+      // error(bWARNING, "parameter " + _s +  " not specified, using default\n");
     }else{
     }
   }else if (_s != "#") {

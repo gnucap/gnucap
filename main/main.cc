@@ -219,7 +219,7 @@ static void process_cmd_line(int argc, const char *argv[])
       }else{
 	try {
 	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
-	}catch (Exception& e) {itested();
+	}catch (Exception& e) {
 	  error(bDANGER, e.message() + '\n');
 	  finish();
 	}

@@ -39,7 +39,6 @@ void PARAM_LIST::parse(CS& cmd)
     }
     std::string Name;
     PARAMETER<double> Value;
-    assert(0);
     cmd >> Name >> '=' >> Value;
     trace2("parsed", Value, Value.string());
     if (cmd.stuck(&here)) {untested();

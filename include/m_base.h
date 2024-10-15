@@ -186,7 +186,7 @@ private:
   void dump(std::ostream& o)const override {itested();
     if (!_input) { untested();
       o << "NA";
-    }else{ untested();
+    }else{ itested();
       o << _data;
     }
   }
@@ -275,8 +275,8 @@ public:
   bool  is_NA()const			{return !_input;}
 
 public:
-  Integer to_Integer()const	{ return *this; }
-  Float to_Float()const;
+  Integer to_Integer()const override { return *this; }
+  Float to_Float()const override;
 };
 /*--------------------------------------------------------------------------*/
 // floating point value with legacy arithmetics
@@ -378,8 +378,8 @@ public:
   bool  is_NA()const			{return _data == ::NOT_INPUT;}
 
 public:
-  Integer to_Integer()const	{ return Integer(static_cast<int32_t>(_data)); }
-  Float to_Float()const   { return *this; }
+  Integer to_Integer()const override { return Integer(static_cast<int32_t>(_data)); }
+  Float to_Float()const override { return *this; }
 }; // Float
 /*--------------------------------------------------------------------------*/
 inline Float Integer::to_Float() const
@@ -491,7 +491,7 @@ public:
 
   bool  is_NA()const			{return _data == to_string(::NOT_INPUT); } // fix later.
 
-  String to_String()const{ return *this; }
+  String to_String()const override { return *this; }
 }; // String
 /*--------------------------------------------------------------------------*/
 inline Base* Integer::divide(const Integer* X)  const  { untested(); assert(X); return new Float(double(_data) / double(X->_data));}
