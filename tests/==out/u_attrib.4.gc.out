@@ -24,7 +24,7 @@
 "(* k *)(* l *) a2 a8(a,b); "
 "endmodule; "
 "list "
-(* a *) module aaa (c,d);
+(* a *) module aaa (.c(c),.d(d));
 resistor #(.r(100)) r1 (.p(a),.n(b));
 (* b *) resistor #(.r(200)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));
@@ -33,7 +33,7 @@ resistor #(.r(200)) r4 (.p(a),.n(b));
 (* d *) resistor #(.r(200)) r6 (.p(a),.n(b));
 endmodule // aaa
 
-(* h *) module bbb (e,f);
+(* h *) module bbb (.e(e),.f(f));
 resistor #(.r(100)) r1 (.p(a),.n(b));
 (* b *) resistor #(.r(200)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));
@@ -78,7 +78,7 @@ endmodule // bbb
 "(* k *)(* l *) a2 a8(a,b); "
 "endmodule; "
 "list "
-(* a *) module aaa (c,d);
+(* a *) module aaa (.c(c),.d(d));
 resistor #(.r(100)) r1 (.p(a),.n(b));
 (* b *) resistor #(.r(200)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));
@@ -87,7 +87,7 @@ resistor #(.r(200)) r4 (.p(a),.n(b));
 (* d *) resistor #(.r(200)) r6 (.p(a),.n(b));
 endmodule // aaa
 
-(* h *) module bbb (e,f);
+(* h *) module bbb (.e(e),.f(f));
 resistor #(.r(100)) r1 (.p(a),.n(b));
 (* b *) resistor #(.r(200)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));
@@ -132,7 +132,7 @@ endmodule // bbb
 "(* k *)(* l *) a2 a8(a,b); "
 "endmodule; "
 "list "
-(* a *) module aaa (c,d);
+(* a *) module aaa (.c(c),.d(d));
 resistor #(.r(100)) r1 (.p(a),.n(b));
 (* b *) resistor #(.r(200)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));
@@ -141,7 +141,7 @@ resistor #(.r(200)) r4 (.p(a),.n(b));
 (* d *) resistor #(.r(200)) r6 (.p(a),.n(b));
 endmodule // aaa
 
-(* h *) module bbb (e,f);
+(* h *) module bbb (.e(e),.f(f));
 resistor #(.r(100)) r1 (.p(a),.n(b));
 (* b *) resistor #(.r(200)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));

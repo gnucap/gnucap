@@ -72,8 +72,6 @@ static DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher,
 namespace {
 /*--------------------------------------------------------------------------*/
 class DCOP : public SIM {
-public:
-  void	finish()override;
 protected:
   void	fix_args(int);
   void	options(CS&, int);
@@ -83,6 +81,9 @@ private:
   void	sweep_recursive(int);
   void	first(int);
   bool	next(int);
+  void	final()override		{_scope->dc_final();}
+  void	finish()override;
+
   explicit DCOP(const DCOP&): SIM() {unreachable(); incomplete();}
 protected:
   void set_sweepval(int i, double d){
@@ -230,6 +231,7 @@ void DCOP::finish(void)
       std::string previous_value = _param_zap[ii].string();
       CS cmd(CS::_STRING, n + "=" + previous_value);
       pl->set(n, previous_value);
+    }else{
     }
     assert(!_ctrl[ii]);
   }
@@ -454,7 +456,11 @@ void DCOP::sweep()
     _sim->clear_limit();
     _scope->tr_begin();
   }
-  sweep_recursive(_n_sweeps);
+  try {
+    sweep_recursive(_n_sweeps);
+  }catch (Exception& e) {untested();
+    error(bDANGER, e.message() + '\n');
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DCOP::precalc()

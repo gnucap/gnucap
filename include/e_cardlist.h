@@ -128,10 +128,13 @@ public:
   TIME_PAIR  tr_review();
   CARD_LIST& tr_accept();
   CARD_LIST& tr_unload();
+  CARD_LIST& dc_final();
+  CARD_LIST& tr_final();
   CARD_LIST& ac_iwant_matrix();
   CARD_LIST& ac_begin();
   CARD_LIST& do_ac();
   CARD_LIST& ac_load();
+  CARD_LIST& ac_final();
   double noise_num(std::string const&)const;
 
   NODE_MAP*   nodes()const {assert(_nm); return _nm;}

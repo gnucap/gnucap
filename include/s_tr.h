@@ -65,6 +65,8 @@ public:
 public:
   void	do_it(CS&, CARD_LIST* scope)override;
   std::string status()const override;
+  void	final()override		{_scope->tr_final();}
+  void	finish()override	{}
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:		// s_tr_rev.cc
   bool	review();

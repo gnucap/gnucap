@@ -58,10 +58,12 @@ public:
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
   const std::string long_label()const override {unreachable(); return "";}
-private:
+protected:
   virtual void	setup(CS&)	= 0;
   virtual void	sweep()		= 0;
-  virtual void	finish()	{}
+  virtual void	final()		= 0;
+  virtual void	finish()	= 0;
+
   virtual bool	is_step_rejected()const {return false;}
 
   explicit SIM(const SIM&):CMD(),_scope(nullptr) {unreachable(); incomplete();}

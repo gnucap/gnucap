@@ -49,10 +49,11 @@ public:
 private:
   explicit FOURIER(const FOURIER&): TRANSIENT() {unreachable(); incomplete();}
   std::string status()const override {untested();return "";}
-  void	setup(CS&)override;	/* s_fo_set.cc */
+  void	setup(CS&)override;
   void	fftallocate();
   void	fftunallocate();
-  void	foout();	/* s_fo_out.cc */
+  void	final()override;
+  //void finish()override	{untested();}
   void	fohead(const PROBE&);
   void	foprint(COMPLEX*);
   void	store_results(double)override; // override virtual
@@ -97,12 +98,10 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
 
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();		break;
-    case rBATCH:	untested();
-      // fall through
-    case rINTERACTIVE:  itested();
-      // fall through
-    case rSCRIPT:	sweep(); foout();	break;
-    case rPRESET:	untested(); /*nothing*/ break;
+    case rBATCH:	untested();sweep(); final(); break;
+    case rINTERACTIVE:  itested();sweep(); final(); break;
+    case rSCRIPT:	sweep(); final(); break;
+    case rPRESET:	untested();/*nothing*/	break;
     }
   }catch (Exception& e) {untested();
     error(bDANGER, e.message() + '\n');
@@ -141,8 +140,10 @@ void FOURIER::store_results(double X)
 /*--------------------------------------------------------------------------*/
 /* foout:  print out the results of the transform
  */
-void FOURIER::foout()
+void FOURIER::final()
 {
+  TRANSIENT::final();
+
   plclose();
   plclear();
   int ii = 0;

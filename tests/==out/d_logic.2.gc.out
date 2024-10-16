@@ -36,7 +36,7 @@ inv #(.model(mos)) U4 (.out(4),.in1(3));
 inv #(.model(mos)) U5 (.out(5),.in1(4));
 inv #(.model(mos)) U6 (.out(6),.in1(5));
 inv #(.model(mos)) U7 (.out(7),.in1(6));
-module mosinv1 (2,3);
+module mosinv1 (.2(2),.3(3));
 vsource #( DC  5.) Vdd (.p(1),.n(0));
 nmos #(.l(100.u),.w(100.u),.nrd(1.),.nrs(1.)) M1 (.d(2),.g(3),.s(0),.b(0));
 pmos #(.l(100.u),.w(100.u),.nrd(1.),.nrs(1.)) M2 (.d(2),.g(3),.s(1),.b(1));

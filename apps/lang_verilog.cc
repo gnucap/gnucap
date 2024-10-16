@@ -702,6 +702,7 @@ void LANG_VERILOG::print_ports_long(OMSTREAM& o, const COMPONENT* x)
   o << ')';
 }
 /*--------------------------------------------------------------------------*/
+#if 0
 void LANG_VERILOG::print_ports_short(OMSTREAM& o, const COMPONENT* x)
 {
   // print in short form ...   value only
@@ -723,6 +724,7 @@ void LANG_VERILOG::print_ports_short(OMSTREAM& o, const COMPONENT* x)
   }
   o << ")";
 }
+#endif
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
@@ -744,7 +746,7 @@ void LANG_VERILOG::print_module(OMSTREAM& o, const BASE_SUBCKT* x)
 
   print_attributes(o, x->id_tag());
   o << "module " <<  x->short_label();
-  print_ports_short(o, x);
+  print_ports_long(o, x);
   o << ";\n";
   
   for (CARD_LIST::const_iterator ci = x->subckt()->begin(); ci != x->subckt()->end(); ++ci) {

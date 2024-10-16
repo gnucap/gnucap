@@ -55,19 +55,19 @@ void SIM::command_base(CS& cmd)
 
     switch (ENV::run_mode) {
     case rPRE_MAIN:	unreachable();	break;
-    case rBATCH:
-    case rINTERACTIVE:
-    case rSCRIPT:	sweep();	break;
+    case rBATCH:	sweep(); final(); break;
+    case rINTERACTIVE:	itested();sweep(); final(); break;
+    case rSCRIPT:	sweep(); final(); break;
     case rPRESET:	/*nothing*/	break;
     }
   }catch (Exception& e) {
     error(bDANGER, e.message() + '\n');
     _sim->count_iterations(iTOTAL);
-    _sim->_lu.unallocate();
-    _sim->_aa.unallocate();
   }
-  _sim->unalloc_vectors();
   finish();
+  _sim->unalloc_vectors();
+  _sim->_lu.unallocate();
+  _sim->_aa.unallocate();
 
   ::status.total.stop();
 }

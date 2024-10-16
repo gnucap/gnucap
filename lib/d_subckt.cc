@@ -113,14 +113,20 @@ private: // no-ops for prototype
   void tr_advance()override {}
   void tr_restore()override {}
   void tr_regress()override {}
+  void dc_final()override {}
+  void tr_final()override {}
   void dc_advance()override {}
   void ac_begin()override {}
   void do_ac()override {}
   void ac_load()override {}
+  void ac_final()override {}
   bool do_tr()override { return true;}
   bool tr_needs_eval()const override {untested(); return false;}
   void tr_queue_eval()override {}
-  std::string port_name(int i)const override{return port_value(i);}
+  std::string  _port_name[PORTS_PER_SUBCKT];
+  int  set_port_by_name(std::string& name, std::string& value) override;
+  std::string port_name(int i)const override
+	{return (_port_name[i]!="") ? _port_name[i] : port_value(i);}
 } pp(&Default_SUBCKT);
 DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt|module", &pp);
 /*--------------------------------------------------------------------------*/
@@ -134,6 +140,14 @@ DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO(COMMON_COMPONENT* c)
   :DEV_SUBCKT(c)
 {
   new_subckt();
+}
+/*--------------------------------------------------------------------------*/
+int DEV_SUBCKT_PROTO::set_port_by_name(std::string& name, std::string& value)
+{
+  int index = net_nodes();
+  _port_name[index] = name;
+  set_port_by_index(index, value); // bumps _net_nodes
+  return index;
 }
 /*--------------------------------------------------------------------------*/
 CARD* DEV_SUBCKT_PROTO::clone_instance()const
