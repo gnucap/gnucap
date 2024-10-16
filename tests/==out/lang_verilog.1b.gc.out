@@ -2,16 +2,16 @@ paramset zz npn;
  .level=1; .kf=NA( 0.); .af=NA( 1.); .bf=150; .br=NA( 1.); .is=NA( 100.E-18); .nf=NA( 1.); .nr=NA( 1.); .c4=NA( 0.); .nc=NA( 2.); .c2=NA( 0.); .ne=NA( 1.5); .rb=NA( 0.); .re=NA( 0.); .rc=NA( 0.); .cjc=NA( 0.); .cje=NA( 0.); .cjs=NA( 0.); .mjc=NA( 0.33); .mje=NA( 0.33); .mjs=NA( 0.); .vjc=NA( 0.75); .vje=NA( 0.75); .vjs=NA( 0.75); .xcjc=NA( 1.); .itf=NA( 0.); .ptf=NA( 0.); .tf=NA( 0.); .tr=NA( 0.); .xtf=NA( 0.); .xtb=NA( 0.); .xti=NA( 3.); .eg=NA( 1.11);
 endparamset
 
-module dumb_resistor (a,b);
+module dumb_resistor (.aa(a),.bb(b));
 resistor #(.r(r)) R1 (.p(a),.n(b));
 endmodule // dumb_resistor
 
-module foo (vcc,in,out);
+module foo (.vcc(vcc),.in(in),.out(out));
 resistor #(.r(z)) Rc (.p(c),.n(vcc));
 zz #(.area(NA( 1.))) q1 (.c(c),.b(b),.e(e));
-dumb_resistor #(.r(abs(-z)/10)) Re (.a(e),.b(0));
+dumb_resistor #(.r(abs(-z)/10)) Re (.aa(e),.bb(0));
 resistor #(.r(100k)) Rb1 (.p(b),.n(vcc));
-dumb_resistor #(.r(r)) Rb2 (.a(b),.b(0));
+dumb_resistor #(.r(r)) Rb2 (.aa(b),.bb(0));
 capacitor #(.c(1u)) Cin (.p(b),.n(in));
 capacitor #(.c(1u)) Cout (.p(c),.n(out));
 resistor #(.r(100k)) Rin (.p(in),.n(0));

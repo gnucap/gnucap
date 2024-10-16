@@ -1,8 +1,8 @@
-module r (a,b);
+module r (.a(a),.b(b));
 resistor #(.r(x+y)) r1 (.p(a),.n(b));
 endmodule // r
 
-module rr (a,b);
+module rr (.a(a),.b(b));
 r #(.x(x/3)) r0 (.a(a),.b(b));
 endmodule // rr
 
@@ -14,11 +14,11 @@ rr #(.x(6.1)) s3 (.a(1),.b(0));
 #           v(1)       r(s0.r0.r1) r(s1.r0.r1) r(s2.r0.r1) r(s3.r0.r1)
  27.        0.99998    2.         2.         2.         3.        
 vsource #(.dc(1)) v1 (.p(1),.n(0));
-module r (1,2);
+module r (.1(1),.2(2));
 resistor #(.r(X+Y)) R1 (.p(1),.n(2));
 endmodule // r
 
-module rr (1,2);
+module rr (.1(1),.2(2));
 r #(.X(X/3)) X0 (.(1),.(2));
 endmodule // rr
 
