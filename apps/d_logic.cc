@@ -47,7 +47,7 @@ private:
   static int	_count;
   node_t	nodes[PORTS_PER_GATE];	/* PORTS_PER_GATE <= PORTSPERSUBCKT */
 public:
-  explicit	DEV_LOGIC(COMMON_COMPONENT* c=NULL);
+  explicit	DEV_LOGIC(COMMON_COMPONENT* c=nullptr);
   explicit	DEV_LOGIC(const DEV_LOGIC& p);
 		~DEV_LOGIC()		{--_count;}
 private: // override virtuals
@@ -301,7 +301,7 @@ void DEV_LOGIC::expand()
 	    long_label() + ": " + subckt_name + " is not a subckt, forcing digital\n");
     }else{
       _gatemode = OPT::mode;    
-      renew_subckt(model, NULL/*&(c->_params)*/);    
+      renew_subckt(model, nullptr/*&(c->_params)*/);    
       subckt()->expand();
     }
   }catch (Exception_Cant_Find&) {

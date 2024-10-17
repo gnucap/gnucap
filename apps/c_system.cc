@@ -42,7 +42,7 @@ public:
       if (cmd.more()) {itested();
 	OS::system(editor + ' ' + cmd.tail());
       }else{ untested();
-	std::string temp_file("/tmp/gnucap" + to_string(unsigned(time(NULL))));
+	std::string temp_file("/tmp/gnucap" + to_string(unsigned(time(nullptr))));
 	command("save " + temp_file + " quiet", Scope);
 	OS::system(editor + ' ' + temp_file);
 	command("get " + temp_file + " quiet", Scope);

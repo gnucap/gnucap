@@ -205,7 +205,7 @@ DEV_DOT* LANG_SPECTRE::parse_command(CS& cmd, DEV_DOT* x)
     }
   }
   delete x;
-  return NULL;
+  return nullptr;
 }
 /*--------------------------------------------------------------------------*/
 MODEL_CARD* LANG_SPECTRE::parse_paramset(CS& cmd, MODEL_CARD* x)
@@ -305,7 +305,7 @@ std::string LANG_SPECTRE::find_type_in_string(CS& cmd)
 void LANG_SPECTRE::parse_top_item(CS& cmd, CARD_LIST* Scope)
 {
   cmd.get_line("gnucap-spectre>");
-  new__instance(cmd, NULL, Scope);
+  new__instance(cmd, nullptr, Scope);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -416,7 +416,7 @@ class CMD_MODEL : public CMD {
     cmd >> base_name;
 
     //const MODEL_CARD* p = model_dispatcher[base_name];
-    const CARD* p = lang_spectre.find_proto(base_name, NULL);
+    const CARD* p = lang_spectre.find_proto(base_name, nullptr);
     if (p) {
       CARD* cl = p->clone();
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);

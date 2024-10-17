@@ -369,7 +369,7 @@ double const MODEL_SEMI_BASE::_default_tc1 = 0.;
 double const MODEL_SEMI_BASE::_default_tc2 = 0.;
 /*--------------------------------------------------------------------------*/
 MODEL_SEMI_BASE::MODEL_SEMI_BASE()
-  :MODEL_CARD(NULL),
+  :MODEL_CARD(nullptr),
    _narrow(_default_narrow),
    _defw(_default_defw),
    _tc1(_default_tc1),

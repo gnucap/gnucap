@@ -100,11 +100,11 @@ private: // override virtual
 /*--------------------------------------------------------------------------*/
 DEV_CPOLY_G::DEV_CPOLY_G(const DEV_CPOLY_G& p)
   :ELEMENT(p),
-   _values(NULL),
-   _old_values(NULL),
+   _values(nullptr),
+   _old_values(nullptr),
    _n_ports(p._n_ports),
    _time(NOT_VALID),
-   _inputs(NULL)
+   _inputs(nullptr)
 {
   // not really a copy .. only valid to copy a default
   // too lazy to do it right, and that's all that is being used
@@ -118,11 +118,11 @@ DEV_CPOLY_G::DEV_CPOLY_G(const DEV_CPOLY_G& p)
 /*--------------------------------------------------------------------------*/
 DEV_CPOLY_G::DEV_CPOLY_G()
   :ELEMENT(),
-   _values(NULL),
-   _old_values(NULL),
+   _values(nullptr),
+   _old_values(nullptr),
    _n_ports(0),
    _time(NOT_VALID),
-   _inputs(NULL)
+   _inputs(nullptr)
 {
 }
 /*--------------------------------------------------------------------------*/

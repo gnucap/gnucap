@@ -102,13 +102,13 @@ private: // override virtual
 /*--------------------------------------------------------------------------*/
 DEV_CPOLY_CAP::DEV_CPOLY_CAP(const DEV_CPOLY_CAP& p)
   :STORAGE(p),
-   _vy0(NULL),
-   _vy1(NULL),
-   _vi0(NULL),
-   _vi1(NULL),
+   _vy0(nullptr),
+   _vy1(nullptr),
+   _vi0(nullptr),
+   _vi1(nullptr),
    _n_ports(p._n_ports),
    _load_time(NOT_VALID),
-   _inputs(NULL)
+   _inputs(nullptr)
 {
   // not really a copy .. only valid to copy a default
   // too lazy to do it right, and that's all that is being used
@@ -124,13 +124,13 @@ DEV_CPOLY_CAP::DEV_CPOLY_CAP(const DEV_CPOLY_CAP& p)
 /*--------------------------------------------------------------------------*/
 DEV_CPOLY_CAP::DEV_CPOLY_CAP()
   :STORAGE(),
-   _vy0(NULL),
-   _vy1(NULL),
-   _vi0(NULL),
-   _vi1(NULL),
+   _vy0(nullptr),
+   _vy1(nullptr),
+   _vi0(nullptr),
+   _vi1(nullptr),
    _n_ports(0),
    _load_time(NOT_VALID),
-   _inputs(NULL)
+   _inputs(nullptr)
 {
 }
 /*--------------------------------------------------------------------------*/

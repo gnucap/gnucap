@@ -59,7 +59,7 @@ public:
 /*--------------------------------------------------------------------------*/
 class SWITCH_BASE : public ELEMENT {
 protected:
-  explicit	SWITCH_BASE(COMMON_COMPONENT* c=NULL);
+  explicit	SWITCH_BASE(COMMON_COMPONENT* c=nullptr);
   explicit	SWITCH_BASE(const SWITCH_BASE& p);
 protected: // override virtual
   std::string value_name()const override	{return "";}
@@ -101,7 +101,7 @@ class DEV_VSWITCH : public SWITCH_BASE {
 private:
   explicit  DEV_VSWITCH(const DEV_VSWITCH& p) :SWITCH_BASE(p) {}
 public:
-  explicit  DEV_VSWITCH(COMMON_COMPONENT* c=NULL) :SWITCH_BASE(c) {}
+  explicit  DEV_VSWITCH(COMMON_COMPONENT* c=nullptr) :SWITCH_BASE(c) {}
 private: // override virtual
   int	    max_nodes()const override	{return 4;}
   int	    min_nodes()const override	{return 4;}
@@ -122,7 +122,7 @@ private:
   explicit  DEV_CSWITCH(const DEV_CSWITCH& p) 
     :SWITCH_BASE(p), _input_label(p._input_label) {}
 public:
-  explicit  DEV_CSWITCH(COMMON_COMPONENT* c=NULL) :SWITCH_BASE(c), _input_label() {}
+  explicit  DEV_CSWITCH(COMMON_COMPONENT* c=nullptr) :SWITCH_BASE(c), _input_label() {}
 private: // override virtual
   int	    max_nodes()const override	{return 3;}
   int	    ext_nodes()const override	{return 2;}
@@ -378,7 +378,7 @@ std::string MODEL_SWITCH::param_value(int i)const
 /*--------------------------------------------------------------------------*/
 SWITCH_BASE::SWITCH_BASE(COMMON_COMPONENT* c)
   :ELEMENT(c),
-   _input(NULL)
+   _input(nullptr)
 {
   std::fill_n(_in, int(OPT::_keep_time_steps), 0.);
   std::fill_n(_state, int(OPT::_keep_time_steps), _UNKNOWN);
@@ -386,7 +386,7 @@ SWITCH_BASE::SWITCH_BASE(COMMON_COMPONENT* c)
 /*--------------------------------------------------------------------------*/
 SWITCH_BASE::SWITCH_BASE(const SWITCH_BASE& p)
   :ELEMENT(p),
-   _input(NULL)
+   _input(nullptr)
 {
   notstd::copy_n(p._in, int(OPT::_keep_time_steps), _in);
   notstd::copy_n(p._state, int(OPT::_keep_time_steps), _state);  
