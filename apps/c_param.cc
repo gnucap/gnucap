@@ -69,7 +69,7 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
 	  par = PARAMETER<vString>(); // !
 	  break;
   case 13: untested();
-	  par = PARAMETER<Quoted_String>();
+	  par = PARAMETER<vString>();
 	  break;
   case 10:
 	  par = PARAMETER<vReal>();

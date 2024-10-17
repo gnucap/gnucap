@@ -22,6 +22,7 @@
  */
 //testing=script,sparse 2009.08.13
 #include "m_base.h"
+#include "m_base_vams.h"
 /*--------------------------------------------------------------------------*/
 void Integer::parse(CS& File)
 {
@@ -110,7 +111,7 @@ void Angled_String::parse(CS& File)
   File.skipbl();
 }
 /*--------------------------------------------------------------------------*/
-void Quoted_String::parse(CS& File)
+void vString::parse(CS& File)
 {itested();
   File.skipbl();
   size_t here = File.cursor();

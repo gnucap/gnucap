@@ -453,12 +453,12 @@ void Token_CONSTANT::stack_op(Expression* E)const
 {itested();
   // unreachable(); no. restoring arg expression??
   trace2("stackop constant", name(), dynamic_cast<Float const*>(data()));
-  trace2("stackop constant", name(), dynamic_cast<Quoted_String const*>(data()));
+  trace2("stackop constant", name(), dynamic_cast<vString const*>(data()));
   trace2("stackop constant", name(), dynamic_cast<String const*>(data()));
 
   if(data()){itested();
     Base* cl = data()->clone();
-    trace3("stackop constant", name(), dynamic_cast<Quoted_String const*>(cl), cl->val_string());
+    trace3("stackop constant", name(), dynamic_cast<vString const*>(cl), cl->val_string());
     assert(cl->val_string() == data()->val_string());
     assert(cl);
     assert(E);

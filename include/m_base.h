@@ -405,7 +405,7 @@ inline Base* Integer::modulo    (const Float* X) const {untested(); assert(X); r
 inline Base* Integer::r_modulo  (const Float* X) const {untested(); assert(X); return X? X->modulo(this) : nullptr;}
 /*--------------------------------------------------------------------------*/
 class String : public Base {
-  friend class Quoted_String; // add
+  friend class vString; // add
 protected:
   char* _data{NULL};
 public:
@@ -559,82 +559,6 @@ public:
 public:
   explicit Angled_String(CS& file)	{ untested();parse(file);}
   explicit Angled_String()		{ untested();}
-};
-/*--------------------------------------------------------------------------*/
-// the first non-blank character is a quote
-// a repeat of the same character terminates it
-class Quoted_String : public String {
-public:
-  void parse(CS&) override;
-public:
-  explicit Quoted_String(CS& file)	{parse(file);}
-  explicit Quoted_String()		{ untested();}
-  /* explicit */ Quoted_String(Quoted_String const& x) : String(x) {}
-  explicit Quoted_String(Base::NOT_INPUT) { untested(); assert(!is_NA());}
-
-  Quoted_String& operator=(Quoted_String const& x) { untested();
-    String::operator=(x);
-    return *this;
-  }
-
-  std::string val_string()const override	{
-    if(_data){itested();
-      // BUG: missing escape
-      return '"' + std::string(_data) + '"';
-    }else{ untested();
-      return "nul"; // uh. make sure to query is_NA;
-    }
-  }
-  operator std::string()const {
-    if(_data){
-      return '"' + std::string(_data) + '"';
-    }else{ untested();
-      // BUG //
-      return "NA"; // uh. make sure to query is_NA;
-    }
-  }
-  using String::assign;
-  Quoted_String* assign(const Base*X)const override {
-    if(!X){ untested();
-    }else if(auto q = dynamic_cast<Quoted_String const*>(X)){itested();
-      return new Quoted_String(*q);
-    }else{ untested();
-    }
-    return nullptr;
-  }
-  Quoted_String* assign(const String*X)const override { untested();
-    if(!X){
-    }else if(auto q = dynamic_cast<Quoted_String const*>(X)){ untested();
-      return new Quoted_String(*q);
-    }else{ untested();
-    }
-    return nullptr;
-  }
-
-  using String::add;
-  String* add(const String* X)const override {
-    if(!dynamic_cast<Quoted_String const*>(X)){
-    }else if(_data && X && X->_data) {
-    /// move to some lib eventually ///
-      size_t len = strlen(_data);
-      char* buf = (char*) malloc(len+strlen(X->_data)+1);
-      if(!buf){ untested();
-	throw Exception("concat errno " + to_string(errno));
-      }else{
-      }
-      char* mid = (char*) mempcpy(buf, _data, len);
-      strcpy(mid, X->_data);
-      return new String(buf);
-    }else{ untested();
-    }
-    return nullptr;
-  }
-//  using String::equal;
-//  Base* equal(const String* X)const override {
-//  }
-
-  virtual Integer to_Integer()const	{untested(); throw Exception("can't convert to integer");}
-  virtual Float to_Float()const		{ untested(); throw Exception("can't convert to float");}
 };
 /*--------------------------------------------------------------------------*/
 // a string that is parsed to the end of a line

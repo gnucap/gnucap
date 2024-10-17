@@ -1,6 +1,12 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 202411*
+
+- support named port syntax
+- real, integer, string parameters in verilog
+- finish hooks in devices
+
 == 20241002-dev
 
 - quantize time in tr_swp
