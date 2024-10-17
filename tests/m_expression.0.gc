@@ -2,11 +2,19 @@ option list
 eval "string"
 param a="aaa"
 eval a
+param string a="aaa"
+eval a
 param b={"aaa" + "bbb"}
 eval b
 param c={"aaa" == "bbb"}
 eval c
 param d={"aaa" == a}
+eval d
+param d={"aaa" == 1.}
+eval d
+param d={"aaa" == 1}
+eval d
+param d={a == 1}
 eval d
 param e={exp("0.")}
 eval e
@@ -33,3 +41,4 @@ param n={"missing quote}
 eval n
 param mid={"aaa" + x + "bbb"}
 eval mid
+eval v < w

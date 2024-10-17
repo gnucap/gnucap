@@ -63,7 +63,7 @@ public:
   vInteger* add(const Integer* X)const override	 { untested(); assert(X); return new vInteger(_data + X->_data);}
   vInteger* multiply(const Integer* X)const override  { untested(); assert(X); return new vInteger(_data * X->_data);}
   vInteger* subtract(const Integer* X)const override  {untested(); assert(X); return new vInteger(_data - X->_data);}
-  vInteger* r_subtract(const Integer* X)const override{ untested();assert(X); return new vInteger(X->_data - _data);}
+  vInteger* r_subtract(const Integer* X)const override{itested();assert(X); return new vInteger(X->_data - _data);}
   vInteger* divide(const Integer* X)const override	 {untested(); assert(X); return new vInteger(_data / X->_data);}
   vInteger* r_divide(const Integer* X)const override  { assert(X); return new vInteger(X->_data / _data);}
   vInteger* modulo(const Integer* X)const override	 {untested(); assert(X); return new vInteger(_data % X->_data);}

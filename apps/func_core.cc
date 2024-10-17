@@ -115,8 +115,8 @@ public:
       }else if(auto i = dynamic_cast<Integer const*>(arg0->data())) {
 	result = std::sqrt(i->value());
 	name = to_string(result);
-      }else{ untested();
-	if(par){ untested();
+      }else{
+	if(par){
 	  E->push_back(par);
 	}else{ untested();
 	}
@@ -246,7 +246,7 @@ DISPATCHER<FUNCTION>::INSTALL d_log10(&function_dispatcher, "log10", &p_log10);
 /*--------------------------------------------------------------------------*/
 class exp : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {itested();
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);

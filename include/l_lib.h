@@ -30,6 +30,7 @@ INTERFACE bool		wmatch(const std::string& s1,const std::string& s2);
 INTERFACE std::string	to_string(unsigned);
 INTERFACE std::string	to_string(int);
 INTERFACE std::string	to_string(double);
+inline std::string	to_string(std::string const& s) { return s;}
 INTERFACE char*		ftos(double,int,int,int);
 /*--------------------------------------------------------------------------*/
 //ftos stuff

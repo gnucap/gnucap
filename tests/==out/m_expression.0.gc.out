@@ -2,17 +2,28 @@
 "string"="string"
 "param a="aaa" "
 "eval a "
-a=aaa
+a= NA
+"param string a="aaa" "
+"eval a "
+a="aaa"
 "param b={"aaa" + "bbb"} "
 "eval b "
-eval b 
-     ^ ? can't convert to float
+b= NA
 "param c={"aaa" == "bbb"} "
 "eval c "
 c= 0.
 "param d={"aaa" == a} "
 "eval d "
-d=("aaa" == aaa)
+d= 1.
+"param d={"aaa" == 1.} "
+"eval d "
+d=("aaa" ==  1.)
+"param d={"aaa" == 1} "
+"eval d "
+d=("aaa" == 1)
+"param d={a == 1} "
+"eval d "
+d=("aaa" == 1)
 "param e={exp("0.")} "
 "eval e "
 e=exp("0.")
@@ -27,7 +38,7 @@ g=exp(("aaa" ==  0.))
 h=exp(( 0. == "aaa"))
 "param i={exp(a == "aaa")} "
 "eval i "
-i=exp((aaa == "aaa"))
+i= 2.71828182845905
 "param j={exp(0. != 0.)} "
 "eval j "
 j= 1.
@@ -46,6 +57,7 @@ eval l
 "options nag "
 "param n={"missing quote} "
 >>>>>param n={"missing quote} 
+Untyped top level parameter. Assuming Float
 "eval n "
 >>>>>eval n 
 "missing quote
@@ -56,6 +68,10 @@ eval n
      ^ ? can't convert to float
 "param mid={"aaa" + x + "bbb"} "
 >>>>>param mid={"aaa" + x + "bbb"} 
+Untyped top level parameter. Assuming Float
 "eval mid "
 >>>>>eval mid 
-mid=(("aaa" + x) + "bbb")
+mid=(x + bbbaaa)
+"eval v < w "
+>>>>>eval v < w 
+(v < w)=1

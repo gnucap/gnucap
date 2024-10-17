@@ -191,6 +191,7 @@ Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
 
   if(base()) {
     ret = base()->e_val_(def, scope, 1);
+    if(ret) trace1("PARAM_INSTANCE::e_val", typeid(*ret).name());
   }else{ untested();
   }
 

@@ -192,7 +192,9 @@ public:
     : Token(Data) {assert(Args=="");}
   explicit Token_CONSTANT(const Token_CONSTANT& P) : Token(P) {untested();}
   Token* clone()const override { untested();
-    if (auto s = dynamic_cast<String const*>(data())) {itested();
+    if (auto q = dynamic_cast<Quoted_String const*>(data())) { untested();
+      return new Token_CONSTANT(new Quoted_String(*q)); // BUG?
+    }else if (auto s = dynamic_cast<String const*>(data())) { untested();
       return new Token_CONSTANT(new String(*s)); // BUG?
     }else{ untested();
       return new Token_CONSTANT(*this);

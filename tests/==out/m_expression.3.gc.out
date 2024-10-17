@@ -1,25 +1,25 @@
 "param a1=b[4] "
 "eval a1 "
-a1=b[4]
+a1= NA
 "param a2="_[b]4" "
 "eval a2 "
-a2=_[b]4
+a2= NA
 "param a3="b]x]y]z]w" "
 "eval a3 "
-a3=b
+a3= NA
 "param a4=_]b[3 "
 "eval a4 "
-a4=_
+a4= NA
 "param a5=_$b[3 "
 "eval a5 "
 _$b[3
      ^ ? missing ]?
-a5=_$b[3
+a5= NA
 "param a6=yy[[3] "
 "eval a6 "
 yy[[3]
       ^ ? missing ]?
-a6=yy[[3]
+a6= NA
 "param a7=yy[3]] "
 "eval a7 "
-a7=yy[3]
+a7= NA

@@ -111,13 +111,14 @@ void Angled_String::parse(CS& File)
 }
 /*--------------------------------------------------------------------------*/
 void Quoted_String::parse(CS& File)
-{
+{itested();
   File.skipbl();
   size_t here = File.cursor();
   char quote = File.ctoc();
   std::string data;
   // TODO: extend ctos and use it.
-  for (;;) {
+  // TODO: remove '\0' characters, c.f. LRM
+  for (;;) {itested();
     if (File.match1('\\')) {itested();
       data += File.ctoc();
       if (File.match1(quote)) {itested();
