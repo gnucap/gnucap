@@ -78,7 +78,7 @@ private:
   explicit	DEV_TRANSLINE(const DEV_TRANSLINE& p)
     :ELEMENT(p), _forward(), _reflect(), _if0(0), _ir0(0), _if1(0), _ir1(0) {}
 public:
-  explicit	DEV_TRANSLINE(COMMON_COMPONENT* c=NULL);
+  explicit	DEV_TRANSLINE(COMMON_COMPONENT* c=nullptr);
 private: // override virtual
   char		id_letter()const override	{return 'T';}
   std::string   value_name()const override	{return "#";}

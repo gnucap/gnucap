@@ -24,6 +24,7 @@
 #ifndef M_EXPRESSION_H
 #define M_EXPRESSION_H
 #include "m_base.h"
+#include "m_base_vams.h"
 /*--------------------------------------------------------------------------*/
 //class Symbol_Table;
 class CARD_LIST;
@@ -192,7 +193,9 @@ public:
     : Token(Data) {assert(Args=="");}
   explicit Token_CONSTANT(const Token_CONSTANT& P) : Token(P) {untested();}
   Token* clone()const override { untested();
-    if (auto s = dynamic_cast<String const*>(data())) {itested();
+    if (auto q = dynamic_cast<vString const*>(data())) { untested();
+      return new Token_CONSTANT(new vString(*q)); // BUG?
+    }else if (auto s = dynamic_cast<String const*>(data())) { untested();
       return new Token_CONSTANT(new String(*s)); // BUG?
     }else{ untested();
       return new Token_CONSTANT(*this);

@@ -2,4 +2,4 @@
 "eval a3 "
 <test + stuff
              ^ ? need >
-a3=<test + stuff>
+a3= NA

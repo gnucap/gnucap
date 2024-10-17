@@ -169,7 +169,7 @@ void DC::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_phase = p_INIT_DC;
   ::status.dc.reset().start();
   command_base(Cmd);
-  _scope = NULL;
+  _scope = nullptr;
   ::status.dc.stop();
 }
 /*--------------------------------------------------------------------------*/
@@ -185,7 +185,7 @@ void OP::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_phase = p_INIT_DC;
   ::status.op.reset().start();
   command_base(Cmd);
-  _scope = NULL;
+  _scope = nullptr;
   ::status.op.stop();
 }
 /*--------------------------------------------------------------------------*/
@@ -203,8 +203,8 @@ DCOP::DCOP()
     _step[ii]=0.;
     _linswp[ii]=true;
     _sweepval[ii]=&_sim->_genout;
-    _zap[ii] = NULL;
-    _ctrl[ii] = NULL;
+    _zap[ii] = nullptr;
+    _ctrl[ii] = nullptr;
     _stepmode[ii] = ONE_PT;
     _param[ii] = NOT_VALID;
   }
@@ -223,8 +223,8 @@ void DCOP::finish(void)
       _stash[ii].restore();
       _zap[ii]->precalc_first();
       _zap[ii]->precalc_last();
-      _zap[ii] = NULL;
-      _ctrl[ii] = NULL;
+      _zap[ii] = nullptr;
+      _ctrl[ii] = nullptr;
     }else if (n != "") {
       PARAM_LIST* pl = _scope->params();
       assert(pl);
@@ -246,7 +246,7 @@ void OP::setup(CS& Cmd)
   _out.reset(); //BUG// don't know why this is needed */
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
 
-  _zap[0] = NULL;
+  _zap[0] = nullptr;
   _sweepval[0] = &(_sim->_temp_c);
   _have_param = true; // temp requires precalc
 
@@ -298,7 +298,7 @@ void DC::setup(CS& Cmd)
 	  throw Exception("dc/op: can't sweep " + (**ci).long_label() + '\n');
 	}
       }else if (Cmd.is_float()) {		// sweep the generator
-	_zap[_n_sweeps] = NULL;
+	_zap[_n_sweeps] = nullptr;
       }else if (Cmd.is_alpha()) {
 	std::string pname;
 

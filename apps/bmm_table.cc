@@ -134,7 +134,7 @@ void EVAL_BM_TABLE::tr_eval(ELEMENT* d)const
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 MODEL_TABLE::MODEL_TABLE()
-  :MODEL_CARD(NULL),
+  :MODEL_CARD(nullptr),
    _order(_default_order),
    _below(_default_below),
    _above(_default_above),
@@ -149,7 +149,7 @@ MODEL_TABLE::MODEL_TABLE(const MODEL_TABLE& p)
    _below(p._below),
    _above(p._above),
    _table(p._table),
-   _spline(NULL)
+   _spline(nullptr)
 {
 }
 /*--------------------------------------------------------------------------*/

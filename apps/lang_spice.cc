@@ -315,7 +315,7 @@ void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* 
     //			min already_got
   }
   int gotnodes = x->_net_nodes;
-  COMMON_COMPONENT* c = NULL;
+  COMMON_COMPONENT* c = nullptr;
 
   if (gotnodes < x->min_nodes()) {
     // HSPICE compatibility kluge.
@@ -515,7 +515,7 @@ DEV_DOT* LANG_SPICE_BASE::parse_command(CS& cmd, DEV_DOT* x)
   CMD::cmdproc(cmd, scope);
 
   delete x;
-  return NULL;
+  return nullptr;
 }
 /*--------------------------------------------------------------------------*/
 MODEL_CARD* LANG_SPICE_BASE::parse_paramset(CS& cmd, MODEL_CARD* x)
@@ -672,7 +672,7 @@ void LANG_SPICE::parse_top_item(CS& cmd, CARD_LIST* Scope)
     IO::mstdout << head << '\n';
   }else{
     cmd.get_line("gnucap-spice>");
-    new__instance(cmd, NULL, Scope);
+    new__instance(cmd, nullptr, Scope);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -917,13 +917,13 @@ static void getmerge(CS& cmd, Skip_Header skip_header, CARD_LIST* Scope)
   }else{
   }
   if (section_name == "") {
-    lang_spice.parse_module_body(file, NULL, Scope, ">>>>", lang_spice.NO_EXIT_ON_BLANK, ".end ");
+    lang_spice.parse_module_body(file, nullptr, Scope, ">>>>", lang_spice.NO_EXIT_ON_BLANK, ".end ");
   }else{
     try {
       for (;;) {
 	file.get_line("lib " + section_name + '>');
 	if (file.umatch(".lib " + section_name + ' ')) {
-	  lang_spice.parse_module_body(file, NULL, Scope, section_name,
+	  lang_spice.parse_module_body(file, nullptr, Scope, section_name,
 			       lang_spice.NO_EXIT_ON_BLANK, ".endl {" + section_name + "}");
 	}else{
 	  // skip it
@@ -1029,7 +1029,7 @@ public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {untested();
     SET_RUN_MODE xx(rPRESET);
     ::status.get.reset().start();
-    lang_spice.parse_module_body(cmd, NULL, Scope, ">", lang_spice.EXIT_ON_BLANK, ". ");
+    lang_spice.parse_module_body(cmd, nullptr, Scope, ">", lang_spice.EXIT_ON_BLANK, ". ");
     ::status.get.stop();
   }
 } p7;

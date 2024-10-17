@@ -43,7 +43,7 @@ public:
     _fstop(0.),
     _fstep(0.),
     _timesteps(0),
-    _fdata(NULL)
+    _fdata(nullptr)
   {}
   ~FOURIER() {}
 private:
@@ -112,7 +112,7 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_aa.unallocate();
 
   _sim->_has_op = s_FOURIER;
-  _scope = NULL;
+  _scope = nullptr;
 
   ::status.four.stop();
   ::status.total.stop();
@@ -341,7 +341,7 @@ void FOURIER::fftunallocate()
       delete [] _fdata[ii];
     }
     delete [] _fdata;
-    _fdata = NULL;
+    _fdata = nullptr;
   }else{untested();
   }
 }

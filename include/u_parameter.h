@@ -275,7 +275,7 @@ private:
     void parse(CS&)override { untested();unreachable();}
     PARA_NONE& operator=(const std::string&)override { untested();unreachable(); return *this;}
     PARA_NONE& operator=(const Base*)override { untested();unreachable(); return *this;}
-    std::string string()const override{untested(); return _s;}
+    std::string string()const override{itested(); return _s;}
     Base const* value()const override{return nullptr;}
     Base const* e_val_(const Base*, const CARD_LIST*, int)const override{return nullptr;}
   };
@@ -395,7 +395,7 @@ public:
   operator double() const{ itested();
     // still used in Gnucsator.
     Base const* v = base()->value();
-    if(auto f = dynamic_cast<Float const*>(v)){ untested();
+    if(auto f = dynamic_cast<Float const*>(v)){
       return *f;
     }else{ untested();
       return NOT_VALID;
@@ -454,7 +454,7 @@ public:
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
-  iterator find(std::string const& k) {untested(); return _pl.find(k); }
+  iterator find(std::string const& k) { return _pl.find(k); }
   const_iterator begin()const {itested(); return _pl.begin();}
   const_iterator end()const { return _pl.end();}
   const_iterator find(std::string const& k) const { return _pl.find(k); }
@@ -522,7 +522,7 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
 
  // T v = T(reduced.eval());
   value_type const* v = def.assign(reduced.value());
-  if(v && v->is_NA()) { untested();
+  if(v && v->is_NA()) {
     delete v;
     v = nullptr;
   }else{
@@ -570,7 +570,7 @@ T PARAMETER<T>::e_val(const T& Def, const CARD_LIST* scope, int recurse)const
 template <class T>
 Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int recurse)const
 {
-  trace2("e_val", _v, _s);
+  trace3("PARAMETER<T>::e_val_", typeid(T).name(), _v, _s);
   assert(scope);
 
   auto d = dynamic_cast<value_type const*>(Def);
@@ -595,7 +595,7 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int re
   }else if (_s != "#") {
     // anything else means look up the value
     _v = lookup_solve(def, scope);
-    if (_v.is_NA()) {
+    if (_v.is_NA()) {itested();
       //BUG// needs to show scope
       //BUG// it is likely to have a numeric overflow resulting from the bad value
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");

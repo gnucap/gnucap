@@ -31,11 +31,14 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
 {
   assert(pl);
   assert(Scope);
+  PARAM_INSTANCE par;
   int type = 0;
   if(cmd >> "real"){
     type = 1;
   }else if(cmd >> "integer"){
     type = 2;
+  }else if(cmd >> "string"){
+    type = 3;
   }else{
   }
   assert(Scope);
@@ -45,8 +48,38 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
       error(bLOG, "Top level parameter. Not within spec, use with care\n");
     }else{ untested();
     }
-  }else{
+  }else if(type == 0){
+    error(bNOERROR, "Untyped top level parameter. Assuming Float\n");
   }
+
+  switch(type){
+  case 1: untested();
+	  par = PARAMETER<Float>();
+	  break;
+  case 11:
+	  par = PARAMETER<vReal>();
+	  break;
+  case 2:
+	  par = PARAMETER<Integer>();
+	  break;
+  case 12:
+	  par = PARAMETER<vInteger>();
+	  break;
+  case 3:
+	  par = PARAMETER<vString>(); // !
+	  break;
+  case 13: untested();
+	  par = PARAMETER<vString>();
+	  break;
+  case 10:
+	  par = PARAMETER<vReal>();
+	  // fallback. see lang_verilog.
+	  break;
+  default:
+	  par = PARAMETER<Float>();
+	  break;
+  }
+
   size_t here = cmd.cursor();
   for (;;) {
     if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
@@ -54,28 +87,6 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
     }else{
     }
     std::string Name;
-    PARAM_INSTANCE par;
-    switch(type){
-    case 1: untested();
-      par = PARAMETER<Float>();
-      break;
-    case 11:
-      par = PARAMETER<vReal>();
-      break;
-    case 2:
-      par = PARAMETER<Integer>();
-      break;
-    case 12:
-      par = PARAMETER<vInteger>();
-      break;
-    case 10:
-      par = PARAMETER<vReal>();
-      // fallback. see lang_verilog.
-      break;
-    default:
-      par = PARAMETER<Float>();
-      break;
-    }
 
     cmd >> Name >> '=' >> par;
 

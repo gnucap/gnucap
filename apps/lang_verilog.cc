@@ -341,7 +341,7 @@ DEV_DOT* LANG_VERILOG::parse_command(CS& cmd, DEV_DOT* x)
   CMD::cmdproc(cmd, scope);
   x->purge();
   delete x;
-  return NULL;
+  return nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /* "paramset" <my_name> <base_name> ";"
@@ -482,8 +482,8 @@ public:
       }else{ untested();
 	return "";
       }
-    }else if (_s == "") { untested();
-      return "NA(" + _value->val_string() + ")";
+   // }else if (_s == "") { untested();
+   //   return "NA(" + _value->val_string() + ")";
     }else{
       return _s;
     }
@@ -616,7 +616,7 @@ std::string LANG_VERILOG::find_type_in_string(CS& cmd)
 void LANG_VERILOG::parse_top_item(CS& cmd, CARD_LIST* Scope)
 {
   cmd.get_line("gnucap-verilog>");
-  new__instance(cmd, NULL, Scope);
+  new__instance(cmd, nullptr, Scope);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -793,7 +793,7 @@ class CMD_PARAMSET : public CMD {
     cmd >> base_name;
 
     //const MODEL_CARD* p = model_dispatcher[base_name];
-    const CARD* p = lang_verilog.find_proto(base_name, NULL);
+    const CARD* p = lang_verilog.find_proto(base_name, nullptr);
     if (p) {
       CARD* cl = p->clone();
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);

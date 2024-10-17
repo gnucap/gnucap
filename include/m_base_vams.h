@@ -63,7 +63,7 @@ public:
   vInteger* add(const Integer* X)const override	 { untested(); assert(X); return new vInteger(_data + X->_data);}
   vInteger* multiply(const Integer* X)const override  { untested(); assert(X); return new vInteger(_data * X->_data);}
   vInteger* subtract(const Integer* X)const override  {untested(); assert(X); return new vInteger(_data - X->_data);}
-  vInteger* r_subtract(const Integer* X)const override{ untested();assert(X); return new vInteger(X->_data - _data);}
+  vInteger* r_subtract(const Integer* X)const override{itested();assert(X); return new vInteger(X->_data - _data);}
   vInteger* divide(const Integer* X)const override	 {untested(); assert(X); return new vInteger(_data / X->_data);}
   vInteger* r_divide(const Integer* X)const override  { assert(X); return new vInteger(X->_data / _data);}
   vInteger* modulo(const Integer* X)const override	 {untested(); assert(X); return new vInteger(_data % X->_data);}
@@ -134,6 +134,82 @@ inline vInteger* vInteger::assign(const Base*X)	 const { return new vInteger(X?I
 inline vInteger* vInteger::assign(const Integer*X)const {untested(); return new vInteger(X?*X:Integer());}
 inline vInteger* vInteger::assign(const Float*X)  const {untested(); return new vInteger(X?Integer(X->to_Integer()):Integer());}
 inline vInteger* vInteger::assign(const String*)  const {untested(); return nullptr;}
+/*--------------------------------------------------------------------------*/
+// the first non-blank character is a quote
+// a repeat of the same character terminates it
+class vString : public String {
+public:
+  void parse(CS&) override;
+public:
+  explicit vString(CS& file)	{parse(file);}
+  explicit vString()		{}
+  /* explicit */ vString(vString const& x) : String(x) {}
+  explicit vString(Base::NOT_INPUT) { assert(!is_NA());}
+
+  vString& operator=(vString const& x) {
+    String::operator=(x);
+    return *this;
+  }
+
+  std::string val_string()const override	{
+    if(_data){itested();
+      // BUG: missing escape
+      return '"' + std::string(_data) + '"';
+    }else{ untested();
+      return "nul"; // uh. make sure to query is_NA;
+    }
+  }
+  operator std::string()const {
+    if(_data){
+      return '"' + std::string(_data) + '"';
+    }else{ untested();
+      // BUG //
+      return "NA"; // uh. make sure to query is_NA;
+    }
+  }
+  using String::assign;
+  vString* assign(const Base*X)const override {
+    if(!X){ untested();
+    }else if(auto q = dynamic_cast<vString const*>(X)){itested();
+      return new vString(*q);
+    }else{ untested();
+    }
+    return nullptr;
+  }
+  vString* assign(const String*X)const override { untested();
+    if(!X){
+    }else if(auto q = dynamic_cast<vString const*>(X)){ untested();
+      return new vString(*q);
+    }else{ untested();
+    }
+    return nullptr;
+  }
+
+  using String::add;
+  String* add(const String* X)const override {
+    if(!dynamic_cast<vString const*>(X)){
+    }else if(_data && X && X->_data) {
+    /// move to some lib eventually ///
+      size_t len = strlen(_data);
+      char* buf = (char*) malloc(len+strlen(X->_data)+1);
+      if(!buf){ untested();
+	throw Exception("concat errno " + to_string(errno));
+      }else{
+      }
+      char* mid = (char*) mempcpy(buf, _data, len);
+      strcpy(mid, X->_data);
+      return new String(buf);
+    }else{ untested();
+    }
+    return nullptr;
+  }
+//  using String::equal;
+//  Base* equal(const String* X)const override {
+//  }
+
+  virtual Integer to_Integer()const	{untested(); throw Exception("can't convert to integer");}
+  virtual Float to_Float()const		{ throw Exception("can't convert to float");}
+};
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif

@@ -22,6 +22,7 @@
  */
 //testing=script,sparse 2009.08.13
 #include "m_base.h"
+#include "m_base_vams.h"
 /*--------------------------------------------------------------------------*/
 void Integer::parse(CS& File)
 {
@@ -110,14 +111,15 @@ void Angled_String::parse(CS& File)
   File.skipbl();
 }
 /*--------------------------------------------------------------------------*/
-void Quoted_String::parse(CS& File)
-{
+void vString::parse(CS& File)
+{itested();
   File.skipbl();
   size_t here = File.cursor();
   char quote = File.ctoc();
   std::string data;
   // TODO: extend ctos and use it.
-  for (;;) {
+  // TODO: remove '\0' characters, c.f. LRM
+  for (;;) {itested();
     if (File.match1('\\')) {itested();
       data += File.ctoc();
       if (File.match1(quote)) {itested();

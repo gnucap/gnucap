@@ -108,7 +108,7 @@ void EVAL_BM_MODEL::expand(const COMPONENT* d)
   // not sure what kind of model it is yet.
   // see what we find.
 
-  COMMON_COMPONENT* c = NULL;
+  COMMON_COMPONENT* c = nullptr;
   try {
     attach_model(d);
     assert(has_model());

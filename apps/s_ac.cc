@@ -102,7 +102,7 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->_acx.unallocate();
   _sim->unalloc_vectors();
 
-  _scope = NULL;
+  _scope = nullptr;
   
   ::status.ac.stop();
   ::status.total.stop();

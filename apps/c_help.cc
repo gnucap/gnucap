@@ -39,7 +39,7 @@ namespace {
     &bm_dispatcher,
     &status_dispatcher,
     &probe_dispatcher,
-    NULL };
+    nullptr };
   // the order here determines the search order
 /*--------------------------------------------------------------------------*/
 class CMD_HELP : public CMD {

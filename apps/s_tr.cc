@@ -46,7 +46,7 @@ void TRANSIENT::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->set_command_tran();
   ::status.tran.reset().start();
   command_base(Cmd);
-  _scope = NULL;
+  _scope = nullptr;
   ::status.tran.stop();
 }
 /*--------------------------------------------------------------------------*/

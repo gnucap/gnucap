@@ -75,7 +75,7 @@ static void buildfile(CS& cmd)
     fprintf(fptr, "%s\n", buffer);
   }
   fclose(fptr);
-  fptr = NULL;
+  fptr = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 static void doit(CARD_LIST* scope)
@@ -127,7 +127,7 @@ static void doit(CARD_LIST* scope)
     }
   }
   fclose(fptr);
-  fptr = NULL;
+  fptr = nullptr;
   swp_count[swp_nest] = 0;
 }
 /*--------------------------------------------------------------------------*/
