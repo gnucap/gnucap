@@ -337,6 +337,11 @@ DEV_DOT* LANG_VERILOG::parse_command(CS& cmd, DEV_DOT* x)
   x->set(cmd.fullstring());
   CARD_LIST* scope = (x->owner()) ? x->owner()->subckt() : &CARD_LIST::card_list;
   cmd.reset();
+  cmd.skipbl();
+  if(cmd.peek() == '`'){
+  }else{
+    // "module" etc gets here.
+  }
   parse_attributes(cmd, x->id_tag());
   CMD::cmdproc(cmd, scope);
   x->purge();

@@ -462,7 +462,7 @@ public:
     command("options lang=spectre", Scope);
   }
 } p8;
-DISPATCHER<CMD>::INSTALL d8(&command_dispatcher, "spectre", &p8);
+DISPATCHER<CMD>::INSTALL d8(&command_dispatcher, "spectre|`spectre", &p8);
 /*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/

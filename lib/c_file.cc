@@ -61,7 +61,7 @@ public:
     }
   }
 } p0;
-DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "include", &p0);
+DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "include|`include", &p0);
 /*--------------------------------------------------------------------------*/
 /* cmd_log: "log" command processing
  * open a file for logging (history)
@@ -104,7 +104,7 @@ public:
     }
   }
 } p1;
-DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "log", &p1);
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "log|`log", &p1);
 /*--------------------------------------------------------------------------*/
 /* cmd_file: ">" command processing
  * open a file for all output

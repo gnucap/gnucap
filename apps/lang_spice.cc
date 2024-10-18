@@ -1041,7 +1041,7 @@ public:
     command("options lang=spice", Scope);
   }
 } p8;
-DISPATCHER<CMD>::INSTALL d8(&command_dispatcher, "spice", &p8);
+DISPATCHER<CMD>::INSTALL d8(&command_dispatcher, "spice|`spice", &p8);
 /*--------------------------------------------------------------------------*/
 class CMD_ACS : public CMD {
 public:

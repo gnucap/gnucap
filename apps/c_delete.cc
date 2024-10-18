@@ -121,7 +121,7 @@ private:
     }
   }
 } p1;
-DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "delete|rm", &p1);
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "delete|rm|`delete|`rm", &p1);
 /*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/

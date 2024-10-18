@@ -136,7 +136,7 @@ public:
       "With no arg, it lists plugins already loaded\n\n";
   }
 } p1;
-DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load", &p1);
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "attach|load|`attach|`load", &p1);
 /*--------------------------------------------------------------------------*/
 void tach_dir(CS& cmd, std::string const& dirname, DIRECTORY const& dir,
               CARD_LIST const* Scope, int flags, size_t here)
@@ -237,7 +237,7 @@ public:
       "With no arg, it lists plugins already loaded\n\n";
   }
 } p2;
-DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "detach|unload", &p2);
+DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "detach|`detach|unload|`unload", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_DETACH_ALL : public CMD {
 public:
@@ -262,7 +262,7 @@ public:
     }
   }
 } p3;
-DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "detach_all", &p3);
+DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "detach_all|`detach_all", &p3);
 /*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/

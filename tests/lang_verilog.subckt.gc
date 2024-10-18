@@ -1,0 +1,13 @@
+verilog
+
+.subckt res 1 2
+Resistor 1 2 10
+.ends
+
+res r1 (1,0);
+isource #(.dc(5)) v(0, 1);
+
+`print op v(nodes)
+`op
+
+`end
