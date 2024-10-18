@@ -234,6 +234,8 @@ std::string mangle(std::string const& name)
 {
   if(isdigit(name[0])) {
     return '\\' + name + " ";
+  }else if(name[0] == '\\') {
+    return name + " ";
   }else{
     // ok, for now.
     // probably need '\\' ... ' ' whenever special characters are used.
@@ -241,6 +243,12 @@ std::string mangle(std::string const& name)
   }
 }
 /*--------------------------------------------------------------------------*/
+// get identifier and turn into internal representation
+// "\1 " -> "1"     -- so it also works with spice
+// "\a " -> "a"     -- identical, use simple form
+// "\$ " -> "\$"   -- not sure
+// "\a* " -> "\a*" -- keep escaped string
+// "\\\ " -> "\\\" -- keep escaped string
 std::string get_identifier(CS& cmd, std::string const& term)
 {
   cmd.skipbl();
@@ -248,18 +256,35 @@ std::string get_identifier(CS& cmd, std::string const& term)
 
   if(cmd.is_digit()) {
     throw Exception("invalid identifier");
-  }if(cmd.match1('\\')) {
-    id = cmd.ctos(term, "\\", " ");
-    if(isdigit(id[0])) {
-      // incomplete. need \\ whenever special chars are used.
-    }else{ untested();
-      // don't touch for now.
-      id = "\\" + id + " ";
+  }else if(cmd >> "\\") {
+
+    id = cmd.get_to(" \t\f");
+    trace1("got to", cmd.peek());
+    cmd.skip();
+
+    {
+      bool plain = true;
+      for(size_t i = 0; plain && i<id.size() ; ++i) {
+	if (isalnum(id[i])) {
+	}else if (id[i] == '$') {
+	  plain = false;
+	}else{
+	  plain = false;
+	}
+      }
+
+      if(plain) {
+	// don't touch, for now.
+      }else{
+	// store escaped string.
+	id = "\\" + id;
+      }
     }
   }else{
     id = cmd.ctos(term, "", "");
   }
 
+  trace1("identifier", id);
   return id;
 }
 /*--------------------------------------------------------------------------*/
@@ -283,7 +308,7 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	}else{ untested();
 	  cmd.warn(bDANGER, here, x->long_label() + ": need ')'");
 	}
-	cmd >> ',';
+	cmd >> ','; // required? warn?
 	try{
 	  int Index = x->set_port_by_name(Name, value);
 	  store_attributes(attribs,  x->port_id_tag(Index));
@@ -311,6 +336,7 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
       for (Index = 0;  cmd.is_alnum() || cmd.peek() == '\\';  ++Index) {
 	try{
 	  std::string value = get_identifier(cmd, ",)");
+	  cmd >> ',';
 	  x->set_port_by_index(Index, value);
 	  store_attributes(attribs,  x->port_id_tag(Index));
 	  if (all_new) {
