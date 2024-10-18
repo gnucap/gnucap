@@ -2,13 +2,13 @@ verilog
 
 param ee 3
 
-module vcvs_(1 2 3 4)
+module vcvs_(\1 ,\2 ,\3 ,\4 )
 parameter ee=3;
-vcvs #(ee) w(1 2 3 4);
+vcvs #(ee) w(\1 ,\2 ,\3 ,\4 );
 endmodule
 
-vcvs_ #(.ee(ee)) x1(out 0 in 0);
-vsource #(.dc(1.5) v1( in 0);
+vcvs_ #(.ee(ee)) x1(out, \0 , in, \0 );
+vsource #(.dc(1.5) v1( in, \0 );
 
 print dc v(nodes)
 dc

@@ -32,6 +32,7 @@ protected:
     :COMPONENT(c) {}
   explicit BASE_SUBCKT(const BASE_SUBCKT& p)
     :COMPONENT(p) {}
+public:
   ~BASE_SUBCKT() {}
 protected: // override virtual
   //char  id_letter()const		//CARD/null

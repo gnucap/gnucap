@@ -1,6 +1,6 @@
 verilog
 
-vcg #(ee) vv(out, 0, in, 0);
+vcg #(ee) vv(out, \0 , in, \0 );
 * F1 out 0 vin ee
 
 spice

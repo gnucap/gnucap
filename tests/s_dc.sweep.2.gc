@@ -2,9 +2,9 @@ simulator language=verilog
 
 // qucs style component macros.
 
-module Idc(1 2);
+module Idc(\1 ,\2 );
 parameter I=1m
-isource #(.dc(I)) dev(2 1);
+isource #(.dc(I)) dev(\2 ,\1 );
 endmodule
 
 module Vdc(p n);
@@ -26,9 +26,9 @@ module R(p, n);
 	resistor #(.r(R * (1. + dT*(Tc1 + dT*Tc2)))) dev(p, n);
 endmodule // R
 
-Idc #(.I(ii)) i1(1 0)
-R #(.R(rr) r1(1 0)
-Vdc #(.U(vv)) v1(2 0)
+Idc #(.I(ii)) i1(\1 , \0 )
+R #(.R(rr) r1(\1 , \0 )
+Vdc #(.U(vv)) v1(\2 ,\0 )
 
 spice
 .options noinsensitive

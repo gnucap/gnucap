@@ -1,0 +1,6 @@
+module m(a, 1, c, d ); 
+            ^ ? invalid identifier
+// BUG, need ',' 
+module m (.a(a),.\2, (\2, ),.c(c),.d(d));
+endmodule // m
+

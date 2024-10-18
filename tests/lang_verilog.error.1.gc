@@ -1,7 +1,7 @@
 verilog
 
 // too few ports
-vccs #(.gm({alpha*adap})) iF(0 f cd );
+vccs #(.gm({alpha*adap})) iF(\0 , f, cd );
 
 list
 

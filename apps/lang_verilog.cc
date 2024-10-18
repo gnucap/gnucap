@@ -229,6 +229,40 @@ void LANG_VERILOG::parse_label(CS& cmd, CARD* x)
   }
 }
 /*--------------------------------------------------------------------------*/
+// map to verilog representation
+std::string mangle(std::string const& name)
+{
+  if(isdigit(name[0])) {
+    return '\\' + name + " ";
+  }else{
+    // ok, for now.
+    // probably need '\\' ... ' ' whenever special characters are used.
+    return name;
+  }
+}
+/*--------------------------------------------------------------------------*/
+std::string get_identifier(CS& cmd, std::string const& term)
+{
+  cmd.skipbl();
+  std::string id;
+
+  if(cmd.is_digit()) {
+    throw Exception("invalid identifier");
+  }if(cmd.match1('\\')) {
+    id = cmd.ctos(term, "\\", " ");
+    if(isdigit(id[0])) {
+      // incomplete. need \\ whenever special chars are used.
+    }else{ untested();
+      // don't touch for now.
+      id = "\\" + id + " ";
+    }
+  }else{
+    id = cmd.ctos(term, "", "");
+  }
+
+  return id;
+}
+/*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 {
   assert(x);
@@ -240,8 +274,15 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
     if (cmd.match1('.')) {
       // by name
       while (cmd >> '.') {
-	std::string Name  = cmd.ctos("(", "", "");
-	std::string value = cmd.ctos(",)", "(", ")");
+	std::string Name = get_identifier(cmd, "(");
+	int paren = cmd.skip1b('(');
+	std::string value = cmd.ctos(",)", "", "");
+	if (!paren){
+	  //?
+	}else if( cmd.skip1b(')')) {
+	}else{ untested();
+	  cmd.warn(bDANGER, here, x->long_label() + ": need ')'");
+	}
 	cmd >> ',';
 	try{
 	  int Index = x->set_port_by_name(Name, value);
@@ -267,9 +308,9 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
     }else{
       // by order
       int Index;
-      for (Index = 0;  cmd.is_alnum();  ++Index) {
+      for (Index = 0;  cmd.is_alnum() || cmd.peek() == '\\';  ++Index) {
 	try{
-	  std::string value = cmd.ctos(",)", "", "");
+	  std::string value = get_identifier(cmd, ",)");
 	  x->set_port_by_index(Index, value);
 	  store_attributes(attribs,  x->port_id_tag(Index));
 	  if (all_new) {
@@ -452,7 +493,7 @@ public:
     //cmd >> name;
     name = cmd.ctos(",=();", "'{\"", "'}\"");
     if (cmd) {
-      if (cmd.match1('(')) { untested();
+      if (cmd.match1('(')) {
 	_s = name + '(' + cmd.ctos("", "(", ")") + ')';
       }else{
 	_s = name;
@@ -487,7 +528,7 @@ public:
       }else{ untested();
 	return "";
       }
-   // }else if (_s == "") { untested();
+   // }else if (_s == "") {
    //   return "NA(" + _value->val_string() + ")";
     }else{
       return _s;
@@ -501,7 +542,7 @@ public:
     return _value;
   }
   bool has_good_value()const override { untested();unreachable(); return false;}
-  Base const* e_val_(const Base*, const CARD_LIST*, int)const {unreachable(); return nullptr;}
+  Base const* e_val_(const Base*, const CARD_LIST*, int)const { untested();unreachable(); return nullptr;}
 }param_any;
 /*--------------------------------------------------------------------------*/
 void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
@@ -539,7 +580,7 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
     cmd >> Name >> '=' >> par;
 
     trace1("parsed", par.string());
-    if (cmd.stuck(&here)) {untested();
+    if (cmd.stuck(&here)) {
       break;
     }else{
     }
@@ -637,7 +678,7 @@ void LANG_VERILOG::print_attributes(OMSTREAM& o, tag_t x)
 void LANG_VERILOG::print_args(OMSTREAM& o, const MODEL_CARD* x)
 {
   assert(x);
-  if (x->use_obsolete_callback_print()) {untested();
+  if (x->use_obsolete_callback_print()) {
     x->print_args_obsolete_callback(o, this);  //BUG//callback//
   }else{
     for (int ii = x->param_count() - 1;  ii >= 0;  --ii) {
@@ -695,7 +736,7 @@ void LANG_VERILOG::print_ports_long(OMSTREAM& o, const COMPONENT* x)
   for (int ii = 0;  x->port_exists(ii);  ++ii) {
     o << sep;
     print_attributes(o, x->port_id_tag(ii));
-    o << '.' << x->port_name(ii) << '(' << x->port_value(ii) << ')';
+    o << '.' << mangle(x->port_name(ii)) << '(' << mangle(x->port_value(ii)) << ')';
     sep = ',';
   }
   for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
@@ -709,22 +750,22 @@ void LANG_VERILOG::print_ports_long(OMSTREAM& o, const COMPONENT* x)
 /*--------------------------------------------------------------------------*/
 #if 0
 void LANG_VERILOG::print_ports_short(OMSTREAM& o, const COMPONENT* x)
-{
+{ untested();
   // print in short form ...   value only
   assert(x);
 
   o << " (";
   std::string sep = "";
-  for (int ii = 0;  x->port_exists(ii);  ++ii) {
+  for (int ii = 0;  x->port_exists(ii);  ++ii) { untested();
     o << sep;
     print_attributes(o, x->port_id_tag(ii));
-    o << x->port_value(ii);
+    o << mangle(x->port_value(ii));
     sep = ',';
   }
   for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
     o << sep;
     //////print_attributes(o, x->port_id_tag(ii));
-    o << x->current_port_value(ii);
+    o << mangle(x->current_port_value(ii));
     sep = ',';
   }
   o << ")";
@@ -825,8 +866,22 @@ class CMD_MODULE : public CMD {
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
     assert(!new_module->is_device());
-    lang_verilog.parse_module(cmd, new_module);
-    Scope->push_back(new_module);
+    try {
+      lang_verilog.parse_module(cmd, new_module);
+      Scope->push_back(new_module);
+    }catch(Exception const& e) {
+      cmd.warn(bDANGER, e.message());
+      for (;;) {
+	cmd.get_line("verilog-module>");
+
+	if (cmd >> "endmodule ") {
+	  break;
+	}else{
+	}
+      }
+      delete new_module;
+    //  cmd.warn(bDANGER, e.message());
+    }
   }
 } p2;
 DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "module|macromodule", &p2);

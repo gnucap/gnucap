@@ -1,0 +1,12 @@
+verilog
+
+module m(a, 1, c, d );
+endmodule
+
+// BUG, need ','
+module m(a, \2, c, d );
+endmodule
+
+list
+
+end

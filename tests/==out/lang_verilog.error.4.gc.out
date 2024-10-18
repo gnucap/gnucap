@@ -1,6 +1,6 @@
-module crash (n0 n1 n2 n3 n0 n4); 
-                          ^ ? duplicate port name, skipping
-module zero (n0 n1 n2 n3 0 n4); 
-                         ^ ? node 0 not allowed here
+module crash (n0, n1, n2, n3, n0, n4); 
+                              ^ ? duplicate port name, skipping
+module zero (n0, n1, n2, n3, \0 , n4); 
+                             ^ ? node 0 not allowed here
 #          
  27.       

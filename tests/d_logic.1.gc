@@ -6,12 +6,12 @@ spice
 Vdd  8  0  dc 5.
 V1   1  0  generator( 1. ) 
 .verilog
-inv #(.model(mos))  U2  (2 1);
-inv #(.model(mos))  U3  (3 2);
-inv #(.model(mos))  U4  (4 3);
-inv #(.model(mos))  U5  (5 4);
-inv #(.model(mos))  U6  (6 5);
-inv #(.model(mos))  U7  (7 6);
+inv #(.model(mos))  U2  (\2 ,\1 );
+inv #(.model(mos))  U3  (\3 ,\2 );
+inv #(.model(mos))  U4  (\4 ,\3 );
+inv #(.model(mos))  U5  (\5 ,\4 );
+inv #(.model(mos))  U6  (\6 ,\5 );
+inv #(.model(mos))  U7  (\7 ,\6 );
 spice
 .subckt mosinv1  2  3 
 Vdd  1  0  dc 5.
