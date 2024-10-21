@@ -9,11 +9,11 @@ globals.o: globals.cc ../include/globals.h ../include/l_dispatcher.h \
 m_expression_dump.o: m_expression_dump.cc ../include/m_expression.h \
  ../include/m_base.h ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/ap.h \
- ../include/constant.h
+ ../include/constant.h ../include/m_base_vams.h
 m_expression_in.o: m_expression_in.cc ../include/m_expression.h \
  ../include/m_base.h ../include/l_lib.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/ap.h \
- ../include/constant.h
+ ../include/constant.h ../include/m_base_vams.h
 m_expression_reduce.o: m_expression_reduce.cc ../include/globals.h \
  ../include/l_dispatcher.h ../include/e_base.h ../include/u_attrib.h \
  ../include/ap.h ../include/md.h ../include/io_trace.h \
@@ -24,7 +24,8 @@ m_expression_reduce.o: m_expression_reduce.cc ../include/globals.h \
  ../include/m_base_vams.h ../include/e_cardlist.h
 m_base_in.o: m_base_in.cc ../include/m_base.h ../include/l_lib.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \
- ../include/ap.h ../include/constant.h
+ ../include/ap.h ../include/constant.h ../include/m_base_vams.h \
+ ../include/m_base.h
 m_base_math.o: m_base_math.cc ../include/m_base.h ../include/l_lib.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \
  ../include/ap.h ../include/constant.h
@@ -89,7 +90,7 @@ u_function.o: u_function.cc ../include/u_function.h ../include/e_base.h \
  ../include/u_attrib.h ../include/ap.h ../include/md.h \
  ../include/io_trace.h ../include/io_error.h ../include/l_indirect.h \
  ../include/m_expression.h ../include/m_base.h ../include/l_lib.h \
- ../include/constant.h
+ ../include/constant.h ../include/m_base_vams.h
 u_lang.o: u_lang.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_base.h ../include/u_attrib.h ../include/ap.h \
  ../include/md.h ../include/io_trace.h ../include/io_error.h \

@@ -1,0 +1,13 @@
+
+verilog
+
+resistor #(.r(1))     Rin2 (\a , \b );
+resistor #(.r(1))     Rin2 (\a , \b	); // tab
+resistor #(.r(1))     Rin2 (\a*a , \-- );
+resistor #(.r(1))     Rin2 (\$aa , \\\ );
+
+list
+
+spice
+
+.list

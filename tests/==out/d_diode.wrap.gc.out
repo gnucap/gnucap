@@ -1,15 +1,15 @@
-module spice_diode (.1(1),.2(2));
+module spice_diode (.\1 (\1 ),.\2 (\2 ));
 paramset mydiode d;
  .tnom=NA( 27.); .is=Is; .rs=rs; .n=N; .tt=tt; .cjo=cjo; .pb=vj; .mj=M; .egap=NA( 1.11); .xti=NA( 3.); .fc=NA( 0.5);
 endparamset
 
-mydiode #(.area(area)) D1 (.a(1),.c(2));
+mydiode #(.area(area)) D1 (.a(\1 ),.c(\2 ));
 endmodule // spice_diode
 
 // TODO: this is actually a paramset 
-module Diode (.1(1),.2(2));
+module Diode (.\1 (\1 ),.\2 (\2 ));
 // ignored, but somehow used in .net files revisit later. 
-spice_diode #(.Is(Is),.M(M),.N(N),.area(Area),.cjo(Cj0),.rs(Rs),.tt(Tt),.vj(Vj)) d1 (.1(2),.2(1));
+spice_diode #(.Is(Is),.M(M),.N(N),.area(Area),.cjo(Cj0),.rs(Rs),.tt(Tt),.vj(Vj)) d1 (.\1 (\2 ),.\2 (\1 ));
 endmodule // Diode
 
 #           v(1)       v(2)      

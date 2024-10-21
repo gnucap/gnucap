@@ -50,7 +50,7 @@ public:
     }
   }
 } p0;
-DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "measure", &p0);
+DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "measure|`measure", &p0);
 /*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/

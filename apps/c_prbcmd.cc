@@ -133,7 +133,7 @@ public:
     do_probe(cmd, _probe_lists->store, Scope);
   }
 } p0;
-DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "store", &p0);
+DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "store|`store", &p0);
 /*--------------------------------------------------------------------------*/
 class CMD_ALARM : public CMD {
 public:
@@ -149,7 +149,7 @@ public:
     do_probe(cmd, _probe_lists->alarm, Scope);
   }
 } p1;
-DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "alarm", &p1);
+DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "alarm|`alarm", &p1);
 /*--------------------------------------------------------------------------*/
 class CMD_PLOT : public CMD {
 public:
@@ -166,7 +166,7 @@ public:
     do_probe(cmd, _probe_lists->plot, Scope);
   }
 } p2;
-DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "iplot|plot", &p2);
+DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, "iplot|plot|`iplot|`plot", &p2);
 /*--------------------------------------------------------------------------*/
 class CMD_PRINT : public CMD {
 public:
@@ -183,7 +183,7 @@ public:
     do_probe(cmd, _probe_lists->print, Scope);
   }
 } p3;
-DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "iprint|print|probe", &p3);
+DISPATCHER<CMD>::INSTALL d3(&command_dispatcher, "iprint|print|probe|`iprint|`print|`probe", &p3);
 /*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/

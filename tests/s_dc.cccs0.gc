@@ -1,6 +1,6 @@
 verilog
 
-cccs #(ee) F1(out, 0, Vin);
+cccs #(ee) F1(out, \0 , Vin);
 * F1 out 0 vin ee
 
 spice

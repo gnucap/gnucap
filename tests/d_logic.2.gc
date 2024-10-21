@@ -10,8 +10,8 @@ U3   3 2  mos inv
 U4   4 3  mos inv
 U5   5 4  mos inv
 .verilog
-inv #(.model(mos)) U6  (6 5);
-inv #(.model(mos)) U7  (7 6);
+inv #(.model(mos)) U6  (\6 , \5 );
+inv #(.model(mos)) U7  (\7 ,\6 );
 spice
 .subckt mosinv1  2  3 
 Vdd  1  0  dc 5.

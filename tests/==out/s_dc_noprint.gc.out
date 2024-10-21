@@ -1,4 +1,6 @@
-vsource #(.dc(1)) v (.p(30),.n(0));
+\\ ground \0 
+^ ? \\: no match
+vsource #(.dc(1)) v (.p(\30 ),.n(\0 ));
 #          
  0.        
  1.        

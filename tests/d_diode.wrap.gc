@@ -16,7 +16,7 @@
 
 verilog
 // TODO: this is actually a paramset
-module Diode(1 2);
+module Diode(\1 ,\2 );
   parameter N=1
   parameter Cj0=15f
   parameter M=0.5
@@ -32,17 +32,17 @@ module Diode(1 2);
   parameter Eg=1.11 Tbv=0. Trs=0. Ttt1=0. Ttt2=0. Tm1=0. Tm2=0.
   parameter Tnom=26.85
 
-  spice_diode #( .area(Area) .Is(Is) .rs(Rs) .N(N) .cjo(Cj0) .vj(Vj) .M(M) .tt(Tt)) d1(2 1);
+  spice_diode #( .area(Area) .Is(Is) .rs(Rs) .N(N) .cjo(Cj0) .vj(Vj) .M(M) .tt(Tt)) d1(\2 ,\1 );
 endmodule
 
 list
 
-Diode #(.Area(2)) d1(i 1);
-Diode #(.Area(2)) d2(0 i);
-Diode #(.Area(1)) d3(0 2);
-resistor #(.r(100k)) r1 (in 1);
-resistor #(.r(100k)) r2 (in 2);
-vsource #(.dc(1)) v(in 0);
+Diode #(.Area(2)) d1(i, \1 );
+Diode #(.Area(2)) d2(\0 , i);
+Diode #(.Area(1)) d3(\0 , \2 );
+resistor #(.r(100k)) r1 (in, \1 );
+resistor #(.r(100k)) r2 (in, \2 );
+vsource #(.dc(1)) v(in, \0 );
 
 print dc v 1 2
 dc

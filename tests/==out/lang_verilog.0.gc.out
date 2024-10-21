@@ -1,0 +1,8 @@
+resistor #(.r(1)) Rin2 (.p(a),.n(b));
+resistor #(.r(1)) Rin2 (.p(a),.n(b));
+resistor #(.r(1)) Rin2 (.p(\a*a ),.n(\-- ));
+resistor #(.r(1)) Rin2 (.p(\$aa ),.n(\\\ ));
+Rin2 ( a b ) 1
+Rin2 ( a b ) 1
+Rin2 ( \a*a \-- ) 1
+Rin2 ( \$aa \\\ ) 1

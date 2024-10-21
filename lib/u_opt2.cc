@@ -333,7 +333,7 @@ namespace {
       o.command(cmd, Scope);
     }
   } p5;
-  DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "options|set|width", &p5);
+  DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "options|set|width|`options|`set", &p5);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

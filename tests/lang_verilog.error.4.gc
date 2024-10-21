@@ -2,11 +2,11 @@
 verilog
 
 // duplicate label error
-module crash (n0 n1 n2 n3 n0 n4);
+module crash (n0, n1, n2, n3, n0, n4);
 endmodule
-module zero (n0 n1 n2 n3 0 n4);
+module zero (n0, n1, n2, n3, \0 , n4);
 endmodule
 
-crash X1 (1 2);
+crash X1 (\1 , \2 );
 op
 end

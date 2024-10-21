@@ -2,7 +2,7 @@ verilog
 
 param ee 3
 
-vsource #(ee) vv(in 0);
+vsource #(ee) vv(in, \0 );
 
 spice
 
