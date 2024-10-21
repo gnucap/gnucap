@@ -255,9 +255,11 @@ std::string get_identifier(CS& cmd, std::string const& term)
   std::string id;
 
   if(cmd.is_digit()) {
-    throw Exception("invalid identifier");
-  }else if(cmd >> "\\") {
+    cmd.warn(bDANGER, "invalid identifier");
+  }else{
+  }
 
+  if(cmd >> "\\") {
     id = cmd.get_to(" \t\f");
     trace1("got to", cmd.peek());
     cmd.skip();
@@ -301,14 +303,14 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
       while (cmd >> '.') {
 	std::string Name = get_identifier(cmd, "(");
 	int paren = cmd.skip1b('(');
-	std::string value = cmd.ctos(",)", "", "");
-	if (!paren){
+	std::string value = get_identifier(cmd, ")");
+	if (!paren){untested();
 	  //?
 	}else if( cmd.skip1b(')')) {
-	}else{ untested();
+	}else{untested();
 	  cmd.warn(bDANGER, here, x->long_label() + ": need ')'");
 	}
-	cmd >> ','; // required? warn?
+	cmd >> ',';
 	try{
 	  int Index = x->set_port_by_name(Name, value);
 	  store_attributes(attribs,  x->port_id_tag(Index));

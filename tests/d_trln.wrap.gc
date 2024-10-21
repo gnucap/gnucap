@@ -11,7 +11,7 @@ module TLIN (a, b)
 
   // local
   parameter c0=299792458.0
-  tline #(.z(Z), .td(1./c0), .len(L) t(a, \0 , b, \0 );
+  tline #(.z(Z), .td(1./c0), .len(L) t (.t1(a), .b1(\0 ) , .t2(b), .b2(\0 ) );
 endmodule
 
 TLIN #(.Alpha(0),.L(100m),.Temp(26.85),.Z(50)) Line1 (.a(_net0),.b(out1));
