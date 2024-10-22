@@ -41,7 +41,7 @@ CS& CS::umatch(const std::string& s)
       break;
     }else if ((str2[0] == '\\') && (peek() == str2[1])) {
       skip();
-      str2 += 2;
+      str2 += 2; // BUG // can get past the end of s.
     }else if ((!optional) && (*str2 == '{')) {
       ++str2;
       optional = true;
