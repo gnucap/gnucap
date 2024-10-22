@@ -202,7 +202,7 @@ std::string DEV_SUBCKT::port_name(int i)const
   if (const DEV_SUBCKT* p=dynamic_cast<const DEV_SUBCKT*>(_parent)) {
     if (i<p->net_nodes()){
       return p->port_name(i);
-    }else{untested(); 
+    }else{ 
       return "";
     }
   }else if(_parent){untested(); untested();

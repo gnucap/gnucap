@@ -21,7 +21,7 @@
  *------------------------------------------------------------------
  * string compare
  */
-//testing=script 2006.07.17
+//testing=manual 2024.10.22
 #include "u_opt.h"
 #include "ap.h"
 /*--------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ CS& CS::umatch(const std::string& s)
     if ((!*str2) || (*str2 == '|')) {
       _ok = true;
       break;
-    }else if ((str2[0] == '\\') && (peek() == str2[1])) {
+    }else if ((str2[0] == '\\') && str2[1] && (peek() == str2[1])) {
       skip();
       str2 += 2;
     }else if ((!optional) && (*str2 == '{')) {

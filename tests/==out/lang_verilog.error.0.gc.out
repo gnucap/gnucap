@@ -1,5 +1,7 @@
 module m(a, 1, c, d ); 
             ^ ? invalid identifier
+m #() a(.); 
+        ^ ? a: mismatch ); ignored
 module m (.a(a),.\1 (\1 ),.c(c),.d(d));
 endmodule // m
 
@@ -7,3 +9,4 @@ endmodule // m
 module m (.a(a),.\2, (\2, ),.c(c),.d(d));
 endmodule // m
 
+m #() a ();
