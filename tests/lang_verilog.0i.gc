@@ -1,0 +1,16 @@
+
+verilog
+
+module foo(a, b);
+	parameter a=1.;
+	parameter integer i=1.;
+	parameter integer j=a+i;
+	vsource #(.dc(j)) v(a, b);
+endmodule;
+
+foo #(.i(19), .a(2)) f(\1 , \0 );
+
+`print op v(nodes)
+
+`op
+list

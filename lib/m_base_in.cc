@@ -33,6 +33,11 @@ void Integer::parse(CS& File)
     File >> _data;
     if (File.stuck(&here)) {
       _input = false;
+    }else if(File.peek() == '.'){ untested();
+      trace1("Integer?", File.tail());
+      // reject float literal.
+      _input = false;
+      File.reset_fail(here);
     }else{
       _input = true;
     }

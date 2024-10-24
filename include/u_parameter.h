@@ -643,7 +643,7 @@ inline void PARAMETER<bool>::parse(CS& cmd)
 template <class T>
 inline void PARAMETER<T>::parse(CS& cmd) 
 {
-  T new_val;
+  value_type new_val;
   cmd >> new_val;
   if (cmd) {
     _v = new_val;
