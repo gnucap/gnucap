@@ -127,17 +127,19 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 	    static PARAMETER<double> f;
 	    pi = f; // what it used to be.
 	  }else{
-	    trace1("got one", i->first);
+	    trace2("got one", i->first, k->second.string());
 	    // get type from proto
 	    pi = k->second;
+	    trace1("set type", pi.string());
 	  }
 
 	}
 
 	Base const* b = i->second.e_val(nullptr, scope);
-	trace1("eval_copy value", typeid(*b).name());
-
-	pi.set_fixed(b);
+	if(b && !b->is_NA()) {
+	  pi.set_fixed(b->clone());
+	}else{
+	}
 
       }else if(j->second.has_hard_value()) {untested();
 	j->second.set_fixed(i->second.e_val(j->second.value(), scope));
@@ -180,18 +182,14 @@ Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
     throw Exception("recursion too deep");
   }else{
   }
-  if(dynamic_cast<PARA_NONE const*>(base())) {
-    assert(!base()->e_val_(def, scope, 1));
-  }else{
-  }
 
   // try { untested();
 
   Base const* ret = nullptr;
 
   if(base()) {
-    ret = base()->e_val_(def, scope, 1);
-    if(ret) trace1("PARAM_INSTANCE::e_val", typeid(*ret).name());
+    assert(recursion);
+    ret = base()->e_val_(def, scope, recursion);
   }else{ untested();
   }
 
@@ -234,8 +232,6 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
       error(bTRACE, Name + " already set. replacing\n");
     }
   }else{
-    // spice fallback.
-    p = PARAMETER<double>();
     p = Value;
   }
 }
@@ -280,6 +276,80 @@ bool Get(CS& cmd, const std::string& key, PARAMETER<int>* val)
   }else{
     return false;
   }
+}
+/*--------------------------------------------------------------------------*/
+// similar in PARAMETER<T>
+// make it all Base* and move to PARA_BASE?
+void PARAM_INSTANCE::PARA_NONE::lookup_solve(const CARD_LIST* scope) const
+{
+  CS cmd(CS::_STRING, _s);
+  Expression e(cmd);
+  Expression reduced(e, scope);
+
+  delete _v;
+  _v = nullptr;
+  {
+    Base const* v = reduced.value();
+
+    if(v && v->is_NA()) {
+    }else if(v){
+      _v = v->clone();
+    }else{
+    }
+  }
+
+  if (_v) {
+    // OK
+  }else{
+    const PARAM_LIST* pl = scope->params();
+    Base const* b = pl->deep_lookup(_s).e_val(nullptr, scope);
+    if(b && !b->is_NA()){ untested();
+      error(bWARNING, "parameter " + _s +  "  specified\n");
+      _v = b->clone();
+    }else if(b){ untested();
+      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
+    }else{
+      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+// duplicate of PARAMETER<T>::e_val_
+// make it all Base* and move to PARA_BASE?
+Base const* PARAM_INSTANCE::PARA_NONE::e_val_(const Base* Def, const CARD_LIST*
+    scope, int recurse) const
+{
+  assert(scope);
+
+  if (_s == "") {
+    delete _v;
+    _v = nullptr;
+    // blank string means to use default value
+    if(Def){ untested();
+      _v = Def->clone();
+    }else{
+    }
+    if (recurse) { itested();
+      // error(bWARNING, "?parameter " + _s +  " not specified, using default\n");
+    }else{ untested();
+    }
+  }else if (_s != "#") {
+    // anything else means look up the value
+    lookup_solve(scope);
+    if (!_v || _v->is_NA()) {
+      //BUG// needs to show scope
+      //BUG// it is likely to have a numeric overflow resulting from the bad value
+      error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
+      // throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
+    }else if(!_v){ untested();
+      error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
+    }else{
+    }
+  }else{ untested();
+    // start with # means we have a final value
+  }
+
+  return _v;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

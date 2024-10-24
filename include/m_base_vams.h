@@ -172,6 +172,7 @@ public:
     if(!X){ untested();
     }else if(auto q = dynamic_cast<vString const*>(X)){itested();
       return new vString(*q);
+    }else if(dynamic_cast<Float const*>(X)){untested();
     }else{ untested();
     }
     return nullptr;

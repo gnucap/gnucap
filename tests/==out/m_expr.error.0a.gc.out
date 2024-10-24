@@ -17,6 +17,8 @@ capacitor #(.c(<aaa>)) r1 (.p(\1 ),.n(\0 ));
 capacitor #()  <test> + 4  (.p(\0 ),.n(\0 ));
 "dc "
 parameter <test> not specified, using default
+parameter <test> value is "NOT_INPUT"
+parameter a3 value is "NOT_INPUT"
 parameter <aaa> not specified, using default
 #          
  0.        

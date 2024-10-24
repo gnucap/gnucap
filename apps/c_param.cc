@@ -68,7 +68,7 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
   case 3:
 	  par = PARAMETER<vString>(); // !
 	  break;
-  case 13: untested();
+  case 13:
 	  par = PARAMETER<vString>();
 	  break;
   case 10:
@@ -90,7 +90,7 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
 
     cmd >> Name >> '=' >> par;
 
-    trace1("parsed", par.string());
+    trace2("parsed", Name, par.string());
     if (cmd.stuck(&here)) {untested();
       break;
     }else{

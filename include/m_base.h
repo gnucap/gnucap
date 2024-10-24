@@ -46,6 +46,7 @@ public:
   virtual ~Base() {}
   virtual std::string val_string()const		{ return "error";}
   virtual bool to_bool()const			{ untested();unreachable(); return false;}
+  virtual bool  is_NA()const			{ unreachable(); return false;}
 
   virtual Base* minus()const			{untested(); return nullptr;}
   virtual Base* plus()const			{untested(); return nullptr;}
@@ -289,9 +290,9 @@ protected:
   double _data;
 private:
   void dump(std::ostream& o)const override {itested();
-    if (_data==::NOT_INPUT) { untested();
+    if (_data==::NOT_INPUT) {
       o<<"NA";
-    }else{ untested();
+    }else{
       o<<_data;
     }
   }
@@ -426,6 +427,12 @@ public:
     _data = nullptr;
   }
   String& operator=(String const& s) {
+    if(_data) {
+      free(_data);
+      _data = nullptr;
+    }else{
+    }
+
     if(s._data){
       _data = strdup(s._data);
     }else{itested();

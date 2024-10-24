@@ -224,10 +224,10 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	  }
 	}
 
-      }else{itested();
+      }else{
 	trace1("no value", name());
 	// no value - keep name (and accept incomplete solution later)
-	if(verilog_mode) {itested();
+	if(verilog_mode) {
 	  // not a string, but unresolved
 	  E->push_back(clone());
 	}else if(name()[0] == '"') { untested();

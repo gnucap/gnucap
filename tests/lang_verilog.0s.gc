@@ -1,0 +1,26 @@
+
+verilog
+
+module foo();
+	parameter string fs="default";
+	parameter string ft={"def" + "ault"};
+endmodule;
+
+parameter a=1.;
+parameter string s="default";
+
+// BUG still need {} in c_param
+parameter string t={"def" + "ault"};
+
+eval s
+eval t
+
+foo #(.fs("testvalue")) f();
+`op
+list
+
+list
+
+spice
+
+.list

@@ -263,21 +263,25 @@ void e_val(T* p, const T& def, const CARD_LIST*)
 // envelope for PARAMETER<T>
 class PARAM_INSTANCE {
 private:
-  // needed. PARA_BASE is abstract.
+  // PARA_NONE: act as untyped parameter, carry expression
   class PARA_NONE : public PARA_BASE {
+    mutable Base* _v{nullptr};
   public:
     explicit PARA_NONE() : PARA_BASE() {}
     explicit PARA_NONE(PARA_NONE const&p) : PARA_BASE(p) {}
+    ~PARA_NONE() { delete _v; _v=nullptr; }
     PARA_BASE* clone()const override { untested();unreachable(); return NULL;}
     PARA_BASE* pclone(void* p)const override { return new(p) PARA_NONE(*this);}
-    bool operator==(const PARA_BASE&)const override { untested();unreachable(); return false;}
+    bool operator==(const PARA_BASE& x)const override { return _s == x.string(); }
     bool has_good_value()const override { untested();unreachable(); return false;}
     void parse(CS&)override { untested();unreachable();}
-    PARA_NONE& operator=(const std::string&)override { untested();unreachable(); return *this;}
+    PARA_NONE& operator=(const std::string& s)override { _s = s; return *this;}
     PARA_NONE& operator=(const Base*)override { untested();unreachable(); return *this;}
     std::string string()const override{itested(); return _s;}
     Base const* value()const override{return nullptr;}
-    Base const* e_val_(const Base*, const CARD_LIST*, int)const override{return nullptr;}
+    Base const* e_val_(const Base* def, const CARD_LIST* scope, int)const override;
+  private:
+    void lookup_solve(const CARD_LIST* scope)const;
   };
   char _mem[sizeof(PARAMETER<double>)]{'\0'}; // biggest allowed type...
 private:
@@ -377,7 +381,7 @@ public:
     return base()->has_hard_value();
   }
   Base const* e_val(Base const* def, const CARD_LIST* scope)const;
-  double e_val(int def, const CARD_LIST* scope)const{itested();
+  double e_val(int def, const CARD_LIST* scope)const{untested();
     return e_val(double(def), scope);
   }
   double e_val(double def, const CARD_LIST* scope)const{itested();
@@ -536,7 +540,7 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
   }else{
     const PARAM_LIST* pl = scope->params();
     trace2("los0b", _s, v);
-    Base const* b = pl->deep_lookup(_s).e_val(&def, scope);
+    Base const* b = pl->deep_lookup(_s).e_val(nullptr, scope);
     T ret;
     if(b){
       ret = get<T>(b);
@@ -654,7 +658,7 @@ inline void PARAMETER<T>::parse(CS& cmd)
       }else{
 	_s = name;
       }
-      if (name == "NA") {untested();
+      if (name == "NA") {
         _s = "";
       }else{
       }
