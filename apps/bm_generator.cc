@@ -94,7 +94,7 @@ bool EVAL_BM_GENERATOR::parse_numlist(CS& cmd)
 {
   size_t here = cmd.cursor();
   PARAMETER<double> new_value(NOT_VALID);
-  cmd >> new_value;
+  new_value.obsolete_parse(cmd);
   if (cmd.gotit(here)) {
     _scale = new_value;
     return true;

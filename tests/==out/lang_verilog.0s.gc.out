@@ -1,0 +1,18 @@
+s="default"
+t="default"
+#          
+ 27.       
+module foo ();
+endmodule // foo
+
+// BUG still need {} in c_param 
+foo #(.fs("testvalue")) f ();
+module foo ();
+endmodule // foo
+
+// BUG still need {} in c_param 
+foo #(.fs("testvalue")) f ();
+.subckt foo (  )
+.ends foo
+*// BUG still need {} in c_param 
+f (  )  foo  fs="testvalue"

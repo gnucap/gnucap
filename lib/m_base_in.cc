@@ -33,6 +33,11 @@ void Integer::parse(CS& File)
     File >> _data;
     if (File.stuck(&here)) {
       _input = false;
+    }else if(File.peek() == '.'){ untested();
+      trace1("Integer?", File.tail());
+      // reject float literal.
+      _input = false;
+      File.reset_fail(here);
     }else{
       _input = true;
     }
@@ -112,14 +117,15 @@ void Angled_String::parse(CS& File)
 }
 /*--------------------------------------------------------------------------*/
 void vString::parse(CS& File)
-{itested();
+{
   File.skipbl();
   size_t here = File.cursor();
-  char quote = File.ctoc();
+  const char quote = '"';
+  File.skip1(quote);
   std::string data;
   // TODO: extend ctos and use it.
   // TODO: remove '\0' characters, c.f. LRM
-  for (;;) {itested();
+  for (;File;) {
     if (File.match1('\\')) {itested();
       data += File.ctoc();
       if (File.match1(quote)) {itested();
@@ -136,10 +142,17 @@ void vString::parse(CS& File)
       break;
     }else{
       data += File.ctoc();
+      File.reset(File.cursor()); // set ok.
     }
   }
-  String::operator=(data);
-  File.skipbl();
+  if(File) {
+    String::operator=(data);
+    File.skipbl();
+  }else{
+    // not a vString.
+    File.reset_fail(here);
+  }
+  trace1("stringparse", val_string());
 }
 /*--------------------------------------------------------------------------*/
 void Tail_String::parse(CS& File)

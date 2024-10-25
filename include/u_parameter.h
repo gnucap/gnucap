@@ -53,13 +53,13 @@ public:
   virtual PARA_BASE* pclone(void*)const = 0;
   virtual bool operator==(const PARA_BASE&) const = 0;
 
-	  bool	has_hard_value()const {return (_s != "");}
+	  bool	has_hard_value()const { return (_s != "");}
   virtual bool	has_good_value()const = 0;
           bool  is_constant()const    {itested(); return (_s == "#");}
   virtual bool  is_given()const       {untested(); return (_s != "");}
   void	print(OMSTREAM& o)const       { o << string();}
 
-  virtual void	parse(CS& cmd) = 0;
+  virtual void	obsolete_parse(CS& cmd) = 0;
   virtual PARA_BASE& operator=(const std::string& s) = 0;
   virtual PARA_BASE& operator=(Base const*) = 0;
   virtual std::string string()const = 0;
@@ -117,7 +117,7 @@ public:
   operator T()const {return _v;}
   T e_val(const T& def, const CARD_LIST* scope, int recurse=0)const;
   Base const* value()const override { return &_v;}
-  void	parse(CS& cmd) override;
+  void	obsolete_parse(CS& cmd) override;
 
   std::string string()const override{
     if (_s == "#") {
@@ -263,21 +263,25 @@ void e_val(T* p, const T& def, const CARD_LIST*)
 // envelope for PARAMETER<T>
 class PARAM_INSTANCE {
 private:
-  // needed. PARA_BASE is abstract.
-  class PARA_NONE : public PARA_BASE {
+  // PARAM_ANY: act as untyped parameter, carry expression
+  class PARAM_ANY : public PARA_BASE {
+    mutable Base* _v{nullptr};
   public:
-    explicit PARA_NONE() : PARA_BASE() {}
-    explicit PARA_NONE(PARA_NONE const&p) : PARA_BASE(p) {}
+    explicit PARAM_ANY() : PARA_BASE() {}
+    explicit PARAM_ANY(PARAM_ANY const&p) : PARA_BASE(p) {}
+    ~PARAM_ANY() { delete _v; _v=nullptr; }
     PARA_BASE* clone()const override { untested();unreachable(); return NULL;}
-    PARA_BASE* pclone(void* p)const override { return new(p) PARA_NONE(*this);}
-    bool operator==(const PARA_BASE&)const override { untested();unreachable(); return false;}
+    PARA_BASE* pclone(void* p)const override { return new(p) PARAM_ANY(*this);}
+    bool operator==(const PARA_BASE& x)const override { return _s == x.string(); }
     bool has_good_value()const override { untested();unreachable(); return false;}
-    void parse(CS&)override { untested();unreachable();}
-    PARA_NONE& operator=(const std::string&)override { untested();unreachable(); return *this;}
-    PARA_NONE& operator=(const Base*)override { untested();unreachable(); return *this;}
-    std::string string()const override{itested(); return _s;}
+    void obsolete_parse(CS&)override { untested();unreachable();}
+    PARAM_ANY& operator=(const std::string& s)override { _s = s; return *this;}
+    PARAM_ANY& operator=(const Base*)override { untested();unreachable(); return *this;}
+    std::string string()const override{ return _s;}
     Base const* value()const override{return nullptr;}
-    Base const* e_val_(const Base*, const CARD_LIST*, int)const override{return nullptr;}
+    Base const* e_val_(const Base* def, const CARD_LIST* scope, int)const override;
+  private:
+    void lookup_solve(const CARD_LIST* scope)const;
   };
   char _mem[sizeof(PARAMETER<double>)]{'\0'}; // biggest allowed type...
 private:
@@ -285,7 +289,7 @@ private:
   PARA_BASE* base() { return reinterpret_cast<PARA_BASE*>(&_mem);}
 public:
   explicit PARAM_INSTANCE() {
-    new(&_mem) PARA_NONE();
+    new(&_mem) PARAM_ANY();
   }
   /*explicit*/ PARAM_INSTANCE(PARAM_INSTANCE const& p) {
     p.base()->pclone(&_mem);
@@ -325,7 +329,7 @@ public:
     return *this;
   }
   void set_fixed(Base const* v) {
-    if(dynamic_cast<PARA_NONE*>(base())) {
+    if(dynamic_cast<PARAM_ANY*>(base())) {
       // BUG?
       if(dynamic_cast<Float const*>(v)){
 	*this = PARAMETER<Float>();
@@ -342,22 +346,7 @@ public:
       *base() = v;
     }
   }
-#if 1
   PARAM_INSTANCE& operator=(double const& p) = delete;
-#else
-  // not what it appears to be. call set_fixed instead.
-  PARAM_INSTANCE& operator=(double const& p){ untested();
-    if(auto d = dynamic_cast<PARAMETER<double>*>(_p)){ untested();
-      *d = p;
-    }else{ untested();
-      delete _p;
-      PARAMETER<double>* pp = new PARAMETER<double>();
-      *pp = p;
-      _p = pp;
-    }
-    return *this;
-  }
-#endif
 public:
   Base const* value()const {untested(); return base()->value();}
   std::string const string() const{
@@ -366,7 +355,7 @@ public:
   }
   bool exists() const{
     assert(base());
-    if(dynamic_cast<PARA_NONE const*>(base())){
+    if(dynamic_cast<PARAM_ANY const*>(base())){
       return false;
     }else{
       return true;
@@ -377,7 +366,7 @@ public:
     return base()->has_hard_value();
   }
   Base const* e_val(Base const* def, const CARD_LIST* scope)const;
-  double e_val(int def, const CARD_LIST* scope)const{itested();
+  double e_val(int def, const CARD_LIST* scope)const{untested();
     return e_val(double(def), scope);
   }
   double e_val(double def, const CARD_LIST* scope)const{itested();
@@ -397,12 +386,12 @@ public:
     Base const* v = base()->value();
     if(auto f = dynamic_cast<Float const*>(v)){
       return *f;
-    }else{ untested();
+    }else{
       return NOT_VALID;
     }
   }
-  void parse(CS& cmd) {
-    base()->parse(cmd);
+  void obsolete_parse(CS& cmd) {
+    base()->obsolete_parse(cmd);
   }
  //  operator PARAMETER<double> const&()const {
  //    if(auto d = dynamic_cast<PARAMETER<double> const*>(_data.base())){
@@ -434,7 +423,7 @@ public:
     _pl = p._pl;
     return *this;
   }
-  void	parse(CS& cmd);
+  void	obsolete_parse(CS& cmd);
   void	print(OMSTREAM&, LANGUAGE*)const;
   
   size_t size()const {return _pl.size();}
@@ -536,7 +525,7 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
   }else{
     const PARAM_LIST* pl = scope->params();
     trace2("los0b", _s, v);
-    Base const* b = pl->deep_lookup(_s).e_val(&def, scope);
+    Base const* b = pl->deep_lookup(_s).e_val(nullptr, scope);
     T ret;
     if(b){
       ret = get<T>(b);
@@ -609,7 +598,7 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int re
 }
 /*--------------------------------------------------------------------------*/
 template <>
-inline void PARAMETER<bool>::parse(CS& cmd) 
+inline void PARAMETER<bool>::obsolete_parse(CS& cmd) 
 {
   bool new_val;
   cmd >> new_val;
@@ -637,10 +626,10 @@ inline void PARAMETER<bool>::parse(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-inline void PARAMETER<T>::parse(CS& cmd) 
+inline void PARAMETER<T>::obsolete_parse(CS& cmd) 
 {
-  T new_val;
-  cmd >> new_val;
+  value_type new_val;
+  new_val.parse(cmd);
   if (cmd) {
     _v = new_val;
     _s = "#";
@@ -654,7 +643,7 @@ inline void PARAMETER<T>::parse(CS& cmd)
       }else{
 	_s = name;
       }
-      if (name == "NA") {untested();
+      if (name == "NA") {
         _s = "";
       }else{
       }
@@ -679,6 +668,28 @@ inline OMSTREAM& operator<<(OMSTREAM& o, PARAM_INSTANCE const& p)
   trace3("PI << ", p.string(), p.operator->(), &p);
   p->print(o);
   return o;
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+bool Get(CS& cmd, const std::string& key, PARAMETER<T>* val)
+{
+  if (cmd.umatch(key + " {=}")) {
+    val->obsolete_parse(cmd);
+    return true;
+  }else{
+    return false;
+  }
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+bool Get(CS& cmd, const std::string& key, PARAM_INSTANCE* val)
+{ untested();
+  if (cmd.umatch(key + " {=}")) { untested();
+    val->obsolete_parse(cmd);
+    return true;
+  }else{ untested();
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

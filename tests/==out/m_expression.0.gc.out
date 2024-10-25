@@ -2,13 +2,14 @@
 "string"="string"
 "param a="aaa" "
 "eval a "
-a= NA
+a=aaa
 "param string a="aaa" "
 "eval a "
 a="aaa"
 "param b={"aaa" + "bbb"} "
 "eval b "
-b= NA
+eval b 
+     ^ ? can't convert to float
 "param c={"aaa" == "bbb"} "
 "eval c "
 c= 0.
@@ -29,7 +30,7 @@ d=("aaa" == 1)
 e=exp("0.")
 "param f={exp(1.+"0.")} "
 "eval f "
-f=exp(("0." +  1.))
+f=exp(( 1. + "0."))
 "param g={exp("aaa" == 0.)} "
 "eval g "
 g=exp(("aaa" ==  0.))
@@ -65,13 +66,13 @@ Untyped top level parameter. Assuming Float
 "missing quote
 ^ ? string begins here
 eval n 
-     ^ ? can't convert to float
+     ^ ? what's this?
 "param mid={"aaa" + x + "bbb"} "
 >>>>>param mid={"aaa" + x + "bbb"} 
 Untyped top level parameter. Assuming Float
 "eval mid "
 >>>>>eval mid 
-mid=(x + bbbaaa)
+mid=(("aaa" + x) + "bbb")
 "eval v < w "
 >>>>>eval v < w 
-(v < w)=1
+(v < w)=(v < w)

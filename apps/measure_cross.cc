@@ -103,7 +103,7 @@ public:
 	};
       }
       return to_string(x_time);
-    }else{ untested();
+    }else{
       throw Exception_No_Match(probe_name);
     }
   }

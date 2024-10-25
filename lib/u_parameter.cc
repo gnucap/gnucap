@@ -28,7 +28,7 @@
 #include "u_parameter.h"
 #include "u_lang.h"
 /*--------------------------------------------------------------------------*/
-void PARAM_LIST::parse(CS& cmd)
+void PARAM_LIST::obsolete_parse(CS& cmd)
 {
   (cmd >> "real |integer "); // ignore type
   size_t here = cmd.cursor();
@@ -39,7 +39,8 @@ void PARAM_LIST::parse(CS& cmd)
     }
     std::string Name;
     PARAMETER<double> Value;
-    cmd >> Name >> '=' >> Value;
+    cmd >> Name >> '=';
+    Value.obsolete_parse(cmd);
     trace2("parsed", Value, Value.string());
     if (cmd.stuck(&here)) {untested();
       break;
@@ -56,9 +57,9 @@ void PARAM_LIST::parse(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::print(OMSTREAM& o, LANGUAGE* lang)const
-{
-  for (const_iterator i = _pl.begin(); i != _pl.end(); ++i) {
-    if (i->second.has_hard_value()) {
+{ untested();
+  for (const_iterator i = _pl.begin(); i != _pl.end(); ++i) { untested();
+    if (i->second.has_hard_value()) { untested();
       print_pair(o, lang, i->first, i->second);
     }else{ untested();
     }
@@ -126,18 +127,20 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 	    // should not get here in verilog mode
 	    static PARAMETER<double> f;
 	    pi = f; // what it used to be.
-	  }else{
-	    trace1("got one", i->first);
+	  }else{itested();
+	    trace2("got one", i->first, k->second.string());
 	    // get type from proto
 	    pi = k->second;
+	    trace1("set type", pi.string());
 	  }
 
 	}
 
 	Base const* b = i->second.e_val(nullptr, scope);
-	trace1("eval_copy value", typeid(*b).name());
-
-	pi.set_fixed(b);
+	if(b && !b->is_NA()) {
+	  pi.set_fixed(b->clone());
+	}else{itested();
+	}
 
       }else if(j->second.has_hard_value()) {untested();
 	j->second.set_fixed(i->second.e_val(j->second.value(), scope));
@@ -154,7 +157,7 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
   trace1("PARAM_LIST::deep_lookup", Name);
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
-  }else{
+  }else{itested();
   }
   const_iterator i = _pl.find(Name);
   if (i!=_pl.end() && i->second.has_hard_value()) {
@@ -180,18 +183,14 @@ Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
     throw Exception("recursion too deep");
   }else{
   }
-  if(dynamic_cast<PARA_NONE const*>(base())) {
-    assert(!base()->e_val_(def, scope, 1));
-  }else{
-  }
 
   // try { untested();
 
   Base const* ret = nullptr;
 
   if(base()) {
-    ret = base()->e_val_(def, scope, 1);
-    if(ret) trace1("PARAM_INSTANCE::e_val", typeid(*ret).name());
+    assert(recursion);
+    ret = base()->e_val_(def, scope, recursion);
   }else{ untested();
   }
 
@@ -205,13 +204,13 @@ Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::set(std::string Name, const double& Value)
-{
-  if (OPT::case_insensitive) {
+{itested();
+  if (OPT::case_insensitive) {itested();
     notstd::to_lower(&Name);
-  }else{
+  }else{itested();
   }
   Float v(Value);
-  try{
+  try{itested();
     _pl[Name].set_fixed(&v);
   }catch(Exception_Clash const&){ untested();
     (_pl[Name] = "").set_fixed(&v);
@@ -223,19 +222,18 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
 {
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
-  }else{
+  }else{itested();
   }
   PARAM_INSTANCE& p = _pl[Name];
-  if(p.exists()){
-    try{
+  if(p.exists()){itested();
+    try{itested();
       p = Value;
-    }catch(Exception_Clash const&){
+    }catch(Exception_Clash const&){itested();
       (p = "") = Value;
       error(bTRACE, Name + " already set. replacing\n");
     }
   }else{
-    // spice fallback.
-    p = PARAMETER<double>();
+    trace2("PARAM_LIST::set", Name, Value);
     p = Value;
   }
 }
@@ -259,7 +257,7 @@ bool Get(CS& cmd, const std::string& key, PARAMETER<bool>* val)
 {
   if (cmd.umatch(key + ' ')) {
     if (cmd.skip1b('=')) {
-      cmd >> *val;
+      val->obsolete_parse(cmd);
     }else{
       *val = true;
     }
@@ -280,6 +278,83 @@ bool Get(CS& cmd, const std::string& key, PARAMETER<int>* val)
   }else{
     return false;
   }
+}
+/*--------------------------------------------------------------------------*/
+// similar in PARAMETER<T>
+// make it all Base* and move to PARA_BASE?
+void PARAM_INSTANCE::PARAM_ANY::lookup_solve(const CARD_LIST* scope) const
+{
+  CS cmd(CS::_STRING, _s);
+  Expression e(cmd);
+  Expression reduced(e, scope);
+
+  delete _v;
+  _v = nullptr;
+  {
+    Base const* v = reduced.value();
+
+    if(v && v->is_NA()) { untested();
+      assert(_s != "\"one\"");
+    }else if(v){
+      _v = v->clone();
+      assert(_v);
+    }else{itested();
+    }
+  }
+
+  if (_v) {
+    // OK
+  }else{itested();
+    const PARAM_LIST* pl = scope->params();
+    Base const* b = pl->deep_lookup(_s).e_val(nullptr, scope);
+    if(b && !b->is_NA()){ untested();
+      error(bWARNING, "parameter " + _s +  "  specified\n");
+      _v = b->clone();
+    }else if(b){ untested();
+      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
+    }else{itested();
+      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+// duplicate of PARAMETER<T>::e_val_
+// make it all Base* and move to PARA_BASE?
+Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const CARD_LIST*
+    scope, int recurse) const
+{
+  assert(scope);
+
+  if (_s == "") {itested();
+    delete _v;
+    _v = nullptr;
+    // blank string means to use default value
+    if(Def){ untested();
+      _v = Def->clone();
+    }else{itested();
+    }
+    if (recurse) { itested();
+      // error(bWARNING, "?parameter " + _s +  " not specified, using default\n");
+    }else{ untested();
+    }
+  }else if (_s != "#") {
+    // anything else means look up the value
+    lookup_solve(scope);
+    if (!_v || _v->is_NA()) {itested();
+      //BUG// needs to show scope
+      //BUG// it is likely to have a numeric overflow resulting from the bad value
+      error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
+      // throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
+    }else if(!_v){ untested();
+      assert(_s != "\"one\"");
+      error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
+    }else{
+    }
+  }else{ untested();
+    // start with # means we have a final value
+  }
+
+  return _v;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

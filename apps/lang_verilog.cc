@@ -461,20 +461,23 @@ public:
     }
   }
 private:
-  void parse(CS& cmd, PARAM_LIST* pl);
+  void parse(CS& cmd, PARAM_LIST* pl)const;
+  void parse_def(CS& cmd, PARAM_INSTANCE& par)const;
 } module_param;
 /*--------------------------------------------------------------------------*/
+// essentially PARAM_INSTANCE::PARAM_NONE, untyped parameter
+// but resolve to verilog types.
 class PARAM_ANY : public PARA_BASE {
-  Base* _value{nullptr};
+  mutable Base* _value{nullptr};
 public:
   explicit PARAM_ANY() : PARA_BASE () {}
   explicit PARAM_ANY(PARAM_ANY const&p) : PARA_BASE (p) {
     if(p._value){
-      _value = p._value->assign(p._value);
+      _value = p._value->clone();
     }else{
     }
   }
-  ~PARAM_ANY() {delete _value;}
+  ~PARAM_ANY() { delete _value; _value=nullptr;}
   PARA_BASE* clone()const override{ untested();return new PARAM_ANY(*this);}
   PARA_BASE* pclone(void*p)const override{return new(p) PARAM_ANY(*this);}
   bool operator==(const PARA_BASE& v)const { untested();
@@ -489,7 +492,7 @@ public:
     }else if(auto i = dynamic_cast<Integer const*>(v.value())){ untested();
       eq = i->equal(_value);
     }else{ untested();
-      // incomplete();
+      incomplete();
     }
 
     bool ret = false;
@@ -516,28 +519,16 @@ public:
     return ret;
   }
 
-  void parse(CS& cmd) override {
-    std::string name;
-    //cmd >> name;
-    name = cmd.ctos(",=();", "'{\"", "'}\"");
-    if (cmd) {
-      if (cmd.match1('(')) {
-	_s = name + '(' + cmd.ctos("", "(", ")") + ')';
-      }else{
-	_s = name;
-      }
-    }else{
-    }
-  }
-  PARA_BASE& operator=(const std::string&) override{ untested();unreachable(); return *this;}
+  void obsolete_parse(CS&) override { untested(); unreachable(); }
+  PARA_BASE& operator=(const std::string&s) override{ _s = s; return *this;}
   PARA_BASE& operator=(Base const* v)override {
     delete _value;
+    _value = nullptr;
     if(dynamic_cast<Float const*>(v)){
-      // assert(dynamic_cast<vReal const*>(v));
       vReal n;
       _value = n.assign(v);
       trace3("now real", _s, v->val_string(), _value->val_string());
-    }else if(dynamic_cast<Integer const*>(v)){ untested();
+    }else if(dynamic_cast<Integer const*>(v)){
       vInteger n;
       _value = n.assign(v);
       trace3("now integer", _s, v->val_string(), _value->val_string());
@@ -546,6 +537,7 @@ public:
       assert(_value);
       trace3("don't know", _s, v->val_string(), _value->val_string());
     }
+    assert(_value);
     _s = "#";
     return *this;
   }
@@ -556,7 +548,7 @@ public:
       }else{ untested();
 	return "";
       }
-   // }else if (_s == "") {
+   // }else if (_s == "") { untested();
    //   return "NA(" + _value->val_string() + ")";
     }else{
       return _s;
@@ -570,19 +562,50 @@ public:
     return _value;
   }
   bool has_good_value()const override { untested();unreachable(); return false;}
-  Base const* e_val_(const Base*, const CARD_LIST*, int)const { untested();unreachable(); return nullptr;}
+  Base const* e_val_(const Base* def, const CARD_LIST* s, int)const { untested();
+    // def does not seem to carry type info...
+    // see s_dc.vcvs1{a,b,c}.gc
+    error(bDEBUG, "assuming double in " + _s + "\n");
+    PARAMETER<double> pp;
+    PARAM_INSTANCE pi;
+    pi = pp;
+    pi = _s;
+    Base const* v = pi.e_val(def, s);
+    assert(v);
+    _value = v->clone(); // v belongs to pi.
+    return _value;
+  }
 }param_any;
 /*--------------------------------------------------------------------------*/
-void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
+void CMD_MODULE_PARAM::parse_def(CS& cmd, PARAM_INSTANCE& par) const
+{
+   // BUG // need to tokenize right here. strings may contain separators etc.
+  size_t here = cmd.cursor();
+  std::string def = cmd.get_to(",;");
+  if(cmd.skip1(",;")){
+    // par = "{" + def + "}";
+  }else{
+    cmd.warn(int(here), "missing ';'?\n");
+    cmd.reset(here);
+    def = cmd.tail(); // feeling lucky.
+  }
+  trace2("parse_def", cmd.fullstring(), def);
+  par = def;
+}
+/*--------------------------------------------------------------------------*/
+void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
 {
   assert(pl);
-  int type = 0;
+  PARAM_INSTANCE par;
   if(cmd >> "real"){
-    type = 1;
+    par = PARAMETER<vReal>();
   }else if(cmd >> "integer"){
-    type = 2;
-// TODO: realtime | time | string
+    par = PARAMETER<vInteger>();
+  }else if(cmd >> "string"){
+    par = PARAMETER<vString>();
   }else{
+    // TODO: realtime | time
+    par = PARAM_ANY();
   }
   size_t here = cmd.cursor();
   for (;;) {
@@ -591,24 +614,15 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
     }else{
     }
     std::string Name;
-    PARAM_INSTANCE par;
-    switch(type){
-    case 1:
-      par = PARAMETER<vReal>();
-      break;
-    case 2:
-      par = PARAMETER<vInteger>();
-      break;
-    default:
-      par = param_any;
-      // par = PARAMETER<vReal>();
-      break;
+    cmd >> Name;
+    par = "";
+    if(cmd.skip1('=')) {
+      parse_def(cmd, par);
+    }else{
+      cmd.skip1(',');
     }
 
-    cmd >> Name >> '=' >> par;
-
-    trace1("parsed", par.string());
-    if (cmd.stuck(&here)) {
+    if (cmd.stuck(&here)) { untested();
       break;
     }else{
     }
@@ -616,6 +630,7 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
       notstd::to_lower(&Name);
     }else{
     }
+    trace2("parsed", Name, par.string());
     pl->set(Name, par);
   }
   cmd.check(bDANGER, "syntax error");
@@ -706,7 +721,7 @@ void LANG_VERILOG::print_attributes(OMSTREAM& o, tag_t x)
 void LANG_VERILOG::print_args(OMSTREAM& o, const MODEL_CARD* x)
 {
   assert(x);
-  if (x->use_obsolete_callback_print()) {
+  if (x->use_obsolete_callback_print()) { untested();
     x->print_args_obsolete_callback(o, this);  //BUG//callback//
   }else{
     for (int ii = x->param_count() - 1;  ii >= 0;  --ii) {
@@ -897,14 +912,14 @@ class CMD_MODULE : public CMD {
     try {
       lang_verilog.parse_module(cmd, new_module);
       Scope->push_back(new_module);
-    }catch(Exception const& e) {
+    }catch(Exception const& e) { untested();
       cmd.warn(bDANGER, e.message());
-      for (;;) {
+      for (;;) { untested();
 	cmd.get_line("verilog-module>");
 
-	if (cmd >> "endmodule ") {
+	if (cmd >> "endmodule ") { untested();
 	  break;
-	}else{
+	}else{ untested();
 	}
       }
       delete new_module;

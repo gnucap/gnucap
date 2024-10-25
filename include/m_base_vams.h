@@ -55,13 +55,13 @@ public:
   vInteger* assign(const String*X)const override;
 
   vInteger* less(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data < X->_data)?1:0);}
-  vInteger* greater(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data > X->_data)?1:0);}
+  vInteger* greater(const Integer* X)const override	 {itested(); assert(X); return new vInteger((_data > X->_data)?1:0);}
   vInteger* leq(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data <= X->_data)?1:0);}
   vInteger* geq(const Integer* X)const override	 {itested(); assert(X); return new vInteger((_data >= X->_data)?1:0);}
   vInteger* not_equal(const Integer* X)const override { untested(); assert(X); return new vInteger((_data != X->_data)?1:0);}
   vInteger* equal(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data == X->_data)?1:0);}
-  vInteger* add(const Integer* X)const override	 { untested(); assert(X); return new vInteger(_data + X->_data);}
-  vInteger* multiply(const Integer* X)const override  { untested(); assert(X); return new vInteger(_data * X->_data);}
+  vInteger* add(const Integer* X)const override	 { assert(X); return new vInteger(_data + X->_data);}
+  vInteger* multiply(const Integer* X)const override  {itested(); assert(X); return new vInteger(_data * X->_data);}
   vInteger* subtract(const Integer* X)const override  {untested(); assert(X); return new vInteger(_data - X->_data);}
   vInteger* r_subtract(const Integer* X)const override{itested();assert(X); return new vInteger(X->_data - _data);}
   vInteger* divide(const Integer* X)const override	 {untested(); assert(X); return new vInteger(_data / X->_data);}
@@ -140,18 +140,19 @@ inline vInteger* vInteger::assign(const String*)  const {untested(); return null
 class vString : public String {
 public:
   void parse(CS&) override;
+private:
+  explicit vString(const char* data) : String(data) {untested(); }
 public:
-  explicit vString(CS& file)	{parse(file);}
-  explicit vString()		{}
-  /* explicit */ vString(vString const& x) : String(x) {}
-  explicit vString(Base::NOT_INPUT) { assert(!is_NA());}
+  explicit vString(CS& file) : String()	{itested(); parse(file);}
+  explicit vString(Base::NOT_INPUT x = _NOT_INPUT) : String(x) {  assert(is_NA());}
+  /* explicit */ vString(vString const& x) : String(x) {itested(); }
 
   vString& operator=(vString const& x) {
     String::operator=(x);
     return *this;
   }
 
-  std::string val_string()const override	{
+  std::string val_string()const override {
     if(_data){itested();
       // BUG: missing escape
       return '"' + std::string(_data) + '"';
@@ -172,6 +173,9 @@ public:
     if(!X){ untested();
     }else if(auto q = dynamic_cast<vString const*>(X)){itested();
       return new vString(*q);
+    }else if(dynamic_cast<String const*>(X)){untested();
+      incomplete();
+    }else if(dynamic_cast<Float const*>(X)){untested();
     }else{ untested();
     }
     return nullptr;
@@ -190,6 +194,7 @@ public:
     if(!dynamic_cast<vString const*>(X)){
     }else if(_data && X && X->_data) {
     /// move to some lib eventually ///
+      trace2("string add", _data, X->_data);
       size_t len = strlen(_data);
       char* buf = (char*) malloc(len+strlen(X->_data)+1);
       if(!buf){ untested();
@@ -198,11 +203,13 @@ public:
       }
       char* mid = (char*) mempcpy(buf, _data, len);
       strcpy(mid, X->_data);
-      return new String(buf);
+      return new vString(buf);
     }else{ untested();
     }
     return nullptr;
   }
+  using String::r_add;
+  String* r_add(const String* X)const override  { assert(X); return X->add(this); }
 //  using String::equal;
 //  Base* equal(const String* X)const override {
 //  }

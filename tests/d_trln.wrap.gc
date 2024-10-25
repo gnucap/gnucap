@@ -4,13 +4,13 @@ verilog
 # "Qucsator style" TLIN
 module TLIN (a, b)
 	// ground \0
-  parameter Z=50
-  parameter L=100m
-  parameter Alpha=1
-  parameter Temp=26.85
+  parameter Z=50;
+  parameter L=100m;
+  parameter Alpha=1;
+  parameter Temp=26.85;
 
   // local
-  parameter c0=299792458.0
+  parameter c0=299792458.0;
   tline #(.z(Z), .td(1./c0), .len(L) t (.t1(a), .b1(\0 ) , .t2(b), .b2(\0 ) );
 endmodule
 

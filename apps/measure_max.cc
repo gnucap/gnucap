@@ -81,7 +81,7 @@ public:
 	}
       }
       return to_string((arg) ? (time) : (m));
-    }else{ untested();
+    }else{
       throw Exception_No_Match(probe_name);
     }
   }

@@ -117,7 +117,7 @@ void Expression::leaf(CS& File)
   size_t here = File.cursor();
   if (File.peek() == '"') {
     vString* s = new vString(File);
-    if (File.stuck(&here)) { untested();
+    if (File.stuck(&here)) {
       delete s;
       throw Exception_CS("what's this?", File);
     }else{

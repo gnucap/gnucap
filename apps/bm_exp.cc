@@ -195,7 +195,7 @@ bool EVAL_BM_EXP::parse_numlist(CS& cmd)
   size_t here = cmd.cursor();
   for (PARAMETER<double>* i = &_iv;  i < &_end;  ++i) {
     PARAMETER<double> val(NOT_VALID);
-    cmd >> val;
+    val.obsolete_parse(cmd);
     if (cmd.stuck(&here)) {
       break;
     }else{ untested();

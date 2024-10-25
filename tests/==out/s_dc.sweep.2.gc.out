@@ -1,3 +1,8 @@
+parameter U=1m 
+               ^ ? missing ';'?
+
+parameter U=1m 
+            ^ ? syntax error
 *// qucs style component macros. 
 .subckt Idc ( 1 2 )
 dev ( 2 1 )  isource I

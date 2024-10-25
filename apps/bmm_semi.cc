@@ -235,7 +235,7 @@ bool EVAL_BM_SEMI_BASE::parse_numlist(CS& cmd)
 {
   size_t here = cmd.cursor();
   PARAMETER<double> val(NOT_VALID);
-  cmd >> val;
+  val.obsolete_parse(cmd);
   if (cmd.gotit(here)) {
     _value = val;
     return true;

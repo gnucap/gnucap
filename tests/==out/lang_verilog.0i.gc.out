@@ -1,0 +1,7 @@
+#           v(1)      
+ 27.        21.       
+module foo (.a(a),.b(b));
+vsource #(.dc(j)) v (.p(a),.n(b));
+endmodule // foo
+
+foo #(.a(2),.i(19)) f (.a(\1 ),.b(\0 ));
