@@ -55,13 +55,13 @@ public:
   vInteger* assign(const String*X)const override;
 
   vInteger* less(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data < X->_data)?1:0);}
-  vInteger* greater(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data > X->_data)?1:0);}
+  vInteger* greater(const Integer* X)const override	 {itested(); assert(X); return new vInteger((_data > X->_data)?1:0);}
   vInteger* leq(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data <= X->_data)?1:0);}
   vInteger* geq(const Integer* X)const override	 {itested(); assert(X); return new vInteger((_data >= X->_data)?1:0);}
   vInteger* not_equal(const Integer* X)const override { untested(); assert(X); return new vInteger((_data != X->_data)?1:0);}
   vInteger* equal(const Integer* X)const override	 { untested(); assert(X); return new vInteger((_data == X->_data)?1:0);}
   vInteger* add(const Integer* X)const override	 { assert(X); return new vInteger(_data + X->_data);}
-  vInteger* multiply(const Integer* X)const override  { untested(); assert(X); return new vInteger(_data * X->_data);}
+  vInteger* multiply(const Integer* X)const override  {itested(); assert(X); return new vInteger(_data * X->_data);}
   vInteger* subtract(const Integer* X)const override  {untested(); assert(X); return new vInteger(_data - X->_data);}
   vInteger* r_subtract(const Integer* X)const override{itested();assert(X); return new vInteger(X->_data - _data);}
   vInteger* divide(const Integer* X)const override	 {untested(); assert(X); return new vInteger(_data / X->_data);}
@@ -141,19 +141,18 @@ class vString : public String {
 public:
   void parse(CS&) override;
 private:
-  explicit vString(const char* data) : String(data) {}
+  explicit vString(const char* data) : String(data) {untested(); }
 public:
-  explicit vString(CS& file)	{parse(file);}
-  explicit vString()		{}
-  /* explicit */ vString(vString const& x) : String(x) {}
-  explicit vString(Base::NOT_INPUT) { assert(!is_NA());}
+  explicit vString(CS& file) : String()	{itested(); parse(file);}
+  explicit vString(Base::NOT_INPUT x = _NOT_INPUT) : String(x) {  assert(is_NA());}
+  /* explicit */ vString(vString const& x) : String(x) {itested(); }
 
   vString& operator=(vString const& x) {
     String::operator=(x);
     return *this;
   }
 
-  std::string val_string()const override	{
+  std::string val_string()const override {
     if(_data){itested();
       // BUG: missing escape
       return '"' + std::string(_data) + '"';

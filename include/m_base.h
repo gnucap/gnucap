@@ -186,8 +186,8 @@ class Integer : public Base {
   friend class Float;
   friend class vInteger;
 protected:
-  int32_t _data;
-  bool _input;
+  int32_t _data{0};
+  bool _input{false};
 private:
   void dump(std::ostream& o)const override {itested();
     if (!_input) { untested();
@@ -200,9 +200,8 @@ public:
   /*implicit*/ Integer(const Integer& p) :Base(), _data(p._data), _input(p._input) { }
   explicit Integer(CS& file)		{untested();parse(file);}
   explicit Integer(const std::string& s)	{CS cs(CS::_STRING, s); parse(cs);}
-  Integer(Base::NOT_INPUT) :_data(0), _input(false) {}
+  Integer(Base::NOT_INPUT = _NOT_INPUT) {}
   Integer(int32_t x) :_data(x), _input(true) {}
-  Integer() : _input(false) {}
   void parse(CS&) override;
   int32_t value()const			{return _data;}
   operator int32_t()const		{return _data;}
@@ -278,7 +277,7 @@ public:
   Base* modulo(const String*)const override	{untested();return nullptr;}
   Base* r_modulo(const String*)const override	{untested();return nullptr;}
 
-  bool  is_NA()const			{return !_input;}
+  bool  is_NA()const override			{return !_input;}
 
 public:
   Integer to_Integer()const override { return *this; }
@@ -381,7 +380,7 @@ public:
   Base* modulo(const String*)const override	{untested();return nullptr;}
   Base* r_modulo(const String*)const override	{untested();return nullptr;}
 
-  bool  is_NA()const			{return _data == ::NOT_INPUT;}
+  bool  is_NA()const override			{return _data == ::NOT_INPUT;}
 
 public:
   Integer to_Integer()const override { return Integer(static_cast<int32_t>(_data)); }
@@ -421,9 +420,8 @@ private:
 public:
   explicit String(CS& file) {untested();parse(file);}
   explicit String(std::string const& s) { operator=(s); }
-  explicit String() { assert(!is_NA()); }
-  explicit String(Base::NOT_INPUT) { untested(); assert(!is_NA());}
-  /*explicit*/ String(const String& s) : Base() {itested();
+  explicit String(Base::NOT_INPUT x = _NOT_INPUT) { (void)x; assert(is_NA());}
+  /*explicit*/ String(const String& s) : Base() {
     operator=(s);
   }
   ~String() {
@@ -439,7 +437,7 @@ public:
 
     if(s._data){
       _data = strdup(s._data);
-    }else{itested();
+    }else{
       assert(!_data);
     }
     return *this;
@@ -478,7 +476,7 @@ public:
   Integer* greater(const String* X)const override  { return _data && X && X->_data?new Integer(  strcmp(_data, X->_data) >  0) : nullptr;}
   Integer* leq(const String* X)const override	   {untested(); return _data && X && X->_data?new Integer(  strcmp(_data, X->_data) <= 0) : nullptr;}
   Integer* geq(const String* X)const override	   {untested(); return _data && X && X->_data?new Integer(  strcmp(_data, X->_data) >= 0) : nullptr;}
-  Integer* not_equal(const String* X)const override{untested(); return _data && X && X->_data?new Integer(!!strcmp(_data, X->_data)     ) : nullptr;}
+  Integer* not_equal(const String* X)const override{itested(); return _data && X && X->_data?new Integer(!!strcmp(_data, X->_data)     ) : nullptr;}
   Integer* equal(const String* X)const override	   { return _data && X && X->_data?new Integer( !strcmp(_data, X->_data)     ) : nullptr;}
   String* add(const String*)const override	   { return nullptr;}
   String* r_add(const String* X)const override	   {untested();return ((X) ? (X->add(this))  : (nullptr));}
@@ -539,7 +537,7 @@ public:
   Base* modulo    (const Integer*)const override {untested();return nullptr;}
   Base* r_modulo  (const Integer*)const override {untested();return nullptr;}
 
-  bool  is_NA()const			{return _data; }
+  bool  is_NA()const override			{return !_data; }
 
   String to_String()const override { return *this; }
   Float to_Float()const override  { return Float(); }

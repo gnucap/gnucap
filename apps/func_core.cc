@@ -246,7 +246,7 @@ DISPATCHER<FUNCTION>::INSTALL d_log10(&function_dispatcher, "log10", &p_log10);
 /*--------------------------------------------------------------------------*/
 class exp : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {itested();
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
     x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);

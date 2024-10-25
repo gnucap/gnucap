@@ -1,33 +1,17 @@
 s="default"
 t="default"
-parameter "testvalue" not specified, using default
-parameter "testvalue" value is "NOT_INPUT"
-parameter "testvalue" not specified, using default
-parameter "testvalue" value is "NOT_INPUT"
-parameter "testvalue" not specified, using default
-parameter "testvalue" value is "NOT_INPUT"
 #          
-parameter "testvalue" not specified, using default
-parameter "testvalue" value is "NOT_INPUT"
-parameter "testvalue" not specified, using default
-parameter "testvalue" value is "NOT_INPUT"
  27.       
-parameter "testvalue" not specified, using default
-parameter "testvalue" value is "NOT_INPUT"
 module foo ();
 endmodule // foo
 
 // BUG still need {} in c_param 
 foo #(.fs("testvalue")) f ();
-parameter "testvalue" not specified, using default
-parameter "testvalue" value is "NOT_INPUT"
 module foo ();
 endmodule // foo
 
 // BUG still need {} in c_param 
 foo #(.fs("testvalue")) f ();
-parameter "testvalue" not specified, using default
-parameter "testvalue" value is "NOT_INPUT"
 .subckt foo (  )
 .ends foo
 *// BUG still need {} in c_param 

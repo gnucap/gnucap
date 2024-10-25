@@ -57,9 +57,9 @@ void PARAM_LIST::obsolete_parse(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::print(OMSTREAM& o, LANGUAGE* lang)const
-{
-  for (const_iterator i = _pl.begin(); i != _pl.end(); ++i) {
-    if (i->second.has_hard_value()) {
+{ untested();
+  for (const_iterator i = _pl.begin(); i != _pl.end(); ++i) { untested();
+    if (i->second.has_hard_value()) { untested();
       print_pair(o, lang, i->first, i->second);
     }else{ untested();
     }
@@ -127,7 +127,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 	    // should not get here in verilog mode
 	    static PARAMETER<double> f;
 	    pi = f; // what it used to be.
-	  }else{
+	  }else{itested();
 	    trace2("got one", i->first, k->second.string());
 	    // get type from proto
 	    pi = k->second;
@@ -139,7 +139,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
 	Base const* b = i->second.e_val(nullptr, scope);
 	if(b && !b->is_NA()) {
 	  pi.set_fixed(b->clone());
-	}else{
+	}else{itested();
 	}
 
       }else if(j->second.has_hard_value()) {untested();
@@ -157,7 +157,7 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
   trace1("PARAM_LIST::deep_lookup", Name);
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
-  }else{
+  }else{itested();
   }
   const_iterator i = _pl.find(Name);
   if (i!=_pl.end() && i->second.has_hard_value()) {
@@ -204,13 +204,13 @@ Base const* PARAM_INSTANCE::e_val(Base const* def, const CARD_LIST* scope) const
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::set(std::string Name, const double& Value)
-{
-  if (OPT::case_insensitive) {
+{itested();
+  if (OPT::case_insensitive) {itested();
     notstd::to_lower(&Name);
-  }else{
+  }else{itested();
   }
   Float v(Value);
-  try{
+  try{itested();
     _pl[Name].set_fixed(&v);
   }catch(Exception_Clash const&){ untested();
     (_pl[Name] = "").set_fixed(&v);
@@ -222,13 +222,13 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
 {
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
-  }else{
+  }else{itested();
   }
   PARAM_INSTANCE& p = _pl[Name];
-  if(p.exists()){
-    try{
+  if(p.exists()){itested();
+    try{itested();
       p = Value;
-    }catch(Exception_Clash const&){
+    }catch(Exception_Clash const&){itested();
       (p = "") = Value;
       error(bTRACE, Name + " already set. replacing\n");
     }
@@ -293,16 +293,18 @@ void PARAM_INSTANCE::PARAM_ANY::lookup_solve(const CARD_LIST* scope) const
   {
     Base const* v = reduced.value();
 
-    if(v && v->is_NA()) {
+    if(v && v->is_NA()) { untested();
+      assert(_s != "\"one\"");
     }else if(v){
       _v = v->clone();
-    }else{
+      assert(_v);
+    }else{itested();
     }
   }
 
   if (_v) {
     // OK
-  }else{
+  }else{itested();
     const PARAM_LIST* pl = scope->params();
     Base const* b = pl->deep_lookup(_s).e_val(nullptr, scope);
     if(b && !b->is_NA()){ untested();
@@ -310,7 +312,7 @@ void PARAM_INSTANCE::PARAM_ANY::lookup_solve(const CARD_LIST* scope) const
       _v = b->clone();
     }else if(b){ untested();
       error(bWARNING, "parameter " + _s +  " not specified, using default\n");
-    }else{
+    }else{itested();
       error(bWARNING, "parameter " + _s +  " not specified, using default\n");
     }
   }
@@ -323,13 +325,13 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const CARD_LIST*
 {
   assert(scope);
 
-  if (_s == "") {
+  if (_s == "") {itested();
     delete _v;
     _v = nullptr;
     // blank string means to use default value
     if(Def){ untested();
       _v = Def->clone();
-    }else{
+    }else{itested();
     }
     if (recurse) { itested();
       // error(bWARNING, "?parameter " + _s +  " not specified, using default\n");
@@ -338,12 +340,13 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const CARD_LIST*
   }else if (_s != "#") {
     // anything else means look up the value
     lookup_solve(scope);
-    if (!_v || _v->is_NA()) {
+    if (!_v || _v->is_NA()) {itested();
       //BUG// needs to show scope
       //BUG// it is likely to have a numeric overflow resulting from the bad value
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
       // throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
     }else if(!_v){ untested();
+      assert(_s != "\"one\"");
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
     }else{
     }

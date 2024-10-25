@@ -277,7 +277,7 @@ private:
     void obsolete_parse(CS&)override { untested();unreachable();}
     PARAM_ANY& operator=(const std::string& s)override { _s = s; return *this;}
     PARAM_ANY& operator=(const Base*)override { untested();unreachable(); return *this;}
-    std::string string()const override{itested(); return _s;}
+    std::string string()const override{ return _s;}
     Base const* value()const override{return nullptr;}
     Base const* e_val_(const Base* def, const CARD_LIST* scope, int)const override;
   private:
@@ -386,7 +386,7 @@ public:
     Base const* v = base()->value();
     if(auto f = dynamic_cast<Float const*>(v)){
       return *f;
-    }else{ untested();
+    }else{
       return NOT_VALID;
     }
   }
