@@ -117,7 +117,7 @@ void Angled_String::parse(CS& File)
 }
 /*--------------------------------------------------------------------------*/
 void vString::parse(CS& File)
-{untested();
+{
   File.skipbl();
   size_t here = File.cursor();
   const char quote = '"';
@@ -125,7 +125,7 @@ void vString::parse(CS& File)
   std::string data;
   // TODO: extend ctos and use it.
   // TODO: remove '\0' characters, c.f. LRM
-  for (;File;) {untested();
+  for (;File;) {
     if (File.match1('\\')) {itested();
       data += File.ctoc();
       if (File.match1(quote)) {itested();
@@ -134,21 +134,21 @@ void vString::parse(CS& File)
 	data += File.ctoc();
       }else{itested();
       }
-    }else if (File.skip1(quote)) { untested();
+    }else if (File.skip1(quote)) {
       break;
-    }else if (!File.ns_more()) { untested();
+    }else if (!File.ns_more()) {
       File.warn(bNOERROR, "end of file in quoted string");
       File.warn(bNOERROR, here, "string begins here");
       break;
-    }else{ untested();
+    }else{
       data += File.ctoc();
       File.reset(File.cursor()); // set ok.
     }
   }
-  if(File) { untested();
+  if(File) {
     String::operator=(data);
     File.skipbl();
-  }else{ untested();
+  }else{
     // not a vString.
     File.reset_fail(here);
   }

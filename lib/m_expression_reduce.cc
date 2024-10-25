@@ -192,6 +192,10 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	trace2("found Float", name(), typeid(*n).name());
       }
       E->push_back(new Token_CONSTANT(n));
+    }else if(name()[0] == '"') { untested();
+	  CS cmd(CS::_STRING, name());
+	  String* s = new vString(cmd);
+	  E->push_back(new Token_CONSTANT(s));
     }else{itested();
       // a name
       PARAM_INSTANCE p = (*(E->_scope->params()))[name()];
@@ -227,15 +231,12 @@ void Token_SYMBOL::stack_op(Expression* E)const
       }else{
 	trace1("no value", name());
 	// no value - keep name (and accept incomplete solution later)
-	if(verilog_mode) {
-	  // not a string, but unresolved
-	  E->push_back(clone());
-	}else if(name()[0] == '"') { untested();
-	  E->push_back(clone());
-	}else{
-	  // keep behaviour for naked strings.
-	  String* s = new String(name());
+	if(name()[0] == '"') { untested();
+	  CS cmd(CS::_STRING, name());
+	  String* s = new vString(cmd);
 	  E->push_back(new Token_CONSTANT(s));
+	}else{
+	  E->push_back(clone());
 	}
       }
     }
@@ -305,7 +306,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	trace3("order unchanged.", t2->name(), name(), t1->name());
 	E->push_back(t2);
 	E->push_back(t1);
-      }else if (dynamic_cast<String const*>(t2->data())) { untested();
+      }else if (dynamic_cast<String const*>(t2->data())) {
 	trace3("string order unchanged.", t2->name(), name(), t1->name());
 	E->push_back(t2);
 	E->push_back(t1);
@@ -343,15 +344,19 @@ void Token_BINOP::stack_op(Expression* E)const
 	  trace3("order unchanged1", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
-	}else if (dynamic_cast<const Float*>(t1->data())) {
+	}else if (dynamic_cast<const Float*>(t1->data())) { untested();
 	  trace3("order unchanged2", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
-	}else if (dynamic_cast<String const*>(t2->data())) { untested();
-	  trace3("string, order unchanged", t2->name(), name(), t1->name());
+	}else if (dynamic_cast<String const*>(t1->data())) {
+	  trace3("string, order unchanged1", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
-	}else{
+	}else if (dynamic_cast<String const*>(t2->data())) { untested();
+	  trace3("string, order unchanged2", t2->name(), name(), t1->name());
+	  E->push_back(t2);
+	  E->push_back(t1);
+	}else{ untested();
 	  trace3("order changed", t2->name(), name(), t1->name());
 	  // change order to enable later optimization
 	  E->push_back(t1);
@@ -365,11 +370,11 @@ void Token_BINOP::stack_op(Expression* E)const
 	trace3("order unchanged3b", t2->name(), name(), t1->name());
 	E->push_back(t2);
 	E->push_back(t1);
-      }else if (strchr("+*", name()[0])) {itested();
-	trace3("order changed2", t2->name(), name(), t1->name());
-	// change order to enable later optimization
-	E->push_back(t1);
-	E->push_back(t2);
+//      }else if (strchr("+*", name()[0])) {itested();
+//	trace3("order changed2", t2->name(), name(), t1->name());
+//	// change order to enable later optimization
+//	E->push_back(t1);
+//	E->push_back(t2);
       }else{itested();
 	trace3("order unchanged3", t2->name(), name(), t1->name());
 	E->push_back(t2);
@@ -389,7 +394,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	E->push_back(t2);
 	delete t3;
 	delete t1;
-      }else{
+      }else{ untested();
 	// fail - push all
 	E->push_back(t3);
 	E->push_back(t2);

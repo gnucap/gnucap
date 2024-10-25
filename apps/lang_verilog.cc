@@ -520,7 +520,7 @@ public:
   }
 
   void obsolete_parse(CS&) override { untested(); unreachable(); }
-  PARA_BASE& operator=(const std::string&s) override{ untested(); _s = s; return *this;}
+  PARA_BASE& operator=(const std::string&s) override{ _s = s; return *this;}
   PARA_BASE& operator=(Base const* v)override {
     delete _value;
     _value = nullptr;
@@ -584,8 +584,7 @@ void CMD_MODULE_PARAM::parse_def(CS& cmd, PARAM_INSTANCE& par) const
   std::string def = cmd.get_to(",;");
   if(cmd.skip1(",;")){
     // par = "{" + def + "}";
-  }else{ untested();
-    incomplete();
+  }else{
     cmd.warn(int(here), "missing ';'?\n");
     cmd.reset(here);
     def = cmd.tail(); // feeling lucky.
@@ -602,7 +601,7 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
     par = PARAMETER<vReal>();
   }else if(cmd >> "integer"){
     par = PARAMETER<vInteger>();
-  }else if(cmd >> "string"){ untested();
+  }else if(cmd >> "string"){
     par = PARAMETER<vString>();
   }else{
     // TODO: realtime | time
@@ -619,7 +618,7 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
     par = "";
     if(cmd.skip1('=')) {
       parse_def(cmd, par);
-    }else{ untested();
+    }else{
       cmd.skip1(',');
     }
 

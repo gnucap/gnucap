@@ -5,6 +5,8 @@ param a2="_[b]4"
 eval a2
 param a3="b]x]y]z]w"
 eval a3
+param string a3="b]x]y]z]w"
+eval a3
 param a4=_]b[3
 eval a4
 param a5=_$b[3

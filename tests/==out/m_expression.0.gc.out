@@ -2,7 +2,7 @@
 "string"="string"
 "param a="aaa" "
 "eval a "
-a= NA
+a=aaa
 "param string a="aaa" "
 "eval a "
 a="aaa"
@@ -30,7 +30,7 @@ d=("aaa" == 1)
 e=exp("0.")
 "param f={exp(1.+"0.")} "
 "eval f "
-f=exp(("0." +  1.))
+f=exp(( 1. + "0."))
 "param g={exp("aaa" == 0.)} "
 "eval g "
 g=exp(("aaa" ==  0.))
@@ -75,4 +75,4 @@ Untyped top level parameter. Assuming Float
 mid=(("aaa" + x) + "bbb")
 "eval v < w "
 >>>>>eval v < w 
-(v < w)=1
+(v < w)=(v < w)

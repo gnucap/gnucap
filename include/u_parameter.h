@@ -53,7 +53,7 @@ public:
   virtual PARA_BASE* pclone(void*)const = 0;
   virtual bool operator==(const PARA_BASE&) const = 0;
 
-	  bool	has_hard_value()const {untested(); return (_s != "");}
+	  bool	has_hard_value()const { return (_s != "");}
   virtual bool	has_good_value()const = 0;
           bool  is_constant()const    {itested(); return (_s == "#");}
   virtual bool  is_given()const       {untested(); return (_s != "");}
@@ -263,20 +263,20 @@ void e_val(T* p, const T& def, const CARD_LIST*)
 // envelope for PARAMETER<T>
 class PARAM_INSTANCE {
 private:
-  // PARA_NONE: act as untyped parameter, carry expression
-  class PARA_NONE : public PARA_BASE {
+  // PARAM_ANY: act as untyped parameter, carry expression
+  class PARAM_ANY : public PARA_BASE {
     mutable Base* _v{nullptr};
   public:
-    explicit PARA_NONE() : PARA_BASE() {}
-    explicit PARA_NONE(PARA_NONE const&p) : PARA_BASE(p) {}
-    ~PARA_NONE() { delete _v; _v=nullptr; }
+    explicit PARAM_ANY() : PARA_BASE() {}
+    explicit PARAM_ANY(PARAM_ANY const&p) : PARA_BASE(p) {}
+    ~PARAM_ANY() { delete _v; _v=nullptr; }
     PARA_BASE* clone()const override { untested();unreachable(); return NULL;}
-    PARA_BASE* pclone(void* p)const override { return new(p) PARA_NONE(*this);}
-    bool operator==(const PARA_BASE& x)const override { untested(); return _s == x.string(); }
+    PARA_BASE* pclone(void* p)const override { return new(p) PARAM_ANY(*this);}
+    bool operator==(const PARA_BASE& x)const override { return _s == x.string(); }
     bool has_good_value()const override { untested();unreachable(); return false;}
     void obsolete_parse(CS&)override { untested();unreachable();}
-    PARA_NONE& operator=(const std::string& s)override { _s = s; return *this;}
-    PARA_NONE& operator=(const Base*)override { untested();unreachable(); return *this;}
+    PARAM_ANY& operator=(const std::string& s)override { _s = s; return *this;}
+    PARAM_ANY& operator=(const Base*)override { untested();unreachable(); return *this;}
     std::string string()const override{itested(); return _s;}
     Base const* value()const override{return nullptr;}
     Base const* e_val_(const Base* def, const CARD_LIST* scope, int)const override;
@@ -289,7 +289,7 @@ private:
   PARA_BASE* base() { return reinterpret_cast<PARA_BASE*>(&_mem);}
 public:
   explicit PARAM_INSTANCE() {
-    new(&_mem) PARA_NONE();
+    new(&_mem) PARAM_ANY();
   }
   /*explicit*/ PARAM_INSTANCE(PARAM_INSTANCE const& p) {
     p.base()->pclone(&_mem);
@@ -329,7 +329,7 @@ public:
     return *this;
   }
   void set_fixed(Base const* v) {
-    if(dynamic_cast<PARA_NONE*>(base())) {
+    if(dynamic_cast<PARAM_ANY*>(base())) {
       // BUG?
       if(dynamic_cast<Float const*>(v)){
 	*this = PARAMETER<Float>();
@@ -346,22 +346,7 @@ public:
       *base() = v;
     }
   }
-#if 1
   PARAM_INSTANCE& operator=(double const& p) = delete;
-#else
-  // not what it appears to be. call set_fixed instead.
-  PARAM_INSTANCE& operator=(double const& p){ untested();
-    if(auto d = dynamic_cast<PARAMETER<double>*>(_p)){ untested();
-      *d = p;
-    }else{ untested();
-      delete _p;
-      PARAMETER<double>* pp = new PARAMETER<double>();
-      *pp = p;
-      _p = pp;
-    }
-    return *this;
-  }
-#endif
 public:
   Base const* value()const {untested(); return base()->value();}
   std::string const string() const{
@@ -370,13 +355,13 @@ public:
   }
   bool exists() const{
     assert(base());
-    if(dynamic_cast<PARA_NONE const*>(base())){
+    if(dynamic_cast<PARAM_ANY const*>(base())){
       return false;
     }else{
       return true;
     }
   }
-  bool has_hard_value() const{ untested();
+  bool has_hard_value() const{
     assert(base());
     return base()->has_hard_value();
   }

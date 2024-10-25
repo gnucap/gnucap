@@ -77,7 +77,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
     else if (Umatch(Name, "gen{erator} "))  {		 s = "generator";}
     else if (Umatch(Name, "inc{lude} "))    {untested(); s = "include";}
     else if (Umatch(Name, "l{ist} "))       {untested(); s = "list";}
-    else if (Umatch(Name, "m{odify} "))     {untested(); s = "modify";}
+    else if (Umatch(Name, "m{odify} "))     { s = "modify";}
     else if (Umatch(Name, "opt{ions} "))    {            s = "options";}
     else if (Umatch(Name, "par{ameter} "))  {untested(); s = "param";}
     else if (Umatch(Name, "pr{int} "))      {untested(); s = "print";}

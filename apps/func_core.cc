@@ -144,7 +144,7 @@ public:
 	throw(Exception("wrong argcount"));
       }
 
-    }else if(par) { untested();
+    }else if(par) {
       E->push_back(par);
       throw(Exception("unsuitable paramlist"));
     }else{ untested();
