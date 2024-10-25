@@ -3,25 +3,24 @@ simulator language=verilog
 // qucs style component macros.
 
 module Idc(\1 ,\2 );
-parameter I=1m
+parameter I=1m;
 isource #(.dc(I)) dev(\2 ,\1 );
 endmodule
 
 module Vdc(p n);
 	parameter U=1m
-	parameter Temp
+	parameter Temp;
 	vsource #(.dc(U)) dev(p n);
 endmodule
 
 module R(p, n);
-	parameter R
-	parameter Temp=26.85
-	parameter Tnom=26.85
-	parameter Tc1=0
-	parameter Tc2=0
+	parameter R;
+	parameter real Temp=26.85;
+	parameter Tnom=26.85;
+	parameter Tc1=0, Tc2=0;
 
 	// local?
-	parameter dT={Temp-Tnom}
+	parameter dT=Temp-Tnom;
 
 	resistor #(.r(R * (1. + dT*(Tc1 + dT*Tc2)))) dev(p, n);
 endmodule // R

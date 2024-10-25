@@ -1,0 +1,30 @@
+* parameter and string eval check
+.eval "hello"
+.eval "hello" + " " + "world"
+
+.parameter string what="world";
+.eval "hello " + what
+.eval "hello " + (what + 1 + 2) + 3 + 4
+
+.parameter a = 1
+.eval a
+.parameter b = a;
+.eval b
+
+.parameter string a = "b";
+.eval a
+.parameter string b = a;
+.eval b
+.parameter string c = {b + "."};
+.eval c
+
+* does not work, use verilog
+.parameter string d = b + ".";
+.eval d
+
+.verilog
+module test();
+	parameter string d = b + "."; // works.
+endmodule
+
+.end

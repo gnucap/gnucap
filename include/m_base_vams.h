@@ -140,6 +140,8 @@ inline vInteger* vInteger::assign(const String*)  const {untested(); return null
 class vString : public String {
 public:
   void parse(CS&) override;
+private:
+  explicit vString(const char* data) : String(data) {}
 public:
   explicit vString(CS& file)	{parse(file);}
   explicit vString()		{}
@@ -172,6 +174,8 @@ public:
     if(!X){ untested();
     }else if(auto q = dynamic_cast<vString const*>(X)){itested();
       return new vString(*q);
+    }else if(dynamic_cast<String const*>(X)){untested();
+      incomplete();
     }else if(dynamic_cast<Float const*>(X)){untested();
     }else{ untested();
     }
@@ -191,6 +195,7 @@ public:
     if(!dynamic_cast<vString const*>(X)){
     }else if(_data && X && X->_data) {
     /// move to some lib eventually ///
+      trace2("string add", _data, X->_data);
       size_t len = strlen(_data);
       char* buf = (char*) malloc(len+strlen(X->_data)+1);
       if(!buf){ untested();
@@ -199,11 +204,13 @@ public:
       }
       char* mid = (char*) mempcpy(buf, _data, len);
       strcpy(mid, X->_data);
-      return new String(buf);
+      return new vString(buf);
     }else{ untested();
     }
     return nullptr;
   }
+  using String::r_add;
+  String* r_add(const String* X)const override  { assert(X); return X->add(this); }
 //  using String::equal;
 //  Base* equal(const String* X)const override {
 //  }

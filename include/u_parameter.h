@@ -53,7 +53,7 @@ public:
   virtual PARA_BASE* pclone(void*)const = 0;
   virtual bool operator==(const PARA_BASE&) const = 0;
 
-	  bool	has_hard_value()const {return (_s != "");}
+	  bool	has_hard_value()const {untested(); return (_s != "");}
   virtual bool	has_good_value()const = 0;
           bool  is_constant()const    {itested(); return (_s == "#");}
   virtual bool  is_given()const       {untested(); return (_s != "");}
@@ -272,7 +272,7 @@ private:
     ~PARA_NONE() { delete _v; _v=nullptr; }
     PARA_BASE* clone()const override { untested();unreachable(); return NULL;}
     PARA_BASE* pclone(void* p)const override { return new(p) PARA_NONE(*this);}
-    bool operator==(const PARA_BASE& x)const override { return _s == x.string(); }
+    bool operator==(const PARA_BASE& x)const override { untested(); return _s == x.string(); }
     bool has_good_value()const override { untested();unreachable(); return false;}
     void obsolete_parse(CS&)override { untested();unreachable();}
     PARA_NONE& operator=(const std::string& s)override { _s = s; return *this;}
@@ -376,7 +376,7 @@ public:
       return true;
     }
   }
-  bool has_hard_value() const{
+  bool has_hard_value() const{ untested();
     assert(base());
     return base()->has_hard_value();
   }

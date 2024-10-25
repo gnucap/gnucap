@@ -65,7 +65,7 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
   case 12:
 	  par = PARAMETER<vInteger>();
 	  break;
-  case 3:
+  case 3: untested();
 	  par = PARAMETER<vString>(); // !
 	  break;
   case 13:

@@ -1,0 +1,13 @@
+* parameter and string eval check 
+"hello"="hello"
+(("hello" + " ") + "world")="hello world"
+("hello " + what)="hello world"
+((("hello " + ((what + 1) + 2)) + 3) + 4)=(("hello " + ("world" + 3)) + 7)
+a= 1.
+b= 1.
+a="b"
+b="b"
+c="b."
+.parameter string d = b + "."; 
+                        ^ ? syntax error
+d="b"

@@ -17,20 +17,20 @@
 verilog
 // TODO: this is actually a paramset
 module Diode(\1 ,\2 );
-  parameter N=1
-  parameter Cj0=15f
-  parameter M=0.5
-  parameter Vj=0.7
-  parameter Rs=0.
-  parameter Is=1e-15
-  parameter Area=1.
-  parameter Tt=0.
+  parameter N=1;
+  parameter Cj0=15f;
+  parameter M=0.5;
+  parameter Vj=0.7;
+  parameter Rs=0.;
+  parameter Is=1e-15;
+  parameter Area=1.;
+  parameter Tt=0.;
 
   // ignored, but somehow used in .net files revisit later.
-  parameter Fc=.5 Cp=0. Isr=0. Nr=2.
-  parameter Ikf=0 Kf=0. Af=1. Ffe=1. Bv=0. Ibv=1m Temp=26.85 Xti=3.
-  parameter Eg=1.11 Tbv=0. Trs=0. Ttt1=0. Ttt2=0. Tm1=0. Tm2=0.
-  parameter Tnom=26.85
+  parameter Fc=.5, Cp=0., Isr=0., Nr=2.;
+  parameter Ikf=0, Kf=0., Af=1., Ffe=1., Bv=0., Ibv=1m, Temp=26.85, Xti=3.;
+  parameter Eg=1.11, Tbv=0., Trs=0., Ttt1=0., Ttt2=0., Tm1=0., Tm2=0.;
+  parameter Tnom=26.85;
 
   spice_diode #( .area(Area) .Is(Is) .rs(Rs) .N(N) .cjo(Cj0) .vj(Vj) .M(M) .tt(Tt)) d1(\2 ,\1 );
 endmodule

@@ -461,7 +461,8 @@ public:
     }
   }
 private:
-  void parse(CS& cmd, PARAM_LIST* pl);
+  void parse(CS& cmd, PARAM_LIST* pl)const;
+  void parse_def(CS& cmd, PARAM_INSTANCE& par)const;
 } module_param;
 /*--------------------------------------------------------------------------*/
 // essentially PARAM_INSTANCE::PARAM_NONE, untyped parameter
@@ -518,19 +519,7 @@ public:
     return ret;
   }
 
-  void obsolete_parse(CS& cmd) override {
-    std::string name;
-    //cmd >> name;
-    name = cmd.ctos(",=();", "'{\"", "'}\"");
-    if (cmd) {
-      if (cmd.match1('(')) { untested();
-	_s = name + '(' + cmd.ctos("", "(", ")") + ')';
-      }else{
-	_s = name;
-      }
-    }else{
-    }
-  }
+  void obsolete_parse(CS&) override { untested(); unreachable(); }
   PARA_BASE& operator=(const std::string&s) override{ untested(); _s = s; return *this;}
   PARA_BASE& operator=(Base const* v)override {
     delete _value;
@@ -588,7 +577,24 @@ public:
   }
 }param_any;
 /*--------------------------------------------------------------------------*/
-void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
+void CMD_MODULE_PARAM::parse_def(CS& cmd, PARAM_INSTANCE& par) const
+{
+   // BUG // need to tokenize right here. strings may contain separators etc.
+  size_t here = cmd.cursor();
+  std::string def = cmd.get_to(",;");
+  if(cmd.skip1(",;")){
+    // par = "{" + def + "}";
+  }else{ untested();
+    incomplete();
+    cmd.warn(int(here), "missing ';'?\n");
+    cmd.reset(here);
+    def = cmd.tail(); // feeling lucky.
+  }
+  trace2("parse_def", cmd.fullstring(), def);
+  par = def;
+}
+/*--------------------------------------------------------------------------*/
+void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
 {
   assert(pl);
   PARAM_INSTANCE par;
@@ -596,11 +602,11 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
     par = PARAMETER<vReal>();
   }else if(cmd >> "integer"){
     par = PARAMETER<vInteger>();
-  }else if(cmd >> "string"){
+  }else if(cmd >> "string"){ untested();
     par = PARAMETER<vString>();
   }else{
     // TODO: realtime | time
-    par = param_any;
+    par = PARAM_ANY();
   }
   size_t here = cmd.cursor();
   for (;;) {
@@ -609,10 +615,14 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
     }else{
     }
     std::string Name;
-    cmd >> Name >> '=';
-    par.obsolete_parse(cmd);
+    cmd >> Name;
+    par = "";
+    if(cmd.skip1('=')) {
+      parse_def(cmd, par);
+    }else{ untested();
+      cmd.skip1(',');
+    }
 
-    trace1("parsed", par.string());
     if (cmd.stuck(&here)) { untested();
       break;
     }else{
@@ -621,6 +631,7 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
       notstd::to_lower(&Name);
     }else{
     }
+    trace2("parsed", Name, par.string());
     pl->set(Name, par);
   }
   cmd.check(bDANGER, "syntax error");

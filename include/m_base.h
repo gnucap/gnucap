@@ -85,6 +85,10 @@ public:
   virtual Base* add(const Integer*)const	{untested(); return nullptr;}
   virtual Base* add(const Float*)const		{untested(); return nullptr;}
   virtual Base* add(const String*)const		{untested(); return nullptr;}
+  virtual Base* r_add(const Base*)const		{untested(); return nullptr;}
+  virtual Base* r_add(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* r_add(const Float*)const	{untested(); return nullptr;}
+  virtual Base* r_add(const String*)const	{ return nullptr;}
   virtual Base* multiply(const Base*)const	{untested(); return nullptr;}
   virtual Base* multiply(const Integer*)const	{untested(); return nullptr;}
   virtual Base* multiply(const Float*)const	{untested(); return nullptr;}
@@ -477,6 +481,7 @@ public:
   Integer* not_equal(const String* X)const override{untested(); return _data && X && X->_data?new Integer(!!strcmp(_data, X->_data)     ) : nullptr;}
   Integer* equal(const String* X)const override	   { return _data && X && X->_data?new Integer( !strcmp(_data, X->_data)     ) : nullptr;}
   String* add(const String*)const override	   { return nullptr;}
+  String* r_add(const String* X)const override	   {untested();return ((X) ? (X->add(this))  : (nullptr));}
 
   Base* multiply(const String*)const override	{return nullptr;}
   Base* subtract(const String*)const override	{untested(); return nullptr;}
@@ -492,7 +497,8 @@ public:
   Base* geq(const Base* X)const override	{untested();return ((X) ? (X->leq(this))       : (nullptr));}
   Base* not_equal(const Base* X)const override	{           return ((X) ? (X->not_equal(this)) : (nullptr));}
   Base* equal(const Base* X)const override	{ return ((X) ? (X->equal(this))     : (nullptr));} // ??
-  Base* add(const Base* X)const override 	{	    return ((X) ? (X->add(this))       : (nullptr));}
+  Base* add(const Base* X)const override 	{	    return ((X) ? (X->r_add(this))      : (nullptr));}
+  Base* r_add(const Base* X)const override 	{untested(); return ((X) ? (X->add(this))       : (nullptr));}
   Base* multiply(const Base* X)const override	{           return ((X) ? (X->multiply(this))  : (nullptr));}
   Base* subtract(const Base* X)const override	{           return ((X) ? (X->r_subtract(this)): (nullptr));}
   Base* r_subtract(const Base* X)const override	{untested();return ((X) ? (X->subtract(this))  : (nullptr));}
@@ -508,6 +514,7 @@ public:
   Base* not_equal(const Float*)const override	{untested();return nullptr;}
   Base* equal(const Float*)const override	{ return nullptr;}
   Base* add(const Float*)const override 	{           return nullptr;}
+  Base* r_add(const Float*)const override 	{untested();return nullptr;}
   Base* multiply(const Float*)const override	{untested();return nullptr;}
   Base* subtract(const Float*)const override	{untested();return nullptr;}
   Base* r_subtract(const Float*)const override	{untested();return nullptr;}
@@ -523,6 +530,7 @@ public:
   Base* not_equal (const Integer*)const override {untested();return nullptr;} //?
   Base* equal     (const Integer*)const override {untested();return nullptr;} //?
   Base* add       (const Integer*)const override {return nullptr;}
+  Base* r_add     (const Integer*)const override {untested();return nullptr;}
   Base* multiply  (const Integer*)const override {untested(); incomplete(); return nullptr;}
   Base* subtract  (const Integer*)const override {untested();return nullptr;}
   Base* r_subtract(const Integer*)const override {untested();return nullptr;}

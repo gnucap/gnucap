@@ -324,6 +324,7 @@ void Token_BINOP::stack_op(Expression* E)const
   }else if (dynamic_cast<Token_CONSTANT*>(t1)) {itested();
     if (dynamic_cast<Token_CONSTANT*>(t2)) {itested();
       // have # # + .. becomes result (the usual)
+      trace3("op+", t2->name(), name(), t1->name());
       Token* t = op(t2, t1);
       assert(t);
       if (t->data()) {itested();
@@ -344,6 +345,10 @@ void Token_BINOP::stack_op(Expression* E)const
 	  E->push_back(t1);
 	}else if (dynamic_cast<const Float*>(t1->data())) {
 	  trace3("order unchanged2", t2->name(), name(), t1->name());
+	  E->push_back(t2);
+	  E->push_back(t1);
+	}else if (dynamic_cast<String const*>(t2->data())) { untested();
+	  trace3("string, order unchanged", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
 	}else{
