@@ -235,13 +235,13 @@ void FOURIER::setup(CS& Cmd)
   _cont = true;
   if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
     PARAMETER<double> arg1, arg2, arg3;
-    Cmd >> arg1;
+    arg1.obsolete_parse(Cmd);
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
-      Cmd >> arg2;
+      arg2.obsolete_parse(Cmd);
     }else{untested();
     }
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
-      Cmd >> arg3;
+      arg3.obsolete_parse(Cmd);
     }else{untested();
     }
     

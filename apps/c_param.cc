@@ -88,7 +88,8 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
     }
     std::string Name;
 
-    cmd >> Name >> '=' >> par;
+    cmd >> Name >> '=';
+    par.obsolete_parse(cmd);
 
     trace2("parsed", Name, par.string());
     if (cmd.stuck(&here)) {untested();

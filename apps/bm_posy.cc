@@ -203,12 +203,12 @@ bool EVAL_BM_POSY::parse_numlist(CS& cmd)
   for (;;) {
     size_t start_of_pair = here;
     std::pair<PARAMETER<double>, PARAMETER<double> > p;
-    cmd >> p.second; // value
+    p.second.obsolete_parse(cmd);
     if (cmd.stuck(&here)) {
       // no more, graceful finish
       break;
     }else{
-      cmd >> p.first; // key
+      p.first.obsolete_parse(cmd);
       if (cmd.stuck(&here)) {
 	// ran out, but already have half of the pair
 	// back up one, hoping somebody else knows what to do with it

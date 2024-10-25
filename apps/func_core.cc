@@ -30,7 +30,7 @@ class abs : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::abs(x));
   }
@@ -144,7 +144,7 @@ public:
 	throw(Exception("wrong argcount"));
       }
 
-    }else if(par) {
+    }else if(par) { untested();
       E->push_back(par);
       throw(Exception("unsuitable paramlist"));
     }else{ untested();
@@ -159,7 +159,7 @@ class ln : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::log(x));
   }
@@ -237,7 +237,7 @@ class log10 : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::log10(x));
   }
@@ -248,7 +248,7 @@ class exp : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {itested();
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::exp(x));
   }
@@ -259,7 +259,7 @@ class INT : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::floor(x));
   }
@@ -270,7 +270,8 @@ class pow : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x, y;
-    Cmd >> x >> y;
+    x.obsolete_parse(Cmd);
+    y.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     y.e_val(NOT_INPUT, Scope);
     return to_string(std::pow(x,y));
@@ -282,7 +283,8 @@ class MAX : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x, y;
-    Cmd >> x >> y;
+    x.obsolete_parse(Cmd);
+    y.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     y.e_val(NOT_INPUT, Scope);
     return to_string(std::max(x,y));
@@ -295,7 +297,8 @@ public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x, y;
     trace1("min", Cmd.fullstring());
-    Cmd >> x >> y;
+    x.obsolete_parse(Cmd);
+    y.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     y.e_val(NOT_INPUT, Scope);
     return to_string(std::min(x,y));
@@ -307,7 +310,9 @@ class IF : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {itested();
     PARAMETER<double> x, y, z;
-    Cmd >> x >> y >> z;
+    x.obsolete_parse(Cmd);
+    y.obsolete_parse(Cmd);
+    z.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     y.e_val(NOT_INPUT, Scope);
     z.e_val(NOT_INPUT, Scope);
@@ -320,7 +325,7 @@ class sin : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::sin(x));
   }
@@ -331,7 +336,7 @@ class sinh : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::sinh(x));
   }
@@ -342,7 +347,7 @@ class cos : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::cos(x));
   }
@@ -353,7 +358,7 @@ class cosh : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::cosh(x));
   }
@@ -364,7 +369,7 @@ class tan : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::tan(x));
   }
@@ -375,7 +380,7 @@ class tanh : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> x;
-    Cmd >> x;
+    x.obsolete_parse(Cmd);
     x.e_val(NOT_INPUT, Scope);
     return to_string(std::tanh(x));
   }
@@ -386,7 +391,7 @@ class na : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {
     PARAMETER<double> arg;
-    Cmd >> arg;
+    arg.obsolete_parse(Cmd);
     arg.e_val(NOT_INPUT, Scope);
     return "NA";
     //return (arg.has_hard_value()) ? (to_string(double(arg))) : ("NA");
@@ -410,7 +415,7 @@ class RANDOM_STUB : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> arg;
-    Cmd >> arg;
+    arg.obsolete_parse(Cmd);
     arg.e_val(NOT_INPUT, Scope);
     return to_string(double(arg));
   }

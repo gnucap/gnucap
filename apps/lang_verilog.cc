@@ -518,7 +518,7 @@ public:
     return ret;
   }
 
-  void parse(CS& cmd) override {
+  void obsolete_parse(CS& cmd) override {
     std::string name;
     //cmd >> name;
     name = cmd.ctos(",=();", "'{\"", "'}\"");
@@ -609,7 +609,8 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl)
     }else{
     }
     std::string Name;
-    cmd >> Name >> '=' >> par;
+    cmd >> Name >> '=';
+    par.obsolete_parse(cmd);
 
     trace1("parsed", par.string());
     if (cmd.stuck(&here)) { untested();

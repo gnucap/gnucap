@@ -28,7 +28,7 @@
 #include "u_parameter.h"
 #include "u_lang.h"
 /*--------------------------------------------------------------------------*/
-void PARAM_LIST::parse(CS& cmd)
+void PARAM_LIST::obsolete_parse(CS& cmd)
 {
   (cmd >> "real |integer "); // ignore type
   size_t here = cmd.cursor();
@@ -39,7 +39,8 @@ void PARAM_LIST::parse(CS& cmd)
     }
     std::string Name;
     PARAMETER<double> Value;
-    cmd >> Name >> '=' >> Value;
+    cmd >> Name >> '=';
+    Value.obsolete_parse(cmd);
     trace2("parsed", Value, Value.string());
     if (cmd.stuck(&here)) {untested();
       break;
@@ -255,7 +256,7 @@ bool Get(CS& cmd, const std::string& key, PARAMETER<bool>* val)
 {
   if (cmd.umatch(key + ' ')) {
     if (cmd.skip1b('=')) {
-      cmd >> *val;
+      val->obsolete_parse(cmd);
     }else{
       *val = true;
     }

@@ -123,7 +123,8 @@ bool EVAL_BM_TANH::parse_numlist(CS& cmd)
   size_t here = cmd.cursor();
   PARAMETER<double> gain(NOT_VALID);
   PARAMETER<double> limit(NOT_VALID);
-  cmd >> gain >> limit;
+  gain.obsolete_parse(cmd);
+  limit.obsolete_parse(cmd);
   if (cmd.gotit(here)) {
     _gain  = gain;
     _limit = limit;
