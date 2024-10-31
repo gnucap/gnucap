@@ -1,10 +1,13 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 202411*
+== 20241031-dev
 
 - support named port syntax
+- escaped identifiers for ports
+- interoperability with spice port names
 - real, integer, string parameters in verilog
+- verilog compliant division and log
 - finish hooks in devices
 
 == 20241002-dev

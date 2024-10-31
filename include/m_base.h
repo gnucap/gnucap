@@ -52,7 +52,7 @@ public:
   virtual Base* plus()const			{untested(); return nullptr;}
 
   Base* clone()const {return assign(this);}
-  virtual Base* assign(const Base*)const        {untested(); return nullptr;}
+  virtual Base* assign(const Base*)const        { return nullptr;}
   virtual Base* assign(const Integer*)const	{untested(); return nullptr;}
   virtual Base* assign(const Float*)const	{untested(); return nullptr;}
   virtual Base* assign(const String*)const	{untested(); return nullptr;}
