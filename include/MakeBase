@@ -106,11 +106,16 @@ md5sums: MD5SUMS
 MD5SUMS: $(DIST_FILES)
 	md5sum $(DIST_FILES) | grep -v MD5SUMS >MD5SUMS
 #-----------------------------------------------------------------------------
+MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
+CLEANFILES = $(MOSTLYCLEANFILES) $(TARGET_EXE) $(EXTRA_CLEANFILES)
+DISTCLEANFILES = $(CLEANFILES) config.log Makefile
+MAINTAINERCLEANFILES = $(DISTCLEANFILES)
+#-----------------------------------------------------------------------------
 mostlyclean:
 	rm -rf $(MOSTLYCLEANFILES)
 	rm -f */*.o */*.obj */*.h */*.cc
 clean:
-	rm -rf $(CLEANFILES)
+	rm -rf $(CLEANFILES) $(EXTRA_CLEANFILES)
 	rm -f */*.o */*.obj */*.h */*.cc
 distclean:
 	rm -rf $(DISTCLEANFILES)

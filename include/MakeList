@@ -73,9 +73,3 @@ OBJS = ${SRCS:.cc=.o}
 TARGET_DEPENDS = $(OBJS) $(RAW)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
-CLEANFILES = $(MOSTLYCLEANFILES)
-DISTCLEANFILES = $(CLEANFILES) config.log makefile Makefile
-MAINTAINERCLEANFILES = $(DISTCLEANFILES)
-#------------------------------------------------------------------------
-#------------------------------------------------------------------------

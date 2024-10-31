@@ -111,12 +111,6 @@ OBJS = ${SRCS:.cc=.o}
 TARGET_DEPENDS = $(OBJS) $(RAW) $(MODELS)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
-CLEANFILES = $(MOSTLYCLEANFILES)
-DISTCLEANFILES = $(CLEANFILES) config.log makefile Makefile
-MAINTAINERCLEANFILES = $(DISTCLEANFILES)
-#------------------------------------------------------------------------
-#------------------------------------------------------------------------
 LIBPATH = `pwd | sed 's/\(.*\)apps/\1lib/'`
 MODELGEN = `pwd | sed 's/\(.*\)apps/\1modelgen/'`/gnucap-modelgen
 #------------------------------------------------------------------------
