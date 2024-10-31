@@ -89,7 +89,7 @@ Token* Token_UNARY::op(const Token* T1)const
   const Base* b = 0;
   if (name() == "-") {
     b = (T1->data())->minus();
-  }else if (name() == "+") { untested();
+  }else if (name() == "+") {itested();
     b = (T1->data())->plus();
   }else if (name() == "!") {itested();
     b = (T1->data())->logic_not();
@@ -152,7 +152,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	// didnt work. put back function token
 	E->push_back(clone());
       }
-    }else{ untested();
+    }else{itested();
       throw Exception_No_Match(name()); //BUG// memory leak
       unreachable();
       E->push_back(clone());
@@ -253,13 +253,13 @@ Token_TERNARY::~Token_TERNARY()
 }
 /*--------------------------------------------------------------------------*/
 void Token_TERNARY::stack_op(Expression* E)const
-{ untested();
+{itested();
   assert(E);
   Token const* t = E->back();
   auto constant = dynamic_cast<Token_CONSTANT const*>(t);
 
   bool is_num = false;
-  if(constant){ untested();
+  if(constant){itested();
     is_num = dynamic_cast<Float const*>(constant->data())
            ||dynamic_cast<Integer const*>(constant->data());
     // bool?
@@ -268,20 +268,20 @@ void Token_TERNARY::stack_op(Expression* E)const
 
   assert(true_part());
   assert(false_part());
-  if (is_num) { untested();
+  if (is_num) {itested();
     assert(constant->data());
     bool select = constant->data()->to_bool();
     delete t;
     E->pop_back();
     Expression const* sel;
 
-    if(select){ untested();
+    if(select){itested();
       sel = true_part();
-    }else{ untested();
+    }else{itested();
       sel = false_part();
     }
     // E->reduce_copy(*sel);
-    for (Expression::const_iterator i = sel->begin(); i != sel->end(); ++i) { untested();
+    for (Expression::const_iterator i = sel->begin(); i != sel->end(); ++i) {itested();
       (**i).stack_op(E);
     }
 
