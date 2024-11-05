@@ -1,0 +1,188 @@
+**************
+* not meant to be a useful circuit, but a good test.
+**************
+
+parameter tclk=200u
+parameter tt=5u
+parameter delay=2u
+
+.model  mos logic ( delay=delay rise=tt fall=tt  rs= 100.  rw= 1.G
++ thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
+
+**************
+
+***  TODO: use paramset  ***
+
+parameter cgdo=10.n
+parameter cgso=10.n
+parameter cgbo=0.
+.model mypmos pmos ( level=2  vto= -1.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8
++ cgso= cgso  cgdo= cgdo  cgbo= cgbo  rsh= 0.  cj= 0.  mj= 0.5  cjsw= 0.  mjsw= 0.33 
++ tox= 100.n  nfs= 0.  tpg=1  ld= 0.  uo= 600.  neff= 1.  fc= 0.5  delta= 0.
++)
+.subckt my_pmos a b c d
+.parameter l=100.u
+.parameter w=100.u
+M2 a b c d mypmos  l=l  w=w nrd= 1.  nrs= 1.
+.ends
+
+.model mynmos nmos ( level=2  vto= 1.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8
++ cgso= cgso  cgdo= cgdo  cgbo= cgbo  rsh= 0.  cj= 0.  mj= 0.5  cjsw= 0.  mjsw= 0.33
++ tox= 100.n  nfs= 0.  tpg=1  ld= 0.  uo= 600.  neff= 1.  fc= 0.5  delta= 0.
++)
+.subckt my_nmos a b c d
+.parameter l=100.u
+.parameter w=100.u
+M1 a b c d mynmos  l=l w=w  nrd= 1.  nrs= 1.
+.ends
+
+**************
+
+module mosand2(out a b);
+  ground 0;
+  my_nmos #(.l(100u),.w(100u)) m1( out nout , \0 , \0 );
+  my_pmos #(.l(100u),.w(100u)) m2( out nout vdd vdd );
+
+  my_pmos #(.l(100u),.w(100u)) mpa( nout a vdd vdd );
+  my_pmos #(.l(100u),.w(100u)) mpb( nout b vdd vdd );
+
+  my_nmos #(.l(100u),.w(100u)) mna( i1   a \0 , \0 );
+  my_nmos #(.l(100u),.w(100u)) mnb( nout b i1 , \0 );
+
+  vsource #(.dc(5.)) Vdd(vdd, \0 );
+endmodule
+
+module mosnand3(out a b c);
+  ground 0;
+  my_pmos #(.l(100u),.w(100u)) mpa( out a vdd vdd );
+  my_pmos #(.l(100u),.w(100u)) mpb( out b vdd vdd );
+  my_pmos #(.l(100u),.w(100u)) mpc( out c vdd vdd );
+
+  my_nmos #(.l(100u),.w(100u)) mna( i1  a, \0 , \0 );
+  my_nmos #(.l(100u),.w(100u)) mnb( i2  b, i1 , \0 );
+  my_nmos #(.l(100u),.w(100u)) mnc( out c, i2 , \0 );
+
+  vsource #(.dc(5.)) Vdd(vdd, \0 );
+endmodule
+
+module mosinv1 (out  in);
+  ground 0;
+  my_nmos #(.l(100u),.w(100u)) m1( out  in  \0 , \0 )
+  my_pmos #(.l(100u),.w(100u)) m2( out  in  vdd vdd)
+  vsource #(.dc(5.)) Vdd(vdd, \0 );
+endmodule
+
+module mosnor2(out a b);
+  ground 0;
+  my_pmos #(.l(100u),.w(100u)) mpb( out, b, i1 , vdd );
+  my_pmos #(.l(100u),.w(100u)) mpa( i1 , a, vdd, vdd );
+
+  my_nmos #(.l(100u),.w(100u)) mna( out,  a,  \0 , \0 );
+  my_nmos #(.l(100u),.w(100u)) mnb( out,  b,  \0 , \0 );
+
+  vsource #(.dc(5.)) Vdd(vdd, \0 );
+endmodule
+
+module xor2(out a b)
+	nor #(.model(mos)) n(i1 a b)
+	and #(.model(mos)) a(i2 a b)
+	nor #(.model(mos)) b(out i1 i2)
+endmodule
+
+
+module da(out gnd xxvdd d7 d6 d5 d4 d3 d2 d1 d0)
+
+parameter w0=1u;
+// ground \0 ;
+
+my_pmos #(.l(100.u),.w(    w0)) p0 (out, nd0, vdd, vdd);
+my_pmos #(.l(100.u),.w(  2*w0)) p1 (out, nd1, vdd, vdd);
+my_pmos #(.l(100.u),.w(  4*w0)) p2 (out, nd2, vdd, vdd);
+my_pmos #(.l(100.u),.w(  8*w0)) p3 (out, nd3, vdd, vdd);
+my_pmos #(.l(100.u),.w( 16*w0)) p4 (out, nd4, vdd, vdd);
+my_pmos #(.l(100.u),.w( 32*w0)) p5 (out, nd5, vdd, vdd);
+my_pmos #(.l(100.u),.w( 64*w0)) p6 (out, nd6, vdd, vdd);
+my_pmos #(.l(100.u),.w(128*w0)) p7 (out, nd7, vdd, vdd);
+
+vsource #(.dc(5.)) Vdd(vdd, \0 );
+
+my_nmos #(.l(100.u),.w(    w0)) n0 (out, nd0, gnd, gnd);
+my_nmos #(.l(100.u),.w(  2*w0)) n1 (out, nd1, gnd, gnd);
+my_nmos #(.l(100.u),.w(  4*w0)) n2 (out, nd2, gnd, gnd);
+my_nmos #(.l(100.u),.w(  8*w0)) n3 (out, nd3, gnd, gnd);
+my_nmos #(.l(100.u),.w( 16*w0)) n4 (out, nd4, gnd, gnd);
+my_nmos #(.l(100.u),.w( 32*w0)) n5 (out, nd5, gnd, gnd);
+my_nmos #(.l(100.u),.w( 64*w0)) n6 (out, nd6, gnd, gnd);
+my_nmos #(.l(100.u),.w(128*w0)) n7 (out, nd7, gnd, gnd);
+
+inv #(.model(mos)) i0(nd0 d0)
+inv #(.model(mos)) i1(nd1 d1)
+inv #(.model(mos)) i2(nd2 d2)
+inv #(.model(mos)) i3(nd3 d3)
+inv #(.model(mos)) i4(nd4 d4)
+inv #(.model(mos)) i5(nd5 d5)
+inv #(.model(mos)) i6(nd6 d6)
+inv #(.model(mos)) i7(nd7 d7)
+
+endmodule
+
+module dff(q nq nset clk data nreset)
+	nand #(.model(mos)) u1(q, nset, i1, nq);
+	nand #(.model(mos)) u2(nq, q, i2, nreset);
+	nand #(.model(mos)) u3(i0, nset, i3, i1);
+	nand #(.model(mos)) u4(i1, i0, clk, nreset);
+	nand #(.model(mos)) u5(i2, i1, clk, i3);
+	nand #(.model(mos)) u6(i3, i2, data, nreset);
+endmodule
+
+module ha(s cout a b)
+	and #(.model(mos)) x(cout a b)
+	xor2 x(s a b)
+endmodule
+
+verilog
+
+// later.
+// ground gnd
+// ground 0
+
+//// ================================================== ////
+resistor #(100k) r1 (\0 , out);
+capacitor #(1n) C1 (\0 , out);
+da myda(aout, \0 , \8 , d7 d6 d5 d4 d3 d2 d1 d0)
+
+ha h7(incd7, c7, d7, c6);
+ha h6(incd6, c6, d6, c5);
+ha h5(incd5, c5, d5, c4);
+ha h4(incd4, c4, d4, c3);
+ha h3(incd3, c3, d3, c2);
+ha h2(incd2, c2, d2, c1);
+ha h1(incd1, c1, d1, c0);
+ha h0(incd0, c0, d0, \8 );
+
+dff ff7(d7 nld7, \8 , clk incd7 reset);
+dff ff4(d4 nld4, \8 , clk incd4 reset);
+dff ff5(d5 nld5, \8 , clk incd5 reset);
+dff ff6(d6 nld6, \8 , clk incd6 reset);
+dff ff3(d3 nld3, \8 , clk incd3 reset);
+dff ff2(d2 nld2, \8 , clk incd2 reset);
+dff ff1(d1 nld1, \8 , clk incd1 reset);
+dff ff0(d0 nld0, \8 , clk incd0 reset);
+
+spice
+.options noinsensitive
+
+V1 clk 0 pulse width={tclk/2} rise=tt fall=tt pv=5 iv=0 period=tclk
+Vr reset 0 pulse delay={tclk*1.1} rise=tt fall=tt pv=5 iv=0
+Vdd 8 0 dc 5.
+
+.print tran v(d0) v(d1) v(d2) v(clk) v(aout) iter(0)
+
+.dc
+
+.tran {8*tclk} basic
+* full cycle
+*.tran {260*tclk} basic > b.out
+
+.status notime
+.end
