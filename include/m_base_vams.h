@@ -141,7 +141,7 @@ class vString : public String {
 public:
   void parse(CS&) override;
 private:
-  explicit vString(const char* data) : String(data) {untested(); }
+  explicit vString(const char* data) : String(data) { }
 public:
   explicit vString(CS& file) : String()	{itested(); parse(file);}
   explicit vString(Base::NOT_INPUT x = _NOT_INPUT) : String(x) {  assert(is_NA());}

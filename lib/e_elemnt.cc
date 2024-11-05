@@ -299,7 +299,6 @@ void ELEMENT::tr_iwant_matrix_passive()
   //BUG// assert can fail as a result of some parse errors
 
   _sim->_aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
-  _sim->_lu.iwant(_n[OUT1].m_(),_n[OUT2].m_());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_iwant_matrix_active()
@@ -320,13 +319,6 @@ void ELEMENT::tr_iwant_matrix_active()
   _sim->_aa.iwant(_n[OUT2].m_(),_n[IN1].m_());
   _sim->_aa.iwant(_n[OUT2].m_(),_n[IN2].m_());
   //_sim->_aa.iwant(_n[IN1].m_(),_n[IN2].m_());
-
-  //_sim->_lu.iwant(_n[OUT1].m_(),_n[OUT2].m_());
-  _sim->_lu.iwant(_n[OUT1].m_(),_n[IN1].m_());
-  _sim->_lu.iwant(_n[OUT1].m_(),_n[IN2].m_());
-  _sim->_lu.iwant(_n[OUT2].m_(),_n[IN1].m_());
-  _sim->_lu.iwant(_n[OUT2].m_(),_n[IN2].m_());
-  //_sim->_lu.iwant(_n[IN1].m_(),_n[IN2].m_());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_iwant_matrix_extended()
@@ -339,7 +331,6 @@ void ELEMENT::tr_iwant_matrix_extended()
     if (_n[ii].m_() >= 0) {
       for (int jj = 0;  jj < ii ;  ++jj) {
 	_sim->_aa.iwant(_n[ii].m_(),_n[jj].m_());
-	_sim->_lu.iwant(_n[ii].m_(),_n[jj].m_());
       }
     }else{itested();
       // node 1 is grounded or invalid
@@ -444,9 +435,9 @@ double ELEMENT::tr_probe_num(const std::string& x)const
   }else if (Umatch(x, "r ")) {
     return (_m0.c1!=0.) ? 1/_m0.c1 : MAXDBL;
   }else if (Umatch(x, "z ")) {
-    return port_impedance(_n[OUT1], _n[OUT2], _sim->_lu, mfactor()*(_m0.c1+_loss0));
+    return port_impedance(_n[OUT1], _n[OUT2], _sim->_aa, mfactor()*(_m0.c1+_loss0));
   }else if (Umatch(x, "zraw ")) {
-    return port_impedance(_n[OUT1], _n[OUT2], _sim->_lu, 0.);
+    return port_impedance(_n[OUT1], _n[OUT2], _sim->_aa, 0.);
   }else{
     return COMPONENT::tr_probe_num(x);
   }

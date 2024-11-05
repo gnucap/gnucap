@@ -301,9 +301,6 @@ void DEV_INDUCTANCE::tr_iwant_matrix()
     
     _sim->_aa.iwant(_n[OUT1].m_(),_n[IN1].m_());
     _sim->_aa.iwant(_n[OUT2].m_(),_n[IN1].m_());
-    
-    _sim->_lu.iwant(_n[OUT1].m_(),_n[IN1].m_());
-    _sim->_lu.iwant(_n[OUT2].m_(),_n[IN1].m_());
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -274,11 +274,11 @@ void SIM::load_matrix()
 void SIM::solve_equations()
 {
   ::status.lud.start();
-  _sim->_lu.lu_decomp(_sim->_aa, bool(OPT::lubypass && _sim->is_inc_mode()));
+  _sim->_aa.lu_decomp(bool(OPT::lubypass && _sim->is_inc_mode()));
   ::status.lud.stop();
 
   ::status.back.start();
-  _sim->_lu.fbsub(_sim->_v0, _sim->_i, _sim->_v0);
+  _sim->_aa.fbsub(_sim->_v0, _sim->_i, _sim->_v0);
   ::status.back.stop();
 }
 /*--------------------------------------------------------------------------*/

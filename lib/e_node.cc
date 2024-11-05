@@ -118,18 +118,18 @@ double NODE::tr_probe_num(const std::string& x)const
     // return v0(); denoised
     return floor(v0()/OPT::vfloor + .5) * OPT::vfloor;
   }else if (Umatch(x, "z ")) {
-    return port_impedance(node_t(const_cast<NODE*>(this)), node_t(&ground_node), _sim->_lu, 0.);
+    return port_impedance(node_t(const_cast<NODE*>(this)), node_t(&ground_node), _sim->_aa, 0.);
   }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) {
     assert(_sim->_nstat);
     return _sim->_nstat[matrix_number()].tr_probe_num(x);
   }else if (Umatch(x, "mdy ")) {
     // matrix diagonal admittance
     const BSMATRIX<double>&  aaa = _sim->_aa;
-    return aaa.d(m_(),m_());
+    return aaa.d(m_());
   }else if (Umatch(x, "mdz ")) {
     // matrix diagonal impedance
     const BSMATRIX<double>&  aaa = _sim->_aa;
-    return 1/aaa.d(m_(),m_());
+    return 1/aaa.d(m_());
   }else if (Umatch(x, "zero ")) {
     // fake probe: 0.0
     return 0.0;
