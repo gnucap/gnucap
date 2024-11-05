@@ -239,7 +239,7 @@ public: // loading.
 public:
   BSMATRIX_DATA<T> const& data() const{ untested(); return *this; }
 private:
-  BSMATRIX_DATA<T>& rw_data(){ untested(); return *this; }
+  BSMATRIX_DATA<T>& rw_data(){ return *this; }
 public:
   void reinit(int ss=0) { uninit(); init(ss); }
 public:
@@ -308,7 +308,7 @@ protected: // matrix data xs
   BSMATRIX_DATA<T> const& data_(BSMATRIX<T> const& d)const { untested();
     return d.data();
   }
-  BSMATRIX_DATA<T>& rw_data_(BSMATRIX<T>& d)const { untested();
+  BSMATRIX_DATA<T>& rw_data_(BSMATRIX<T>& d)const {
     return d.rw_data();
   }
   int lownode_(BSMATRIX_DATA<T> const& d, int r)const {

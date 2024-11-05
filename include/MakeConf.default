@@ -4,8 +4,9 @@ MAKE_CXXFLAGS = -fPIC \
 -std=c++11 -DUNIX -O2 -DNDEBUG $(INCLUDE) -W \
 -DHAVE_LIBREADLINE \
 
-.SUFFIXES : .o .cc
+.SUFFIXES : .so .o .cc
 .cc.o:; $(CXX) $(MAKE_CXXFLAGS) $(CXXFLAGS) $(CCFLAGS) ${MAKE_CPPFLAGS} $(CPPFLAGS) -c $< # configure/Make2
+.cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
 MAKE_EXE = $(CXX) $(MAKE_CXXFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ # Make2.default
 MAKE_LIB = $(CXX) $(MAKE_CXXFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ # Make2.default
