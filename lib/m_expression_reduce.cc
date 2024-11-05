@@ -49,7 +49,7 @@ Token* Token_BINOP::op(const Token* T1, const Token* T2)const
     b = (T1->data())->subtract(T2->data());
   }else if (name() == "/") {
     b = (T1->data())->divide(T2->data());
-  }else if (name() == "%") { untested();
+  }else if (name() == "%") {
     b = (T1->data())->modulo(T2->data());
   }else if (name() == "==") {itested();
     b = (T1->data())->equal(T2->data());
@@ -57,7 +57,7 @@ Token* Token_BINOP::op(const Token* T1, const Token* T2)const
     b = (T1->data())->not_equal(T2->data());
   }else if (name() == "<") {itested();
     b = (T1->data())->less(T2->data());
-  }else if (name() == ">") { untested();
+  }else if (name() == ">") {
     b = (T1->data())->greater(T2->data());
   }else if (name() == "<=") {itested();
     b = (T1->data())->leq(T2->data());
@@ -263,7 +263,7 @@ void Token_TERNARY::stack_op(Expression* E)const
     is_num = dynamic_cast<Float const*>(constant->data())
            ||dynamic_cast<Integer const*>(constant->data());
     // bool?
-  }else{ untested();
+  }else{
   }
 
   assert(true_part());
@@ -285,7 +285,7 @@ void Token_TERNARY::stack_op(Expression* E)const
       (**i).stack_op(E);
     }
 
-  }else{ untested();
+  }else{
     Expression* te = new Expression(*true_part(), E->_scope);
     Expression* fe = new Expression(*false_part(), E->_scope);
     E->push_back(new Token_TERNARY(te, fe));
@@ -306,7 +306,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	trace3("order unchanged.", t2->name(), name(), t1->name());
 	E->push_back(t2);
 	E->push_back(t1);
-      }else if (dynamic_cast<String const*>(t2->data())) { untested();
+      }else if (dynamic_cast<String const*>(t2->data())) {
 	trace3("string order unchanged.", t2->name(), name(), t1->name());
 	E->push_back(t2);
 	E->push_back(t1);
@@ -335,7 +335,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	delete t1;
       }else{
 	// fail - one arg is unknown, push back args
-	if (!strchr("+*", name()[0])) { untested();
+	if (!strchr("+*", name()[0])) {
 	  trace2("order unchanged0", typeid(*t1).name(), typeid(*t2).name());
 	  trace3("order unchanged0", t2->name(), name(), t1->name());
 	  E->push_back(t2);
@@ -348,7 +348,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	  trace3("order unchanged2", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
-	}else if (dynamic_cast<String const*>(t1->data())) { untested();
+	}else if (dynamic_cast<String const*>(t1->data())) {
 	  trace3("string, order unchanged1", t2->name(), name(), t1->name());
 	  E->push_back(t2);
 	  E->push_back(t1);
@@ -366,7 +366,7 @@ void Token_BINOP::stack_op(Expression* E)const
 	delete t;
       }
     }else if (dynamic_cast<Token_SYMBOL*>(t2)) {
-      if (!E->is_empty() && dynamic_cast<const Token_PARLIST*>(E->back())) { untested();
+      if (!E->is_empty() && dynamic_cast<const Token_PARLIST*>(E->back())) {
 	trace3("order unchanged3b", t2->name(), name(), t1->name());
 	E->push_back(t2);
 	E->push_back(t1);
