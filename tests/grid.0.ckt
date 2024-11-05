@@ -1,0 +1,43 @@
+
+.subckt grids top1 top4 bot2
+.parameter r=1k
+.parameter l=1e-6
+.parameter c=1e-6
+Rtop_1_2 top1 top2 {r}
+Ltop_1_2 top1 top2 {l}
+Rbot_1_2 bot1 bot2 {r}
+Lbot_1_2 bot1 bot2 {l}
+Rtop_1_3 top1 top3 {r}
+Ltop_1_3 top1 top3 {l}
+Rbot_1_3 bot1 bot3 {r}
+Lbot_1_3 bot1 bot3 {l}
+C1 top1 bot1 {c}
+Rtop_2_4 top2 top4 {r}
+Ltop_2_4 top2 top4 {l}
+Rbot_2_4 bot2 bot4 {r}
+Lbot_2_4 bot2 bot4 {l}
+C2 top2 bot2 {c}
+Rtop_3_4 top3 top4 {r}
+Ltop_3_4 top3 top4 {l}
+Rbot_3_4 bot3 bot4 {r}
+Lbot_3_4 bot3 bot4 {l}
+C3 top3 bot3 {c}
+C4 top4 bot4 {c}
+.ends
+
+X1 in out 0 grids
+v1 in 0 ac 1 dc 0
+
+*>.print ac vr(out) vi(out) vm(out) vp(out)
+*>.print op v(out)
+*>.op
+*>.ac oct 1 1 250k basic
+
+*>.end
+
+* try this with ngspice -b ..
+.control
+ac oct 1 1 500k
+set units = degrees
+.endc
+.print ac vm(out) vp(out)
