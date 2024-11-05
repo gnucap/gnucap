@@ -44,8 +44,8 @@ CCFLAGS = \
 .cc.o:; $(CXX) $(CXXFLAGS) ${MAKE_CPPFLAGS} $(CPPFLAGS) $(CCFLAGS) -c $<
 .cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
-MAKE_EXE = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
-MAKE_LIB = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
+MAKE_EXE = $(CXX) $(CCFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_LIB = $(CXX) $(CCFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3
