@@ -173,8 +173,8 @@ void attach_file(CS& cmd, std::string const& file_name,
   // a name to look for
   // check if already loaded
   assert(flags);
-  if (void* handle = attach_list[file_name]) { untested();
-    if (Scope->is_empty()) { untested();
+  if (void* handle = attach_list[file_name]) {itested();
+    if (Scope->is_empty()) {itested();
       cmd.warn(bDANGER, here, "\"" + file_name + "\": already loaded, replacing");
       dlclose(handle);
       attach_list[file_name] = nullptr;

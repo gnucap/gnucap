@@ -47,7 +47,7 @@ public:
   }
 
   void want(int, int);
-  size_t size()const {return _size;}
+  size_t size()const { untested();return _size;}
   void init(int s) {
     _data.resize(s);
   }
@@ -55,16 +55,16 @@ public:
     _data.clear();
   }
 
-  void dumpgr(){
+  void dumpgr(){ untested();
     int s = 0;
-    for(auto& i : _data){
+    for(auto& i : _data){ untested();
       s += int(i.first.size());
     }
     std::cout << "p tw " << to_string(int(_data.size())) << " " << to_string(s) << "\n";
     auto ii = 0;
-    for(auto& i : _data){
+    for(auto& i : _data){ untested();
       ++ii;
-      for(auto& j : i.first){
+      for(auto& j : i.first){ untested();
 	std::cout << ii << " " << j << "\n";
       }
     }
@@ -116,7 +116,7 @@ class BSSMATRIX {
   T	_trash;		// depository for row and col 0, write only
 public:
   explicit BSSMATRIX<T>(int s=0);
-  ~BSSMATRIX<T>(){
+  ~BSSMATRIX<T>(){ untested();
     uninit();
   }
 
@@ -127,7 +127,7 @@ private: // impl.
   T* rowptr(int i) {return _colptr[i+1] - 1; }
   T* colptr(int i) {return _colptr[i]; }
   T* diaptr(int i) {return _diaptr[i]; }
-//  void set_changed(int n, bool x = true)const {_changed[n] = x;}
+//  void set_changed(int n, bool x = true)const { untested();_changed[n] = x;}
 public: // lifecycle
   void init(int size);
   void iwant(int i, int j);
@@ -136,7 +136,7 @@ public: // lifecycle
   void uninit();
 
 public: // internals for CBS
-  int lownode_col(int i){ return _lownode_col[i];}
+  int lownode_col(int i){ untested(); return _lownode_col[i];}
   int lownode_row(int i){ return _lownode_row[i];}
 
 public:
@@ -148,12 +148,12 @@ private:
   T&	   u(int r, int c);
   T&	   l(int r, int c);
   T&	   m(int r, int c);
-  T&	   d(int r) { return *diaptr(r); }
+  T&	   d(int r) { untested(); return *diaptr(r); }
   T const& u(int r, int c)const;
   T const& l(int r, int c)const;
   T const& m(int r, int c)const;
   T const& d(int r)const { return *diaptr(r); }
-//  int lownode(int n) const{return _lownode[n]; }
+//  int lownode(int n) const{ untested();return _lownode[n]; }
 
 public:
   void fbsub(T* x, const T* b, T* c = nullptr) const;
@@ -201,14 +201,14 @@ private: // CBS
   void set_min_pivot(double x)override {_min_pivot = x;}
 //  void zero() override;
   void lu_decomp(bool do_partial) override;
-//  void lu_decomp() override{unreachable();}
+//  void lu_decomp() override{ untested();unreachable();}
   void load_diagonal_point(int i, T value)override;
   void load_point(int i, int j, T value)override;
   void load_couple(int i, int j, T value)override;
   void load_symmetric(int i, int j, T value)override;
   void load_asymmetric(int r1, int r2, int c1, int c2, T value)override;
 
-  void set_changed(int, bool)const override{
+  void set_changed(int, bool)const override{ untested();
     unreachable(); // obsolete
   }
   void set_changed(int i, int j)const {
@@ -229,7 +229,7 @@ private: // CBS
       _changed[j] = std::min(unsigned(j-1), _changed[j]-1)+1; // diag
     }else if(i==j){
       _changed[i] = std::min(unsigned(j-1), _changed[i]-1)+1;
-    }else{
+    }else{ untested();
     }
 
     assert(i==0 || int(_changed[i]) <= i );
@@ -241,14 +241,14 @@ private:
   void lu_iwant(int i, int j);
 
 private: // aa data xs
-//  BSMATRIX<T>& aa() {return data_();}
+//  BSMATRIX<T>& aa() { untested();return data_();}
   int aalownode(int i) const{ return lownode_(data(), i); }
   int aalownode_u(int i) const{ return lownode_(data(), i); }
   int aalownode_l(int i) const{ return lownode_(data(), i); }
 
-  T const & aau(int i, int j)const { return u_(data(), i, j); }
-  T const & aal(int i, int j)const { return l_(data(), i, j); }
-  T const & aad(int i       )const { return d_(data(), i); }
+  T const & aau(int i, int j)const { untested(); return u_(data(), i, j); }
+  T const & aal(int i, int j)const { untested(); return l_(data(), i, j); }
+  T const & aad(int i       )const { untested(); return d_(data(), i); }
 
   T& aam(int i, int j){ return BSMATRIX_SOLVER<T>::m_(_aa, i, j); }
   T& aal(int i, int j){ return BSMATRIX_SOLVER<T>::l_(_aa, i, j); }
@@ -256,7 +256,7 @@ private: // aa data xs
   T& aad(int i       ){ return BSMATRIX_SOLVER<T>::d_(_aa, i); }
 
 private: // lu data xs
-  // T& m(int r, int c) { return _lu.m(r, c); }
+  // T& m(int r, int c) { untested(); return _lu.m(r, c); }
 
 private:
   unsigned is_changed(int n)const {
@@ -264,13 +264,13 @@ private:
   }
 
 private: // implementation
-  void fbsub(T* v) const override{
+  void fbsub(T* v) const override{itested();
     return _lu.fbsub(v, v, v);
   }
   void fbsub(T* x, const T* b, T* c = nullptr) const override {
     return _lu.fbsub(x, b, c);
   }
-  void fbsubt(T*) const{ incomplete(); }
+  void fbsubt(T*) const{ untested(); incomplete(); }
 
 private: // memory
   void tag_wanted();
@@ -349,7 +349,7 @@ void CBS<T>::unallocate()
 /* u: as above, but lvalue */
 template <class T>
 T& BSSMATRIX<T>::u(int r, int c)
-{
+{ untested();
   assert(_colptr);
   assert(_lownode_col);
   assert(0 < r);
@@ -364,7 +364,7 @@ T& BSSMATRIX<T>::u(int r, int c)
 /* l: as above, but lvalue */
 template <class T>
 T& BSSMATRIX<T>::l(int r, int c)
-{
+{ untested();
   assert(_lownode_row);
   assert(0 < c);
   assert(c <= r); // !
@@ -499,8 +499,8 @@ public:
     return *this;
   }
 
-  //int& row(){return x[0];}
-  //int& col(){return x[1];}
+  //int& row(){ untested();return x[0];}
+  //int& col(){ untested();return x[1];}
 };
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -532,7 +532,7 @@ bool CBS<T>::nonzero_lu(int rr, int cc, int dd)
 	ii -= m;
       }else if(nz(col[ii]) && nz(row[-ii])){
 	return true;
-      }else{
+      }else{ untested();
 	--ii;
       }
     }
@@ -584,7 +584,7 @@ T BSSMATRIX<T>::subdot(T* lj, int i, T* ui, int j, int dd, T const& in) const
   if(last_l<lj){
     assert(dot == subdot(i,j,dd,in));
     return T(dot);
-  }else if(ui<last_u){
+  }else if(ui<last_u){ untested();
     assert(dot == subdot(i,j,dd,in));
     return T(dot);
   }
@@ -652,8 +652,8 @@ T BSSMATRIX<T>::subdot(int i, int j, int dd, T const& in) const
   int uu = 1;
   skip(u, uu);
   skip(l, ll, -1);
-  for( ; uu<dd && ll<dd ;){
-    if(uu == ll){
+  for( ; uu<dd && ll<dd ;){ untested();
+    if(uu == ll){ untested();
       assert( u<dj && di<l);
       assert(!idx(u));
       assert(!idx(l));
@@ -668,11 +668,11 @@ T BSSMATRIX<T>::subdot(int i, int j, int dd, T const& in) const
       skip(u, uu);
       skip(l, ll, -1);
       assert(!std::isnan(dot));
-    }else if(uu<ll){
+    }else if(uu<ll){ untested();
       ++uu;
       ++u;
       skip(u, uu);
-    }else{
+    }else{ untested();
       ++ll;
       --l;
       skip(l, ll, -1);
@@ -712,7 +712,7 @@ void BSSMATRIX<T>::iwant(int i, int j)
   assert(i);
   assert(j);
 
-  if (i <= 0  ||  j <= 0) {
+  if (i <= 0  ||  j <= 0) { untested();
     // ...
   }else if (i < _lownode_col[j]) {
     _lownode_col[j] = i;
@@ -733,7 +733,7 @@ void CBS<T>::lu_iwant(int i, int j)
   assert(i);
   assert(j);
 
-  if (i <= 0  ||  j <= 0) {
+  if (i <= 0  ||  j <= 0) { untested();
     // start tags?
   }else if (i < _lownode_col[j]) {
     _lownode_col[j] = i;
@@ -832,7 +832,7 @@ void CBS<T>::tag_wanted()
  */
 template <class T>
 void BSSMATRIX<T>::zero()
-{
+{ untested();
   incomplete();
 }
 /*--------------------------------------------------------------------------*/
@@ -964,7 +964,7 @@ void CBS<T>::lu_decomp(bool do_partial)
 	}else{
 	}
 	*dd = diag;
-        if(fabs(*dd) < _min_pivot) {
+        if(fabs(*dd) < _min_pivot) {itested();
 	  error(bWARNING, "open circuit: internal node %u\n", mm);
 	  *dd = _min_pivot;
 	}else{
@@ -981,10 +981,10 @@ void CBS<T>::lu_decomp(bool do_partial)
   }
 
 #ifdef ACCT
-   if(do_partial){
+   if(do_partial){ untested();
    std::cerr << "ch " << ch <<  " use " << use << " ds " << dsaved
              << " unnec " << unn << " unch " << unch <<"\n";
-   if(saved){
+   if(saved){ untested();
    std::cerr << "saved " << saved << "\n";
    }
    }
@@ -1011,12 +1011,12 @@ void CBS<T>::lu_set_tags(int mm)
 	}
 	--seek;
 	zcnt = 0;
-      }else{
+      }else{ untested();
 	++zcnt;
       }
     }
 
-    if(zcnt){
+    if(zcnt){ untested();
       *seek = makeidx<T>(zcnt); // oops? + gap?
     }else if(bn==1){
     }else if(bn==mm){
@@ -1045,11 +1045,11 @@ void CBS<T>::lu_set_tags(int mm)
 	}
 	++seek;
 	zcnt = 0;
-      }else{
+      }else{ untested();
 	++zcnt;
       }
     }
-    if(zcnt){
+    if(zcnt){ untested();
       *seek = makeidx<T>(zcnt); // oops? + gap?
     }else if(bn==1){
     }else if(bn==mm){
@@ -1065,47 +1065,47 @@ void CBS<T>::lu_set_tags(int mm)
 /*--------------------------------------------------------------------------*/
 template <class T>
 void CBS<T>::dump_lu()
-{
+{ untested();
   trace1("========= DUMP D", size());
-  for (int mm=1; mm <= size(); ++mm) {
+  for (int mm=1; mm <= size(); ++mm) { untested();
     T* dd = _lu.diaptr(mm);
     trace2("D", mm, *dd);
   }
   trace1("========= DUMP U", size());
-  for (int mm=1; mm <= size(); ++mm) {
+  for (int mm=1; mm <= size(); ++mm) { untested();
     T* ui = _lu.colptr(mm);
     int ii = 1;
-    if(idx(ui)){
+    if(idx(ui)){ untested();
       ii += idx(ui++);
-    }else{
+    }else{ untested();
     }
 
-    for (; ii<mm; ){
+    for (; ii<mm; ){ untested();
       trace3("U", ii, mm, *ui);
       ++ui;
       ++ii;
-      if(idx(ui)){
+      if(idx(ui)){ untested();
 	ii += idx(ui++);
-      }else{
+      }else{ untested();
       }
     }
   }
   trace1("========= DUMP L", size());
-  for (int mm=1; mm <= size(); ++mm) {
+  for (int mm=1; mm <= size(); ++mm) { untested();
     T* lj = _lu.rowptr(mm);
     int jj = 1;
-    if(idx(lj)) {
+    if(idx(lj)) { untested();
       jj += idx(lj--);
-    }else{
+    }else{ untested();
     }
       // first one? l(mm,bn) = aa.l(mm,bn);
-    for (; jj<mm; ){
+    for (; jj<mm; ){ untested();
       trace3("L", mm, jj, *lj);
       --lj;
       ++jj;
-      if(idx(lj)){
+      if(idx(lj)){ untested();
 	jj += idx(lj--);
-      }else{
+      }else{ untested();
       }
     }
 
@@ -1126,7 +1126,7 @@ void CBS<T>::want_lu_fill()
       }else if(nz(aau(ii,mm))){
 	nzcount += 1 + zeros;
 	zeros = false;
-      }else{
+      }else{ untested();
 	zeros = true;
       }
     }
@@ -1147,7 +1147,7 @@ void CBS<T>::want_lu_fill()
       }else if(nz(aal(mm,jj))){
 	nzcount += 1 + zeros;
 	zeros = false;
-      }else{
+      }else{ untested();
 	zeros = true;
       }
     }
@@ -1178,7 +1178,7 @@ void CBS<T>::compute_lu_fill()
     if (bn < mm) {
       if(nz(aad(bn))){
 	++f;
-      }else{
+      }else{ untested();
       }
       /// ============= U ================
       gap = 0;
@@ -1186,7 +1186,7 @@ void CBS<T>::compute_lu_fill()
 
       if(nz(aau(bn,mm))){
 	++f;
-      }else{
+      }else{ untested();
 	aau(bn,mm) = index(++gap);
 	assert(!nz(aau(bn,mm)));
 	++z;
@@ -1215,7 +1215,7 @@ void CBS<T>::compute_lu_fill()
       gap=0;
       if(nz(aal(mm, bn))){
 	++f;
-      }else{
+      }else{ untested();
 	aal(mm, bn) = index(++gap);
 	++z;
       }
@@ -1290,18 +1290,20 @@ void BSSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
       assert(jj);
       int low_node = jj; // std::max(jj, first_nz);
       assert(!idx(lj));
-      while(jj<low_node){
+      while(jj<low_node){ untested();
 	++jj;
-	if(idx(--lj)){
+	if(idx(--lj)){ untested();
 	  jj += idx(lj--);
-	}else{
+	}else{ untested();
 	}
       }
 
       c[ii] = b[ii];
       // for (int jj = low_node; jj < ii; ++jj)
       for (; jj<ii; ) {
-	assert(!std::isnan(c[jj]));
+	if(std::isnan(c[jj])){itested();
+	}else{itested();
+	}
 	assert(!idx(lj));
 	assert(!std::isnan(*lj));
 	T l__ = *lj;
@@ -1330,7 +1332,9 @@ void BSSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
     for (; ii<jj; ) {
       // x[ii] -= u(ii,jj) * x[jj];
       assert(!idx(ui));
-      assert(!std::isnan(x[jj]));
+      if(std::isnan(x[jj])){itested();
+      }else{itested();
+      }
       assert(!std::isnan(*ui));
       x[ii] -= *ui * x[jj];
       if(*ui)
@@ -1348,7 +1352,7 @@ void BSSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
  */
 template <class T>
 void BSSMATRIX<T>::fbsubt(T*) const
-{
+{ untested();
   incomplete();
 }
 /*--------------------------------------------------------------------------*/
@@ -1418,11 +1422,11 @@ void CBS<T>::check_consistency(int m)
 /*--------------------------------------------------------------------------*/
 template <class T>
 void CBS<T>::load_point(int i, int j, T value)
-{
-  if (i > 0 && j > 0) {
+{ untested();
+  if (i > 0 && j > 0) { untested();
     set_changed(i, j);
     aam(i,j) += value;
-  }else{
+  }else{ untested();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -1433,7 +1437,7 @@ void CBS<T>::load_diagonal_point(int i, T value)
   if (i > 0) {
     set_changed(i, i);
     aad(i) += value;
-  }else{
+  }else{ untested();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -1441,16 +1445,16 @@ void CBS<T>::load_diagonal_point(int i, T value)
 // load_point(j, i, -value);
 template <class T>
 void CBS<T>::load_couple(int i, int j, T value)
-{
-  if (j > 0) {
-    if (i > 0) {
+{itested();
+  if (j > 0) {itested();
+    if (i > 0) {itested();
       set_changed(i, j);
       aam(i,j) -= value;
       set_changed(j, i);
       aam(j,i) -= value;
-    }else{
+    }else{itested();
     }
-  }else{
+  }else{ untested();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -1491,25 +1495,25 @@ void CBS<T>::load_asymmetric(int r1,int r2,int c1,int c2,T value)
     if (c1 > 0) {
       aam(r1,c1) += value;
       set_changed(r1, c1);
-    }else{
+    }else{itested();
     }
     if (c2 > 0) {
       aam(r1,c2) -= value;
       set_changed(r1, c2);
     }else{
     }
-  }else{
+  }else{itested();
   }
   if (r2 > 0) {
     if (c1 > 0) {
       set_changed(r2, c1);
       aam(r2,c1) -= value;
-    }else{
+    }else{itested();
     }
     if (c2 > 0) {
       set_changed(r2, c2);
       aam(r2,c2) += value;
-    }else{
+    }else{itested();
     }
   }else{
   }
