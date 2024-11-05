@@ -90,8 +90,6 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
     _sim->_aa.reallocate();
     _sim->_aa.dezero(OPT::gmin);
     _sim->_aa.set_min_pivot(OPT::pivtol);    
-    _sim->_lu.reallocate();
-    _sim->_lu.set_min_pivot(OPT::pivtol);
     fftallocate();
     ::status.set_up.stop();
 
@@ -107,7 +105,6 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
   }
   fftunallocate();
   _sim->unalloc_vectors();
-  _sim->_lu.unallocate();
   _sim->_aa.unallocate();
 
   _sim->_has_op = s_FOURIER;

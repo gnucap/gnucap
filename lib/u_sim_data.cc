@@ -60,7 +60,7 @@ SIM_DATA::SIM_DATA()
    _nstat(nullptr),
    _vdc(nullptr),
    _aa(),
-   _lu(),
+   _lu(_aa), // alias.
    _acx(),
    _eq(),
    _loadq(),
@@ -71,11 +71,18 @@ SIM_DATA::SIM_DATA()
    _evalq(nullptr),
    _evalq_uc(nullptr),
    _waves(nullptr),
-   _has_op(s_NONE)
+   _has_op(s_NONE),
+   _aa_solver(nullptr),
+   _acx_solver(nullptr)
 {
   _evalq = &_evalq1;
   _evalq_uc = &_evalq2;
   std::fill_n(_iter, iCOUNT, 0);
+
+  _aa_solver = new LU_COPY<double>(_aa);
+  _aa.set_solver(_aa_solver);
+  _acx_solver = new LU_INPLACE<COMPLEX>(_acx);
+  _acx.set_solver(_acx_solver);
 }
 /*--------------------------------------------------------------------------*/
 SIM_DATA::~SIM_DATA()
@@ -137,6 +144,11 @@ SIM_DATA::~SIM_DATA()
     _waves = nullptr;
   }else{
   }
+
+  _aa.set_solver(nullptr);
+  delete _aa_solver;
+  _acx.set_solver(nullptr);
+  delete _acx_solver;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -262,7 +274,6 @@ void SIM_DATA::init(CARD_LIST* scope)
     scope->map_nodes();
     alloc_hold_vectors();
     _aa.reinit(_total_nodes);
-    _lu.reinit(_total_nodes);
     _acx.reinit(_total_nodes);
     scope->tr_iwant_matrix();
     scope->ac_iwant_matrix();
@@ -347,7 +358,6 @@ void SIM_DATA::uninit()
 {
   if (_vdc) {
     _acx.reinit(0);
-    _lu.reinit(0);
     _aa.reinit(0);
     delete [] _vdc;
     _vdc = nullptr;
@@ -357,7 +367,6 @@ void SIM_DATA::uninit()
     _nm = nullptr;
   }else{
     assert(_acx.size() == 0);
-    assert(_lu.size() == 0);
     assert(_aa.size() == 0);
     assert(!_nstat);
     assert(!_nm);

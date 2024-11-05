@@ -47,8 +47,6 @@ void SIM::command_base(CS& cmd)
     _sim->_aa.reallocate();
     _sim->_aa.dezero(OPT::gmin);
     _sim->_aa.set_min_pivot(OPT::pivtol);
-    _sim->_lu.reallocate();
-    _sim->_lu.set_min_pivot(OPT::pivtol);
     assert(_sim->_nstat);
     ::status.set_up.stop();
 
@@ -62,6 +60,7 @@ void SIM::command_base(CS& cmd)
   }catch (Exception& e) {
     error(bDANGER, e.message() + '\n');
     _sim->count_iterations(iTOTAL);
+    _sim->_aa.unallocate();
   }
   finish();
   _sim->unalloc_vectors();

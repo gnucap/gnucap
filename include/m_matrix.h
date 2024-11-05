@@ -114,173 +114,333 @@
 #include "l_stlextra.h"
 /*--------------------------------------------------------------------------*/
 template <class T>
-class BSMATRIX {
-private:
-  mutable bool* _changed;// flag: this node changed value
-  int*	_lownode;	// lowest node connecting to this one
-  T*	_space;		// ptr to actual memory space used
-  T**	_diaptr;	// ptrs to diagonal
-  int	_nzcount;	// count of non-zero elements
-  int	_size;		// # of rows and columns
-  T	_zero;		// always 0 but not const
-  T	_trash;		// depository for row and col 0, write only
-  T	_min_pivot;	// minimum pivot value
-private:
-  explicit	BSMATRIX(const BSMATRIX<T>&) {incomplete();unreachable();}
-  void		uninit();
-  void		init(int s=0);
-  T&		subtract_dot_product(int r, int c, int d);
-  T&		subtract_dot_product(int r, int c, int d, const T& in);
-  int		lownode(int i)const	{return _lownode[i];}
-  bool		is_changed(int n)const	{return _changed[n];}
-  void		set_changed(int n, bool x = true)const {_changed[n] = x;}
+class BSMATRIX_SOLVER;
+template <class T>
+class BSMATRIX;
+/*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+template <class T>
+class BSMATRIX_DATA {
+  friend class BSMATRIX_SOLVER<T>;
+protected:
+  int*	_lownode{nullptr};	// lowest node connecting to this one
+  T*	_space{nullptr};	// ptr to actual memory space used
+  T**	_diaptr{nullptr};	// ptrs to diagonal
+  int	_nzcount{0};	// count of non-zero elements
+  int	_size{0};	// # of rows and columns
+  T	_zero{0};	// always 0 but not const
+  T	_trash{0};	// depository for row and col 0, write only
 public:
-  explicit	BSMATRIX(int ss=0);
-  		~BSMATRIX()		{uninit();}
-  void		reinit(int ss=0)	{uninit(); init(ss);}
-  //void	clone(const BSMATRIX<T>&);
-  void		iwant(int, int);
-  void		unallocate();
-  void		allocate();
-  void		reallocate()		{unallocate(); allocate();}
-  void		set_min_pivot(double x)	{_min_pivot = x;}
-  void		zero();
-  void		dezero(T& o);
+  BSMATRIX_DATA(BSMATRIX_DATA const&) = delete;
+  explicit	BSMATRIX_DATA();
+  ~BSMATRIX_DATA() { uninit(); }
+public: // life cycle
+  void init(int s);
+  void iwant(int, int);
+  void allocate();
+  void unallocate();
+  void uninit();
+public:
+  T const& s(int r, int c)const;
+  T const& d(int r, int c)const;
+
+protected:
+  T&	   u(int r, int c);
+  T&	   l(int r, int c);
+  T&	   d(int r);
+  T&	   m(int r, int c);
+protected: // const xs
+  T const& u(int r, int c)const {
+    auto& x = const_cast<BSMATRIX_DATA<T>&>(*this);
+    return x.u(r, c);
+  }
+  T const& l(int r, int c)const {
+    auto& x = const_cast<BSMATRIX_DATA<T>&>(*this);
+    return x.l(r, c);
+  }
+  T const& d(int r)const {
+    auto& x = const_cast<BSMATRIX_DATA<T>&>(*this);
+    return x.d(r);
+  }
+  T const& m(int r, int c) const { untested();
+    auto& x = const_cast<BSMATRIX_DATA<T>&>(*this);
+    return x.m(r);
+  }
+  int lownode(int n) const{ assert(_lownode); return _lownode[n]; }
+  // int		lownode(int i)const	{ untested();return _lownode[i];}
+public:
+  void zero();
+  void dezero(T const& o);
+  void fbsub(T* v) const;
+  void fbsub(T* x, const T* b, T* c = nullptr) const;
+  void fbsubt(T* v) const;
+public:
   int		size()const		{return _size;}
   double 	density();
-  T 	d(int r, int  )const;
-  T     s(int r, int c)const;
-private:
-  T 	u(int r, int c)const;
-  T 	l(int r, int c)const;
-  T&	d(int r, int  );
-  T&	u(int r, int c);
-  T&	l(int r, int c);
-  T&	m(int r, int c);
+}; // BSMATRIX_DATA
+/*--------------------------------------------------------------------------*/
+// BUMP/SPIKE MATRIX interface class
+template <class T>
+class BSMATRIX : private BSMATRIX_DATA<T> {
+  friend class BSMATRIX_SOLVER<T>;
+  T _min_pivot; // here?
+  BSMATRIX_SOLVER<T>* _solver;
 public:
-  void		load_diagonal_point(int i, T value);
-  void		load_point(int i, int j, T value);
-  void		load_couple(int i, int j, T value);
-  void		load_symmetric(int i, int j, T value);
-  void		load_asymmetric(int r1, int r2, int c1, int c2, T value);
-  
-  void		lu_decomp(const BSMATRIX<T>&, bool do_partial);
-  void		lu_decomp();
-  void		fbsub(T* v) const;
-  void		fbsub(T* x, const T* b, T* c = nullptr) const;
-  void		fbsubt(T* v) const;
-};
+  BSMATRIX(const BSMATRIX<T>&) = delete;
+  explicit BSMATRIX(int s=0);
+  ~BSMATRIX(){}
+
+public:
+  using BSMATRIX_DATA<T>::size;
+  using BSMATRIX_DATA<T>::zero;
+  using BSMATRIX_DATA<T>::dezero;
+  using BSMATRIX_DATA<T>::density;
+
+private: // access.
+  using BSMATRIX_DATA<T>::u;
+  using BSMATRIX_DATA<T>::l;
+  using BSMATRIX_DATA<T>::d;
+  using BSMATRIX_DATA<T>::m;
+
+public:
+  void set_solver(BSMATRIX_SOLVER<T>* S) {
+    uninit();
+    if(_solver) {
+      _solver = nullptr;
+    }else{
+    }
+    if(S) {
+      S->uninit();
+      _solver = S;
+    }else{
+    }
+    init();
+  }
+private:
+  void init(int s=0);
+  void uninit();
+public: // loading.
+  void load_diagonal_point(int i, T value) {
+    assert(_solver); return _solver->load_diagonal_point(i, value);
+  }
+  void load_point(int i, int j, T value) { itested();
+    assert(_solver); return _solver->load_point(i, j, value);
+  }
+  void load_couple(int i, int j, T value) {
+    assert(_solver); return _solver->load_couple(i, j, value);
+  }
+  void load_symmetric(int i, int j, T value) {
+    assert(_solver); return _solver->load_symmetric(i, j, value);
+  }
+  void load_asymmetric(int r1, int r2, int c1, int c2, T value) {
+    assert(_solver); return _solver->load_asymmetric(r1, r2, c1, c2, value);
+  }
+
+public:
+  BSMATRIX_DATA<T> const& data() const{ untested(); return *this; }
+private:
+  BSMATRIX_DATA<T>& rw_data(){ untested(); return *this; }
+public:
+  void reinit(int ss=0) { uninit(); init(ss); }
+public:
+  void unallocate();
+  void allocate();
+  void reallocate();
+  //void	clone(const BSMATRIX<T>&);
+  void iwant(int, int);
+  void set_min_pivot(double x)	{assert(_solver); _solver->set_min_pivot(x);}
+  T const& d(int r)const{
+    BSMATRIX_SOLVER<T> const* s = _solver;
+    assert(s);
+    return s->d(r);
+  }
+  void zero() { assert(_solver); _solver->zero(); }
+
+public: // "solve?"
+  void lu_decomp(bool do_partial) {
+    assert(_solver); _solver->lu_decomp(do_partial);
+  }
+  void lu_decomp() {
+    assert(_solver); _solver->lu_decomp(false);
+  }
+  void fbsub(T* v) const { assert(_solver); _solver->fbsub(v); }
+  void fbsub(T* x, const T* b, T* c = nullptr) const {
+    assert(_solver); _solver->fbsub(x, b, c);
+  }
+  void fbsubt(T* v) const { untested(); assert(_solver); _solver->fbsubt(v); }
+}; // BSMATRIX
+/*--------------------------------------------------------------------------*/
+template <class T>
+class BSMATRIX_SOLVER {
+protected: // private?
+  BSMATRIX_DATA<T>& _data; // _aa, _acx and the like
+public:
+  explicit BSMATRIX_SOLVER(BSMATRIX<T>& m) : _data(m) {}
+  explicit BSMATRIX_SOLVER(BSMATRIX_SOLVER const&) = delete;
+  virtual ~BSMATRIX_SOLVER() { }
+public:
+  int  size()const { return _data.size(); }
+
+  virtual void init(int ss) = 0;
+  virtual void uninit() = 0;
+  virtual void iwant(int, int){} // LU_COPY
+  virtual void allocate() = 0;
+  virtual void unallocate() = 0;
+  virtual void set_min_pivot(double x) = 0;
+//  virtual void set_changed(int n, bool x = true)const = 0;
+
+  virtual void lu_decomp(bool do_partial) = 0;
+  virtual void fbsub(T*) const { untested(); unreachable(); }
+  virtual void fbsub(T* x, const T* b, T* c = nullptr) const = 0;
+  virtual void fbsubt(T*) const { untested(); unreachable(); }
+
+  T const& d(int r) const {
+    return _data.d(r);
+  }
+  T const& s(int r, int c) const { untested();
+    return _data.s(r, c);
+  }
+  virtual void zero() {
+    return _data.zero();
+  }
+
+protected: // matrix data xs
+  BSMATRIX_DATA<T> const& data_(BSMATRIX<T> const& d)const { untested();
+    return d.data();
+  }
+  BSMATRIX_DATA<T>& rw_data_(BSMATRIX<T>& d)const { untested();
+    return d.rw_data();
+  }
+  int lownode_(BSMATRIX_DATA<T> const& d, int r)const {
+    return d.lownode(r);
+  }
+  T const& u_(BSMATRIX_DATA<T> const& d, int r, int c)const {
+    return d.u(r,c);
+  }
+  T const& l_(BSMATRIX_DATA<T> const& d, int r, int c)const {
+    return d.l(r,c);
+  }
+  T const& m_(BSMATRIX_DATA<T> const& d, int r, int c)const { untested();
+    return d.m(r,c);
+  }
+  T const& d_(BSMATRIX_DATA<T> const& d, int r)const {
+    return d.d(r);
+  }
+  T const& m(int r, int c)const { untested();
+    return _data.m(r, c);
+  }
+
+private:
+  T& u(int r, int c) { untested();
+    return _data.u(r, c);
+  }
+  T& l(int r, int c) { untested();
+    return _data.l(r, c);
+  }
+  T& d(int r) {
+    return _data.d(r);
+  }
+  T& m(int r, int c) {
+    return _data.m(r, c);
+  }
+
+public: // load
+  virtual void load_diagonal_point(int i, T value);
+  virtual void load_point(int i, int j, T value);
+  virtual void load_couple(int i, int j, T value);
+  virtual void load_symmetric(int i, int j, T value);
+  virtual void load_asymmetric(int r1, int r2, int c1, int c2, T value);
+
+private:
+  virtual void set_changed(int, bool j=true) const { untested();
+    (void) j;
+    // obsolete. use LU_COPY::load_*
+  }
+
+
+protected:
+  BSMATRIX_DATA<T> const& data() const { return _data; }
+
+protected: // non-const data xs for friends.
+  T& u_(BSMATRIX_DATA<T>& d, int r, int c) { return d.u(r,c); }
+  T& l_(BSMATRIX_DATA<T>& d, int r, int c) { return d.l(r,c); }
+  T& m_(BSMATRIX_DATA<T>& d, int r, int c) { return d.m(r,c); }
+  T& d_(BSMATRIX_DATA<T>& d, int r) { return d.d(r); }
+}; // BSMATRIX_SOLVER
 /*--------------------------------------------------------------------------*/
 // private implementations
 /*--------------------------------------------------------------------------*/
 template <class T>
-void BSMATRIX<T>::uninit()
+void BSMATRIX_DATA<T>::init(int s)
 {
-  unallocate();
-  delete [] _lownode;
-  _lownode = nullptr;
-  delete [] _changed;
-  _changed = nullptr;
-}
-/*--------------------------------------------------------------------------*/
-template <class T>
-void BSMATRIX<T>::init(int ss)
-{
-  assert(!_lownode);
   assert(!_diaptr);
   assert(!_space);
 
-  assert(_zero == 0.);
-  _min_pivot = _trash = 0.;
-  _nzcount = 0;
-  _size = ss;
+  _size = s;
+
+  assert(!_lownode);
   _lownode = new int[size()+1];
   assert(_lownode);
   for (int ii = 0;  ii <= size();  ++ii) {
     _lownode[ii] = ii;
   }
-  _changed = new bool[size()+1];
-  assert(_changed);
-  for (int ii = 0;  ii <= size();  ++ii) {
-    set_changed(ii, false);
-  }
-}
-/*--------------------------------------------------------------------------*/
-namespace {
-/*--------------------------------------------------------------------------*/
-template<class T>
-struct longer{
-  typedef T type;
-};
-template<>
-struct longer< std::complex<double> > {
-  typedef std::complex<long double> type;
-};
-template<>
-struct longer<double> {
-  typedef long double type;
-};
-/*--------------------------------------------------------------------------*/
-}
-/*--------------------------------------------------------------------------*/
-template <class T>
-T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd)
-{
-  assert(_lownode);
-  int kk = std::max(_lownode[rr], _lownode[cc]);
-  int len = dd - kk;
-  T& in = m(rr, cc);
-  typedef typename longer<T>::type longertype;
-  longertype dot = 0.;
 
-  if (len > 0) {
-    T* row = &(l(rr,kk));	// _diaptr[r][r-c];
-    T* col = &(u(kk,cc));	// _diaptr[c][r-c];
-    /* for (ii = kk;   ii < dd;   ++ii) */
-    for (int ii = 0;   ii < len;   ++ii) {
-      dot += row[-ii] * col[ii];
-    }
-  }else{
-  }
-  in -= T(dot);
-  return in;
+  assert(_zero == 0.);
+  _trash = 0.;
+  _nzcount = 0;
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-T& BSMATRIX<T>::subtract_dot_product(int rr, int cc, int dd, const T& in)
+void BSMATRIX_DATA<T>::uninit()
 {
-  assert(_lownode);
-  int kk = std::max(_lownode[rr], _lownode[cc]);
-  int len = dd - kk;
-  typedef typename longer<T>::type longertype;
-  longertype dot = 0.;
-  if (len > 0) {
-    T* row = &(l(rr,kk));
-    T* col = &(u(kk,cc));
-    /* for (ii = kk;   ii < dd;   ++ii) */
-    for (int ii = 0;   ii < len;   ++ii) {
-      dot += row[-ii] * col[ii];
-    }
+  unallocate();
+  delete [] _lownode;
+  _lownode = nullptr;
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void BSMATRIX<T>::uninit()
+{
+  BSMATRIX_DATA<T>::uninit();
+
+  if(_solver) {
+    _solver->uninit();
   }else{
   }
-  T& result = m(rr, cc);
-  result = T(in - dot);
-  return result;
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void BSMATRIX<T>::init(int ss)
+{
+  BSMATRIX_DATA<T>::init(ss);
+  if(ss){
+    assert(_solver);
+  }else{
+  }
+  if(_solver){
+    _solver->init(ss);
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 // public implementations
 /*--------------------------------------------------------------------------*/
 template <class T>
+BSMATRIX_DATA<T>::BSMATRIX_DATA()
+ :_lownode(nullptr),
+  _space(nullptr),
+  _diaptr(nullptr),
+  _nzcount(0),
+  _size(0),
+  _zero(0.),
+  _trash(0.)
+{
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
 BSMATRIX<T>::BSMATRIX(int ss)
-  :_changed(nullptr),
-   _lownode(nullptr),
-   _space(nullptr),
-   _diaptr(nullptr),
-   _nzcount(0),
-   _size(ss),
-   _zero(0.),
-   _trash(0.),
-   _min_pivot(0.)
+ :BSMATRIX_DATA<T>()
+ ,_solver(nullptr)
 {
   init(ss);
 }
@@ -302,7 +462,7 @@ void BSMATRIX<T>::clone(const BSMATRIX<T> & aa)
 /* iwant: indicate that "iwant" to allocate this spot in the matrix
  */
 template <class T>
-void BSMATRIX<T>::iwant(int node1, int node2)
+void BSMATRIX_DATA<T>::iwant(int node1, int node2)
 {
   assert(_lownode);
   assert(node1 <= size());
@@ -320,7 +480,33 @@ void BSMATRIX<T>::iwant(int node1, int node2)
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
+void BSMATRIX<T>::iwant(int node1, int node2)
+{
+  BSMATRIX_DATA<T>::iwant(node1, node2);
+  assert(_solver);
+  _solver->iwant(node1, node2); // could manage L and U copy
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void BSMATRIX<T>::reallocate()
+{
+//  assert(_solver);
+//  _solver->unallocate();
+  unallocate();
+  allocate();
+//  _solver->allocate();
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
 void BSMATRIX<T>::unallocate()
+{
+  BSMATRIX_DATA<T>::unallocate();
+  assert(_solver);
+  return _solver->unallocate();
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void BSMATRIX_DATA<T>::unallocate()
 {
   assert (_zero == 0.);
   delete [] _diaptr;
@@ -330,10 +516,18 @@ void BSMATRIX<T>::unallocate()
   _space = nullptr;
 }
 /*--------------------------------------------------------------------------*/
+template <class T>
+void BSMATRIX<T>::allocate()
+{
+  BSMATRIX_DATA<T>::allocate();
+  assert(_solver);
+  return _solver->allocate();
+}
+/*--------------------------------------------------------------------------*/
 /* allocate: really get the space to work
  */
 template <class T>
-void BSMATRIX<T>::allocate()
+void BSMATRIX_DATA<T>::allocate()
 {
   assert(_lownode);
   assert(!_diaptr);
@@ -363,7 +557,7 @@ void BSMATRIX<T>::allocate()
 /* zero: wipe the whole array
  */
 template <class T>
-void BSMATRIX<T>::zero()
+void BSMATRIX_DATA<T>::zero()
 {
   assert(_space);
   assert(_zero == 0.);
@@ -374,15 +568,15 @@ void BSMATRIX<T>::zero()
 /* dezero: make sure(?) the diagonal is non-zero
  */
 template <class T>
-void BSMATRIX<T>::dezero(T& offset)
+void BSMATRIX_DATA<T>::dezero(T const& offset)
 {
   for (int ii = 1;  ii <= size();  ++ii) {
-    d(ii,ii) += offset;
+    d(ii) += offset;
   }
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-double BSMATRIX<T>::density()
+double BSMATRIX_DATA<T>::density()
 {
   if (size() > 0) {
     assert(_lownode);
@@ -400,24 +594,9 @@ double BSMATRIX<T>::density()
  * It is known that the entry is valid and on the diagonal
  */
 template <class T>
-T BSMATRIX<T>::d(int r, int c) const
+T& BSMATRIX_DATA<T>::d(int r)
 {
-  (void)c;
   assert(_diaptr);
-  assert(r == c);
-  assert(0 <= r);
-  assert(r <= _size);
-
-  return *(_diaptr[r]);
-}
-/*--------------------------------------------------------------------------*/
-/* d: as above, but lvalue */
-template <class T>
-T& BSMATRIX<T>::d(int r, int c)
-{
-  (void)c;
-  assert(_diaptr);
-  assert(r == c);
   assert(0 <= r);
   assert(r <= _size);
 
@@ -428,26 +607,11 @@ T& BSMATRIX<T>::d(int r, int c)
  * It is known that the entry is valid and in the upper triangle
  */
 template <class T>
-T BSMATRIX<T>::u(int r, int c) const
+T& BSMATRIX_DATA<T>::u(int r, int c)
 {
   assert(_diaptr);
   assert(_lownode);
-  assert(0 < r);
-  assert(r <= c);
-  assert(c <= _size);
-  assert(1 <= _lownode[c]);
-  assert(_lownode[c] <= r);
-
-  return _diaptr[c][r-c];
-}
-/*--------------------------------------------------------------------------*/
-/* u: as above, but lvalue */
-template <class T>
-T& BSMATRIX<T>::u(int r, int c)
-{
-  assert(_diaptr);
-  assert(_lownode);
-  assert(0 < r);
+  assert(0 <= r);
   assert(r <= c);
   assert(c <= _size);
   assert(1 <= _lownode[c]);
@@ -460,27 +624,12 @@ T& BSMATRIX<T>::u(int r, int c)
  * It is known that the entry is valid and in the lower triangle
  */
 template <class T>
-T BSMATRIX<T>::l(int r, int c) const
+T& BSMATRIX_DATA<T>::l(int r, int c)
 {
   assert(_diaptr);
   assert(_lownode);
   assert(0 < c);
-  assert(c <= r);
-  assert(r <= _size);
-  assert(1 <= _lownode[r]);
-  assert(_lownode[r] <= c);
-
-  return _diaptr[r][r-c];
-}
-/*--------------------------------------------------------------------------*/
-/* l: as above, but lvalue */
-template <class T>
-T& BSMATRIX<T>::l(int r, int c)
-{
-  assert(_diaptr);
-  assert(_lownode);
-  assert(0 < c);
-  assert(c <= r);
+  assert(c < r);
   assert(r <= _size);
   assert(1 <= _lownode[r]);
   assert(_lownode[r] <= c);
@@ -493,7 +642,7 @@ T& BSMATRIX<T>::l(int r, int c)
  * but it is not known whether lower, upper, or diagonal
  */
 template <class T>
-T& BSMATRIX<T>::m(int r, int c)
+T& BSMATRIX_DATA<T>::m(int r, int c)
 {
   assert(_diaptr);
   assert(_lownode);
@@ -522,7 +671,7 @@ T& BSMATRIX<T>::m(int r, int c)
  *   but reading it gives a number not useful for anything.
  */
 template <class T>
-T BSMATRIX<T>::s(int row, int col)const
+T const& BSMATRIX_DATA<T>::s(int row, int col)const
 {itested();
   assert(_lownode);
   assert(0 <= col);
@@ -532,7 +681,7 @@ T BSMATRIX<T>::s(int row, int col)const
   assert(_zero == 0.);
 
   if (col == row) {itested();
-    return d(row, col);
+    return d(row);
   }else if (col > row) {itested();    /* above the diagonal */
     if (row == 0) {itested();
       return _trash;
@@ -555,11 +704,13 @@ T BSMATRIX<T>::s(int row, int col)const
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-void BSMATRIX<T>::load_point(int i, int j, T value)
-{itested();
-  if (i > 0 && j > 0) {itested();
+void BSMATRIX_SOLVER<T>::load_point(int i, int j, T value)
+{ untested();
+  if (i > 0 && j > 0) { untested();
+    // BUG only 1 change //
     set_changed(j);
     set_changed(i);
+    // set_changed(i, j);
     m(i,j) += value;
   }else{itested();
   }
@@ -567,11 +718,11 @@ void BSMATRIX<T>::load_point(int i, int j, T value)
 /*--------------------------------------------------------------------------*/
 // load_point(i, i, value);
 template <class T>
-void BSMATRIX<T>::load_diagonal_point(int i, T value)
+void BSMATRIX_SOLVER<T>::load_diagonal_point(int i, T value)
 {
   if (i > 0) {
-    set_changed(i);
-    d(i,i) += value;
+    set_changed(i, i);
+    d(i) += value;
   }else{untested();
   }
 }
@@ -579,13 +730,13 @@ void BSMATRIX<T>::load_diagonal_point(int i, T value)
 // load_point(i, j, -value);
 // load_point(j, i, -value);
 template <class T>
-void BSMATRIX<T>::load_couple(int i, int j, T value)
+void BSMATRIX_SOLVER<T>::load_couple(int i, int j, T value)
 {
   if (j > 0) {
-    set_changed(j);
     if (i > 0) {
-      set_changed(i);
+      set_changed(i, j);
       m(i,j) -= value;
+      set_changed(j, i);
       m(j,i) -= value;
     }else{
     }
@@ -598,21 +749,23 @@ void BSMATRIX<T>::load_couple(int i, int j, T value)
 // load_point(i, j, -value);	// load_couple(i, j, value);
 // load_point(j, i, -value);
 template <class T>
-void BSMATRIX<T>::load_symmetric(int i, int j, T value)
+void BSMATRIX_SOLVER<T>::load_symmetric(int i, int j, T value)
 {
   if (j > 0) {
-    set_changed(j);
-    d(j,j) += value;
+    set_changed(j, j);
+    d(j) += value;
     if (i > 0) {
-      set_changed(i);
-      d(i,i) += value;
+      set_changed(i,i);
+      set_changed(i,j);
+      set_changed(j,i);
+      d(i) += value;
       m(i,j) -= value;
       m(j,i) -= value;
     }else{
     }
   }else if (i > 0) {
-    set_changed(i);
-    d(i,i) += value;
+    set_changed(i,i);
+    d(i) += value;
   }else{
   }
 }
@@ -622,29 +775,29 @@ void BSMATRIX<T>::load_symmetric(int i, int j, T value)
 // load_point(r1, c2, -value);
 // load_point(r2, c1, -value);
 template <class T>
-void BSMATRIX<T>::load_asymmetric(int r1,int r2,int c1,int c2,T value)
+void BSMATRIX_SOLVER<T>::load_asymmetric(int r1,int r2,int c1,int c2,T value)
 {
-  set_changed(c1);
-  set_changed(c2);
   if (r1 > 0) {
-    set_changed(r1);
     if (c1 > 0) {
       m(r1,c1) += value;
+      set_changed(r1, c1);
     }else{
     }
     if (c2 > 0) {
       m(r1,c2) -= value;
+      set_changed(r1, c2);
     }else{
     }
   }else{
   }
   if (r2 > 0) {
-    set_changed(r2);
     if (c1 > 0) {
+      set_changed(r2, c1);
       m(r2,c1) -= value;
     }else{
     }
     if (c2 > 0) {
+      set_changed(r2, c2);
       m(r2,c2) += value;
     }else{
     }
@@ -652,89 +805,11 @@ void BSMATRIX<T>::load_asymmetric(int r1,int r2,int c1,int c2,T value)
   }
 }
 /*--------------------------------------------------------------------------*/
-template <class T>
-void BSMATRIX<T>::lu_decomp(const BSMATRIX<T>& aa, bool do_partial)
-{
-  int prop = 0;   /* change propagation indicator */
-  assert(_lownode);
-  assert(aa._lownode);
-  assert(aa.size() == size());
-  for (int mm = 1;   mm <= size();   ++mm) {
-    assert(aa.lownode(mm) == _lownode[mm]);
-    int bn = _lownode[mm];
-    if (!do_partial  ||  aa.is_changed(mm)  ||  bn <= prop) {
-      aa.set_changed(mm, false);
-      prop = mm;
-      if (bn < mm) {
-	prop = mm;
-	u(bn,mm) = aa.u(bn,mm) / d(bn,bn);
-	for (int ii = bn+1;  ii<mm;  ii++) {
-	  /* u(ii,mm) = (aa.u(ii,mm) - dot(ii,mm,ii)) / d(ii,ii); */
-	  subtract_dot_product(ii,mm,ii,aa.u(ii,mm)) /= d(ii,ii);
-	}
-	l(mm,bn) = aa.l(mm,bn);
-	for (int jj = bn+1;  jj<mm;  jj++) {
-	  /* l(mm,jj) = aa.l(mm,jj) - dot(mm,jj,jj); */
-	  subtract_dot_product(mm,jj,jj,aa.l(mm,jj));
-	}
-	{ /* jj == mm */
-	  /* d(mm,mm) = aa.d(mm,mm) - dot(mm,mm,mm); then test */
-	  if (subtract_dot_product(mm,mm,mm,aa.d(mm,mm)) == 0.) {
-	    error(bWARNING, "open circuit: internal node %u\n", mm);
-	    d(mm,mm) = _min_pivot;
-	  }else{
-	  }
-	}
-      }else{    /* bn == mm */
-	d(mm,mm) = aa.d(mm,mm);
-	if (d(mm,mm)==0.) {
-	  d(mm,mm) = _min_pivot;
-	}else{
-	}
-      }
-    }else{
-    }
-  }
-}
-/*--------------------------------------------------------------------------*/
-template <class T>
-void BSMATRIX<T>::lu_decomp()
-{
-  assert(_lownode);
-  for (int mm = 1;   mm <= size();   ++mm) {
-    int bn = _lownode[mm];
-    if (bn < mm) {
-      u(bn,mm) /= d(bn,bn);
-      for (int ii =bn+1;  ii<mm;  ii++) {
-	/* (m(ii,mm) -= dot(ii,mm,ii)) /= d(ii,ii); */
-	subtract_dot_product(ii,mm,ii) /= d(ii,ii);
-      }
-      for (int jj = bn+1;  jj<mm;  jj++) {
-	/* m(mm,jj) -= dot(mm,jj,jj); */
-	subtract_dot_product(mm,jj,jj);
-      }
-      { /* jj == mm */
-	/* m(mm,mm) -= dot(mm,mm,mm); then test */
-	if (subtract_dot_product(mm,mm,mm) == 0.) {itested();
-	  error(bWARNING, "open circuit: internal node %u\n", mm);
-	  d(mm,mm) = _min_pivot;
-	}else{
-	}
-      }
-    }else{    /* bn == mm */
-      if (d(mm,mm)==0.) {
-	d(mm,mm) = _min_pivot;
-      }else{
-      }
-    }
-  }
-}
-/*--------------------------------------------------------------------------*/
 /* fbsub: forward and back sub, shared storage
  * v = right side vector, changed in place to solution vector
  */
 template <class T>
-void BSMATRIX<T>::fbsub(T* v) const
+void BSMATRIX_DATA<T>::fbsub(T* v) const
 {
   assert(_lownode);
   assert(v);
@@ -743,7 +818,7 @@ void BSMATRIX<T>::fbsub(T* v) const
     for (int jj = _lownode[ii]; jj < ii; ++jj) {
       v[ii] -= l(ii,jj) * v[jj];
     }
-    v[ii] /= d(ii,ii);
+    v[ii] /= d(ii);
   }
 
   for (int jj = size(); jj > 1; --jj) {		/* back substitution    */
@@ -759,7 +834,7 @@ void BSMATRIX<T>::fbsub(T* v) const
  * x = solution vector
  */
 template <class T>
-void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
+void BSMATRIX_DATA<T>::fbsub(T* x, const T* b, T* c) const
 {
   assert(_lownode);
   assert(x);
@@ -783,7 +858,7 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
       for (int jj = low_node; jj < ii; ++jj) {
 	c[ii] -= l(ii,jj) * c[jj];
       }
-      c[ii] /= d(ii,ii);
+      c[ii] /= d(ii);
     }
   }
 
@@ -808,29 +883,28 @@ void BSMATRIX<T>::fbsub(T* x, const T* b, T* c) const
  *  added: Gennadiy Serdyuk <gserdyuk@gserdyuk.com>
  */
 template <class T>
-void BSMATRIX<T>::fbsubt(T* v) const
-{itested();
+void BSMATRIX_DATA<T>::fbsubt(T* v) const
+{untested();
   assert(_lownode);
   assert(v);
 
   // forward substitution
-  for (int ii = 1; ii <= size(); ++ii) {itested();
-    for (int jj = _lownode[ii]; jj < ii; ++jj) {itested();
+  for (int ii = 1; ii <= size(); ++ii) {untested();
+    for (int jj = _lownode[ii]; jj < ii; ++jj) {untested();
       v[ii] -= u(jj,ii) * v [jj];
     }
   }
 
   // back substitution
-  for (int jj = size(); jj > 1; --jj) {itested();
-    v[jj] /= d(jj,jj);
-    for (int ii = _lownode[jj]; ii < jj; ++ii) {itested();
+  for (int jj = size(); jj > 1; --jj) {untested();
+    v[jj] /= d(jj);
+    for (int ii = _lownode[jj]; ii < jj; ++ii) {untested();
       v[ii] -= l(jj,ii) * v[jj];
     }
   }
-  v[1]/=d(1,1);
+  v[1] /= d(1);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif
-
 // vim:ts=8:sw=2:noet:

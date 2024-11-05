@@ -27,7 +27,7 @@
 #include "constant.h"
 #include "l_compar.h"
 #include "u_opt.h"
-#include "m_matrix.h"
+#include "m_matrix_solver.h"
 /*--------------------------------------------------------------------------*/
 // external
 class WAVE;
@@ -87,7 +87,7 @@ struct INTERFACE SIM_DATA {
   LOGIC_NODE* _nstat;	/* digital data				*/
   double *_vdc;		/* saved dc voltages			*/
   BSMATRIX<double> _aa;	/* raw matrix for DC & tran */
-  BSMATRIX<double> _lu;	/* decomposed matrix for DC & tran */
+  BSMATRIX<double>& _lu;/* alias used in modelgen models */
   BSMATRIX<COMPLEX> _acx;/* raw & decomposed matrix for AC */
   std::priority_queue<EVENT, std::deque<EVENT>, std::greater<double> > _eq; /*event queue*/
   std::deque<CARD*> _loadq;
@@ -180,6 +180,9 @@ struct INTERFACE SIM_DATA {
   bool exceeds_iteration_limit(OPT::ITL itlnum)const {return(_iter[iSTEP] > OPT::itl[itlnum]);}
   bool uic_now() {return _uic && analysis_is_static() && _time0==0.;}
   SIM_MODE has_op()const {return _has_op;}
+private: // stash here for now. Try plugins performance later.
+  BSMATRIX_SOLVER<double>* _aa_solver;
+  BSMATRIX_SOLVER<COMPLEX>* _acx_solver;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

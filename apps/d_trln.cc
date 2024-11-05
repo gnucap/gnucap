@@ -387,8 +387,6 @@ void DEV_TRANSLINE::tr_iwant_matrix()
 {
   _sim->_aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
   _sim->_aa.iwant(_n[IN1].m_(), _n[IN2].m_());
-  _sim->_lu.iwant(_n[OUT1].m_(),_n[OUT2].m_());
-  _sim->_lu.iwant(_n[IN1].m_(), _n[IN2].m_());
 }
 /*--------------------------------------------------------------------------*/
 /* first setup, initial dc, empty the lines
