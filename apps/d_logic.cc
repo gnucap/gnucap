@@ -669,7 +669,6 @@ void DEV_LOGIC::tr_accept()
 	if (_n[OUTNODE]->lv() == lvUNKNOWN
 	    || future_state.lv_future() != _n[OUTNODE]->lv_future()) {
 	  _n[OUTNODE]->set_event(m->delay, future_state);
-	  _sim->new_event(_n[OUTNODE]->final_time(), this);
 	  //assert(future_state == _n[OUTNODE].lv_future());
 	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();
