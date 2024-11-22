@@ -51,7 +51,7 @@ public:
   explicit	DEV_LOGIC(const DEV_LOGIC& p);
 		~DEV_LOGIC()		{--_count;}
 private: // override virtuals
-  char	   id_letter()const override	{untested();return 'U';}
+  char	   id_letter()const override	{return 'U';}
   std::string value_name()const override{return "";}
   bool	      print_type_in_spice()const override{return true;}
   std::string dev_type()const override{assert(has_common()); return common()->name();}
