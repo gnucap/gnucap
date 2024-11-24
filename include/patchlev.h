@@ -1,1 +1,1 @@
-#define PATCHLEVEL "cbs 2024.10.05"
+#define PATCHLEVEL "logic-bug 2024.10.23"

@@ -312,8 +312,9 @@ void FOURIER::setup(CS& Cmd)
   }else if (_dtratio_in.has_hard_value()) {untested();
     _sim->_dtmin = _dtmax / _dtratio_in;
   }else{
-    // use smaller of soft values
-    _sim->_dtmin = std::min(double(_dtmin_in), _dtmax/_dtratio_in);
+    // use larger of soft values
+    // relax (increase) dtmin for very large dtmax
+    _sim->_dtmin = std::max(double(_dtmin_in), _dtmax/_dtratio_in);
   }
 }
 /*--------------------------------------------------------------------------*/
