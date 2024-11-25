@@ -1,0 +1,45 @@
+inv #(.model(dummy_tmp)) (.out(a), .in1(b)); 
+                         ^ ? label required
+module test (.a(a),.b(b));
+inv #(.model(dummy_tmp)) U_unnamed (.out(a),.in1(b));
+endmodule // test
+
+paramset dummy_tmp logic;
+ .delay=NA( 1.n); .vmax=NA( 5.); .vmin=NA( 0.); .unknown=NA( 2.5); .rise=NA( 500.p); .fall=NA( 500.p); .rs=NA( 100.); .rw=NA( 1.G); .thh=NA( 0.75); .thl=NA( 0.25); .mr=NA( 5.); .mf=NA( 5.); .over=NA( 0.1); .tnom=NA( 27.);
+endparamset
+
+//* vpulse #(.val0(0) .val1(5) .width(.2) .period(.5)) v1(b, \0 ); 
+vsource #(pulse.iv( 0.), .pv( 5.), .delay(NA( 0.)), .rise( 0.), .fall( 0.), .width( 2.), .period( 5.)) vpulse (.p(b),.n(\0 ));
+test #() t (.a(a),.b(b));
+t.U_unnamed: can't find subckt: dummy_tmpinv1, forcing digital
+#           v(a)       v(b)      
+ 27.        5.         0.        
+#Time       v(a)       v(b)      
+ 0.         0.         0.        
+-1.         5.         0.        
+-2.         5.         0.        
+ 0.         5.         0.        
+ 0.         5.         0.        
+-1.         5.         5.        
+-2.         5.         5.        
+ 0.1        5.         5.        
+ 0.         5.         5.        
+-1.         0.         5.        
+-2.         0.         5.        
+ 0.1        0.         5.        
+ 0.         0.         5.        
+-1.         0.         5.        
+-2.         0.         5.        
+ 2.         0.         5.        
+ 0.         0.         5.        
+-1.         0.         5.        
+-2.         0.         5.        
+ 5.         0.         5.        
+ 0.         0.         5.        
+-1.         0.         5.        
+-2.         0.         5.        
+ 7.         0.         5.        
+ 0.         0.         5.        
+-1.         0.         5.        
+-2.         0.         5.        
+ 10.        0.         5.        
