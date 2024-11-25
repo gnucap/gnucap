@@ -51,7 +51,7 @@ public:
   explicit	DEV_LOGIC(const DEV_LOGIC& p);
 		~DEV_LOGIC()		{--_count;}
 private: // override virtuals
-  char	   id_letter()const override	{untested();return 'U';}
+  char	   id_letter()const override	{return 'U';}
   std::string value_name()const override{return "";}
   bool	      print_type_in_spice()const override{return true;}
   std::string dev_type()const override{assert(has_common()); return common()->name();}
@@ -669,7 +669,6 @@ void DEV_LOGIC::tr_accept()
 	if (_n[OUTNODE]->lv() == lvUNKNOWN
 	    || future_state.lv_future() != _n[OUTNODE]->lv_future()) {
 	  _n[OUTNODE]->set_event(m->delay, future_state);
-	  _sim->new_event(_n[OUTNODE]->final_time(), this);
 	  //assert(future_state == _n[OUTNODE].lv_future());
 	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();

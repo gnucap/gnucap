@@ -37,6 +37,7 @@ class LOGIC_NODE;
 class CKT_BASE;
 /*--------------------------------------------------------------------------*/
 enum TRI_STATE {tsNO=0, tsYES=1, tsBAD=-1};
+
 class EVENT {
 private:
   double    _time  {NEVER};
@@ -137,14 +138,17 @@ struct INTERFACE SIM_DATA {
   }
   double new_event(double Time, const CKT_BASE* Owner=NULL) {
     assert(Time <= BIGBIG);
-    _eq.push(EVENT(Time, Owner));
-    if(_dtmin){
+    double time;
+    if (_dtmin <= 0.) {
+      // DC,OP analysis.
+      time = Time;
+    }else if (Time <= _time0+_dtmin) {
+      time = std::ceil(Time/_dtmin) * _dtmin;
     }else{
-      // getting here in d_logic_nand-dc.ckt
-      // does no harm, but cannot quantise.
+      time = std::round(Time/_dtmin) * _dtmin;
     }
-    // TODO: move to future EVENT_QUEUE. For now, quantize here, to get the effect.
-    return std::round(Time/_dtmin) * _dtmin;
+    _eq.push(EVENT(time, Owner));
+    return time;
   }
   void set_command_none() {_mode = s_NONE;}
   void set_command_ac()	  {_mode = s_AC;}

@@ -316,7 +316,9 @@ void LOGIC_NODE::set_event(double delay, LOGICVAL v)
     // leaving quality as it was
   }
   set_d_iter();
-  set_final_time(_sim->_time0 + delay);
+  double ft = CKT_BASE::_sim->new_event(_sim->_time0 + delay, this);
+  trace4("set_event", _sim->_time0, delay, ft, _sim->_dtmin);
+  set_final_time(ft);
   if (OPT::picky <= bTRACE) {
     error(bTRACE, "%s:%u:%g new event\n",
 	  long_label().c_str(), d_iter(), final_time());

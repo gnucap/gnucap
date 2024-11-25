@@ -1,0 +1,21 @@
+
+module test(a, b);
+  inv #(.model(dummy_tmp)) (.out(a), .in1(b));
+endmodule
+
+spice
+.model dummy_tmp logic
+* vpulse #(.val0(0) .val1(5) .width(.2) .period(.5)) v1(b, \0 );
+vpulse b 0 pulse iv=0 pv=5 rise=0 fall=0 width=2 period=5
+.verilog
+
+test #() t(a, b)
+
+list
+
+print op v(nodes)
+op
+
+print tran v(nodes)
+* tran 1 works
+tran 10 trace i
