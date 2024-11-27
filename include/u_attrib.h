@@ -52,7 +52,7 @@ public:
       if (_up->dec_ref_count()==0) {
 	delete _up;
 	_up = nullptr;
-      }else{untested();
+      }else{
       }
     }else{
     }
@@ -80,11 +80,13 @@ public:
   const std::string string(tag_t Owner)const {
     if (Owner == _owner || !Owner) {
       if (_up) {
-	return _up->string(Owner) + ", " + _s;
+	std::string upstring = _up->string(Owner);
+	std::string sep = upstring.size()?", ":"";
+	return upstring + sep + _s;
       }else{
 	return _s;
       }
-    }else{untested();
+    }else{
       return "";
     }
   }
@@ -174,7 +176,7 @@ public:
     if (String != "") {
       if (_p) {
 	if (_p->owner() == Owner) {
-	}else{untested();
+	}else{
 	}
 	_p->dec_ref_count();
       }else{
