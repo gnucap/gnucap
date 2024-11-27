@@ -429,6 +429,10 @@ COMPONENT::COMPONENT(const COMPONENT& p)
   }
   attach_common(p._common);
   assert(_common == p._common);
+  if(has_attributes(p.id_tag())) { untested();
+    set_attributes(id_tag()) = attributes(p.id_tag());
+  }else{ untested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 COMPONENT::~COMPONENT()
