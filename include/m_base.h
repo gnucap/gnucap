@@ -415,7 +415,7 @@ protected:
 public:
   void parse(CS&) override { untested();unreachable(); incomplete();}
 private:
-  void dump(std::ostream& o)const override { untested();o << _data;}
+  void dump(std::ostream& o)const override { if(_data){ untested(); o << _data; }else{untested();} }
   explicit String(char* x) : _data(x) {}
 public:
   explicit String(CS& file) {untested();parse(file);}
@@ -459,7 +459,7 @@ public:
       return "nul"; // uh. make sure to query is_NA;
     }
   }
-  std::string val_string()const override { return std::string(_data); }
+  std::string val_string()const override { return *this; }
   bool to_bool()const override			{untested();return (_data && *_data);}
   bool operator==(String const& s)const { untested(); return _data && s._data && !strcmp(_data, s._data); }
   bool operator!=(String const& s)const { untested(); return !operator==(s); }
