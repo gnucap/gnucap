@@ -85,9 +85,8 @@ void DEV_RESISTANCE::dc_advance()
   if(using_tr_eval()){
   }else{
     assert(_m0.c0 == 0.);
-    if(value() == 0.) {
-      _y[0].f1 = OPT::shortckt;
-    }else if(std::abs(value())<OPT::shortckt){
+    if(std::abs(value())<OPT::shortckt) {
+      error(bPICKY, long_label() + ": short circuit\n");
       _y[0].f1 = OPT::shortckt;
     }else {
       _y[0].f1 = value();
