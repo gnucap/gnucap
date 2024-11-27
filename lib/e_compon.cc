@@ -597,6 +597,9 @@ void COMPONENT::precalc_last()
       c->precalc_last(scope());
     }catch (Exception_Precalc& e) {
       error(bWARNING, long_label() + ": " + e.message());
+    }catch (Exception& e) {
+      delete c;
+      throw e;
     }
     attach_common(c);
   }else{
