@@ -62,7 +62,7 @@ std::string COMMON_PARAMLIST::param_name(int i, int j)const
   }else if (i >= COMMON_COMPONENT::param_count()) {untested();
     return "";
   }else{untested();
-    return COMMON_COMPONENT::param_name(i);
+    return COMMON_COMPONENT::param_name(i, j);
   }
 }
 /*--------------------------------------------------------------------------*/

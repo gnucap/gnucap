@@ -713,7 +713,11 @@ void LANG_VERILOG::print_attributes(OMSTREAM& o, tag_t x)
 {
   assert(x);
   if (attributes(x)) {
-    o << "(* " << attributes(x)->string(tag_t(0)) << " *) ";
+    std::string s = attributes(x)->string(x);
+    if(s.size()) {
+      o << "(* " << s << " *) ";
+    }else{
+    }
   }else{
   }
 }

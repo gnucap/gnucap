@@ -36,6 +36,20 @@ void OPT::command(CS& cmd, CARD_LIST* Scope)
   }
 }
 /*--------------------------------------------------------------------------*/
+static bool Get(CS& cmd, std::string const& key, method_t* method)
+{
+  return (cmd >> (key + " {=}")) && (ONE_OF
+   || Set(cmd, "euler", 	method, meEULER)
+   || Set(cmd, "eulero{nly}",	method, meEULERONLY)
+   || Set(cmd, "trap{ezoidal}",	method, meTRAP)
+   || Set(cmd, "trapo{nly}",	method, meTRAPONLY)
+   || Set(cmd, "gear{2}", 	method, meGEAR2)
+   || Set(cmd, "gear2o{nly}",	method, meGEAR2ONLY)
+   || Set(cmd, "t{rap}g{ear}",	method, meTRAPGEAR)
+   || Set(cmd, "t{rap}e{uler}",	method, meTRAPEULER)
+   || cmd.warn(bWARNING, "illegal method"));
+}
+/*--------------------------------------------------------------------------*/
 /* set:  set options from a string
  */
 bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
@@ -69,17 +83,7 @@ bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
       || Get(cmd, "limpts",	&limpts)
       || Get(cmd, "lvlcod",	&lvlcod)
       || Get(cmd, "lvltim",	&lvltim)
-      || (cmd.umatch("method {=}") &&
-	  (ONE_OF
-	   || Set(cmd, "euler", 	&method, meEULER)
-	   || Set(cmd, "eulero{nly}",	&method, meEULERONLY)
-	   || Set(cmd, "trap{ezoidal}",	&method, meTRAP)
-	   || Set(cmd, "trapo{nly}",	&method, meTRAPONLY)
-	   || Set(cmd, "gear{2}", 	&method, meGEAR2)
-	   || Set(cmd, "gear2o{nly}",	&method, meGEAR2ONLY)
-	   || Set(cmd, "t{rap}g{ear}",	&method, meTRAPGEAR)
-	   || Set(cmd, "t{rap}e{uler}",	&method, meTRAPEULER)
-	   || cmd.warn(bWARNING, "illegal method")))
+      || Get(cmd, "method",     &method)
       || Get(cmd, "maxord",	   &maxord)
       || Get(cmd, "defl",	   &defl,	mPOSITIVE)
       || Get(cmd, "defw",	   &defw,	mPOSITIVE)

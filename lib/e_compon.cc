@@ -429,6 +429,10 @@ COMPONENT::COMPONENT(const COMPONENT& p)
   }
   attach_common(p._common);
   assert(_common == p._common);
+  if(has_attributes(p.id_tag())) {
+    set_attributes(id_tag()) = attributes(p.id_tag());
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 COMPONENT::~COMPONENT()
@@ -593,6 +597,9 @@ void COMPONENT::precalc_last()
       c->precalc_last(scope());
     }catch (Exception_Precalc& e) {
       error(bWARNING, long_label() + ": " + e.message());
+    }catch (Exception& e) {
+      delete c;
+      throw e;
     }
     attach_common(c);
   }else{
