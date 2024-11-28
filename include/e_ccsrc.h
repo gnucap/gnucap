@@ -48,11 +48,11 @@ protected: // override virtual
   bool	   tr_needs_eval()const override{assert(!is_q_for_eval()); return true;}
   //void   tr_queue_eval()	//ELEMENT
   void	   tr_unload()override		{untested(); tr_unload_active();}
-  double   tr_involts()const override	{untested();return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
+  double   tr_involts()const override	{untested();return dn_diff(n_(IN1).v0(), n_(IN2).v0());}
   double   tr_input()const override	{untested(); return _input->tr_amps();}
-  double   tr_involts_limited()const override{return volts_limited(_n[IN1],_n[IN2]);}
+  double   tr_involts_limited()const override{return volts_limited(n_(IN1),n_(IN2));}
   double   tr_input_limited()const override{return _input->tr_amps();}
-  COMPLEX  ac_involts()const override	{untested();return _n[IN1]->vac()-_n[IN2]->vac();}
+  COMPLEX  ac_involts()const override	{untested();return n_(IN1)->vac()-n_(IN2)->vac();}
   void	   set_port_by_index(int index, std::string& value) override;
   bool	   node_is_connected(int i)const override;
 public:

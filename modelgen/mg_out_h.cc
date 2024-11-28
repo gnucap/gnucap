@@ -341,13 +341,16 @@ static void make_device(std::ofstream& out, const Device& d)
        ++p) {
     out << ", n_" << (**p).name();
   }
-  size_t total_nodes = d.circuit().req_nodes().size() + d.circuit().opt_nodes().size()
-    + d.circuit().local_nodes().size();
+  size_t port_nodes = d.circuit().req_nodes().size() + d.circuit().opt_nodes().size();
+  size_t total_nodes = port_nodes + d.circuit().local_nodes().size();
   out << "};\n"
-    "  node_t _nodes[" << total_nodes << "];\n"
+    "  mutable node_t _nodes[" << total_nodes << "];\n"
+    "  node_t& n_(int i)const {\n"
+    "          assert(_nodes); assert(i>=0); assert(i<" << total_nodes << "); return _nodes[i];\n"
+    "  }\n"
     "  std::string port_name(int i)const override {\n"
     "    assert(i >= 0);\n"
-    "    assert(i < " << d.circuit().req_nodes().size() + d.circuit().opt_nodes().size() << ");\n"
+    "    assert(i < " << port_nodes << ");\n"
     "    static std::string names[] = {";
   for (Port_List::const_iterator
 	 p = d.circuit().req_nodes().begin();

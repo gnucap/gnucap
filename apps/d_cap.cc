@@ -90,8 +90,8 @@ private: // override virtual
   CARD*	   clone()const override	{return new DEV_TRANSCAP(*this);}
   void	   tr_iwant_matrix()override	{tr_iwant_matrix_active();}
   void	   tr_load()override		{tr_load_active();}
-  double   tr_involts()const override	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
-  double   tr_involts_limited()const override {return volts_limited(_n[IN1],_n[IN2]);}
+  double   tr_involts()const override	{return dn_diff(n_(IN1).v0(),n_(IN2).v0());}
+  double   tr_involts_limited()const override {return volts_limited(n_(IN1),n_(IN2));}
   void	   ac_iwant_matrix()override	{ac_iwant_matrix_active();}
   void	   ac_load()override		{untested(); ac_load_active();}
 
@@ -122,8 +122,8 @@ private: // override virtual
   CARD*	   clone()const override	{return new DEV_VCCAP(*this);}
   void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
   bool     do_tr()override;
-  double   tr_involts()const override	{return dn_diff(_n[IN1].v0(),_n[IN2].v0());}
-  double   tr_involts_limited()const override {return volts_limited(_n[IN1],_n[IN2]);}
+  double   tr_involts()const override	{return dn_diff(n_(IN1).v0(),n_(IN2).v0());}
+  double   tr_involts_limited()const override {return volts_limited(n_(IN1),n_(IN2));}
   void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
 
   std::string port_name(int i)const override {untested();

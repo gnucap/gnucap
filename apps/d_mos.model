@@ -73,47 +73,47 @@ device BUILT_IN_MOS {
     resistor Rd {d id} value="s->rd"
       omit="!OPT::rstray || s->rd == 0.";
     diode Ddb {b id} args="db" reverse="m->polarity==pP"
-      omit="_n[n_b].n_() == _n[n_d].n_() || s->idsat == 0.";
+      omit="n_(n_b).n_() == n_(n_d).n_() || s->idsat == 0.";
     diode Dsb {b is} args="sb" reverse="m->polarity==pP"
-      omit="_n[n_b].n_() == _n[n_s].n_() || s->issat == 0.";
+      omit="n_(n_b).n_() == n_(n_s).n_() || s->issat == 0.";
     
     capacitor Cgs {g is} value="s->cgso" eval=Cgs
-      omit="!OPT::cstray || _n[n_g].n_() == _n[n_s].n_()";
+      omit="!OPT::cstray || n_(n_g).n_() == n_(n_s).n_()";
     capacitor Cgd {g id} value="s->cgdo" eval=Cgd
-      omit="!OPT::cstray || _n[n_g].n_() == _n[n_d].n_()";
+      omit="!OPT::cstray || n_(n_g).n_() == n_(n_d).n_()";
     capacitor Cgb {g b} value="s->cgbo" eval=Cgb
-      omit="!OPT::cstray || _n[n_b].n_() == _n[n_g].n_()";
+      omit="!OPT::cstray || n_(n_b).n_() == n_(n_g).n_()";
     fpoly_cap Cqgs {g is g b is b id b}
       state=qgs  // qgate, cgs, cggb, cgsb, cgdb
       omit="m->cmodel != 0 || !OPT::cstray 
-		|| _n[n_g].n_() == _n[n_is].n_()";
+		|| n_(n_g).n_() == n_(n_is).n_()";
     fpoly_cap Cqgd {g id g b id b is b}
       state=qgd  // qgate, cgs, cggb, cgsb, cgdb
       omit="m->cmodel != 0 || !OPT::cstray 
-		|| _n[n_g].n_() == _n[n_id].n_()";
+		|| n_(n_g).n_() == n_(n_id).n_()";
 
     fpoly_cap Cqds {id is g b is b id b}
       state=qdrn  // qdrn, cds, cdgb, cdsb, cddb
       omit="m->cmodel != 0 || !OPT::cstray 
-             || _n[n_id].n_() == _n[n_is].n_()";
+             || n_(n_id).n_() == n_(n_is).n_()";
 
     fpoly_cap Cqbs {b is g b is b id b}
       state=qbs
       omit="m->cmodel != 0 || !OPT::cstray 
-             || _n[n_b].n_() == _n[n_is].n_()";
+             || n_(n_b).n_() == n_(n_is).n_()";
 
     fpoly_cap Cqbd {b id g b id b is b}
       state=qbd
       omit="m->cmodel != 0 || !OPT::cstray 
-             || _n[n_b].n_() == _n[n_id].n_()";
+             || n_(n_b).n_() == n_(n_id).n_()";
     cpoly_g Ids {id is  g is  id g
 		b is  id b} state=idsxxx;
     cpoly_g Idb {id b  id is  g is  b is}
       state=idbxxx 
-      omit="!(m->needs_isub) || _n[n_d].n_() == _n[n_b].n_()";
+      omit="!(m->needs_isub) || n_(n_d).n_() == n_(n_b).n_()";
     cpoly_g Isb {is b  is id  g id  b id}
       state=isbxxx 
-      omit="!(m->needs_isub) || _n[n_s].n_() == _n[n_b].n_()";
+      omit="!(m->needs_isub) || n_(n_s).n_() == n_(n_b).n_()";
   }
   tr_probe {
     v   = "@n_d[V] - @n_s[V]";
@@ -470,12 +470,12 @@ bool DEV_BUILT_IN_MOS::tr_needs_eval()const
     const MODEL_BUILT_IN_MOS_BASE* m=prechecked_cast<const MODEL_BUILT_IN_MOS_BASE*>(c->model());
     assert(m);
     polarity_t polarity = m->polarity;
-    node_t& eff_s((reversed) ? _n[n_id] : _n[n_is]);
-    node_t& eff_d((reversed) ? _n[n_is] : _n[n_id]);
+    node_t& eff_s((reversed) ? n_(n_id) : n_(n_is));
+    node_t& eff_d((reversed) ? n_(n_is) : n_(n_id));
     return !(conchk(vds,polarity*(eff_d.v0()-eff_s.v0()),OPT::vntol)
-	     && conchk(vgs, polarity*(_n[n_g].v0()-eff_s.v0()),
+	     && conchk(vgs, polarity*(n_(n_g).v0()-eff_s.v0()),
 		       OPT::vntol)
-	     && conchk(vbs, polarity*(_n[n_b].v0()-eff_s.v0()),
+	     && conchk(vbs, polarity*(n_(n_b).v0()-eff_s.v0()),
 		       OPT::vntol));
   }
 }
@@ -500,16 +500,16 @@ bool DEV_BUILT_IN_MOS::do_tr()
   }else{
     double Vds, Vgs, Vbs;
     if (reversed) {
-      Vds = polarity * volts_limited(_n[n_is],_n[n_id]);
-      Vgs = polarity * volts_limited(_n[n_g],_n[n_id]);
-      Vbs = polarity * volts_limited(_n[n_b],_n[n_id]);
+      Vds = polarity * volts_limited(n_(n_is),n_(n_id));
+      Vgs = polarity * volts_limited(n_(n_g),n_(n_id));
+      Vbs = polarity * volts_limited(n_(n_b),n_(n_id));
     }else{
-      Vds = polarity * volts_limited(_n[n_id],_n[n_is]);
-      Vgs = polarity * volts_limited(_n[n_g],_n[n_is]);
-      Vbs = polarity * volts_limited(_n[n_b],_n[n_is]);
+      Vds = polarity * volts_limited(n_(n_id),n_(n_is));
+      Vgs = polarity * volts_limited(n_(n_g),n_(n_is));
+      Vbs = polarity * volts_limited(n_(n_b),n_(n_is));
     }
     vgs = fet_limit_vgs(Vgs, vgs, von);
-    if (_n[n_d].n_() == _n[n_g].n_()) {
+    if (n_(n_d).n_() == n_(n_g).n_()) {
       vds = Vds + (vgs - Vgs);
     }else{
       // Spice hacks Vds here, but my tests show that it often makes

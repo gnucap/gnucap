@@ -520,7 +520,7 @@ bool SWITCH_BASE::do_tr()
   if (_sim->analysis_is_static()) {
     _y[0].x = (_input)			/* _y[0].x is controlling value */
       ? CARD::probe(_input,"I")		/* current controlled */
-      : _n[IN1].v0() - _n[IN2].v0();	/* voltage controlled */
+      : n_(IN1).v0() - n_(IN2).v0();	/* voltage controlled */
     
     state_t new_state;
     if (_y[0].x > m->von) {
@@ -573,7 +573,7 @@ TIME_PAIR SWITCH_BASE::tr_review()
   
   _in[0] = (_input)
     ? CARD::probe(_input,"I")
-    : _n[IN1].v0() - _n[IN2].v0();
+    : n_(IN1).v0() - n_(IN2).v0();
 
   double old_dt = _time[0] - _time[1];
   double old_dv = _in[0] - _in[1];

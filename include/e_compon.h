@@ -229,6 +229,7 @@ public:	// type
   void  set_dev_type(const std::string& new_type) override;
   //--------------------------------------------------------------------
 public:	// ports
+  virtual node_t& n_(int i)const = 0;
   virtual std::string port_name(int)const = 0;
   virtual int  set_port_by_name(std::string& name, std::string& value);
   virtual void set_port_by_index(int index, std::string& value);
