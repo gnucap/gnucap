@@ -64,6 +64,7 @@
 #include <fcntl.h>	/* old style unix files */
 #include <dirent.h>     /* opendir */
 #include <sys/types.h>  /* needed for dirent.h */
+#include <libgen.h>     /* dirname, basename */
 /*--------------------------------------------------------------------------*/
 /* constants related to memory size, word size, etc */
 enum {

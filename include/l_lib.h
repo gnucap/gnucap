@@ -69,6 +69,22 @@ namespace OS {
     }
   }
 
+  inline std::string dirname(std::string const& fn) {untested();
+    char* buf = strdup(fn.c_str());
+    char* dir = ::dirname(buf);
+    std::string ret(dir);
+    free(buf);
+    return ret;
+  }
+
+  inline std::string basename(std::string const& fn) {untested();
+    char* buf = strdup(fn.c_str());
+    char* base = ::basename(buf);
+    std::string ret(base);
+    free(buf);
+    return ret;
+  }
+
   inline std::string getenv(const std::string& s) {
     char* ev = ::getenv(s.c_str());
     if (ev) {
