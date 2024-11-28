@@ -45,7 +45,7 @@ private:
   smode_t	_oldgatemode;
   smode_t	_gatemode;
   static int	_count;
-  node_t	nodes[PORTS_PER_GATE];	/* PORTS_PER_GATE <= PORTSPERSUBCKT */
+  mutable node_t _nodes[PORTS_PER_GATE];	/* PORTS_PER_GATE <= PORTSPERSUBCKT */
 public:
   explicit	DEV_LOGIC(COMMON_COMPONENT* c=nullptr);
   explicit	DEV_LOGIC(const DEV_LOGIC& p);
@@ -94,6 +94,9 @@ private: // override virtuals
   COMPLEX  ac_amps()const override	{unreachable(); return 0.;}
   XPROBE   ac_probe_ext(const std::string&)const override;
 
+  node_t& n_(int i)const {
+    assert(_nodes); assert(i>=0); assert(i<PORTS_PER_GATE); return _nodes[i];
+  }
   std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < PORTS_PER_GATE);
@@ -259,7 +262,6 @@ DEV_LOGIC::DEV_LOGIC(COMMON_COMPONENT* c)
    _oldgatemode(moUNKNOWN),
    _gatemode(moUNKNOWN)   
 {
-  _n = nodes;
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
@@ -273,9 +275,8 @@ DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
 {
   assert(max_nodes() == PORTS_PER_GATE);
   for (int ii = 0;  ii < max_nodes();  ++ii) {
-    nodes[ii] = p.nodes[ii];
+    _nodes[ii] = p._nodes[ii];
   }
-  _n = nodes;
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
@@ -326,11 +327,11 @@ void DEV_LOGIC::tr_begin()
   ELEMENT::tr_begin();
   if (!subckt()) {
     _gatemode = moDIGITAL;
-    _n[OUTNODE]->set_mode(_gatemode);
+    n_(OUTNODE)->set_mode(_gatemode);
     _oldgatemode = _gatemode;
   }else{
     _gatemode = (OPT::mode==moMIXED) ? moANALOG : OPT::mode;
-    _n[OUTNODE]->set_mode(_gatemode);
+    n_(OUTNODE)->set_mode(_gatemode);
     _oldgatemode = _gatemode;
     subckt()->tr_begin();
   }
@@ -353,7 +354,7 @@ void DEV_LOGIC::dc_advance()
 
   if (_gatemode != _oldgatemode) {untested();
     tr_unload();
-    _n[OUTNODE]->set_mode(_gatemode);
+    n_(OUTNODE)->set_mode(_gatemode);
     _oldgatemode = _gatemode;
   }else{
   }
@@ -365,9 +366,9 @@ void DEV_LOGIC::dc_advance()
     subckt()->dc_advance();
     break;
   case moDIGITAL:
-    if (_n[OUTNODE]->in_transit()) {
+    if (n_(OUTNODE)->in_transit()) {
       //q_eval(); evalq is not used for DC
-      _n[OUTNODE]->propagate();
+      n_(OUTNODE)->propagate();
     }else{
     }
     break;
@@ -383,7 +384,7 @@ void DEV_LOGIC::tr_advance()
 
   if (_gatemode != _oldgatemode) {
     tr_unload();
-    _n[OUTNODE]->set_mode(_gatemode);
+    n_(OUTNODE)->set_mode(_gatemode);
     _oldgatemode = _gatemode;
   }else{
   }
@@ -395,10 +396,10 @@ void DEV_LOGIC::tr_advance()
     subckt()->tr_advance();
     break;
   case moDIGITAL: 
-    if (_n[OUTNODE]->in_transit()) {
+    if (n_(OUTNODE)->in_transit()) {
       q_eval();
-      if (_sim->_time0 >= _n[OUTNODE]->final_time()) {
-	_n[OUTNODE]->propagate();
+      if (_sim->_time0 >= n_(OUTNODE)->final_time()) {
+	n_(OUTNODE)->propagate();
       }else{
 	// not ready to propagate.
       }
@@ -413,7 +414,7 @@ void DEV_LOGIC::tr_regress()
 
   if (_gatemode != _oldgatemode) {untested();
     tr_unload();
-    _n[OUTNODE]->set_mode(_gatemode);
+    n_(OUTNODE)->set_mode(_gatemode);
     _oldgatemode = _gatemode;
   }else{
   }
@@ -426,11 +427,11 @@ void DEV_LOGIC::tr_regress()
     break;
   case moDIGITAL:
     q_eval();
-    if (_n[OUTNODE]->last_change_time() > _sim->_time0) {
-      _n[OUTNODE]->unpropagate();
-      assert(_sim->_time0 < _n[OUTNODE]->final_time());
-    }else if (_sim->_time0 >= _n[OUTNODE]->final_time()) {untested();
-      _n[OUTNODE]->propagate();
+    if (n_(OUTNODE)->last_change_time() > _sim->_time0) {
+      n_(OUTNODE)->unpropagate();
+      assert(_sim->_time0 < n_(OUTNODE)->final_time());
+    }else if (_sim->_time0 >= n_(OUTNODE)->final_time()) {untested();
+      n_(OUTNODE)->propagate();
     }else{
     }
     break;
@@ -491,7 +492,7 @@ bool DEV_LOGIC::tr_eval_digital()
   const MODEL_LOGIC* m = prechecked_cast<const MODEL_LOGIC*>(c->model());
   assert(m);
   _y[0].x = 0.;
-  _y[0].f1 = _n[OUTNODE]->to_analog(m);
+  _y[0].f1 = n_(OUTNODE)->to_analog(m);
   _y[0].f0 = 0.;
   _m0.x = 0.;
   _m0.c1 = 1./m->rs;
@@ -520,8 +521,8 @@ void DEV_LOGIC::tr_load()
   case moUNKNOWN: unreachable(); break;
   case moMIXED:   unreachable(); break;
   case moDIGITAL:
-    tr_load_diagonal_point(_n[OUTNODE], &_m0.c1, &_m1.c1);
-    tr_load_source_point(_n[OUTNODE], &_m0.c0, &_m1.c0);
+    tr_load_diagonal_point(n_(OUTNODE), &_m0.c1, &_m1.c1);
+    tr_load_source_point(n_(OUTNODE), &_m0.c0, &_m1.c0);
     break;
   case moANALOG:  assert(subckt()); subckt()->tr_load(); break;
   }
@@ -583,27 +584,27 @@ void DEV_LOGIC::tr_accept()
   /* side effect --- generate digital values for analog nodes */
   assert(PORTS_PER_GATE == max_nodes());
   {
-    _n[OUTNODE]->to_logic(m);
-    _quality = _n[OUTNODE]->quality();  /* the worst quality on this device */
-    _failuremode = _n[OUTNODE]->failure_mode();    /* what is wrong with it? */
+    n_(OUTNODE)->to_logic(m);
+    _quality = n_(OUTNODE)->quality();  /* the worst quality on this device */
+    _failuremode = n_(OUTNODE)->failure_mode();    /* what is wrong with it? */
     _lastchangenode = OUTNODE;		/* which node changed most recently */
-    int lastchangeiter=_n[OUTNODE]->d_iter();/* iteration # when it changed */
+    int lastchangeiter=n_(OUTNODE)->d_iter();/* iteration # when it changed */
     trace0(long_label().c_str());
-    trace2(_n[OUTNODE]->failure_mode().c_str(), OUTNODE, _n[OUTNODE]->quality());
+    trace2(n_(OUTNODE)->failure_mode().c_str(), OUTNODE, n_(OUTNODE)->quality());
     
     for (int ii = BEGIN_IN;  ii < net_nodes();  ++ii) {
-      _n[ii]->to_logic(m);
-      if (_n[ii]->quality() < _quality) {
-	_quality = _n[ii]->quality();
-	_failuremode = _n[ii]->failure_mode();
+      n_(ii)->to_logic(m);
+      if (n_(ii)->quality() < _quality) {
+	_quality = n_(ii)->quality();
+	_failuremode = n_(ii)->failure_mode();
       }else{
       }
-      if (_n[ii]->d_iter() >= lastchangeiter) {
-	lastchangeiter = _n[ii]->d_iter();
+      if (n_(ii)->d_iter() >= lastchangeiter) {
+	lastchangeiter = n_(ii)->d_iter();
 	_lastchangenode = ii;
       }else{
       }
-      trace2(_n[ii]->failure_mode().c_str(), ii, _n[ii]->quality());
+      trace2(n_(ii)->failure_mode().c_str(), ii, n_(ii)->quality());
     }
     /* If _lastchangenode == OUTNODE, no new changes, bypass may be ok.
      * Otherwise, an input changed.  Need to evaluate.
@@ -640,16 +641,16 @@ void DEV_LOGIC::tr_accept()
 	|| _lastchangenode != OUTNODE
 	|| _sim->analysis_is_static()
 	|| _sim->analysis_is_restore()) {
-      LOGICVAL future_state = c->logic_eval(&_n[BEGIN_IN], net_nodes()-BEGIN_IN);
+      LOGICVAL future_state = c->logic_eval(&n_(BEGIN_IN), net_nodes()-BEGIN_IN);
       //		         ^^^^^^^^^^
-      if ((_n[OUTNODE]->is_unknown()) &&
+      if ((n_(OUTNODE)->is_unknown()) &&
 	  (_sim->analysis_is_static() || _sim->analysis_is_restore())) {
-	_n[OUTNODE]->force_initial_value(future_state);
-	_n[OUTNODE]->store_old_lv();
+	n_(OUTNODE)->force_initial_value(future_state);
+	n_(OUTNODE)->store_old_lv();
 	/* This happens when initial DC is digital.
 	 * Answers could be wrong if order in netlist is reversed 
 	 */
-      }else if (future_state != _n[OUTNODE]->lv()) {
+      }else if (future_state != n_(OUTNODE)->lv()) {
 	assert(future_state != lvUNKNOWN);
 	switch (future_state) {
 	case lvSTABLE0:	/*nothing*/		break;
@@ -666,10 +667,10 @@ void DEV_LOGIC::tr_accept()
 	 * conversion, so the kluge stays in for now.
 	 */
 	assert(future_state.lv_old() == future_state.lv_future());
-	if (_n[OUTNODE]->lv() == lvUNKNOWN
-	    || future_state.lv_future() != _n[OUTNODE]->lv_future()) {
-	  _n[OUTNODE]->set_event(m->delay, future_state);
-	  //assert(future_state == _n[OUTNODE].lv_future());
+	if (n_(OUTNODE)->lv() == lvUNKNOWN
+	    || future_state.lv_future() != n_(OUTNODE)->lv_future()) {
+	  n_(OUTNODE)->set_event(m->delay, future_state);
+	  //assert(future_state == n_(OUTNODE).lv_future());
 	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();
 	    error(bDANGER, "%s:%u:%g non-event state change\n",
@@ -682,8 +683,8 @@ void DEV_LOGIC::tr_accept()
       }
     }else{
     }
-    _n[OUTNODE]->store_old_last_change_time();
-    _n[OUTNODE]->store_old_lv(); // needed? yes
+    n_(OUTNODE)->store_old_last_change_time();
+    n_(OUTNODE)->store_old_lv(); // needed? yes
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -706,12 +707,12 @@ void DEV_LOGIC::ac_begin()
 /*--------------------------------------------------------------------------*/
 double DEV_LOGIC::tr_probe_num(const std::string& what)const
 {
-  return _n[OUTNODE]->tr_probe_num(what);
+  return n_(OUTNODE)->tr_probe_num(what);
 }
 /*--------------------------------------------------------------------------*/
 XPROBE DEV_LOGIC::ac_probe_ext(const std::string& what)const
 {untested();
-  return _n[OUTNODE]->ac_probe_ext(what);
+  return n_(OUTNODE)->ac_probe_ext(what);
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_LOGIC::want_analog()const

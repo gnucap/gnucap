@@ -99,7 +99,6 @@ void make_dev_default_constructor(std::ofstream& out,const Device& d)
   }
 
   out << "\n{\n"
-    "  _n = _nodes;\n"
     "  attach_common(&Default_" << d.name() << ");\n"
     "  ++_count;\n";
 
@@ -144,9 +143,8 @@ void make_dev_copy_constructor(std::ofstream& out, const Device& d)
   }
 
   out << "\n{\n"
-    "  _n = _nodes;\n"
     "  for (int ii = 0; ii < max_nodes() + int_nodes(); ++ii) {\n"
-    "    _n[ii] = p._n[ii];\n"
+    "    n_(ii) = p.n_(ii);\n"
     "  }\n"
     "  ++_count;\n";
 
@@ -217,7 +215,7 @@ static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
       Port_List::const_iterator even = p;
       ++p;
       assert(p != e.ports().end());
-      out<< "_n[n_" << (**p).name() << "], _n[n_" << (**even).name() << "]";
+      out<< "n_(n_" << (**p).name() << "), n_(n_" << (**even).name() << ")";
       bool even_node = true;
       while (++p != e.ports().end()) {untested();
 	if (even_node) {untested();
@@ -225,7 +223,7 @@ static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
 	  even = p;
 	}else{untested();
 	  even_node = true;
-	  out<< ", _n[n_"<< (**p).name()<< "], _n[n_"<<(**even).name()<< "]";
+	  out<< ", n_(n_"<< (**p).name()<< "), n_(n_"<<(**even).name()<< ")";
 	}
       }
     }else{untested();
@@ -243,9 +241,9 @@ static void make_dev_expand_one_element(std::ofstream& out, const Element& e)
   Port_List::const_iterator p = e.ports().begin();
   if (p != e.ports().end()) {
     assert(*p);
-    out << "_n[n_" << (**p).name() << "]";
+    out << "n_(n_" << (**p).name() << ")";
     while (++p != e.ports().end()) {
-      out << ", _n[n_" << (**p).name() << "]";
+      out << ", n_(n_" << (**p).name() << ")";
     }
   }else{untested();
   }
@@ -261,28 +259,28 @@ static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
   make_tag();
   if (p.short_if().empty()) {
     out <<
-      "    if (!(_n[n_" << p.name() << "].n_())) {\n"
-      "      _n[n_" << p.name() << "] = _n[n_" << p.short_to() << "];\n"
+      "    if (!(n_(n_" << p.name() << ").n_())) {\n"
+      "      n_(n_" << p.name() << ") = n_(n_" << p.short_to() << ");\n"
       "    }else{\n"
       "    }\n";
     //BUG// generates bad code if no short_to
   }else{
     out <<
-      "    //assert(!(_n[n_" << p.name() << "].n_()));\n"
+      "    //assert(!(n_(n_" << p.name() << ").n_()));\n"
       "    //BUG// this assert fails on a repeat elaboration after a change.\n"
       "    //not sure of consequences when new_model_node called twice.\n"
-      "    if (!(_n[n_" << p.name() << "].n_())) {\n"
+      "    if (!(n_(n_" << p.name() << ").n_())) {\n"
       "      if (" << p.short_if() << ") {\n"
-      "        _n[n_" << p.name() << "] = _n[n_" << p.short_to() << "];\n"
+      "        n_(n_" << p.name() << ") = n_(n_" << p.short_to() << ");\n"
       "      }else{\n"
-      "        _n[n_" << p.name() << "].new_model_node(\".\" + long_label() + \"." << p.name() 
+      "        n_(n_" << p.name() << ").new_model_node(\".\" + long_label() + \"." << p.name()
 			   << "\", this);\n"
       "      }\n"
       "    }else{\n"
       "      if (" << p.short_if() << ") {\n"
-      "        assert(_n[n_" << p.name() << "] == _n[n_" << p.short_to() << "]);\n"
+      "        assert(n_(n_" << p.name() << ") == n_(n_" << p.short_to() << "));\n"
       "      }else{\n"
-      "        //_n[n_" << p.name() << "].new_model_node(\"" << p.name() 
+      "        //n_(n_" << p.name() << ").new_model_node(\"" << p.name()
 		 << ".\" + long_label(), this);\n"
       "      }\n"
       "    }\n";
@@ -295,7 +293,6 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
   out << "void DEV_" << d.name() << "::expand()\n"
     "{\n"
     "  BASE_SUBCKT::expand(); // calls common->expand, attached model\n"
-    "  assert(_n);\n"
     "  assert(common());\n"
     "  const COMMON_" << d.name() << "* c = static_cast<const COMMON_"
       << d.name() << "*>(common());\n"
@@ -361,7 +358,6 @@ static void make_dev_precalc_last(std::ofstream& out, const Device& d)
   out << "void DEV_" << d.name() << "::precalc_last()\n"
     "{\n"
     "  CARD::precalc_last();\n"
-    "  assert(_n);\n"
     "  assert(common());\n"
     "  mutable_common()->precalc_last(scope());\n"
 	 "  assert(subckt());\n"
@@ -385,7 +381,7 @@ static std::string fix_expression(const std::string& in)
       std::string attrib(x.ctos("]"));
       x.skip1(']');
       if (object[0] == 'n') {
-	out += " _n[" + object + "]";
+	out += " n_(" + object + ")";
 	if (attrib != "") {
 	  out += ".v0()";
 	}else{
@@ -431,7 +427,6 @@ static void make_dev_probe(std::ofstream& out, const Device& d)
   make_tag();
   out << "double DEV_" << d.name() << "::tr_probe_num(const std::string& x)const\n"
     "{\n"
-    "  assert(_n);\n"
     "  const COMMON_" << d.name() << "* c = prechecked_cast<const COMMON_"
       << d.name() << "*>(common());\n"
     "  assert(c);\n"

@@ -140,9 +140,9 @@ public:
   double   tr_review_trunc_error(const FPOLY1* q);
   double   tr_review_check_and_convert(double timestep);
 
-  double   tr_outvolts()const	{return dn_diff(_n[OUT1].v0(), _n[OUT2].v0());}
-  double   tr_outvolts_limited()const{return volts_limited(_n[OUT1],_n[OUT2]);}
-  COMPLEX  ac_outvolts()const	{return _n[OUT1]->vac() - _n[OUT2]->vac();}
+  double   tr_outvolts()const	{return dn_diff(n_(OUT1).v0(), n_(OUT2).v0());}
+  double   tr_outvolts_limited()const{return volts_limited(n_(OUT1),n_(OUT2));}
+  COMPLEX  ac_outvolts()const	{return n_(OUT1)->vac() - n_(OUT2)->vac();}
 
   virtual  double  tr_involts()const		= 0;
   virtual  double  tr_input()const		{return tr_involts();}
@@ -169,11 +169,15 @@ protected:
   std::string param_name(int)const override;
   std::string param_name(int,int)const override;
   std::string param_value(int)const override;
+public:
+  node_t& n_(int i)const override{
+    assert(_nodes); assert(i>=0); assert(i<NODES_PER_BRANCH); return _nodes[i];
+  }
 protected:
   PARAMETER<double> _value;	// value, for simple parts
   int      _loaditer;	// load iteration number
-private:
-  node_t   _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
+protected:
+  mutable node_t _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
 public:
   CPOLY1   _m0;		// matrix parameters, new
   CPOLY1   _m1;		// matrix parameters, 1 fill ago
@@ -210,8 +214,8 @@ inline void ELEMENT::tr_load_inode()
 {
   double d = dampdiff(&_loss0, _loss1);
   if (d != 0.) {
-    _sim->_aa.load_couple(_n[OUT1].m_(), _n[IN1].m_(), -d);
-    _sim->_aa.load_couple(_n[OUT2].m_(), _n[IN1].m_(),  d);
+    _sim->_aa.load_couple(n_(OUT1).m_(), n_(IN1).m_(), -d);
+    _sim->_aa.load_couple(n_(OUT2).m_(), n_(IN1).m_(),  d);
   }else{
   }
   _loss1 = _loss0;
@@ -226,15 +230,15 @@ inline void ELEMENT::tr_unload_inode()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_inode()
 {
-  _sim->_acx.load_couple(_n[OUT1].m_(), _n[IN1].m_(), -mfactor() * _loss0);
-  _sim->_acx.load_couple(_n[OUT2].m_(), _n[IN1].m_(),  mfactor() * _loss0);
+  _sim->_acx.load_couple(n_(OUT1).m_(), n_(IN1).m_(), -mfactor() * _loss0);
+  _sim->_acx.load_couple(n_(OUT2).m_(), n_(IN1).m_(),  mfactor() * _loss0);
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_shunt()
 {
   double d = dampdiff(&_loss0, _loss1);
   if (d != 0.) {
-    _sim->_aa.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), d);
+    _sim->_aa.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), d);
   }else{
   }
   _loss1 = _loss0;
@@ -249,7 +253,7 @@ inline void ELEMENT::tr_unload_shunt()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_shunt()
 {
-  _sim->_acx.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), mfactor() * _loss0);
+  _sim->_acx.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), mfactor() * _loss0);
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_source()
@@ -261,12 +265,12 @@ inline void ELEMENT::tr_load_source()
 
   double d = dampdiff(&_m0.c0, _m1.c0);
   if (d != 0.) {
-    if (_n[OUT2].m_() != 0) {
-      _n[OUT2].i() += d;
+    if (n_(OUT2).m_() != 0) {
+      n_(OUT2).i() += d;
     }else{
     }
-    if (_n[OUT1].m_() != 0) {
-      _n[OUT1].i() -= d;
+    if (n_(OUT1).m_() != 0) {
+      n_(OUT1).i() -= d;
     }else{
     }
   }else{
@@ -283,12 +287,12 @@ inline void ELEMENT::tr_unload_source()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_source()
 {
-  if (_n[OUT2].m_() != 0) {
-    _n[OUT2]->iac() += mfactor() * _acg;
+  if (n_(OUT2).m_() != 0) {
+    n_(OUT2)->iac() += mfactor() * _acg;
   }else{
   }
-  if (_n[OUT1].m_() != 0) {
-    _n[OUT1]->iac() -= mfactor() * _acg;
+  if (n_(OUT1).m_() != 0) {
+    n_(OUT1)->iac() -= mfactor() * _acg;
   }else{
   }
 }
@@ -297,7 +301,7 @@ inline void ELEMENT::tr_load_couple()
 {
   double d = dampdiff(&_m0.c1, _m1.c1);
   if (d != 0.) {
-    _sim->_aa.load_couple(_n[OUT1].m_(), _n[OUT2].m_(), d);
+    _sim->_aa.load_couple(n_(OUT1).m_(), n_(OUT2).m_(), d);
   }else{
   }
   _m1.c1 = _m0.c1;
@@ -312,14 +316,14 @@ inline void ELEMENT::tr_unload_couple()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_couple()
 {
-  _sim->_acx.load_couple(_n[OUT1].m_(), _n[OUT2].m_(), mfactor() * _acg);
+  _sim->_acx.load_couple(n_(OUT1).m_(), n_(OUT2).m_(), mfactor() * _acg);
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_passive()
 {
   double d = dampdiff(&_m0.c1, _m1.c1);
   if (d != 0.) {
-    _sim->_aa.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), d);
+    _sim->_aa.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), d);
   }else{
   }
   tr_load_source(); // includes _m1 = _m0
@@ -334,15 +338,15 @@ inline void ELEMENT::tr_unload_passive()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_passive()
 {
-  _sim->_acx.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), mfactor() * _acg);
+  _sim->_acx.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), mfactor() * _acg);
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_active()
 {
   double d = dampdiff(&_m0.c1, _m1.c1);
   if (d != 0.) {
-    _sim->_aa.load_asymmetric(_n[OUT1].m_(), _n[OUT2].m_(),
-		       _n[IN1].m_(), _n[IN2].m_(), d);
+    _sim->_aa.load_asymmetric(n_(OUT1).m_(), n_(OUT2).m_(),
+		       n_(IN1).m_(), n_(IN2).m_(), d);
   }else{
   }
   tr_load_source(); // includes _m1 = _m0
@@ -357,8 +361,8 @@ inline void ELEMENT::tr_unload_active()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_active()
 {
-  _sim->_acx.load_asymmetric(_n[OUT1].m_(), _n[OUT2].m_(),
-		      _n[IN1].m_(), _n[IN2].m_(), mfactor() * _acg);
+  _sim->_acx.load_asymmetric(n_(OUT1).m_(), n_(OUT2).m_(),
+		      n_(IN1).m_(), n_(IN2).m_(), mfactor() * _acg);
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_extended(const node_t& no1, const node_t& no2,

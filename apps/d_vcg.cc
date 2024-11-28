@@ -55,13 +55,13 @@ private: // override virtual
   bool	   do_tr()override;
   void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
   void	   tr_unload() override		{untested(); tr_unload_shunt(); tr_unload_active();}
-  double   tr_involts()const override	{return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
-  double   tr_involts_limited()const override {return volts_limited(_n[IN1],_n[IN2]);}
+  double   tr_involts()const override	{return dn_diff(n_(IN1).v0(), n_(IN2).v0());}
+  double   tr_involts_limited()const override {return volts_limited(n_(IN1),n_(IN2));}
   void	    ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
   void	    ac_begin()override		{_ev = _y[0].f0;  _acg = _m0.c1;}
   void	    do_ac()override;
   void	    ac_load()override		{ac_load_shunt(); ac_load_active();}
-  COMPLEX   ac_involts()const override	{return _n[IN1]->vac() - _n[IN2]->vac();}
+  COMPLEX   ac_involts()const override	{return n_(IN1)->vac() - n_(IN2)->vac();}
 
   std::string port_name(int i)const override {untested();
     assert(i >= 0);

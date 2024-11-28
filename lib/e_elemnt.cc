@@ -39,7 +39,6 @@ ELEMENT::ELEMENT(COMMON_COMPONENT* c)
    _ev(0.),
    _dt(0.)
 {
-  _n = _nodes;
   assert(_y[0].x == 0. && _y[0].f0 == 0. && _y[0].f1 == 0.);
   assert(_y1 == _y[0]);
 
@@ -59,15 +58,11 @@ ELEMENT::ELEMENT(const ELEMENT& p)
    _dt(0.)
 {
   trace0(long_label().c_str());
-  _n = _nodes;
-  if (p._n == p._nodes) {
-    for (int ii = 0;  ii < NODES_PER_BRANCH;  ++ii) {
-      _n[ii] = p._n[ii];
-    }
-  }else{
-    assert(p._nodes);
-    // the constructor for a derived class will take care of it
+
+  for (int ii = 0;  ii < NODES_PER_BRANCH;  ++ii) {
+    _nodes[ii] = p._nodes[ii];
   }
+
   assert(_y[0].x == 0. && _y[0].f0 == 0. && _y[0].f1 == 0.);
   assert(_y1 == _y[0]);
 
@@ -292,13 +287,13 @@ void ELEMENT::tr_iwant_matrix_passive()
   assert(matrix_nodes() == 2);
   assert(is_device());
   //assert(!subckt()); ok for subckt to exist for logic
-  trace2(long_label().c_str(), _n[OUT1].m_(), _n[OUT2].m_());
+  trace2(long_label().c_str(), n_(OUT1).m_(), n_(OUT2).m_());
 
-  assert(_n[OUT1].m_() != INVALID_NODE);
-  assert(_n[OUT2].m_() != INVALID_NODE);
+  assert(n_(OUT1).m_() != INVALID_NODE);
+  assert(n_(OUT2).m_() != INVALID_NODE);
   //BUG// assert can fail as a result of some parse errors
 
-  _sim->_aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  _sim->_aa.iwant(n_(OUT1).m_(),n_(OUT2).m_());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_iwant_matrix_active()
@@ -307,18 +302,18 @@ void ELEMENT::tr_iwant_matrix_active()
   assert(is_device());
   assert(!subckt());
 
-  assert(_n[OUT1].m_() != INVALID_NODE);
-  assert(_n[OUT2].m_() != INVALID_NODE);
-  assert(_n[IN1].m_() != INVALID_NODE);
-  assert(_n[IN2].m_() != INVALID_NODE);
+  assert(n_(OUT1).m_() != INVALID_NODE);
+  assert(n_(OUT2).m_() != INVALID_NODE);
+  assert(n_(IN1).m_() != INVALID_NODE);
+  assert(n_(IN2).m_() != INVALID_NODE);
   //BUG// assert can fail as a result of some parse errors
 
-  //_sim->_aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
-  _sim->_aa.iwant(_n[OUT1].m_(),_n[IN1].m_());
-  _sim->_aa.iwant(_n[OUT1].m_(),_n[IN2].m_());
-  _sim->_aa.iwant(_n[OUT2].m_(),_n[IN1].m_());
-  _sim->_aa.iwant(_n[OUT2].m_(),_n[IN2].m_());
-  //_sim->_aa.iwant(_n[IN1].m_(),_n[IN2].m_());
+  //_sim->_aa.iwant(n_(OUT1).m_(),n_(OUT2).m_());
+  _sim->_aa.iwant(n_(OUT1).m_(),n_(IN1).m_());
+  _sim->_aa.iwant(n_(OUT1).m_(),n_(IN2).m_());
+  _sim->_aa.iwant(n_(OUT2).m_(),n_(IN1).m_());
+  _sim->_aa.iwant(n_(OUT2).m_(),n_(IN2).m_());
+  //_sim->_aa.iwant(n_(IN1).m_(),n_(IN2).m_());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_iwant_matrix_extended()
@@ -328,9 +323,9 @@ void ELEMENT::tr_iwant_matrix_extended()
   assert(ext_nodes() + int_nodes() == matrix_nodes());
 
   for (int ii = 0;  ii < matrix_nodes();  ++ii) {
-    if (_n[ii].m_() >= 0) {
+    if (n_(ii).m_() >= 0) {
       for (int jj = 0;  jj < ii ;  ++jj) {
-	_sim->_aa.iwant(_n[ii].m_(),_n[jj].m_());
+	_sim->_aa.iwant(n_(ii).m_(),n_(jj).m_());
       }
     }else{itested();
       // node 1 is grounded or invalid
@@ -340,18 +335,18 @@ void ELEMENT::tr_iwant_matrix_extended()
 /*--------------------------------------------------------------------------*/
 void ELEMENT::ac_iwant_matrix_passive()
 {
-  trace2(long_label().c_str(), _n[OUT1].m_(), _n[OUT2].m_());
-  _sim->_acx.iwant(_n[OUT1].m_(),_n[OUT2].m_());
+  trace2(long_label().c_str(), n_(OUT1).m_(), n_(OUT2).m_());
+  _sim->_acx.iwant(n_(OUT1).m_(),n_(OUT2).m_());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::ac_iwant_matrix_active()
 {
-  //_sim->_acx.iwant(_n[OUT1].m_(),_n[OUT2].m_());
-  _sim->_acx.iwant(_n[OUT1].m_(),_n[IN1].m_());
-  _sim->_acx.iwant(_n[OUT1].m_(),_n[IN2].m_());
-  _sim->_acx.iwant(_n[OUT2].m_(),_n[IN1].m_());
-  _sim->_acx.iwant(_n[OUT2].m_(),_n[IN2].m_());
-  //_sim->_acx.iwant(_n[IN1].m_(),_n[IN2].m_());
+  //_sim->_acx.iwant(n_(OUT1).m_(),n_(OUT2).m_());
+  _sim->_acx.iwant(n_(OUT1).m_(),n_(IN1).m_());
+  _sim->_acx.iwant(n_(OUT1).m_(),n_(IN2).m_());
+  _sim->_acx.iwant(n_(OUT2).m_(),n_(IN1).m_());
+  _sim->_acx.iwant(n_(OUT2).m_(),n_(IN2).m_());
+  //_sim->_acx.iwant(n_(IN1).m_(),n_(IN2).m_());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::ac_iwant_matrix_extended()
@@ -361,9 +356,9 @@ void ELEMENT::ac_iwant_matrix_extended()
   assert(ext_nodes() + int_nodes() == matrix_nodes());
 
   for (int ii = 0;  ii < matrix_nodes();  ++ii) {
-    if (_n[ii].m_() >= 0) {
+    if (n_(ii).m_() >= 0) {
       for (int jj = 0;  jj < ii ;  ++jj) {
-	_sim->_acx.iwant(_n[ii].m_(),_n[jj].m_());
+	_sim->_acx.iwant(n_(ii).m_(),n_(jj).m_());
       }
     }else{itested();
       // node 1 is grounded or invalid
@@ -435,9 +430,9 @@ double ELEMENT::tr_probe_num(const std::string& x)const
   }else if (Umatch(x, "r ")) {
     return (_m0.c1!=0.) ? 1/_m0.c1 : MAXDBL;
   }else if (Umatch(x, "z ")) {
-    return port_impedance(_n[OUT1], _n[OUT2], _sim->_aa, mfactor()*(_m0.c1+_loss0));
+    return port_impedance(n_(OUT1), n_(OUT2), _sim->_aa, mfactor()*(_m0.c1+_loss0));
   }else if (Umatch(x, "zraw ")) {
-    return port_impedance(_n[OUT1], _n[OUT2], _sim->_aa, 0.);
+    return port_impedance(n_(OUT1), n_(OUT2), _sim->_aa, 0.);
   }else{
     return COMPONENT::tr_probe_num(x);
   }
@@ -474,9 +469,9 @@ XPROBE ELEMENT::ac_probe_ext(const std::string& x)const
       return XPROBE(1. / admittance);
     }
   }else if (Umatch(x, "z ")) {			/* port impedance */
-    return XPROBE(port_impedance(_n[OUT1], _n[OUT2], _sim->_acx, mfactor()*admittance));
+    return XPROBE(port_impedance(n_(OUT1), n_(OUT2), _sim->_acx, mfactor()*admittance));
   }else if (Umatch(x, "zraw ")) {		/* port impedance, raw */
-    return XPROBE(port_impedance(_n[OUT1], _n[OUT2], _sim->_acx, COMPLEX(0.)));
+    return XPROBE(port_impedance(n_(OUT1), n_(OUT2), _sim->_acx, COMPLEX(0.)));
   }else{ 					/* bad parameter */
     return COMPONENT::ac_probe_ext(x);
   }

@@ -45,9 +45,9 @@ private: // override virtual
   void	   tr_iwant_matrix()override	{}
   void	   ac_iwant_matrix()override	{}
   void     precalc_last()override;
-  double   tr_involts()const override	{return dn_diff(_n[IN1].v0(), _n[IN2].v0());}
+  double   tr_involts()const override	{return dn_diff(n_(IN1).v0(), n_(IN2).v0());}
   double   tr_involts_limited()const override {return tr_involts();}
-  COMPLEX  ac_involts()const override	{return _n[IN1]->vac() - _n[IN2]->vac();}
+  COMPLEX  ac_involts()const override	{return n_(IN1)->vac() - n_(IN2)->vac();}
   double   tr_probe_num(const std::string&)const override;
   XPROBE   ac_probe_ext(const std::string&)const override;
 

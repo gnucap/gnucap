@@ -62,7 +62,7 @@ device BUILT_IN_BJT {
     fpoly_cap Cbx {b ic} state=qbx; // qbx, cqbx
     fpoly_cap Cbc {ib ic} state=qbc; // qbc, cqbc
     fpoly_cap Ccs {s ic} state=qcs // qcs, cqcs
-	omit="!(_n[n_s].n_())";
+	omit="!(n_(n_s).n_())";
     fpoly_cap Cbe {ib ie ib ic} state=qbe; // qbe, cqbe, geqbc
     // parasitics
     resistor Rc {c ic} value="m->rc / c->area"
@@ -686,11 +686,11 @@ bool DEV_BUILT_IN_BJT::tr_needs_eval()const
     const MODEL_BUILT_IN_BJT* m=prechecked_cast<const MODEL_BUILT_IN_BJT*>(c->model());
     assert(m);
     polarity_t polarity = m->polarity;
-    return !(conchk(vbc, polarity*(_n[n_ib].v0()-_n[n_ic].v0()),
+    return !(conchk(vbc, polarity*(n_(n_ib).v0()-n_(n_ic).v0()),
 		    OPT::vntol)
-	     && conchk(vbe, polarity*(_n[n_ib].v0()-_n[n_ie].v0()),
+	     && conchk(vbe, polarity*(n_(n_ib).v0()-n_(n_ie).v0()),
 		       OPT::vntol)
-	     && conchk(vcs, polarity*(_n[n_ic].v0()-_n[n_s].v0()),
+	     && conchk(vcs, polarity*(n_(n_ic).v0()-n_(n_s).v0()),
 		       OPT::vntol));
   }
 }
@@ -715,12 +715,12 @@ bool DEV_BUILT_IN_BJT::do_tr()
     /* ERROR:  need to initialize VCS, VBX here */
     vcs = vbx = 0.;
   }else{				// normal gather
-    vbe = pnj_limit((m->polarity * volts_limited(_n[n_ib], _n[n_ie])),
+    vbe = pnj_limit((m->polarity * volts_limited(n_(n_ib), n_(n_ie))),
 		    vbe, t->vt, t->Vcrit);
-    vbc = pnj_limit((m->polarity * volts_limited(_n[n_ib], _n[n_ic])),
+    vbc = pnj_limit((m->polarity * volts_limited(n_(n_ib), n_(n_ic))),
 		    vbc, t->vt, t->Vcrit);
-    vbx = m->polarity * volts_limited(_n[n_b], _n[n_ic]);
-    vcs = m->polarity * volts_limited(_n[n_s], _n[n_ic]);
+    vbx = m->polarity * volts_limited(n_(n_b), n_(n_ic));
+    vcs = m->polarity * volts_limited(n_(n_s), n_(n_ic));
   }
  
   if (_sim->uic_now()) {itested();//736

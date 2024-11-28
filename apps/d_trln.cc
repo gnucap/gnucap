@@ -125,18 +125,18 @@ inline bool DEV_TRANSLINE::tr_needs_eval()const
 /*--------------------------------------------------------------------------*/
 inline double DEV_TRANSLINE::tr_involts()const
 {
-  return dn_diff(_n[IN1].v0(), _n[IN2].v0());
+  return dn_diff(n_(IN1).v0(), n_(IN2).v0());
 }
 /*--------------------------------------------------------------------------*/
 inline double DEV_TRANSLINE::tr_involts_limited()const
 { untested();
   unreachable();
-  return volts_limited(_n[IN1],_n[IN2]);
+  return volts_limited(n_(IN1),n_(IN2));
 }
 /*--------------------------------------------------------------------------*/
 inline COMPLEX DEV_TRANSLINE::ac_involts()const
 {untested();
-  return _n[IN1]->vac() - _n[IN2]->vac();
+  return n_(IN1)->vac() - n_(IN2)->vac();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -385,8 +385,8 @@ void DEV_TRANSLINE::precalc_last()
 /*--------------------------------------------------------------------------*/
 void DEV_TRANSLINE::tr_iwant_matrix()
 {
-  _sim->_aa.iwant(_n[OUT1].m_(),_n[OUT2].m_());
-  _sim->_aa.iwant(_n[IN1].m_(), _n[IN2].m_());
+  _sim->_aa.iwant(n_(OUT1).m_(),n_(OUT2).m_());
+  _sim->_aa.iwant(n_(IN1).m_(), n_(IN2).m_());
 }
 /*--------------------------------------------------------------------------*/
 /* first setup, initial dc, empty the lines
@@ -456,8 +456,8 @@ void DEV_TRANSLINE::tr_load()
   if (!_sim->is_inc_mode()) {
     const COMMON_TRANSLINE* c = prechecked_cast<const COMMON_TRANSLINE*>(common());
     assert(c);
-    _sim->_aa.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), mfactor()/c->real_z0);
-    _sim->_aa.load_symmetric(_n[IN1].m_(),  _n[IN2].m_(),  mfactor()/c->real_z0);
+    _sim->_aa.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), mfactor()/c->real_z0);
+    _sim->_aa.load_symmetric(n_(IN1).m_(),  n_(IN2).m_(),  mfactor()/c->real_z0);
     lvf = _if0;
     lvr = _ir0;
   }else{
@@ -465,23 +465,23 @@ void DEV_TRANSLINE::tr_load()
     lvr = dn_diff(_ir0, _ir1);
   }
   if (lvf != 0.) {
-    if (_n[OUT1].m_() != 0) {
-      _n[OUT1].i() += mfactor() * lvf;
+    if (n_(OUT1).m_() != 0) {
+      n_(OUT1).i() += mfactor() * lvf;
     }else{untested();
     }
-    if (_n[OUT2].m_() != 0) {untested();
-      _n[OUT2].i() -= mfactor() * lvf;
+    if (n_(OUT2).m_() != 0) {untested();
+      n_(OUT2).i() -= mfactor() * lvf;
     }else{
     }
   }else{
   }
   if (lvr != 0.) {
-    if (_n[IN1].m_() != 0) {
-      _n[IN1].i() += mfactor() * lvr;
+    if (n_(IN1).m_() != 0) {
+      n_(IN1).i() += mfactor() * lvr;
     }else{untested();
     }
-    if (_n[IN2].m_() != 0) {untested();
-      _n[IN2].i() -= mfactor() * lvr;
+    if (n_(IN2).m_() != 0) {untested();
+      n_(IN2).i() -= mfactor() * lvr;
     }else{
     }
   }else{
@@ -534,11 +534,11 @@ void DEV_TRANSLINE::do_ac()
 void DEV_TRANSLINE::ac_load()
 {
   //BUG// explicit mfactor
-  _sim->_acx.load_symmetric(_n[OUT1].m_(), _n[OUT2].m_(), mfactor()*_y11);
-  _sim->_acx.load_symmetric(_n[IN1].m_(),  _n[IN2].m_(),  mfactor()*_y11);
-  _sim->_acx.load_asymmetric(_n[OUT1].m_(),_n[OUT2].m_(), _n[IN2].m_(),  _n[IN1].m_(),
+  _sim->_acx.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), mfactor()*_y11);
+  _sim->_acx.load_symmetric(n_(IN1).m_(),  n_(IN2).m_(),  mfactor()*_y11);
+  _sim->_acx.load_asymmetric(n_(OUT1).m_(),n_(OUT2).m_(), n_(IN2).m_(),  n_(IN1).m_(),
 			     mfactor()*_y12);
-  _sim->_acx.load_asymmetric(_n[IN1].m_(), _n[IN2].m_(), _n[OUT2].m_(), _n[OUT1].m_(),
+  _sim->_acx.load_asymmetric(n_(IN1).m_(), n_(IN2).m_(), n_(OUT2).m_(), n_(OUT1).m_(),
 			     mfactor()*_y12);
 }
 /*--------------------------------------------------------------------------*/

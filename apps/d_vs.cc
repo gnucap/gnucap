@@ -107,9 +107,9 @@ void DEV_VS::tr_begin()
   _m0.c1 = 0.;
   _m1 = _m0;
   if (!using_tr_eval()) {
-    if (_n[OUT2].m_() == 0) {
+    if (n_(OUT2).m_() == 0) {
       _sim->set_limit(value());
-    }else if (_n[OUT1].m_() == 0) {
+    }else if (n_(OUT1).m_() == 0) {
       _sim->set_limit(-value());
     }else{
       //BUG// don't set limit
@@ -124,9 +124,9 @@ bool DEV_VS::do_tr()
   if (using_tr_eval()) {
     _y[0].x = _sim->_time0;
     tr_eval();
-    if (_n[OUT2].m_() == 0) {
+    if (n_(OUT2).m_() == 0) {
       _sim->set_limit(_y[0].f1);
-    }else if (_n[OUT1].m_() == 0) {
+    }else if (n_(OUT1).m_() == 0) {
       _sim->set_limit(-_y[0].f1);
     }else{
       //BUG// don't set limit

@@ -447,18 +447,16 @@ COMPONENT::~COMPONENT()
 /*--------------------------------------------------------------------------*/
 bool COMPONENT::node_is_grounded(int i)const 
 {
-  assert(_n);
   assert(i >= 0);
   assert(i < net_nodes());
-  return _n[i].is_grounded();
+  return n_(i).is_grounded();
 }
 /*--------------------------------------------------------------------------*/
 bool COMPONENT::node_is_connected(int i)const 
 {
-  assert(_n);
   assert(i >= 0);
   assert(i < net_nodes());
-  return _n[i].is_connected();
+  return n_(i).is_connected();
 }
 /*--------------------------------------------------------------------------*/
 int COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
@@ -477,7 +475,7 @@ int COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
 void COMPONENT::set_port_by_index(int num, std::string& ext_name)
 {
   if (num < max_nodes()) {
-    _n[num].new_node(ext_name, this);
+    n_(num).new_node(ext_name, this);
     if (num+1 > _net_nodes) {
       // make the list bigger
       _net_nodes = num+1;
@@ -492,7 +490,7 @@ void COMPONENT::set_port_by_index(int num, std::string& ext_name)
 void COMPONENT::set_port_to_ground(int num)
 {
   if (num < max_nodes()) {
-    _n[num].set_to_ground(this);
+    n_(num).set_to_ground(this);
     if (num+1 > _net_nodes) {
       _net_nodes = num+1;
     }else{untested();
@@ -615,7 +613,7 @@ void COMPONENT::map_nodes()
   //assert(ext_nodes() + int_nodes() == matrix_nodes());
 
   for (int ii = 0; ii < ext_nodes()+int_nodes(); ++ii) {
-    _n[ii].map();
+    n_(ii).map();
   }
 
   if (subckt()) {
@@ -661,7 +659,7 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
   attach_common(Common);
 
   assert(node_count <= net_nodes());
-  notstd::copy_n(Nodes, node_count, _n);
+  std::copy_n(Nodes, node_count, &n_(0));
 }
 /*--------------------------------------------------------------------------*/
 /* set_slave: force evaluation whenever the owner is evaluated.
@@ -844,10 +842,9 @@ std::string COMPONENT::param_value(int i)const
 /*--------------------------------------------------------------------------*/
 const std::string COMPONENT::port_value(int i)const 
 {
-  assert(_n);
   assert(i >= 0);
   assert(i < net_nodes());
-  return _n[i].short_label();
+  return n_(i).short_label();
 }
 /*--------------------------------------------------------------------------*/
 const std::string COMPONENT::current_port_value(int)const 
@@ -862,7 +859,7 @@ double COMPONENT::tr_probe_num(const std::string& x)const
   CS cmd(CS::_STRING, x);
   if (cmd.umatch("v")) {
     int nn = cmd.ctoi();
-    return (nn > 0 && nn <= net_nodes()) ? _n[nn-1].v0() : NOT_VALID;
+    return (nn > 0 && nn <= net_nodes()) ? n_(nn-1).v0() : NOT_VALID;
   }else if (Umatch(x, "error{time} |next{time} ")) {
     return (_time_by._error_estimate < BIGBIG) ? _time_by._error_estimate : 0;
   }else if (Umatch(x, "timef{uture} ")) {
