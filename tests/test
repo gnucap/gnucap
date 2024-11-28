@@ -18,7 +18,7 @@ else
     do
 	echo $ii
 	echo $ii >>$3/$2.diffs
-	$1 $ii |tail -n +12 >$3/$ii.out
+	$1 < $ii |tail -n +12 >$3/$ii.out
 	diff -u $4/$ii.out $3/$ii.out >>$3/$2.diffs || echo "**** $ii fails ****"
     done
     echo done with $1 $2 >>$3/$2.diffs

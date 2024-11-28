@@ -189,8 +189,8 @@ static void process_cmd_line(int argc, const char *argv[])
 	}
       }else if (strcasecmp(argv[ii], "-i") == 0) {itested();
 	++ii;
-	if (ii < argc) {itested();
-	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+	if (ii < argc) {untested();
+	  CMD::command(std::string("`include ") + argv[ii++], &CARD_LIST::card_list);
 	}else{untested();
 	}
       }else if (strcasecmp(argv[ii], "-b") == 0) {
@@ -218,7 +218,7 @@ static void process_cmd_line(int argc, const char *argv[])
 	}
       }else{
 	try {
-	  CMD::command(std::string("include ") + argv[ii++], &CARD_LIST::card_list);
+	  CMD::command(std::string("`include ") + argv[ii++], &CARD_LIST::card_list);
 	}catch (Exception& e) {
 	  error(bDANGER, e.message() + '\n');
 	  finish();
@@ -282,7 +282,10 @@ int main(int argc, const char *argv[])
 	    CMD::cmdproc(cmd.get_line(I_PROMPT), &CARD_LIST::card_list);
 	  }
 	}catch (Exception_End_Of_Input& e) {
-	  error(bDANGER, e.message() + '\n');
+	  if(e.message().size()) { untested();
+	    error(bDANGER, e.message() + '\n');
+	  }else {
+	  }
 	  finish();
 	  //CMD::command("quit", &CARD_LIST::card_list);
 	  //exit(0);

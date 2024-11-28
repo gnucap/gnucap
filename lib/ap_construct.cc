@@ -74,11 +74,11 @@ CS::CS(CS::WHOLE_FILE, const std::string& name)
    _end_match(0),
    _ok(true),
    _line_number(0)
-{
+{ untested();
   int f = open(name.c_str(), O_RDONLY);
   if (f == EOF) {itested();
     throw Exception_File_Open(name + ": " + strerror(errno));
-  }else{
+  }else{ untested();
   }
   _length = static_cast<size_t>(lseek(f, off_t(0), SEEK_END));
   lseek(f, off_t(0), SEEK_SET);
@@ -152,7 +152,7 @@ CS& CS::get_line(const std::string& prompt)
     _cnt = 0;
     _length = _cmd.length();
     _ok = true;
-  }else{itested();
+  }else{untested();
     assert(_file == stdin);
     char cmdbuf[BUFLEN];
     getcmd(prompt.c_str(), cmdbuf, BUFLEN);

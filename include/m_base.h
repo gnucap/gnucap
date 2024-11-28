@@ -340,7 +340,7 @@ public:
   Base* leq(const Integer* X)const override	 {untested(); assert(X); return X->geq(this);}
   Base* geq(const Integer* X)const override	 {itested(); assert(X); return X->leq(this);}
   Base* not_equal(const Integer* X)const override{untested(); assert(X); return new Integer(X->_data != _data);}
-  Base* equal(const Integer* X)const override	 {untested(); assert(X); return new Integer(X->_data == _data);}
+  Base* equal(const Integer* X)const override	 {itested(); assert(X); return new Integer(X->_data == _data);}
   Base* add(const Integer* X)const override	 { assert(X); return new Float(X->_data + _data);}
   Base* multiply(const Integer* X)const override { assert(X); return new Float(X->_data * _data);}
   Base* subtract(const Integer* X)const override { assert(X); return new Float(_data - X->_data);}
@@ -398,7 +398,7 @@ inline Base* Integer::greater   (const Float* X) const {untested(); assert(X); r
 inline Base* Integer::leq       (const Float* X) const { assert(X); return new Integer((_data <= X->_data)?1:0);}
 inline Base* Integer::geq       (const Float* X) const {itested(); assert(X); return new Integer((_data >= X->_data)?1:0);}
 inline Base* Integer::not_equal (const Float* X) const {untested(); assert(X); return new Integer((_data != X->_data)?1:0);}
-inline Base* Integer::equal     (const Float* X) const {untested(); assert(X); return new Integer((_data == X->_data)?1:0);}
+inline Base* Integer::equal     (const Float* X) const {itested(); assert(X); return new Integer((_data == X->_data)?1:0);}
 inline Base* Integer::add       (const Float* X) const { assert(X); return X? X->add(this) : nullptr;}
 inline Base* Integer::multiply  (const Float* X) const { assert(X); return X? X->multiply(this) : nullptr;}
 inline Base* Integer::subtract  (const Float* X) const {untested(); assert(X); return X? X->r_subtract(this) : nullptr;}
