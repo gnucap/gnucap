@@ -68,7 +68,7 @@ prep: symlinks ${TEST_PLUGINS}
 	-mkdir -p ${TARGETDIR}
 
 ${gc_out}: ${TARGETDIR}/%.gc.out: prep
-	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} ${srcdir}/$*.gc |tail -n +12 | \
+	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${srcdir}/$*.gc |tail -n +12 | \
 		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
 
 ${ckt_out}: ${TARGETDIR}/%.ckt.out: prep

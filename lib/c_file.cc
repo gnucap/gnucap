@@ -36,32 +36,61 @@ extern OMSTREAM mlog;		/* log file bitmap		*/
 namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_INCLUDE : public CMD {
+private:
+  bool _relative{false};
 public:
+  explicit CMD_INCLUDE(bool rel=false) : CMD(), _relative(rel) {}
   void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
     if (Scope == &CARD_LIST::card_list) {
     }else{ untested();
     }
     size_t here = cmd.cursor();
+    std::string cwd;
+    std::string file_name;
+    cmd >> file_name;
+    std::string full_file_name;
+
+    if (OS::access_ok(file_name, R_OK)) {
+      // prefer local, relative or absolute.
+      full_file_name = file_name;
+    }else{ untested();
+      std::string incl = OS::getenv("GNUCAP_INCLUDEPATH");
+      full_file_name = findfile(file_name, incl, R_OK);
+    }
+
+    if(_relative){ itested();
+      cwd = OS::getcwd();
+      std::string dir = OS::dirname(full_file_name);
+      full_file_name = OS::basename(full_file_name);
+      OS::chdir(dir);
+    }else{
+    }
+
+
     try {
-      std::string file_name;
-      cmd >> file_name;
-      CS file(CS::_INC_FILE, file_name);
+      CS file(CS::_INC_FILE, full_file_name);
       for (;;) {
-	if (OPT::language) {
+	if (OPT::language) { untested();
 	  OPT::language->parse_top_item(file, Scope);
-	}else{itested();
+	}else{ untested();
 	  CMD::cmdproc(file.get_line(""), Scope);
 	}
       }
     }catch (Exception_File_Open& e) {itested();
       cmd.warn(bDANGER, here, e.message() + '\n');
-    }catch (Exception_End_Of_Input& e) {
+    }catch (Exception_End_Of_Input& e) { untested();
       // done
+    }
+    if(_relative){ untested();
+      OS::chdir(cwd);
+    }else{
     }
   }
 } p0;
-DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "include|`include", &p0);
+DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "include", &p0);
+CMD_INCLUDE p0_rel(true);
+DISPATCHER<CMD>::INSTALL d0_rel(&command_dispatcher, "`include", &p0_rel);
 /*--------------------------------------------------------------------------*/
 /* cmd_log: "log" command processing
  * open a file for logging (history)
