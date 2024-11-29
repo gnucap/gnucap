@@ -26,10 +26,10 @@
  */
 //testing=script,sparse 2023.11.22
 #include "e_logicmod.h"
-#include "u_lang.h"
 #include "globals.h"
 #include "e_subckt.h"
 #include "u_xprobe.h"
+#include "e_logic.h"
 #include "e_elemnt.h"
 /*--------------------------------------------------------------------------*/
 namespace {
@@ -100,9 +100,12 @@ private: // override virtuals
   std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < PORTS_PER_GATE);
-    static std::string names[PORTS_PER_GATE] = {"out",
-			"in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
-    return names[i];
+    const COMMON_LOGIC* c = dynamic_cast<const COMMON_LOGIC*>(common());
+    assert(c);
+    return c->port_name(i);
+    //static std::string names[PORTS_PER_GATE] = {"out",
+    //    "in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
+    //return names[i];
   }
 public:
   static int count()			{untested();return _count;}
@@ -110,28 +113,6 @@ private:
   bool	   tr_eval_digital();
   bool	   want_analog()const;
   bool	   want_digital()const;
-};
-/*--------------------------------------------------------------------------*/
-class INTERFACE COMMON_LOGIC : public COMMON_COMPONENT {
-protected:
-  explicit	COMMON_LOGIC(int c=0)
-    :COMMON_COMPONENT(c) {++_count;}
-  explicit	COMMON_LOGIC(const COMMON_LOGIC& p)
-    :COMMON_COMPONENT(p) {++_count;}
-public:
-		~COMMON_LOGIC()			{--_count;}
-  bool operator==(const COMMON_COMPONENT&)const override;
-  static  int	count()				{untested();return _count;}
-  virtual LOGICVAL logic_eval(const node_t*, int)const	= 0;
-
-  void		set_param_by_index(int, std::string&, int)override;
-  bool		param_is_printable(int)const override;
-  std::string	param_name(int)const override;
-  std::string	param_name(int,int)const override;
-  std::string	param_value(int)const override;
-  int param_count()const override {return (1 + COMMON_COMPONENT::param_count());}
-protected:
-  static int	_count;
 };
 /*--------------------------------------------------------------------------*/
 class LOGIC_AND : public COMMON_LOGIC {
@@ -727,64 +708,7 @@ bool DEV_LOGIC::want_digital()const
     ((OPT::mode == moDIGITAL) || (OPT::mode == moMIXED && _quality == qGOOD));
 }
 /*--------------------------------------------------------------------------*/
-bool COMMON_LOGIC::operator==(const COMMON_COMPONENT& x)const
-{
-  const COMMON_LOGIC* p = dynamic_cast<const COMMON_LOGIC*>(&x);
-  bool rv = p
-    && COMMON_COMPONENT::operator==(x);
-  if (rv) {
-  }else{
-  }
-  return rv;
-}
-/*--------------------------------------------------------------------------*/
-void COMMON_LOGIC::set_param_by_index(int I, std::string& Value, int Offset)
-{
-  switch (COMMON_LOGIC::param_count() - 1 - I) {
-  case 0:  _modelname = Value; break;
-  default:untested();untested(); COMMON_COMPONENT::set_param_by_index(I, Value, Offset); break;
-  }
-}
-/*--------------------------------------------------------------------------*/
-bool COMMON_LOGIC::param_is_printable(int I)const
-{
-  switch (COMMON_LOGIC::param_count() - 1 - I) {
-  case 0: return OPT::language 
-      && OPT::language->name() != "spice" && OPT::language->name() != "acs";
-  default: return COMMON_COMPONENT::param_is_printable(I);
-  }
-}
-/*--------------------------------------------------------------------------*/
-std::string COMMON_LOGIC::param_name(int I)const
-{
-  switch (COMMON_LOGIC::param_count() - 1 - I) {
-  case 0: return "model";
-  default:untested(); return COMMON_COMPONENT::param_name(I);
-  }
-}
-/*--------------------------------------------------------------------------*/
-std::string COMMON_LOGIC::param_name(int I, int j)const
-{
-  if (j == 0) {
-    return param_name(I);
-  }else if (I >= COMMON_COMPONENT::param_count()) {untested();
-    return "";
-  }else{untested();
-    return COMMON_COMPONENT::param_name(I, j);
-  }
-}
-/*--------------------------------------------------------------------------*/
-std::string COMMON_LOGIC::param_value(int I)const
-{
-  switch (COMMON_LOGIC::param_count() - 1 - I) {
-  case 0: return _modelname;
-  default:untested(); return COMMON_COMPONENT::param_value(I);
-  }
-}
-
-/*--------------------------------------------------------------------------*/
 int DEV_LOGIC::_count = -1;
-int COMMON_LOGIC::_count = -1;
 /*--------------------------------------------------------------------------*/
 static LOGIC_NONE Default_LOGIC(CC_STATIC);
 static DEV_LOGIC p1(&Default_LOGIC);

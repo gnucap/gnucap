@@ -29,7 +29,7 @@ DELETED =
 RAW_SRCS =
 #------------------------------------------------------------------------
 RAW_HDRS = \
-ap.h bm.h c_comand.h constant.h d_coment.h d_dot.h d_logic.h \
+ap.h bm.h c_comand.h constant.h d_coment.h d_dot.h e_logic.h \
 declare.h e_aux.h e_base.h e_card.h e_cardlist.h e_ccsrc.h e_compon.h \
 e_logicmod.h e_logicnode.h e_logicval.h \
 e_elemnt.h e_model.h e_node.h e_paramlist.h e_storag.h e_subckt.h \
