@@ -32,7 +32,7 @@
 /* default constructor : unconnected, don't use
  */
 NODE::NODE()
-  :CKT_BASE(),
+  :CARD(),
    _user_number(INVALID_NODE)
    //_flat_number(INVALID_NODE)
    //_matrix_number(INVALID_NODE)
@@ -42,7 +42,7 @@ NODE::NODE()
 /* copy constructor : user data only
  */
 NODE::NODE(const NODE& p)
-  :CKT_BASE(p),
+  :CARD(p),
    _user_number(p._user_number)
    //_flat_number(p._flat_number)
    //_matrix_number(INVALID_NODE)
@@ -54,7 +54,7 @@ NODE::NODE(const NODE& p)
  * supposedly not used, but used by a required function that is also not used
  */
 NODE::NODE(const NODE* p)
-  :CKT_BASE(*p),
+  :CARD(*p),
    _user_number(p->_user_number)
    //_flat_number(p->_flat_number)
    //_matrix_number(INVALID_NODE)
@@ -65,7 +65,7 @@ NODE::NODE(const NODE* p)
 /* usual initializing constructor : name and index
  */
 NODE::NODE(const std::string& s, int n)
-  :CKT_BASE(s),
+  :CARD(s),
    _user_number(n)
    //_flat_number(n)
    //_matrix_number(INVALID_NODE)
@@ -108,8 +108,8 @@ node_t& node_t::operator=(const node_t& p)
 /*--------------------------------------------------------------------------*/
 LOGIC_NODE& node_t::data()const
 {
-  assert(CKT_BASE::_sim->_nstat);
-  return CKT_BASE::_sim->_nstat[m_()];
+  assert(CARD::_sim->_nstat);
+  return CARD::_sim->_nstat[m_()];
 }
 /*--------------------------------------------------------------------------*/
 double NODE::tr_probe_num(const std::string& x)const
@@ -147,7 +147,7 @@ double NODE::tr_probe_num(const std::string& x)const
     double z2 = tr_probe_num("zero ");
     return z1/z2;
   }else{itested();
-    return CKT_BASE::tr_probe_num(x);
+    return CARD::tr_probe_num(x);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -159,7 +159,7 @@ XPROBE NODE::ac_probe_ext(const std::string& x)const
     return XPROBE(port_impedance(node_t(const_cast<NODE*>(this)),
 				 node_t(&ground_node), _sim->_acx, COMPLEX(0.)));
   }else{untested();
-    return CKT_BASE::ac_probe_ext(x);
+    return CARD::ac_probe_ext(x);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -198,7 +198,7 @@ void node_t::new_node(const std::string& node_name, const CARD* d)
 void node_t::new_model_node(const std::string& node_name, CARD* d)
 {
   new_node(node_name, d);
-  _ttt = CKT_BASE::_sim->newnode_model();
+  _ttt = CARD::_sim->newnode_model();
   //assert(_ttt == _nnn->flat_number());
 }
 /*--------------------------------------------------------------------------*/

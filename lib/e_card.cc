@@ -37,6 +37,16 @@ CARD::CARD()
 {
 }
 /*--------------------------------------------------------------------------*/
+CARD::CARD(const std::string& S)
+  :CKT_BASE(S),
+   _evaliter(-100),
+   _subckt(0),
+   _owner(0),
+   _constant(false),
+   _net_nodes(0)
+{
+}
+/*--------------------------------------------------------------------------*/
 CARD::CARD(const CARD& p)
   :CKT_BASE(p),
    _evaliter(-100),

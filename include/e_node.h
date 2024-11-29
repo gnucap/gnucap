@@ -25,7 +25,7 @@
 #ifndef E_NODE_H
 #define E_NODE_H
 #include "u_sim_data.h"
-#include "e_base.h"
+#include "e_card.h"
 /*--------------------------------------------------------------------------*/
 enum {
   OUT1 = 0,
@@ -36,7 +36,7 @@ enum {
   INVALID_NODE = -1
 };
 /*--------------------------------------------------------------------------*/
-class NODE : public CKT_BASE {
+class NODE : public CARD {
 private:
   int	_user_number;
   //int	_flat_number;
@@ -49,6 +49,8 @@ public:
   explicit NODE(const NODE* p); // u_nodemap.cc:49 (deep copy)
   explicit NODE(const std::string& s, int n);
   ~NODE() {}
+
+  CARD* clone()const override	{untested(); return new NODE(*this);}
 
 public: // raw data access (rvalues)
   int	user_number()const	{return _user_number;}

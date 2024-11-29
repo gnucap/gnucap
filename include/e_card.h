@@ -53,6 +53,7 @@ public:   				// traversal functions
   //--------------------------------------------------------------------
 protected: // create and destroy.
   explicit CARD();
+  explicit CARD(const std::string& s);
   explicit CARD(const CARD&);
 public:
   virtual  ~CARD();
@@ -145,7 +146,7 @@ public: // parameters
   virtual std::string param_name(int)const	   {return "";}
   virtual std::string param_name(int i,int j)const {return (j==0) ? param_name(i) : "";}
   virtual std::string param_value(int)const	   {untested(); return "";}
-  virtual std::string value_name()const = 0;
+  virtual std::string value_name()const		   {untested();incomplete(); return "";}
   //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code
   virtual bool use_obsolete_callback_parse()const {return false;}
