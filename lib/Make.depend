@@ -224,6 +224,16 @@ e_compon.o: e_compon.cc ../include/u_lang.h ../include/e_base.h \
  ../include/m_matrix_solver.h ../include/m_matrix.h \
  ../include/l_stlextra.h ../include/m_cpoly.h ../include/l_denoise.h \
  ../include/e_compon.h ../include/u_time_pair.h
+e_logic.o: e_logic.cc ../include/e_logic.h ../include/e_logicval.h \
+ ../include/md.h ../include/io_trace.h ../include/io_error.h \
+ ../include/e_compon.h ../include/u_sim_data.h ../include/constant.h \
+ ../include/l_compar.h ../include/u_opt.h ../include/mode.h \
+ ../include/io_.h ../include/l_lib.h ../include/m_matrix_solver.h \
+ ../include/m_matrix.h ../include/l_stlextra.h ../include/u_time_pair.h \
+ ../include/u_parameter.h ../include/m_expression.h ../include/m_base.h \
+ ../include/ap.h ../include/m_base_vams.h ../include/e_cardlist.h \
+ ../include/e_card.h ../include/e_base.h ../include/u_attrib.h \
+ ../include/l_indirect.h ../include/u_lang.h
 e_logicnode.o: e_logicnode.cc ../include/e_logicmod.h \
  ../include/e_model.h ../include/u_parameter.h ../include/u_opt.h \
  ../include/mode.h ../include/io_.h ../include/l_lib.h ../include/md.h \
