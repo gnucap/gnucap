@@ -214,8 +214,8 @@ public:
 //  Base* equal(const String* X)const override {
 //  }
 
-  virtual Integer to_Integer()const	{untested(); throw Exception("can't convert to integer");}
-  virtual Float to_Float()const		{ throw Exception("can't convert to float");}
+  virtual Integer to_Integer()const override {untested(); throw Exception("can't convert to integer");}
+  virtual Float to_Float()const override { throw Exception("can't convert to float");}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

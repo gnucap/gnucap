@@ -345,7 +345,7 @@ static void make_device(std::ofstream& out, const Device& d)
   size_t total_nodes = port_nodes + d.circuit().local_nodes().size();
   out << "};\n"
     "  mutable node_t _nodes[" << total_nodes << "];\n"
-    "  node_t& n_(int i)const {\n"
+    "  node_t& n_(int i)const override {\n"
     "          assert(_nodes); assert(i>=0); assert(i<" << total_nodes << "); return _nodes[i];\n"
     "  }\n"
     "  std::string port_name(int i)const override {\n"

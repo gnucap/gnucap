@@ -72,7 +72,7 @@ protected: // override virtual
   COMPLEX  ac_involts()const override	{itested(); return NOT_VALID;}
   COMPLEX  ac_amps()const override	{itested(); return NOT_VALID;}
 
-  node_t& n_(int i)const {
+  node_t& n_(int i)const override {
     assert(_nN); assert(i>=0); assert(i<net_nodes()); return _nN[i];
   }
   std::string port_name(int)const override {untested();

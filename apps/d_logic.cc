@@ -94,7 +94,7 @@ private: // override virtuals
   COMPLEX  ac_amps()const override	{unreachable(); return 0.;}
   XPROBE   ac_probe_ext(const std::string&)const override;
 
-  node_t& n_(int i)const {
+  node_t& n_(int i)const override {
     assert(_nodes); assert(i>=0); assert(i<PORTS_PER_GATE); return _nodes[i];
   }
   std::string port_name(int i)const override {
