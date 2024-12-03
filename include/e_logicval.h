@@ -49,7 +49,7 @@ public:
   LOGICVAL& operator=(const LOGICVAL& p) {_lv=p._lv; return *this;}
 
   LOGICVAL& operator&=(LOGICVAL p)
-	{itested(); _lv = and_truth[_lv][p._lv]; return *this;}
+	{_lv = and_truth[_lv][p._lv]; return *this;}
   LOGICVAL& operator|=(LOGICVAL p)
 	{_lv = or_truth[_lv][p._lv]; return *this;}
   LOGICVAL  operator^=(LOGICVAL p)
