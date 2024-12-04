@@ -61,9 +61,9 @@ private: // LU xs
 
 private: // solver overrides
   void init(int ss=0)override;
-  void iwant(int i, int j){ _lu.iwant(i, j); }
-  void allocate() { _lu.allocate(); }
-  void unallocate() { _lu.unallocate(); }
+  void iwant(int i, int j)override { _lu.iwant(i, j); }
+  void allocate()override { _lu.allocate(); }
+  void unallocate()override { _lu.unallocate(); }
   void uninit()override;
   void set_min_pivot(double x)override { _min_pivot = x; }
   void lu_decomp(bool do_partial)override;
@@ -140,8 +140,8 @@ private: // data xs
 private: // solver overrides
   void init(int)override { }
   void uninit()override { }
-  void allocate() { }
-  void unallocate() { }
+  void allocate()override { }
+  void unallocate()override { }
   void set_min_pivot(double x)override { _min_pivot = x; }
   void set_changed(int, bool j=true)const override { (void)j; }
   void fbsub(T* v)const override {

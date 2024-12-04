@@ -584,7 +584,7 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int re
   }else if (_s != "#") {
     // anything else means look up the value
     _v = lookup_solve(def, scope);
-    if (_v.is_NA()) {itested();
+    if (_v.is_NA()) {
       //BUG// needs to show scope
       //BUG// it is likely to have a numeric overflow resulting from the bad value
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");

@@ -32,6 +32,7 @@ CCFLAGS = \
 -DHAVE_LIBREADLINE \
 -std=c++11 -DUNIX  -g -O0 $(INCLUDE) -DTRACE_UNTESTED \
 -Wall -Wextra \
+-Wsuggest-override \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
 -Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
 -Winit-self -Wmissing-include-dirs -Winvalid-pch \

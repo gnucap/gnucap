@@ -143,9 +143,9 @@ public:
 private:
   explicit vString(const char* data) : String(data) { }
 public:
-  explicit vString(CS& file) : String()	{itested(); parse(file);}
+  explicit vString(CS& file) : String()	{parse(file);}
   explicit vString(Base::NOT_INPUT x = _NOT_INPUT) : String(x) {  assert(is_NA());}
-  /* explicit */ vString(vString const& x) : String(x) {itested(); }
+  /* explicit */ vString(vString const& x) : String(x) {}
 
   vString& operator=(vString const& x) {
     String::operator=(x);
@@ -153,7 +153,7 @@ public:
   }
 
   std::string val_string()const override {
-    if(_data){itested();
+    if(_data){
       // BUG: missing escape
       return '"' + std::string(_data) + '"';
     }else{ untested();
@@ -171,7 +171,7 @@ public:
   using String::assign;
   vString* assign(const Base*X)const override {
     if(!X){ untested();
-    }else if(auto q = dynamic_cast<vString const*>(X)){itested();
+    }else if(auto q = dynamic_cast<vString const*>(X)){
       return new vString(*q);
     }else if(dynamic_cast<String const*>(X)){untested();
       incomplete();
@@ -214,8 +214,8 @@ public:
 //  Base* equal(const String* X)const override {
 //  }
 
-  virtual Integer to_Integer()const	{untested(); throw Exception("can't convert to integer");}
-  virtual Float to_Float()const		{ throw Exception("can't convert to float");}
+  virtual Integer to_Integer()const override {untested(); throw Exception("can't convert to integer");}
+  virtual Float to_Float()const override { throw Exception("can't convert to float");}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

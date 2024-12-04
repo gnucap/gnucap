@@ -322,7 +322,6 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 	}
       }
     }
-    itested();
     throw Exception_No_Match(Name);
   }
 }
@@ -468,7 +467,6 @@ int COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
     }else{
     }
   }
-  itested();
   throw Exception_No_Match(int_name);
 }
 /*--------------------------------------------------------------------------*/

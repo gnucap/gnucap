@@ -480,7 +480,7 @@ public:
   ~PARAM_ANY() { delete _value; _value=nullptr;}
   PARA_BASE* clone()const override{ untested();return new PARAM_ANY(*this);}
   PARA_BASE* pclone(void*p)const override{return new(p) PARAM_ANY(*this);}
-  bool operator==(const PARA_BASE& v)const { untested();
+  bool operator==(const PARA_BASE& v)const override { untested();
     // PARAMETER const* p = dynamic_cast<PARAMETER const*>(&b);
     // return (p && _v == p->_v  &&  _s == p->_s);
     Base* eq = nullptr;
@@ -562,7 +562,7 @@ public:
     return _value;
   }
   bool has_good_value()const override { untested();unreachable(); return false;}
-  Base const* e_val_(const Base* def, const CARD_LIST* s, int)const { untested();
+  Base const* e_val_(const Base* def, const CARD_LIST* s, int)const override { untested();
     // def does not seem to carry type info...
     // see s_dc.vcvs1{a,b,c}.gc
     error(bDEBUG, "assuming double in " + _s + "\n");

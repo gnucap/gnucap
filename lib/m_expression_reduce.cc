@@ -51,21 +51,21 @@ Token* Token_BINOP::op(const Token* T1, const Token* T2)const
     b = (T1->data())->divide(T2->data());
   }else if (name() == "%") {
     b = (T1->data())->modulo(T2->data());
-  }else if (name() == "==") {itested();
+  }else if (name() == "==") {
     b = (T1->data())->equal(T2->data());
-  }else if (name() == "!=") {itested();
+  }else if (name() == "!=") {
     b = (T1->data())->not_equal(T2->data());
-  }else if (name() == "<") {itested();
+  }else if (name() == "<") {
     b = (T1->data())->less(T2->data());
   }else if (name() == ">") {
     b = (T1->data())->greater(T2->data());
-  }else if (name() == "<=") {itested();
+  }else if (name() == "<=") {
     b = (T1->data())->leq(T2->data());
-  }else if (name() == ">=") {itested();
+  }else if (name() == ">=") {
     b = (T1->data())->geq(T2->data());
-  }else if (name() == "||") {itested();
+  }else if (name() == "||") {
     b = (T1->data())->logic_or(T2->data());
-  }else if (name() == "&&") {itested();
+  }else if (name() == "&&") {
     b = (T1->data())->logic_and(T2->data());
   }else{ untested();
     // op (name()) not one of those listed
@@ -89,9 +89,9 @@ Token* Token_UNARY::op(const Token* T1)const
   const Base* b = 0;
   if (name() == "-") {
     b = (T1->data())->minus();
-  }else if (name() == "+") {itested();
+  }else if (name() == "+") {
     b = (T1->data())->plus();
-  }else if (name() == "!") {itested();
+  }else if (name() == "!") {
     b = (T1->data())->logic_not();
   }else{ untested();
     // op (name()) not one of those listed
@@ -152,7 +152,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	// didnt work. put back function token
 	E->push_back(clone());
       }
-    }else{itested();
+    }else{
       throw Exception_No_Match(name()); //BUG// memory leak
       unreachable();
       E->push_back(clone());
@@ -177,14 +177,14 @@ void Token_SYMBOL::stack_op(Expression* E)const
 
       Base* n;
       if(is_int) {
-	if(verilog_mode) {itested();
+	if(verilog_mode) {
 	  n = new vInteger(name());
 	}else{
 	  n = new Integer(name());
 	}
 	trace1("found Integer", name());
       }else{
-	if(verilog_mode) {itested();
+	if(verilog_mode) {
 	  n = new vReal(name());
 	}else{
 	  n = new Float(name());
@@ -244,7 +244,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 }
 /*--------------------------------------------------------------------------*/
 Token_TERNARY::~Token_TERNARY()
-{itested();
+{
   delete _true;
   _true = nullptr;
 
@@ -253,13 +253,13 @@ Token_TERNARY::~Token_TERNARY()
 }
 /*--------------------------------------------------------------------------*/
 void Token_TERNARY::stack_op(Expression* E)const
-{itested();
+{
   assert(E);
   Token const* t = E->back();
   auto constant = dynamic_cast<Token_CONSTANT const*>(t);
 
   bool is_num = false;
-  if(constant){itested();
+  if(constant){
     is_num = dynamic_cast<Float const*>(constant->data())
            ||dynamic_cast<Integer const*>(constant->data());
     // bool?
@@ -268,20 +268,20 @@ void Token_TERNARY::stack_op(Expression* E)const
 
   assert(true_part());
   assert(false_part());
-  if (is_num) {itested();
+  if (is_num) {
     assert(constant->data());
     bool select = constant->data()->to_bool();
     delete t;
     E->pop_back();
     Expression const* sel;
 
-    if(select){itested();
+    if(select){
       sel = true_part();
-    }else{itested();
+    }else{
       sel = false_part();
     }
     // E->reduce_copy(*sel);
-    for (Expression::const_iterator i = sel->begin(); i != sel->end(); ++i) {itested();
+    for (Expression::const_iterator i = sel->begin(); i != sel->end(); ++i) {
       (**i).stack_op(E);
     }
 
@@ -423,7 +423,7 @@ void Token_STOP::stack_op(Expression* E)const
 }
 /*--------------------------------------------------------------------------*/
 void Token_ARRAY::stack_op(Expression* E)const
-{itested();
+{
   assert(E);
   E->push_back(clone());
   return;

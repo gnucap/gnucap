@@ -59,7 +59,7 @@ public:
       full_file_name = findfile(file_name, incl, R_OK);
     }
 
-    if(_relative){ itested();
+    if(_relative){
       cwd = OS::getcwd();
       std::string dir = OS::dirname(full_file_name);
       full_file_name = OS::basename(full_file_name);
@@ -71,7 +71,7 @@ public:
     try {
       CS file(CS::_INC_FILE, full_file_name);
       for (;;) {
-	if (OPT::language) { untested();
+	if (OPT::language) {
 	  OPT::language->parse_top_item(file, Scope);
 	}else{ untested();
 	  CMD::cmdproc(file.get_line(""), Scope);
@@ -79,10 +79,10 @@ public:
       }
     }catch (Exception_File_Open& e) {itested();
       cmd.warn(bDANGER, here, e.message() + '\n');
-    }catch (Exception_End_Of_Input& e) { untested();
+    }catch (Exception_End_Of_Input& e) {
       // done
     }
-    if(_relative){ untested();
+    if(_relative){
       OS::chdir(cwd);
     }else{
     }
