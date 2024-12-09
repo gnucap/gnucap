@@ -89,7 +89,9 @@ depend ${srcdir}/Make.depend: # $(SRCS) ${GENERATED_SRCS} $(HDRS)
 		${MAKE_CPPFLAGS} $$i -DDEPEND \
 		>> ${srcdir}/Make.depend; \
 	done
-	
+	if [ -n "${EXTRA_DEPEND}" ]; then \
+		echo ${EXTRA_DEPEND} >> ${srcdir}/Make.depend; \
+	fi
 #-----------------------------------------------------------------------------
 date:
 	date "+#define PATCHLEVEL \"`git branch | awk '/\*/ { print $$2; }'` %Y.%m.%d\"" \

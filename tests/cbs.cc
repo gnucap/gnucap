@@ -191,9 +191,9 @@ private: // SOLVER
     }else{
     }
   }
-  void allocate();
+  void allocate()override;
   void check_consistency(int m);
-  void unallocate();
+  void unallocate()override;
 
 private: // CBS
   void init(int ss) override;
@@ -270,7 +270,7 @@ private: // implementation
   void fbsub(T* x, const T* b, T* c = nullptr) const override {
     return _lu.fbsub(x, b, c);
   }
-  void fbsubt(T*) const{ untested(); incomplete(); }
+  void fbsubt(T*)const override { untested(); incomplete(); }
 
 private: // memory
   void tag_wanted();

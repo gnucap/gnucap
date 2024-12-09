@@ -87,5 +87,7 @@ symlinks: ${TEST_SYMLINKS:%=${PWD}/%}
 ${TEST_SYMLINKS:%=${PWD}/%} : ${PWD}/%:
 	[ ${srcdir} = "." ] || ${LN_S} ${srcdir}/$*
 
+EXTRA_CLEANFILES = ${TEST_PLUGINS}
+
 .PHONY: ${diff} ${v_out} ${gc_out} ${dump_out} check diff prep symlinks
 .DELETE_ON_ERROR:
