@@ -9,3 +9,4 @@ main.o: main.cc ../include/globals.h ../include/l_dispatcher.h \
  ../include/e_cardlist.h ../include/u_lang.h ../include/ap.h \
  ../include/patchlev.h ../include/c_comand.h ../include/e_card.h \
  ../include/declare.h
+main.o: ../conf/config.h
