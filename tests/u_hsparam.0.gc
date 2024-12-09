@@ -1,0 +1,18 @@
+
+module a (x,y);
+resistor #(.r(1), .$mfactor(2)) r(x,y)
+endmodule
+module b (x,y);
+a #(.$mfactor(.33333)) r(x,y)
+endmodule
+
+verilog
+
+isource #(1) i(\0 ,x);
+a #(.$mfactor(5)) a1(x, \0 );
+
+isource #(1) i(\0 ,y);
+b #(.$mfactor(5)) a1(y, \0 );
+
+print op v(nodes)
+op

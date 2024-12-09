@@ -1,0 +1,14 @@
+simple diode test
+V1   1  0  10.
+.subckt m4 1 2
+	R1   1  2  400.K
+	D1   2  0  ddd
+.ends
+Xm 1 2 m4 $mfactor=4
+.model  ddd  d  ( is= 10.f  rs= 0.  n= 1.  tt= 0.  cjo= 1.p  vj= 1.  m= 0.5 
++ eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5 )
+.list
+.print op v(1) v(2) i(V1)
+.op
+.stat notime
+.end
