@@ -1,6 +1,14 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 20241210-dev
+
+- matrix interface & cbs test
+- public COMMON_LOGIC, and fix a logic bug
+- `include: now relative to current file
+- virtual portlists: CARD::n_
+- inherit attributes in copy
+
 == 20241031-dev
 
 - support named port syntax
