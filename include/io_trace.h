@@ -150,12 +150,12 @@
 #ifdef __cplusplus
 
 #define unreachable() ( \
-    std::cerr << "@@#\n@@@\nunreachable:" \
+    std::cerr << "@@#\n@@@unreachable:" \
               << __FILE__ << ":" << __LINE__ << ":" << __func__ << "\n"); \
     unreachable_trap()
 
 #define incomplete() ( \
-    std::cerr << "@@#\n@@@\nincomplete:" \
+    std::cerr << "@@#\n@@@incomplete:" \
               << __FILE__ << ":" << __LINE__ << ":" << __func__ << "\n" )
 
 #else // no __cplusplus
