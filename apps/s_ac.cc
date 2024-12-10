@@ -239,6 +239,10 @@ void AC::solve()
   ::status.load.start();
   _sim->count_iterations(iTOTAL);
   _scope->do_ac();
+  while (!_sim->_late_evalq.empty()) { //BUG// encapsulation violation
+    _sim->_late_evalq.front()->do_ac_last();
+    _sim->_late_evalq.pop_front();
+  }
   _scope->ac_load();
   ::status.load.stop();
 
