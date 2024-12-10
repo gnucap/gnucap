@@ -1,0 +1,8 @@
+
+module rr (a, b, c, ref);
+	resistor #(.r($temperature())) r(b, ref);
+endmodule
+
+simulator lang=verilog
+
+list

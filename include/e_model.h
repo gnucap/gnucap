@@ -68,7 +68,7 @@ public:
   virtual SDP_CARD* new_sdp(COMMON_COMPONENT*)const {unreachable();return 0;};
   virtual bool parse_params_obsolete_callback(CS&) {unreachable(); return false;}
   virtual bool is_valid(const COMPONENT*)const {return true;}
-  const CARD* component_proto()const {untested(); return _component_proto;}
+  const CARD* component_proto()const {itested(); return _component_proto;}
 protected:
   const CARD* _component_proto;
 public:

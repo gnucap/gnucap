@@ -1,0 +1,4 @@
+module rr (.a(a),.b(b),.c(c),.ref(ref));
+resistor #(.r($temperature())) r (.p(b),.n(ref));
+endmodule // rr
+

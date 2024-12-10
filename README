@@ -1,4 +1,4 @@
-This directory contains the 20241002 Gnucap snapshot
+This directory contains the Gnucap snapshots
 
 Gnucap is a modular mixed-signal circuit simulator that partially implements
 Verilog-AMS, that aspires to eventually implement the complete language.

@@ -267,7 +267,7 @@ public: // "solve?"
   void fbsub(T* x, const T* b, T* c = nullptr) const {
     assert(_solver); _solver->fbsub(x, b, c);
   }
-  void fbsubt(T* v) const { untested(); assert(_solver); _solver->fbsubt(v); }
+  void fbsubt(T* v) const {itested(); assert(_solver); _solver->fbsubt(v); }
 }; // BSMATRIX
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -884,21 +884,21 @@ void BSMATRIX_DATA<T>::fbsub(T* x, const T* b, T* c) const
  */
 template <class T>
 void BSMATRIX_DATA<T>::fbsubt(T* v) const
-{untested();
+{itested();
   assert(_lownode);
   assert(v);
 
   // forward substitution
-  for (int ii = 1; ii <= size(); ++ii) {untested();
-    for (int jj = _lownode[ii]; jj < ii; ++jj) {untested();
+  for (int ii = 1; ii <= size(); ++ii) {itested();
+    for (int jj = _lownode[ii]; jj < ii; ++jj) {itested();
       v[ii] -= u(jj,ii) * v [jj];
     }
   }
 
   // back substitution
-  for (int jj = size(); jj > 1; --jj) {untested();
+  for (int jj = size(); jj > 1; --jj) {itested();
     v[jj] /= d(jj);
-    for (int ii = _lownode[jj]; ii < jj; ++ii) {untested();
+    for (int ii = _lownode[jj]; ii < jj; ++ii) {itested();
       v[ii] -= l(jj,ii) * v[jj];
     }
   }
