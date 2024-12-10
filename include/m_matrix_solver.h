@@ -150,7 +150,7 @@ private: // solver overrides
   void fbsub(T* x, const T* b, T* c = NULL)const override { untested();
     return _data.fbsub(x, b, c);
   }
-  void fbsubt(T* v)const override { untested();
+  void fbsubt(T* v)const override {itested();
     return _data.fbsubt(v);
   }
   void lu_decomp(bool do_partial)override;
@@ -306,7 +306,7 @@ void LU_INPLACE<T>::lu_decomp(bool /*ignore partial*/)
       }
       { /* jj == mm */
 	/* m(mm,mm) -= dot(mm,mm,mm); then test */
-	if (subtract_dot_product(mm,mm,mm) == 0.) {untested();
+	if (subtract_dot_product(mm,mm,mm) == 0.) {itested();
 	  error(bWARNING, "open circuit: internal node %u\n", mm);
 	  d(mm,mm) = _min_pivot;
 	}else{
