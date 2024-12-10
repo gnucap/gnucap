@@ -100,7 +100,7 @@ std::string CS::ctos(const std::string& term,
 	}
       }else if (skip1(the_begin_quote)) {
 	++quotes;
-	skip();
+	//skip();
       }else if (skip1('\\')) {
 	end_string = cursor() - 1;
 	s += _cmd.substr(begin_string, end_string-begin_string);

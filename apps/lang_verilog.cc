@@ -168,16 +168,6 @@ void LANG_VERILOG::parse_args_paramset(CS& cmd, MODEL_CARD* x)
   }
 }
 /*--------------------------------------------------------------------------*/
-static std::string get_expression_string(CS& cmd)
-{
-  // BUG // need to tokenize right here. strings may contain separators etc.
-  // ctos(",)", "(", ")"); does not work, see lang_verilog.4
-  Expression e(cmd);
-  std::stringstream s;
-  e.dump(s);
-  return s.str();
-}
-/*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 {
   assert(x);
@@ -190,7 +180,7 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
       // by name
       while (cmd >> '.') {
 	std::string Name  = cmd.ctos("(", "", "");
-	std::string value = get_expression_string(cmd);
+	std::string value = cmd.ctos(",)", "(", ")");
 	cmd >> ',';
 	try{
 	  int Index = x->set_param_by_name(Name, value);
