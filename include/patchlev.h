@@ -1,1 +1,1 @@
-#define PATCHLEVEL "snapshot 2024.12.10"
+#define PATCHLEVEL "bugfix 2024.12.11"

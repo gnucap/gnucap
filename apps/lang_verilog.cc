@@ -916,12 +916,12 @@ class CMD_MODULE : public CMD {
     try {
       lang_verilog.parse_module(cmd, new_module);
       Scope->push_back(new_module);
-    }catch(Exception const& e) {
+    }catch(Exception const& e) { untested();
       cmd.warn(bDANGER, e.message());
-      for (;;) {
+      for (;;) { untested();
 	cmd.get_line("verilog-module>");
 
-	if (cmd >> "endmodule ") {
+	if (cmd >> "endmodule ") { untested();
 	  break;
 	}else{ untested();
 	}
