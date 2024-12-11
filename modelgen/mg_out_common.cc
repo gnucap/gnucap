@@ -127,7 +127,6 @@ static void make_common_operator_equal(std::ofstream& out, const Device& d)
     out << "    && " << c->code_name() << " == p->" << c->code_name() << '\n';
   }
   out <<
-    "    && _sdp && p->_sdp\n"
     "    && COMMON_COMPONENT::operator==(x));\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
