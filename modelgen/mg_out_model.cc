@@ -330,7 +330,7 @@ static void make_model_new_sdp(std::ofstream& out, const Model& m)
     "      cc->_sdp->init(cc);\n"
     "      return cc->_sdp;\n"
     "    }else{\n"
-    "      delete cc->_sdp;\n"
+    "      // delete cc->_sdp;\n"
     "      return new SDP_" << m.name() << "(c);\n"
     "    }\n"
     "  }else{\n"

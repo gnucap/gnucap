@@ -359,7 +359,7 @@ static void make_dev_precalc_last(std::ofstream& out, const Device& d)
     "{\n"
     "  COMMON_COMPONENT const* c = common();\n"
     "  BASE_SUBCKT::precalc_last();\n"
-    "  if(c==common()){untested();\n"
+    "  if(c==common()){\n"
     "  }else{\n"
     "  }\n";
   out << "}\n"
