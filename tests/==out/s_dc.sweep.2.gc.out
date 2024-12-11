@@ -12,7 +12,7 @@ dev ( p n )  vsource U
 .ends Vdc
 .subckt R ( p n )
 *// local? 
-dev ( p n )  resistor R * (1. + dT*(Tc1 + dT*Tc2))
+dev ( p n )  resistor (R * (1. + (dT * (Tc1 + (dT * Tc2)))))
 .ends R
 i1 ( 1 0 )  Idc  I=ii
 r1 ( 1 0 )  R  R=rr

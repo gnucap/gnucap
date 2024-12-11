@@ -1,19 +1,6 @@
 vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? label required
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? '(' required (parse ports) (grounding)
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? sink: port unconnected, grounding
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? src: port unconnected, grounding
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? ps: port unconnected, grounding
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? ns: port unconnected, grounding
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? what's this?
+           ^ ? what's this?
 // error .. extra paren, rest of line not parsed 
-vccs #(.gm(alpha*adap)) G_unnamed (.sink(\0 ),.src(\0 ),.ps(\0 ),.ns(\0 ));
 print tran v(x) v(y) 
              ^ ? no match
 print tran v(x) v(y) 

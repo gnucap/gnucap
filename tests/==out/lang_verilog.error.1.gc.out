@@ -1,7 +1,6 @@
-vccs #(.gm({alp ... ap})) iF(\0 , f, cd ); 
-                                        ^ ? need 1 more nodes, grounding
+vccs #(.gm({alpha*adap})) iF(\0 , f, cd ); 
+           ^ ? what's this?
 // too few ports 
-vccs #(.gm(alpha*adap)) iF (.sink(\0 ),.src(f),.ps(cd),.ns(\0 ));
 print tran v(x) v(y) 
              ^ ? no match
 print tran v(x) v(y) 

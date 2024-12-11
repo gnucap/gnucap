@@ -3,7 +3,7 @@ resistor #(.r(x+y)) r1 (.p(a),.n(b));
 endmodule // r
 
 module rr (.a(a),.b(b));
-r #(.x(x/3)) r0 (.a(a),.b(b));
+r #(.x((x / 3))) r0 (.a(a),.b(b));
 endmodule // rr
 
 vsource #(.dc(1)) v1 (.p(\1 ),.n(\0 ));

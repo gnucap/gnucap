@@ -1,23 +1,10 @@
 vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? label required
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? '(' required (parse ports) (grounding)
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? sink: port unconnected, grounding
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? src: port unconnected, grounding
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? ps: port unconnected, grounding
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? ns: port unconnected, grounding
-vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
-                         ^ ? what's this?
+           ^ ? vccs #(.gm({alpha*adap}))) iF(0 f cd 0); 
+           ^ ? what's this?
 crash(x, y); 
-     ^ ? label required
-module crash (.iout(iout),.nC(nC));
-// extra paren in vccs 
-vccs #(.gm(alpha*adap)) G_unnamed (.sink(\0 ),.src(\0 ),.ps(\0 ),.ns(\0 ));
-endmodule // crash
-
+^ ? crash: no match
 // syntax error, no label 
-crash #() X_unnamed (.iout(x),.nC(y));
+print tran v(x) v(y) 
+             ^ ? no match
+print tran v(x) v(y) 
+                  ^ ? no match
