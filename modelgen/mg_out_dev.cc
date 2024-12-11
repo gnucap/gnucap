@@ -312,7 +312,8 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "\n"
     "  if (_sim->is_first_expand()) {\n"
     "    precalc_first();\n"
-    "    precalc_last();\n"
+    "    // precalc_last();\n"
+    "    mutable_common()->precalc_last(scope());\n"
     "    // optional nodes\n";
   for (Port_List::const_iterator
        p = d.circuit().opt_nodes().begin();
@@ -356,11 +357,11 @@ static void make_dev_precalc_last(std::ofstream& out, const Device& d)
   make_tag();
   out << "void DEV_" << d.name() << "::precalc_last()\n"
     "{\n"
-    "  CARD::precalc_last();\n"
-    "  assert(common());\n"
-    "  mutable_common()->precalc_last(scope());\n"
-	 "  assert(subckt());\n"
-	 "  subckt()->precalc_last();\n";
+    "  COMMON_COMPONENT const* c = common();\n"
+    "  BASE_SUBCKT::precalc_last();\n"
+    "  if(c==common()){untested();\n"
+    "  }else{\n"
+    "  }\n";
   out << "}\n"
     "/*--------------------------------------"
     "------------------------------------*/\n";
