@@ -352,21 +352,6 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
-static void make_dev_precalc_last(std::ofstream& out, const Device& d)
-{
-  make_tag();
-  out << "void DEV_" << d.name() << "::precalc_last()\n"
-    "{\n"
-    "  COMMON_COMPONENT const* c = common();\n"
-    "  BASE_SUBCKT::precalc_last();\n"
-    "  if(c==common()){\n"
-    "  }else{\n"
-    "  }\n";
-  out << "}\n"
-    "/*--------------------------------------"
-    "------------------------------------*/\n";
-}
-/*--------------------------------------------------------------------------*/
 static std::string fix_expression(const std::string& in)
 {
   std::string out;
@@ -480,7 +465,6 @@ void make_cc_dev(std::ofstream& out, const Device& d)
   make_dev_default_constructor(out, d);
   make_dev_copy_constructor(out, d);
   make_dev_expand(out, d);
-  make_dev_precalc_last(out, d);
   make_dev_probe(out, d);
   make_dev_aux(out, d);
   out << "/*--------------------------------------"
