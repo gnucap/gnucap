@@ -53,7 +53,17 @@ COMMON_COMPONENT::COMMON_COMPONENT(int c)
 COMMON_COMPONENT::~COMMON_COMPONENT()
 {
   trace1("common,destruct", _attach_count);
-  assert(_attach_count == 0 || _attach_count == CC_STATIC);
+  if(_attach_count == 0){
+    // not attached to anything.
+  }else if(_attach_count == CC_STATIC) {
+    // static, not attached to anything.
+  }else if(_attach_count > CC_STATIC) {
+    // static, still attached to another common
+    // the other is static (presumably), but
+    // there seems no way to influence destruction order
+  }else{
+    assert(0 && "common still in use");
+  }
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
