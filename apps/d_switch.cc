@@ -129,26 +129,24 @@ private: // override virtual
   int	    min_nodes()const override	{return 3;}
   int	    net_nodes()const override	{return 2;}
   int	    num_current_ports()const override {return 1;}
-  const std::string current_port_value(int)const override {return _input_label;};
   CARD*	    clone()const override	{return new DEV_CSWITCH(*this);}
   void	    expand()override;
   char	    id_letter()const override	{return 'W';}
-  int	   set_port_by_name(std::string& Name, std::string& Value)override
-		{untested(); return SWITCH_BASE::set_port_by_name(Name,Value);}
   void	   set_port_by_index(int, std::string&)override;
   bool	   node_is_connected(int)const override;
 
-  std::string port_name(int i)const override {itested();
+  std::string port_name(int i)const override {
     assert(i >= 0);
-    assert(i < 2);
-    static std::string names[] = {"p", "n"};
+    assert(i < 3);
+    static std::string names[] = {"p", "n", "in"};
     return names[i];
   }
-  std::string current_port_name(int i)const override { untested();
-    assert(i >= 0);
-    assert(i < 1);
-    static std::string names[] = {"in"};
-    return names[i];
+  const std::string port_value(int i)const override {
+    if (i == 2) {
+      return _input_label;
+    }else{
+      return SWITCH_BASE::port_value(i);
+    }
   }
 private:
   std::string	 _input_label;

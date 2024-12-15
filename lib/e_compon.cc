@@ -400,7 +400,8 @@ COMPONENT::COMPONENT(COMMON_COMPONENT* c)
    _mfactor_fixed(NOT_VALID),
    _converged(false),
    _q_for_eval(-1),
-   _time_by()
+   _time_by(),
+   _net_nodes(0)
 {
   if (_sim) {
     _sim->uninit();
@@ -416,7 +417,8 @@ COMPONENT::COMPONENT(const COMPONENT& p)
    _mfactor_fixed(p._mfactor_fixed),
    _converged(p._converged),
    _q_for_eval(-1),
-   _time_by(p._time_by)
+   _time_by(p._time_by),
+   _net_nodes(p._net_nodes)
 {
   if (_sim) {
     _sim->uninit();
@@ -473,12 +475,13 @@ int COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
 void COMPONENT::set_port_by_index(int num, std::string& ext_name)
 {
   if (num < max_nodes()) {
-    n_(num).new_node(ext_name, this);
+    n_(num).new_node(ext_name, this);  // Really look-up node, make new if needed.
+
     if (num+1 > _net_nodes) {
-      // make the list bigger
+      // Update _net_nodes for net_nodes().  Not really a count.
       _net_nodes = num+1;
     }else{
-      // it's already big enough, probably assigning out of order
+      // probably assigning out of order.
     }
   }else{
     throw Exception_Too_Many(num+1, max_nodes(), 0/*offset*/);
@@ -843,13 +846,6 @@ const std::string COMPONENT::port_value(int i)const
   assert(i >= 0);
   assert(i < net_nodes());
   return n_(i).short_label();
-}
-/*--------------------------------------------------------------------------*/
-const std::string COMPONENT::current_port_value(int)const 
-{untested();
-  unreachable();
-  static std::string s;
-  return s;
 }
 /*--------------------------------------------------------------------------*/
 double COMPONENT::tr_probe_num(const std::string& x)const

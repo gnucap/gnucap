@@ -109,7 +109,7 @@ private: // override virtual
   char	   id_letter()const override	{return 'K';}
   bool	   print_type_in_spice()const override {return false;}
   std::string value_name()const override {return "k";}
-  std::string dev_type()const override	{untested(); return "mutual_inductor";}
+  std::string dev_type()const override	{return "mutual_inductor";}
   int	   max_nodes()const override	{return 2;}
   int	   min_nodes()const override	{return 2;}
   int	   matrix_nodes()const override	{return 2;}
@@ -139,10 +139,6 @@ private: // override virtual
   void	   ac_load()override;
   COMPLEX  ac_amps()const override	{untested(); return _loss0 * ac_outvolts();}
 
-  int	   set_port_by_name(std::string& Name, std::string& Value)override
-		{untested(); return COMPONENT::set_port_by_name(Name,Value);}
-  void	   set_port_by_index(int Index, std::string& Value)override
-		{set_current_port_by_index(Index, Value);}
   bool	   node_is_connected(int i)const override {
     switch (i) {
     case 0:  return _output_label != "";
@@ -150,24 +146,20 @@ private: // override virtual
     default: unreachable(); return false;
     }
   }
-
-  std::string port_name(int)const override {untested();
-    return "";
-  }
-  std::string current_port_name(int i)const override {untested();
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < 2);
     static std::string names[] = {"l1", "l2"};
     return names[i];
   }
-  const std::string current_port_value(int i)const override {
+  const std::string port_value(int i)const override {
     switch (i) {
-    case 0:  return _output_label;
-    case 1:  return _input_label;
-    default: unreachable(); return COMPONENT::current_port_value(i);
+    case 0: return _output_label;
+    case 1: return _input_label;
+    default: unreachable(); return COMPONENT::port_value(i);
     }
   }
-  void set_current_port_by_index(int i, const std::string& s) override {
+  void set_port_by_index(int i, std::string& s) override {
     switch (i) {
     case 0:  _output_label = s;	break;
     case 1:  _input_label = s;	break;

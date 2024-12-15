@@ -1,0 +1,35 @@
+//
+spice
+.model  sss  csw  ( it= 0.  ih= .002  ron= 1.K  roff= 1.E+12 )
+v1   1  0  dc 1. ac  1. 
+.verilog
+resistor #(1k) r1 (\1 , \2 );
+sss            w1 (\2 , \0 , rprobe);
+spice
+v2   3  0  dc 1. ac  1. 
+.verilog
+resistor #(1k) r2 (\3 , \4 );
+sss            w2 (\4 , \0 , vprobe);
+spice
+v3   5  0  dc 1. ac  1. 
+.verilog
+resistor #(1k) r3 (\5 , \6 );
+sss            w3 (\6 , \0 , isig);
+spice
+isig   7  0  pwl( 0.  0.  5.  -.005  15. .005  25.  -.005 ) 
+.verilog
+resistor #(1k) rprobe (\7 , \8 );
+vsource  #(0)  vprobe (\8 , \0 );
+
+option insensitive
+width out=170
+list
+print dc v(nodes) ev(w*) i(?sig) i(?probe)
+print tran v(nodes) ev(w*) i(?sig) i(?probe)
+print ac v(nodes) ev(w*) i(?sig) i(?probe)
+dc isig .005 -.005 -.001 loop
+ac 1k
+tran 0 25 1
+ac 1k 
+list
+end 

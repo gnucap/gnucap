@@ -53,16 +53,10 @@ private: // override virtual
   void	   do_ac_last()override;
   void	   ac_load()override	{ac_load_active();}
 
-  std::string port_name(int i)const override {untested();
+  std::string port_name(int i)const override {
     assert(i >= 0);
-    assert(i < 2);
-    static std::string names[] = {"sink", "src"};
-    return names[i];
-  }
-  std::string current_port_name(int i)const override {untested();
-    assert(i >= 0);
-    assert(i < 1);
-    static std::string names[] = {"in"};
+    assert(i < 3);
+    static std::string names[] = {"sink", "src", "in"};
     return names[i];
   }
 };

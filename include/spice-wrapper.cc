@@ -256,7 +256,6 @@ public:	// type
   void set_dev_type(const std::string& nt);
   std::string dev_type()const	{return _modelname;}
 public:	// ports
-  // bool port_exists(int i)const //COMPONENT
   std::string port_name(int i)const {itested();
     assert(i >= 0);
     assert(i < MAX_NET_NODES);

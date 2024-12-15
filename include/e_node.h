@@ -133,7 +133,7 @@ public:
 
   
   const std::string  short_label()const {return ((n_()) ? (n_()->short_label()) : "?????");}
-  void	set_to_ground(CARD*);
+  void	set_to_ground(CARD* Owner)	{new_node("0", Owner);}
   void	new_node(const std::string&, const CARD*);
   void	new_model_node(const std::string& n, CARD* d);
   void	map_subckt_node(int* map_array, const CARD* d);

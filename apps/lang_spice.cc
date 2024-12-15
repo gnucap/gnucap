@@ -314,6 +314,11 @@ void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* 
     parse_ports(cmd, x, 0,  0,		num_nodes, false);
     //			min already_got
   }
+  //assert(x->_net_nodes == x->net_nodes()); //fails
+  // _net_nodes is how many so far.
+  // For some devs net_nodes() always returns the finished number.
+  // For others it returns _net_nodes, which equals the finished number when it is finished,
+  // but it is not finished here.
   int gotnodes = x->_net_nodes;
   COMMON_COMPONENT* c = nullptr;
 
@@ -806,10 +811,6 @@ void LANG_SPICE_BASE::print_ports(OMSTREAM& o, const COMPONENT* x)
   std::string sep = "";
   for (int ii = 0;  x->port_exists(ii);  ++ii) {
     o << sep << x->port_value(ii);
-    sep = " ";
-  }
-  for (int ii = 0;  x->current_port_exists(ii);  ++ii) {
-    o << sep << x->current_port_value(ii);
     sep = " ";
   }
   o << " )";

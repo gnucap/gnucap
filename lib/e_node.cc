@@ -163,30 +163,26 @@ XPROBE NODE::ac_probe_ext(const std::string& x)const
   }
 }
 /*--------------------------------------------------------------------------*/
-void node_t::set_to_ground(CARD* d)
-{
-  //assert(!_nnn); //BUG// fails on MUTUAL_L::expand after clone
-  assert(d);
-
-  NODE_MAP* Map = d->scope()->nodes();
-  assert(Map);
-  _nnn = (*Map)["0"];
-  _ttt = 0;
-  assert(_nnn);
-}
-/*--------------------------------------------------------------------------*/
 /* new_node: a raw new node, as when a netlist is parsed
+ * It's only "new" if this is the first use in this scope.
+ * If it is not the first use of this node, it makes a connection.
  */
-void node_t::new_node(const std::string& node_name, const CARD* d)
+void node_t::new_node(const std::string& node_name, const CARD* Owner)
 {
-  //assert(!_nnn); //BUG// fails on MUTUAL_L::expand after clone
-  assert(d);
-
-  NODE_MAP* Map = d->scope()->nodes();
+  if (_nnn) {//206
+    // Repeat assign to this port, must be by name.  Probably an error.
+    // Just clobber it.  Might be a leak but probably isn't.
+  }else{//33312
+    // proper first assign to this port.  The usual case.
+  }
+  assert(Owner); // the device that owns this port.
+  assert(Owner->scope()); // the CARD_LIST that owns this device.
+  NODE_MAP* Map = Owner->scope()->nodes();
   assert(Map);
-  _nnn = Map->new_node(node_name);
-  _ttt = _nnn->user_number();
+
+  _nnn = Map->new_node(node_name); // not neessarily "new"
   assert(_nnn);
+  _ttt = _nnn->user_number();
 }
 /*--------------------------------------------------------------------------*/
 /* new_model_node: a mapped new node, produced through model expansion.
@@ -195,9 +191,9 @@ void node_t::new_node(const std::string& node_name, const CARD* d)
  * Supposedly equivalent to new_node() then map_subckt_node()
  * but it does it without building a map
  */
-void node_t::new_model_node(const std::string& node_name, CARD* d)
+void node_t::new_model_node(const std::string& node_name, CARD* Owner)
 {
-  new_node(node_name, d);
+  new_node(node_name, Owner);
   _ttt = CARD::_sim->newnode_model();
   //assert(_ttt == _nnn->flat_number());
 }

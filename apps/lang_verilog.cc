@@ -786,12 +786,6 @@ void LANG_VERILOG::print_ports_long(OMSTREAM& o, const COMPONENT* x)
     o << '.' << mangle(x->port_name(ii)) << '(' << mangle(x->port_value(ii)) << ')';
     sep = ',';
   }
-  for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
-    o << sep;
-    //////print_attributes(o, x->port_id_tag(ii));
-    o << '.' << x->current_port_name(ii) << '(' << x->current_port_value(ii) << ')';
-    sep = ',';
-  }
   o << ')';
 }
 /*--------------------------------------------------------------------------*/
@@ -807,12 +801,6 @@ void LANG_VERILOG::print_ports_short(OMSTREAM& o, const COMPONENT* x)
     o << sep;
     print_attributes(o, x->port_id_tag(ii));
     o << mangle(x->port_value(ii));
-    sep = ',';
-  }
-  for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
-    o << sep;
-    //////print_attributes(o, x->port_id_tag(ii));
-    o << mangle(x->current_port_value(ii));
     sep = ',';
   }
   o << ")";

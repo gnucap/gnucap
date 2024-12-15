@@ -348,10 +348,6 @@ static void print_ports(OMSTREAM& o, const COMPONENT* x)
     o << sep << x->port_value(ii);
     sep = " ";
   }
-  for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
-    o << sep << x->current_port_value(ii);
-    sep = " ";
-  }
   o << ")";
 }
 /*--------------------------------------------------------------------------*/

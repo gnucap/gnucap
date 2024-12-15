@@ -35,9 +35,6 @@ CARD::CARD()
    _constant(false),
    _net_nodes(0)
 {
-  #include "trace_on.h"
-  trace3("", sizeof(std::string), sizeof(CKT_BASE), sizeof(CARD));
-  #include "trace_off.h"
 }
 /*--------------------------------------------------------------------------*/
 CARD::CARD(const std::string& S)
