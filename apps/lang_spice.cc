@@ -848,6 +848,7 @@ class CMD_MODEL : public CMD {
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);
       if (new_card) {
 	assert(!new_card->owner());
+	new_card->set_owner(nullptr);
 	lang_spice.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
       }else{untested();
