@@ -880,6 +880,7 @@ class CMD_PARAMSET : public CMD {
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);
       if (new_card) {
 	assert(!new_card->owner());
+	new_card->set_owner(nullptr);
 	lang_verilog.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
       }else{untested();
@@ -898,6 +899,7 @@ class CMD_MODULE : public CMD {
     BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("module"));
     assert(new_module);
     assert(!new_module->owner());
+    new_module->set_owner(nullptr);
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
     assert(!new_module->is_device());
