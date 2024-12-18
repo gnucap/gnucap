@@ -1073,7 +1073,6 @@ void DEV_SPICE::precalc_last()
     notstd::copy_n(node_stash, matrix_nodes(), node); // put back real nodes
     // hopefully, the matrix pointers are the same as last time!
   }
-  assert(!is_constant());
   assert_model_unlocalized();
   assert_instance();
 }
@@ -1097,7 +1096,6 @@ void DEV_SPICE::internal_precalc()
     set_converged();
     _spice_model->_gen.GENinstances = NULL;
 
-    assert(!is_constant());
     assert_instance();
   }else{ untested();
   }
@@ -1287,13 +1285,6 @@ bool DEV_SPICE::do_tr()
 /*--------------------------------------------------------------------------*/
 void DEV_SPICE::tr_load()
 { untested();
-#ifndef NDEBUG
-  if (_loaditer == _sim->iteration_tag()) {untested();
-    error(bDANGER, long_label() + " internal error: double load\n");
-  }
-  _loaditer = _sim->iteration_tag();
-#endif
-
   int ihit[MATRIX_NODES+OFFSET];
   int jhit[MATRIX_NODES+OFFSET];
 

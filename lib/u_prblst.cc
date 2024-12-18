@@ -29,7 +29,7 @@
 #include "ap.h"
 #include "u_prblst.h"
 /*--------------------------------------------------------------------------*/
-void PROBE_LISTS::purge(CKT_BASE* brh)
+void PROBE_LISTS::purge(CARD* brh)
 {
   for (int i = 0;  i < sCOUNT;  ++i) {
     alarm[i].remove_one(brh);
@@ -101,11 +101,11 @@ void PROBELIST::remove_list(CS& cmd)
  * called by STL remove, below
  * both are needed to support different versions of stl
  */
-bool operator==(const PROBE& prb, const CKT_BASE* brh)
+bool operator==(const PROBE& prb, const CARD* brh)
 {
   return (prb.object() == brh);
 }
-bool operator!=(const PROBE& prb, const CKT_BASE* brh)
+bool operator!=(const PROBE& prb, const CARD* brh)
 {untested();
   return (prb.object() != brh);
 }
@@ -113,7 +113,7 @@ bool operator!=(const PROBE& prb, const CKT_BASE* brh)
 /* remove a brh from a PROBELIST
  * removes all probes on brh
  */
-void PROBELIST::remove_one(CKT_BASE *brh)
+void PROBELIST::remove_one(CARD *brh)
 {
   assert(brh);
   erase(remove(begin(), end(), brh), end());
@@ -192,7 +192,7 @@ void PROBELIST::add_list(CS& cmd, CARD_LIST* scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-void PROBELIST::push_new_probe(const std::string& param,const CKT_BASE* object)
+void PROBELIST::push_new_probe(const std::string& param,const CARD* object)
 {
   bag.push_back(PROBE(param, object));
 }

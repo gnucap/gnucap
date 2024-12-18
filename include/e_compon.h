@@ -152,15 +152,16 @@ class HS_PARAM;
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMPONENT : public CARD {
 private:
-  COMMON_COMPONENT* _common{nullptr};
-  HS_PARAM* _hsparam{nullptr}; // possibly indirect. later.
-private:
-  double _mfactor_fixed;	// composite, including subckt mfactor
-  bool	 _converged;
-  int	 _q_for_eval;
+  // meets short,short,bool (5 bytes, needs 3)
+  bool	    _converged{false};
 public:
+  short     _net_nodes{0};	// actual number of "nodes" in the netlist
   TIME_PAIR _time_by;
-  int	 _net_nodes;	// actual number of "nodes" in the netlist
+private:
+  COMMON_COMPONENT* _common{nullptr};
+  HS_PARAM* _hsparam{nullptr};		// possibly indirect. later.
+  float	    _mfactor_fixed{1.0};	// composite, including subckt mfactor
+  int	    _q_for_eval{-1};
   //--------------------------------------------------------------------
 protected: // create and destroy.
   explicit   COMPONENT(COMMON_COMPONENT* c=nullptr);
@@ -194,13 +195,12 @@ public:	// state, aux data
   void	set_not_converged()		{_converged = false;}
 
   double mfactor()const {
-    assert(_mfactor_fixed != NOT_VALID);
 #ifndef NDEBUG
     if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
-      assert(_mfactor_fixed == o->mfactor() * my_mfactor());
+      assert(_mfactor_fixed == float(o->mfactor() * my_mfactor()));
     }else{
       assert(!owner());
-      assert(_mfactor_fixed == my_mfactor());
+      assert(_mfactor_fixed == float(my_mfactor()));
     }
 #endif
     return _mfactor_fixed;

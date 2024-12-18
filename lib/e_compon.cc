@@ -396,12 +396,12 @@ public:
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT(COMMON_COMPONENT* c)
   :CARD(),
-   _common(0),
-   _mfactor_fixed(NOT_VALID),
    _converged(false),
-   _q_for_eval(-1),
+   _net_nodes(0),
    _time_by(),
-   _net_nodes(0)
+   _common(0),
+   _mfactor_fixed(1.0),
+   _q_for_eval(-1)
 {
   if (_sim) {
     _sim->uninit();
@@ -413,12 +413,12 @@ COMPONENT::COMPONENT(COMMON_COMPONENT* c)
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT(const COMPONENT& p)
   :CARD(p),
+   _converged(p._converged),
+   _net_nodes(p._net_nodes),
+   _time_by(p._time_by),
    _common(0),
    _mfactor_fixed(p._mfactor_fixed),
-   _converged(p._converged),
-   _q_for_eval(-1),
-   _time_by(p._time_by),
-   _net_nodes(p._net_nodes)
+   _q_for_eval(-1)
 {
   if (_sim) {
     _sim->uninit();
@@ -479,7 +479,7 @@ void COMPONENT::set_port_by_index(int num, std::string& ext_name)
 
     if (num+1 > _net_nodes) {
       // Update _net_nodes for net_nodes().  Not really a count.
-      _net_nodes = num+1;
+      _net_nodes = short(num+1);
     }else{
       // probably assigning out of order.
     }
@@ -493,7 +493,7 @@ void COMPONENT::set_port_to_ground(int num)
   if (num < max_nodes()) {
     n_(num).set_to_ground(this);
     if (num+1 > _net_nodes) {
-      _net_nodes = num+1;
+      _net_nodes = short(num+1);
     }else{untested();
     }
   }else{untested();
@@ -577,10 +577,10 @@ void COMPONENT::precalc_first()
   }
   trace1(long_label().c_str(), double(my_mfactor()));
   if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
-    _mfactor_fixed = o->mfactor() * my_mfactor();
+    _mfactor_fixed = float(o->mfactor() * my_mfactor());
   }else{
     assert(!owner());
-    _mfactor_fixed =  my_mfactor();
+    _mfactor_fixed = float(my_mfactor());
   } 
   trace1(long_label().c_str(), _mfactor_fixed);
 }

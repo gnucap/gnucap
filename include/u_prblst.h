@@ -45,7 +45,7 @@ public:
   void     clear();
 
   void	   remove_list(CS&);
-  void     remove_one(CKT_BASE*);
+  void     remove_one(CARD*);
   void     add_list(CS&, CARD_LIST* scope);
   int	   size()const		{return static_cast<int>(bag.size());}
   const_iterator begin()const	{return bag.begin();}
@@ -54,7 +54,7 @@ public:
   iterator end()		{return bag.end();}
 private:
   void	  erase(iterator b, iterator e) {bag.erase(b,e);}
-  void	  push_new_probe(const std::string& param, const CKT_BASE* object);
+  void	  push_new_probe(const std::string& param, const CARD* object);
   bool    add_branches(const std::string&, const std::string&, const CARD_LIST*);
   void    add_all_nodes(const std::string&, CARD_LIST*);
 };
@@ -65,7 +65,7 @@ public:
   PROBELIST plot[sCOUNT];  // list of plot probes
   PROBELIST print[sCOUNT]; // list of print probes
   PROBELIST store[sCOUNT]; // list of probes to store for postproc
-  void purge(CKT_BASE*);
+  void purge(CARD*);
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

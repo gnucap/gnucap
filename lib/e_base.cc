@@ -25,33 +25,12 @@
 #include "u_sim_data.h"
 #include "m_wave.h"
 #include "u_prblst.h"
-#include "u_xprobe.h"
-#include "e_base.h"
-/*--------------------------------------------------------------------------*/
-static char fix_case(char c)
-{
-  return ((OPT::case_insensitive) ? (static_cast<char>(tolower(c))) : (c));
-}
-/*--------------------------------------------------------------------------*/
-double CKT_BASE::tr_probe_num(const std::string&)const {return NOT_VALID;}
-XPROBE CKT_BASE::ac_probe_ext(const std::string&)const {return XPROBE(NOT_VALID, mtNONE);}
-double CKT_BASE::noise_num(const std::string&)const {itested(); return 0.;}
 /*--------------------------------------------------------------------------*/
 SIM_DATA* CKT_BASE::_sim = nullptr; 
 PROBE_LISTS* CKT_BASE::_probe_lists = nullptr;
 /*--------------------------------------------------------------------------*/
 CKT_BASE::~CKT_BASE()
 {
-  trace1("~CKT_BASE", _probes);
-  if (_probes == 0) {
-  }else if (!_probe_lists) {untested();
-  }else if (!_sim) {untested();
-  }else{
-    _probe_lists->purge(this);
-  }
-  trace1("", _probes);
-  assert(_probes==0);
-
   if (has_attributes(id_tag())) {untested();
     unreachable();    // needs purge();
     erase_attributes(id_tag());
@@ -92,65 +71,6 @@ bool CKT_BASE::help(CS& Cmd, OMSTREAM& Out)const
   }else{
     return false;
   }
-}
-/*--------------------------------------------------------------------------*/
-double CKT_BASE::probe_num(const std::string& what)const
-{
-  double x;
-  if (_sim->analysis_is_ac()) {
-    x = ac_probe_num(what);
-  }else{
-    x = tr_probe_num(what);
-  }
-  return (std::abs(x)>=1) ? x : floor(x/OPT::floor + .5) * OPT::floor;
-}
-/*--------------------------------------------------------------------------*/
-double CKT_BASE::ac_probe_num(const std::string& what)const
-{
-  size_t length = what.length();
-  mod_t modifier = mtNONE;
-  bool want_db = false;
-  char parameter[BUFLEN+1];
-  strcpy(parameter, what.c_str());
-
-  if (length > 2  &&  Umatch(&parameter[length-2], "db ")) {
-    want_db = true;
-    length -= 2;
-  }
-  if (length > 1) { // selects modifier based on last letter of parameter
-    switch (fix_case(parameter[length-1])) {
-      case 'm': modifier = mtMAG;   length--;	break;
-      case 'p': modifier = mtPHASE; length--;	break;
-      case 'r': modifier = mtREAL;  length--;	break;
-      case 'i': modifier = mtIMAG;  length--;	break;
-      default:  modifier = mtNONE;		break;
-    }
-  }
-  parameter[length] = '\0'; // chop
-  
-  // "p" is "what" with the modifier chopped off.
-  // Try that first.
-  XPROBE xp = ac_probe_ext(parameter);
-
-  // If we don't find it, try again with the full string.
-  if (!xp.exists()) {
-    xp = ac_probe_ext(what);
-    if (!xp.exists()) {
-      // Still didn't find anything.  Print "??".
-    }else{itested();
-      // The second attempt worked.
-    }
-  }
-  return xp(modifier, want_db);
-}
-/*--------------------------------------------------------------------------*/
-/*static*/ double CKT_BASE::probe(const CKT_BASE *This, const std::string& what)
-{
-  if (This) {
-    return This->probe_num(what);
-  }else{				/* return 0 if doesn't exist */
-    return 0.0;				/* happens when optimized models */
-  }					/* don't have all parts */
 }
 /*--------------------------------------------------------------------------*/
 /*static*/ WAVE* CKT_BASE::find_wave(const std::string& probe_name)

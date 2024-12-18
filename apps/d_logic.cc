@@ -290,8 +290,6 @@ void DEV_LOGIC::expand()
     error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)), 
 	  long_label() + ": can't find subckt: " + subckt_name + ", forcing digital\n");
   }
-  
-  assert(!is_constant()); /* is a BUG */
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::tr_iwant_matrix()

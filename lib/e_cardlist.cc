@@ -52,7 +52,7 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
 
   attach_params(p, scope);
   shallow_copy(model->subckt());
-  set_owner(owner);
+  //set_owner(owner);
   map_subckt_nodes(model, owner);
 }
 /*--------------------------------------------------------------------------*/

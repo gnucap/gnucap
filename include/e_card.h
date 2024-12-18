@@ -30,6 +30,7 @@
 class CARD;
 /*--------------------------------------------------------------------------*/
 // external
+class XPROBE;
 class node_t;
 class CARD_LIST;
 class PARAM_LIST;
@@ -38,12 +39,15 @@ struct TIME_PAIR;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CARD : public CKT_BASE {
 private:
-  mutable int	_evaliter;	// model eval iteration number
   CARD_LIST*	_subckt;
-  CARD* 	_owner;
+  short 	_owner_tag;
+  mutable short _probes;	// number of probes set
   bool		_constant;	// eval stays the same every iteration
-public:
-  int		_net_nodes;	// actual number of "nodes" in the netlist
+  // padding 3 bytes (see NODE, COMPONENT)
+  //--------------------------------------------------------------------
+  static INDIRECT<short,CARD*> _owner_index;
+  static INDIRECT<CARD*,short> _owners;
+  static INDIRECT<CARD_LIST*,short> _scopes;
   //--------------------------------------------------------------------
 public:   				// traversal functions
   CARD* find_in_my_scope(const std::string& name);
@@ -101,7 +105,6 @@ public:	// state, aux data
   virtual int  net_nodes()const	{return 0;}
   virtual bool is_device()const	{return false;}
   virtual void set_slave()	{untested(); assert(!subckt());}
-	  bool evaluated()const;
 
   void	set_constant(bool c)	{_constant = c;}
   bool	is_constant()const	{return _constant;}
@@ -111,9 +114,9 @@ public: // owner, scope
   virtual const CARD_LIST* scope()const;
   virtual bool		   makes_own_scope()const  {return false;}
 
-  CARD*		owner()		   {return _owner;}
-  const CARD*	owner()const	   {return _owner;}
-  void		set_owner(CARD* o) {assert(!o||!_owner||_owner==o); _owner=o;}
+  CARD*		owner()		   {return _owners.at(_owner_tag);}
+  const CARD*	owner()const	   {return _owners.at(_owner_tag);}
+  void		set_owner(CARD* o);
   //--------------------------------------------------------------------
 public: // subckt
   CARD_LIST*	     subckt()		{return _subckt;}
@@ -121,8 +124,6 @@ public: // subckt
   void	  new_subckt();
   void	  new_subckt(const CARD* model, PARAM_LIST const* p);
   void	  renew_subckt(const CARD* model, PARAM_LIST const* p);
-  //void     new_subckt(const CARD* model, CARD* owner, const CARD_LIST* scope, PARAM_LIST* p);
-  //void     renew_subckt(const CARD* model, CARD* owner, const CARD_LIST* scope, PARAM_LIST* p);
   //--------------------------------------------------------------------
 public:	// type
   virtual std::string dev_type()const	{unreachable(); return "";}
@@ -148,6 +149,17 @@ public: // parameters
   virtual std::string param_name(int i,int j)const {return (j==0) ? param_name(i) : "";}
   virtual std::string param_value(int)const	   {untested(); return "";}
   virtual std::string value_name()const		   {untested();incomplete(); return "";}
+  //--------------------------------------------------------------------
+public: // probes
+	  double      probe_num(const std::string&)const;
+	  double      ac_probe_num(const std::string&)const;
+  virtual double      tr_probe_num(const std::string&)const;
+  virtual XPROBE      ac_probe_ext(const std::string&)const;
+	  void	      inc_probes()const	{++_probes;}
+	  void	      dec_probes()const	{assert(_probes>0); --_probes;}
+	  bool	      has_probes()const	{return _probes > 0;}
+  virtual double      noise_num(const std::string&)const {untested(); return 0.;}
+  static  double      probe(const CARD*,const std::string&);
   //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code
   virtual bool use_obsolete_callback_parse()const {return false;}

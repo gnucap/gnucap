@@ -24,10 +24,10 @@
 //testing=script 2009.06.21
 #include "u_sim_data.h"
 #include "u_status.h"
-#include "e_base.h"
+#include "e_card.h"
 #include "u_probe.h"
 /*--------------------------------------------------------------------------*/
-PROBE::PROBE(const std::string& what,const CKT_BASE *brh)
+PROBE::PROBE(const std::string& what,const CARD *brh)
   :CKT_BASE(),
    _what(what),
    _brh(brh),

@@ -1,1 +1,1 @@
-#define PATCHLEVEL "bugfix 2024.12.11"
+#define PATCHLEVEL "node-3 2024.12.17"

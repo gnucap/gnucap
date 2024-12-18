@@ -22,43 +22,52 @@
  * Base class for "cards" in the circuit description file
  */
 //testing=script 2014.07.04
+#include "e_card.h"
+#include "u_xprobe.h"
+#include "u_prblst.h"
 #include "u_time_pair.h"
 #include "e_cardlist.h"
 #include "e_node.h"
-#include "e_card.h"
+/*--------------------------------------------------------------------------*/
+double CARD::tr_probe_num(const std::string&)const {return NOT_VALID;}
+XPROBE CARD::ac_probe_ext(const std::string&)const {return XPROBE(NOT_VALID, mtNONE);}
 /*--------------------------------------------------------------------------*/
 CARD::CARD()
   :CKT_BASE(),
-   _evaliter(-100),
    _subckt(0),
-   _owner(0),
-   _constant(false),
-   _net_nodes(0)
+   _owner_tag(0),
+   _probes(0),
+   _constant(false)
 {
 }
 /*--------------------------------------------------------------------------*/
 CARD::CARD(const std::string& S)
   :CKT_BASE(S),
-   _evaliter(-100),
    _subckt(0),
-   _owner(0),
-   _constant(false),
-   _net_nodes(0)
+   _owner_tag(0),
+   _probes(0),
+   _constant(false)
 {
 }
 /*--------------------------------------------------------------------------*/
 CARD::CARD(const CARD& p)
   :CKT_BASE(p),
-   _evaliter(-100),
    _subckt(0), //BUG// isn't this supposed to copy????
-   _owner(0),
-   _constant(p._constant),
-   _net_nodes(p._net_nodes)
+   _owner_tag(0),
+   _probes(0),
+   _constant(p._constant)
 {
 }
 /*--------------------------------------------------------------------------*/
 CARD::~CARD()
 {
+  if (_probes > 0) {
+    assert(_probe_lists);
+    _probe_lists->purge(this);
+  }else{
+  }
+  assert(_probes==0);
+
   // purge();
   delete _subckt;
 }
@@ -96,6 +105,21 @@ int CARD::connects_to(const node_t& node)const
   }else{untested();
   }
   return count;
+}
+/*--------------------------------------------------------------------------*/
+void CARD::set_owner(CARD* o)
+{
+  trace2("", __LINE__, _owner_tag);
+  if (_owner_index.count(o+1) == 0) {	// based on o+1 because o==0 is legit.
+    static short _owner_count = 0;	// o==0 is the root.
+    _owner_tag =  ++_owner_count;	// still a nonzero tag.
+    assert(_owner_count > 0);
+    _owner_index[o+1] = _owner_tag;
+    _owners[_owner_tag] = o;
+    _scopes[_owner_tag] = ((o) ? o->subckt() : &(CARD_LIST::card_list));
+  }else{
+    _owner_tag = _owner_index.at(o+1);
+  }
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST* CARD::scope()
@@ -206,8 +230,6 @@ TIME_PAIR CARD::tr_review()
 void CARD::new_subckt()
 {
   assert(!_subckt);
-  delete _subckt;
-  _subckt = nullptr;
   _subckt = new CARD_LIST;
 }
 /*--------------------------------------------------------------------------*/
@@ -216,6 +238,7 @@ void CARD::new_subckt(const CARD* Model, PARAM_LIST const* Params)
   delete _subckt;
   _subckt = nullptr;
   _subckt = new CARD_LIST(Model, this, scope(), Params);
+  _subckt->set_owner(this);
 }
 /*--------------------------------------------------------------------------*/
 void CARD::renew_subckt(const CARD* Model, PARAM_LIST const* Params)
@@ -264,14 +287,68 @@ void CARD::set_dev_type(const std::string& New_Type)
   }
 }
 /*--------------------------------------------------------------------------*/
-bool CARD::evaluated()const
+double CARD::probe_num(const std::string& what)const
 {
-  if (_evaliter == _sim->iteration_tag()) {
-    return true;
+  double x;
+  if (_sim->analysis_is_ac()) {
+    x = ac_probe_num(what);
   }else{
-    _evaliter = _sim->iteration_tag();
-    return false;
+    x = tr_probe_num(what);
   }
+  return (std::abs(x)>=1) ? x : floor(x/OPT::floor + .5) * OPT::floor;
+}
+/*--------------------------------------------------------------------------*/
+static char fix_case(char c)
+{
+  return ((OPT::case_insensitive) ? (static_cast<char>(tolower(c))) : (c));
+}
+/*--------------------------------------------------------------------------*/
+double CARD::ac_probe_num(const std::string& what)const
+{
+  size_t length = what.length();
+  mod_t modifier = mtNONE;
+  bool want_db = false;
+  char parameter[BUFLEN+1];
+  strcpy(parameter, what.c_str());
+
+  if (length > 2  &&  Umatch(&parameter[length-2], "db ")) {
+    want_db = true;
+    length -= 2;
+  }
+  if (length > 1) { // selects modifier based on last letter of parameter
+    switch (fix_case(parameter[length-1])) {
+      case 'm': modifier = mtMAG;   length--;	break;
+      case 'p': modifier = mtPHASE; length--;	break;
+      case 'r': modifier = mtREAL;  length--;	break;
+      case 'i': modifier = mtIMAG;  length--;	break;
+      default:  modifier = mtNONE;		break;
+    }
+  }
+  parameter[length] = '\0'; // chop
+
+  // "p" is "what" with the modifier chopped off.
+  // Try that first.
+  XPROBE xp = ac_probe_ext(parameter);
+
+  // If we don't find it, try again with the full string.
+  if (!xp.exists()) {
+    xp = ac_probe_ext(what);
+    if (!xp.exists()) {
+      // Still didn't find anything.  Print "??".
+    }else{itested();
+      // The second attempt worked.
+    }
+  }
+  return xp(modifier, want_db);
+}
+/*--------------------------------------------------------------------------*/
+/*static*/ double CARD::probe(const CARD *This, const std::string& what)
+{
+  if (This) {
+    return This->probe_num(what);
+  }else{				/* return 0 if doesn't exist */
+    return 0.0;				/* happens when optimized models */
+  }					/* don't have all parts */
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

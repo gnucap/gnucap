@@ -341,8 +341,7 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "  }\n"
     "  //precalc();\n"
     "  subckt()->expand();\n"
-    "  //subckt()->precalc();\n"
-    "  assert(!is_constant());\n";
+    "  //subckt()->precalc();\n";
   if (d.circuit().sync()) {
     out << "  subckt()->set_slave();\n";
   }else{

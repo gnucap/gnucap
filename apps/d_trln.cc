@@ -380,7 +380,6 @@ void DEV_TRANSLINE::precalc_last()
   _forward.set_delay(c->real_td);
   _reflect.set_delay(c->real_td);
   set_converged();
-  assert(!is_constant());
 }
 /*--------------------------------------------------------------------------*/
 void DEV_TRANSLINE::tr_iwant_matrix()

@@ -261,7 +261,6 @@ void DEV_SUBCKT::precalc_first()
     subckt()->precalc_first();
   }else{
   }
-  assert(!is_constant()); /* because I have more work to do */
 }
 /*--------------------------------------------------------------------------*/
 void DEV_SUBCKT::precalc_last()
@@ -272,8 +271,6 @@ void DEV_SUBCKT::precalc_last()
   assert(c);
   subckt()->attach_params(&(c->_params), scope());
   subckt()->precalc_last();
-
-  assert(!is_constant()); /* because I have more work to do */
 }
 /*--------------------------------------------------------------------------*/
 double DEV_SUBCKT::tr_probe_num(const std::string& x)const

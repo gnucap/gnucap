@@ -417,9 +417,6 @@ void SWITCH_BASE::precalc_last()
     assert(m);
     _y1.f1 = _y[0].f1 = (c->_ic == _ON) ? m->ron : m->roff;	// override, unknown is off
     
-    assert(!is_constant()); // depends on input
-    // converged?????
-    
     _m0.c1 = 1./_y[0].f1;
     _m0.c0 = 0.;
     _m1 = _m0;

@@ -26,9 +26,7 @@
 #define L_INDIRECT_H
 #include "md.h"
 /*--------------------------------------------------------------------------*/
-typedef intptr_t tag_t;
-
-template <class T>
+template <class T, class tag_t=intptr_t>
 class INDIRECT {
 private:
   std::map<tag_t, T> _map;
@@ -52,7 +50,7 @@ public:
     return _map[x];
   }
   const T& at(tag_t x)const {
-    if (!x) {untested();
+    if (!x) {//untested();
       return _map.at(tag_t(0));
     }else if (_map.count(x) == 0) {
       return _map.at(tag_t(0));

@@ -66,7 +66,6 @@ void DEV_CCVS::precalc_last()
 {
   CCSRC_BASE::precalc_last();
   set_converged();
-  assert(!is_constant()); /* because of incomplete analysis */
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CCVS::tr_begin()

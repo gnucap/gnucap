@@ -99,15 +99,15 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-void LANGUAGE::new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope)
+void LANGUAGE::new__instance(CS& cmd, BASE_SUBCKT* Owner, CARD_LIST* Scope)
 {
   if (cmd.is_end()) {itested();
     // nothing
   }else{
     std::string type = find_type_in_string(cmd);
-    if (const CARD* proto = find_proto(type, owner)) {
+    if (const CARD* proto = find_proto(type, Owner)) {
       if (CARD* new_instance = proto->clone_instance()) {
-	new_instance->set_owner(owner);
+	new_instance->set_owner(Owner);
 	CARD* x = parse_item(cmd, new_instance);
 	if (x) {
 	  assert(Scope);
