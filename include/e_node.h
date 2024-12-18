@@ -38,7 +38,7 @@ enum {
 /*--------------------------------------------------------------------------*/
 class NODE : public CARD {
 private:
-  // meets short,short,bool (5 bytes)
+  // meets short,int,bool (7 bytes)
   int	_user_number;
   //int	_flat_number;
   //int	_matrix_number;

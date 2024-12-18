@@ -396,12 +396,7 @@ public:
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT(COMMON_COMPONENT* c)
   :CARD(),
-   _converged(false),
-   _net_nodes(0),
-   _time_by(),
-   _common(0),
-   _mfactor_fixed(1.0),
-   _q_for_eval(-1)
+   _time_by()
 {
   if (_sim) {
     _sim->uninit();
@@ -414,11 +409,9 @@ COMPONENT::COMPONENT(COMMON_COMPONENT* c)
 COMPONENT::COMPONENT(const COMPONENT& p)
   :CARD(p),
    _converged(p._converged),
-   _net_nodes(p._net_nodes),
-   _time_by(p._time_by),
-   _common(0),
    _mfactor_fixed(p._mfactor_fixed),
-   _q_for_eval(-1)
+   _time_by(p._time_by),
+   _net_nodes(p._net_nodes)
 {
   if (_sim) {
     _sim->uninit();

@@ -152,16 +152,16 @@ class HS_PARAM;
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMPONENT : public CARD {
 private:
-  // meets short,short,bool (5 bytes, needs 3)
+  // meets short,int,bool (7 bytes, needs 1)
   bool	    _converged{false};
-public:
-  short     _net_nodes{0};	// actual number of "nodes" in the netlist
-  TIME_PAIR _time_by;
 private:
   COMMON_COMPONENT* _common{nullptr};
   HS_PARAM* _hsparam{nullptr};		// possibly indirect. later.
   float	    _mfactor_fixed{1.0};	// composite, including subckt mfactor
   int	    _q_for_eval{-1};
+public:
+  TIME_PAIR _time_by;
+  short     _net_nodes{0};	// actual number of "nodes" in the netlist
   //--------------------------------------------------------------------
 protected: // create and destroy.
   explicit   COMPONENT(COMMON_COMPONENT* c=nullptr);

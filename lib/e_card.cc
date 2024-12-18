@@ -141,7 +141,7 @@ CARD_LIST* CARD::scope()
 /*--------------------------------------------------------------------------*/
 const CARD_LIST* CARD::scope()const
 {
-  if (owner()) { untested();
+  if (owner()) {
     assert(_scopes.at(_owner_tag) == owner()->subckt());
   }else{
     assert(_scopes.at(_owner_tag) == &(CARD_LIST::card_list));

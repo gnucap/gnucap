@@ -38,16 +38,17 @@ class LANGUAGE;
 struct TIME_PAIR;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CARD : public CKT_BASE {
+  typedef int owner_tag_t;
 private:
   CARD_LIST*	_subckt;
-  short 	_owner_tag;
+  owner_tag_t 	_owner_tag;
   mutable short _probes;	// number of probes set
   bool		_constant;	// eval stays the same every iteration
-  // padding 3 bytes (see NODE, COMPONENT)
+  // padding 1 byte (see NODE, COMPONENT)
   //--------------------------------------------------------------------
-  static INDIRECT<short,CARD*> _owner_index;
-  static INDIRECT<CARD*,short> _owners;
-  static INDIRECT<CARD_LIST*,short> _scopes;
+  static INDIRECT<owner_tag_t,CARD*> _owner_index;
+  static INDIRECT<CARD*,owner_tag_t> _owners;
+  static INDIRECT<CARD_LIST*,owner_tag_t> _scopes;
   //--------------------------------------------------------------------
 public:   				// traversal functions
   CARD* find_in_my_scope(const std::string& name);

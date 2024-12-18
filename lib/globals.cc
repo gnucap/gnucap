@@ -51,9 +51,9 @@ DISPATCHER<CKT_BASE> help_dispatcher;
 DISPATCHER<PROBELIST> probe_dispatcher;
 
 INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
-INDIRECT<short,CARD*> CARD::_owner_index;
-INDIRECT<CARD*,short> CARD::_owners;
-INDIRECT<CARD_LIST*,short> CARD::_scopes;
+INDIRECT<CARD::owner_tag_t,CARD*> CARD::_owner_index;
+INDIRECT<CARD*,CARD::owner_tag_t> CARD::_owners;
+INDIRECT<CARD_LIST*,CARD::owner_tag_t> CARD::_scopes;
 CARD_LIST CARD_LIST::card_list;	// root circuit 
 
 // the rest of this should not be here, is residue of old stuff
