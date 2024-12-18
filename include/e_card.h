@@ -39,6 +39,10 @@ struct TIME_PAIR;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CARD : public CKT_BASE {
   typedef int owner_tag_t;
+  struct owner_scope_t {
+    CARD* _owner{nullptr};
+    CARD_LIST* _scope{nullptr};
+  };
 private:
   CARD_LIST*	_subckt;
   owner_tag_t 	_owner_tag;
@@ -47,8 +51,7 @@ private:
   // padding 1 byte (see NODE, COMPONENT)
   //--------------------------------------------------------------------
   static INDIRECT<owner_tag_t,CARD*> _owner_index;
-  static INDIRECT<CARD*,owner_tag_t> _owners;
-  static INDIRECT<CARD_LIST*,owner_tag_t> _scopes;
+  static INDIRECT<owner_scope_t,owner_tag_t> _owners;
   //--------------------------------------------------------------------
 public:   				// traversal functions
   CARD* find_in_my_scope(const std::string& name);
@@ -115,8 +118,8 @@ public: // owner, scope
   virtual const CARD_LIST* scope()const;
   virtual bool		   makes_own_scope()const  {return false;}
 
-  CARD*		owner()		   {return _owners.at(_owner_tag);}
-  const CARD*	owner()const	   {return _owners.at(_owner_tag);}
+  CARD*		owner()		   {return _owners.at(_owner_tag)._owner;}
+  const CARD*	owner()const	   {return _owners.at(_owner_tag)._owner;}
   void		set_owner(CARD* o);
   //--------------------------------------------------------------------
 public: // subckt

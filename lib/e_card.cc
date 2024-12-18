@@ -118,35 +118,36 @@ void CARD::set_owner(CARD* o)
     _owner_tag =  ++_owner_count;	// still a nonzero tag.
     assert(_owner_count > 0);
     _owner_index[o+1] = _owner_tag;
-    _owners[_owner_tag] = o;
-    _scopes[_owner_tag] = ((o) ? o->subckt() : &(CARD_LIST::card_list));
+    owner_scope_t& os = _owners[_owner_tag];
+    os._owner = o;
+    os._scope = ((o) ? o->subckt() : &(CARD_LIST::card_list));
   }else{
     _owner_tag = _owner_index.at(o+1);
     // BUG: scope may have changed. update just in case.
-    _scopes[_owner_tag] = ((o) ? o->subckt() : &(CARD_LIST::card_list));
+    _owners[_owner_tag]._scope = ((o) ? o->subckt() : &(CARD_LIST::card_list));
   }
 
-  assert( _owners.at(_owner_tag) == o);
+  assert( _owners.at(_owner_tag)._owner == o);
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST* CARD::scope()
 {
   if (owner()) {
-    assert(_scopes.at(_owner_tag) == owner()->subckt());
+    assert(_owners.at(_owner_tag)._scope == owner()->subckt());
   }else{
-    assert(_scopes.at(_owner_tag) == &(CARD_LIST::card_list));
+    assert(_owners.at(_owner_tag)._scope == &(CARD_LIST::card_list));
   }
-  return _scopes.at(_owner_tag);
+  return _owners.at(_owner_tag)._scope;
 }
 /*--------------------------------------------------------------------------*/
 const CARD_LIST* CARD::scope()const
 {
   if (owner()) {
-    assert(_scopes.at(_owner_tag) == owner()->subckt());
+    assert(_owners.at(_owner_tag)._scope == owner()->subckt());
   }else{
-    assert(_scopes.at(_owner_tag) == &(CARD_LIST::card_list));
+    assert(_owners.at(_owner_tag)._scope == &(CARD_LIST::card_list));
   }
-  return _scopes.at(_owner_tag);
+  return _owners.at(_owner_tag)._scope;
 }
 /*--------------------------------------------------------------------------*/
 /* find_in_my_scope: find in same scope as myself
