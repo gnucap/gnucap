@@ -38,6 +38,7 @@ public:
   size_t count(tag_t x)const {return _map.count(x);}
     
   T& operator[](tag_t x) {
+    assert(x);
     if (!x) {untested();
       // null tag, not allowed here
     }else if (_map.count(x) == 0) {
@@ -46,13 +47,14 @@ public:
       // repeat, adding or replacing
       // possible collision
     }
-    assert(x);
     return _map[x];
   }
   const T& at(tag_t x)const {
-    if (!x) {//untested();
+    assert(x);
+    assert(_map.count(x) > 0);
+    if (!x) {untested();
       return _map.at(tag_t(0));
-    }else if (_map.count(x) == 0) {
+    }else if (_map.count(x) == 0) {untested();
       return _map.at(tag_t(0));
     }else{
       return _map.at(x);

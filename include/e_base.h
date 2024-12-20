@@ -56,7 +56,7 @@ public: // tags and attributes (meta-data)
 protected:
   const ATTRIB_LIST_p& attributes(tag_t x)const {return _attribs.at(x);}
   ATTRIB_LIST_p&   set_attributes(tag_t x)	{return _attribs[x];}
-  bool		   has_attributes(tag_t x)const {return attributes(x);}
+  bool		   has_attributes(tag_t x)const {return _attribs.count(x) > 0;}
   void		 erase_attributes(tag_t x)	{_attribs.erase(x);}
   void	     erase_attributes(tag_t b, tag_t e) {_attribs.erase(b,e);}
   //--------------------------------------------------------------------

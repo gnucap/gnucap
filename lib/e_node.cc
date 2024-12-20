@@ -183,6 +183,7 @@ void node_t::new_node(const std::string& node_name, const CARD* Owner)
   _nnn = Map->new_node(node_name); // not neessarily "new"
   assert(_nnn);
   _ttt = _nnn->user_number();
+  _nnn->set_owner(nullptr);
 }
 /*--------------------------------------------------------------------------*/
 /* new_model_node: a mapped new node, produced through model expansion.

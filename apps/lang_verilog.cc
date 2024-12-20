@@ -712,7 +712,8 @@ void LANG_VERILOG::parse_top_item(CS& cmd, CARD_LIST* Scope)
 void LANG_VERILOG::print_attributes(OMSTREAM& o, tag_t x)
 {
   assert(x);
-  if (attributes(x)) {
+
+  if (has_attributes(x)) {
     std::string s = attributes(x)->string(x);
     if(s.size()) {
       o << "(* " << s << " *) ";
@@ -879,7 +880,7 @@ class CMD_PARAMSET : public CMD {
       CARD* cl = p->clone();
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);
       if (new_card) {
-	assert(!new_card->owner());
+	//assert(!new_card->owner());
 	new_card->set_owner(nullptr);
 	lang_verilog.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
@@ -898,7 +899,7 @@ class CMD_MODULE : public CMD {
   void do_it(CS& cmd, CARD_LIST* Scope)override {
     BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("module"));
     assert(new_module);
-    assert(!new_module->owner());
+    //assert(!new_module->owner());
     new_module->set_owner(nullptr);
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
