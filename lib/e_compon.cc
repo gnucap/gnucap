@@ -396,10 +396,6 @@ public:
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT(COMMON_COMPONENT* c)
   :CARD(),
-   _common(0),
-   _mfactor_fixed(NOT_VALID),
-   _converged(false),
-   _q_for_eval(-1),
    _time_by()
 {
   if (_sim) {
@@ -412,11 +408,10 @@ COMPONENT::COMPONENT(COMMON_COMPONENT* c)
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT(const COMPONENT& p)
   :CARD(p),
-   _common(0),
-   _mfactor_fixed(p._mfactor_fixed),
    _converged(p._converged),
-   _q_for_eval(-1),
-   _time_by(p._time_by)
+   _mfactor_fixed(p._mfactor_fixed),
+   _time_by(p._time_by),
+   _net_nodes(p._net_nodes)
 {
   if (_sim) {
     _sim->uninit();
@@ -473,12 +468,13 @@ int COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
 void COMPONENT::set_port_by_index(int num, std::string& ext_name)
 {
   if (num < max_nodes()) {
-    n_(num).new_node(ext_name, this);
+    n_(num).new_node(ext_name, this);  // Really look-up node, make new if needed.
+
     if (num+1 > _net_nodes) {
-      // make the list bigger
-      _net_nodes = num+1;
+      // Update _net_nodes for net_nodes().  Not really a count.
+      _net_nodes = short(num+1);
     }else{
-      // it's already big enough, probably assigning out of order
+      // probably assigning out of order.
     }
   }else{
     throw Exception_Too_Many(num+1, max_nodes(), 0/*offset*/);
@@ -490,7 +486,7 @@ void COMPONENT::set_port_to_ground(int num)
   if (num < max_nodes()) {
     n_(num).set_to_ground(this);
     if (num+1 > _net_nodes) {
-      _net_nodes = num+1;
+      _net_nodes = short(num+1);
     }else{untested();
     }
   }else{untested();
@@ -574,10 +570,10 @@ void COMPONENT::precalc_first()
   }
   trace1(long_label().c_str(), double(my_mfactor()));
   if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
-    _mfactor_fixed = o->mfactor() * my_mfactor();
+    _mfactor_fixed = float(o->mfactor() * my_mfactor());
   }else{
     assert(!owner());
-    _mfactor_fixed =  my_mfactor();
+    _mfactor_fixed = float(my_mfactor());
   } 
   trace1(long_label().c_str(), _mfactor_fixed);
 }
@@ -843,13 +839,6 @@ const std::string COMPONENT::port_value(int i)const
   assert(i >= 0);
   assert(i < net_nodes());
   return n_(i).short_label();
-}
-/*--------------------------------------------------------------------------*/
-const std::string COMPONENT::current_port_value(int)const 
-{untested();
-  unreachable();
-  static std::string s;
-  return s;
 }
 /*--------------------------------------------------------------------------*/
 double COMPONENT::tr_probe_num(const std::string& x)const

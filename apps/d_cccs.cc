@@ -49,19 +49,14 @@ private: // override virtual
   void	   tr_load()override	{tr_load_active();}
   void	   ac_iwant_matrix()override {ac_iwant_matrix_active();}
   void	   ac_begin()override	{CCSRC_BASE::ac_begin(); _ev = _y[0].f1;}
-  void	   do_ac()override;
+  void	   do_ac()override	{_sim->_late_evalq.push_back(this);}
+  void	   do_ac_last()override;
   void	   ac_load()override	{ac_load_active();}
 
-  std::string port_name(int i)const override {untested();
+  std::string port_name(int i)const override {
     assert(i >= 0);
-    assert(i < 2);
-    static std::string names[] = {"sink", "src"};
-    return names[i];
-  }
-  std::string current_port_name(int i)const override {untested();
-    assert(i >= 0);
-    assert(i < 1);
-    static std::string names[] = {"in"};
+    assert(i < 3);
+    static std::string names[] = {"sink", "src", "in"};
     return names[i];
   }
 };
@@ -129,14 +124,9 @@ bool DEV_CCCS::do_tr_last()
   return converged();
 }
 /*--------------------------------------------------------------------------*/
-void DEV_CCCS::do_ac()
+void DEV_CCCS::do_ac_last()
 {
   assert(_input);
-  if (!_input->evaluated()) {	/* patch for forward reference */
-    ELEMENT* input = const_cast<ELEMENT*>(_input);
-    input->do_ac();		/* make sure sense elt is evaluated first */
-  }else{
-  }
   if (using_ac_eval()) {
     ac_eval();
   }else{

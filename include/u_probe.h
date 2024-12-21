@@ -27,14 +27,16 @@
 #include "e_base.h"
 #include "l_compar.h" // inorder
 /*--------------------------------------------------------------------------*/
+class CARD;
+/*--------------------------------------------------------------------------*/
 class INTERFACE PROBE : public CKT_BASE {
 private:
   std::string	_what;    
-  const CKT_BASE* _brh;
+  const CARD*	_brh;
   double	_lo,_hi;
   explicit  PROBE() {unreachable(); incomplete();}
 public:
-  explicit  PROBE(const std::string& what, const CKT_BASE *brh);
+  explicit  PROBE(const std::string& what, const CARD *brh);
 	    PROBE(const PROBE& p);
 	    ~PROBE()				{detach();}
 
@@ -44,7 +46,7 @@ public:
 
   const std::string label()const;
   double	  value()const;
-  const CKT_BASE* object()const	 {return _brh;}
+  const CARD*	  object()const	 {return _brh;}
   double	  lo()const	 {return _lo;}
   double	  hi()const	 {return _hi;}
   double	  range()const	 {return hi()-lo();}

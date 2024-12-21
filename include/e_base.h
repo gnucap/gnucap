@@ -28,7 +28,6 @@
 #include "l_indirect.h"
 /*--------------------------------------------------------------------------*/
 // external
-class XPROBE;
 class WAVE;
 class OMSTREAM;
 struct SIM_DATA;
@@ -36,7 +35,6 @@ class PROBE_LISTS;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CKT_BASE {
 private:
-  mutable int	_probes;		/* number of probes set */
   std::string	_label;
 public:
   static SIM_DATA* _sim;
@@ -45,9 +43,9 @@ private:
   static INDIRECT<ATTRIB_LIST_p> _attribs;
   //--------------------------------------------------------------------
 protected: // create and destroy
-  explicit CKT_BASE()			  :_probes(0), _label() {}
-  explicit CKT_BASE(const std::string& s) :_probes(0), _label(s) {}
-  explicit CKT_BASE(const CKT_BASE& p)	  :_probes(0), _label(p._label) {}
+  explicit CKT_BASE()			  :_label() {}
+  explicit CKT_BASE(const std::string& s) :_label(s) {}
+  explicit CKT_BASE(const CKT_BASE& p)	  :_label(p._label) {}
   virtual  ~CKT_BASE();
   virtual void	      purge() {}
   //--------------------------------------------------------------------
@@ -58,7 +56,7 @@ public: // tags and attributes (meta-data)
 protected:
   const ATTRIB_LIST_p& attributes(tag_t x)const {return _attribs.at(x);}
   ATTRIB_LIST_p&   set_attributes(tag_t x)	{return _attribs[x];}
-  bool		   has_attributes(tag_t x)const {return attributes(x);}
+  bool		   has_attributes(tag_t x)const {return _attribs.count(x) > 0;}
   void		 erase_attributes(tag_t x)	{_attribs.erase(x);}
   void	     erase_attributes(tag_t b, tag_t e) {_attribs.erase(b,e);}
   //--------------------------------------------------------------------
@@ -67,16 +65,6 @@ public: // user stuff
   virtual bool	      help(CS&, OMSTREAM&)const;
   virtual std::string status()const {untested();return "";}
   //--------------------------------------------------------------------
-public: // probes
-	  double      probe_num(const std::string&)const;
-	  double      ac_probe_num(const std::string&)const;
-  virtual double      tr_probe_num(const std::string&)const;
-  virtual XPROBE      ac_probe_ext(const std::string&)const;
-	  void	      inc_probes()const	{++_probes;}
-	  void	      dec_probes()const	{assert(_probes>0); --_probes;}
-	  bool	      has_probes()const	{return _probes > 0;}
-  virtual double      noise_num(const std::string&)const;
-  static  double      probe(const CKT_BASE*,const std::string&);
   static  WAVE*	      find_wave(const std::string& probe_name);
   //--------------------------------------------------------------------
 public: // label

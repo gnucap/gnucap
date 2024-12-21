@@ -1,0 +1,45 @@
+//Mutual inductance test circuit
+spice
+v1 1 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+.verilog
+//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), 
+//	.width( 0.002), .period( 0.01)  AC  1.) v1 (.p(\1 ),.n(\0 ));
+resistor #(.r( 22.)) r1a (.p(\1 ),.n(\2 ));
+mutual_inductor #(.k(.75)) k1 (.l1(l1a),.l2(l1b));
+inductor #(.l( 0.56)) l1a (.p(\2 ),.n(\0 ));
+inductor #(.l( 0.79)) l1b (.p(\3 ),.n(\0 ));
+resistor #(.r( 75.)) r1b (.p(\3 ),.n(\0 ));
+
+spice
+v2 4 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+.verilog
+//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002),
+//	.width( 0.002), .period( 0.01)  AC  1.) v2 (.p(\4 ),.n(\0 ));
+resistor #(.r( 22.)) r2a (.p(\4 ),.n(\5 ));
+inductor #(.l( 0.061151326)) l2a (.p(\5 ),.n(\6 ));
+inductor #(.l( 0.498848674)) l2b (.p(\6 ),.n(\0 ));
+inductor #(.l( 0.291151326)) l2c (.p(\6 ),.n(\7 ));
+resistor #(.r( 75.)) r2b (.p(\7 ),.n(\0 ));
+
+spice
+v3 8 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
+.verilog
+//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002),
+//	.width( 0.002), .period( 0.01)  AC  1.) v3 (.p(\8 ),.n(\0 ));
+resistor #(.r( 22.)) r3a (.p(\8 ),.n(\9 ));
+inductor #(.l( 0.56)) l3a (.p(\10 ),.n(\0 ));
+inductor #(.l( 0.79)) l3b (.p(\11 ),.n(\0 ));
+vcvs #(.gain( 0.631454018)) e3a (.p(\9 ),.n(\10 ),.ps(\11 ),.ns(\0 ));
+vcvs #(.gain( 0.890801204)) e3b (.p(\12 ),.n(\11 ),.ps(\10 ),.ns(\0 ));
+resistor #(.r( 75.)) r3b (.p(\12 ),.n(\0 ));
+
+options nopage
+list
+width out=132
+print ac v(2) v(3) v(5) v(7) v(9) v(12)
+ac dec 2 .1 1k
+print tran v(2) v(3) v(5) v(7) v(9) v(12)
+tran .001 .01 0 .0001
+list
+status notime
+end

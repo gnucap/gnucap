@@ -175,7 +175,6 @@ public:
   }
 protected:
   PARAMETER<double> _value;	// value, for simple parts
-  int      _loaditer;	// load iteration number
 protected:
   mutable node_t _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
 public:
@@ -258,11 +257,6 @@ inline void ELEMENT::ac_load_shunt()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_source()
 {
-#if !defined(NDEBUG)
-  assert(_loaditer != _sim->iteration_tag()); // double load
-  _loaditer = _sim->iteration_tag();
-#endif
-
   double d = dampdiff(&_m0.c0, _m1.c0);
   if (d != 0.) {
     if (n_(OUT2).m_() != 0) {

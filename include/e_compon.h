@@ -152,14 +152,16 @@ class HS_PARAM;
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMPONENT : public CARD {
 private:
-  COMMON_COMPONENT* _common{nullptr};
-  HS_PARAM* _hsparam{nullptr}; // possibly indirect. later.
+  // meets short,int,bool (7 bytes, needs 1)
+  bool	    _converged{false};
 private:
-  double _mfactor_fixed;	// composite, including subckt mfactor
-  bool	 _converged;
-  int	 _q_for_eval;
+  COMMON_COMPONENT* _common{nullptr};
+  HS_PARAM* _hsparam{nullptr};		// possibly indirect. later.
+  float	    _mfactor_fixed{1.0};	// composite, including subckt mfactor
+  int	    _q_for_eval{-1};
 public:
   TIME_PAIR _time_by;
+  short     _net_nodes{0};	// actual number of "nodes" in the netlist
   //--------------------------------------------------------------------
 protected: // create and destroy.
   explicit   COMPONENT(COMMON_COMPONENT* c=nullptr);
@@ -193,13 +195,12 @@ public:	// state, aux data
   void	set_not_converged()		{_converged = false;}
 
   double mfactor()const {
-    assert(_mfactor_fixed != NOT_VALID);
 #ifndef NDEBUG
     if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
-      assert(_mfactor_fixed == o->mfactor() * my_mfactor());
+      assert(_mfactor_fixed == float(o->mfactor() * my_mfactor()));
     }else{
       assert(!owner());
-      assert(_mfactor_fixed == my_mfactor());
+      assert(_mfactor_fixed == float(my_mfactor()));
     }
 #endif
     return _mfactor_fixed;
@@ -233,21 +234,15 @@ public:	// ports
   virtual std::string port_name(int)const = 0;
   virtual int  set_port_by_name(std::string& name, std::string& value);
   virtual void set_port_by_index(int index, std::string& value);
-  bool port_exists(int i)const {return i < net_nodes();}
-  const std::string port_value(int i)const;
+  bool port_exists(int i)const		{return i < (net_nodes()+num_current_ports());}
+  virtual const std::string port_value(int i)const;
   void	set_port_to_ground(int index);
-
-  virtual std::string current_port_name(int)const {return "";}
-  virtual const std::string current_port_value(int)const;
-  virtual void set_current_port_by_index(int, const std::string&) {unreachable();}    
-  bool current_port_exists(int i)const	{return i < num_current_ports();}
 
   virtual int	max_nodes()const	{unreachable(); return 0;}
   virtual int	min_nodes()const	{unreachable(); return 0;}
   virtual int	num_current_ports()const {return 0;}
   virtual int	tail_size()const	{return 0;}
 
-  int	net_nodes()const override	{itested();return 0;} //override
   virtual int	ext_nodes()const	{return max_nodes();}
   virtual int	int_nodes()const	{return 0;}
   virtual int	matrix_nodes()const	{return 0;}

@@ -41,7 +41,6 @@ protected: // override virtual
   int	   matrix_nodes()const override	{return 4;}
   int	   net_nodes()const override	{return 2;}
   int	   num_current_ports()const override {return 1;}
-  const std::string current_port_value(int)const override {return _input_label;};
   //void   precalc_first();	//ELEMENT
   void	   expand_last() override;
   //void   precalc_last();	//ELEMENT
@@ -60,6 +59,14 @@ public:
 		       COMMON_COMPONENT* Common, double Value,
 		       const node_t& N0, const node_t& N1,
 		       ELEMENT* Input);
+
+  const std::string port_value(int i)const override {
+    if (i == 2) {
+      return _input_label;
+    }else{
+      return ELEMENT::port_value(i);
+    }
+  }
 protected:
   std::string	 _input_label;
   const ELEMENT* _input;

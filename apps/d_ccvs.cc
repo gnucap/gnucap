@@ -48,20 +48,15 @@ private: // override virtual
   void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
   void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
   void	   ac_begin()override		{_loss1=_loss0=1./OPT::shortckt; _ev = _y[0].f1;}
-  void	   do_ac()override;
+  void	   do_ac()override		{_sim->_late_evalq.push_back(this);}
+  void	   do_ac_last()override;
   void	   ac_load()override		{ac_load_active();}
   COMPLEX  ac_amps()const override	{untested(); return ELEMENT::ac_amps();}
 
   std::string port_name(int i)const override {untested();
     assert(i >= 0);
-    assert(i < 2);
-    static std::string names[] = {"p", "n"};
-    return names[i];
-  }
-  std::string current_port_name(int i)const override {untested();
-    assert(i >= 0);
-    assert(i < 1);
-    static std::string names[] = {"in"};
+    assert(i < 3);
+    static std::string names[] = {"p", "n", "in"};
     return names[i];
   }
 };
@@ -71,7 +66,6 @@ void DEV_CCVS::precalc_last()
 {
   CCSRC_BASE::precalc_last();
   set_converged();
-  assert(!is_constant()); /* because of incomplete analysis */
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CCVS::tr_begin()
@@ -112,14 +106,9 @@ bool DEV_CCVS::do_tr_last()
   return converged();
 }
 /*--------------------------------------------------------------------------*/
-void DEV_CCVS::do_ac()
+void DEV_CCVS::do_ac_last()
 {
   assert(_input);
-  if (!_input->evaluated()) {untested();
-    ELEMENT* input = const_cast<ELEMENT*>(_input);
-    input->do_ac();	    //BUG// premature load of sense element
-  }else{
-  }
   ac_load_shunt();
   if (using_ac_eval()) {untested();
     ac_eval();

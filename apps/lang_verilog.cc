@@ -712,7 +712,8 @@ void LANG_VERILOG::parse_top_item(CS& cmd, CARD_LIST* Scope)
 void LANG_VERILOG::print_attributes(OMSTREAM& o, tag_t x)
 {
   assert(x);
-  if (attributes(x)) {
+
+  if (has_attributes(x)) {
     std::string s = attributes(x)->string(x);
     if(s.size()) {
       o << "(* " << s << " *) ";
@@ -786,12 +787,6 @@ void LANG_VERILOG::print_ports_long(OMSTREAM& o, const COMPONENT* x)
     o << '.' << mangle(x->port_name(ii)) << '(' << mangle(x->port_value(ii)) << ')';
     sep = ',';
   }
-  for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
-    o << sep;
-    //////print_attributes(o, x->port_id_tag(ii));
-    o << '.' << x->current_port_name(ii) << '(' << x->current_port_value(ii) << ')';
-    sep = ',';
-  }
   o << ')';
 }
 /*--------------------------------------------------------------------------*/
@@ -807,12 +802,6 @@ void LANG_VERILOG::print_ports_short(OMSTREAM& o, const COMPONENT* x)
     o << sep;
     print_attributes(o, x->port_id_tag(ii));
     o << mangle(x->port_value(ii));
-    sep = ',';
-  }
-  for (int ii = 0;  x->current_port_exists(ii);  ++ii) {untested();
-    o << sep;
-    //////print_attributes(o, x->port_id_tag(ii));
-    o << mangle(x->current_port_value(ii));
     sep = ',';
   }
   o << ")";
@@ -891,7 +880,8 @@ class CMD_PARAMSET : public CMD {
       CARD* cl = p->clone();
       MODEL_CARD* new_card = dynamic_cast<MODEL_CARD*>(cl);
       if (new_card) {
-	assert(!new_card->owner());
+	//assert(!new_card->owner());
+	new_card->set_owner(nullptr);
 	lang_verilog.parse_paramset(cmd, new_card);
 	Scope->push_back(new_card);
       }else{untested();
@@ -909,7 +899,8 @@ class CMD_MODULE : public CMD {
   void do_it(CS& cmd, CARD_LIST* Scope)override {
     BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("module"));
     assert(new_module);
-    assert(!new_module->owner());
+    //assert(!new_module->owner());
+    new_module->set_owner(nullptr);
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
     assert(!new_module->is_device());

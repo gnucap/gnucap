@@ -26,6 +26,7 @@
 #include "e_cardlist.h"
 #include "u_status.h"
 #include "patchlev.h"
+#include "e_card.h"
 /*--------------------------------------------------------------------------*/
 // here to make sure they get constructed and destructed in proper order
 // first construct, last destruct
@@ -50,6 +51,8 @@ DISPATCHER<CKT_BASE> help_dispatcher;
 DISPATCHER<PROBELIST> probe_dispatcher;
 
 INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
+INDIRECT<CARD::owner_tag_t,CARD*> CARD::_owner_index;
+INDIRECT<CARD::owner_scope_t,CARD::owner_tag_t> CARD::_owners;
 CARD_LIST CARD_LIST::card_list;	// root circuit 
 
 // the rest of this should not be here, is residue of old stuff

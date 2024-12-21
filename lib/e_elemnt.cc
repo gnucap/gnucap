@@ -30,7 +30,6 @@
 ELEMENT::ELEMENT(COMMON_COMPONENT* c)
   :COMPONENT(c),
    _value(0),
-   _loaditer(0),
    _m0(),
    _m1(),
    _loss0(0.),
@@ -48,7 +47,6 @@ ELEMENT::ELEMENT(COMMON_COMPONENT* c)
 ELEMENT::ELEMENT(const ELEMENT& p)
   :COMPONENT(p),
    _value(p._value),
-   _loaditer(0),
    _m0(),
    _m1(),
    _loss0(p._loss0),

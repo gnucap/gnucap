@@ -73,7 +73,6 @@ private: // override virtual
 void DEV_VCR::precalc_last()
 {
   ELEMENT::precalc_last();
-  assert(!is_constant());
   set_not_converged();
 }
 /*--------------------------------------------------------------------------*/

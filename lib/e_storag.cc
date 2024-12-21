@@ -55,11 +55,9 @@ METHOD STORAGE::method_select[meNUM_METHODS][meNUM_METHODS] = { //
 void STORAGE::precalc_last()
 {
   ELEMENT::precalc_last();
-
   set_converged();
-  assert(!is_constant()); /* because of integration */
- 
   _method_a = method_select[OPT::method][_method_u];
+
   //assert(_loss0 == 0.);
   //assert(_loss1 == 0.);
   /* m0 and acg are frequency/time dependent and cannot be set here.
