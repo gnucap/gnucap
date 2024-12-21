@@ -109,8 +109,11 @@ int CARD::connects_to(const node_t& node)const
 /*--------------------------------------------------------------------------*/
 void CARD::set_owner(CARD* o)
 {
-  assert(!o || o->subckt());
-  assert(!_owner_tag ||  _owner_index.at(o+1) == _owner_tag);
+  assert(!o                                  // reset owner.
+      || !_owner_tag                         // uninitialised.
+      || !_owners[_owner_tag]._owner         // owner was reset.
+      || _owner_index.at(o+1) == _owner_tag  // new owner==old_owner. no-op
+      );
 
   trace2("", __LINE__, _owner_tag);
   if (_owner_index.count(o+1) == 0) {	// based on o+1 because o==0 is legit.
