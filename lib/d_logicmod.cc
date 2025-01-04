@@ -95,7 +95,7 @@ void MODEL_LOGIC::precalc_first()
 /*--------------------------------------------------------------------------*/
 void MODEL_LOGIC::set_param_by_index(int i, std::string& value, int offset)
 {
-  switch (MODEL_LOGIC::param_count() - 1 - i) {
+  switch (i) {
   case 0: delay = value; break;
   case 1: vmax = value; break;
   case 2: vmin = value; break;
@@ -109,13 +109,13 @@ void MODEL_LOGIC::set_param_by_index(int i, std::string& value, int offset)
   case 10: mr = value; break;
   case 11: mf = value; break;
   case 12: over = value; break;
-  default: MODEL_CARD::set_param_by_index(i, value, offset); break;
+  default: MODEL_CARD::set_param_by_index(i-13, value, offset); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool MODEL_LOGIC::param_is_printable(int i)const
 {
-  switch (MODEL_LOGIC::param_count() - 1 - i) {
+  switch (i) {
   case 0:
   case 1:
   case 2:
@@ -129,13 +129,13 @@ bool MODEL_LOGIC::param_is_printable(int i)const
   case 10:
   case 11:
   case 12: return true;
-  default: return MODEL_CARD::param_is_printable(i);
+  default: return MODEL_CARD::param_is_printable(i-13);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_LOGIC::param_name(int i)const
 {
-  switch (MODEL_LOGIC::param_count() - 1 - i) {
+  switch (i) {
   case 0: return "delay";
   case 1: return "vmax";
   case 2: return "vmin";
@@ -149,7 +149,7 @@ std::string MODEL_LOGIC::param_name(int i)const
   case 10: return "mr";
   case 11: return "mf";
   case 12: return "over";
-  default: return MODEL_CARD::param_name(i);
+  default: return MODEL_CARD::param_name(i-13);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -157,16 +157,16 @@ std::string MODEL_LOGIC::param_name(int i, int j)const
 {
   if (j == 0) {
     return param_name(i);
-  }else if (i >= MODEL_CARD::param_count()) {
+  }else if (i < 13) {
     return "";
   }else{ untested();
-    return MODEL_CARD::param_name(i, j);
+    return MODEL_CARD::param_name(i-13, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_LOGIC::param_value(int i)const
 {
-  switch (MODEL_LOGIC::param_count() - 1 - i) {
+  switch (i) {
   case 0: return delay.string();
   case 1: return vmax.string();
   case 2: return vmin.string();
@@ -180,7 +180,7 @@ std::string MODEL_LOGIC::param_value(int i)const
   case 10: return mr.string();
   case 11: return mf.string();
   case 12: return over.string();
-  default: return MODEL_CARD::param_value(i);
+  default: return MODEL_CARD::param_value(i-13);
   }
 }
 /*--------------------------------------------------------------------------*/

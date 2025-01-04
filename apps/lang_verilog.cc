@@ -196,7 +196,7 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
       }
     }else{
       // by order
-      for (int Index = x->param_count() - 1;  cmd.is_alnum() || cmd.match1("+-.");  --Index) {
+      for (int Index = 0;  cmd.is_alnum() || cmd.match1("+-.");  ++Index) {
 	try{
 	  std::string value = cmd.ctos(",)", "", "");
 	  x->set_param_by_index(Index, value, 0/*offset*/);
@@ -729,7 +729,7 @@ void LANG_VERILOG::print_args(OMSTREAM& o, const MODEL_CARD* x)
   if (x->use_obsolete_callback_print()) { untested();
     x->print_args_obsolete_callback(o, this);  //BUG//callback//
   }else{
-    for (int ii = x->param_count() - 1;  ii >= 0;  --ii) {
+    for (int ii = 0; ii < x->param_count(); ++ii) {
       if (x->param_is_printable(ii)) {
 	std::string arg = " ." + x->param_name(ii) + '=' + x->param_value(ii) + ';';
 	o << arg;
@@ -749,7 +749,8 @@ void LANG_VERILOG::print_args(OMSTREAM& o, const COMPONENT* x)
     arg_count = INACTIVE;
   }else{
     std::string sep = "";
-    for (int ii = x->param_count() - 1;  ii >= 0;  --ii) {
+    //for (int ii = x->param_count() - 1;  ii >= 0;  --ii) {
+    for (int ii = 0; ii < x->param_count(); ++ii) {
       if (x->param_is_printable(ii)) {
 	o << sep;
 	print_attributes(o, x->param_id_tag(ii));

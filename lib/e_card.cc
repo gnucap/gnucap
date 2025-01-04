@@ -274,7 +274,7 @@ node_t& CARD::n_(int)const
 int CARD::set_param_by_name(std::string Name, std::string Value)
 {
   //BUG// ugly linear search
-  for (int i = param_count() - 1;  i >= 0;  --i) {
+  for (int i = 0;  i < param_count();  ++i) {
     for (int j = 0;  param_name(i,j) != "";  ++j) { // multiple names
       if (Umatch(Name, param_name(i,j) + ' ')) {
 	set_param_by_index(i, Value, 0/*offset*/);

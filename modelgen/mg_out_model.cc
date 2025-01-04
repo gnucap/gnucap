@@ -345,7 +345,7 @@ static void make_model_set_param_by_index(std::ofstream& out, const Model& m)
   out << 
     "void MODEL_" << m.name() << "::set_param_by_index(int i, std::string& value, int offset)\n"
     "{\n"
-    "  switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+    "  switch (i) {\n";
   size_t i = 0;
   if (m.level() != "") {
     out << "  case " << i++ << ": level = value; break; //" << m.level() << "\n";
@@ -386,7 +386,7 @@ static void make_model_set_param_by_index(std::ofstream& out, const Model& m)
 
   if (!m.hide_base()) {
     out << "  default: MODEL_" << m.inherit() 
-	<< "::set_param_by_index(i, value, offset); break;\n";
+	<< "::set_param_by_index(i-" << i << ", value, offset); break;\n";
   }else{
     out << "  default: throw Exception_Too_Many(i, " << i-1 << ", offset); break;\n";
   }
@@ -402,7 +402,7 @@ void make_model_param_is_printable(std::ofstream& out, const Model& m)
   out << "bool MODEL_" << m.name() 
       << "::param_is_printable(int i)const\n"
     "{\n"
-    "  switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+    "  switch (i) {\n";
   size_t i = 0;
   if (m.level() != "") {
     out << "  case " << i++ << ":  return (true);\n";
@@ -467,7 +467,7 @@ void make_model_param_is_printable(std::ofstream& out, const Model& m)
 	 + m.independent().raw().size());
 
   if (!m.hide_base()) {
-    out << "  default: return MODEL_" << m.inherit() << "::param_is_printable(i);\n";
+    out << "  default: return MODEL_" << m.inherit() << "::param_is_printable(i-" << i << ");\n";
   }else{
     out << "  default: return false;\n";
   }
@@ -482,7 +482,7 @@ void make_model_param_name(std::ofstream& out, const Model& m)
   make_tag();
   out << "std::string MODEL_" << m.name() << "::param_name(int i)const\n"
     "{\n"
-    "  switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+    "  switch (i) {\n";
   size_t i = 0;
   if (m.level() != "") {
     out << "  case " << i++ << ":  return \"level\";\n";
@@ -530,7 +530,7 @@ void make_model_param_name(std::ofstream& out, const Model& m)
 	 + m.independent().raw().size());
 
   if (!m.hide_base()) {
-    out << "  default: return MODEL_" << m.inherit() << "::param_name(i);\n";
+    out << "  default: return MODEL_" << m.inherit() << "::param_name(i-" << i << ");\n";
   }else{
     out << "  default: return \"\";\n";
   }
@@ -548,7 +548,7 @@ void make_model_param_name_or_alias(std::ofstream& out, const Model& m)
     "  if (j == 0) {\n"
     "    return param_name(i);\n"
     "  }else if (j == 1) {\n"
-    "    switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+    "    switch (i) {\n";
   size_t i = 0;
   if (m.level() != "") {
     out << "    case " << i++ << ":  return \"\";\n";
@@ -598,7 +598,7 @@ void make_model_param_name_or_alias(std::ofstream& out, const Model& m)
 	 + m.independent().raw().size());
 
   if (!m.hide_base()) {
-    out << "    default: return MODEL_" << m.inherit() << "::param_name(i, j);\n";
+    out << "    default: return MODEL_" << m.inherit() << "::param_name(i-" << i << ", j);\n";
   }else{
     out << "    default: return \"\";\n";
   }
@@ -625,7 +625,7 @@ void make_model_param_value(std::ofstream& out, const Model& m)
   make_tag();
   out << "std::string MODEL_" << m.name() << "::param_value(int i)const\n"
     "{\n"
-    "  switch (MODEL_" << m.name() << "::param_count() - 1 - i) {\n";
+    "  switch (i) {\n";
   size_t i = 0;
   if (m.level() != "") {
     out << "  case " << i++ << ":  return \"" << m.level() << "\";\n";
@@ -665,7 +665,7 @@ void make_model_param_value(std::ofstream& out, const Model& m)
 	 + m.independent().raw().size());
 
   if (!m.hide_base()) {
-    out << "  default: return MODEL_" << m.inherit() << "::param_value(i);\n";
+    out << "  default: return MODEL_" << m.inherit() << "::param_value(i-" << i << ");\n";
   }else{
     out << "  default: return \"\";\n";
   }

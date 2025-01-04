@@ -388,34 +388,34 @@ MODEL_SEMI_BASE::MODEL_SEMI_BASE(const MODEL_SEMI_BASE& p)
 /*--------------------------------------------------------------------------*/
 void MODEL_SEMI_BASE::set_param_by_index(int i, std::string& value, int offset)
 {
-  switch (MODEL_SEMI_BASE::param_count() - 1 - i) {
+  switch (i) {
   case 0: _narrow = value; break;
   case 1: _defw = value; break;
   case 2: _tc1 = value; break;
   case 3: _tc2 = value; break;
-  default: MODEL_CARD::set_param_by_index(i, value, offset); break;
+  default: MODEL_CARD::set_param_by_index(i-4, value, offset); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool MODEL_SEMI_BASE::param_is_printable(int i)const
 {
-  switch (MODEL_SEMI_BASE::param_count() - 1 - i) {
+  switch (i) {
   case 0: return true;
   case 1: return true;
   case 2: return true;
   case 3: return true;
-  default: return MODEL_CARD::param_is_printable(i);
+  default: return MODEL_CARD::param_is_printable(i-4);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SEMI_BASE::param_name(int i)const
 {
-  switch (MODEL_SEMI_BASE::param_count() - 1 - i) {
+  switch (i) {
   case 0: return "narrow";
   case 1: return "defw";
   case 2: return "tc1";
   case 3: return "tc2";
-  default: return MODEL_CARD::param_name(i);
+  default: return MODEL_CARD::param_name(i-4);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -423,21 +423,21 @@ std::string MODEL_SEMI_BASE::param_name(int i, int j)const
 {
   if (j == 0) {untested();
     return param_name(i);
-  }else if (i >= MODEL_CARD::param_count()) {
+  }else if (i < 4) {
     return "";
   }else{untested();
-    return MODEL_CARD::param_name(i, j);
+    return MODEL_CARD::param_name(i-4, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SEMI_BASE::param_value(int i)const
 {
-  switch (MODEL_SEMI_BASE::param_count() - 1 - i) {
+  switch (i) {
   case 0: return _narrow.string();
   case 1: return _defw.string();
   case 2: return _tc1.string();
   case 3: return _tc2.string();
-  default: return MODEL_CARD::param_value(i);
+  default: return MODEL_CARD::param_value(i-4);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -474,28 +474,28 @@ MODEL_SEMI_CAPACITOR::MODEL_SEMI_CAPACITOR(const MODEL_SEMI_CAPACITOR& p)
 /*--------------------------------------------------------------------------*/
 void MODEL_SEMI_CAPACITOR::set_param_by_index(int i, std::string& value, int offset)
 {
-  switch (MODEL_SEMI_CAPACITOR::param_count() - 1 - i) {
+  switch (i) {
   case 0: _cj = value; break;
   case 1: _cjsw = value; break;
-  default:untested(); MODEL_SEMI_BASE::set_param_by_index(i, value, offset); break;
+  default:untested(); MODEL_SEMI_BASE::set_param_by_index(i-2, value, offset); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool MODEL_SEMI_CAPACITOR::param_is_printable(int i)const
 {
-  switch (MODEL_SEMI_CAPACITOR::param_count() - 1 - i) {
+  switch (i) {
   case 0: return true;
   case 1: return true;
-  default: return MODEL_SEMI_BASE::param_is_printable(i);
+  default: return MODEL_SEMI_BASE::param_is_printable(i-2);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SEMI_CAPACITOR::param_name(int i)const
 {
-  switch (MODEL_SEMI_CAPACITOR::param_count() - 1 - i) {
+  switch (i) {
   case 0: return "cj";
   case 1: return "cjsw";
-  default: return MODEL_SEMI_BASE::param_name(i);
+  default: return MODEL_SEMI_BASE::param_name(i-2);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -503,19 +503,19 @@ std::string MODEL_SEMI_CAPACITOR::param_name(int i, int j)const
 {
   if (j == 0) {
     return param_name(i);
-  }else if (i >= MODEL_SEMI_BASE::param_count()) {
+  }else if (i < 2) {
     return "";
   }else{untested();
-    return MODEL_SEMI_BASE::param_name(i, j);
+    return MODEL_SEMI_BASE::param_name(i-2, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SEMI_CAPACITOR::param_value(int i)const
 {
-  switch (MODEL_SEMI_CAPACITOR::param_count() - 1 - i) {
+  switch (i) {
   case 0: return _cj.string();
   case 1: return _cjsw.string();
-  default: return MODEL_SEMI_BASE::param_value(i);
+  default: return MODEL_SEMI_BASE::param_value(i-2);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -547,25 +547,25 @@ MODEL_SEMI_RESISTOR::MODEL_SEMI_RESISTOR(const MODEL_SEMI_RESISTOR& p)
 /*--------------------------------------------------------------------------*/
 void MODEL_SEMI_RESISTOR::set_param_by_index(int i, std::string& value, int offset)
 {
-  switch (MODEL_SEMI_RESISTOR::param_count() - 1 - i) {
+  switch (i) {
   case 0: _rsh = value; break;
-  default: MODEL_SEMI_BASE::set_param_by_index(i, value, offset); break;
+  default: MODEL_SEMI_BASE::set_param_by_index(i-1, value, offset); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool MODEL_SEMI_RESISTOR::param_is_printable(int i)const
 {
-  switch (MODEL_SEMI_RESISTOR::param_count() - 1 - i) {
+  switch (i) {
   case 0: return true;
-  default: return MODEL_SEMI_BASE::param_is_printable(i);
+  default: return MODEL_SEMI_BASE::param_is_printable(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SEMI_RESISTOR::param_name(int i)const
 {
-  switch (MODEL_SEMI_RESISTOR::param_count() - 1 - i) {
+  switch (i) {
   case 0: return "rsh";
-  default: return MODEL_SEMI_BASE::param_name(i);
+  default: return MODEL_SEMI_BASE::param_name(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -573,18 +573,18 @@ std::string MODEL_SEMI_RESISTOR::param_name(int i, int j)const
 {
   if (j == 0) {
     return param_name(i);
-  }else if (i >= MODEL_SEMI_BASE::param_count()) {
+  }else if (i < 1) {
     return "";
   }else{
-    return MODEL_SEMI_BASE::param_name(i, j);
+    return MODEL_SEMI_BASE::param_name(i-1, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SEMI_RESISTOR::param_value(int i)const
 {
-  switch (MODEL_SEMI_RESISTOR::param_count() - 1 - i) {
+  switch (i) {
   case 0: return _rsh.string();
-  default: return MODEL_SEMI_BASE::param_value(i);
+  default: return MODEL_SEMI_BASE::param_value(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/

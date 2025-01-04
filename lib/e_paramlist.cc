@@ -37,8 +37,8 @@ bool COMMON_PARAMLIST::operator==(const COMMON_COMPONENT& x)const
 bool COMMON_PARAMLIST::param_is_printable(int i)const
 {
   assert(i < COMMON_PARAMLIST::param_count());
-  if (i >= COMMON_COMPONENT::param_count()) {
-    return _params.is_printable(COMMON_PARAMLIST::param_count() - 1 - i);
+  if (i < int(_params.size())) {
+    return _params.is_printable(i);
   }else{
     return COMMON_COMPONENT::param_is_printable(i);
   }
@@ -47,8 +47,8 @@ bool COMMON_PARAMLIST::param_is_printable(int i)const
 std::string COMMON_PARAMLIST::param_name(int i)const
 {
   assert(i < COMMON_PARAMLIST::param_count());
-  if (i >= COMMON_COMPONENT::param_count()) {
-    return _params.name(COMMON_PARAMLIST::param_count() - 1 - i);
+  if (i < int(_params.size())) {
+    return _params.name(i);
   }else{itested();
     return COMMON_COMPONENT::param_name(i);
   }
@@ -59,7 +59,7 @@ std::string COMMON_PARAMLIST::param_name(int i, int j)const
   assert(i < COMMON_PARAMLIST::param_count());
   if (j == 0) {untested();
     return param_name(i);
-  }else if (i >= COMMON_COMPONENT::param_count()) {untested();
+  }else if (i < int(_params.size())) {untested();
     return "";
   }else{untested();
     return COMMON_COMPONENT::param_name(i, j);
@@ -69,8 +69,8 @@ std::string COMMON_PARAMLIST::param_name(int i, int j)const
 std::string COMMON_PARAMLIST::param_value(int i)const
 {
   assert(i < COMMON_PARAMLIST::param_count());
-  if (i >= COMMON_COMPONENT::param_count()) {
-    return _params.value(COMMON_PARAMLIST::param_count() - 1 - i);
+  if (i < int(_params.size())) {
+    return _params.value(i);
   }else{itested();
     return COMMON_COMPONENT::param_value(i);
   }

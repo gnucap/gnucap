@@ -81,9 +81,9 @@ int ELEMENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(Name == value_name()){
     _value = Value;
-    return ELEMENT::param_count() - 1; // BUG?
+    return 0;
   }else{
-    return COMPONENT::set_param_by_name(Name, Value);
+    return COMPONENT::set_param_by_name(Name, Value) + 1;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -95,11 +95,11 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
     c->set_param_by_index(i, Value, offset);
     attach_common(c);
   }else{
-    switch (ELEMENT::param_count() - 1 - i) {
+    switch (i) {
     case 0:
       _value = Value; break;
     default:
-      COMPONENT::set_param_by_index(i, Value, offset);
+      COMPONENT::set_param_by_index(i-1, Value, offset);
     }
   }
 }
@@ -109,11 +109,11 @@ bool ELEMENT::param_is_printable(int i)const
   if (has_common()) {
     return COMPONENT::param_is_printable(i);
   }else{
-    switch (ELEMENT::param_count() - 1 - i) {
+    switch (i) {
     case 0:
       return value().has_hard_value();
     default:
-      return COMPONENT::param_is_printable(i);
+      return COMPONENT::param_is_printable(i-1);
     }
   }
 }
@@ -123,10 +123,10 @@ std::string ELEMENT::param_name(int i)const
   if (has_common()) {
     return COMPONENT::param_name(i);
   }else{
-    switch (ELEMENT::param_count() - 1 - i) {
+    switch (i) {
     case 0:  return value_name();
     default:
-      return COMPONENT::param_name(i);
+      return COMPONENT::param_name(i-1);
     }
   }
 }
@@ -138,10 +138,10 @@ std::string ELEMENT::param_name(int i, int j)const
   }else{
     if (j == 0) {
       return param_name(i);
-    }else if (i >= ELEMENT::param_count()) {untested();
+    }else if (i < 1) {
       return "";
     }else{
-      return COMPONENT::param_name(i,j);
+      return COMPONENT::param_name(i-1,j);
     }
   }
 }
@@ -151,11 +151,11 @@ std::string ELEMENT::param_value(int i)const
   if (has_common()) {
     return COMPONENT::param_value(i);
   }else{
-    switch (ELEMENT::param_count() - 1 - i) {
+    switch (i) {
     case 0:
       return value().string();
     default:
-      return COMPONENT::param_value(i);
+      return COMPONENT::param_value(i-1);
     }
   }
 }
