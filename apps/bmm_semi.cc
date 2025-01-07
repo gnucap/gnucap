@@ -393,7 +393,7 @@ void MODEL_SEMI_BASE::set_param_by_index(int i, std::string& value, int offset)
   case 1: _defw = value; break;
   case 2: _tc1 = value; break;
   case 3: _tc2 = value; break;
-  default: MODEL_CARD::set_param_by_index(i-4, value, offset); break;
+  default: MODEL_CARD::set_param_by_index(i-4, value, offset+4); break;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -477,7 +477,7 @@ void MODEL_SEMI_CAPACITOR::set_param_by_index(int i, std::string& value, int off
   switch (i) {
   case 0: _cj = value; break;
   case 1: _cjsw = value; break;
-  default:untested(); MODEL_SEMI_BASE::set_param_by_index(i-2, value, offset); break;
+  default:untested(); MODEL_SEMI_BASE::set_param_by_index(i-2, value, offset+2); break;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -549,7 +549,7 @@ void MODEL_SEMI_RESISTOR::set_param_by_index(int i, std::string& value, int offs
 {
   switch (i) {
   case 0: _rsh = value; break;
-  default: MODEL_SEMI_BASE::set_param_by_index(i-1, value, offset); break;
+  default: MODEL_SEMI_BASE::set_param_by_index(i-1, value, offset+1); break;
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -159,7 +159,7 @@ void make_common_set_param_by_index(std::ofstream& out, const Device& d)
   assert(i == d.common().override().size() + d.common().raw().size());
 
   out <<
-    "  default: COMMON_COMPONENT::set_param_by_index(I-" << i << ", Value, Offset);\n"
+    "  default: COMMON_COMPONENT::set_param_by_index(I-" << i << ", Value, Offset+" << i << ");\n"
     "  }\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";

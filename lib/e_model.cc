@@ -59,7 +59,7 @@ void MODEL_CARD::set_param_by_index(int i, std::string& value, int offset)
 {
   switch (i) {
   case 0: _tnom_c = value; break;
-  default: CARD::set_param_by_index(i-1, value, offset); break;
+  default: CARD::set_param_by_index(i-1, value, offset+1); break;
   }
 }
 /*--------------------------------------------------------------------------*/

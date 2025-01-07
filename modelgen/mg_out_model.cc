@@ -386,7 +386,7 @@ static void make_model_set_param_by_index(std::ofstream& out, const Model& m)
 
   if (!m.hide_base()) {
     out << "  default: MODEL_" << m.inherit() 
-	<< "::set_param_by_index(i-" << i << ", value, offset); break;\n";
+	<< "::set_param_by_index(i-" << i << ", value, offset+" << i << "); break;\n";
   }else{
     out << "  default: throw Exception_Too_Many(i, " << i-1 << ", offset); break;\n";
   }

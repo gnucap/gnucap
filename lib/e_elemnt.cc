@@ -99,7 +99,7 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
     case 0:
       _value = Value; break;
     default:
-      COMPONENT::set_param_by_index(i-1, Value, offset);
+      COMPONENT::set_param_by_index(i-1, Value, offset+1);
     }
   }
 }

@@ -42,7 +42,7 @@ void COMMON_LOGIC::set_param_by_index(int I, std::string& Value, int Offset)
 {
   switch (I) {
   case 0:  _modelname = Value; break;
-  default:untested();untested(); COMMON_COMPONENT::set_param_by_index(I-1, Value, Offset); break;
+  default:untested();untested(); COMMON_COMPONENT::set_param_by_index(I-1, Value, Offset+1); break;
   }
 }
 /*--------------------------------------------------------------------------*/

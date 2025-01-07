@@ -581,7 +581,7 @@ int MODEL_SPICE::Set_param_by_name(std::string Name, std::string new_value)
       v = new_value;
       int ok = info.DEVmodParam(Parms.id, &Value, &_spice_model._gen);
       assert(ok == OK);
-      return MODEL_SPICE::param_count() - 1 - i;
+      return i;
     }else{ untested();
     }
   }
@@ -650,20 +650,20 @@ void MODEL_SPICE::set_dev_type(const std::string& new_type)
 bool MODEL_SPICE::param_is_printable(int i)const
 { untested();
   assert(i < MODEL_SPICE::param_count());
-  if (i >= MODEL_CARD::param_count()) { untested();
-    return _params.is_printable(MODEL_SPICE::param_count() - 1 - i);
+  if (i < int(_params.size())) { untested();
+    return _params.is_printable(i);
   }else{ untested();
-    return MODEL_CARD::param_is_printable(i);
+    return MODEL_CARD::param_is_printable(i-_params.size());
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SPICE::param_name(int i)const
 { untested();
   assert(i < MODEL_SPICE::param_count());
-  if (i >= MODEL_CARD::param_count()) { untested();
-    return _params.name(MODEL_SPICE::param_count() - 1 - i);
+  if (i < int(_params.size())) { untested();
+    return _params.name(i);
   }else{ untested();
-    return MODEL_CARD::param_name(i);
+    return MODEL_CARD::param_name(i-_params.size());
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -672,20 +672,20 @@ std::string MODEL_SPICE::param_name(int i, int j)const
   assert(i < MODEL_SPICE::param_count());
   if (j == 0) {untested();
     return param_name(i);
-  }else if (i >= MODEL_CARD::param_count()) {untested();
+  }else if (i < int(_params.size())) { untested();
     return "";
   }else{untested();
-    return MODEL_CARD::param_name(i);
+    return MODEL_CARD::param_name(i-_params.size());
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SPICE::param_value(int i)const
 { untested();
   assert(i < MODEL_SPICE::param_count());
-  if (i >= MODEL_CARD::param_count()) { untested();
-    return _params.value(MODEL_SPICE::param_count() - 1 - i);
+  if (i < int(_params.size())) { untested();
+    return _params.value(i);
   }else{ untested();
-    return MODEL_CARD::param_value(i);
+    return MODEL_CARD::param_value(i-_params.size());
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -304,7 +304,7 @@ void MODEL_SWITCH::set_param_by_index(int i, std::string& value, int offset)
   case 3: voff = value; break;
   case 4: ron = value; break;
   case 5: roff = value; break;
-  default: MODEL_CARD::set_param_by_index(i-6, value, offset); break;
+  default: MODEL_CARD::set_param_by_index(i-6, value, offset+6); break;
   }
 }
 /*--------------------------------------------------------------------------*/

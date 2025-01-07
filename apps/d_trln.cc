@@ -227,7 +227,7 @@ void COMMON_TRANSLINE::set_param_by_index(int I, std::string& Value, int Offset)
   case 6:  td = Value; break;
   case 7:  f = Value; break;
   case 8:  nl = Value; break;
-  default: COMMON_COMPONENT::set_param_by_index(I-9, Value, Offset); break;
+  default: COMMON_COMPONENT::set_param_by_index(I-9, Value, Offset+9); break;
   }
   //BUG// does not print IC
 }

@@ -109,7 +109,7 @@ void MODEL_LOGIC::set_param_by_index(int i, std::string& value, int offset)
   case 10: mr = value; break;
   case 11: mf = value; break;
   case 12: over = value; break;
-  default: MODEL_CARD::set_param_by_index(i-13, value, offset); break;
+  default: MODEL_CARD::set_param_by_index(i-13, value, offset+13); break;
   }
 }
 /*--------------------------------------------------------------------------*/
