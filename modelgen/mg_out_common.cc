@@ -122,8 +122,11 @@ static void make_common_operator_equal(std::ofstream& out, const Device& d)
        ++p) {
     out << "    && " << (**p).code_name() << " == p->" << (**p).code_name() << '\n';
   }
-  out << 
-    "    && _sdp == p->_sdp\n"
+  // TODO: this is wrong. need check model equality eventually
+  for(auto c : d.common().calculated()){
+    out << "    && " << c->code_name() << " == p->" << c->code_name() << '\n';
+  }
+  out <<
     "    && COMMON_COMPONENT::operator==(x));\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
@@ -135,7 +138,7 @@ void make_common_set_param_by_index(std::ofstream& out, const Device& d)
   out <<
     "void COMMON_" << d.name() << "::set_param_by_index(int I, std::string& Value, int Offset)\n"
     "{\n"
-    "  switch (COMMON_" << d.name() << "::param_count() - 1 - I) {\n";
+    "  switch (I) {\n";
   size_t i = 0;
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
@@ -159,7 +162,7 @@ void make_common_set_param_by_index(std::ofstream& out, const Device& d)
   assert(i == d.common().override().size() + d.common().raw().size());
 
   out <<
-    "  default: COMMON_COMPONENT::set_param_by_index(I, Value, Offset);\n"
+    "  default: COMMON_COMPONENT::set_param_by_index(I-" << i << ", Value, Offset+" << i << ");\n"
     "  }\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
@@ -171,7 +174,7 @@ void make_common_param_is_printable(std::ofstream& out, const Device& d)
   out <<
     "bool COMMON_" << d.name() << "::param_is_printable(int i)const\n"
     "{\n"
-    "  switch (COMMON_" << d.name() << "::param_count() - 1 - i) {\n";
+    "  switch (i) {\n";
   size_t i = 0;
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
@@ -208,7 +211,7 @@ void make_common_param_is_printable(std::ofstream& out, const Device& d)
   }
   assert(i == d.common().override().size() + d.common().raw().size());
   out <<
-    "  default: return COMMON_COMPONENT::param_is_printable(i);\n"
+    "  default: return COMMON_COMPONENT::param_is_printable(i-" << i << ");\n"
     "  }\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
@@ -220,7 +223,7 @@ void make_common_param_name(std::ofstream& out, const Device& d)
   out <<
     "std::string COMMON_" << d.name() << "::param_name(int i)const\n"
     "{\n"
-    "  switch (COMMON_" << d.name() << "::param_count() - 1 - i) {\n";
+    "  switch (i) {\n";
   size_t i = 0;
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
@@ -243,7 +246,7 @@ void make_common_param_name(std::ofstream& out, const Device& d)
   }
   assert(i == d.common().override().size() + d.common().raw().size());
   out <<
-    "  default: return COMMON_COMPONENT::param_name(i);\n"
+    "  default: return COMMON_COMPONENT::param_name(i-" << i << ");\n"
     "  }\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
@@ -258,7 +261,7 @@ void make_common_param_name_or_alias(std::ofstream& out, const Device& d)
     "  if (j == 0) {\n"
     "    return param_name(i);\n"
     "  }else if (j == 1) {\n"
-    "    switch (COMMON_" << d.name() << "::param_count() - 1 - i) {\n";
+    "    switch (i) {\n";
   size_t i = 0;
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
@@ -284,7 +287,7 @@ void make_common_param_name_or_alias(std::ofstream& out, const Device& d)
     "    default: return \"\";\n"
     "    }\n"
     "  }else{untested();//281\n"
-    "    return COMMON_COMPONENT::param_name(i, j);\n"
+    "    return COMMON_COMPONENT::param_name(i-" << i << ", j);\n"
     "  }\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
@@ -296,7 +299,7 @@ void make_common_param_value(std::ofstream& out, const Device& d)
   out <<
     "std::string COMMON_" << d.name() << "::param_value(int i)const\n"
     "{\n"
-    "  switch (COMMON_" << d.name() << "::param_count() - 1 - i) {\n";
+    "  switch (i) {\n";
   size_t i = 0;
   for (Parameter_List::const_iterator 
        p = d.common().override().begin(); 
@@ -319,7 +322,7 @@ void make_common_param_value(std::ofstream& out, const Device& d)
   }
   assert(i == d.common().override().size() + d.common().raw().size());
   out <<
-    "  default: return COMMON_COMPONENT::param_value(i);\n"
+    "  default: return COMMON_COMPONENT::param_value(i-" << i << ");\n"
     "  }\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";

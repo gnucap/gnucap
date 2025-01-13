@@ -58,6 +58,7 @@ enum {CC_STATIC=27342}; // mid-sized arbitrary positive int
 // so it won't be deleted
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMMON_COMPONENT : public CKT_BASE {
+  mutable COMMON_COMPONENT* _next{nullptr};
 protected: // probably obsolete
   PARAMETER<double>	_tnom_c;  // specification temperature
   PARAMETER<double>	_dtemp;   // rise over enclosing temperature
@@ -71,6 +72,9 @@ public:
   static void attach_common(COMMON_COMPONENT* c, COMMON_COMPONENT** to);
   static void detach_common(COMMON_COMPONENT** from);
   bool is_shared()const {return _attach_count > 1;}
+  void attach_next(COMMON_COMPONENT* c) { untested(); attach_common(c, &_next); }
+  void detach_next() { untested(); detach_common(&_next); }
+  bool has_next()const { untested(); return _next; }
 private:
   COMMON_COMPONENT& operator=(const COMMON_COMPONENT&)
 			      {unreachable(); return *this;}

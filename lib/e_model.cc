@@ -57,25 +57,25 @@ MODEL_CARD::~MODEL_CARD()
 /*--------------------------------------------------------------------------*/
 void MODEL_CARD::set_param_by_index(int i, std::string& value, int offset)
 {
-  switch (MODEL_CARD::param_count() - 1 - i) {
+  switch (i) {
   case 0: _tnom_c = value; break;
-  default: CARD::set_param_by_index(i, value, offset); break;
+  default: CARD::set_param_by_index(i-1, value, offset+1); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool MODEL_CARD::param_is_printable(int i)const
 {
-  switch (MODEL_CARD::param_count() - 1 - i) {
+  switch (i) {
   case 0: return true;
-  default: return CARD::param_is_printable(i);
+  default: return CARD::param_is_printable(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_CARD::param_name(int i)const
 {
-  switch (MODEL_CARD::param_count() - 1 - i) {
+  switch (i) {
   case 0: return "tnom\0";
-  default: return CARD::param_name(i);
+  default: return CARD::param_name(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -83,18 +83,18 @@ std::string MODEL_CARD::param_name(int i, int j)const
 { untested();
   if (j == 0) { untested();
     return param_name(i);
-  }else if (i >= CARD::param_count()) { untested();
+  }else if (i < 1) { untested();
     return "";
   }else{ untested();
-    return MODEL_CARD::param_name(i, j);
+    return MODEL_CARD::param_name(i-1, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_CARD::param_value(int i)const
 {
-  switch (MODEL_CARD::param_count() - 1 - i) {
+  switch (i) {
   case 0: return _tnom_c.string();
-  default: return CARD::param_value(i);
+  default: return CARD::param_value(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/

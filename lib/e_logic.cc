@@ -40,26 +40,26 @@ bool COMMON_LOGIC::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 void COMMON_LOGIC::set_param_by_index(int I, std::string& Value, int Offset)
 {
-  switch (COMMON_LOGIC::param_count() - 1 - I) {
+  switch (I) {
   case 0:  _modelname = Value; break;
-  default:untested();untested(); COMMON_COMPONENT::set_param_by_index(I, Value, Offset); break;
+  default:untested();untested(); COMMON_COMPONENT::set_param_by_index(I-1, Value, Offset+1); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool COMMON_LOGIC::param_is_printable(int I)const
 {
-  switch (COMMON_LOGIC::param_count() - 1 - I) {
+  switch (I) {
   case 0: return OPT::language 
       && OPT::language->name() != "spice" && OPT::language->name() != "acs";
-  default: return COMMON_COMPONENT::param_is_printable(I);
+  default: return COMMON_COMPONENT::param_is_printable(I-1);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_LOGIC::param_name(int I)const
 {
-  switch (COMMON_LOGIC::param_count() - 1 - I) {
+  switch (I) {
   case 0: return "model";
-  default:untested(); return COMMON_COMPONENT::param_name(I);
+  default:untested(); return COMMON_COMPONENT::param_name(I-1);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -67,18 +67,18 @@ std::string COMMON_LOGIC::param_name(int I, int j)const
 {
   if (j == 0) {
     return param_name(I);
-  }else if (I >= COMMON_COMPONENT::param_count()) {untested();
+  }else if (I < 1) {untested();
     return "";
   }else{untested();
-    return COMMON_COMPONENT::param_name(I, j);
+    return COMMON_COMPONENT::param_name(I-1, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_LOGIC::param_value(int I)const
 {
-  switch (COMMON_LOGIC::param_count() - 1 - I) {
+  switch (I) {
   case 0: return _modelname;
-  default:untested(); return COMMON_COMPONENT::param_value(I);
+  default:untested(); return COMMON_COMPONENT::param_value(I-1);
   }
 }
 /*--------------------------------------------------------------------------*/

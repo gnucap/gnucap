@@ -197,17 +197,17 @@ bool COMMON_SWITCH::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 bool COMMON_SWITCH::param_is_printable(int i)const
 {
-  switch (COMMON_SWITCH::param_count() - 1 - i) {
+  switch (i) {
   case 0:  return (_ic == _ON || _ic == _OFF);
-  default: return COMMON_COMPONENT::param_is_printable(i);
+  default: return COMMON_COMPONENT::param_is_printable(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_SWITCH::param_name(int i)const
 { untested();
-  switch (COMMON_SWITCH::param_count() - 1 - i) {
+  switch (i) {
   case 0:  return "ic";
-  default: return COMMON_COMPONENT::param_name(i);
+  default: return COMMON_COMPONENT::param_name(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -215,18 +215,18 @@ std::string COMMON_SWITCH::param_name(int i, int j)const
 {itested();
   if (j == 0) {itested();
     return param_name(i);
-  }else if (i >= COMMON_COMPONENT::param_count()) {itested();
+  }else if (i < 1) {untested();
     return "";
   }else{itested();
-    return COMMON_COMPONENT::param_name(i, j);
+    return COMMON_COMPONENT::param_name(i-1, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_SWITCH::param_value(int i)const
 {itested();
-  switch (COMMON_SWITCH::param_count() - 1 - i) {
+  switch (i) {
   case 0:  return (_ic == _ON) ? "1" : "0";
-  default: return COMMON_COMPONENT::param_value(i);
+  default: return COMMON_COMPONENT::param_value(i-1);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -297,27 +297,27 @@ std::string MODEL_SWITCH::dev_type()const
 /*--------------------------------------------------------------------------*/
 void MODEL_SWITCH::set_param_by_index(int i, std::string& value, int offset)
 {
-  switch (MODEL_SWITCH::param_count() - 1 - i) {
+  switch (i) {
   case 0: vt = value; break;
   case 1: vh = value; break;
   case 2: von = value; break;
   case 3: voff = value; break;
   case 4: ron = value; break;
   case 5: roff = value; break;
-  default: MODEL_CARD::set_param_by_index(i, value, offset); break;
+  default: MODEL_CARD::set_param_by_index(i-6, value, offset+6); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool MODEL_SWITCH::param_is_printable(int i)const
 {
-  switch (MODEL_SWITCH::param_count() - 1 - i) {
+  switch (i) {
   case 0: 
   case 1: 
   case 2: 
   case 3: 
   case 4: 
   case 5: return true;
-  default: return MODEL_CARD::param_is_printable(i);
+  default: return MODEL_CARD::param_is_printable(i-6);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -325,24 +325,24 @@ std::string MODEL_SWITCH::param_name(int i)const
 {
   switch (type) {
   case VOLTAGE:
-    switch (MODEL_SWITCH::param_count() - 1 - i) {
+    switch (i) {
     case 0: return "vt";
     case 1: return "vh";
     case 2: return "von";
     case 3: return "voff";
     case 4: return "ron";
     case 5: return "roff";
-    default: return MODEL_CARD::param_name(i);
+    default: return MODEL_CARD::param_name(i-6);
     }
   case CURRENT:
-    switch (MODEL_SWITCH::param_count() - 1 - i) {
+    switch (i) {
     case 0: return "it";
     case 1: return "ih";
     case 2: return "ion";
     case 3: return "ioff";
     case 4: return "ron";
     case 5: return "roff";
-    default: return MODEL_CARD::param_name(i);
+    default: return MODEL_CARD::param_name(i-6);
     }
   }
   unreachable();
@@ -353,23 +353,24 @@ std::string MODEL_SWITCH::param_name(int i, int j)const
 {
   if (j == 0) {
     return param_name(i);
-  }else if (i >= MODEL_CARD::param_count()) {
+  }else if (i < 6) {
     return "";
   }else{ untested();
-    return MODEL_CARD::param_name(i, j);
+    assert(0);
+    return MODEL_CARD::param_name(i-6, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string MODEL_SWITCH::param_value(int i)const
 {
-  switch (MODEL_SWITCH::param_count() - 1 - i) {
+  switch (i) {
   case 0: return vt.string();
   case 1: return vh.string();
   case 2: return von.string();
   case 3: return voff.string();
   case 4: return ron.string();
   case 5: return roff.string();
-  default: return MODEL_CARD::param_value(i);
+  default: return MODEL_CARD::param_value(i-6);
   }
 }
 /*--------------------------------------------------------------------------*/

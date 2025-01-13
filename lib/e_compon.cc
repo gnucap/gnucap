@@ -53,7 +53,17 @@ COMMON_COMPONENT::COMMON_COMPONENT(int c)
 COMMON_COMPONENT::~COMMON_COMPONENT()
 {
   trace1("common,destruct", _attach_count);
-  assert(_attach_count == 0 || _attach_count == CC_STATIC);
+  if(_attach_count == 0){
+    // not attached to anything.
+  }else if(_attach_count == CC_STATIC) {
+    // static, not attached to anything.
+  }else if(_attach_count > CC_STATIC) {
+    // static, still attached to another common
+    // the other is static (presumably), but
+    // there seems no way to influence destruction order
+  }else{
+    assert(0 && "common still in use");
+  }
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
@@ -312,7 +322,7 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
     return 0;
   }else{
     //BUG// ugly linear search
-    for (int i = param_count() - 1;  i >= 0;  --i) {
+    for (int i = 0;  i < param_count();  ++i) {
       for (int j = 0;  param_name(i,j) != "";  ++j) {
 	if (Umatch(Name, param_name(i,j) + ' ')) {
 	  set_param_by_index(i, Value, 0/*offset*/);
@@ -334,7 +344,7 @@ int COMMON_COMPONENT::Set_param_by_name(std::string Name, std::string Value)
   assert(!has_parse_params_obsolete_callback());
   
   //BUG// ugly linear search
-  for (int i = COMMON_COMPONENT::param_count() - 1;  i >= 0;  --i) {itested();
+  for (int i = 0;  i < COMMON_COMPONENT::param_count();  ++i) {itested();
     for (int j = 0;  COMMON_COMPONENT::param_name(i,j) != "";  ++j) {itested();
       if (Umatch(Name, COMMON_COMPONENT::param_name(i,j) + ' ')) {itested();
 	COMMON_COMPONENT::set_param_by_index(i, Value, 0/*offset*/);
@@ -724,24 +734,24 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(int idx = set_hsparam(Name, Value)){
     trace3("COMPONENT::spbn", Name, Value, idx);
-    return COMPONENT::param_count() - idx;
+    return idx-1;
   }else if (!has_common()) { itested();
-    return CARD::set_param_by_name(Name, Value);
+    return CARD::set_param_by_name(Name, Value) + sysparams_count;
   }else if(!common()->is_shared()) {
     // it's us!
-    return mutable_common()->set_param_by_name(Name, Value);
+    return mutable_common()->set_param_by_name(Name, Value) + sysparams_count;
   }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     int index = c->set_param_by_name(Name, Value);
     attach_common(c);
-    return index;
+    return index + sysparams_count;
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMPONENT::set_param_by_index(int i, std::string& Value, int offset)
+void COMPONENT::set_param_by_index(int I, std::string& Value, int offset)
 {
-  int I = COMPONENT::param_count() - 1 - i;
+  int i = I - sysparams_count;
 
   if( I < sysparams_count ){
     hsparam().set_by_index(I, Value);
@@ -757,9 +767,9 @@ void COMPONENT::set_param_by_index(int i, std::string& Value, int offset)
   }
 }
 /*--------------------------------------------------------------------------*/
-bool COMPONENT::param_is_printable(int i)const
+bool COMPONENT::param_is_printable(int I)const
 {
-  int I = COMPONENT::param_count() - 1 - i;
+  int i = I - sysparams_count;
 
   if( I < sysparams_count ){
     if(_hsparam){
@@ -774,10 +784,12 @@ bool COMPONENT::param_is_printable(int i)const
   }
 }
 /*--------------------------------------------------------------------------*/
-std::string COMPONENT::param_name(int i)const
+std::string COMPONENT::param_name(int I)const
 {
+  int i = I - sysparams_count;
+
   assert(sysparams_count == 8);
-  switch (COMPONENT::param_count() - 1 - i) {
+  switch (I) {
   case 0: return "$mfactor";
   case 1:itested(); return "$xposition";
   case 2:itested(); return "$yposition";
@@ -797,10 +809,10 @@ std::string COMPONENT::param_name(int i)const
   }
 }
 /*--------------------------------------------------------------------------*/
-std::string COMPONENT::param_name(int i, int j)const
+std::string COMPONENT::param_name(int I, int j)const
 {itested();
-  trace3("COMPONENT::param_name", long_label(), i, j);
-  int I = COMPONENT::param_count() - 1 - i;
+  int i = I - sysparams_count;
+
   if(I < sysparams_count && j) {itested();
     return "";
   }else if(I < sysparams_count) { untested();
@@ -818,9 +830,10 @@ std::string COMPONENT::param_name(int i, int j)const
   }
 }
 /*--------------------------------------------------------------------------*/
-std::string COMPONENT::param_value(int i)const
+std::string COMPONENT::param_value(int I)const
 {
-  int I = COMPONENT::param_count() - 1 - i;
+  int i = I - sysparams_count;
+
   if(I>=0 && I < sysparams_count) {
     if(_hsparam){
       return _hsparam->param_value(I);
