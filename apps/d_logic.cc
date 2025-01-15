@@ -51,19 +51,19 @@ public:
   explicit	DEV_LOGIC(const DEV_LOGIC& p);
 		~DEV_LOGIC()		{--_count;}
 private: // override virtuals
-  char	   id_letter()const override	{return 'U';}
+  char	   id_letter()const override	{ untested();return 'U';}
   std::string value_name()const override{return "";}
-  bool	      print_type_in_spice()const override{return true;}
+  bool	      print_type_in_spice()const override{ untested();return true;}
   std::string dev_type()const override{assert(has_common()); return common()->name();}
-  int	   tail_size()const override {return 2;}
+  int	   tail_size()const override { untested();return 2;}
   int	   max_nodes()const override {return PORTS_PER_GATE;}
   int	   min_nodes()const override {return BEGIN_IN+1;}
-  int	   matrix_nodes()const override	{return 2;}
+  int	   matrix_nodes()const override	{ untested();return 2;}
   int	   net_nodes()const override {return _net_nodes;}
   CARD*	   clone()const override {return new DEV_LOGIC(*this);}
   void	   precalc_first()override {ELEMENT::precalc_first(); if (subckt()) {subckt()->precalc_first();}}
   void	   expand()override;
-  void	   precalc_last() override{ELEMENT::precalc_last(); if (subckt()) {subckt()->precalc_last();}}
+  void	   precalc_last() override;
   //void   map_nodes();
 
   void	   tr_iwant_matrix()override;
@@ -79,9 +79,9 @@ private: // override virtuals
   void	   tr_unload()override;
   TIME_PAIR tr_review()override;
   void	   tr_accept()override;
-  double   tr_involts()const override	{unreachable(); return 0;}
+  double   tr_involts()const override	{ untested();unreachable(); return 0;}
   //double tr_input()const		//ELEMENT
-  double   tr_involts_limited()const override {unreachable(); return 0;}
+  double   tr_involts_limited()const override { untested();unreachable(); return 0;}
   //double tr_input_limited()const	//ELEMENT
   //double tr_amps()const		//ELEMENT
   double   tr_probe_num(const std::string&)const override;
@@ -90,14 +90,14 @@ private: // override virtuals
   void	   ac_begin()override;
   void	   do_ac()override	{untested();  assert(subckt());  subckt()->do_ac();}
   void	   ac_load()override	{untested();  assert(subckt());  subckt()->ac_load();}
-  COMPLEX  ac_involts()const override	{unreachable(); return 0.;}
-  COMPLEX  ac_amps()const override	{unreachable(); return 0.;}
+  COMPLEX  ac_involts()const override	{ untested();unreachable(); return 0.;}
+  COMPLEX  ac_amps()const override	{ untested();unreachable(); return 0.;}
   XPROBE   ac_probe_ext(const std::string&)const override;
 
   node_t& n_(int i)const override {
     assert(_nodes); assert(i>=0); assert(i<PORTS_PER_GATE); return _nodes[i];
   }
-  std::string port_name(int i)const override {
+  std::string port_name(int i)const override { untested();
     assert(i >= 0);
     assert(i < PORTS_PER_GATE);
     const COMMON_LOGIC* c = dynamic_cast<const COMMON_LOGIC*>(common());
@@ -261,6 +261,15 @@ DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
+void DEV_LOGIC::precalc_last()
+{
+  ELEMENT::precalc_last();
+  if (subckt()) {
+    subckt()->precalc_last();
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
 void DEV_LOGIC::expand()
 {
   ELEMENT::expand();
@@ -269,7 +278,7 @@ void DEV_LOGIC::expand()
 
   attach_model();
   const MODEL_LOGIC* m = dynamic_cast<const MODEL_LOGIC*>(c->model());
-  if (!m) {
+  if (!m) { untested();
     throw Exception_Model_Type_Mismatch(long_label(), c->modelname(), "logic family (LOGIC)");
   }else{
   }
@@ -348,7 +357,7 @@ void DEV_LOGIC::dc_advance()
     if (n_(OUTNODE)->in_transit()) {
       //q_eval(); evalq is not used for DC
       n_(OUTNODE)->propagate();
-    }else{
+    }else{ untested();
     }
     break;
   }
@@ -573,7 +582,7 @@ void DEV_LOGIC::tr_accept()
     
     for (int ii = BEGIN_IN;  ii < net_nodes();  ++ii) {
       n_(ii)->to_logic(m);
-      if (n_(ii)->quality() < _quality) {
+      if (n_(ii)->quality() < _quality) { untested();
 	_quality = n_(ii)->quality();
 	_failuremode = n_(ii)->failure_mode();
       }else{
@@ -593,13 +602,13 @@ void DEV_LOGIC::tr_accept()
     trace3(_failuremode.c_str(), _lastchangenode, lastchangeiter, _quality);
   }
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */  
-  if (want_analog()) {
+  if (want_analog()) { untested();
     if (_gatemode == moDIGITAL) {untested();
       error(bTRACE, "%s:%u:%g switch to analog, %s\n", long_label().c_str(),
 	    _sim->iteration_tag(), _sim->_time0, _failuremode.c_str());
       _oldgatemode = _gatemode;
       _gatemode = moANALOG;
-    }else{
+    }else{ untested();
     }
     assert(_gatemode == moANALOG);
   }else{
@@ -648,7 +657,7 @@ void DEV_LOGIC::tr_accept()
 	assert(future_state.lv_old() == future_state.lv_future());
 	if (n_(OUTNODE)->lv() == lvUNKNOWN
 	    || future_state.lv_future() != n_(OUTNODE)->lv_future()) {
-	  n_(OUTNODE)->set_event(m->delay, future_state);
+	  n_(OUTNODE)->set_event(c->_real_delay, future_state);
 	  //assert(future_state == n_(OUTNODE).lv_future());
 	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();
@@ -685,7 +694,7 @@ void DEV_LOGIC::ac_begin()
 }
 /*--------------------------------------------------------------------------*/
 double DEV_LOGIC::tr_probe_num(const std::string& what)const
-{
+{ untested();
   return n_(OUTNODE)->tr_probe_num(what);
 }
 /*--------------------------------------------------------------------------*/
