@@ -51,11 +51,11 @@ public:
   explicit	DEV_LOGIC(const DEV_LOGIC& p);
 		~DEV_LOGIC()		{--_count;}
 private: // override virtuals
-  char	   id_letter()const override	{ untested();return 'U';}
+  char	   id_letter()const override	{return 'U';}
   std::string value_name()const override{return "";}
-  bool	      print_type_in_spice()const override{ untested();return true;}
+  bool	      print_type_in_spice()const override{return true;}
   std::string dev_type()const override{assert(has_common()); return common()->name();}
-  int	   tail_size()const override { untested();return 2;}
+  int	   tail_size()const override {return 2;}
   int	   max_nodes()const override {return PORTS_PER_GATE;}
   int	   min_nodes()const override {return BEGIN_IN+1;}
   int	   matrix_nodes()const override	{ untested();return 2;}
@@ -97,7 +97,7 @@ private: // override virtuals
   node_t& n_(int i)const override {
     assert(_nodes); assert(i>=0); assert(i<PORTS_PER_GATE); return _nodes[i];
   }
-  std::string port_name(int i)const override { untested();
+  std::string port_name(int i)const override {
     assert(i >= 0);
     assert(i < PORTS_PER_GATE);
     const COMMON_LOGIC* c = dynamic_cast<const COMMON_LOGIC*>(common());
@@ -278,7 +278,7 @@ void DEV_LOGIC::expand()
 
   attach_model();
   const MODEL_LOGIC* m = dynamic_cast<const MODEL_LOGIC*>(c->model());
-  if (!m) { untested();
+  if (!m) {
     throw Exception_Model_Type_Mismatch(long_label(), c->modelname(), "logic family (LOGIC)");
   }else{
   }
@@ -357,7 +357,7 @@ void DEV_LOGIC::dc_advance()
     if (n_(OUTNODE)->in_transit()) {
       //q_eval(); evalq is not used for DC
       n_(OUTNODE)->propagate();
-    }else{ untested();
+    }else{
     }
     break;
   }
@@ -582,7 +582,7 @@ void DEV_LOGIC::tr_accept()
     
     for (int ii = BEGIN_IN;  ii < net_nodes();  ++ii) {
       n_(ii)->to_logic(m);
-      if (n_(ii)->quality() < _quality) { untested();
+      if (n_(ii)->quality() < _quality) {
 	_quality = n_(ii)->quality();
 	_failuremode = n_(ii)->failure_mode();
       }else{
@@ -602,13 +602,13 @@ void DEV_LOGIC::tr_accept()
     trace3(_failuremode.c_str(), _lastchangenode, lastchangeiter, _quality);
   }
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */  
-  if (want_analog()) { untested();
+  if (want_analog()) {
     if (_gatemode == moDIGITAL) {untested();
       error(bTRACE, "%s:%u:%g switch to analog, %s\n", long_label().c_str(),
 	    _sim->iteration_tag(), _sim->_time0, _failuremode.c_str());
       _oldgatemode = _gatemode;
       _gatemode = moANALOG;
-    }else{ untested();
+    }else{
     }
     assert(_gatemode == moANALOG);
   }else{
@@ -694,7 +694,7 @@ void DEV_LOGIC::ac_begin()
 }
 /*--------------------------------------------------------------------------*/
 double DEV_LOGIC::tr_probe_num(const std::string& what)const
-{ untested();
+{
   return n_(OUTNODE)->tr_probe_num(what);
 }
 /*--------------------------------------------------------------------------*/

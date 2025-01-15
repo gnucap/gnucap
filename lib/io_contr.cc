@@ -118,7 +118,7 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
     }else if (cmd.umatch("save ")) {itested();
       fn = file_open(cmd,"","w",fn);
       (*out).attach(fn);
-    }else if (cmd.umatch("\\|")) {untested();
+    }else if (cmd.umatch("\\|")) {
       // open a pipe
       std::string command;
       cmd >> command;
@@ -128,7 +128,7 @@ OMSTREAM* outset(CS& cmd, OMSTREAM* out)
 
       IO::formaat = ftos_EXP;
       (*out).setformat(ftos_EXP);
-      if (!echo) {untested();
+      if (!echo) {
 	(*out).detach(IO::mstdout);
       }else{untested();
       }

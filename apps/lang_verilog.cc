@@ -212,6 +212,10 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
       }
     }
     cmd >> ')';
+  }else if (cmd >> "#") {
+    std::string arg;
+    cmd >> arg;
+    x->set_param_by_index(0, arg, 0);
   }else{
     // no args
   }

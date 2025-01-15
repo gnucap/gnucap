@@ -15,9 +15,9 @@ endmodule
 module clock(.out(i0), .en(en));
 	nand #(5) i0 (i0, i4, en);
 	inv #(5) i0 (i4, i3);
-	inv #(5) i0 (i3, i2);
-	inv #(5) i0 (i2, i1);
-	inv #(5) i0 (i1, i0);
+	inv #5 i0 (i3, i2);
+	inv #5 i0 (i2, i1);
+	inv #5 i0 (i1, i0);
 endmodule
 
 module main(all, out3, out2, out1, out0, en);
@@ -25,7 +25,9 @@ module main(all, out3, out2, out1, out0, en);
 	clock c1(clk, en);
 endmodule
 
+
 verilog
+list
 
 main m(a, b, c, d, e, en);
 

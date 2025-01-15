@@ -55,7 +55,7 @@ bool COMMON_LOGIC::param_is_printable(int I)const
 {
   switch (I) {
   case 0: return _delay.has_hard_value();
-  case 1: return OPT::language 
+  case 1: return modelname().size() && OPT::language
       && OPT::language->name() != "spice" && OPT::language->name() != "acs";
   default: return COMMON_COMPONENT::param_is_printable(I-PC);
   }
