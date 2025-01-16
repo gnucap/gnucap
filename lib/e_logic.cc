@@ -28,8 +28,6 @@
 /*--------------------------------------------------------------------------*/
 int COMMON_LOGIC::_count = -1;
 /*--------------------------------------------------------------------------*/
-enum { PC = 2 };
-/*--------------------------------------------------------------------------*/
 bool COMMON_LOGIC::operator==(const COMMON_COMPONENT& x)const
 {
   const COMMON_LOGIC* p = dynamic_cast<const COMMON_LOGIC*>(&x);
@@ -47,7 +45,7 @@ void COMMON_LOGIC::set_param_by_index(int I, std::string& Value, int Offset)
   switch (I) {
   case 0:  _delay = Value; break;
   case 1:  _modelname = Value; break;
-  default:untested();untested(); COMMON_COMPONENT::set_param_by_index(I-PC, Value, Offset+PC); break;
+  default:untested(); COMMON_COMPONENT::set_param_by_index(I-2, Value, Offset+2); break;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -57,7 +55,7 @@ bool COMMON_LOGIC::param_is_printable(int I)const
   case 0: return _delay.has_hard_value();
   case 1: return modelname().size() && OPT::language
       && OPT::language->name() != "spice" && OPT::language->name() != "acs";
-  default: return COMMON_COMPONENT::param_is_printable(I-PC);
+  default: return COMMON_COMPONENT::param_is_printable(I-2);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -66,7 +64,7 @@ std::string COMMON_LOGIC::param_name(int I)const
   switch (I) {
   case 0: return "delay";
   case 1: return "model";
-  default:untested(); return COMMON_COMPONENT::param_name(I-PC);
+  default:untested(); return COMMON_COMPONENT::param_name(I-2);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -74,10 +72,10 @@ std::string COMMON_LOGIC::param_name(int I, int j)const
 {
   if (j == 0) {
     return param_name(I);
-  }else if (I < 1) {
+  }else if (I < 2) {
     return "";
   }else{untested();
-    return COMMON_COMPONENT::param_name(I-PC, j);
+    return COMMON_COMPONENT::param_name(I-2, j);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -86,7 +84,7 @@ std::string COMMON_LOGIC::param_value(int I)const
   switch (I) {
   case 0: return _delay.string();
   case 1: return _modelname;
-  default:untested(); return COMMON_COMPONENT::param_value(I-PC);
+  default:untested(); return COMMON_COMPONENT::param_value(I-2);
   }
 }
 /*--------------------------------------------------------------------------*/
