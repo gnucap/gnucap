@@ -24,6 +24,7 @@
 //testing=?
 #include "u_lang.h"
 #include "e_logic.h"
+#include "e_logicmod.h"
 /*--------------------------------------------------------------------------*/
 int COMMON_LOGIC::_count = -1;
 /*--------------------------------------------------------------------------*/
@@ -31,6 +32,7 @@ bool COMMON_LOGIC::operator==(const COMMON_COMPONENT& x)const
 {
   const COMMON_LOGIC* p = dynamic_cast<const COMMON_LOGIC*>(&x);
   bool rv = p
+    && _delay == p->_delay
     && COMMON_COMPONENT::operator==(x);
   if (rv) {
   }else{
@@ -41,25 +43,28 @@ bool COMMON_LOGIC::operator==(const COMMON_COMPONENT& x)const
 void COMMON_LOGIC::set_param_by_index(int I, std::string& Value, int Offset)
 {
   switch (I) {
-  case 0:  _modelname = Value; break;
-  default:untested();untested(); COMMON_COMPONENT::set_param_by_index(I-1, Value, Offset+1); break;
+  case 0:  _delay = Value; break;
+  case 1:  _modelname = Value; break;
+  default:untested(); COMMON_COMPONENT::set_param_by_index(I-2, Value, Offset+2); break;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool COMMON_LOGIC::param_is_printable(int I)const
 {
   switch (I) {
-  case 0: return OPT::language 
+  case 0: return _delay.has_hard_value();
+  case 1: return modelname().size() && OPT::language
       && OPT::language->name() != "spice" && OPT::language->name() != "acs";
-  default: return COMMON_COMPONENT::param_is_printable(I-1);
+  default: return COMMON_COMPONENT::param_is_printable(I-2);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_LOGIC::param_name(int I)const
 {
   switch (I) {
-  case 0: return "model";
-  default:untested(); return COMMON_COMPONENT::param_name(I-1);
+  case 0: return "delay";
+  case 1: return "model";
+  default:untested(); return COMMON_COMPONENT::param_name(I-2);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -67,19 +72,39 @@ std::string COMMON_LOGIC::param_name(int I, int j)const
 {
   if (j == 0) {
     return param_name(I);
-  }else if (I < 1) {untested();
+  }else if (I < 2) {
     return "";
   }else{untested();
-    return COMMON_COMPONENT::param_name(I-1, j);
+    return COMMON_COMPONENT::param_name(I-2, j);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_LOGIC::param_value(int I)const
 {
   switch (I) {
-  case 0: return _modelname;
-  default:untested(); return COMMON_COMPONENT::param_value(I-1);
+  case 0: return _delay.string();
+  case 1: return _modelname;
+  default:untested(); return COMMON_COMPONENT::param_value(I-2);
   }
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_LOGIC::precalc_first(CARD_LIST const* scope)
+{
+  COMMON_COMPONENT::precalc_first(scope);
+  if(modelname()=="") {
+    error(bDEBUG, "falling back to default logic\n");
+    set_modelname("logic");
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_LOGIC::precalc_last(CARD_LIST const* scope)
+{
+  _delay.e_val(1, scope);
+  const MODEL_LOGIC* m = dynamic_cast<MODEL_LOGIC const*>(model());
+  assert(m);
+  _real_delay = m->delay * _delay;
+  COMMON_COMPONENT::precalc_last(scope);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

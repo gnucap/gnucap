@@ -27,6 +27,9 @@
 #include "e_compon.h"
 /*--------------------------------------------------------------------------*/
 class INTERFACE COMMON_LOGIC : public COMMON_COMPONENT {
+  PARAMETER<int> _delay;
+public:
+  double _real_delay{NOT_VALID};
 protected:
   enum {PORTS_PER_GATE = 10};
   static int	_count;
@@ -34,7 +37,9 @@ protected:
   explicit	COMMON_LOGIC(int c=0)
     :COMMON_COMPONENT(c) {++_count;}
   explicit	COMMON_LOGIC(const COMMON_LOGIC& p)
-    :COMMON_COMPONENT(p) {++_count;}
+    :COMMON_COMPONENT(p),
+     _delay(p._delay),
+     _real_delay(p._real_delay) {++_count;}
 public:
 		~COMMON_LOGIC()			{--_count;}
   bool operator==(const COMMON_COMPONENT&)const override;
@@ -46,7 +51,7 @@ public:
   std::string	param_name(int)const override;
   std::string	param_name(int,int)const override;
   std::string	param_value(int)const override;
-  int param_count()const override {return (1 + COMMON_COMPONENT::param_count());}
+  int param_count()const override {return (2 + COMMON_COMPONENT::param_count());}
   virtual std::string port_name(int i)const {
     assert(i >= 0);
     assert(i < PORTS_PER_GATE);
@@ -54,6 +59,8 @@ public:
 			"in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
     return names[i];
   }
+  void precalc_first(const CARD_LIST*)override;
+  void precalc_last(const CARD_LIST*)override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

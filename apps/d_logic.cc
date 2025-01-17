@@ -58,12 +58,12 @@ private: // override virtuals
   int	   tail_size()const override {return 2;}
   int	   max_nodes()const override {return PORTS_PER_GATE;}
   int	   min_nodes()const override {return BEGIN_IN+1;}
-  int	   matrix_nodes()const override	{return 2;}
+  int	   matrix_nodes()const override	{ untested();return 2;}
   int	   net_nodes()const override {return _net_nodes;}
   CARD*	   clone()const override {return new DEV_LOGIC(*this);}
   void	   precalc_first()override {ELEMENT::precalc_first(); if (subckt()) {subckt()->precalc_first();}}
   void	   expand()override;
-  void	   precalc_last() override{ELEMENT::precalc_last(); if (subckt()) {subckt()->precalc_last();}}
+  void	   precalc_last() override;
   //void   map_nodes();
 
   void	   tr_iwant_matrix()override;
@@ -79,9 +79,9 @@ private: // override virtuals
   void	   tr_unload()override;
   TIME_PAIR tr_review()override;
   void	   tr_accept()override;
-  double   tr_involts()const override	{unreachable(); return 0;}
+  double   tr_involts()const override	{ untested();unreachable(); return 0;}
   //double tr_input()const		//ELEMENT
-  double   tr_involts_limited()const override {unreachable(); return 0;}
+  double   tr_involts_limited()const override { untested();unreachable(); return 0;}
   //double tr_input_limited()const	//ELEMENT
   //double tr_amps()const		//ELEMENT
   double   tr_probe_num(const std::string&)const override;
@@ -90,8 +90,8 @@ private: // override virtuals
   void	   ac_begin()override;
   void	   do_ac()override	{untested();  assert(subckt());  subckt()->do_ac();}
   void	   ac_load()override	{untested();  assert(subckt());  subckt()->ac_load();}
-  COMPLEX  ac_involts()const override	{unreachable(); return 0.;}
-  COMPLEX  ac_amps()const override	{unreachable(); return 0.;}
+  COMPLEX  ac_involts()const override	{ untested();unreachable(); return 0.;}
+  COMPLEX  ac_amps()const override	{ untested();unreachable(); return 0.;}
   XPROBE   ac_probe_ext(const std::string&)const override;
 
   node_t& n_(int i)const override {
@@ -259,6 +259,15 @@ DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
     _nodes[ii] = p._nodes[ii];
   }
   ++_count;
+}
+/*--------------------------------------------------------------------------*/
+void DEV_LOGIC::precalc_last()
+{
+  ELEMENT::precalc_last();
+  if (subckt()) {
+    subckt()->precalc_last();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::expand()
@@ -648,7 +657,7 @@ void DEV_LOGIC::tr_accept()
 	assert(future_state.lv_old() == future_state.lv_future());
 	if (n_(OUTNODE)->lv() == lvUNKNOWN
 	    || future_state.lv_future() != n_(OUTNODE)->lv_future()) {
-	  n_(OUTNODE)->set_event(m->delay, future_state);
+	  n_(OUTNODE)->set_event(c->_real_delay, future_state);
 	  //assert(future_state == n_(OUTNODE).lv_future());
 	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();

@@ -4,9 +4,9 @@
 
 parameter tclk=200u
 parameter tt=5u
-parameter delay=2u
+parameter delay=1u
 
-.model  mos logic ( delay=delay rise=tt fall=tt  rs= 100.  rw= 1.G
+.model logic logic ( delay=delay rise=tt fall=tt  rs= 100.  rw= 1.G
 + thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
 
 **************
@@ -38,7 +38,7 @@ M1 a b c d mynmos  l=l w=w  nrd= 1.  nrs= 1.
 
 **************
 
-module mosand2(out a b);
+module logicand2(out a b);
   ground 0;
   my_nmos #(.l(100u),.w(100u)) m1( out nout , \0 , \0 );
   my_pmos #(.l(100u),.w(100u)) m2( out nout vdd vdd );
@@ -52,7 +52,7 @@ module mosand2(out a b);
   vsource #(.dc(5.)) Vdd(vdd, \0 );
 endmodule
 
-module mosnand3(out a b c);
+module logicnand3(out a b c);
   ground 0;
   my_pmos #(.l(100u),.w(100u)) mpa( out a vdd vdd );
   my_pmos #(.l(100u),.w(100u)) mpb( out b vdd vdd );
@@ -65,14 +65,14 @@ module mosnand3(out a b c);
   vsource #(.dc(5.)) Vdd(vdd, \0 );
 endmodule
 
-module mosinv1 (out  in);
+module logicinv1 (out  in);
   ground 0;
   my_nmos #(.l(100u),.w(100u)) m1( out  in  \0 , \0 )
   my_pmos #(.l(100u),.w(100u)) m2( out  in  vdd vdd)
   vsource #(.dc(5.)) Vdd(vdd, \0 );
 endmodule
 
-module mosnor2(out a b);
+module logicnor2(out a b);
   ground 0;
   my_pmos #(.l(100u),.w(100u)) mpb( out, b, i1 , vdd );
   my_pmos #(.l(100u),.w(100u)) mpa( i1 , a, vdd, vdd );
@@ -84,9 +84,9 @@ module mosnor2(out a b);
 endmodule
 
 module xor2(out a b)
-	nor #(.model(mos)) n(i1 a b)
-	and #(.model(mos)) a(i2 a b)
-	nor #(.model(mos)) b(out i1 i2)
+	nor #2 n(i1 a b)
+	and #2 a(i2 a b)
+	nor #2 b(out i1 i2)
 endmodule
 
 
@@ -115,28 +115,28 @@ my_nmos #(.l(100.u),.w( 32*w0)) n5 (out, nd5, gnd, gnd);
 my_nmos #(.l(100.u),.w( 64*w0)) n6 (out, nd6, gnd, gnd);
 my_nmos #(.l(100.u),.w(128*w0)) n7 (out, nd7, gnd, gnd);
 
-inv #(.model(mos)) i0(nd0 d0)
-inv #(.model(mos)) i1(nd1 d1)
-inv #(.model(mos)) i2(nd2 d2)
-inv #(.model(mos)) i3(nd3 d3)
-inv #(.model(mos)) i4(nd4 d4)
-inv #(.model(mos)) i5(nd5 d5)
-inv #(.model(mos)) i6(nd6 d6)
-inv #(.model(mos)) i7(nd7 d7)
+inv #2 i0(nd0 d0)
+inv #2 i1(nd1 d1)
+inv #2 i2(nd2 d2)
+inv #2 i3(nd3 d3)
+inv #2 i4(nd4 d4)
+inv #2 i5(nd5 d5)
+inv #2 i6(nd6 d6)
+inv #2 i7(nd7 d7)
 
 endmodule
 
 module dff(q nq nset clk data nreset)
-	nand #(.model(mos)) u1(q, nset, i1, nq);
-	nand #(.model(mos)) u2(nq, q, i2, nreset);
-	nand #(.model(mos)) u3(i0, nset, i3, i1);
-	nand #(.model(mos)) u4(i1, i0, clk, nreset);
-	nand #(.model(mos)) u5(i2, i1, clk, i3);
-	nand #(.model(mos)) u6(i3, i2, data, nreset);
+	nand #2 u1(q, nset, i1, nq);
+	nand #2 u2(nq, q, i2, nreset);
+	nand #2 u3(i0, nset, i3, i1);
+	nand #2 u4(i1, i0, clk, nreset);
+	nand #2 u5(i2, i1, clk, i3);
+	nand #2 u6(i3, i2, data, nreset);
 endmodule
 
 module ha(s cout a b)
-	and #(.model(mos)) x(cout a b)
+	and #2 x(cout a b)
 	xor2 x(s a b)
 endmodule
 

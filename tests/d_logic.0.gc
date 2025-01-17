@@ -1,0 +1,39 @@
+
+* options trace
+
+.model logic logic ( delay=1n rise=1n fall=1n  rs= 100.  rw= 1.G
++ thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
+
+module logic_test(all, out3, out2, out1, out0, in);
+	inv #(1) b0(out0, in);
+	inv #(2) b1(out1, in);
+	inv #(3) b2(out2, in);
+	inv #(4) b3(out3, in);
+	nand #(1) a(all, out0, out1, out2, out3);
+endmodule
+
+module clock(.out(i0), .en(en));
+	nand #(5) i0 (i0, i4, en);
+	inv #(5) i0 (i4, i3);
+	inv #5 i0 (i3, i2);
+	inv #5 i0 (i2, i1);
+	inv #5 i0 (i1, i0);
+endmodule
+
+module main(all, out3, out2, out1, out0, en);
+	logic_test t1(all, out3, out2, out1, out0, clk);
+	clock c1(clk, en);
+endmodule
+
+
+verilog
+list
+
+main m(a, b, c, d, e, en);
+
+spice
+
+Ven en 0 pulse iv=0 pv=5 rise=1n
+
+.print tran v(nodes)
+.tran .5u basic

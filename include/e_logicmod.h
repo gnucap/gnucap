@@ -46,7 +46,7 @@ public:
   static int	count()			{untested();return _count;}
 public:
 			/* ----- digital mode ----- */
-  PARAMETER<double> delay;	/* propagation delay */
+  PARAMETER<double> delay;	/* timescale, unit */
 			/* -- conversion parameters both ways -- */
   PARAMETER<double> vmax;	/* nominal volts for logic 1 */
   PARAMETER<double> vmin;	/* nominal volts for logic 0 */
