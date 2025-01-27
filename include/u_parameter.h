@@ -53,13 +53,13 @@ public:
   virtual PARA_BASE* pclone(void*)const = 0;
   virtual bool operator==(const PARA_BASE&) const = 0;
 
-	  bool	has_hard_value()const { return (_s != "");}
+	  bool	has_hard_value()const {return (_s != "");}
   virtual bool	has_good_value()const = 0;
           bool  is_constant()const    {itested(); return (_s == "#");}
   virtual bool  is_given()const       {untested(); return (_s != "");}
   void	print(OMSTREAM& o)const       { o << string();}
 
-  virtual void	obsolete_parse(CS& cmd) = 0;
+  virtual void	parse(CS& cmd) = 0;
   virtual PARA_BASE& operator=(const std::string& s) = 0;
   virtual PARA_BASE& operator=(Base const*) = 0;
   virtual std::string string()const = 0;
@@ -117,7 +117,7 @@ public:
   operator T()const {return _v;}
   T e_val(const T& def, const CARD_LIST* scope, int recurse=0)const;
   Base const* value()const override { return &_v;}
-  void	obsolete_parse(CS& cmd) override;
+  void	parse(CS& cmd) override;
 
   std::string string()const override{
     if (_s == "#") {
@@ -274,7 +274,7 @@ private:
     PARA_BASE* pclone(void* p)const override { return new(p) PARAM_ANY(*this);}
     bool operator==(const PARA_BASE& x)const override { return _s == x.string(); }
     bool has_good_value()const override { untested();unreachable(); return false;}
-    void obsolete_parse(CS&)override { untested();unreachable();}
+    void parse(CS&)override { untested();unreachable();}
     PARAM_ANY& operator=(const std::string& s)override { _s = s; return *this;}
     PARAM_ANY& operator=(const Base*)override { untested();unreachable(); return *this;}
     std::string string()const override{ return _s;}
@@ -390,8 +390,8 @@ public:
       return NOT_VALID;
     }
   }
-  void obsolete_parse(CS& cmd) {
-    base()->obsolete_parse(cmd);
+  void parse(CS& cmd) {
+    base()->parse(cmd);
   }
  //  operator PARAMETER<double> const&()const {
  //    if(auto d = dynamic_cast<PARAMETER<double> const*>(_data.base())){
@@ -423,7 +423,7 @@ public:
     _pl = p._pl;
     return *this;
   }
-  void	obsolete_parse(CS& cmd);
+  void	parse(CS& cmd);
   void	print(OMSTREAM&, LANGUAGE*)const;
   
   size_t size()const {return _pl.size();}
@@ -598,7 +598,7 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int re
 }
 /*--------------------------------------------------------------------------*/
 template <>
-inline void PARAMETER<bool>::obsolete_parse(CS& cmd) 
+inline void PARAMETER<bool>::parse(CS& cmd) 
 {
   bool new_val;
   cmd >> new_val;
@@ -626,10 +626,10 @@ inline void PARAMETER<bool>::obsolete_parse(CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-inline void PARAMETER<T>::obsolete_parse(CS& cmd) 
+inline void PARAMETER<T>::parse(CS& cmd) 
 {
   value_type new_val;
-  new_val.parse(cmd);
+  cmd >> new_val;
   if (cmd) {
     _v = new_val;
     _s = "#";
@@ -674,7 +674,7 @@ template <class T>
 bool Get(CS& cmd, const std::string& key, PARAMETER<T>* val)
 {
   if (cmd.umatch(key + " {=}")) {
-    val->obsolete_parse(cmd);
+    val->parse(cmd);
     return true;
   }else{
     return false;
@@ -685,7 +685,7 @@ template <class T>
 bool Get(CS& cmd, const std::string& key, PARAM_INSTANCE* val)
 { untested();
   if (cmd.umatch(key + " {=}")) { untested();
-    val->obsolete_parse(cmd);
+    val->parse(cmd);
     return true;
   }else{ untested();
     return false;

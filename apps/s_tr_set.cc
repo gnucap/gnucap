@@ -46,13 +46,13 @@ void TRANSIENT::setup(CS& Cmd)
 
   if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
     PARAMETER<double> arg1, arg2, arg3;
-    arg1.obsolete_parse(Cmd);
+    Cmd >> arg1;
     if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
-      arg2.obsolete_parse(Cmd);
+      Cmd >> arg2;
     }else{
     }
     if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
-      arg3.obsolete_parse(Cmd);
+      Cmd >> arg3;
     }else{
     }
     
@@ -124,7 +124,7 @@ void TRANSIENT::setup(CS& Cmd)
     /* _tstrobe unchanged */
   }
   if (Cmd.match1("'\"({") || Cmd.is_pfloat()) {
-    _dtmax_in.obsolete_parse(Cmd);
+    Cmd >> _dtmax_in;
   }else{
   }
 

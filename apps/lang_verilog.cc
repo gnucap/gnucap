@@ -522,8 +522,23 @@ public:
     }
     return ret;
   }
-
-  void obsolete_parse(CS&) override { untested(); unreachable(); }
+#if 0
+  void parse(CS& cmd) override {
+    std::string name;
+    //cmd >> name;
+    name = cmd.ctos(",=();", "'{\"", "'}\"");
+    if (cmd) {
+      if (cmd.match1('(')) { untested();
+	_s = name + '(' + cmd.ctos("", "(", ")") + ')';
+      }else{
+	_s = name;
+      }
+    }else{
+    }
+  }
+  PARA_BASE& operator=(const std::string&s) override{ untested(); _s = s; return *this;}
+#endif
+  void parse(CS&) override { untested(); unreachable(); }
   PARA_BASE& operator=(const std::string&s) override{ _s = s; return *this;}
   PARA_BASE& operator=(Base const* v)override {
     delete _value;

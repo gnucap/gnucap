@@ -184,12 +184,12 @@ bool EVAL_BM_PWL::parse_numlist(CS& cmd)
     size_t start_of_pair = here;
     std::pair<PARAMETER<double>, PARAMETER<double> > p;
     //cmd >> key >> value;
-    p.first.obsolete_parse(cmd); // key
+    cmd >> p.first; // key
     if (cmd.stuck(&here)) {
       // no more, graceful finish
       break;
     }else{
-      p.second.obsolete_parse(cmd); // value
+      cmd >> p.second; // value
       if (cmd.stuck(&here)) { untested();
 	// ran out, but already have half of the pair
 	// back up one, hoping somebody else knows what to do with it
