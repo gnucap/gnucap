@@ -170,11 +170,11 @@ bool MODEL_TABLE::parse_params_obsolete_callback(CS& cmd)
     for (;;) {
       size_t start_of_pair = here;
       std::pair<PARAMETER<double>, PARAMETER<double> > p;
-      p.first.obsolete_parse(cmd);
+      cmd >> p.first; // key
       if (cmd.stuck(&here)) {
 	break;
       }else{
-	p.second.obsolete_parse(cmd); // value
+	cmd >> p.second; // value
 	if (cmd.stuck(&here)) {
 	  cmd.reset(start_of_pair);
 	  break;

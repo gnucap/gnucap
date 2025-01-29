@@ -157,7 +157,7 @@ bool EVAL_BM_POLY::parse_numlist(CS& cmd)
   for (;;) {
     size_t old_here = here;
     PARAMETER<double> val;
-    val.obsolete_parse(cmd);
+    cmd >> val;
     if (cmd.stuck(&here)) {
       // no more, graceful finish
       break;

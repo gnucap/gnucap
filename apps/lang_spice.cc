@@ -550,7 +550,7 @@ BASE_SUBCKT* LANG_SPICE_BASE::parse_module(CS& cmd, BASE_SUBCKT* x)
     cmd.reset(here);
     parse_ports(cmd, x, x->min_nodes(), 0/*start*/, num_nodes, true/*all new*/);
   }
-  x->subckt()->params()->obsolete_parse(cmd);
+  x->subckt()->params()->parse(cmd);
 
   // body
   parse_module_body(cmd, x, x->subckt(), name() + "-subckt>", NO_EXIT_ON_BLANK, ".ends |.eom ");

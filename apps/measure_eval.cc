@@ -30,7 +30,7 @@ class MEASURE : public FUNCTION {
 public:
   std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
     PARAMETER<double> arg;
-    arg.obsolete_parse(Cmd);
+    Cmd >> arg;
     arg.e_val(BIGBIG, Scope);
     return to_string(double(arg));
   }

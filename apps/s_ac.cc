@@ -133,15 +133,15 @@ void AC::setup(CS& Cmd)
     || (Get(Cmd, "o{ctave}",	&_step_in) && (_stepmode = OCTAVE));
   
   if (Cmd.match1("'\"({") || Cmd.is_float()) {
-    _start.obsolete_parse(Cmd);
+    Cmd >> _start;
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
-      _stop.obsolete_parse(Cmd);
+      Cmd >> _stop;
     }else{
       _stop = _start;
     }
     if (Cmd.match1("'\"({") || Cmd.is_float()) {
       _stepmode = LIN_STEP;
-      _step_in.obsolete_parse(Cmd);
+      Cmd >> _step_in;
     }else{
     }
   }
