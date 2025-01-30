@@ -1,7 +1,7 @@
 verilog
 
 module main(\1 ,\2 );
-  parameter real v;
+  parameter real v=0;
   parameter integer test = 2;
   vsource #(.dc(v + test / 3)) v1(\2 ,\1 )
 endmodule

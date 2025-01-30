@@ -3,19 +3,19 @@ paramset logic logic;
 endparamset
 
 module logic_test (.all(all),.out3(out3),.out2(out2),.out1(out1),.out0(out0),.in(in));
-inv #(.delay(1)) b0 (.out(out0),.in1(in));
-inv #(.delay(2)) b1 (.out(out1),.in1(in));
-inv #(.delay(3)) b2 (.out(out2),.in1(in));
-inv #(.delay(4)) b3 (.out(out3),.in1(in));
-nand #(.delay(1)) a (.out(all),.in1(out0),.in2(out1),.in3(out2),.in4(out3));
+inv #(.delay(1),.model(logic)) b0 (.out(out0),.in1(in));
+inv #(.delay(2),.model(logic)) b1 (.out(out1),.in1(in));
+inv #(.delay(3),.model(logic)) b2 (.out(out2),.in1(in));
+inv #(.delay(4),.model(logic)) b3 (.out(out3),.in1(in));
+nand #(.delay(1),.model(logic)) a (.out(all),.in1(out0),.in2(out1),.in3(out2),.in4(out3));
 endmodule // logic_test
 
 module clock (.out(i0),.en(en));
-nand #(.delay(5)) i0 (.out(i0),.in1(i4),.in2(en));
-inv #(.delay(5)) i0 (.out(i4),.in1(i3));
-inv #(.delay(5)) i0 (.out(i3),.in1(i2));
-inv #(.delay(5)) i0 (.out(i2),.in1(i1));
-inv #(.delay(5)) i0 (.out(i1),.in1(i0));
+nand #(.delay(5),.model(logic)) i0 (.out(i0),.in1(i4),.in2(en));
+inv #(.delay(5),.model(logic)) i0 (.out(i4),.in1(i3));
+inv #(.delay(5),.model(logic)) i0 (.out(i3),.in1(i2));
+inv #(.delay(5),.model(logic)) i0 (.out(i2),.in1(i1));
+inv #(.delay(5),.model(logic)) i0 (.out(i1),.in1(i0));
 endmodule // clock
 
 module main (.all(all),.out3(out3),.out2(out2),.out1(out1),.out0(out0),.en(en));

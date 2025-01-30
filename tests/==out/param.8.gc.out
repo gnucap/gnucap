@@ -2,6 +2,8 @@
 ^ ? \\: no match
 parameter a not specified, using default
 parameter a value is "NOT_INPUT"
+parameter a not specified, using default
+parameter a value is "NOT_INPUT"
 #           v(1)       v(2)       v(3)      
  0.         1.         2.         1.        
 #           v(1)       v(2)       v(3)      

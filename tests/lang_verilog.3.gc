@@ -12,7 +12,7 @@ endmodule
 
 module foo (vcc in out);
 parameter real z=10k;
-parameter real r;
+parameter real r=-1.;
 resistor      #(.r(z))         Rc   (.p(c), .n(vcc));
 zz            #(.off(1))       q1   (.b(b), .c(c), .e(e));
 dumb_resistor #(.r(abs(-z)/10) Re   (e,\0 );

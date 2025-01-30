@@ -737,10 +737,10 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
     return idx-1;
   }else if (!has_common()) { itested();
     return CARD::set_param_by_name(Name, Value) + sysparams_count;
-  }else if(!common()->is_shared()) {
+  }else if(!common()->is_shared()) { untested();
     // it's us!
     return mutable_common()->set_param_by_name(Name, Value) + sysparams_count;
-  }else{
+  }else{ untested();
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     int index = c->set_param_by_name(Name, Value);

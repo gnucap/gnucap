@@ -4,7 +4,7 @@ simulator lang=spectre
 model zz npn bf=150
 
 subckt dumb_resistor (a b)
-//parameters r=10k
+parameters r=10k
 R1 (a b) resistor r=r
 ends
 
