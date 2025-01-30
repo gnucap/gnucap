@@ -140,7 +140,14 @@ private:
   int param_count_dont_print()const override {return common()->COMMON_COMPONENT::param_count();}
 
   node_t& n_(int i)const override {
-    assert(_n); assert(i>=0); assert(i<_node_capacity); return _n[i];
+    assert(_n); assert(i>=0);
+    if(i<_node_capacity) {
+      return _n[i];
+    }else{
+      // getting here in d_subckt.error3.ckt
+      static node_t dummy;
+      return dummy;
+    }
   }
   std::string port_name(int i)const override;
 public:
@@ -151,7 +158,7 @@ public:
 int DEV_SUBCKT::_count = -1;
 DISPATCHER<CARD>::INSTALL d0(&device_dispatcher, "module", &p1);
 /*--------------------------------------------------------------------------*/
-//BUG// fixed limit on number of ports
+//BUG// fixed limit on number of ports, spice only
 #define PORTS_PER_SUBCKT 100
 /*--------------------------------------------------------------------------*/
 class DEV_SUBCKT_PROTO : public DEV_SUBCKT {
@@ -251,13 +258,13 @@ CARD* DEV_SUBCKT_PROTO::clone_instance()const
 
   // assert(!new_instance->subckt());
 
-  if (this == &pp){ untested();
+  if (this == &pp){
     // cloning from static, empty model
     // look out for _parent in expand
     assert(!new_instance->_parent);
     assert(!new_instance->is_device());
     new_instance->_parent = this;
-  }else{ untested();
+  }else{
     new_instance->_parent = this;
     //assert(common() == new_instance->common());
 
@@ -275,7 +282,7 @@ CARD* DEV_SUBCKT_PROTO::clone_instance()const
 /*--------------------------------------------------------------------------*/
 bool DEV_SUBCKT::is_device() const
 {
-  if(!_parent) { untested();
+  if(!_parent) {
     return false;
   }else if(_parent==&pp){
     // spice proto
@@ -307,19 +314,19 @@ int DEV_SUBCKT::set_port_by_name(std::string& name, std::string& value)
 /*--------------------------------------------------------------------------*/
 int DEV_SUBCKT::max_nodes() const
 {
-  if(_parent == &pp){ untested();
+  if(_parent == &pp){
     // spice..
     return _parent->max_nodes();
   }else if(_parent){
     return static_cast<CARD const*>(_parent)->net_nodes();
   }else if(this == &pp){ untested();
     incomplete();
+    unreachable();
     return 100000;
   }else{
-    // no parent. probably building spice instance, prototype yet unknown
-    // let lang_spice decide
-    return PORTS_PER_SUBCKT;
-    return net_nodes();
+    // building proto. allow one more.
+    // they come in order anyway.
+    return std::min(INT_MAX, net_nodes() + 1);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -335,12 +342,12 @@ CARD_LIST* DEV_SUBCKT::scope()
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_SUBCKT::is_valid() const
-{
+{ untested();
   PARAM_LIST const* params;
-  if(_parent){
+  if(_parent){ untested();
     assert(_parent->subckt());
     params = _parent->subckt()->params();
-  }else{
+  }else{ untested();
     assert(subckt());
     params = subckt()->params();
   }
@@ -351,9 +358,9 @@ bool DEV_SUBCKT::is_valid() const
   Base const* x = v.e_val(nullptr, subckt());
   Integer c;
   Integer* res = c.assign(x);
-  if(!res) {
+  if(!res) { untested();
     return true;
-  }else{
+  }else{ untested();
     assert(x);
     trace1("DEV_SUBCKT::is_valid III", typeid(*x).name());
     int a = res->value();
@@ -367,18 +374,18 @@ CARD* DEV_SUBCKT::clone()const
   DEV_SUBCKT* new_instance = new DEV_SUBCKT(*this);
   assert(!new_instance->subckt());
 
-  if (this == &p1){ untested();
+  if (this == &p1){
     // cloning from static, empty model
     // has no parent.
     new_instance->new_subckt(); // from DEV_SUBCKT_PROTO::DEV_SUBCKT_PROTO
-  }else if(_parent){ untested();
+  }else if(_parent){
     new_instance->_parent = _parent;
     assert(new_instance->is_device());
-  }else{ untested();
+  }else{
     // verilog. build proto
  //   new_instance->_parent = this;
     assert(!new_instance->is_device());
-    if(new_instance->subckt()){
+    if(new_instance->subckt()){ untested();
     }else{
      new_instance->new_subckt();
     }
@@ -413,7 +420,7 @@ DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
   _node_capacity = p.max_nodes();
   if(_node_capacity){
     _n = new node_t[_node_capacity];
-  }else{
+  }else{ untested();
     assert(_n == nullptr);
   }
   if(p.is_device()){
@@ -437,17 +444,17 @@ int DEV_SUBCKT::set_param_by_name(std::string Name, std::string Value)
 
   if (Name[0] == '$'){
     return BASE_SUBCKT::set_param_by_name(Name, Value);
-  }else if(_parent==&pp || !_parent) { untested();
+  }else if(_parent==&pp || !_parent) {
     // spice.
     trace2("spice spbn", Name, Value);
     int i = BASE_SUBCKT::set_param_by_name(Name,Value);
-    for(auto p : c->_params){ untested();
+    for(auto p : c->_params){
       trace2("spbn param spice", p.first, p.second.string());
     }
     return i;
-  }else{ untested();
+  }else{
     trace2("normal spbn", Name, Value);
-    for(auto p : *_parent->subckt()->params()){ untested();
+    for(auto p : *_parent->subckt()->params()){
       trace2("normal param", p.first, p.second.string());
     }
     PARAM_LIST::const_iterator p = _parent->subckt()->params()->find(Name);
@@ -464,7 +471,7 @@ std::string DEV_SUBCKT::port_name(int i)const
   if (const DEV_SUBCKT* p=dynamic_cast<const DEV_SUBCKT*>(_parent)) {
     if (i<p->net_nodes()){
       return p->port_name(i);
-    }else{untested();
+    }else{
       return "";
     }
   }else if(_parent) { untested(); untested();
@@ -479,7 +486,7 @@ std::string DEV_SUBCKT::port_name(int i)const
     }
   }else if(i<net_nodes()) {
     return port_value(i);
-  }else{
+  }else{ untested();
     return "";
   }
 }
@@ -496,7 +503,7 @@ void DEV_SUBCKT::expand()
     // first time spice
     assert(c->modelname()!="");
     const CARD* model = find_looking_out(c->modelname());
-    if ((_parent = dynamic_cast<const DEV_SUBCKT_PROTO*>(model))) { untested();
+    if ((_parent = dynamic_cast<const DEV_SUBCKT_PROTO*>(model))) {
       // good
     }else if (dynamic_cast<const BASE_SUBCKT*>(model)) {
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt proto");
@@ -513,7 +520,7 @@ void DEV_SUBCKT::expand()
 	n_(i).n_()->set_label("");
       }
     }
-  }else{
+  }else{ untested();
   }
 
   trace1("DEV_SUBCKT::expand1", max_nodes());
@@ -543,7 +550,7 @@ void DEV_SUBCKT::expand()
       CARD* d = (*i)->deflate();
 
       if(d == (*i)){
-      }else{
+      }else{ untested();
 	assert(d->owner() == this);
 	delete *i;
 	*i = d;

@@ -465,6 +465,7 @@ bool COMPONENT::node_is_connected(int i)const
 /*--------------------------------------------------------------------------*/
 int COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
 {
+  trace3("spbn", int_name, ext_name, net_nodes());
   for (int i=0; i<max_nodes(); ++i) {
     if (int_name == port_name(i)) {
       set_port_by_index(i, ext_name);
@@ -472,7 +473,9 @@ int COMPONENT::set_port_by_name(std::string& int_name, std::string& ext_name)
     }else{
     }
   }
-  throw Exception_No_Match(int_name);
+  {
+    throw Exception_No_Match(int_name);
+  }
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_port_by_index(int num, std::string& ext_name)
@@ -737,10 +740,10 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
     return idx-1;
   }else if (!has_common()) { itested();
     return CARD::set_param_by_name(Name, Value) + sysparams_count;
-  }else if(!common()->is_shared()) { untested();
+  }else if(!common()->is_shared()) {
     // it's us!
     return mutable_common()->set_param_by_name(Name, Value) + sysparams_count;
-  }else{ untested();
+  }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     int index = c->set_param_by_name(Name, Value);
