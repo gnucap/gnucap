@@ -257,7 +257,7 @@ public:	// ports
   virtual bool	f_is_value()const	{return false;}
 
   bool		node_is_grounded(int i)const;
-  virtual bool	node_is_connected(int i)const; // $port_connected
+  virtual bool	node_is_connected(int i)const;
   //--------------------------------------------------------------------
 public: // parameters
   int  set_param_by_name(std::string, std::string) override;

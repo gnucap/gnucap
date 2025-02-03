@@ -320,7 +320,6 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	  store_attributes(attribs,  x->port_id_tag(Index));
 	}catch (Exception_No_Match&) {
 	  cmd.warn(bDANGER, here, x->long_label() + ": mismatch " + Name + " ignored");
-	  trace2("ignored", Name, x->net_nodes());
 	}catch (Exception_Clash&) {untested();
 	  cmd.warn(bDANGER, here, x->long_label() + ": already set " + Name + ", ignored");
 	}

@@ -88,7 +88,7 @@ private: // override virtual
   bool		print_type_in_spice()const override {return true;}
   std::string   value_name()const override	{return "#";}
   int		max_nodes()const override;
-  int		ext_nodes()const override {return int(_node_capacity);}
+  int		ext_nodes()const override	{return _node_capacity;}
   int		min_nodes()const override	{return 0;}
   int		matrix_nodes()const override	{return 0;}
   int		net_nodes()const override	{return _net_nodes;}
@@ -109,10 +109,10 @@ private: // no ops for prototype
   void tr_load()override	{if(is_device()){ BASE_SUBCKT::tr_load();}else{} }
   void tr_accept()override	{if(is_device()){ BASE_SUBCKT::tr_accept();}else{} }
   void tr_regress()override	{if(is_device()){ BASE_SUBCKT::tr_regress();}else{} }
-  void dc_final()override {if(is_device()){ BASE_SUBCKT::dc_final();}else{}}
-  void tr_final()override {if(is_device()){ BASE_SUBCKT::tr_final();}else{}}
+  void dc_final()override	{if(is_device()){ BASE_SUBCKT::dc_final();}else{}}
+  void tr_final()override	{if(is_device()){ BASE_SUBCKT::tr_final();}else{}}
   void tr_advance()override	{if(is_device()){ BASE_SUBCKT::tr_advance();}else{} }
-  TIME_PAIR tr_review() override{if(is_device()){ return BASE_SUBCKT::tr_review();}else{
+  TIME_PAIR tr_review()override	{if(is_device()){ return BASE_SUBCKT::tr_review();}else{
                                                   return TIME_PAIR(NEVER, NEVER);}}
   void dc_advance()override	{if(is_device()){ BASE_SUBCKT::dc_advance();}else{} }
   void do_ac()override		{if(is_device()){ BASE_SUBCKT::do_ac();}else{} }
@@ -255,7 +255,6 @@ CARD* DEV_SUBCKT_PROTO::clone_instance()const
   }
   new_instance->_net_nodes = 0;
 #endif
-
   // assert(!new_instance->subckt());
 
   if (this == &pp){
@@ -274,8 +273,8 @@ CARD* DEV_SUBCKT_PROTO::clone_instance()const
     }
 
   }
- // assert(new_instance->is_device()); // not yet.
 
+ // assert(new_instance->is_device());
   return new_instance;
 }
 /*--------------------------------------------------------------------------*/
@@ -383,7 +382,6 @@ CARD* DEV_SUBCKT::clone()const
     assert(new_instance->is_device());
   }else{
     // verilog. build proto
- //   new_instance->_parent = this;
     assert(!new_instance->is_device());
     if(new_instance->subckt()){ untested();
     }else{
