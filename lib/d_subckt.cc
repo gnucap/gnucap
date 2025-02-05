@@ -341,9 +341,9 @@ CARD_LIST* DEV_SUBCKT::scope()
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_SUBCKT::is_valid() const
-{ untested();
+{itested();
   PARAM_LIST const* params;
-  if(_parent){ untested();
+  if(_parent){itested();
     assert(_parent->subckt());
     params = _parent->subckt()->params();
   }else{ untested();
@@ -357,9 +357,9 @@ bool DEV_SUBCKT::is_valid() const
   Base const* x = v.e_val(nullptr, subckt());
   Integer c;
   Integer* res = c.assign(x);
-  if(!res) { untested();
+  if(!res) {itested();
     return true;
-  }else{ untested();
+  }else{itested();
     assert(x);
     trace1("DEV_SUBCKT::is_valid III", typeid(*x).name());
     int a = res->value();
@@ -458,7 +458,7 @@ int DEV_SUBCKT::set_param_by_name(std::string Name, std::string Value)
     PARAM_LIST::const_iterator p = _parent->subckt()->params()->find(Name);
     if(p != _parent->subckt()->params()->end()){
       return BASE_SUBCKT::set_param_by_name(Name,Value);
-    }else{ untested();
+    }else{itested();
       throw Exception_No_Match(Name);
     }
   }
@@ -484,7 +484,7 @@ std::string DEV_SUBCKT::port_name(int i)const
     }
   }else if(i<net_nodes()) {
     return port_value(i);
-  }else{ untested();
+  }else{itested();
     return "";
   }
 }
@@ -548,7 +548,7 @@ void DEV_SUBCKT::expand()
       CARD* d = (*i)->deflate();
 
       if(d == (*i)){
-      }else{ untested();
+      }else{itested();
 	assert(d->owner() == this);
 	delete *i;
 	*i = d;

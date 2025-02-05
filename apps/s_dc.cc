@@ -375,10 +375,10 @@ void DCOP::fix_args(int Nest)
     }
     _linswp[Nest] = true;
     break;
-  case TIMES:untested();
+  case TIMES:itested();
     if (_step[Nest] == 0.  &&  _start[Nest] != 0.) {untested();
       _step[Nest] = _stop[Nest] / _start[Nest];
-    }else{untested();
+    }else{itested();
     }
     _linswp[Nest] = false;
     break;

@@ -162,7 +162,7 @@ public: // probes
 	  void	      inc_probes()const	{++_probes;}
 	  void	      dec_probes()const	{assert(_probes>0); --_probes;}
 	  bool	      has_probes()const	{return _probes > 0;}
-  virtual double      noise_num(const std::string&)const {untested(); return 0.;}
+  virtual double      noise_num(const std::string&)const {itested(); return 0.;}
   static  double      probe(const CARD*,const std::string&);
   //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code
