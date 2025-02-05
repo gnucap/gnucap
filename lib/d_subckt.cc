@@ -560,7 +560,7 @@ void DEV_SUBCKT::expand()
 /*--------------------------------------------------------------------------*/
 void DEV_SUBCKT::precalc_first()
 {
-  BASE_SUBCKT::precalc_first();
+  COMPONENT::precalc_first();
 
   if (subckt()) {
   }else{
