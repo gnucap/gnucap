@@ -1,8 +1,13 @@
 # "Qucsator style" diode
 
 * simulator lang=spice
-* .options noinsensitive
+* BUG: insensitive match does not work
+* in insensitive mode, parameters are cast to lower,
+* then they won't be recognised in d1 below.
+* -> need case sensitivity by scope?
+options noinsensitive
 .subckt spice_diode 1 2
+ .parameter dummy=17.
  .parameter area=1
  .parameter N=1, cjo=10f
  .parameter M=1, vj=.6
@@ -32,7 +37,7 @@ module Diode(\1 ,\2 );
   parameter Eg=1.11, Tbv=0., Trs=0., Ttt1=0., Ttt2=0., Tm1=0., Tm2=0.;
   parameter Tnom=26.85;
 
-  spice_diode #( .area(Area) .Is(Is) .rs(Rs) .N(N) .cjo(Cj0) .vj(Vj) .M(M) .tt(Tt)) d1(\2 ,\1 );
+  spice_diode #( .area(Area), .Is(Is), .rs(Rs), .N(N), .cjo(Cj0), .vj(Vj), .M(M), .tt(Tt)) d1(\2 ,\1 );
 endmodule
 
 list
