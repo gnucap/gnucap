@@ -149,7 +149,7 @@ sub_makefile() {
 	echo "PRESET = default" >> $1
 	echo "include ../MakeConf" >> $1
 	echo "include $top_srcdir/include/MakeBase" >> $1
-	echo "-include \${srcdir}/Make.depend" >> $1
+	echo "-include Make.depend" >> $1
 }
 #------------------------------------------------------------------------
 if [ -f $srcdir/Makefile.in ]; then
@@ -195,6 +195,7 @@ echo "include ${top_srcdir_}/include/MakeConf.\${PRESET}" >>MakeConf
 sub_configure() {
 	m="$1/Makefile"
 	echo creating $m
+	rm -rf "$1/Make.depend"
 	if [ "$top_srcdir_" = ".." ]; then
 		srcdir_=".";
 	else

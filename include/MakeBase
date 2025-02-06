@@ -69,28 +69,10 @@ backup:
 	cp $(RAW) BACKUP
 #------------------------------------------------------------------------
 #   depend: Make.depend
-#   Make.depend: $(SRCS) $(HDRS)
-#   	[ -z "$+" ] ||	(cd ${srcdir}; $(CXX) -MM $(CCFLAGS) ${MAKE_CPPFLAGS} ${CPPFLAGS} $(SRCS) > Make.depend)
-#   #	[ -z "$+" ] || $(CXX) -MM $(CCFLAGS) ${MAKE_CPPFLAGS} ${CPPFLAGS} $+ > ${srcdir}/Make.depend
-#------------------------------------------------------------------------
-depend ${srcdir}/Make.depend: # $(SRCS) ${GENERATED_SRCS} $(HDRS)
-	: > ${srcdir}/Make.depend
-	if [ -n "$(RAW_SRCS)" ]; then \
-		( cd ${srcdir}; $(CXX) -MM $(CXXFLAGS) -I../include ${CPPFLAGS} \
-		-isystem${CURDIR}/../conf \
-		${MAKE_CPPFLAGS} ${RAW_SRCS} -DDEPEND ) \
-		>> ${srcdir}/Make.depend; \
-	fi
-	for i in $(GENERATED_SRCS); do \
-		echo $${i%cc}o: $${i} >> ${srcdir}/Make.depend; \
-		( cd ${srcdir}; $(CXX) -xc++ -MT $${i%cc}o -MM $(CXXFLAGS) -I ../include -isystem ${CURDIR}  ${CPPFLAGS} \
-		${MAKE_CPPFLAGS} -DDEPEND - < ${CURDIR}/$$i >> Make.depend ); \
-		$(CXX) -MM $(CXXFLAGS) -isystem ${top_srcdir}/include ${CPPFLAGS} \
-		${MAKE_CPPFLAGS} $$i -DDEPEND \
-		>> ${srcdir}/Make.depend; \
-	done
+Make.depend: | $(SRCS) $(HDRS)
+	[ -z "$|" ] || $(CXX) -MM $(CCFLAGS) ${MAKE_CPPFLAGS} ${CPPFLAGS} $| > $@
 	if [ -n "${EXTRA_DEPEND}" ]; then \
-		echo ${EXTRA_DEPEND} >> ${srcdir}/Make.depend; \
+		echo ${EXTRA_DEPEND} >> Make.depend; \
 	fi
 #-----------------------------------------------------------------------------
 date:
@@ -109,7 +91,7 @@ MD5SUMS: $(DIST_FILES)
 	md5sum $(DIST_FILES) | grep -v MD5SUMS >MD5SUMS
 #-----------------------------------------------------------------------------
 MOSTLYCLEANFILES = $(OBJS) $(GENERATED)
-CLEANFILES = $(MOSTLYCLEANFILES) $(TARGET_EXE) $(EXTRA_CLEANFILES)
+CLEANFILES = $(MOSTLYCLEANFILES) $(TARGET_EXE) $(EXTRA_CLEANFILES) Make.depend
 DISTCLEANFILES = $(CLEANFILES) config.log Makefile
 MAINTAINERCLEANFILES = $(DISTCLEANFILES)
 #-----------------------------------------------------------------------------
