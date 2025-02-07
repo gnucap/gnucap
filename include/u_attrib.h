@@ -77,7 +77,7 @@ public:
     return *this;
   }
 
-  const std::string string(tag_t Owner)const {
+  std::string string(tag_t Owner)const {
     if (Owner == _owner || !Owner) {
       if (_up) {
 	std::string upstring = _up->string(Owner);
@@ -91,14 +91,14 @@ public:
     }
   }
 
-  const std::string operator[] (const std::string& Key)const {itested();
+  std::string at(const std::string& Key)const {untested();
     CS cmd(CS::_STRING, _s);
     bool found = false;
-    std::string val("0");
+    std::string val;
 
-    while (cmd.more()) {itested();
-      if (cmd >> Key) {itested();
-	if (cmd >> "=") {itested();
+    while (cmd.more()) {untested();
+      if (cmd >> Key) {untested();
+	if (cmd >> "=") {untested();
 	  cmd >> val;
 	}else{untested();
 	  val = "1";
@@ -106,20 +106,28 @@ public:
 	found = true;
 	// keep looking in case there is another, which will supercede
 	// finds right-most match using left-right search
-      }else{itested();
+      }else{untested();
 	cmd.skiparg();
-	if (cmd >> "=") {itested();
+	if (cmd >> "=") {untested();
 	  cmd.ctos();
-	}else{itested();
+	}else{untested();
 	}
       }
     }
 
-    if (found) {itested();
+    if (found) {untested();
       return val;
     }else if (_up) {untested();
       return (*_up)[Key];
-    }else{
+    }else{untested();
+      throw std::out_of_range(Key);
+    }
+  }
+
+  std::string operator[] (const std::string& Key)const {untested();
+    try{ untested();
+      return at(Key);
+    }catch(std::out_of_range const&) { untested();
       return "0";
     }
   }
@@ -153,6 +161,8 @@ public:
 
   ATTRIB_LIST const* operator->()const {return _p;}
   ATTRIB_LIST*       operator->()      {return _p;}
+  ATTRIB_LIST const* operator*()const  {untested(); return _p;}
+  ATTRIB_LIST*       operator*()       {untested(); return _p;}
 
   ATTRIB_LIST_p& operator=(const ATTRIB_LIST_p& P) {
     if (_p) {untested();
