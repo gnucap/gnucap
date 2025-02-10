@@ -146,7 +146,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const CARD_LIST* scope)
       }else{ untested();
 	// this is not needed.
       }
-    }else{ untested();
+    }else{itested();
     }
   }
 }

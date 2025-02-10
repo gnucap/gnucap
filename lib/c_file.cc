@@ -159,7 +159,7 @@ public:
 	cmd.skipbl();
       }
       FILE* newfile = xopen(cmd,"",access);
-      if (newfile) { untested();
+      if (newfile) {itested();
 	filestack.push_back(newfile);
 	mout.attach(newfile);
 	IO::mstdout.attach(newfile);

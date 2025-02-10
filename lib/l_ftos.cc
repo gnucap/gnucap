@@ -167,7 +167,7 @@ char* ftos(double num, int fieldwidth, int len, int fmt)
 	if ((fmt&ftos_EXP && expo<-9) || expo>10 || expo<-16) {
 	  --len;			/* one less digit if 'e' notation */
 	}				/* and exp is 2 digits */
-	if (len < 3) { untested();
+	if (len < 3) {itested();
 	  untested();
 	  ++len;
 	}

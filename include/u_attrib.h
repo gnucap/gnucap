@@ -91,43 +91,43 @@ public:
     }
   }
 
-  std::string at(const std::string& Key)const {untested();
+  std::string at(const std::string& Key)const {itested();
     CS cmd(CS::_STRING, _s);
     bool found = false;
     std::string val;
 
-    while (cmd.more()) {untested();
-      if (cmd >> Key) {untested();
-	if (cmd >> "=") {untested();
+    while (cmd.more()) {itested();
+      if (cmd >> Key) {itested();
+	if (cmd >> "=") {itested();
 	  cmd >> val;
-	}else{untested();
+	}else{itested();
 	  val = "1";
 	}
 	found = true;
 	// keep looking in case there is another, which will supercede
 	// finds right-most match using left-right search
-      }else{untested();
+      }else{itested();
 	cmd.skiparg();
-	if (cmd >> "=") {untested();
+	if (cmd >> "=") {itested();
 	  cmd.ctos();
 	}else{untested();
 	}
       }
     }
 
-    if (found) {untested();
+    if (found) {itested();
       return val;
-    }else if (_up) {untested();
+    }else if (_up) {itested();
       return (*_up)[Key];
-    }else{untested();
+    }else{itested();
       throw std::out_of_range(Key);
     }
   }
 
-  std::string operator[] (const std::string& Key)const {untested();
-    try{ untested();
+  std::string operator[] (const std::string& Key)const {itested();
+    try{itested();
       return at(Key);
-    }catch(std::out_of_range const&) { untested();
+    }catch(std::out_of_range const&) {itested();
       return "0";
     }
   }
