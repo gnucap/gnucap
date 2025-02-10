@@ -255,7 +255,7 @@ std::string COMMON_COMPONENT::param_name(int i)const
   case 0:  return "tnom";
   case 1:  return "dtemp";
   case 2:  return "temp";
-  default:untested(); return "";
+  default:itested(); return "";
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -274,7 +274,7 @@ std::string COMMON_COMPONENT::param_value(int i)const
   case 0:itested();  return _tnom_c.string();
   case 1:itested();  return _dtemp.string();
   case 2:itested();  return _temp_c.string();
-  default:untested(); return "";
+  default:itested(); return "";
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -806,7 +806,7 @@ std::string COMPONENT::param_name(int I)const
     if (has_common()) {
       return common()->param_name(i);
       return to_string(i) + common()->param_name(i);
-    }else{ untested();
+    }else{itested();
       return CARD::param_name(i);
     }
   }
@@ -818,7 +818,7 @@ std::string COMPONENT::param_name(int I, int j)const
 
   if(I < sysparams_count && j) {itested();
     return "";
-  }else if(I < sysparams_count) { untested();
+  }else if(I < sysparams_count) {itested();
     return param_name(i);
   }else if (has_common()) {untested();
     return common()->param_name(i,j);
@@ -840,7 +840,7 @@ std::string COMPONENT::param_value(int I)const
   if(I>=0 && I < sysparams_count) {
     if(_hsparam){
       return _hsparam->param_value(I);
-    }else{ untested();
+    }else{itested();
       return "";
     }
   }else if (has_common()) {

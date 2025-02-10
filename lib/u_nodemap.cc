@@ -55,7 +55,9 @@ NODE_MAP::~NODE_MAP()
   for (iterator i = _node_map.begin(); i != _node_map.end(); ++i) {
     if (i->first != "0") {
       assert(i->second);
+      i->second->purge();
       delete i->second;
+    }else{
     }
   }  
 }

@@ -77,7 +77,7 @@ public:
     return *this;
   }
 
-  const std::string string(tag_t Owner)const {
+  std::string string(tag_t Owner)const {
     if (Owner == _owner || !Owner) {
       if (_up) {
 	std::string upstring = _up->string(Owner);
@@ -91,16 +91,16 @@ public:
     }
   }
 
-  const std::string operator[] (const std::string& Key)const {itested();
+  std::string at(const std::string& Key)const {itested();
     CS cmd(CS::_STRING, _s);
     bool found = false;
-    std::string val("0");
+    std::string val;
 
     while (cmd.more()) {itested();
       if (cmd >> Key) {itested();
 	if (cmd >> "=") {itested();
 	  cmd >> val;
-	}else{untested();
+	}else{itested();
 	  val = "1";
 	}
 	found = true;
@@ -110,16 +110,24 @@ public:
 	cmd.skiparg();
 	if (cmd >> "=") {itested();
 	  cmd.ctos();
-	}else{itested();
+	}else{untested();
 	}
       }
     }
 
     if (found) {itested();
       return val;
-    }else if (_up) {untested();
+    }else if (_up) {itested();
       return (*_up)[Key];
-    }else{
+    }else{itested();
+      throw std::out_of_range(Key);
+    }
+  }
+
+  std::string operator[] (const std::string& Key)const {itested();
+    try{itested();
+      return at(Key);
+    }catch(std::out_of_range const&) {itested();
       return "0";
     }
   }
@@ -153,6 +161,8 @@ public:
 
   ATTRIB_LIST const* operator->()const {return _p;}
   ATTRIB_LIST*       operator->()      {return _p;}
+  ATTRIB_LIST const* operator*()const  {untested(); return _p;}
+  ATTRIB_LIST*       operator*()       {untested(); return _p;}
 
   ATTRIB_LIST_p& operator=(const ATTRIB_LIST_p& P) {
     if (_p) {untested();

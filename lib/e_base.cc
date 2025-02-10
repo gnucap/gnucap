@@ -31,7 +31,7 @@ PROBE_LISTS* CKT_BASE::_probe_lists = nullptr;
 /*--------------------------------------------------------------------------*/
 CKT_BASE::~CKT_BASE()
 {
-  if (has_attributes(id_tag())) {untested();
+  if (has_attributes(id_tag())) {itested();
     unreachable();    // needs purge();
     erase_attributes(id_tag());
   }else{

@@ -257,7 +257,7 @@ DISPATCHER<FUNCTION>::INSTALL d_exp(&function_dispatcher, "exp", &p_exp);
 /*--------------------------------------------------------------------------*/
 class INT : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {itested();
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);
@@ -408,7 +408,7 @@ DISPATCHER<FUNCTION>::INSTALL d_na(&function_dispatcher, "na", &p_na);
 /*--------------------------------------------------------------------------*/
 class RANDOM_STUB : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override { untested();
+  std::string eval(CS& Cmd, const CARD_LIST* Scope)const override {itested();
     PARAMETER<double> arg;
     Cmd >> arg;
     arg.e_val(NOT_INPUT, Scope);
