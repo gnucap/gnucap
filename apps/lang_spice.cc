@@ -406,9 +406,7 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
       cmd >> value;
       x->set_param_by_name(xx->value_name(), value);
     }else if (cmd.match1("'{")) {	// quoted unnamed value
-      std::string value;
-      cmd >> value; // strips off the quotes
-      value = '{' + value + '}'; // put them back
+      std::string value = cmd.ctos(",=;)", "\"'{(", "\"'})");
       x->set_param_by_name(xx->value_name(), value);
     }else{				// only name=value pairs
     }
