@@ -150,9 +150,6 @@ public:
       _s = "";
     }else if (s.size() && _s.size()) {
       throw Exception_Clash("already set");
-    }else if (strchr("'\"{", s[0])) {
-      CS cmd(CS::_STRING, s);
-      _s = cmd.ctos("", "'\"{", "'\"}");
     }else{
       _s = s;
     }
