@@ -555,7 +555,7 @@ model BUILT_IN_BJT {
 	double rx = NA;
 	double rbpr = m->rbm / c->area;
 	double rbpi = m->rb / c->area - rbpr;
-	if (has_nz_value(m->irb)) {itested();//554
+	if (has_nz_value(m->irb)) {untested();//554
 	  // base resistance lowering at high current
 	  double cb = d->cpi + d->cmu;
 	  double xjrb = m->irb * c->area;
@@ -580,7 +580,7 @@ model BUILT_IN_BJT {
 	double argtf = NA;
 	double arg2  = NA;
 	double arg3  = NA;
-	if (has_nz_value(m->xtf)) {itested();//579
+	if (has_nz_value(m->xtf)) {untested();//579
 	  if (m->transtimevbcfact != 0.) {
 	    argtf = m->xtf * exp(d->vbc * m->transtimevbcfact);
 	  }else{untested();
@@ -724,15 +724,15 @@ bool DEV_BUILT_IN_BJT::do_tr()
     vcs = m->polarity * volts_limited(n_(n_s), n_(n_ic));
   }
  
-  if (_sim->uic_now()) {itested();//736
+  if (_sim->uic_now()) {untested();//736
     if (has_good_value(c->icvbe)) {untested();//737
       vbe = m->polarity * c->icvbe;
-    }else{itested();//739
+    }else{untested();//739
     }
     if (has_good_value(c->icvce)) {untested();//741
       vbc = vbe - m->polarity * c->icvce;
       vbx = vbc;
-    }else{itested();//744
+    }else{untested();//744
     }
   }else{
   }
