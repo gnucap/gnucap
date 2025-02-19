@@ -84,5 +84,6 @@ E3     37   0  35  36  10.K
 .ac oct 10 31.25 32k
 .modify R106a=100k
 .modify R106b=1
+.print ac vdb(37) vdb(31) vdb(34)
 .ac
 .end

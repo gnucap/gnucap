@@ -20,4 +20,6 @@ C3 5 0 2
 .delete Q3 M* L R3* L* c* c2 r2 r*
 .list
 .op
+.print op v(nodes)
+.op
 .end

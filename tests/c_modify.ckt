@@ -6,15 +6,21 @@ R2 2 0 1
 .print op v(nodes)
 .op
 .fault R1=10
+.print op v(nodes)
 .op
 .modify R2=10
+.print op v(nodes)
 .op
 .fault R2=100
+.print op v(nodes)
 .op
 .fault V1=.001
+.print op v(nodes)
 .op
 .list
 .unfault
 .list
+.op
+.print op v(nodes)
 .op
 .end

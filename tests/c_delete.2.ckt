@@ -21,24 +21,31 @@ C3 5 0 2
 .list
 .op
 .delete M*
+.print op v(nodes)
 .list
 .op
 .delete L
+.print op v(nodes)
 .list
 .op
 .delete R3*
+.print op v(nodes)
 .list
 .op
 .delete L*
+.print op v(nodes)
 .list
 .op
 .delete c*
+.print op v(nodes)
 .list
 .op
 .delete r2
+.print op v(nodes)
 .list
 .op
 .delete r*
+.print op v(nodes)
 .list
 .op
 .end
