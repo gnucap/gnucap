@@ -384,7 +384,7 @@ DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
    _parent(p._parent)
 {
   trace3("DEV_SUBCKT::DEV_SUBCKT", short_label(), net_nodes(), p.max_nodes());
-  _node_capacity = p.max_nodes();
+  _node_capacity = p.net_nodes();
   if(_node_capacity){
     _nodes = new node_t[_node_capacity];
   }else{ untested();
