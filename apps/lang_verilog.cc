@@ -327,12 +327,8 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	here = cmd.cursor();
       }
       for (int Index = 0;  Index < x->min_nodes();  ++Index) {
-	//BUG// This may be a bad idea.
-	//BUG// It's definitely wrong with all_new.
-	//BUG// What should we do with unconnected ports?
 	if (!(x->node_is_connected(Index))) {untested();
-	  cmd.warn(bDANGER, x->port_name(Index) + ": port unconnected, grounding");
-	  x->set_port_to_ground(Index);
+	  cmd.warn(bDANGER, x->port_name(Index) + ": requested port unconnected");
 	}else{
 	}
       }
@@ -366,16 +362,11 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	here = cmd.cursor();
       }
       if (Index < x->min_nodes()) {
-	//BUG// This may be a bad idea.
-	//BUG// It's definitely wrong with all_new.
-	//BUG// What should we do with unconnected ports?
 	if (all_new) {untested();
+	  // probably unreachable
 	}else{
 	}
-	cmd.warn(bDANGER, "need " + to_string(x->min_nodes()-Index) +" more nodes, grounding");
-	for (  ;  Index < x->min_nodes();  ++Index) {
-	  x->set_port_to_ground(Index);
-	}
+	cmd.warn(bDANGER, to_string(x->min_nodes()-Index) +" more nodes requested");
       }else{
       }
     }

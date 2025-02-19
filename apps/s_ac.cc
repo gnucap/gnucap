@@ -95,7 +95,7 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
     case rSCRIPT:	sweep(); final(); break;
     case rPRESET:	/*nothing*/	break;
     }
-  }catch (Exception& e) {untested();
+  }catch (Exception& e) {
     error(bDANGER, e.message() + '\n');
   }
   finish();
