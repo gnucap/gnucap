@@ -55,7 +55,7 @@ ELEMENT::ELEMENT(const ELEMENT& p)
    _ev(0.),
    _dt(0.)
 {
-  trace0(long_label().c_str());
+  trace1("ELEMENT::ELEMENT", short_label());
 
   for (int ii = 0;  ii < NODES_PER_BRANCH;  ++ii) {
     _nodes[ii] = p._nodes[ii];

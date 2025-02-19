@@ -28,7 +28,7 @@
 #include "u_nodemap.h"
 #include "e_model.h"
 /*--------------------------------------------------------------------------*/
-#define trace_func_comp() trace0((__func__ + (":" + (**ci).long_label())).c_str())
+#define trace_func_comp() trace1(__func__, (**ci).short_label())
 /*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST()
   :_parent(nullptr),
