@@ -1,4 +1,5 @@
 verilog
+load ./c_debug.so
 
 module r(p, n);
 resistor #(.r(1), .$mfactor(5)) r(p,n);
@@ -10,4 +11,5 @@ r #(.$mfactor(2)) r1(\1 ,\0 )
 print dc v(nodes)
 dc
 status notime
+portdump
 end

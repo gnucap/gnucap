@@ -1,0 +1,22 @@
+NMOS inverter
+*>.load ./c_debug.so
+*>.load ./cbs.so
+md1  3 2 0 0  modeld w=10u l=2u
+ml1  1 1 3 0  modell w=2u l=2u
+vdd 1 0 5
+vin 2 0 .8
+
+.MODEL MODELD NMOS (level=1 KP=28U VTO=0.7 LAMBDA=0.01)
+.MODEL MODELL NMOS (level=1 KP=28U VTO=0.7 LAMBDA=0.01)
+.PRINT OP iter(0) V(nodes)
+.op trace iter
+.PRINT OP v(md1.*)
+.op
+.PRINT OP v(ml1.*)
+.op
+.stat notime
+.list
+*>.portdump
+*>.cbsstat
+*>.cbsdump
+.end

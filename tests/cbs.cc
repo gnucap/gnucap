@@ -28,6 +28,8 @@
 #include "m_matrix.h"
 #include "e_base.h"
 #include "u_sim_data.h"
+#include "c_comand.h"
+#include "globals.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -36,9 +38,10 @@ class FOOTPRINT {
   typedef std::deque<value_type> list_t;
   typedef std::pair<list_t, list_t> lists_t;
   typedef std::deque<lists_t> container_t;
+  typedef container_t::const_iterator const_iterator;
 
 private:
-  size_t _size;
+  int _nreq{0};
 public: // BUG
   container_t _data;
 public:
@@ -47,7 +50,8 @@ public:
   }
 
   void want(int, int);
-  size_t size()const { untested();return _size;}
+  int size()const {return int(_data.size());}
+  int nreq()const {return _nreq;}
   void init(int s) {
     _data.resize(s);
   }
@@ -81,6 +85,9 @@ public:
       i.second.erase(e, i.second.end());
     }
   }
+
+  const_iterator begin()const {return _data.begin();}
+  const_iterator end()const {return _data.end();}
 };
 /*--------------------------------------------------------------------------*/
 inline void FOOTPRINT::want(int i, int j)
@@ -95,7 +102,7 @@ inline void FOOTPRINT::want(int i, int j)
     _data[j-1].second.push_back(i);
   }else{
   }
-  ++_size;
+  ++_nreq;
 }
 /*--------------------------------------------------------------------------*/
 template<class T>
@@ -299,6 +306,11 @@ private:
   bool is_one(T const&) const;
   bool nz(T const& t) const{ return bool(t); }
   void propagate(int m);
+
+public:
+  int fpsize()const { return _fp.size(); }
+  int fpnreq()const { return _fp.nreq(); }
+  FOOTPRINT const& fp()const {return _fp;}
 }; // CBS
 /*--------------------------------------------------------------------------*/
 template<class T>
@@ -1519,15 +1531,46 @@ void CBS<T>::load_asymmetric(int r1,int r2,int c1,int c2,T value)
   }
 }
 /*--------------------------------------------------------------------------*/
+CBS<double>* m;
 struct set{
   set(){
-    auto x = new CBS<double>(CKT_BASE::_sim->_aa);
-    CKT_BASE::_sim->_aa.set_solver(x);
+    m = new CBS<double>(CKT_BASE::_sim->_aa);
+    CKT_BASE::_sim->_aa.set_solver(m);
   }
   ~set(){
     CKT_BASE::_sim->_aa.set_solver(nullptr);
   }
 } s;
+/*--------------------------------------------------------------------------*/
+class CMD_STAT : public CMD {
+public:
+  void print(OMSTREAM, const CARD_LIST*);
+  void do_it(CS&, CARD_LIST* )override {
+    OMSTREAM o = IO::mstdout;
+    assert(m);
+    o << "fpnreq: " << m->fpnreq() << "\n";
+    o << "fpsize: " << m->fpsize() << "\n";
+   // o << "nnz" << m->nnz() << "\n";
+  }
+} p5;
+DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "cbsstat", &p5);
+/*--------------------------------------------------------------------------*/
+class CMD_DUMP : public CMD {
+public:
+  void print(OMSTREAM, const CARD_LIST*);
+  void do_it(CS&, CARD_LIST* )override {
+    OMSTREAM o = IO::mstdout;
+    assert(m);
+    int i = 0;
+    for(auto p : m->fp()) {
+      ++i;
+      for(auto q : p.first) {
+	o << i << " " << q << "\n";
+      }
+    }
+  }
+} p6;
+DISPATCHER<CMD>::INSTALL d6(&command_dispatcher, "cbsdump", &p6);
 /*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/

@@ -5,3 +5,22 @@ iterations: op=0, dc=2, tran=0, fourier=0, total=2
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=1, subckt=0, model=0, total=1
 dctran density=100.0%, ac density=100.0%
+name   ...
+have 1 nodes. model: 0 sckt: 0
+
+r 2 2 0
+0 -1
+1 -1
+ r.r 2 2 0
+ 0 -1
+ 1 -1
+i1 2 2 0
+0 0
+1 1
+r1 2 3 0
+0 1
+1 0
+2 -1
+ r1.r 2 2 0
+ 0 1
+ 1 0

@@ -1,4 +1,5 @@
 '
+*>.load ./c_debug.so
 V1   2  0  1.
 X1   2  1  3 zzz
 X2   2  4  5 zzz
@@ -18,4 +19,5 @@ r6 4 0 1
 .print
 .list
 *>.status notime
+*>.portdump
 .end
