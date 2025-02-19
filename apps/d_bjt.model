@@ -62,7 +62,8 @@ device BUILT_IN_BJT {
     fpoly_cap Cbx {b ic} state=qbx; // qbx, cqbx
     fpoly_cap Cbc {ib ic} state=qbc; // qbc, cqbc
     fpoly_cap Ccs {s ic} state=qcs // qcs, cqcs
-	omit="!(n_(n_s).n_())";
+	 // omit="!(_n[n_s].n_())"; unreachable, removed
+	 ;
     fpoly_cap Cbe {ib ie ib ic} state=qbe; // qbe, cqbe, geqbc
     // parasitics
     resistor Rc {c ic} value="m->rc / c->area"
