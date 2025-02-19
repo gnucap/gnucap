@@ -154,3 +154,8 @@ v(5)   0.                2.               4.                6.               8.
  280.n      3.9964     6.4383    -0.73073   -11.221     ??        
  290.n      3.8872     6.5682    -0.75123   -11.221     ??        
  300.n      3.8995     6.5733    -0.76918   -11.221     ??        
+Gnucap   System status
+iterations: op=9, dc=0, tran=184, fourier=0, total=1009
+transient timesteps: accepted=156, rejected=0, total=156
+nodes: user=9, subckt=0, model=4, total=13
+dctran density=65.7%, ac density=65.7%

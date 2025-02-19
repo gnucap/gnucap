@@ -32,4 +32,5 @@ Vbs   4  0  0.
 *>.op
 *>.print op vd(m1) vg(m1) vb(m1) vs(m1) vth(m1) vgst(m1)
 .op
+*>.status notime
 .end

@@ -57,3 +57,8 @@
 + 5.         0.46622    5.         3.2034     5.         0.46622    5.        
 + 3.2034     5.         0.46622    0.46622    5.         3.2034     5.        
 + 0.46622    5.         3.2034     5.         0.46622    5.         3.2034    
+Gnucap   System status
+iterations: op=21, dc=0, tran=0, fourier=0, total=21
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=201, subckt=0, model=0, total=201
+dctran density=2.0%, ac density=2.0%

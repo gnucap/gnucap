@@ -30,3 +30,8 @@ cmosp: is - js conflict
  27.       -0.80756   -0.80756    0.80756    0.80756   
 #           vd(M1)     vg(M1)     vb(M1)     vs(M1)     vth(M1)    vgst(M1)  
  27.       -1.6151    -1.6151     0.         0.        -0.84435    0.77077   
+Gnucap   System status
+iterations: op=5, dc=0, tran=0, fourier=0, total=60
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=77.8%, ac density=77.8%
