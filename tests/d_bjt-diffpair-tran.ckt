@@ -34,4 +34,5 @@ rbias 7 8 20k
 *>.tran 10ns 300ns
 *>.print tran vcs(q*)
 *>.tran 10ns 300ns
+*>.status notime
 .end

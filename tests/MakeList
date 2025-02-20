@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TEST_SRCS = cbs
+TEST_SRCS = cbs c_debug
 TEST_LIB_EXT = .so
 #------------------------------------------------------------------------
 TEST_SYMLINKS = d_cccs.1.ckt c_lib.1.ckt

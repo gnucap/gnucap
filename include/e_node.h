@@ -140,6 +140,7 @@ public:
   void	map_subckt_node(int* map_array, const CARD* d);
   bool	is_grounded()const {return (e_() == 0);}
   bool	is_connected()const {return (e_() != INVALID_NODE);}
+  bool	is_short_to(node_t const& n)const {return n_() == n.n_();} // BUG. doesn't work
 
   node_t&     map() {
     if (t_() != INVALID_NODE) {

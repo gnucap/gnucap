@@ -203,12 +203,10 @@ void PROBELIST::add_all_nodes(const std::string& what, CARD_LIST* scope)
   if (scope == &CARD_LIST::card_list) {
   }else{itested();
   }
-  for (NODE_MAP::const_iterator
-       i = scope->nodes()->begin();
-       i != scope->nodes()->end();
-       ++i) {
-    if ((i->first != "0") && (i->first.find('.') == std::string::npos)) {
-      NODE* node = i->second;
+  NODE_MAP const* nodes = scope->nodes();
+  for (NODE_MAP::const_iterator i = nodes->begin(); i != nodes->end(); ++i) {
+    if (((*i).first != "0") && ((*i).first.find('.') == std::string::npos)) {
+      NODE const* node = (*i).second;
       assert (node);
       push_new_probe(what, node);
     }else{
@@ -266,12 +264,10 @@ bool PROBELIST::add_branches(const std::string&device,
     if (device.find_first_of("*?") != std::string::npos) {
       // there's a wild card.  do linear search for all
       { // nodes
-	for (NODE_MAP::const_iterator 
-	     i = scope->nodes()->begin();
-	     i != scope->nodes()->end();
-	     ++i) {
-	  if (i->first != "0") {
-	    NODE* node = i->second;
+	NODE_MAP const* nodes = scope->nodes();
+	for (NODE_MAP::const_iterator i = nodes->begin(); i != nodes->end(); ++i) {
+	  if ((*i).first != "0") {
+	    NODE const* node = (*i).second;
 	    assert (node);
 	    if (wmatch(node->short_label(), device)) {
 	      push_new_probe(param, node);

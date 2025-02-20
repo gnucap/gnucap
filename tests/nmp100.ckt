@@ -305,4 +305,5 @@ vin 1 0 .8
 .width out=80
 .PRINT OP iter(0) V(nodes)
 .op
+*>.status notime
 .end

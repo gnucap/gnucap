@@ -73,47 +73,47 @@ device BUILT_IN_MOS {
     resistor Rd {d id} value="s->rd"
       omit="!OPT::rstray || s->rd == 0.";
     diode Ddb {b id} args="db" reverse="m->polarity==pP"
-      omit="n_(n_b).n_() == n_(n_d).n_() || s->idsat == 0.";
+      omit="n_(n_b).is_short_to(n_(n_d)) || s->idsat == 0.";
     diode Dsb {b is} args="sb" reverse="m->polarity==pP"
-      omit="n_(n_b).n_() == n_(n_s).n_() || s->issat == 0.";
+      omit="n_(n_b).is_short_to(n_(n_s)) || s->issat == 0.";
     
     capacitor Cgs {g is} value="s->cgso" eval=Cgs
-      omit="!OPT::cstray || n_(n_g).n_() == n_(n_s).n_()";
+      omit="!OPT::cstray || n_(n_g).is_short_to(n_(n_s))";
     capacitor Cgd {g id} value="s->cgdo" eval=Cgd
-      omit="!OPT::cstray || n_(n_g).n_() == n_(n_d).n_()";
+      omit="!OPT::cstray || n_(n_g).is_short_to(n_(n_d))";
     capacitor Cgb {g b} value="s->cgbo" eval=Cgb
-      omit="!OPT::cstray || n_(n_b).n_() == n_(n_g).n_()";
+      omit="!OPT::cstray || n_(n_b).is_short_to(n_(n_g))";
     fpoly_cap Cqgs {g is g b is b id b}
       state=qgs  // qgate, cgs, cggb, cgsb, cgdb
       omit="m->cmodel != 0 || !OPT::cstray 
-		|| n_(n_g).n_() == n_(n_is).n_()";
+		|| n_(n_g).is_short_to(n_(n_is))";
     fpoly_cap Cqgd {g id g b id b is b}
       state=qgd  // qgate, cgs, cggb, cgsb, cgdb
       omit="m->cmodel != 0 || !OPT::cstray 
-		|| n_(n_g).n_() == n_(n_id).n_()";
+		|| n_(n_g).is_short_to(n_(n_id))";
 
     fpoly_cap Cqds {id is g b is b id b}
       state=qdrn  // qdrn, cds, cdgb, cdsb, cddb
       omit="m->cmodel != 0 || !OPT::cstray 
-             || n_(n_id).n_() == n_(n_is).n_()";
+             || n_(n_id).is_short_to(n_(n_is))";
 
     fpoly_cap Cqbs {b is g b is b id b}
       state=qbs
       omit="m->cmodel != 0 || !OPT::cstray 
-             || n_(n_b).n_() == n_(n_is).n_()";
+             || n_(n_b).is_short_to(n_(n_is))";
 
     fpoly_cap Cqbd {b id g b id b is b}
       state=qbd
       omit="m->cmodel != 0 || !OPT::cstray 
-             || n_(n_b).n_() == n_(n_id).n_()";
+             || n_(n_b).is_short_to(n_(n_id))";
     cpoly_g Ids {id is  g is  id g
 		b is  id b} state=idsxxx;
     cpoly_g Idb {id b  id is  g is  b is}
       state=idbxxx 
-      omit="!(m->needs_isub) || n_(n_d).n_() == n_(n_b).n_()";
+      omit="!(m->needs_isub) || n_(n_d).is_short_to(n_(n_b))";
     cpoly_g Isb {is b  is id  g id  b id}
       state=isbxxx 
-      omit="!(m->needs_isub) || n_(n_s).n_() == n_(n_b).n_()";
+      omit="!(m->needs_isub) || n_(n_s).is_short_to(n_(n_b))";
   }
   tr_probe {
     v   = "@n_d[V] - @n_s[V]";

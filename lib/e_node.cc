@@ -208,7 +208,7 @@ void node_t::map_subckt_node(int* m, const CARD* d)
     }else{
       throw Exception(d->long_label() + ": need more nodes");
     }
-  }else{untested();
+  }else{
     throw Exception(d->long_label() + ": invalid nodes");
   }
   //_nnn->set_flat_number(_ttt);

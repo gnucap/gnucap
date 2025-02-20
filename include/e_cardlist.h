@@ -37,16 +37,17 @@ class LANGUAGE;
 struct TIME_PAIR;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CARD_LIST {
-private:
+public: // base types
+  typedef std::list<CARD*> list;
+  typedef list::iterator iterator;
+  typedef list::const_iterator const_iterator;
+private: // data members
   const CARD_LIST* _parent;
   mutable NODE_MAP* _nm;
   mutable PARAM_LIST* _params;
-  std::list<CARD*> _cl;
+  list _cl;
   bool _verilog_math{false};
-public:
-  // internal types
-  typedef std::list<CARD*>::iterator iterator;
-  typedef std::list<CARD*>::const_iterator const_iterator;
+public: // more types
   class fat_iterator {
   private:
     CARD_LIST* _list;

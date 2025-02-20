@@ -564,6 +564,12 @@ void COMPONENT::expand()
 /*--------------------------------------------------------------------------*/
 void COMPONENT::precalc_first()
 {
+  for(int i = 0; i < min_nodes(); ++i){
+    if(!node_is_connected(i)) {
+      throw Exception(long_label() + ": invalid nodes");
+    }else{
+    }
+  }
   CARD::precalc_first();
   if (has_common()) {
     try {

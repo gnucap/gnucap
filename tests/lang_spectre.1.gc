@@ -39,7 +39,9 @@ parameters gain=.5
 - ac 1k
 
 Rload (out 0) resistor r=100k
+- probe op v(V_cc) v(in) v(out) iter(0) vc(X1.q1) vce(X1.q1)
 - op
+- probe ac v(V_cc) v(in) v(amp_in) v(out)
 - ac
 
 - end

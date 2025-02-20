@@ -38,14 +38,17 @@ R5l 52 0 100
 
 # very lo-z drive
 .modify R?s=.1
+.print tran v nodes
 .tr 0 300n 5n trace all
 
 # slightly lo-z drive
 .modify R?s=25
+.print tran v nodes
 .tr 0 300n 5n trace all
 
 # hi-z drive
 .modify R?s=100
+.print tran v nodes
 .tr 0 300n 5n trace all
 .tr 600n 5n trace all
 

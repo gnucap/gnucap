@@ -259,7 +259,7 @@ static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
   make_tag();
   if (p.short_if().empty()) {
     out <<
-      "    if (!(n_(n_" << p.name() << ").n_())) {\n"
+      "    if (!(n_(n_" << p.name() << ").is_connected())) {\n"
       "      n_(n_" << p.name() << ") = n_(n_" << p.short_to() << ");\n"
       "    }else{\n"
       "    }\n";

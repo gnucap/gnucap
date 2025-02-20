@@ -7,6 +7,7 @@
  0.02       1.         Inf        0.         0.         Inf       
  1.         1.         Inf        0.         0.         Inf       
 "r1 (2 0) 1 "
+".print tran v(1) timef(v1) errort(v1) eventt(v1) dtr(v1) "
 ".tran trace rejected "
 #Time       v(1)       timef(v1)  errort(v1) eventt(v1) dtr(v1)   
  0.         0.         Inf        0.         0.         Inf       
