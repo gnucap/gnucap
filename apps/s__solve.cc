@@ -155,21 +155,36 @@ void SIM::advance_time(void)
   }else{untested();
   }
   ::status.advance.start();
-  static double last_iter_time;
+  static double time1, time2;
   if (_sim->_time0 > 0) {
-    if (_sim->_time0 > last_iter_time) {	/* moving forward */
-      notstd::copy_n(_sim->_v0, _sim->_total_nodes+1, _sim->_vt1);
+    if (_sim->_time0 > time1) {		/* moving forward */
+      std::swap(_sim->_v0,_sim->_vt1);
+      if (OPT::predictor && time1 > time2) {
+	double dtdt = (_sim->_time0 - time1) / (time1 - time2);
+	trace4("", _sim->_time0, time1, time2, dtdt);
+	for (int ii=1; ii <= _sim->_total_nodes; ++ii) {
+	  double vt2 = _sim->_v0[ii];
+	  double vt1 = _sim->_vt1[ii];
+	  double vt0 = vt1 + (vt1 - vt2) * dtdt;
+	  trace3("", vt0,  vt1, vt2);
+	  _sim->_v0[ii] = vt0;
+	}
+      }else{
+	std::copy_n(_sim->_vt1, _sim->_total_nodes+1, _sim->_v0);
+      }
       _scope->tr_advance();
     }else{				/* moving backward */
       /* don't save voltages.  They're wrong! */
       /* instead, restore a clean start for iteration */
-      notstd::copy_n(_sim->_vt1, _sim->_total_nodes+1, _sim->_v0);
+      std::copy_n(_sim->_vt1, _sim->_total_nodes+1, _sim->_v0);
       _scope->tr_regress();
     }
   }else{
+    time1 = time2 = 0;
     _scope->dc_advance();
   }
-  last_iter_time = _sim->_time0;
+  time2 = time1;
+  time1 = _sim->_time0;
   ::status.advance.stop();
 }
 /* last_iter_time is initially 0 by C definition.

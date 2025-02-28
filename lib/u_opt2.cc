@@ -140,6 +140,7 @@ bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
       || Get(cmd, "lub{ypass}",    &lubypass)
       || Get(cmd, "fbb{ypass}",	   &fbbypass)
       || Get(cmd, "tracel{oad}",   &traceload)
+      || Get(cmd, "pred{ictor}",   &predictor)
       || Get(cmd, "itermin",	   &itermin)
       || Get(cmd, "vmax",	   &vmax)
       || Get(cmd, "vmin",	   &vmin)
@@ -259,6 +260,7 @@ void OPT::print(OMSTREAM& o)
   o << ((lubypass) ?"  lubypass" :"  nolubypass");    
   o << ((fbbypass) ?"  fbbypass" :"  nofbbypass");    
   o << ((traceload)?"  traceload":"  notraceload");    
+  o << ((predictor)?"  predictor":"  nopredictor");
   o << "  order="  << order;
   o << "  mode="   << mode;
   o << "  transits=" << transits;
