@@ -1,6 +1,21 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 20250301-dev
+- arbitrary number of module ports
+- leave optional unconnected ports floating
+- print debug message on dtmin change
+- delay argument in logic primitive
+- fix: quoted strings in parameter values
+- fix: purge node attributes before deletion
+- cleanup modelgen precalc_last
+- reverse parameter indexing (now forward)
+- current ports are just ports
+- ac analysis: avoid pre-schedule hack
+- NODE is now CARD
+- indirect storage for owner/scope
+- debug aid: cover matrix numbers/stats in tests
+
 == 20241210-dev
 
 - matrix interface & cbs test

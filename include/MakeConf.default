@@ -1,15 +1,14 @@
 #------------------------------------------------------------------------
 
-MAKE_CXXFLAGS = -fPIC \
--std=c++11 -DUNIX -O2 -DNDEBUG $(INCLUDE) -W \
--DHAVE_LIBREADLINE \
+MAKE_CXXFLAGS = -fPIC -std=c++11 -O2 -W ${CXXFLAGS}
+MAKE_CPPFLAGS = -DUNIX $(INCLUDE) -DNDEBUG -DHAVE_LIBREADLINE ${CPPFLAGS}
 
 .SUFFIXES : .so .o .cc
-.cc.o:; $(CXX) $(MAKE_CXXFLAGS) $(CXXFLAGS) $(CCFLAGS) ${MAKE_CPPFLAGS} $(CPPFLAGS) -c $< # configure/Make2
+.cc.o:; $(CXX) $(MAKE_CXXFLAGS) $(CXXFLAGS) ${MAKE_CPPFLAGS} -c $< # configure/Make2
 .cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
-MAKE_EXE = $(CXX) $(MAKE_CXXFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ # Make2.default
-MAKE_LIB = $(CXX) $(MAKE_CXXFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ # Make2.default
+MAKE_EXE = $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} $(OBJS) $(LIBS) $(LDFLAGS) -o $@ # Make2.default
+MAKE_LIB = $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ # Make2.default
 all: $(TARGET_EXE) $(TARGET)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
