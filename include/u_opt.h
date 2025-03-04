@@ -136,7 +136,7 @@ public:
   static bool lubypass;	    // bypass parts of LU decomposition, if appropriate
   static bool fbbypass;	    // bypass fwd & back sub when last iter converged
   static bool traceload;    // load only elements that need it, using queue
-  static bool predictor;    // use explicit predictor
+  static double predictor;  // use explicit predictor
   static int itermin;	    // forced min iteration count.
   static double vmax;	    // + voltage limit for nonlinear calculations
   static double vmin;	    // - voltage limit for nonlinear calculations

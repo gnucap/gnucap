@@ -156,30 +156,33 @@ void SIM::advance_time(void)
   }
   ::status.advance.start();
   static double time1, time2;
-  if (_sim->_time0 > 0) {
-    if (_sim->_time0 > time1) {		/* moving forward */
+  if (_sim->_time0 > 0) {//44061 // not initial DC
+    if (_sim->_time0 > time1) {//43294 // moving forward
       std::swap(_sim->_v0,_sim->_vt1);
-      if (OPT::predictor && time1 > time2) {
+      if (OPT::predictor && time1 > time2) {//42447 // 
 	double dtdt = (_sim->_time0 - time1) / (time1 - time2);
 	trace4("", _sim->_time0, time1, time2, dtdt);
-	for (int ii=1; ii <= _sim->_total_nodes; ++ii) {
-	  double vt2 = _sim->_v0[ii];
-	  double vt1 = _sim->_vt1[ii];
-	  double vt0 = vt1 + (vt1 - vt2) * dtdt;
-	  trace3("", vt0,  vt1, vt2);
-	  _sim->_v0[ii] = vt0;
+	if (dtdt <= OPT::predictor) {//42094 // normal prediction
+	  for (int ii=1; ii <= _sim->_total_nodes; ++ii) {
+	    double vt2 = _sim->_v0[ii];
+	    double vt1 = _sim->_vt1[ii];
+	    double vt0 = vt1 + (vt1 - vt2) * dtdt;
+	    _sim->_v0[ii] = vt0;
+	  }
+	}else{//353 // long shot, large step follows small step
+	  std::copy_n(_sim->_vt1, _sim->_total_nodes+1, _sim->_v0);
 	}
-      }else{
+      }else{//847 // first step, no history
 	std::copy_n(_sim->_vt1, _sim->_total_nodes+1, _sim->_v0);
       }
       _scope->tr_advance();
-    }else{				/* moving backward */
+    }else{//767 // moving backward
       /* don't save voltages.  They're wrong! */
       /* instead, restore a clean start for iteration */
       std::copy_n(_sim->_vt1, _sim->_total_nodes+1, _sim->_v0);
       _scope->tr_regress();
     }
-  }else{
+  }else{//6771 // initial DCOP
     time1 = time2 = 0;
     _scope->dc_advance();
   }

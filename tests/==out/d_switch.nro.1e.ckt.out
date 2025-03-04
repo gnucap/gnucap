@@ -96,15 +96,15 @@
  198.91u    0.028476   10.Meg     2.         0.024955   248.38u    6.        
  199.06u    0.044068   10.Meg     2.         0.028476   248.38u    6.        
  200.u      0.13762    10.Meg     3.         0.044068   248.38u    1.        
-t2= 198.867322855874u
-t1= 149.211467855827u
+t2= 198.867322855867u
+t1= 149.211467855828u
 t0= 99.5553138558303u
 tmin0= 99.561238u
 tmin1= 149.217392u
 tmax1= 149.21008u
 falltime= 7.31199999997483E-9
 risetime= 49.648842E-6
-dt= 49.655855000047E-6
+dt= 49.655855000039E-6
 Gnucap   System status
 iterations: op=0, dc=0, tran=218, fourier=0, total=314
 transient timesteps: accepted=96, rejected=0, total=96

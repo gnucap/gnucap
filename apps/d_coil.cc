@@ -58,6 +58,7 @@ public: // override virtual
   void     precalc_last()override;
   void	   tr_iwant_matrix()override;
   void     tr_begin()override;
+  void     tr_advance()override {STORAGE::tr_advance(); do_tr();}
   bool	   do_tr()override;
   void	   tr_load()override;
   void	   tr_unload()override;

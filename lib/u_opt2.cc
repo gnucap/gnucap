@@ -260,7 +260,7 @@ void OPT::print(OMSTREAM& o)
   o << ((lubypass) ?"  lubypass" :"  nolubypass");    
   o << ((fbbypass) ?"  fbbypass" :"  nofbbypass");    
   o << ((traceload)?"  traceload":"  notraceload");    
-  o << ((predictor)?"  predictor":"  nopredictor");
+  o << "  predictor=" << predictor;
   o << "  order="  << order;
   o << "  mode="   << mode;
   o << "  transits=" << transits;

@@ -24,7 +24,7 @@
  1.         1.         0.63241    1.         0.63241    2.         0.63241    632.41n    632.41n    1.2648u    38.694n    38.694n    77.388n    386.94n    386.94n   
 + 773.88n    367.59n    7.7195u    55.439u    1.4985     1.4985     1.4985    
 Gnucap   System status
-iterations: op=0, dc=0, tran=73, fourier=0, total=92
+iterations: op=0, dc=0, tran=74, fourier=0, total=93
 transient timesteps: accepted=16, rejected=3, total=19
 nodes: user=6, subckt=0, model=0, total=6
 dctran density=55.6%, ac density=55.6%
