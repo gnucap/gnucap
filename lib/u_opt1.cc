@@ -79,6 +79,7 @@ bool	OPT::lcbypass = true;
 bool	OPT::lubypass = true;
 bool	OPT::fbbypass = true;
 bool	OPT::traceload = true;
+double	OPT::predictor = 100.;
 int	OPT::itermin = 1;
 double	OPT::vmax =  5;
 double	OPT::vmin = -5;

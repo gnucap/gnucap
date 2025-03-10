@@ -10,7 +10,7 @@ C6 ( 3 0 )  1.
  ^ ? fanout: no match
 #Time       iter(0)    v(1)       v(2)       v(3)       z(C6)      zraw(C6)   z(3)      
  0.         3.         0.         0.         0.         0.97       0.97       0.97      
- 0.1        52.        1.         0.095202   0.097999   0.97       0.03836    0.03836   
+ 0.1        51.        1.         0.095202   0.097999   0.97       0.03836    0.03836   
  0.2        4.         1.         0.18137    0.18643    0.97       0.047549   0.047549  
  0.3        4.         1.         0.25934    0.26619    0.97       0.047549   0.047549  
  0.4        4.         1.         0.32988    0.33813    0.97       0.047549   0.047549  
@@ -36,7 +36,7 @@ R4 ( 2 0 )  1.
 R5 ( 1 3 )  0.97
 C6 ( 3 0 )  1.
 Gnucap   System status
-iterations: op=0, dc=0, tran=91, fourier=0, total=123
+iterations: op=0, dc=0, tran=90, fourier=0, total=122
 transient timesteps: accepted=16, rejected=7, total=23
 nodes: user=3, subckt=0, model=0, total=3
 dctran density=77.8%, ac density=77.8%
