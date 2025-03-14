@@ -472,6 +472,8 @@ void DEV_SUBCKT::expand()
     const CARD* model = find_looking_out(c->modelname());
     if ((_parent = dynamic_cast<const DEV_SUBCKT_PROTO*>(model))) {
       // good
+    }else if ((_parent = dynamic_cast<const DEV_MODULE_PROTO*>(model))) {
+      // good
     }else if (dynamic_cast<const BASE_SUBCKT*>(model)) {
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt proto");
     }else{

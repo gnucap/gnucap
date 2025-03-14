@@ -1,0 +1,25 @@
+
+module test0(.a(x), .b(y), .c(z));
+endmodule;
+
+module test1(a b c);
+endmodule;
+
+
+spice
+
+.subckt test2(a b c)
+.ends
+
+.test0 t1 1 2 3 test0
+.test1 t1 1 2 3 test1
+.test2 t2 1 2 3 test2
+
+X1 1 2 3 test0
+X2 1 2 3 test1
+X3 1 2 3 test2
+
+.list
+.verilog
+list
+op
