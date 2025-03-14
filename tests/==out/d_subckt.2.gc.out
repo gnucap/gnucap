@@ -1,0 +1,29 @@
+.subckt test0 ( x y z )
+.ends test0
+.subckt test1 ( a b c )
+.ends test1
+.subckt test2 ( a b c )
+.ends test2
+t1 ( 1 2 3 )  test0 
+t1 ( 1 2 3 )  test1 
+t2 ( 1 2 3 )  test2 
+X1 ( 1 2 3 )  test0 
+X2 ( 1 2 3 )  test1 
+X3 ( 1 2 3 )  test2 
+module test0 (.a(x),.b(y),.c(z));
+endmodule // test0
+
+module test1 (.a(a),.b(b),.c(c));
+endmodule // test1
+
+module test2 (.a(a),.b(b),.c(c));
+endmodule // test2
+
+test0 #() t1 (.a(\1 ),.b(\2 ),.c(\3 ));
+test1 #() t1 (.a(\1 ),.b(\2 ),.c(\3 ));
+test2 #() t2 (.a(\1 ),.b(\2 ),.c(\3 ));
+test0 #() X1 (.(\1 ),.(\2 ),.(\3 ));
+test1 #() X2 (.(\1 ),.(\2 ),.(\3 ));
+test2 #() X3 (.(\1 ),.(\2 ),.(\3 ));
+#          
+ 27.       

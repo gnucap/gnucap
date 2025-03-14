@@ -1,6 +1,10 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 20250*****-dev
+- predictor for node voltages
+- fix module instanciation in spice
+
 == 20250301-dev
 - arbitrary number of module ports
 - leave optional unconnected ports floating

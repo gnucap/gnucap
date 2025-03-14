@@ -1,1 +1,1 @@
-#define PATCHLEVEL "predictor 2025.03.10"
+#define PATCHLEVEL "sckt_spice 2025.03.14"
