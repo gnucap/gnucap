@@ -1,6 +1,17 @@
-.subckt crash (n0 n1 n2 n3 n0 n4) 
+.subckt dupln (n0 n1 n2 n3 n0 n4) 
                            ^ ? duplicate port name, skipping
 .subckt zero (n0 n1 n2 n3 0 n4) 
                           ^ ? node 0 not allowed here
+*# duplicate label error 
+.subckt dupln ( n0 n1 n2 n3 n4 )
+.ends dupln
+.subckt zero ( n0 n1 n2 n3 n4 )
+.ends zero
+X1 ( 1 2 )  dupln 
 #          
  27.       
+Gnucap   System status
+iterations: op=2, dc=0, tran=0, fourier=0, total=2
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=50.0%, ac density=50.0%
