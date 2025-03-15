@@ -1,0 +1,9 @@
+verilog
+
+resistor #() r1 (\1 ,\2 );
+op
+status notime
+
+delete r1
+op
+status notime
