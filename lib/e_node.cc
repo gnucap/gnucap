@@ -73,7 +73,7 @@ NODE::NODE(const std::string& s, int n)
 }
 /*--------------------------------------------------------------------------*/
 node_t::node_t()
-  :_nnn(0),
+  :_nnn(nullptr),
    _ttt(INVALID_NODE),
    _m(INVALID_NODE)
 {

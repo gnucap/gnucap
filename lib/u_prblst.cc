@@ -146,7 +146,7 @@ void PROBELIST::add_list(CS& cmd, CARD_LIST* scope)
     add_all_nodes(what, scope);
   }else if (cmd.umatch("0")) {
     // node 0 means system stuff
-    push_new_probe(what, 0);
+    push_new_probe(what, nullptr);
   }else if (cmd.is_alnum() || cmd.match1("*?")) {
     // branches or named nodes
     size_t here1 = cmd.cursor();
