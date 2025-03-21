@@ -1,0 +1,182 @@
+Test modelgen internal node re-expansion after a change 
+>>>>>.MODEL  NMOS   NMOS            LEVEL = 4.00000E+000              TOX = 3.00000E-002              VDD = 5.00000E+000             TEMP = 2.70000E+001               DL = 7.97991E-001               DW = 4.77402E-001              VFB = -1.0087E+000              PHI = 7.96434E-001               K1 = 1.31191E+000               K2 = 1.46640E-001              ETA = -1.0027E-003              MUZ = 5.34334E+002               U0 = 4.38497E-002               U1 = -5.7332E-002             LETA = -9.4847E-003             WETA = 1.47316E-002              LU0 = 6.38105E-002              WU0 = -6.1053E-002              LU1 = 1.01174E+000              WU1 = 1.62706E-002               N0 = 1.55               NB = 0.09             CGDO = 2.70000E-010             CGSO = 2.70000E-010             CGBO = 1.40000E-010            XPART = 1.2              RSH = 35.0               CJ = 2.75E-4              CJSW = 1.90E-10              JS = 1.0E-8               PB = 0.7              PBSW = 0.8               MJ = 0.5              MJSW = 0.33              WDF = 0.0 
+>>>>>.DC 
+#          
+ 0.        
+>>>>>.status notime 
+Gnucap   System status
+iterations: op=0, dc=3, tran=0, fourier=0, total=3
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=2, total=3
+dctran density=100.0%, ac density=100.0%
+>>>>>.PRINT DC V(nodes) 
+>>>>>.DC 
+#           V(1)      
+ 0.         0.        
+>>>>>.status notime 
+Gnucap   System status
+iterations: op=0, dc=3, tran=0, fourier=0, total=6
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=2, total=3
+dctran density=100.0%, ac density=100.0%
+>>>>>.portdump 
+name   ...
+have 3 nodes. model: 2 sckt: 0
+
+
+MN1 4 4 2
+0 3
+1 3
+2 0
+3 0
+4 2
+5 1
+ MN1.Ids 10 10 0
+ 0 2
+ 1 1
+ 2 3
+ 3 1
+ 4 2
+ 5 3
+ 6 0
+ 7 1
+ 8 2
+ 9 0
+ MN1.Cgb 2 2 0
+ 0 3
+ 1 0
+ MN1.Cgs 2 2 0
+ 0 3
+ 1 1
+ MN1.Ddb 2 2 1
+ 0 0
+ 1 2
+ 2 0
+ MN1.Ddb.Yj 2 2 0
+ 0 0
+ 1 2
+ MN1.Rd 2 2 0
+ 0 3
+ 1 2
+ MN1.Rs 2 2 0
+ 0 0
+ 1 1
+
+NMOS
+
+>>>>>.PRINT DC V(nodes) 
+>>>>>.DC 
+#           V(1)      
+ 0.         0.        
+>>>>>.status notime 
+Gnucap   System status
+iterations: op=0, dc=3, tran=0, fourier=0, total=9
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=100.0%, ac density=100.0%
+>>>>>.portdump 
+name   ...
+have 3 nodes. model: 0 sckt: 0
+
+
+MN1 4 4 2
+0 3
+1 3
+2 0
+3 0
+4 2
+5 1
+ MN1.Ids 10 10 0
+ 0 2
+ 1 1
+ 2 3
+ 3 1
+ 4 2
+ 5 3
+ 6 0
+ 7 1
+ 8 2
+ 9 0
+ MN1.Cgb 2 2 0
+ 0 3
+ 1 0
+ MN1.Cgs 2 2 0
+ 0 3
+ 1 1
+ MN1.Ddb 2 2 1
+ 0 0
+ 1 2
+ 2 0
+ MN1.Ddb.Yj 2 2 0
+ 0 0
+ 1 2
+ MN1.Rd 2 2 0
+ 0 3
+ 1 2
+ MN1.Rs 2 2 0
+ 0 0
+ 1 1
+
+NMOS
+
+v2 2 2 0
+0 3
+1 0
+>>>>>.options norstray 
+>>>>>.DC 
+#           V(1)      
+ 0.         0.        
+>>>>>.status notime 
+Gnucap   System status
+iterations: op=0, dc=3, tran=0, fourier=0, total=12
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=100.0%, ac density=100.0%
+>>>>>.portdump 
+name   ...
+have 3 nodes. model: 0 sckt: 0
+
+
+MN1 4 4 2
+0 3
+1 3
+2 0
+3 0
+4 2
+5 1
+ MN1.Ids 10 10 0
+ 0 2
+ 1 1
+ 2 3
+ 3 1
+ 4 2
+ 5 3
+ 6 0
+ 7 1
+ 8 2
+ 9 0
+ MN1.Cgb 2 2 0
+ 0 3
+ 1 0
+ MN1.Cgs 2 2 0
+ 0 3
+ 1 1
+ MN1.Ddb 2 2 1
+ 0 0
+ 1 2
+ 2 0
+ MN1.Ddb.Yj 2 2 0
+ 0 0
+ 1 2
+ MN1.Rd 2 2 0
+ 0 3
+ 1 2
+ MN1.Rs 2 2 0
+ 0 0
+ 1 1
+
+NMOS
+
+v2 2 2 0
+0 3
+1 0
