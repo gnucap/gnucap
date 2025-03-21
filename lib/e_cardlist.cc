@@ -173,7 +173,7 @@ CARD_LIST& CARD_LIST::expand()
     trace_func_comp();
     (**ci).expand_first();
   }
-  for (iterator ci=begin(); ci!=end(); ++ci) {
+  for (iterator ci=begin(); ci!=end(); ++ci) { // TODO: reverse.
     trace_func_comp();
     (**ci).expand();
   }
