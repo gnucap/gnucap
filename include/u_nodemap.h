@@ -29,8 +29,12 @@
 class NODE;
 /*--------------------------------------------------------------------------*/
 class NODE_MAP {
+  typedef std::map<std::string, NODE*> map_t;
+public:
+  typedef map_t::iterator iterator;
+  typedef map_t::const_iterator const_iterator;
 private:
-  std::map<const std::string, NODE*> _node_map;
+  map_t _map;
   explicit  NODE_MAP(const NODE_MAP&);
 
 public:
@@ -39,12 +43,14 @@ public:
   NODE*     operator[](std::string);
   NODE*     new_node(std::string);
 
-  typedef std::map<const std::string, NODE*>::iterator iterator;
-  typedef std::map<const std::string, NODE*>::const_iterator const_iterator;
+  const_iterator begin()const		{return map().begin();}
+  const_iterator end()const		{return map().end();}
+  int		 how_many()const	{return static_cast<int>(map().size()-1);}
+  int		 size()const		{untested(); return static_cast<int>(map().size());}
 
-  const_iterator begin()const		{return _node_map.begin();}
-  const_iterator end()const		{return _node_map.end();}
-  int		 how_many()const	{return static_cast<int>(_node_map.size()-1);}
+private:
+  map_t& map() {return _map;}
+  map_t const& map() const {return _map;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -28,20 +28,19 @@
 NODE ground_node("0",0);
 /*--------------------------------------------------------------------------*/
 NODE_MAP::NODE_MAP()
-  : _node_map()
 {
-  _node_map["0"] = &ground_node;
+  map()["0"] = &ground_node;
 }
 /*--------------------------------------------------------------------------*/
 /* copy constructor: deep copy
  * The std::map copy constructor does a shallow copy,
  * then replace second with a deep copy.
  */
-NODE_MAP::NODE_MAP(const NODE_MAP& p)
-  : _node_map(p._node_map)
+NODE_MAP::NODE_MAP(const NODE_MAP&)
 { untested();
+  incomplete();
   unreachable();
-  for (iterator i = _node_map.begin(); i != _node_map.end(); ++i) { untested();
+  for (iterator i = map().begin(); i != map().end(); ++i) { untested();
     if (i->first != "0") { untested();
       assert(i->second);
       i->second = new NODE(i->second);
@@ -52,14 +51,20 @@ NODE_MAP::NODE_MAP(const NODE_MAP& p)
 /*--------------------------------------------------------------------------*/
 NODE_MAP::~NODE_MAP()
 {
-  for (iterator i = _node_map.begin(); i != _node_map.end(); ++i) {
-    if (i->first != "0") {
-      assert(i->second);
-      i->second->purge();
-      delete i->second;
-    }else{
+  if(1 /*map*/) {
+    for (iterator i = map().begin(); i != map().end(); ++i) {
+      if (i->second != &ground_node) {
+	assert(i->second);
+	i->second->purge();
+	delete i->second;
+      }else{
+      }
     }
-  }  
+   // delete _map;
+   // _map = nullptr;
+  }else{ untested();
+    incomplete();
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* return a pointer to a node given a string
@@ -67,16 +72,16 @@ NODE_MAP::~NODE_MAP()
  */
 NODE* NODE_MAP::operator[](std::string s)
 {
-  const_iterator i = _node_map.find(s);
-  if (i != _node_map.end()) {
+  const_iterator i = map().find(s);
+  if (i != map().end()) {
     return i->second;
   }else if (OPT::case_insensitive) {
     notstd::to_lower(&s);
-    i = _node_map.find(s);
+    i = map().find(s);
   }else{
     return nullptr;
   }
-  return (i != _node_map.end()) ? i->second : nullptr;
+  return (i != map().end()) ? i->second : nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /* return a pointer to a node given a string
@@ -88,13 +93,13 @@ NODE* NODE_MAP::new_node(std::string s)
     notstd::to_lower(&s);
   }else{
   }
-  NODE* node = _node_map[s];
+  NODE* node = map()[s];
 
   // increments how_many() when lookup fails (new s)  
   if (!node) {
     node = new NODE(s, how_many());
     //                 ^^^^ is really the map number of the new node
-    _node_map[s] = node;
+    map()[s] = node;
   }
   assert(node);
   return node;
