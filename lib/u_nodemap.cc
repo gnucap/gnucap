@@ -148,7 +148,7 @@ std::string const& NODE_MAP::name(int i) const
   }else if(_map){
     // fallback, getting here in a few corner cases,
     // top level only.
-    for(auto const& p : map()){ untested();
+    for(auto const& p : map()){
       assert(p.second);
       if(p.second->user_number() == i){
 	return p.first;

@@ -58,7 +58,7 @@ SIM_DATA::SIM_DATA()
    _vt1(nullptr),
    _ac(nullptr),
    _noise(nullptr),
-   _nstat(nullptr),
+   _nstat(false),
    _vdc(nullptr),
    _aa(),
    _lu(_aa), // alias.
@@ -119,8 +119,7 @@ SIM_DATA::~SIM_DATA()
   }else{
   }
   if (_nstat) {unreachable();
-    delete [] _nstat;
-    _nstat = nullptr;
+    _nstat = false;
   }else{
   }
   if (_vdc) {unreachable();
@@ -222,6 +221,10 @@ void SIM_DATA::map__nodes()
   case oFORWARD: order_forward(); break;
   }
   ::status.order.stop();
+  NODE_MAP* top_nodes = CARD_LIST::card_list.nodes();
+  assert(top_nodes);
+  top_nodes->at(0).map();
+  assert(top_nodes->at(0).m_()==0);
 }
 /*--------------------------------------------------------------------------*/
 /* order_reverse: force ordering to reverse of user ordering
@@ -356,15 +359,9 @@ void SIM_DATA::alloc_hold_vectors()
 {
   assert(is_first_expand());
   NODE_MAP& top_nodes = *CARD_LIST::card_list.nodes();
-  int user_nodes = top_nodes.size()-1;
 
   assert(!_nstat);
-  _nstat = new LOGIC_NODE[user_nodes+1]; // 1 extra for ground..
-  _nstat[0].set_owner(nullptr);
-  _nstat[0].set_flat_number(0);
-  for (int ii=1;  ii <= user_nodes;  ++ii) {
-    _nstat[ii].set_owner(nullptr);
-  }
+  _nstat = true;
 
   assert(top_nodes.size());
   for (int ii=top_nodes.size(); --ii;) {
@@ -444,8 +441,7 @@ void SIM_DATA::uninit()
     _aa.reinit(0);
     delete [] _vdc;
     _vdc = nullptr;
-    delete [] _nstat;
-    _nstat = nullptr;
+    _nstat = false;
     delete [] _nm;
     _nm = nullptr;
   }else{

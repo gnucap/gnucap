@@ -251,7 +251,7 @@ node_t::~node_t()
  * Supposedly equivalent to new_node() then map_subckt_node()
  * but it does it without building a map
  */
-void node_t::new_model_node(const std::string& /*node_name*/, CARD* Owner)
+void node_t::new_model_node(const std::string& node_name, CARD* Owner)
 {
   if(_nnn){ untested();
     //it's already there.
@@ -332,6 +332,7 @@ void node_t::set_to_ground(CARD* Owner)
     // must retain index. connection is in _link...
     _index = idx;
   }
+  _m = 0;
 }
 /*--------------------------------------------------------------------------*/
 bool node_t::is_grounded() const

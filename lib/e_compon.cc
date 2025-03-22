@@ -553,6 +553,12 @@ void COMPONENT::deflate_common()
 void COMPONENT::expand()
 {
   CARD::expand();
+  if (_sim->is_first_expand()) {
+    for(int i=net_nodes(); i<ext_nodes()+int_nodes(); ++i){
+      n_(i).clear();
+    }
+  }else{
+  }
   if (has_common()) {
     COMMON_COMPONENT* new_common = common()->clone();
     new_common->expand(this);

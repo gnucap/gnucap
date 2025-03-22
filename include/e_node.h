@@ -248,8 +248,8 @@ public:
   double      v0()const {
     assert(m_() >= 0);
     assert(m_() <= NODE::_sim->_total_nodes);
-    assert(n_() || root().n_());
-    assert(n_()->m_() == m_());
+    assert(!m_() || n_() || root().n_());
+    assert(!m_() || n_()->m_() == m_());
     //assert(n_()->v0() == NODE::_sim->_v0[m_()]);
     return NODE::_sim->_v0[m_()];
   }

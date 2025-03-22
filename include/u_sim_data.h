@@ -86,7 +86,7 @@ struct INTERFACE SIM_DATA {
   COMPLEX *_ac;		/* ac right side			*/
   COMPLEX *_noise;	/* noise vector				*/
 private:
-  LOGIC_NODE* _nstat;	/* top level nodes			*/
+  bool _nstat;		/* indicate status, use _vdc?		*/
 public:
   double *_vdc;		/* saved dc voltages			*/
   BSMATRIX<double> _aa;	/* raw matrix for DC & tran */
@@ -104,7 +104,7 @@ public:
   SIM_MODE _has_op;
   SIM_DATA();
   ~SIM_DATA();
-  bool is_first_expand() {return !_nstat;}
+  bool is_first_expand() {assert((bool)_vdc==_nstat); return !_nstat;}
   void alloc_hold_vectors(); /* s__init.cc */
   void alloc_vectors();
   void unalloc_vectors();
