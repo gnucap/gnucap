@@ -128,6 +128,7 @@ node_t& node_t::set_own(NODE* n)
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+extern NODE ground_node;
 LOGIC_NODE& node_t::data()const
 {
   if(auto d = dynamic_cast<LOGIC_NODE*>(_nnn)){
