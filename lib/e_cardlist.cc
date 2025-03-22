@@ -583,9 +583,14 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     }
   }
   { // check the outcome anyway
-    for (int i = 0; i <= num_nodes_in_subckt; ++i) { untested();
-      trace3("transition check", i, map[i], node_map[i].t_());
-     // assert(map[i] == node_map[i].t_()); not yet
+    int i = 0;
+    for (; i <= model->net_nodes(); ++i) { untested();
+      trace3("transition check port", i, map[i], node_map[i].t_());
+      assert(map[i] == node_map[i].t_());
+    }
+    for (; i <= num_nodes_in_subckt; ++i) { untested();
+      trace3("transition check internal", i, map[i], node_map[i].t_());
+      // assert(map[i] == node_map[i].t_()); not yet
     }
   }
 
@@ -600,6 +605,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
 	try{
+	  // TODO: use node_map.
 	  (**ci).n_(ii).map_subckt_node(map, owner);
 	}catch(...){
 	  delete[] map;

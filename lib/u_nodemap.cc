@@ -48,6 +48,7 @@ NODE_MAP::NODE_MAP(const NODE_MAP& p)
     map()["0"] = 0;
     assert(_nodes.size());
     _nodes[0] = &ground_node; // BUG. ground is global.
+    assert(_nodes[0].t_()==0);
   }
 }
 /*--------------------------------------------------------------------------*/
