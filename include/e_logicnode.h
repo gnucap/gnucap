@@ -34,7 +34,7 @@ class MODEL_LOGIC;
 class INTERFACE LOGIC_NODE : public NODE {
 private:
   int _flat_number{0};
-  int user_number()const override { return _flat_number;} // obsolete.
+//  int user_number()const override { return _flat_number;} // obsolete.
   int flat_number()const {return _flat_number;}
 public: // BUG: _nstat ...
   void set_flat_number(int i) { _flat_number=i; }

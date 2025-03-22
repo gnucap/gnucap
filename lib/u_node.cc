@@ -29,7 +29,7 @@ double USER_NODE::tr_probe_num(const std::string& s) const
   if(_n) {
     return _n->tr_probe_num(s);
   }else{
-    return NODE::tr_probe_num(s);
+    return NOT_VALID;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ inline XPROBE USER_NODE::ac_probe_ext(const std::string& s) const
   if(_n) {
     return _n->ac_probe_ext(s);
   }else{ untested();
-    return NODE::ac_probe_ext(s);
+	  return XPROBE(NOT_VALID);
   }
 }
 /*--------------------------------------------------------------------------*/

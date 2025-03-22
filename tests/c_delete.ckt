@@ -23,6 +23,7 @@ C3 5 0 2
 .delete L*
 .list
 .print op v(nodes)
+.status notime
 .op
 .delete c*
 .list
@@ -36,4 +37,5 @@ C3 5 0 2
 .list
 .print op v(nodes)
 .op
+.status notime
 .end

@@ -53,9 +53,9 @@ public:
   CARD* clone()const override	{untested(); return new NODE(*this);}
 
 public: // raw data access (rvalues)
-  virtual int user_number()const	{/*ground only*/return 0;}
+  virtual int user_number()const;
 public: // simple calculated data access (rvalues)
-  virtual int	matrix_number()const	{return 0;}// only gnd getting here.
+  virtual int matrix_number()const;
   int	m_()const		{return matrix_number();}
 public: // virtuals
   double	tr_probe_num(const std::string&)const override;
@@ -86,6 +86,21 @@ public: // virtuals
   }
 };
 /*--------------------------------------------------------------------------*/
+#ifndef NDEBUG
+extern NODE ground_node;
+#endif
+/*--------------------------------------------------------------------------*/
+inline int NODE::user_number() const
+{
+  // assert(this==&ground_node);
+  return 0;
+}
+/*--------------------------------------------------------------------------*/
+inline int NODE::matrix_number() const
+{
+  // assert(this==&ground_node);
+  return 0;
+}
 /*--------------------------------------------------------------------------*/
 class INTERFACE node_t {
 private: // this should eventually fit into 64 bits.
