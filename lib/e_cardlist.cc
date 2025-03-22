@@ -540,41 +540,9 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
   trace2("",  model->net_nodes(),  num_nodes_in_subckt);
   assert(model->net_nodes() <= num_nodes_in_subckt);
-  int* map = new int[num_nodes_in_subckt+1];
 
-#if 1 // obsolete; see below.
-  {
-    map[0] = 0;
-    // self test: verify that port node numbering is correct
-    for (int port = 0; port < model->net_nodes(); ++port) {
-      assert(model->n_(port).e_() <= num_nodes_in_subckt);
-      //assert(model->n_(port).e_() == port+1);
-      trace3("ports", port, model->n_(port).e_(), owner->n_(port).t_());
-    }
-    {
-      // take care of the "port" nodes (external connections)
-      // map them to what the calling circuit wants
-      int i=0;
-      for (i=1; i <= model->net_nodes(); ++i) {
-	assert(i <= num_nodes_in_subckt);
-	map[i] = owner->n_(i-1).t_();
-	trace3("ports", i, map[i], owner->n_(i-1).t_());
-      }
-    
-      // get new node numbers, and assign them to the remaining
-      for (assert(i==model->net_nodes() + 1); i <= num_nodes_in_subckt; ++i) {
-	// for each remaining node in card_list
-	map[i] = CKT_BASE::_sim->newnode_subckt();
-	trace2("internal", i, map[i]);
-      }
-    }
-  }
-#endif
-  // "map" now contains a translation list,
-  // from subckt local numbers to matrix index numbers
-
-  NODE_MAP& node_map = *nodes(); // TODO: use this.
-  // node_map supposedy contains the actual nodes.
+  NODE_MAP& node_map = *nodes();
+  // node_map supposedy contains the actual connections
   { // connect ports. this is probably obsolete.
     for (int port = 0; port < model->net_nodes(); ++port) {
       assert(model->n_(port).e_() <= num_nodes_in_subckt);
@@ -583,18 +551,8 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       node_map[port+1] = owner->n_(port);
     }
     for (int i=model->net_nodes() + 1; i <= num_nodes_in_subckt; ++i) {
-      node_map[i].set_own(new LOGIC_NODE(map[i])); // BUG: only connect. allocate later.
-    }
-  }
-  { // check the outcome against obsolete map
-    int i = 0;
-    for (; i <= model->net_nodes(); ++i) { untested();
-      trace3("transition check port", i, map[i], node_map[i].t_());
-      assert(map[i] == node_map[i].t_());
-    }
-    for (; i <= num_nodes_in_subckt; ++i) { untested();
-      trace3("transition check internal", i, map[i], node_map[i].t_());
-      assert(map[i] == node_map[i].t_());
+      int index_hack = CKT_BASE::_sim->newnode_subckt();
+      node_map[i].set_own(new LOGIC_NODE(index_hack)); // BUG: only connect. allocate later.
     }
   }
 
@@ -608,18 +566,12 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
-	try{
-	  (**ci).n_(ii).map_subckt_node(&node_map[0], owner);
-	}catch(...){
-	  delete[] map;
-	  throw;
-	}
+	(**ci).n_(ii).map_subckt_node(&node_map[0], owner);
       }
     }else{
       assert(dynamic_cast<MODEL_CARD*>(*ci));
     }
   }
-  delete[] map;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
