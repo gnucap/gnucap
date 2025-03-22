@@ -480,14 +480,6 @@ void DEV_SUBCKT::expand()
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
     }
     assert(!_parent->is_device()); // really?
-  }else if(_sim->is_first_expand()){
-    trace1("DEV_SUBCKT::expand0", max_nodes());
-    for(int i=0; i<max_nodes(); ++i) {
-      if(n_(i).is_connected()){
-      }else{
-	n_(i).new_model_node("." + long_label() + "." + port_name(i), this);
-      }
-    }
   }else{ untested();
   }
 
