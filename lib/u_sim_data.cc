@@ -228,9 +228,10 @@ void SIM_DATA::map__nodes()
  */
 void SIM_DATA::order_reverse()
 {
+  // it is already reversed. leave it like that.
   _nm[0] = 0;
   for (int node = 1;  node <= _total_nodes;  ++node) {
-    _nm[node] = _total_nodes - node + 1;
+    _nm[node] = node;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -239,9 +240,10 @@ void SIM_DATA::order_reverse()
  */
 void SIM_DATA::order_forward()
 {
+  // need to reverse for forward ordering.
   _nm[0] = 0;
   for (int node = 1;  node <= _total_nodes;  ++node) {
-    _nm[node] = node;
+    _nm[node] = _total_nodes - node + 1;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -250,10 +252,7 @@ void SIM_DATA::order_forward()
  */
 void SIM_DATA::order_auto()
 {
-  _nm[0] = 0;
-  for (int node = 1;  node <= _total_nodes;  ++node) {
-    _nm[node] = _total_nodes - node + 1;
-  }
+  order_reverse();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -264,6 +263,12 @@ static void map_toplevel_nodes(CARD_LIST& tcl)
 {
   NODE_MAP& top_nodes = *tcl.nodes();
   // assert(top_nodes[0].n_() == &ground_node);
+
+  top_nodes[0] = &ground_node;
+  for (int i=1; i<=top_nodes.how_many(); ++i) {
+    trace1("MSN, new", i);
+    top_nodes[i].link_to(top_nodes[i]); // BUG. link when connecting to.
+  }
 
   for (CARD_LIST::iterator ci = tcl.begin(); ci != tcl.end(); ++ci) {
     // for each card in card_list
@@ -289,11 +294,11 @@ void SIM_DATA::init(CARD_LIST* scope)
   }
   if (is_first_expand()) {
     uninit();
-    init_node_count(scope->nodes()->how_many(), 0, 0);
-    scope->expand();
+    init_node_count(0, 0, 0);
     map_toplevel_nodes(CARD_LIST::card_list);
-    map__nodes();
+    scope->expand();
     alloc_hold_vectors();
+    map__nodes();
     scope->map_nodes();
     _aa.reinit(_total_nodes);
     _acx.reinit(_total_nodes);
@@ -313,27 +318,31 @@ void SIM_DATA::init(CARD_LIST* scope)
  * if they already exist, leave them alone to save data
  */
 void SIM_DATA::alloc_hold_vectors()
-{ untested();
-  trace1("SIM_DATA::alloc_hold_vectors", _total_nodes);
+{
   assert(is_first_expand());
+  NODE_MAP& top_nodes = *CARD_LIST::card_list.nodes();
+  int user_nodes = top_nodes.how_many();
 
   assert(!_nstat);
-  _nstat = new LOGIC_NODE[_total_nodes+1];
-  for (int ii=0;  ii <= _total_nodes;  ++ii) {
-    _nstat[_nm[ii]].set_owner(nullptr);
-    _nstat[_nm[ii]].set_flat_number(ii); // BUG
+  _nstat = new LOGIC_NODE[user_nodes+1]; // 1 extra for ground..
+  _nstat[0].set_owner(nullptr);
+  _nstat[0].set_flat_number(0);
+  for (int ii=1;  ii <= user_nodes;  ++ii) {
+    _nstat[ii].set_owner(nullptr);
+#if 0
+     trace2("SIM_DATA::alloc_hold_vectors", ii, _total_nodes+ii);
+    _nstat[ii].set_flat_number(_total_nodes+ii);
+#else
+     trace2("SIM_DATA::alloc_hold_vectors", ii, _total_nodes+user_nodes-ii+1);
+     _nstat[ii].set_flat_number(_total_nodes+user_nodes-ii+1);
+#endif
   }
+  _total_nodes += user_nodes;
+  _user_nodes = user_nodes;
 
-  for (int ii=0;  ii <= _total_nodes;  ++ii) {
-    if(_nm[ii] <= _user_nodes) {
-     _nstat[_nm[ii]].set_flat_number(ii); // BUG
-    }
-  }
-
-  NODE_MAP& top_nodes = *CARD_LIST::card_list.nodes();
   top_nodes[0] = &ground_node;
 
-  for (int ii=1;  ii <= _user_nodes;  ++ii) { untested();
+  for (int ii=1;  ii <= user_nodes;  ++ii) {
     // TODO: only allocate required nodes.
     LOGIC_NODE* nn = &_nstat[_nm[ii]];
     top_nodes[ii] = nn;

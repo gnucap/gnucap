@@ -38,6 +38,7 @@ private:
   int flat_number()const {return _flat_number;}
 public:
   void set_flat_number(int i) { _flat_number=i; }
+  int	matrix_number()const override;
 
 private:
   const MODEL_LOGIC *_family;	/* logic family */

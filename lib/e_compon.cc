@@ -564,22 +564,12 @@ void COMPONENT::expand()
     }
   }else{
   }
-
-  // this is needed to make node assignments work.
-  // (temporary/transition)
-  // c.f. lib/e_ccsrc.cc +43
-  for(int i = 0; i < net_nodes(); ++i) {
-    if(!n_(i).is_link()){ untested();
-      n_(i).link_to(n_(i));
-    }else{ untested();
-    }
-  }
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::precalc_first()
 {
   for(int i = 0; i < min_nodes(); ++i){
-    if(!node_is_connected(i)) { untested();
+    if(!node_is_connected(i)) {
       throw Exception(long_label() + ": invalid nodes");
     }else{
     }
@@ -880,7 +870,12 @@ const std::string COMPONENT::port_value(int i)const
   int idx = n_(i).e_();
   assert(scope());
   assert(scope()->nodes());
-  return scope()->nodes()->at(idx).short_label();
+  if(idx>=0){
+    return scope()->nodes()->at(idx).short_label();
+  }else{
+    // d_subckt.error.2.gc
+    return "?????";
+  }
 }
 /*--------------------------------------------------------------------------*/
 double COMPONENT::tr_probe_num(const std::string& x)const

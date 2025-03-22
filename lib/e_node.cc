@@ -45,7 +45,7 @@ node_t::node_t(const node_t& p)
    _link(p._link),
    _index(p._index),
    _m(p._m)
-{ untested();
+{
 }
 /*--------------------------------------------------------------------------*/
 node_t::node_t(node_t&& p)
@@ -53,10 +53,10 @@ node_t::node_t(node_t&& p)
    _link(p._link),
    _index(p._index),
    _m(p._m)
-{ untested();
+{
   if(p._link == &p) { untested();
     _link = this;
-  }else{ untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -64,13 +64,22 @@ node_t::node_t(NODE* n)
   :_nnn(n),
    // _ttt(n->user_number()),
    _m(to_internal(n->user_number()))
-{ untested();
+{
 }
 /*--------------------------------------------------------------------------*/
 node_t& node_t::operator=(const node_t& p)
-{ untested();
+{
+  if(_own){
+    delete _nnn;
+  }else{
+  }
+  _nnn = nullptr;
   _link = p._link;
-  _index = p._index;
+#if 0
+  _index = INVALID_NODE;
+#else
+  _index = p._index;// wrong scope ??
+#endif
   _m   = p._m;
   _own = false;
   return *this;
@@ -86,7 +95,7 @@ node_t& node_t::operator=(node_t&& p)
 
   if(p._link == &p) { untested();
     _link = this;
-  }else{ untested();
+  }else{
   }
   return *this;
 }
@@ -126,6 +135,11 @@ LOGIC_NODE& node_t::data()const
     return *d;
   }else if(auto e = dynamic_cast<LOGIC_NODE*>(root()._nnn)){
     return *e;
+  }else if(_index==0){
+    // BUG. ground is not a logic node, but asking for one.
+    //  d_cccs.2.ckt
+    static LOGIC_NODE logic_ground(0);
+    return logic_ground;
   }else{
     assert(0);
     incomplete();
@@ -236,6 +250,7 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
   if(_nnn){
     //it's already there.
   }else{
+    // BUG: only request node, and allocate post-expand in appropriate order.
     int idx = CARD::_sim->newnode_model();
     auto ln = new LOGIC_NODE(node_name); // TODO: use requested type
     ln->set_owner(Owner);
@@ -266,8 +281,18 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
       assert(0);
       throw Exception(d->long_label() + ": need more nodes");
     }
-  }else{ untested();
+  }else{
     throw Exception(d->long_label() + ": invalid nodes");
+  }
+}
+/*--------------------------------------------------------------------------*/
+void node_t::allocate()
+{
+  if(is_node()) { untested();
+    // done.
+  }else if(_link==this) {
+    int flat_number = CKT_BASE::_sim->newnode_subckt();
+    set_own(new LOGIC_NODE(flat_number));
   }
 }
 /*--------------------------------------------------------------------------*/

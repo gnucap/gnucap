@@ -175,7 +175,7 @@ CARD_LIST& CARD_LIST::expand()
     trace_func_comp();
     (**ci).expand_first();
   }
-  for (iterator ci=begin(); ci!=end(); ++ci) { // TODO: reverse.
+  for (reverse_iterator ci=rbegin(); ci!=rend(); ++ci) {
     trace_func_comp();
     (**ci).expand();
   }
@@ -183,6 +183,20 @@ CARD_LIST& CARD_LIST::expand()
     trace_func_comp();
     (**ci).expand_last();
   }
+
+  // fill in missing nodes.
+  // BUG: top level works different.
+  if(this != &CARD_LIST::card_list) {
+    assert(nodes());
+    for(int i = nodes()->how_many(); i; --i) {
+      nodes()->at(i).allocate();
+      if(nodes()->at(i).is_node()){
+	trace2("CARD_LIST::alloc", i, nodes()->at(i)->user_number());
+      }
+    }
+  }else{
+  }
+
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -553,9 +567,8 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       assert(node_map[port+1].is_link());
     }
     for (int i=model->net_nodes() + 1; i <= num_nodes_in_subckt; ++i) {
-      int index_hack = CKT_BASE::_sim->newnode_subckt();
-      trace2("MSN, new", i, index_hack);
-      node_map[i].set_own(new LOGIC_NODE(index_hack)); // BUG: only connect. allocate later.
+      trace1("MSN, new", i);
+      node_map[i].link_to(node_map[i]); // BUG. link when connecting to.
     }
   }
 

@@ -331,5 +331,11 @@ void LOGIC_NODE::set_event(double delay, LOGICVAL v)
   set_last_change_time();
 }
 /*--------------------------------------------------------------------------*/
+int LOGIC_NODE::matrix_number() const
+{
+  trace3("MN", short_label(), user_number(), _sim->_nm[user_number()]);
+  return _sim->_nm[user_number()]; // TODO: -> MATRIX_NODE
+}
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:
