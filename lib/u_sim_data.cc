@@ -346,7 +346,7 @@ void SIM_DATA::alloc_hold_vectors()
     // TODO: only allocate required nodes.
     LOGIC_NODE* nn = &_nstat[_nm[ii]];
     top_nodes[ii] = nn;
-    assert(top_nodes[ii].is_node());
+   // assert(top_nodes[ii].is_node());
     assert(top_nodes[ii].n_() == nn);
     nn->set_owner(nullptr);
   }

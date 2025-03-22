@@ -1,6 +1,6 @@
 /*$Id: e_node.h $ -*- C++ -*-
  * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@gnu.org>
+ *               2025 Felix Salfelder
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
@@ -97,14 +97,25 @@ private: // this should eventually fit into 64 bits.
   mutable node_t* _link{nullptr};
   bool _own{false}; // indicate that _nnn is ours.
 private: // treee stuff.
-	 public: // debugging.
   bool is_node()const;
   bool is_link()const;
   bool is_root()const;
+public: // debugging
   node_t&       root();
-  node_t const& root()const;
+  node_t const& root()const {
+    return const_cast<node_t*>(this)->root();
+  }
+public: // debugging
   node_t*       link() {return _link;}
   node_t const* link()const {return _link;}
+  int rank()const {return 0;} // TODO
+  int inc_rank()const {return 0;} // TODO
+private: // union find
+  friend node_t* root(node_t const*);
+  friend int     rank(node_t const*);
+  friend int     inc_rank(node_t*);
+  friend bool    has_parent(node_t*n) {return parent(n);}
+  friend node_t* parent(node_t*);
 public:
   void allocate();
 private:
@@ -202,8 +213,8 @@ public:
 
   bool operator==(const node_t& p)const { return _link==p._link && _nnn==p._nnn && _m==p._m;}
 
-  // BUG?
-  void link_to(node_t& nn){
+  // BUG private:
+  node_t& link_to(node_t& nn){
     if(_own){ untested();
       delete _nnn;
     }else{
@@ -213,6 +224,11 @@ public:
     }else{
     }
     _link = &nn;
+    // TODO: simplify
+    assert(nn._link == nullptr || nn._link == &nn
+	 || nn.root()._nnn == &ground_node
+	 || nn.root()._nnn == nullptr);
+    return *this;
   }
 
 public:
@@ -282,13 +298,33 @@ inline node_t& node_t::root()
   return *r;
 }
 /*--------------------------------------------------------------------------*/
-inline node_t const& node_t::root() const
+/*--------------------------------------------------------------------------*/
+/* set parent of n to p, return new parent
+ */
+inline node_t* set_parent(node_t* n, node_t* p)
 {
-  node_t const* r = this;
-  while (r->is_link() && r->link() != r) {
-    r = r->link();
-  }
-  return *r;
+  assert(n);
+  assert(p);
+  n->link_to(*p);
+  return p;
+}
+/*--------------------------------------------------------------------------*/
+inline node_t* parent(node_t* n)
+{
+  assert(n);
+  return n->link();
+}
+/*--------------------------------------------------------------------------*/
+inline int rank(node_t const* n)
+{
+  assert(n);
+  return n->rank();
+}
+/*--------------------------------------------------------------------------*/
+inline int inc_rank(node_t* n)
+{
+  assert(n);
+  return n->inc_rank();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

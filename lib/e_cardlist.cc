@@ -27,7 +27,7 @@
 #include "e_node.h"
 #include "u_nodemap.h"
 #include "e_model.h"
-#include "e_logicnode.h" // BUG. don't allocate here (transition)
+#include "m_union.h"
 /*--------------------------------------------------------------------------*/
 #define trace_func_comp() trace1(__func__, (**ci).short_label())
 /*--------------------------------------------------------------------------*/
@@ -188,7 +188,8 @@ CARD_LIST& CARD_LIST::expand()
   // BUG: top level works different.
   if(this != &CARD_LIST::card_list) {
     assert(nodes());
-    for(int i = nodes()->how_many(); i; --i) {
+    for(int i = nodes()->how_many(); i; --i) { untested();
+      trace3("CL::expand allocate", i, &nodes()->at(i), &nodes()->at(i).root());
       nodes()->at(i).allocate();
     }
   }else{
@@ -549,29 +550,36 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   assert(nodes());
 
   int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
-  trace2("",  model->net_nodes(),  num_nodes_in_subckt);
-  assert(model->net_nodes() <= num_nodes_in_subckt);
+  trace2("map_sckt_nodes",  model->net_nodes(),  num_nodes_in_subckt);
+  if(model->net_nodes() <= num_nodes_in_subckt){ untested();
+  }else{ untested();
+  }
+  assert(owner->net_nodes() == model->net_nodes());
 
   NODE_MAP& node_map = *nodes();
+  for (int i=model->net_nodes() + 1; i <= num_nodes_in_subckt; ++i) {
+    assert(node_map[i].link() == nullptr);
+  }
+  // The node list (_nm) in an instance of a subckt does not exist.
+  // Device nodes (type node_t) points to the NODE in the parent.
+  // Mapping is done in node_t.
+  //
   // node_map supposedy contains the actual connections
   { // connect ports. this is probably obsolete.
     for (int port = 0; port < model->net_nodes(); ++port) {
       assert(model->n_(port).e_() <= num_nodes_in_subckt);
       //assert(model->n_(port).e_() == port+1);
-      trace3("ports", port, model->n_(port).e_(), owner->n_(port).t_());
       assert(owner->n_(port).is_connected());
-      node_map[port+1] = owner->n_(port);
-      assert(node_map[port+1].is_link());
+      int idx = model->n_(port).e_();
+      trace3("union", owner->long_label(), idx, port);
+      build_union(&node_map[idx], &owner->n_(port));
+      assert(&node_map[idx].root()==&owner->n_(port).root());
+      trace3("union1", owner->long_label(), idx, &node_map[idx].root());
     }
-    for (int i=model->net_nodes() + 1; i <= num_nodes_in_subckt; ++i) {
-      trace1("MSN, new", i);
-      node_map[i].link_to(node_map[i]); // BUG. link when connecting to.
+    for (int port = 0; port < model->net_nodes(); ++port) {
+      trace3("union2", owner->long_label(), port, &owner->n_(port).root());
     }
   }
-
-  // The node list (_nm) in an instance of a subckt does not exist.
-  // Device nodes (type node_t) points to the NODE in the parent.
-  // Mapping is done in node_t.
 
   // scan the list, map the nodes
   for (CARD_LIST::iterator ci = begin(); ci != end(); ++ci) {
@@ -581,11 +589,13 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 	// for each connection node in card
 	trace4("MSN", (**ci).short_label(), ii, (**ci).n_(ii).t_(), (**ci).n_(ii).e_());
 	(**ci).n_(ii).map_subckt_node(&node_map[0], owner);
+	assert(&node_map[(**ci).n_(ii).e_()].root() == &(**ci).n_(ii).root());
       }
     }else{
       assert(dynamic_cast<MODEL_CARD*>(*ci));
     }
   }
+
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

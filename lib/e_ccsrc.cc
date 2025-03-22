@@ -43,7 +43,6 @@ void CCSRC_BASE::expand_last()
     n_(IN1) = _input->n_(IN1);
     n_(IN2).set_to_ground(this);
   }else if (_input->has_iv_probe()) {
-    assert(_input->n_(OUT1).is_link());
     n_(IN1) = _input->n_(OUT1);
     n_(IN2) = _input->n_(OUT2);
   }else{

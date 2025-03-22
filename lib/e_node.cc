@@ -28,6 +28,7 @@
 #include "e_aux.h"
 #include "u_xprobe.h"
 #include "e_logicnode.h"
+#include "m_union.h"
 /*--------------------------------------------------------------------------*/
 /* constructor taking a pointer : it must be valid
  * supposedly not used, but used by a required function that is also not used
@@ -261,13 +262,15 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
 /*--------------------------------------------------------------------------*/
 /* (re)connect a port to an external node making use of index.
  * m: external nodes are in m. usually m == d->scope->nodes.
+ * TODO: pass map, and range check..?
  */
 void node_t::map_subckt_node(node_t* m, const CARD* d)
 {
   assert(m);
   if (e_() != INVALID_NODE) {
     if (1||m[e_()].is_valid()) {
-      _link = &m[e_()];
+      build_union(this, &m[e_()]);
+      // _link = &m[e_()];
       assert(_link);
       if(_own){ untested();
 	delete _nnn;
@@ -275,7 +278,6 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
       }
       _nnn = nullptr;
     }else{ untested();
-      unreachable();
       throw Exception(d->long_label() + ": need more nodes");
     }
   }else{
@@ -287,8 +289,11 @@ void node_t::allocate()
 {
   if(is_node()) { untested();
     // done.
+    trace3("node_t::allocate is_node", this, &root(), _nnn->short_label());
+    assert(_link);
   }else if(_link==this) {
     int flat_number = CKT_BASE::_sim->newnode_subckt();
+    trace3("node_t::allocate loop", this, &root(), flat_number);
     set_own(new LOGIC_NODE(flat_number));
   }
 }
