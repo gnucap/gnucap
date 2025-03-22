@@ -278,7 +278,7 @@ static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
       "      }\n"
       "    }else{\n"
       "      if (" << p.short_if() << ") {\n"
-      "        assert(n_(n_" << p.name() << ") == n_(n_" << p.short_to() << "));\n"
+      "        n_(n_" << p.name() << ") = n_(n_" << p.short_to() << ");\n"
       "      }else{\n"
       "        //n_(n_" << p.name() << ").new_model_node(\"" << p.name()
 		 << ".\" + long_label(), this);\n"
@@ -322,9 +322,9 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     make_dev_allocate_local_nodes(out, **p);
   }
   out << "    // local nodes\n";
-  for (Port_List::const_iterator
-       p = d.circuit().local_nodes().begin();
-       p != d.circuit().local_nodes().end();
+  for (Port_List::const_reverse_iterator
+       p = d.circuit().local_nodes().rbegin();
+       p != d.circuit().local_nodes().rend();
        ++p) {
     make_dev_allocate_local_nodes(out, **p);
   }

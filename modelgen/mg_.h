@@ -70,6 +70,8 @@ template <class T>
 class List_Base : public Base {
 protected:
   typedef typename std::list<T*> _Std_List_T;
+  typedef typename _Std_List_T::const_iterator const_iterator;
+  typedef typename _Std_List_T::const_reverse_iterator const_reverse_iterator;
   _Std_List_T _list;
   virtual ~List_Base() {
     for (typename std::list<T*>::iterator
@@ -81,9 +83,10 @@ protected:
   }
 public:
   void parse(CS& f)override = 0;
-  typedef typename std::list<T*>::const_iterator const_iterator;
   const_iterator begin()const	 {return _list.begin();}
   const_iterator end()const	 {return _list.end();}
+  const_reverse_iterator rbegin()const	 {return _list.rbegin();}
+  const_reverse_iterator rend()const	 {return _list.rend();}
   bool		 is_empty()const {return _list.empty();}
   size_t	 size()const	 {return _list.size();}
 };
@@ -109,11 +112,17 @@ public:
 template <class T, char BEGIN, char END>
 class List : public List_Base<T> {
   using List_Base<T>::_list;
+  typedef typename std::list<T*> list;
 public:
-  //BUG//  why not inherited?
-  typedef typename std::list<T*>::const_iterator const_iterator;
-  const_iterator begin()const	 {return _list.begin();}
-  const_iterator end()const	 {return _list.end();}
+ // typedef typename list::iterator iterator;
+  typedef typename list::const_iterator const_iterator;
+ // typedef typename list::reverse_iterator reverse_iterator;
+  typedef typename list::const_reverse_iterator const_reverse_iterator;
+public:
+  using List_Base<T>::begin;
+  using List_Base<T>::end;
+  using List_Base<T>::rbegin;
+  using List_Base<T>::rend;
 
   void parse(CS& file)override {
     int paren = !BEGIN || file.skip1b(BEGIN);

@@ -631,8 +631,9 @@ void COMPONENT::map_nodes()
   trace3("COMPONENT::map_nodes", long_label(), ext_nodes(), int_nodes());
 
   for (int ii = 0; ii < ext_nodes()+int_nodes(); ++ii) {
-    trace3("COMPONENT::map_nodes", long_label(), ii, n_(ii).is_link());
+    trace3("COMPONENT::map_nodes0", long_label(), ii, n_(ii).is_link());
     n_(ii).map();
+    trace3("COMPONENT::map_nodes1", long_label(), ii, n_(ii).m_());
   }
 
   if (subckt()) {

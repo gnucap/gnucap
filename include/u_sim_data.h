@@ -85,7 +85,9 @@ struct INTERFACE SIM_DATA {
 			/*  used to restore after rejected step	*/
   COMPLEX *_ac;		/* ac right side			*/
   COMPLEX *_noise;	/* noise vector				*/
-  LOGIC_NODE* _nstat;	/* digital data				*/
+private:
+  LOGIC_NODE* _nstat;	/* top level nodes			*/
+public:
   double *_vdc;		/* saved dc voltages			*/
   BSMATRIX<double> _aa;	/* raw matrix for DC & tran */
   BSMATRIX<double>& _lu;/* alias used in modelgen models */
