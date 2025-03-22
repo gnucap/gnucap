@@ -127,6 +127,9 @@ public:
     return _ttt;
   }	// e_cardlist.cc:CARD_LIST::map_subckt_nodes:436 and
 	// e_node.h:node_t::map:263,265 only
+  bool is_valid() const {
+    return node_is_valid(_ttt); // BUG: _ttt is obsolete.
+  }
 
   int	      e_()const {
     return ((_nnn) ? _nnn->user_number() : INVALID_NODE);
@@ -139,7 +142,7 @@ public:
   void	set_to_ground(CARD* Owner)	{new_node("0", Owner);}
   void	new_node(const std::string&, const CARD*);
   void	new_model_node(const std::string& n, CARD* d);
-  void	map_subckt_node(int* map_array, const CARD* d);
+  void	map_subckt_node(node_t* map_array, const CARD* d);
   bool	is_grounded()const {return (e_() == 0);}
   bool	is_connected()const {return (e_() != INVALID_NODE);}
   bool	is_short_to(node_t const& n)const {return n_() == n.n_();} // BUG. doesn't work

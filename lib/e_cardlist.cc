@@ -609,8 +609,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
 	try{
-	  // TODO: use node_map.
-	  (**ci).n_(ii).map_subckt_node(map, owner);
+	  (**ci).n_(ii).map_subckt_node(&node_map[0], owner);
 	}catch(...){
 	  delete[] map;
 	  throw;

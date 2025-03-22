@@ -212,12 +212,12 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
   //assert(_ttt == _nnn->flat_number());
 }
 /*--------------------------------------------------------------------------*/
-void node_t::map_subckt_node(int* m, const CARD* d)
+void node_t::map_subckt_node(node_t* m, const CARD* d)
 {
   assert(m);
   if (e_() != INVALID_NODE) {
-    if (node_is_valid(m[e_()])) {
-      _ttt = m[e_()];
+    if (m[e_()].is_valid()) {
+      _ttt = m[e_()]._ttt; // BUG. don't use _ttt
       if(_ttt==0){
 	if(_own){ untested();
 	  delete _nnn;
