@@ -88,7 +88,10 @@ node_t& node_t::operator=(NODE* n)
     // BUG. transition.
     _ttt = 0;
     _index = 0;
-  }else{
+  }else if(n){
+    // top level kludge
+    incomplete();
+    _ttt = _index = n->user_number();
   }
   return *this;
 }
@@ -177,12 +180,13 @@ void node_t::new_node(const std::string& node_name, const CARD* Owner)
   NODE_MAP* Map = Owner->scope()->nodes();
   assert(Map);
 
-  _nnn = Map->new_node(node_name); // not neessarily "new"
-				   // temporary. will _link instead.
-  // assert(is_connected()); // for now.
+  NODE* n = Map->new_node(node_name); // not neessarily "new"
+  _nnn = n; // needed?
   assert(_nnn);
-  _index = _nnn->user_number();
-  _ttt = _index; // _ttt is obsolete.
+  _index = n->user_number();
+  _ttt = _index; // needed??
+  assert(is_connected()); // for now.
+  // assert((*Map)[_index].n_() == _nnn); // for now.
 
   if(_ttt==0){
     assert(_nnn==&ground_node);
@@ -212,29 +216,40 @@ node_t::~node_t()
  */
 void node_t::new_model_node(const std::string& node_name, CARD* Owner)
 {
-  new_node(node_name, Owner);
-  int index = CARD::_sim->newnode_model();
-  auto ln = new LOGIC_NODE(); // TODO: use requested type
-  ln->set_user_number(index);
+  if(_nnn){
+    //it's already there.
+  }else{
+    // new_node(node_name, Owner); // create map. don't touch map.
+    int matrix_number = CARD::_sim->newnode_model(); // BUG. don't use _ttt
+    auto ln = new LOGIC_NODE(); // TODO: use requested type
+    ln->set_user_number(matrix_number);
 
-  _nnn = ln;
-  _own = true; // garbage collect.
-  _index = _ttt = index; // BUG. why?
+    _nnn = ln;
+    _link = this;
+    _own = true; // garbage collect.
+  }
 }
 /*--------------------------------------------------------------------------*/
+/* (re)connect a port to an external node making use of index.
+ * m: external nodes are in m. usually m == d->scope->nodes.
+ */
 void node_t::map_subckt_node(node_t* m, const CARD* d)
 {
   assert(m);
   if (e_() != INVALID_NODE) {
     if (m[e_()].is_valid()) {
-      _ttt = m[e_()]._ttt; // BUG. don't use _ttt
+       _ttt = m[e_()]._ttt; // BUG. don't use _ttt
       _link = &m[e_()];
       if(_ttt==0){
+	assert(_link);
 	if(_own){ untested();
 	  delete _nnn;
 	}else{
 	}
-	_nnn = &ground_node;
+	_nnn = nullptr;
+	assert(root()._nnn);
+	assert(root()._nnn == &ground_node);
+	_nnn = &ground_node; // not needed.
       }else{
       }
     }else{
@@ -244,7 +259,7 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
     throw Exception(d->long_label() + ": invalid nodes");
   }
   //_nnn->set_flat_number(_ttt);
-  assert(node_is_valid(_ttt));
+  // assert(node_is_valid(_ttt));
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

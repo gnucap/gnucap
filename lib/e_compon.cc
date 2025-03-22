@@ -494,7 +494,7 @@ void COMPONENT::set_port_by_index(int num, std::string& ext_name)
   }
 
   // why store user number in NODE?
-  assert(n_(num).n_()->user_number() == n_(num).e_());
+  // assert(n_(num).n_()->user_number() == n_(num).e_());
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_port_to_ground(int num)

@@ -117,9 +117,14 @@ private:
     return i>=0 && i<=NODE::_sim->_total_nodes;
   }
   static int  to_internal(int n) {
-    assert(node_is_valid(n));
-    assert(NODE::_sim->_nm);
-    return NODE::_sim->_nm[n];
+    if(NODE::_sim->_nm){
+      assert(node_is_valid(n));
+      return NODE::_sim->_nm[n];
+    }else{
+      // possibly building map. no need for this
+      // (remove later)
+      return INVALID_NODE;
+    }
   }
 
 public:
@@ -144,7 +149,9 @@ public:
   int	      e_()const {
     if(_nnn) {
       // assert(_index == _nnn->user_number());
+      incomplete();
       return _nnn->user_number();
+      return _ttt;
     }else{
       assert(_index==INVALID_NODE);
     }
@@ -168,6 +175,12 @@ public:
       assert(_nnn);
 
       _m = to_internal(t_()); // BUG. ask _nnn
+      //  if(dynamic_cast<USER_NODE const*>(_nnn)){ untested();
+      //    incomplete();
+      //  }else{ untested();
+      //    // presumably conected to LOGIC_NODE (temporary hack)
+      //    assert(_m == _nnn->matrix_number());
+      //  }
     }else{
       assert(_m == INVALID_NODE);
     }
@@ -238,7 +251,7 @@ inline bool node_t::is_node() const
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_link() const
 { untested();
-  assert(!_nnn || _link == this);
+  assert(!_nnn || _link == this || !_link);
   return !_nnn && _link;
 }
 /*--------------------------------------------------------------------------*/

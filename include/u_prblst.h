@@ -56,7 +56,7 @@ private:
   void	  erase(iterator b, iterator e) {bag.erase(b,e);}
   void	  push_new_probe(const std::string& param, const CARD* object);
   bool    add_branches(const std::string&, const std::string&, const CARD_LIST*);
-  void    add_all_nodes(const std::string&, CARD_LIST*);
+  void    add_all_nodes(const std::string&, CARD_LIST /*BUG: const*/ *);
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE PROBE_LISTS {

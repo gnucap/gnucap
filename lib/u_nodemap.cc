@@ -32,6 +32,7 @@ NODE_MAP::NODE_MAP()
 {
   _map = new map_t();
   map()["0"] = &ground_node;
+  _nodes.push_back(node_t());
 }
 /*--------------------------------------------------------------------------*/
 /* copy constructor: deep copy
@@ -119,6 +120,7 @@ NODE* NODE_MAP::new_node(std::string s)
     // temporary. may need USER_NODE here eventually.
     node = new USER_NODE(s, how_many());
     //                      ^^^^ is really the map number of the new node
+    _nodes.push_back(node_t());
   }else{
   }
   return node;
