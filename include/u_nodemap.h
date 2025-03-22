@@ -27,23 +27,32 @@
 #include "md.h"
 /*--------------------------------------------------------------------------*/
 class NODE;
-class USER_NODE;
+class node_t;
 /*--------------------------------------------------------------------------*/
 extern NODE ground_node;
 /*--------------------------------------------------------------------------*/
 class NODE_MAP {
   typedef std::map<std::string, NODE*> map_t;
+  typedef std::vector<node_t> vector_t;
 public:
   typedef map_t::iterator iterator;
   typedef map_t::const_iterator const_iterator;
 private:
-  map_t _map;
+  map_t* _map{nullptr};
+  vector_t _nodes;
+
+public:
   explicit  NODE_MAP(const NODE_MAP&);
 
 public:
   explicit  NODE_MAP();
 	   ~NODE_MAP();
   NODE*     operator[](std::string);
+  node_t    const& at(int i)const;
+  node_t&          at(int i);
+  node_t    const& operator[](int i)const { untested();return at(i);}
+  node_t&          operator[](int i) {return at(i);}
+
   NODE*     new_node(std::string);
 
   const_iterator begin()const		{return map().begin();}
@@ -52,8 +61,8 @@ public:
   int		 size()const		{untested(); return static_cast<int>(map().size());}
 
 private:
-  map_t& map() {return _map;}
-  map_t const& map() const {return _map;}
+  map_t& map() {assert(_map); return *_map;}
+  map_t const& map() const {assert(_map); return *_map;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

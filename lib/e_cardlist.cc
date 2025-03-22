@@ -40,7 +40,6 @@ CARD_LIST::CARD_LIST()
 CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
 		     const CARD_LIST* scope, PARAM_LIST const* p)
   :_parent(nullptr),
-   _nm(new NODE_MAP),
    _params(nullptr)
 {
   assert(model);
@@ -53,6 +52,8 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
   attach_params(p, scope);
   shallow_copy(model->subckt());
   //set_owner(owner);
+
+  _nm = new NODE_MAP(*model->subckt()->nodes());
   map_subckt_nodes(model, owner);
 }
 /*--------------------------------------------------------------------------*/
@@ -514,6 +515,7 @@ void CARD_LIST::shallow_copy(const CARD_LIST* p)
     }
   }
   // HERE: clone node map.
+
 }
 /*--------------------------------------------------------------------------*/
 // set up the map of external to expanded node numbers
@@ -525,18 +527,21 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   assert(owner);
   //assert(owner->subckt());
   //assert(owner->subckt() == this);
-  if(owner->subckt()) {
+  if(owner->subckt()) { untested();
     assert(owner->subckt() == this);
   }else{
     // coming from e_card.cc:253, presumably
   }
   trace0(model->long_label().c_str());
   trace0(owner->long_label().c_str());
+  assert(nodes());
 
   int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
   trace2("",  model->net_nodes(),  num_nodes_in_subckt);
   assert(model->net_nodes() <= num_nodes_in_subckt);
   int* map = new int[num_nodes_in_subckt+1];
+
+#if 1 // obsolete; see below.
   {
     map[0] = 0;
     // self test: verify that port node numbering is correct
@@ -563,8 +568,26 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       }
     }
   }
+#endif
   // "map" now contains a translation list,
   // from subckt local numbers to matrix index numbers
+
+  NODE_MAP& node_map = *nodes(); // TODO: use this.
+  // node_map supposedy contains the actual nodes.
+  { // connect ports. this is probably obsolete.
+    for (int port = 0; port < model->net_nodes(); ++port) {
+      assert(model->n_(port).e_() <= num_nodes_in_subckt);
+      //assert(model->n_(port).e_() == port+1);
+      trace3("ports", port, model->n_(port).e_(), owner->n_(port).t_());
+      node_map[port+1] = owner->n_(port);
+    }
+  }
+  { // check the outcome anyway
+    for (int i = 0; i <= num_nodes_in_subckt; ++i) { untested();
+      trace3("transition check", i, map[i], node_map[i].t_());
+     // assert(map[i] == node_map[i].t_()); not yet
+    }
+  }
 
   // The node list (_nm) in an instance of a subckt does not exist.
   // Device nodes (type node_t) points to the NODE in the parent.

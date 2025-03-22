@@ -30,40 +30,42 @@ NODE ground_node("0", 0);
 /*--------------------------------------------------------------------------*/
 NODE_MAP::NODE_MAP()
 {
+  _map = new map_t();
   map()["0"] = &ground_node;
 }
 /*--------------------------------------------------------------------------*/
 /* copy constructor: deep copy
- * The std::map copy constructor does a shallow copy,
- * then replace second with a deep copy.
+ * replicate number of nodes and their names
+ * connectivity will be dealt with elsewhere
  */
-NODE_MAP::NODE_MAP(const NODE_MAP&)
+NODE_MAP::NODE_MAP(const NODE_MAP& p)
 { untested();
-  incomplete();
-  unreachable();
-  for (iterator i = map().begin(); i != map().end(); ++i) { untested();
-    if (i->first != "0") { untested();
-      incomplete(); // not used yet.
-      // assert(i->second);
-      // i->second = new NODE(i->second);
-    }else{ untested();
-    }
+  _map = new map_t(); // additional names
+		    // TODO: share/keep exising names
+  _nodes.resize(p.size());
+
+  { untested(); // BUG: special treatment for ground node
+    map()["0"] = 0;
+    assert(_nodes.size());
+    _nodes[0] = &ground_node; // BUG. ground is global.
   }
 }
 /*--------------------------------------------------------------------------*/
 NODE_MAP::~NODE_MAP()
 {
-  if(1 /*map*/) {
+  if(_map) {
     for (iterator i = map().begin(); i != map().end(); ++i) {
-      if (i->second != &ground_node) {
+      if (!i->second){
+	incomplete();
+      }else if (i->second != &ground_node) {
 	assert(i->second);
 	i->second->purge();
 	delete i->second;
       }else{
       }
     }
-   // delete _map;
-   // _map = nullptr;
+    delete _map;
+    _map = nullptr;
   }else{ untested();
     incomplete();
   }
@@ -85,6 +87,18 @@ NODE* NODE_MAP::operator[](std::string s)
     return nullptr;
   }
   return (i != map().end()) ? i->second : nullptr;
+}
+/*--------------------------------------------------------------------------*/
+node_t const& NODE_MAP::at(int i)const
+{
+  assert(i<int(_nodes.size()));
+  return _nodes[i];
+}
+/*--------------------------------------------------------------------------*/
+node_t& NODE_MAP::at(int i)
+{
+  assert(i<int(_nodes.size()));
+  return _nodes[i];
 }
 /*--------------------------------------------------------------------------*/
 /* return a pointer to a node given a string
