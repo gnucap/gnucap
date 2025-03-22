@@ -277,8 +277,8 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
       }else{
       }
       _nnn = nullptr;
-    }else{
-      assert(0);
+    }else{ untested();
+      unreachable();
       throw Exception(d->long_label() + ": need more nodes");
     }
   }else{

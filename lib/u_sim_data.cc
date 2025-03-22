@@ -275,7 +275,7 @@ static void map_toplevel_nodes(CARD_LIST& tcl)
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
-	(**ci).n_(ii).map_subckt_node(&top_nodes[0], nullptr);
+	(**ci).n_(ii).map_subckt_node(&top_nodes[0], *ci);
       }
     }else{
       //	assert(dynamic_cast<MODEL_CARD*>(*ci));
