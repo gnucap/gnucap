@@ -18,4 +18,6 @@ main m();
 print dc v(m.r)
 dc
 
+status notime
+
 portdump

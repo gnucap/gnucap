@@ -188,7 +188,7 @@ CARD_LIST& CARD_LIST::expand()
   // BUG: top level works different.
   if(this != &CARD_LIST::card_list) {
     assert(nodes());
-    for(int i = nodes()->how_many(); i; --i) { untested();
+    for(int i = nodes()->how_many(); i; --i) {
       trace3("CL::expand allocate", i, &nodes()->at(i), &nodes()->at(i).root());
       nodes()->at(i).allocate();
     }
@@ -551,8 +551,8 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 
   int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
   trace2("map_sckt_nodes",  model->net_nodes(),  num_nodes_in_subckt);
-  if(model->net_nodes() <= num_nodes_in_subckt){ untested();
-  }else{ untested();
+  if(model->net_nodes() <= num_nodes_in_subckt){
+  }else{
   }
   assert(owner->net_nodes() == model->net_nodes());
 

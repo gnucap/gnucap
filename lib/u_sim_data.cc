@@ -266,8 +266,9 @@ static void map_toplevel_nodes(CARD_LIST& tcl)
 
   top_nodes[0] = &ground_node;
   for (int i=1; i<=top_nodes.how_many(); ++i) {
-    trace1("MSN, new", i);
-    top_nodes[i].link_to(top_nodes[i]); // BUG. link when connecting to.
+    node_t none;
+    top_nodes[i] = none;
+    assert(!top_nodes[i].link());
   }
 
   for (CARD_LIST::iterator ci = tcl.begin(); ci != tcl.end(); ++ci) {
@@ -334,28 +335,32 @@ void SIM_DATA::alloc_hold_vectors()
     _nstat[ii].set_flat_number(_total_nodes+ii);
 #else
      trace2("SIM_DATA::alloc_hold_vectors", ii, _total_nodes+user_nodes-ii+1);
-     _nstat[ii].set_flat_number(_total_nodes+user_nodes-ii+1);
+     // _nstat[ii].set_flat_number(_total_nodes+user_nodes-ii+1);
 #endif
   }
-  _total_nodes += user_nodes;
-  _user_nodes = user_nodes;
 
   top_nodes[0] = &ground_node;
 
-  for (int ii=1;  ii <= user_nodes;  ++ii) {
-    // TODO: only allocate required nodes.
-    LOGIC_NODE* nn = &_nstat[_nm[ii]];
-    top_nodes[ii] = nn;
-   // assert(top_nodes[ii].is_node());
-    assert(top_nodes[ii].n_() == nn);
-    nn->set_owner(nullptr);
+  for (int ii=top_nodes.how_many(); ii; --ii) {
+    // top_nodes[ii].allocate() // basically, but use different counter...
+    LOGIC_NODE* nn = &_nstat[ii];
+    nn->set_label(top_nodes[ii].short_label()); // BUG. duplicate label storage
+    if(top_nodes[ii].link() == &top_nodes[ii]){
+      ++_total_nodes;
+      ++_user_nodes;
+      _nstat[ii].set_flat_number(_total_nodes);
+      top_nodes[ii] = nn;
+      assert(top_nodes[ii].n_() == nn);
+      nn->set_owner(nullptr);
+    }else{
+    }
   }
-  // BUG: duplicate label storage
-  for(auto p : top_nodes) { untested();
-    assert(p.second);
-    int ii = p.second->user_number();
-    LOGIC_NODE* nn = &_nstat[_nm[ii]];
-    nn->set_label(p.first);
+  for(auto p : top_nodes) {
+    incomplete(); // needed??
+    if(p.second){
+      p.second->set_label(p.first);
+    }else{
+    }
   }
 
   assert(!_vdc);

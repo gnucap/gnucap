@@ -13,4 +13,6 @@ net n1(.a(n), .b(m));
 print dc v(nodes)
 dc
 
+status notime
+
 portdump

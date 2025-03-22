@@ -207,9 +207,11 @@ void PROBELIST::add_all_nodes(const std::string& what, CARD_LIST* scope)
   for (NODE_MAP::const_iterator i = nodes->begin(); i != nodes->end(); ++i) {
     if (((*i).first != "0") && ((*i).first.find('.') == std::string::npos)) {
       NODE const* node = (*i).second;
-      assert (node);
-      trace1("push probe", node->long_label());
-      push_new_probe(what, node);
+      if(node){
+	trace1("push probe", node->long_label());
+	push_new_probe(what, node);
+      }else{
+      }
     }else{
     }
   }

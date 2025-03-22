@@ -25,29 +25,29 @@
 /*--------------------------------------------------------------------------*/
 template<class T>
 T find_subset(T x)
-{ untested();
-  if(!has_parent(x)) { untested();
+{
+  if(!has_parent(x)) {
     return set_parent(x, x);
-  }else if(parent(x) != x) { untested();
+  }else if(parent(x) != x) {
     return set_parent(x, find_subset(parent(x)));
-  }else{ untested();
+  }else{
     return x;
   }
 }
 /*--------------------------------------------------------------------------*/
 template<class T>
 T build_union(T x, T y)
-{ untested();
+{
   x = find_subset(x);
   y = find_subset(y);
 
-  if(x == y){ untested();
+  if(x == y){
     return x;
   }else if(rank(x) < rank(y)){ untested();
     return set_parent(x, y);
   }else if(rank(y) < rank(x)){ untested();
     return set_parent(y, x);
-  }else{ untested();
+  }else{
     inc_rank(y); // new parent.
     return set_parent(x, y);
   }
