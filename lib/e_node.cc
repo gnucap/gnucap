@@ -95,7 +95,8 @@ node_t& node_t::operator=(NODE* n)
 node_t& node_t::set_own(NODE* n)
 {
   operator=(n);
-  _own = true;
+  _own = true; // take ownership.
+  _ttt = n->user_number(); // BUG: transition.
   return *this;
 }
 /*--------------------------------------------------------------------------*/

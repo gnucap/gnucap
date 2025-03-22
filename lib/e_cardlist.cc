@@ -27,6 +27,7 @@
 #include "e_node.h"
 #include "u_nodemap.h"
 #include "e_model.h"
+#include "e_logicnode.h" // BUG. don't allocate here (transition)
 /*--------------------------------------------------------------------------*/
 #define trace_func_comp() trace1(__func__, (**ci).short_label())
 /*--------------------------------------------------------------------------*/
@@ -581,8 +582,11 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       trace3("ports", port, model->n_(port).e_(), owner->n_(port).t_());
       node_map[port+1] = owner->n_(port);
     }
+    for (int i=model->net_nodes() + 1; i <= num_nodes_in_subckt; ++i) {
+      node_map[i].set_own(new LOGIC_NODE(map[i])); // BUG: only connect. allocate later.
+    }
   }
-  { // check the outcome anyway
+  { // check the outcome against obsolete map
     int i = 0;
     for (; i <= model->net_nodes(); ++i) { untested();
       trace3("transition check port", i, map[i], node_map[i].t_());
@@ -590,7 +594,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     }
     for (; i <= num_nodes_in_subckt; ++i) { untested();
       trace3("transition check internal", i, map[i], node_map[i].t_());
-      // assert(map[i] == node_map[i].t_()); not yet
+      assert(map[i] == node_map[i].t_());
     }
   }
 

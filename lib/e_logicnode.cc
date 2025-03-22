@@ -25,7 +25,7 @@
 #include "e_logicmod.h"
 #include "e_logicnode.h"
 /*--------------------------------------------------------------------------*/
-LOGIC_NODE::LOGIC_NODE()
+LOGIC_NODE::LOGIC_NODE(int i)
   :NODE(),
    _family(0),
    _d_iter(-1), // initially d_iter is older than a_iter
@@ -39,6 +39,11 @@ LOGIC_NODE::LOGIC_NODE()
    _quality(qBAD),
    _failure_mode("initial")
 {
+  if(i!=-1){
+    incomplete(); // transition
+    set_flat_number(i);
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 double LOGIC_NODE::tr_probe_num(const std::string& x)const
