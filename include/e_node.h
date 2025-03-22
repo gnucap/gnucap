@@ -101,7 +101,8 @@ private: // treee stuff.
   node_t*       link() {return _link;}
   node_t const* link()const {return _link;}
 private:
-  int _ttt;		// m == nm[t] if properly set up
+  int _index{INVALID_NODE}; // index in node map
+  int _ttt;		// m == nm[t] if properly set up // obsolete.
   int _m;		// mapped, after reordering
 
 private:
@@ -141,7 +142,13 @@ public:
   }
 
   int	      e_()const {
-    return ((_nnn) ? _nnn->user_number() : INVALID_NODE);
+    if(_nnn) {
+      // assert(_index == _nnn->user_number());
+      return _nnn->user_number();
+    }else{
+      assert(_index==INVALID_NODE);
+    }
+    return _index;
   }
   const NODE* n_()const {return _nnn;}
   NODE*	      n_()	{return _nnn;}
@@ -159,7 +166,8 @@ public:
   node_t&     map() {
     if (t_() != INVALID_NODE) {
       assert(_nnn);
-      _m=to_internal(t_());
+
+      _m = to_internal(t_()); // BUG. ask _nnn
     }else{
       assert(_m == INVALID_NODE);
     }

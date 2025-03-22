@@ -492,6 +492,9 @@ void COMPONENT::set_port_by_index(int num, std::string& ext_name)
   }else{
     throw Exception_Too_Many(num+1, max_nodes(), 0/*offset*/);
   }
+
+  // why store user number in NODE?
+  assert(n_(num).n_()->user_number() == n_(num).e_());
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_port_to_ground(int num)
