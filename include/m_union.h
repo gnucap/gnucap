@@ -43,9 +43,9 @@ T build_union(T x, T y)
 
   if(x == y){
     return x;
-  }else if(rank(x) < rank(y)){ untested();
+  }else if(rank(x) < rank(y)){
     return set_parent(x, y);
-  }else if(rank(y) < rank(x)){ untested();
+  }else if(rank(y) < rank(x)){
     return set_parent(y, x);
   }else{
     inc_rank(y); // new parent.

@@ -8,6 +8,7 @@ resistor #(.r(r)) R1 (.p(a),.n(b));
 endmodule // dumb_resistor
 
 module foo (.vcc(vcc),.in(in),.out(out));
+ground \0 ; 
 resistor #(.r(z)) Rc (.p(c),.n(vcc));
 zz #(.area(NA( 1.))) q1 (.c(c),.b(b),.e(e));
 dumb_resistor #(.r(abs(-z)/10)) Re (.aa(e),.bb(\0 ));
@@ -30,7 +31,7 @@ vsource #( AC  0.2) Vin (.p(in),.n(\0 ));
  1.K        869.54p    0.2        0.099968   0.87954   
 #           v(V_cc)    v(in)      v(out)     iter(0)    vc(X1.q1)  vce(X1.q1)
  27.        20.        0.         0.         16.        10.213     9.2279    
-#Freq      
- 1.K       
+#Freq       v(V_cc)    v(in)      v(amp_in)  v(out)    
+ 1.K        796.25p    0.2        0.099968   0.80624   
 #Freq       v(V_cc)    v(in)      v(amp_in)  v(out)    
  1.K        796.25p    0.2        0.099968   0.80624   

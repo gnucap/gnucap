@@ -13,6 +13,7 @@ resistor #(r) R1 (a b);
 endmodule
 
 module foo (vcc in out);
+ground \0 ;
 parameter real z=10k;
 parameter real r=z;
 resistor      #(.r(z))         Rc   (.p(c), .n(vcc));

@@ -3,7 +3,7 @@ verilog
 
 # "Qucsator style" TLIN
 module TLIN (a, b)
-	// ground \0
+  ground \0 ;
   parameter Z=50;
   parameter L=100m;
   parameter Alpha=1;

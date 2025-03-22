@@ -1,11 +1,3 @@
-ground 0; 
-^ ? ground: no match
-ground 0; 
-^ ? ground: no match
-ground 0; 
-^ ? ground: no match
-ground 0; 
-^ ? ground: no match
 #          
  0.        
 #Time       v(d0)      v(d1)      v(d2)      v(clk)     v(aout)    iter(0)   

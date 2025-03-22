@@ -867,6 +867,7 @@ const std::string COMPONENT::port_value(int i)const
   assert(i < net_nodes());
 
   int idx = n_(i).e_();
+  trace3("PV", long_label(), i, idx);
   assert(scope());
   assert(scope()->nodes());
   if(idx>=0){

@@ -39,8 +39,6 @@ NODE::NODE(const NODE* p)
   unreachable();
 }
 /*--------------------------------------------------------------------------*/
-node_t::node_t() { }
-/*--------------------------------------------------------------------------*/
 node_t::node_t(const node_t& p)
   :_nnn(p._nnn),
    _link(p._link),
@@ -61,8 +59,10 @@ node_t::node_t(node_t&& p)
   }
 }
 /*--------------------------------------------------------------------------*/
+extern NODE ground_node;
 node_t::node_t(NODE* n)
   :_nnn(n),
+   _index(n->user_number()),
    _m(n->matrix_number())
 {
 }
@@ -75,11 +75,7 @@ node_t& node_t::operator=(const node_t& p)
   }
   _nnn = nullptr;
   _link = p._link;
-#if 0
-  _index = INVALID_NODE;
-#else
   _index = p._index;// wrong scope ??
-#endif
   _m   = p._m;
   _own = false;
   return *this;
@@ -103,7 +99,12 @@ node_t& node_t::operator=(node_t&& p)
 // ordinary pointer assignment
 node_t& node_t::operator=(NODE* n)
 {
-  if(_own){ untested();
+  assert(!_link || _link == this);
+  // clear();
+  if(!_nnn){
+    _own = false;
+  }else if(_own){ untested();
+    _nnn->purge();
     delete _nnn;
     _own = false;
   }else{
@@ -111,21 +112,16 @@ node_t& node_t::operator=(NODE* n)
   _link = this;
   _nnn = n;
 
-  if(n==&ground_node){
-    // BUG. transition.
-    _index = 0;
-    _link = this;
-  }else{
-  }
+  _index = n->user_number();
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 // take ownership
 node_t& node_t::set_own(NODE* n)
 {
+  assert(n != &ground_node);
   operator=(n);
   _own = true; // take ownership.
-  _index = 0; // n->user_number();
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -133,16 +129,17 @@ LOGIC_NODE& node_t::data()const
 {
   if(auto d = dynamic_cast<LOGIC_NODE*>(_nnn)){
     return *d;
-  }else if(auto e = dynamic_cast<LOGIC_NODE*>(root()._nnn)){
+  }else if(auto e = dynamic_cast<LOGIC_NODE*>(root()._nnn)){ untested();
     return *e;
-  }else if(_index==0){
+  }else if(_index==0 || _nnn == &ground_node){
     // BUG. ground is not a logic node, but asking for one.
     //  d_cccs.2.ckt
     static LOGIC_NODE logic_ground(0);
     return logic_ground;
-  }else{
-    assert(0);
-    incomplete();
+  }else{ untested();
+    unreachable();
+    static LOGIC_NODE logic_ground(0);
+    return logic_ground;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -153,11 +150,9 @@ double NODE::tr_probe_num(const std::string& x)const
     return floor(v0()/OPT::vfloor + .5) * OPT::vfloor;
   }else if (Umatch(x, "z ")) {
     return port_impedance(node_t(const_cast<NODE*>(this)), node_t(&ground_node), _sim->_aa, 0.);
-  }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) {
-    assert(0);
+  }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) { untested();
     unreachable();
- //   assert(_sim->_nstat);
- //   return _sim->_nstat[matrix_number()].tr_probe_num(x);
+    return NOT_VALID;
   }else if (Umatch(x, "mdy ")) {
     // matrix diagonal admittance
     const BSMATRIX<double>&  aaa = _sim->_aa;
@@ -211,15 +206,20 @@ void node_t::new_node(const std::string& node_name, const CARD* Owner)
   }else{//33312
     // proper first assign to this port.  The usual case.
   }
-  assert(Owner); // the device that owns this port.
-  assert(Owner->scope()); // the CARD_LIST that owns this device.
-  NODE_MAP* Map = Owner->scope()->nodes();
+  CARD_LIST const* scope; // the CARD_LIST that owns this device.
+  if(Owner) {
+    scope = Owner->scope();
+  }else{
+    scope = &CARD_LIST::card_list;
+  }
+  assert(scope);
+  NODE_MAP* Map = scope->nodes();
   assert(Map);
 
   NODE* n = Map->new_node(node_name); // not neessarily "new"
-  _nnn = n; // needed?
-  assert(_nnn);
   _index = n->user_number();
+  assert(_index!=INVALID_NODE);
+
   assert(is_connected()); // for now.
   n->set_owner(nullptr); // Owner?
 }
@@ -229,10 +229,14 @@ void node_t::new_node(const std::string& node_name, const CARD* Owner)
 // only delete once.
 node_t::~node_t()
 {
-  if(_own){
+  // clear();
+  if(!_nnn){
+    _own = false;
+  }else if(_own){
     _nnn->purge();
     delete _nnn;
     _nnn = nullptr;
+    _own = false;
   }else{
   }
 }
@@ -243,9 +247,9 @@ node_t::~node_t()
  * Supposedly equivalent to new_node() then map_subckt_node()
  * but it does it without building a map
  */
-void node_t::new_model_node(const std::string& node_name, CARD* Owner)
+void node_t::new_model_node(const std::string& /*node_name*/, CARD* Owner)
 {
-  if(_nnn){
+  if(_nnn){ untested();
     //it's already there.
   }else{
     // BUG: only request node, and allocate post-expand in appropriate order.
@@ -253,10 +257,8 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
     auto ln = new LOGIC_NODE(node_name); // TODO: use requested type
     ln->set_owner(Owner);
     ln->set_flat_number(idx);
-
-    _nnn = ln;
-    _link = this;
-    _own = true; // garbage collect.
+    ln->set_owner(Owner);
+    set_own(ln);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -268,18 +270,18 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
 {
   assert(m);
   if (e_() != INVALID_NODE) {
-    if (1||m[e_()].is_valid()) {
-      build_union(this, &m[e_()]);
-      // _link = &m[e_()];
-      assert(_link);
-      if(_own){ untested();
-	delete _nnn;
-      }else{
-      }
-      _nnn = nullptr;
+    clear(); // keep index.
+    build_union(this, &m[e_()]);
+    assert(_link);
+    assert(!_nnn);
+    if(!_nnn){
+      _own = false;
+    }else if(_own){ untested();
+      delete _nnn;
+      _own = false;
     }else{ untested();
-      throw Exception(d->long_label() + ": need more nodes");
     }
+    _nnn = nullptr;
   }else{
     throw Exception(d->long_label() + ": invalid nodes");
   }
@@ -291,31 +293,65 @@ void node_t::allocate(int u)
     // done.
     trace3("node_t::allocate is_node", this, &root(), _nnn->short_label());
     assert(_link);
-  }else if(_link==this) { untested();
+  }else if(_link==this) {
     int flat_number;
     if(u){
       flat_number = CKT_BASE::_sim->newnode_user();
     }else{
       flat_number = CKT_BASE::_sim->newnode_subckt();
     }
-    trace3("node_t::allocate loop", this, &root(), flat_number);
+    trace3("node_t::allocate new", this, &root(), flat_number);
     NODE* nn = new LOGIC_NODE(flat_number);
     nn->set_owner(nullptr);
     set_own(nn);
+  }else{
+    trace2("node_t::allocate no allocate", _index, u);
+  }
+}
+/*--------------------------------------------------------------------------*/
+void node_t::set_to_ground(CARD* Owner)
+{
+  assert(!_link || _link == this);
+  int idx = _index;
+  clear();
+  assert(!_nnn);
+  new_node("0", Owner);
+  if(Owner){
+    assert(Owner->scope());
+    assert(Owner->scope()->nodes());
+    NODE_MAP& nodes = *Owner->scope()->nodes();
+    _link = &nodes["0"]->n_(0);
+    _index = nodes["0"]->user_number();
+  }else{
+    NODE_MAP& nodes = *CARD_LIST::card_list.nodes();
+    _link = &nodes["0"]->n_(0);
+    // must retain index. connection is in _link...
+    _index = idx;
   }
 }
 /*--------------------------------------------------------------------------*/
 bool node_t::is_grounded() const
 {
-  if(_index==0){
+  if(_nnn==&ground_node){ untested();
     return true;
-  }else if(_nnn==&ground_node){ untested();
-    return true;
-  }else if(root()){ untested();
+  }else if(&root()!=this){ untested();
     return root().is_grounded();
   }else{
     return false;
   }
 }
+/*--------------------------------------------------------------------------*/
+void node_t::clear()
+{
+  if(!_nnn){
+  }else if(_own){ untested();
+    _nnn->purge();
+    delete _nnn;
+  }else{
+  }
+  _own = false;
+  _nnn = nullptr;
+}
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

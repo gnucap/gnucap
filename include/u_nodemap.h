@@ -25,11 +25,10 @@
 #ifndef U_NODEMAP_H
 #define U_NODEMAP_H
 #include "md.h"
+#include "e_node.h" // node_t
 /*--------------------------------------------------------------------------*/
 class NODE;
 class node_t;
-/*--------------------------------------------------------------------------*/
-extern NODE ground_node;
 /*--------------------------------------------------------------------------*/
 class NODE_MAP {
   typedef std::map<std::string, NODE*> map_t;
@@ -55,12 +54,15 @@ public:
 
   NODE*     new_node(std::string);
 
+  iterator begin()			{return map().begin();}
+  iterator end()			{return map().end();}
   const_iterator begin()const		{return map().begin();}
   const_iterator end()const		{return map().end();}
   int		 how_many()const	{return static_cast<int>(map().size()-1);}
-  int		 size()const		{untested(); return static_cast<int>(map().size());}
+  int		 size()const		{untested(); return static_cast<int>(_nodes.size());}
 
   std::string const& name(int)const;
+  void map_nodes();
 
 private:
   map_t& map() {assert(_map); return *_map;}

@@ -38,6 +38,18 @@ CARD_LIST::CARD_LIST()
 {
 }
 /*--------------------------------------------------------------------------*/
+CARD_LIST::CARD_LIST(CARD_LIST::with_ground)
+  :_parent(nullptr),
+   _nm(new NODE_MAP),
+   _params(nullptr)
+{
+  // NB: erase_all does not clear the node map.
+  //     perhaps it should, but it must retain "0".
+  _nm->new_node("0");
+  assert(_nm->size()==1);
+  // assert(CARD_LIST::card_list.nodes()->at(0).is_grounded()); later.
+}
+/*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
 		     const CARD_LIST* scope, PARAM_LIST const* p)
   :_parent(nullptr),
@@ -188,7 +200,8 @@ CARD_LIST& CARD_LIST::expand()
   // BUG: top level works different.
   if(this != &CARD_LIST::card_list) {
     assert(nodes());
-    for(int i = nodes()->how_many(); i; --i) {
+    trace1("CL::expand allocate", nodes()->size());
+    for(int i = nodes()->size(); i--;) {
       trace3("CL::expand allocate", i, &nodes()->at(i), &nodes()->at(i).root());
       nodes()->at(i).allocate();
     }
@@ -220,6 +233,11 @@ CARD_LIST& CARD_LIST::precalc_last()
  */
 CARD_LIST& CARD_LIST::map_nodes()
 {
+  if(_nm){
+    // needed for probes
+    _nm->map_nodes();
+  }else{ untested();
+  }
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
     (**ci).map_nodes();
@@ -527,11 +545,12 @@ void CARD_LIST::shallow_copy(const CARD_LIST* p)
     }else{
     }
   }
-  // HERE: clone node map.
-
 }
 /*--------------------------------------------------------------------------*/
 // set up the map of external to expanded node numbers
+#ifndef NDEBUG
+extern NODE ground_node;
+#endif
 void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 {
   assert(model);
@@ -549,7 +568,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   trace0(owner->long_label().c_str());
   assert(nodes());
 
-  int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
+  int num_nodes_in_subckt = model->subckt()->nodes()->size();
   trace2("map_sckt_nodes",  model->net_nodes(),  num_nodes_in_subckt);
   if(model->net_nodes() <= num_nodes_in_subckt){
   }else{
@@ -557,8 +576,15 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   assert(owner->net_nodes() <= model->net_nodes());
 
   NODE_MAP& node_map = *nodes();
-  for (int i=model->net_nodes() + 1; i <= num_nodes_in_subckt; ++i) {
-    assert(node_map[i].link() == nullptr);
+  for (int i=model->net_nodes(); i < num_nodes_in_subckt; ++i) {
+#if 0
+    if(node_map[i].link()){
+      assert(node_map[i].root());
+      assert(node_map[i].root().n_() == &ground_node
+	  || node_map[i].root().n_()->short_label()=="0");
+    }else{
+    }
+#endif
   }
   // The node list (_nm) in an instance of a subckt does not exist.
   // Device nodes (type node_t) points to the NODE in the parent.
@@ -569,12 +595,15 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     for (int port = 0; port < model->net_nodes(); ++port) {
       assert(model->n_(port).e_() <= num_nodes_in_subckt);
       //assert(model->n_(port).e_() == port+1);
-      assert(owner->n_(port).is_connected());
-      int idx = model->n_(port).e_();
-      trace3("union", owner->long_label(), idx, port);
-      build_union(&node_map[idx], &owner->n_(port));
-      assert(&node_map[idx].root()==&owner->n_(port).root());
-      trace3("union1", owner->long_label(), idx, &node_map[idx].root());
+      if(owner->n_(port).is_connected()){
+	int idx = model->n_(port).e_();
+	trace3("union", owner->long_label(), idx, port);
+	build_union(&node_map[idx], &owner->n_(port));
+	assert(&node_map[idx].root()==&owner->n_(port).root());
+	trace3("union1", owner->long_label(), idx, &node_map[idx].root());
+      }else{
+	// floating?
+      }
     }
     for (int port = 0; port < model->net_nodes(); ++port) {
       trace3("union2", owner->long_label(), port, &owner->n_(port).root());

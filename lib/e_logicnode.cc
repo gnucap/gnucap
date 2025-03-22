@@ -40,7 +40,6 @@ LOGIC_NODE::LOGIC_NODE(int i)
    _failure_mode("initial")
 {
   if(i!=-1){
-    incomplete(); // transition
     set_flat_number(i);
   }else{
   }

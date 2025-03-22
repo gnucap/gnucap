@@ -1,7 +1,7 @@
 
 simulator lang=verilog
 
-ground gg
+ground gg;
 vsource #(3) v1(\2 , gg);
 resistor #(1) r(gg, \2 );
 

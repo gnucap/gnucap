@@ -40,7 +40,7 @@ M1 a b c d mynmos  l=l w=w  nrd= 1.  nrs= 1.
 **************
 
 module mosand2(out a b);
-  ground 0;
+  ground \0 ;
   my_nmos #(.l(100u),.w(100u)) m1( out nout , \0 , \0 );
   my_pmos #(.l(100u),.w(100u)) m2( out nout vdd vdd );
 
@@ -54,7 +54,7 @@ module mosand2(out a b);
 endmodule
 
 module mosnand3(out a b c);
-  ground 0;
+  ground \0 ;
   my_pmos #(.l(100u),.w(100u)) mpa( out a vdd vdd );
   my_pmos #(.l(100u),.w(100u)) mpb( out b vdd vdd );
   my_pmos #(.l(100u),.w(100u)) mpc( out c vdd vdd );
@@ -67,14 +67,14 @@ module mosnand3(out a b c);
 endmodule
 
 module mosinv1 (out  in);
-  ground 0;
+  ground \0 ;
   my_nmos #(.l(100u),.w(100u)) m1( out  in  \0 , \0 )
   my_pmos #(.l(100u),.w(100u)) m2( out  in  vdd vdd)
   vsource #(.dc(5.)) Vdd(vdd, \0 );
 endmodule
 
 module mosnor2(out a b);
-  ground 0;
+  ground \0 ;
   my_pmos #(.l(100u),.w(100u)) mpb( out, b, i1 , vdd );
   my_pmos #(.l(100u),.w(100u)) mpa( i1 , a, vdd, vdd );
 
@@ -94,7 +94,7 @@ endmodule
 module da(out gnd xxvdd d7 d6 d5 d4 d3 d2 d1 d0)
 
 parameter w0=1u;
-// ground \0 ;
+ground \0 ;
 
 my_pmos #(.l(100.u),.w(    w0)) p0 (out, nd0, vdd, vdd);
 my_pmos #(.l(100.u),.w(  2*w0)) p1 (out, nd1, vdd, vdd);

@@ -190,7 +190,7 @@ public: // override virtual
   CARD*		clone()const override		{return new DEV_SUBCKT_PROTO(*this);}
   bool		is_device()const override	{return false;}
   bool		makes_own_scope()const override	{return true;}
-  CARD_LIST*	   scope()override		{untested();return subckt();}
+  CARD_LIST*	   scope()override		{return subckt();}
   const CARD_LIST* scope()const override	{return subckt();}
 private: // no-ops for prototype
   void precalc_first()override {}

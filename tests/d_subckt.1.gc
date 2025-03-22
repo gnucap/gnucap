@@ -5,6 +5,8 @@ module r(p, n);
 resistor #(.r(1), .$mfactor(5)) r(p,n);
 endmodule
 
+list
+
 isource #(.dc(1)) i1(\0 ,\1 )
 r #(.$mfactor(2)) r1(\1 ,\0 )
 
