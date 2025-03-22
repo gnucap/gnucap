@@ -60,6 +60,8 @@ public:
   int		 how_many()const	{return static_cast<int>(map().size()-1);}
   int		 size()const		{untested(); return static_cast<int>(map().size());}
 
+  std::string const& name(int)const;
+
 private:
   map_t& map() {assert(_map); return *_map;}
   map_t const& map() const {assert(_map); return *_map;}

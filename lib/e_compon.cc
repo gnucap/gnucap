@@ -870,7 +870,7 @@ const std::string COMPONENT::port_value(int i)const
   assert(scope());
   assert(scope()->nodes());
   if(idx>=0){
-    return scope()->nodes()->at(idx).short_label();
+    return scope()->nodes()->name(idx);
   }else{
     // d_subckt.error.2.gc
     return "?????";

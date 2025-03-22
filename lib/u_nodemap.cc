@@ -126,5 +126,30 @@ NODE* NODE_MAP::new_node(std::string s)
   return node;
 }
 /*--------------------------------------------------------------------------*/
+std::string const& NODE_MAP::name(int i) const
+{
+  static std::string dunno("??????");
+  node_t const& n = at(i);
+  if(n.n_()) { untested();
+    std::string const& l = n.n_()->short_label();
+    assert(!_map || _map->at(l) == i);
+    return l;
+  }else if(_map){ untested();
+    // fallback, getting here in a few corner cases,
+    // top level only.
+    for(auto const& p : map()){ untested();
+      if(p.second->user_number() == i){
+	return p.first;
+      }else{ untested();
+      }
+    }
+    assert(0);
+    return dunno;
+  }else{ untested();
+    assert(0);
+    return dunno;
+  }
+}
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:
