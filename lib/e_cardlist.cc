@@ -554,7 +554,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   if(model->net_nodes() <= num_nodes_in_subckt){
   }else{
   }
-  assert(owner->net_nodes() == model->net_nodes());
+  assert(owner->net_nodes() <= model->net_nodes());
 
   NODE_MAP& node_map = *nodes();
   for (int i=model->net_nodes() + 1; i <= num_nodes_in_subckt; ++i) {

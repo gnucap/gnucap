@@ -330,26 +330,18 @@ void SIM_DATA::alloc_hold_vectors()
   _nstat[0].set_flat_number(0);
   for (int ii=1;  ii <= user_nodes;  ++ii) {
     _nstat[ii].set_owner(nullptr);
-#if 0
-     trace2("SIM_DATA::alloc_hold_vectors", ii, _total_nodes+ii);
-    _nstat[ii].set_flat_number(_total_nodes+ii);
-#else
-     trace2("SIM_DATA::alloc_hold_vectors", ii, _total_nodes+user_nodes-ii+1);
-     // _nstat[ii].set_flat_number(_total_nodes+user_nodes-ii+1);
-#endif
   }
 
   top_nodes[0] = &ground_node;
 
   for (int ii=top_nodes.how_many(); ii; --ii) {
     // top_nodes[ii].allocate() // basically, but use different counter...
-    LOGIC_NODE* nn = &_nstat[ii];
-    nn->set_label(top_nodes[ii].short_label()); // BUG. duplicate label storage
     if(top_nodes[ii].link() == &top_nodes[ii]){
+      LOGIC_NODE* nn = new LOGIC_NODE;
       ++_total_nodes;
       ++_user_nodes;
-      _nstat[ii].set_flat_number(_total_nodes);
-      top_nodes[ii] = nn;
+      nn->set_flat_number(_total_nodes);
+      top_nodes[ii].set_own(nn);
       assert(top_nodes[ii].n_() == nn);
       nn->set_owner(nullptr);
     }else{

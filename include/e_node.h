@@ -54,7 +54,7 @@ public:
 public: // raw data access (rvalues)
   virtual int user_number()const	{/*ground only*/return 0;}
 public: // simple calculated data access (rvalues)
-  virtual int	matrix_number()const	{untested(); return 0;}// only gnd getting here.
+  virtual int	matrix_number()const	{return 0;}// only gnd getting here.
   int	m_()const		{return matrix_number();}
 public: // virtuals
   double	tr_probe_num(const std::string&)const override;
@@ -156,7 +156,6 @@ public:
 
   
   const std::string  short_label()const {
-    incomplete();
     if (n_()){
       return n_()->short_label();
     }else if(root().n_()) {

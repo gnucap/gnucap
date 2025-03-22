@@ -1,17 +1,19 @@
 .title mos1 inverter 
 .print dc v(X*.Mn1.dsb) v(Mn1.dsb) v(Mp1.dsb) v(Mn2.dsb) v(3) 
+            ^ ? no match
+.print dc v(X*.Mn1.dsb) v(Mn1.dsb) v(Mp1.dsb) v(Mn2.dsb) v(3) 
                           ^ ? no match
 .print dc v(X*.Mn1.dsb) v(Mn1.dsb) v(Mp1.dsb) v(Mn2.dsb) v(3) 
                                      ^ ? no match
 .print dc v(X*. ... 1.dsb) v(Mp1.dsb) v(Mn2.dsb) v(3) 
                                         ^ ? no match
-#           v(X2.Mn1.Dsb) v(3)      
- 0.         0.         5.        
- 1.         0.         4.9726    
- 2.         0.         4.082     
- 3.         0.         0.19168   
- 4.         0.         0.0068252 
- 5.         0.         3.0232n   
+#           v(3)      
+ 0.         5.        
+ 1.         4.9726    
+ 2.         4.082     
+ 3.         0.19168   
+ 4.         0.0068252 
+ 5.         3.0232n   
 Gnucap   System status
 iterations: op=0, dc=46, tran=0, fourier=0, total=46
 transient timesteps: accepted=0, rejected=0, total=0
