@@ -1,0 +1,15 @@
+.subckt net ( i i )
+.ends net
+.subckt main (  )
+R1 ( 2 0 )  1.
+*X1 2 1 net 
+n1 ( 1 2 )  net 
+V1 ( 1 0 )  DC  1.
+.ends main
+#           i(Xm.R1)  
+ 27.        0.99999   
+Gnucap   System status
+iterations: op=4, dc=0, tran=0, fourier=0, total=4
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=0, subckt=1, model=0, total=1
+dctran density=100.0%, ac density=100.0%

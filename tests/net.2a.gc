@@ -1,0 +1,109 @@
+
+
+module net(.a(i), .b(i));
+endmodule
+
+spice
+
+.subckt A 1 11
+X01  2  1 B
+X02  3  2 B
+X03  4  3 B
+X04  5  4 B
+X05  6  5 B
+X06  7  6 B
+X07  8  7 B
+X08  9  8 B
+X09 10  9 B
+X10 11 10 B
+.ends
+
+.subckt B 1 11
+X01  2  1 C
+X02  3  2 C
+X03  4  3 C
+X04  5  4 C
+X05  6  5 C
+X06  7  6 C
+X07  8  7 C
+X08  9  8 C
+X09 10  9 C
+X10 11 10 C
+.ends
+
+.subckt C 1 11
+X01  2  1 D
+X02  3  2 D
+X03  4  3 D
+X04  5  4 D
+X05  6  5 D
+X06  7  6 D
+X07  8  7 D
+X08  9  8 D
+X09 10  9 D
+X10 11 10 D
+.ends
+
+.subckt D 1 11
+X01  2  1 E
+X02  3  2 E
+X03  4  3 E
+X04  5  4 E
+X05  6  5 E
+X06  7  6 E
+X07  8  7 E
+X08  9  8 E
+X09 10  9 E
+X10 11 10 E
+.ends
+
+.subckt E 1 11
+X01  2  1 F
+X02  3  2 F
+X03  4  3 F
+X04  5  4 F
+X05  6  5 F
+X06  7  6 F
+X07  8  7 F
+X08  9  8 F
+X09 10  9 F
+X10 11 10 F
+.ends
+
+.subckt F 1 11
+X01  2  1 G
+X02  3  2 G
+X03  4  3 G
+X04  5  4 G
+X05  6  5 G
+X06  7  6 G
+X07  8  7 G
+X08  9  8 G
+X09 10  9 G
+X10 11 10 G
+.ends
+
+.subckt G 1 2
+.net s1 1 2 net
+.ends
+
+.subckt main
+R1 2 0 1
+X1 1 2 C
+*X1 1 2 A ; more..
+V1 1 0 1
+.ends
+
+*>.list
+
+Xm main
+
+*>.print op i(Xm.R1)
+*>.op
+*>.status notime
+*>.end
+
+* ngspice
+.options acct
+.op
+.print op i(V1)

@@ -1,0 +1,20 @@
+
+
+module net(.a(i), .b(i), .c(j), .d(j));
+endmodule
+
+module main();
+  ground g;
+  resistor #(1.) r1(\2 , g);
+  net #() n1(.a(\1 ), .b(\2 ), .c(\4 ), .d(g));
+  vsource #(1.) v1(\1 , \4 );
+endmodule
+
+verilog
+list
+
+main Xm();
+
+print op i(Xm.r1)
+op
+status notime

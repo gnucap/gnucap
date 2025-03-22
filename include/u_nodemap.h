@@ -59,7 +59,7 @@ public:
   const_iterator begin()const		{return map().begin();}
   const_iterator end()const		{return map().end();}
   int		 how_many()const	{return static_cast<int>(map().size()-1);}
-  int		 size()const		{untested(); return static_cast<int>(_nodes.size());}
+  int		 size()const		{ return static_cast<int>(_nodes.size());}
 
   std::string const& name(int)const;
   void map_nodes();

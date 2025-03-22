@@ -37,7 +37,7 @@ NODE_MAP::NODE_MAP()
  * replicate number of nodes and their names
  */
 NODE_MAP::NODE_MAP(const NODE_MAP& p)
-{ untested();
+{
   _map = new map_t(); // additional names
 		    // TODO: share/keep exising names
   _nodes.resize(p.size());
