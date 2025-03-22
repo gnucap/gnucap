@@ -335,17 +335,7 @@ void SIM_DATA::alloc_hold_vectors()
   top_nodes[0] = &ground_node;
 
   for (int ii=top_nodes.how_many(); ii; --ii) {
-    // top_nodes[ii].allocate() // basically, but use different counter...
-    if(top_nodes[ii].link() == &top_nodes[ii]){
-      LOGIC_NODE* nn = new LOGIC_NODE;
-      ++_total_nodes;
-      ++_user_nodes;
-      nn->set_flat_number(_total_nodes);
-      top_nodes[ii].set_own(nn);
-      assert(top_nodes[ii].n_() == nn);
-      nn->set_owner(nullptr);
-    }else{
-    }
+    top_nodes[ii].allocate(1 /*bump user node count*/);
   }
   for(auto p : top_nodes) {
     incomplete(); // needed??

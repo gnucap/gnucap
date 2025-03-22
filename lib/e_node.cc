@@ -285,16 +285,23 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
   }
 }
 /*--------------------------------------------------------------------------*/
-void node_t::allocate()
+void node_t::allocate(int u)
 {
   if(is_node()) { untested();
     // done.
     trace3("node_t::allocate is_node", this, &root(), _nnn->short_label());
     assert(_link);
-  }else if(_link==this) {
-    int flat_number = CKT_BASE::_sim->newnode_subckt();
+  }else if(_link==this) { untested();
+    int flat_number;
+    if(u){
+      flat_number = CKT_BASE::_sim->newnode_user();
+    }else{
+      flat_number = CKT_BASE::_sim->newnode_subckt();
+    }
     trace3("node_t::allocate loop", this, &root(), flat_number);
-    set_own(new LOGIC_NODE(flat_number));
+    NODE* nn = new LOGIC_NODE(flat_number);
+    nn->set_owner(nullptr);
+    set_own(nn);
   }
 }
 /*--------------------------------------------------------------------------*/

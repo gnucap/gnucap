@@ -123,6 +123,7 @@ public:
   int init_node_count(int user, int sub, int mod) {
     _user_nodes=user; _subckt_nodes=sub; _model_nodes=mod; return (_total_nodes=user+sub+mod);
   }
+  int newnode_user()   {++_user_nodes;   return ++_total_nodes;}
   int newnode_subckt() {++_subckt_nodes; return ++_total_nodes;}
   int newnode_model()  {++_model_nodes;  return ++_total_nodes;}
   bool is_inc_mode()	 {return _inc_mode;}

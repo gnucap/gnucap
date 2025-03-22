@@ -112,7 +112,7 @@ private: // union find
   friend bool    has_parent(node_t*n) {return parent(n);}
   friend node_t* parent(node_t*);
 public:
-  void allocate();
+  void allocate(int u=0);
 private:
   int _index{INVALID_NODE}; // index in node map
   int _m{INVALID_NODE};	// mapped, after reordering
