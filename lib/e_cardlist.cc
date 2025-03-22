@@ -513,6 +513,7 @@ void CARD_LIST::shallow_copy(const CARD_LIST* p)
     }else{
     }
   }
+  // HERE: clone node map.
 }
 /*--------------------------------------------------------------------------*/
 // set up the map of external to expanded node numbers
@@ -524,6 +525,11 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   assert(owner);
   //assert(owner->subckt());
   //assert(owner->subckt() == this);
+  if(owner->subckt()) {
+    assert(owner->subckt() == this);
+  }else{
+    // coming from e_card.cc:253, presumably
+  }
   trace0(model->long_label().c_str());
   trace0(owner->long_label().c_str());
 
