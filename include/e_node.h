@@ -93,6 +93,7 @@ private: // this should eventually fit into 64 bits.
   mutable node_t* _link{nullptr};
   bool _own{false}; // indicate that _nnn is ours.
 private: // treee stuff.
+	 public: // debugging.
   bool is_node()const;
   bool is_link()const;
   bool is_root()const;
@@ -102,8 +103,7 @@ private: // treee stuff.
   node_t const* link()const {return _link;}
 private:
   int _index{INVALID_NODE}; // index in node map
-  int _ttt;		// m == nm[t] if properly set up // obsolete.
-  int _m;		// mapped, after reordering
+  int _m{INVALID_NODE};	// mapped, after reordering
 
 private:
   static bool node_is_valid(int i) {
@@ -131,56 +131,43 @@ public:
   int	      m_()const	{return _m;}
 
   int	      t_()const {
-    if(!_nnn){
-    }else if(_ttt == 0){
-      // has been set to ground? ddid not update _nnn?
-      incomplete();
-    }else if(_ttt == _nnn->user_number()) {
-    }else{
-      incomplete();
-    }
-    return _ttt;
+    return _index;
   }	// e_cardlist.cc:CARD_LIST::map_subckt_nodes:436 and
 	// e_node.h:node_t::map:263,265 only
   bool is_valid() const {
-    return node_is_valid(_ttt); // BUG: _ttt is obsolete.
+    return _link || _nnn;
   }
 
-  int	      e_()const {
-    if(_nnn) {
-      // assert(_index == _nnn->user_number());
-      incomplete();
-      return _nnn->user_number();
-      return _ttt;
-    }else{
-      assert(_index==INVALID_NODE);
-    }
-    return _index;
-  }
+  int	      e_()const {return _index;}
   const NODE* n_()const {return _nnn;}
   NODE*	      n_()	{return _nnn;}
 
   
-  const std::string  short_label()const {return ((n_()) ? (n_()->short_label()) : "?????");}
+  const std::string  short_label()const {
+    incomplete();
+    if (n_()){
+      return n_()->short_label();
+    }else if(root().n_()) {
+      return root().n_()->short_label();
+    }else{
+      return "?????";
+    }
+  }
   void	set_to_ground(CARD* Owner)	{new_node("0", Owner);}
   void	new_node(const std::string&, const CARD*);
   void	new_model_node(const std::string& n, CARD* d);
   void	map_subckt_node(node_t* map_array, const CARD* d);
   bool	is_grounded()const {return (e_() == 0);}
-  bool	is_connected()const {return (e_() != INVALID_NODE);}
+  bool	is_connected()const {return _link || (e_() != INVALID_NODE);}
   bool	is_short_to(node_t const& n)const {return n_() == n.n_();} // BUG. doesn't work
 
-  node_t&     map() {
-    if (t_() != INVALID_NODE) {
-      assert(_nnn);
-
-      _m = to_internal(t_()); // BUG. ask _nnn
-      //  if(dynamic_cast<USER_NODE const*>(_nnn)){ untested();
-      //    incomplete();
-      //  }else{ untested();
-      //    // presumably conected to LOGIC_NODE (temporary hack)
-      //    assert(_m == _nnn->matrix_number());
-      //  }
+  node_t&     map() { untested();
+    // if (t_() != INVALID_NODE) {
+    if (_link) {
+      assert(root()._nnn);
+      _nnn = root()._nnn;
+      _link = this;
+      _m = _nnn->matrix_number();
     }else{
       assert(_m == INVALID_NODE);
     }
@@ -189,7 +176,8 @@ public:
 
   explicit    node_t();
 	      node_t(const node_t&);
-  explicit    node_t(int i) : _ttt(i) {}
+  explicit    node_t(int i) : _index(i) {untested();}
+	      node_t(node_t&&);
   explicit    node_t(NODE*);
 	      ~node_t();
 
@@ -203,16 +191,30 @@ public:
   operator bool()const {return _nnn;}
 
   node_t& operator=(const node_t& p);
+  node_t& operator=(node_t&& p);
   node_t& operator=(NODE* p);
   node_t& set_own(NODE* p);
 
-  bool operator==(const node_t& p) {return _nnn==p._nnn && _ttt==p._ttt && _m==p._m;}
+  bool operator==(const node_t& p) {return _nnn==p._nnn && _m==p._m;}
+
+  // BUG?
+  void link_to(node_t& nn){
+    if(_own){
+      delete _nnn;
+    }else{
+    }
+    _nnn = nullptr;
+    if(!_link){ untested();
+    }else{ untested();
+    }
+    _link = &nn;
+  }
 
 public:
   double      v0()const {
     assert(m_() >= 0);
     assert(m_() <= NODE::_sim->_total_nodes);
-    assert(n_());
+    assert(n_() || root().n_());
     //assert(n_()->m_() == m_());
     //assert(n_()->v0() == NODE::_sim->_v0[m_()]);
     return NODE::_sim->_v0[m_()];
@@ -250,7 +252,7 @@ inline bool node_t::is_node() const
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_link() const
-{ untested();
+{
   assert(!_nnn || _link == this || !_link);
   return !_nnn && _link;
 }

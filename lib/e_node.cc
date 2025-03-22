@@ -38,39 +38,56 @@ NODE::NODE(const NODE* p)
   unreachable();
 }
 /*--------------------------------------------------------------------------*/
-node_t::node_t()
-  :_nnn(nullptr),
-   _ttt(INVALID_NODE),
-   _m(INVALID_NODE)
-{
-}
+node_t::node_t() { }
+/*--------------------------------------------------------------------------*/
 node_t::node_t(const node_t& p)
   :_nnn(p._nnn),
-   _ttt(p._ttt),
+   _link(p._link),
+   _index(p._index),
    _m(p._m)
-{
-  //assert(_ttt == _nnn->flat_number());
+{ untested();
 }
+/*--------------------------------------------------------------------------*/
+node_t::node_t(node_t&& p)
+  :_nnn(p._nnn),
+   _link(p._link),
+   _index(p._index),
+   _m(p._m)
+{ untested();
+  if(p._link == &p) { untested();
+    _link = this;
+  }else{ untested();
+  }
+}
+/*--------------------------------------------------------------------------*/
 node_t::node_t(NODE* n)
   :_nnn(n),
-   _ttt(n->user_number()),
+   // _ttt(n->user_number()),
    _m(to_internal(n->user_number()))
-{
-  //assert(_ttt == _nnn->flat_number());
+{ untested();
 }
+/*--------------------------------------------------------------------------*/
 node_t& node_t::operator=(const node_t& p)
-{
-  if (p._nnn) {
-    //assert(p._ttt == p._nnn->flat_number());
-  }else{
-    assert(p._ttt == INVALID_NODE);
-    assert(p._m   == INVALID_NODE);
-  }
-  _nnn   = p._nnn;
-  _ttt = p._ttt; // BUG.
+{ untested();
+  _link = p._link;
   _index = p._index;
   _m   = p._m;
   _own = false;
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+node_t& node_t::operator=(node_t&& p)
+{
+  _nnn   = nullptr; // p._nnn;
+  _link   = p._link;
+  _index = p._index;
+  _m   = p._m;
+  _own = false;
+
+  if(p._link == &p) { untested();
+    _link = this;
+  }else{ untested();
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -82,16 +99,14 @@ node_t& node_t::operator=(NODE* n)
     _own = false;
   }else{
   }
+  _link = this;
   _nnn = n;
 
   if(n==&ground_node){
     // BUG. transition.
-    _ttt = 0;
     _index = 0;
-  }else if(n){
-    // top level kludge
-    incomplete();
-    _ttt = _index = n->user_number();
+    _link = this;
+  }else{
   }
   return *this;
 }
@@ -101,13 +116,20 @@ node_t& node_t::set_own(NODE* n)
 {
   operator=(n);
   _own = true; // take ownership.
-  _ttt = n->user_number(); // BUG: transition.
   _index = n->user_number();
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 LOGIC_NODE& node_t::data()const
 {
+  if(auto d = dynamic_cast<LOGIC_NODE*>(_nnn)){
+    return *d;
+  }else if(auto e = dynamic_cast<LOGIC_NODE*>(root()._nnn)){
+    return *e;
+  }else{
+    assert(0);
+    incomplete();
+  }
   assert(CARD::_sim->_nstat);
   return CARD::_sim->_nstat[m_()];
 }
@@ -120,6 +142,8 @@ double NODE::tr_probe_num(const std::string& x)const
   }else if (Umatch(x, "z ")) {
     return port_impedance(node_t(const_cast<NODE*>(this)), node_t(&ground_node), _sim->_aa, 0.);
   }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) {
+    assert(0);
+    unreachable();
     assert(_sim->_nstat);
     return _sim->_nstat[matrix_number()].tr_probe_num(x);
   }else if (Umatch(x, "mdy ")) {
@@ -184,15 +208,8 @@ void node_t::new_node(const std::string& node_name, const CARD* Owner)
   _nnn = n; // needed?
   assert(_nnn);
   _index = n->user_number();
-  _ttt = _index; // needed??
   assert(is_connected()); // for now.
-  // assert((*Map)[_index].n_() == _nnn); // for now.
-
-  if(_ttt==0){
-    assert(_nnn==&ground_node);
-  }else{
-  }
-  _nnn->set_owner(nullptr); // Owner?
+  n->set_owner(nullptr); // Owner?
 }
 /*--------------------------------------------------------------------------*/
 // free memory. NODES are owned by roots in the union forest, but path
@@ -219,10 +236,10 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
   if(_nnn){
     //it's already there.
   }else{
-    // new_node(node_name, Owner); // create map. don't touch map.
-    int matrix_number = CARD::_sim->newnode_model(); // BUG. don't use _ttt
-    auto ln = new LOGIC_NODE(); // TODO: use requested type
-    ln->set_user_number(matrix_number);
+    int idx = CARD::_sim->newnode_model();
+    auto ln = new LOGIC_NODE(node_name); // TODO: use requested type
+    ln->set_owner(Owner);
+    ln->set_flat_number(idx);
 
     _nnn = ln;
     _link = this;
@@ -237,29 +254,21 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
 {
   assert(m);
   if (e_() != INVALID_NODE) {
-    if (m[e_()].is_valid()) {
-       _ttt = m[e_()]._ttt; // BUG. don't use _ttt
+    if (1||m[e_()].is_valid()) {
       _link = &m[e_()];
-      if(_ttt==0){
-	assert(_link);
-	if(_own){ untested();
-	  delete _nnn;
-	}else{
-	}
-	_nnn = nullptr;
-	assert(root()._nnn);
-	assert(root()._nnn == &ground_node);
-	_nnn = &ground_node; // not needed.
+      assert(_link);
+      if(_own){ untested();
+	delete _nnn;
       }else{
       }
+      _nnn = nullptr;
     }else{
+      assert(0);
       throw Exception(d->long_label() + ": need more nodes");
     }
-  }else{
+  }else{ untested();
     throw Exception(d->long_label() + ": invalid nodes");
   }
-  //_nnn->set_flat_number(_ttt);
-  // assert(node_is_valid(_ttt));
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

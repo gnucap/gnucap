@@ -548,10 +548,13 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       assert(model->n_(port).e_() <= num_nodes_in_subckt);
       //assert(model->n_(port).e_() == port+1);
       trace3("ports", port, model->n_(port).e_(), owner->n_(port).t_());
-      node_map[port+1] = owner->n_(port);
+      assert(owner->n_(port).is_connected());
+      node_map[port+1].link_to(owner->n_(port)); // BUG. use assign, but prepare.
+      assert(node_map[port+1].is_link());
     }
     for (int i=model->net_nodes() + 1; i <= num_nodes_in_subckt; ++i) {
       int index_hack = CKT_BASE::_sim->newnode_subckt();
+      trace2("MSN, new", i, index_hack);
       node_map[i].set_own(new LOGIC_NODE(index_hack)); // BUG: only connect. allocate later.
     }
   }
@@ -566,6 +569,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
+	trace4("MSN", (**ci).short_label(), ii, (**ci).n_(ii).t_(), (**ci).n_(ii).e_());
 	(**ci).n_(ii).map_subckt_node(&node_map[0], owner);
       }
     }else{

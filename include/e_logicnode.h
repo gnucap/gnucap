@@ -127,6 +127,7 @@ public: // action, used by logic
 private: // inhibited
   explicit LOGIC_NODE(const LOGIC_NODE&):NODE(){incomplete();unreachable();}
 public: // general use
+  explicit LOGIC_NODE(std::string const& s) : NODE(s), _flat_number{INVALID_NODE} {}
   explicit LOGIC_NODE(int i=-1);
 	   ~LOGIC_NODE() {}
 

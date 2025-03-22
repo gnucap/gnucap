@@ -54,7 +54,7 @@ static void grow_nodes(int Index, node_t*& n, int& capacity, int capacity_floor)
     }
     node_t* new_nodes = new node_t[new_capacity];
     for(int i=0; i<capacity; ++i){
-      new_nodes[i] = n[i];
+      new_nodes[i] = std::move(n[i]);
     }
     delete[] n;
     n = new_nodes;

@@ -25,6 +25,7 @@
 #include "u_lang.h"
 #include "e_model.h"
 #include "e_elemnt.h"
+#include "u_nodemap.h"
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),
@@ -563,12 +564,22 @@ void COMPONENT::expand()
     }
   }else{
   }
+
+  // this is needed to make node assignments work.
+  // (temporary/transition)
+  // c.f. lib/e_ccsrc.cc +43
+  for(int i = 0; i < net_nodes(); ++i) {
+    if(!n_(i).is_link()){ untested();
+      n_(i).link_to(n_(i));
+    }else{ untested();
+    }
+  }
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::precalc_first()
 {
   for(int i = 0; i < min_nodes(); ++i){
-    if(!node_is_connected(i)) {
+    if(!node_is_connected(i)) { untested();
       throw Exception(long_label() + ": invalid nodes");
     }else{
     }
@@ -627,8 +638,10 @@ void COMPONENT::map_nodes()
   //assert(min_nodes() <= net_nodes());
   assert(net_nodes() <= max_nodes());
   //assert(ext_nodes() + int_nodes() == matrix_nodes());
+  trace3("COMPONENT::map_nodes", long_label(), ext_nodes(), int_nodes());
 
   for (int ii = 0; ii < ext_nodes()+int_nodes(); ++ii) {
+    trace3("COMPONENT::map_nodes", long_label(), ii, n_(ii).is_link());
     n_(ii).map();
   }
 
@@ -863,7 +876,11 @@ const std::string COMPONENT::port_value(int i)const
 {
   assert(i >= 0);
   assert(i < net_nodes());
-  return n_(i).short_label();
+
+  int idx = n_(i).e_();
+  assert(scope());
+  assert(scope()->nodes());
+  return scope()->nodes()->at(idx).short_label();
 }
 /*--------------------------------------------------------------------------*/
 double COMPONENT::tr_probe_num(const std::string& x)const
