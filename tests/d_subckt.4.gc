@@ -1,0 +1,22 @@
+
+module main(.\1 (\1 ), .b(\2 ));
+  // global \0 ;
+  resistor #(1) r1(\1 , \2 );
+  resistor #(1) r2(\2 , \0 );
+  isource #(1) i1(\0 , \1 );
+endmodule
+
+verilog
+
+main m(.\1 (\1 ));
+list
+
+print op v(m.r1) v(1)
+op
+
+delete m
+main m(.\1 (\1 ) .b(\0 ));
+print op v(m.r1) v(1)
+op
+status notime
+list

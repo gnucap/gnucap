@@ -145,6 +145,7 @@ LOGIC_NODE& node_t::data()const
     static LOGIC_NODE logic_ground(0);
     return logic_ground;
   }
+  unreachable();
 }
 /*--------------------------------------------------------------------------*/
 double NODE::tr_probe_num(const std::string& x)const
@@ -224,7 +225,6 @@ void node_t::new_node(const std::string& node_name, const CARD* Owner)
   _index = n->user_number();
   assert(_index!=INVALID_NODE);
 
-  assert(is_connected()); // for now.
   n->set_owner(nullptr); // Owner?
 }
 /*--------------------------------------------------------------------------*/
@@ -256,13 +256,7 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
   if(_nnn){ untested();
     //it's already there.
   }else{
-    // BUG: only request node, and allocate post-expand in appropriate order.
-    int idx = CARD::_sim->newnode_model();
-    auto ln = new LOGIC_NODE(node_name); // TODO: use requested type
-    ln->set_owner(Owner);
-    ln->set_flat_number(idx);
-    ln->set_owner(Owner);
-    set_own(ln);
+    find_subset(this);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -291,18 +285,35 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
   }
 }
 /*--------------------------------------------------------------------------*/
-void node_t::allocate(int u)
+// nodes are all the same. only difference is counter
+// 0: subckt, module, DEV_SUBCKT "subckt_node"
+// 1: top level                  "user_node"
+// 2: misc device internal nodes "model_node"
+void node_t::allocate(int u /*, CARD* owner*/)
 {
-  if(is_node()) { untested();
+  if(_nnn == &ground_node){
+  }else if(is_node() && CKT_BASE::_sim->is_first_expand()) {
+    // repeat call.
+  }else{
+  }
+  if(is_node()) {
     // done.
     trace3("node_t::allocate is_node", this, &root(), _nnn->short_label());
     assert(_link);
   }else if(_link==this) {
-    int flat_number;
-    if(u){
-      flat_number = CKT_BASE::_sim->newnode_user();
-    }else{
+    int flat_number = INVALID_NODE;
+    switch(u) {
+    case 0:
       flat_number = CKT_BASE::_sim->newnode_subckt();
+      break;
+    case 1:
+      flat_number = CKT_BASE::_sim->newnode_user();
+      break;
+    case 2:
+      flat_number = CKT_BASE::_sim->newnode_model();
+      break;
+    default:
+      unreachable();
     }
     trace3("node_t::allocate new", this, &root(), flat_number);
     NODE* nn = new LOGIC_NODE(flat_number);
@@ -337,9 +348,14 @@ void node_t::set_to_ground(CARD* Owner)
 /*--------------------------------------------------------------------------*/
 bool node_t::is_grounded() const
 {
-  if(_nnn==&ground_node){ untested();
+  if(_m==0){
+    assert(_nnn == &ground_node);
     return true;
-  }else if(&root()!=this){ untested();
+  }else{
+    assert(_nnn != &ground_node);
+  }
+
+  if(&root()!=this){ untested();
     return root().is_grounded();
   }else{
     return false;
@@ -349,7 +365,7 @@ bool node_t::is_grounded() const
 void node_t::clear()
 {
   if(!_nnn){
-  }else if(_own){ untested();
+  }else if(_own){
     _nnn->purge();
     delete _nnn;
   }else{

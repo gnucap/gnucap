@@ -104,7 +104,7 @@ public:
   SIM_MODE _has_op;
   SIM_DATA();
   ~SIM_DATA();
-  bool is_first_expand() {assert((bool)_vdc==_nstat); return !_nstat;}
+  bool is_first_expand() {return !_nstat;}
   void alloc_hold_vectors(); /* s__init.cc */
   void alloc_vectors();
   void unalloc_vectors();

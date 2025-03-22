@@ -126,8 +126,8 @@ CARD_LIST& CARD_LIST::erase(iterator ci)
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::erase(CARD* c)
-{untested();
-  if (c) {untested();
+{
+  if (c) {
     c->purge();
     delete c;
     _cl.remove(c);
@@ -197,15 +197,10 @@ CARD_LIST& CARD_LIST::expand()
   }
 
   // fill in missing nodes.
-  // BUG: top level works different.
-  if(this != &CARD_LIST::card_list) {
-    assert(nodes());
-    trace1("CL::expand allocate", nodes()->size());
-    for(int i = nodes()->size(); i--;) {
-      trace3("CL::expand allocate", i, &nodes()->at(i), &nodes()->at(i).root());
-      nodes()->at(i).allocate();
-    }
-  }else{
+  assert(nodes());
+  for(int i = nodes()->size(); i;) {
+    int select_counter = this==&CARD_LIST::card_list;
+    nodes()->at(--i).allocate(select_counter);
   }
 
   return *this;
@@ -595,13 +590,13 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     for (int port = 0; port < model->net_nodes(); ++port) {
       assert(model->n_(port).e_() <= num_nodes_in_subckt);
       //assert(model->n_(port).e_() == port+1);
+      int idx = model->n_(port).e_();
       if(owner->n_(port).is_connected()){
-	int idx = model->n_(port).e_();
-	trace3("union", owner->long_label(), idx, port);
+	trace5("connected port", owner->long_label(), idx, port, owner->n_(port).link(), owner->n_(port).e_());
 	build_union(&node_map[idx], &owner->n_(port));
 	assert(&node_map[idx].root()==&owner->n_(port).root());
-	trace3("union1", owner->long_label(), idx, &node_map[idx].root());
       }else{
+	trace5("floating port", owner->long_label(), idx, port, model->n_(port).link(), owner->n_(port).e_());
 	// floating?
       }
     }

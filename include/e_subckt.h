@@ -47,6 +47,7 @@ protected: // override virtual
   void  precalc_first()override { COMPONENT::precalc_first();
     if(subckt()){ subckt()->precalc_first();} else { } }
   //void  expand()			//COMPONENT
+/*--------------------------------------------------------------------------*/
   void  precalc_last()override { COMPONENT::precalc_last();
     if(subckt()){ subckt()->precalc_last();} else { untested(); } }
   //void  map_nodes();

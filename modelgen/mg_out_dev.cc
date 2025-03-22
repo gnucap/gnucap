@@ -269,7 +269,7 @@ static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
       "    //assert(!(n_(n_" << p.name() << ").n_()));\n"
       "    //BUG// this assert fails on a repeat elaboration after a change.\n"
       "    //not sure of consequences when new_model_node called twice.\n"
-      "    if (!(n_(n_" << p.name() << ").n_())) {\n"
+      "    if (1||!(n_(n_" << p.name() << ").n_())) {\n"
       "      if (" << p.short_if() << ") {\n"
       "        n_(n_" << p.name() << ") = n_(n_" << p.short_to() << ");\n"
       "      }else{\n"
@@ -277,8 +277,9 @@ static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
 			   << "\", this);\n"
       "      }\n"
       "    }else{\n"
+      "      unreachable();\n"
       "      if (" << p.short_if() << ") {\n"
-      "        n_(n_" << p.name() << ") = n_(n_" << p.short_to() << ");\n"
+      "        assert(n_(n_" << p.name() << ").is_short_to(n_(n_" << p.short_to() << ")));\n"
       "      }else{\n"
       "        //n_(n_" << p.name() << ").new_model_node(\"" << p.name()
 		 << ".\" + long_label(), this);\n"
@@ -307,6 +308,11 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "  }\n"
     "\n"
     "  if (_sim->is_first_expand()) {\n"
+       // modelgen does not use nodemap.
+		 // ad-hoc erase leftover nodes from previous run
+    "    for(int i=net_nodes(); i<ext_nodes()+int_nodes(); ++i){\n"
+    "      n_(i).clear();\n"
+    "    }\n"
     "    precalc_first();\n"
     "    // precalc_last();\n"
     "    mutable_common()->precalc_last(scope());\n"
@@ -322,9 +328,9 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     make_dev_allocate_local_nodes(out, **p);
   }
   out << "    // local nodes\n";
-  for (Port_List::const_reverse_iterator
-       p = d.circuit().local_nodes().rbegin();
-       p != d.circuit().local_nodes().rend();
+  for (Port_List::const_iterator
+       p = d.circuit().local_nodes().begin();
+       p != d.circuit().local_nodes().end();
        ++p) {
     make_dev_allocate_local_nodes(out, **p);
   }
@@ -342,6 +348,11 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "  }\n"
     "  //precalc();\n"
     "  subckt()->expand();\n"
+       // modelgen does not populate nodemap in instances
+       // CARD_LIST::expand misses internal nodes here
+    "  for(int i=ext_nodes()+int_nodes(); i>net_nodes();){\n"
+    "    n_(--i).allocate(2);\n"
+    "  }\n"
     "  //subckt()->precalc();\n";
   if (d.circuit().sync()) {
     out << "  subckt()->set_slave();\n";

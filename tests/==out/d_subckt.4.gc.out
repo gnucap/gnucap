@@ -1,0 +1,25 @@
+module main (.\1 (\1 ),.b(\2 ));
+// global \0 ; 
+resistor #(.r(1)) r1 (.p(\1 ),.n(\2 ));
+resistor #(.r(1)) r2 (.p(\2 ),.n(\0 ));
+isource #(.dc(1)) i1 (.p(\0 ),.n(\1 ));
+endmodule // main
+
+main #() m (.\1 (\1 ));
+#           v(m.r1)    v(1)      
+ 27.        1.         1.        
+#           v(m.r1)    v(1)      
+ 27.        1.         1.        
+Gnucap   System status
+iterations: op=4, dc=0, tran=0, fourier=0, total=8
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=1, model=0, total=2
+dctran density=50.0%, ac density=50.0%
+module main (.\1 (\1 ),.b(\2 ));
+// global \0 ; 
+resistor #(.r(1)) r1 (.p(\1 ),.n(\2 ));
+resistor #(.r(1)) r2 (.p(\2 ),.n(\0 ));
+isource #(.dc(1)) i1 (.p(\0 ),.n(\1 ));
+endmodule // main
+
+main #() m (.\1 (\1 ),.b(\0 ));

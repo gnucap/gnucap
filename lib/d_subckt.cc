@@ -486,7 +486,6 @@ void DEV_SUBCKT::expand()
       if(n_(i).is_connected()){
       }else{
 	n_(i).new_model_node("." + long_label() + "." + port_name(i), this);
-	n_(i).n_()->set_label("");
       }
     }
   }else{ untested();

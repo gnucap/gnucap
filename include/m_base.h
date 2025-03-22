@@ -145,13 +145,10 @@ protected:
   explicit List_Base(const List_Base& p) : Base(), _list(p._list) {untested();}
 public:
   typedef typename std::list<T*>::const_iterator const_iterator;
-  typedef typename std::list<T*>::const_reverse_iterator const_reverse_iterator;
   bool		 is_empty()const {return _list.empty();}
   size_t	 size()const	 {return _list.size();}
   const_iterator begin()const	 {return _list.begin();}
   const_iterator end()const	 {return _list.end();}
-  const_reverse_iterator rbegin()const	 {untested(); return _list.rbegin();}
-  const_reverse_iterator rend()const	 {untested(); return _list.rend();}
   const T*	 front()const	 {untested();assert(!is_empty()); return _list.front();}
   const T*	 back()const	 {assert(!is_empty()); return _list.back();}
   T*		 back()		 {assert(!is_empty()); return _list.back();}
