@@ -32,11 +32,12 @@ class MODEL_LOGIC;
 #define qGOOD	 (OPT::transits)
 /*--------------------------------------------------------------------------*/
 class INTERFACE LOGIC_NODE : public NODE {
-private: // BUG. transition
-  int _user_number{0};
-  int user_number()const override {return _user_number;}
-public: // BUG: _nstat ...
-  void set_user_number(int i) { _user_number=i; }
+private:
+  int _flat_number{0};
+  int user_number()const override {untested(); return _flat_number;} // obsolete.
+  int flat_number()const {return _flat_number;}
+public:
+  void set_flat_number(int i) { _flat_number=i; }
 
 private:
   const MODEL_LOGIC *_family;	/* logic family */
