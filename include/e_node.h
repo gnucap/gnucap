@@ -129,6 +129,7 @@ private: // union find
   friend int     inc_rank(node_t*);
   friend bool    has_parent(node_t*n) {return parent(n);}
   friend node_t* parent(node_t*);
+  friend node_t* set_parent(node_t* n, node_t* p);
 public:
   void allocate(int u=0);
 private:
@@ -227,11 +228,13 @@ public:
 
   bool operator==(const node_t& p)const { return _link==p._link && _nnn==p._nnn && _m==p._m;}
 
-  // BUG private:
+private:
+public: // top level kludge. u_sim_data.cc line 457
   node_t& link_to(node_t* nn){
     assert(nn);
     if(_own){ untested();
       delete _nnn;
+    }else if(_nnn){ untested();
     }else{
     }
     _nnn = nullptr;

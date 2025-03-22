@@ -307,7 +307,7 @@ static void map_toplevel_nodes(CARD_LIST& tcl)
     }else{
       // just link, but do not mark for allocation.
       int u = n->user_number();
-      u = n->n_(0).e_();
+      assert(u == n->n_(0).e_());
       n->n_(0).clear();
       n->n_(0).link_to(&top_nodes[u].root());
     }

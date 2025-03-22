@@ -246,18 +246,17 @@ node_t::~node_t()
 }
 /*--------------------------------------------------------------------------*/
 /* new_model_node: a mapped new node, produced through model expansion.
- * Not really a model_node, but a node in the subckt that is made
+ * Not really a model_node, but a node in the device that is made
  * in model expansion.
  * Supposedly equivalent to new_node() then map_subckt_node()
  * but it does it without building a map
  */
 void node_t::new_model_node(const std::string& node_name, CARD* Owner)
 {
-  if(_nnn){ untested();
-    //it's already there.
-  }else{
-    find_subset(this);
-  }
+  (void) node_name;
+  (void) Owner;
+  assert(!_nnn);
+  find_subset(this);
 }
 /*--------------------------------------------------------------------------*/
 /* (re)connect a port to an external node making use of index.
