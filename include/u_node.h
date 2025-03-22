@@ -35,10 +35,10 @@ class USER_NODE : public NODE {
 public:
   explicit USER_NODE(std::string const& s, int i=INVALID_NODE)
     : NODE(s), _n(i) {
-    assert(_n.t_() == i);
+    assert(_n.e_() == i);
   }
 public:
-  int user_number()const override {return _n.t_();}
+  int user_number()const override {return _n.e_();}
   void set_to_ground() { _global=true; _n.set_to_ground(nullptr); }
   bool is_global()const {return _global;}
 private: // probe proxy

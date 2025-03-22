@@ -581,7 +581,7 @@ BASE_SUBCKT* LANG_SPICE_BASE::parse_module(CS& cmd, BASE_SUBCKT* x)
 void LANG_SPICE_BASE::parse_module_body(CS& cmd, BASE_SUBCKT* x, CARD_LIST* Scope,
 		const std::string& prompt, EOB exit_on_blank, const std::string& exit_key)
 {
-  if (x && want_ground_zero) { untested();
+  if (x && want_ground_zero) {
     assert(x->scope()==x->subckt());
     assert(x->scope()==Scope);
     NODE* gnd = Scope->nodes()->new_node("0");

@@ -59,12 +59,15 @@ node_t::node_t(node_t&& p)
   }
 }
 /*--------------------------------------------------------------------------*/
+#ifndef NDEBUG
 extern NODE ground_node;
+#endif
 node_t::node_t(NODE* n)
   :_nnn(n),
    _index(n->user_number()),
    _m(n->matrix_number())
 {
+  assert(n!=&ground_node || _m==0);
 }
 /*--------------------------------------------------------------------------*/
 node_t& node_t::operator=(const node_t& p)

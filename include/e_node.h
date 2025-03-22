@@ -149,10 +149,6 @@ private:
 public:
   int	      m_()const	{return _m;}
 
-  int	      t_()const {
-    return _index;
-  }	// e_cardlist.cc:CARD_LIST::map_subckt_nodes:436 and
-	// e_node.h:node_t::map:263,265 only
   bool is_valid() const { untested();
     return _link || _nnn;
   }

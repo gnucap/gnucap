@@ -296,9 +296,9 @@ static void map_toplevel_nodes(CARD_LIST& tcl)
     NODE* n = (*p).second;
     assert(n->net_nodes()==1);
 
-    if(un->user_number()==0){ untested();
+    if(un->user_number()==0){
       n->n_(0).map_subckt_node(&top_nodes[0], nullptr);
-    }else if(un->is_global()){ untested();
+    }else if(un->is_global()){
       // node has link. must be global.. map as usual
       n->n_(0).map_subckt_node(&top_nodes[0], nullptr);
     }else{
