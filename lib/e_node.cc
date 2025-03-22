@@ -171,8 +171,12 @@ void node_t::new_node(const std::string& node_name, const CARD* Owner)
 				   // temporary. will _link instead.
   // assert(is_connected()); // for now.
   assert(_nnn);
-  _ttt = _nnn->user_number();
-  _nnn->set_owner(nullptr);
+  _ttt = _nnn->user_number(); // BUG. _nnn is a USER_NODE. don't copy
+  if(_ttt==0){
+    assert(_nnn==&ground_node);
+  }else{
+  }
+  _nnn->set_owner(nullptr); // Owner?
 }
 /*--------------------------------------------------------------------------*/
 // free memory. NODES are owned by roots in the union forest, but path
@@ -207,6 +211,14 @@ void node_t::map_subckt_node(int* m, const CARD* d)
   if (e_() != INVALID_NODE) {
     if (node_is_valid(m[e_()])) {
       _ttt = m[e_()];
+      if(_ttt==0){
+	if(_own){ untested();
+	  delete _nnn;
+	}else{
+	}
+	_nnn = &ground_node;
+      }else{
+      }
     }else{
       throw Exception(d->long_label() + ": need more nodes");
     }

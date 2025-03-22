@@ -117,8 +117,13 @@ public:
   int	      m_()const	{return _m;}
 
   int	      t_()const {
-    //assert(_nnn);
-    //assert(_ttt == _nnn->flat_number());
+    if(!_nnn){
+    }else if(_ttt == 0){
+      // has been set to ground? ddid not update _nnn?
+      incomplete();
+    }else{
+      incomplete();
+    }
     return _ttt;
   }	// e_cardlist.cc:CARD_LIST::map_subckt_nodes:436 and
 	// e_node.h:node_t::map:263,265 only
