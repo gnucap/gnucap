@@ -34,7 +34,7 @@ XPROBE CARD::ac_probe_ext(const std::string&)const {return XPROBE(NOT_VALID, mtN
 /*--------------------------------------------------------------------------*/
 CARD::CARD()
   :CKT_BASE(),
-   _subckt(0),
+   _subckt(nullptr),
    _owner_tag(0),
    _probes(0),
    _constant(false)
@@ -43,7 +43,7 @@ CARD::CARD()
 /*--------------------------------------------------------------------------*/
 CARD::CARD(const std::string& S)
   :CKT_BASE(S),
-   _subckt(0),
+   _subckt(nullptr),
    _owner_tag(0),
    _probes(0),
    _constant(false)
@@ -52,7 +52,7 @@ CARD::CARD(const std::string& S)
 /*--------------------------------------------------------------------------*/
 CARD::CARD(const CARD& p)
   :CKT_BASE(p),
-   _subckt(0), //BUG// isn't this supposed to copy????
+   _subckt(nullptr), //BUG// isn't this supposed to copy????
    _owner_tag(0),
    _probes(0),
    _constant(p._constant)

@@ -9,7 +9,7 @@ r4 4 0 10k
 .list
 .print op v(nodes)
 .op
-.print dc v(nodes)
+.print dc v(nodes) iter(0)
 .dc v1 -10 10 1
 .dc v1 1 100 decade 5
 .dc v1 32 68 9
