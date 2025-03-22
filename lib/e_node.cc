@@ -62,8 +62,7 @@ node_t::node_t(node_t&& p)
 /*--------------------------------------------------------------------------*/
 node_t::node_t(NODE* n)
   :_nnn(n),
-   // _ttt(n->user_number()),
-   _m(to_internal(n->user_number()))
+   _m(to_internal(n->flat_number()))
 {
 }
 /*--------------------------------------------------------------------------*/
@@ -125,7 +124,7 @@ node_t& node_t::set_own(NODE* n)
 {
   operator=(n);
   _own = true; // take ownership.
-  _index = n->user_number();
+  _index = 0; // n->user_number();
   return *this;
 }
 /*--------------------------------------------------------------------------*/

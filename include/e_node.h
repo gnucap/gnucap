@@ -52,8 +52,12 @@ public:
   CARD* clone()const override	{untested(); return new NODE(*this);}
 
 public: // raw data access (rvalues)
+<<<<<<< HEAD
   virtual int user_number()const	{/*ground only*/return 0;}
   //int	flat_number()const	{itested();return _flat_number;}
+=======
+  virtual int flat_number()const	{return 0;} // only ground.
+>>>>>>> 7f72764c1 (cleanup user_number)
 public: // simple calculated data access (rvalues)
   virtual int	matrix_number()const	{untested(); return 0;}// only gnd getting here.
   int	m_()const		{return matrix_number();}
