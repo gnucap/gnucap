@@ -24,8 +24,9 @@
 //testing=script,complete 2006.07.14
 #include "e_node.h"
 #include "u_nodemap.h"
+#include "u_node.h"
 /*--------------------------------------------------------------------------*/
-NODE ground_node("0",0);
+NODE ground_node("0", 0);
 /*--------------------------------------------------------------------------*/
 NODE_MAP::NODE_MAP()
 {
@@ -42,8 +43,9 @@ NODE_MAP::NODE_MAP(const NODE_MAP&)
   unreachable();
   for (iterator i = map().begin(); i != map().end(); ++i) { untested();
     if (i->first != "0") { untested();
-      assert(i->second);
-      i->second = new NODE(i->second);
+      incomplete(); // not used yet.
+      // assert(i->second);
+      // i->second = new NODE(i->second);
     }else{ untested();
     }
   }
@@ -72,12 +74,13 @@ NODE_MAP::~NODE_MAP()
  */
 NODE* NODE_MAP::operator[](std::string s)
 {
-  const_iterator i = map().find(s);
+  iterator i = map().find(s);
   if (i != map().end()) {
     return i->second;
   }else if (OPT::case_insensitive) {
-    notstd::to_lower(&s);
-    i = map().find(s);
+    std::string ls(s);
+    notstd::to_lower(&ls);
+    i = map().find(ls);
   }else{
     return nullptr;
   }
@@ -88,20 +91,21 @@ NODE* NODE_MAP::operator[](std::string s)
  * creates a new one if it isn't already there.
  */
 NODE* NODE_MAP::new_node(std::string s)
-{  
+{
   if (OPT::case_insensitive) {
     notstd::to_lower(&s);
   }else{
   }
-  NODE* node = map()[s];
+  NODE*& node = map()[s];
 
   // increments how_many() when lookup fails (new s)  
   if (!node) {
-    node = new NODE(s, how_many());
-    //                 ^^^^ is really the map number of the new node
-    map()[s] = node;
+    trace2("MAP::new_node", s, how_many());
+    // temporary. may need USER_NODE here eventually.
+    node = new USER_NODE(s, how_many());
+    //                      ^^^^ is really the map number of the new node
+  }else{
   }
-  assert(node);
   return node;
 }
 /*--------------------------------------------------------------------------*/

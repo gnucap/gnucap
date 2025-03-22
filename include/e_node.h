@@ -36,33 +36,27 @@ enum {
   INVALID_NODE = -1
 };
 /*--------------------------------------------------------------------------*/
+// base class for various NODEs
+// avoiding stuff that is not needed everywere.
+// shield from accidental use
 class NODE : public CARD {
-private:
-  // meets short,int,bool (7 bytes)
-  int	_user_number;
-  //int	_flat_number;
-  //int	_matrix_number;
 protected:
-  explicit NODE();
+  explicit NODE() : CARD() {}
 private: // inhibited
-  explicit NODE(const NODE& p);
+  explicit NODE(const NODE& p) : CARD(p) {unreachable();}
 public:
   explicit NODE(const NODE* p); // u_nodemap.cc:49 (deep copy)
-  explicit NODE(const std::string& s, int n);
+  explicit NODE(const std::string& s, int idx=0) : CARD(s) {assert(!idx);}
   ~NODE() {}
 
   CARD* clone()const override	{untested(); return new NODE(*this);}
 
 public: // raw data access (rvalues)
-  int	user_number()const	{return _user_number;}
+  virtual int user_number()const	{/*ground only*/return 0;}
   //int	flat_number()const	{itested();return _flat_number;}
 public: // simple calculated data access (rvalues)
-  int	matrix_number()const	{return _sim->_nm[_user_number];}
+  int	matrix_number()const	{return _sim->_nm[user_number()];} // TODO: -> MATRIX_NODE
   int	m_()const		{return matrix_number();}
-public: // maniputation
-  NODE&	set_user_number(int n)	{_user_number = n; return *this;}
-  //NODE& set_flat_number(int n) {itested();_flat_number = n; return *this;}
-  //NODE& set_matrix_number(int n){untested();_matrix_number = n;return *this;}
 public: // virtuals
   double	tr_probe_num(const std::string&)const override;
   XPROBE	ac_probe_ext(const std::string&)const override;
@@ -91,7 +85,7 @@ public: // virtuals
     return _sim->_ac[m_()];
   }
 };
-extern NODE ground_node;
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 class INTERFACE node_t {
 private: // this should eventually fit into 64 bits.
@@ -157,8 +151,9 @@ public:
 
   explicit    node_t();
 	      node_t(const node_t&);
+  explicit    node_t(int i) : _ttt(i) {}
   explicit    node_t(NODE*);
-	      ~node_t() {}
+	      ~node_t();
 
 private: // raw data access (lvalues)
   LOGIC_NODE&	data()const;
@@ -167,8 +162,11 @@ public:
   //LOGIC_NODE&	    operator*()const	{untested();return data();}
   const LOGIC_NODE* operator->()const	{return &data();}
   LOGIC_NODE*	    operator->()	{return &data();}
+  operator bool()const {return _nnn;}
 
   node_t& operator=(const node_t& p);
+  node_t& operator=(NODE* p);
+  node_t& set_own(NODE* p);
 
   bool operator==(const node_t& p) {return _nnn==p._nnn && _ttt==p._ttt && _m==p._m;}
 

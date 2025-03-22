@@ -263,6 +263,7 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 	}
 	//----------------------
 	if (!(x->node_is_connected(index))) {untested();
+	  assert(0);
 	  break; // illegal node name, might be proper exit.
 	}else{
 	  if (all_new) {

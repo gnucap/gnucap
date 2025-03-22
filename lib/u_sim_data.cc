@@ -298,7 +298,7 @@ void SIM_DATA::alloc_hold_vectors()
   _nstat = new LOGIC_NODE[_total_nodes+1];
   for (int ii=0;  ii <= _total_nodes;  ++ii) {
     _nstat[_nm[ii]].set_owner(nullptr);
-    _nstat[_nm[ii]].set_user_number(ii);
+    _nstat[_nm[ii]].set_user_number(ii); // BUG
   }
 
   assert(!_vdc);

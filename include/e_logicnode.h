@@ -32,6 +32,12 @@ class MODEL_LOGIC;
 #define qGOOD	 (OPT::transits)
 /*--------------------------------------------------------------------------*/
 class INTERFACE LOGIC_NODE : public NODE {
+private: // BUG. transition
+  int _user_number{0};
+  int user_number()const override {return _user_number;}
+public: // BUG: _nstat ...
+  void set_user_number(int i) { _user_number=i; }
+
 private:
   const MODEL_LOGIC *_family;	/* logic family */
   int 	      _d_iter;		/* iteration of last update - digital */
