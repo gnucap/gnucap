@@ -190,7 +190,7 @@ protected:
   bool _input{false};
 private:
   void dump(std::ostream& o)const override {itested();
-    if (!_input) { untested();
+    if (!_input) {itested();
       o << "NA";
     }else{ itested();
       o << _data;

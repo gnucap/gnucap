@@ -102,7 +102,7 @@ public:
       o<<"-inf";
     // }else if (_data==NOT_INPUT) { untested();
     //   o<<"NA";
-    }else{ untested();
+    }else{itested();
       o<<_data;
     }
   }

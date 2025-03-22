@@ -480,7 +480,7 @@ void DEV_SUBCKT::expand()
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
     }
     assert(!_parent->is_device()); // really?
-  }else{ untested();
+  }else{itested();
   }
 
   trace1("DEV_SUBCKT::expand1", max_nodes());
