@@ -1,0 +1,22 @@
+ground gnd; 
+module net (.a(i),.b(i));
+endmodule // net
+
+net #() s1 (.a(\2 ),.b(\1 ));
+isource #(.dc(1)) v1 (.p(gnd),.n(\1 ));
+resistor #(.r(2)) r1 (.p(\2 ),.n(gnd));
+resistor #(.r(2)) r2 (.p(\2 ),.n(\1 ));
+#           v(1)       v(2)       i(r1)      v(gnd)    
+ 27.        2.         2.         1.         0.        
+Gnucap   System status
+iterations: op=4, dc=0, tran=0, fourier=0, total=4
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%
+#           v(1)       v(2)       i(r1)     
+ 27.        2.        -4.p        1.        
+Gnucap   System status
+iterations: op=4, dc=0, tran=0, fourier=0, total=8
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=77.8%, ac density=77.8%

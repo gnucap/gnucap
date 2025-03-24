@@ -31,11 +31,13 @@
 #include "e_model.h"
 #include "e_elemnt.h"
 #include "bm.h"
+#include "u_node.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
 static const bool add_mfactor = true; // allow $mfactor
 static const bool alias_m_mfactor = true; // treat m as mfactor when rejected.
+static const bool want_ground_zero = true; // "ground 0;"
 /*--------------------------------------------------------------------------*/
 class LANG_SPICE_BASE : public LANGUAGE {
 public:
@@ -77,6 +79,14 @@ private: // local
   void print_args(OMSTREAM&, const COMPONENT*);
   void print_label(OMSTREAM&, const COMPONENT*);
   void print_ports(OMSTREAM&, const COMPONENT*);
+public:
+  void set_ground(CARD_LIST* Scope) { untested();
+    if(want_ground_zero) { untested();
+      CMD::command(".ground 0", Scope);
+      // CMD::command(".global 0", Scope);
+    }else{ untested();
+    }
+  }
 };
 /*--------------------------------------------------------------------------*/
 class LANG_SPICE : public LANG_SPICE_BASE {
@@ -226,6 +236,7 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 			     int start, int num_nodes, bool all_new)
 {
   assert(x);
+  trace3("parse_ports", start, num_nodes, all_new);
 
   int paren = cmd.skip1b('(');
   int index = start;
@@ -238,7 +249,7 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 	break; // done.  have closing paren.
       }else if (index >= num_nodes) {
 	break; // done.  have maxnodes.
-      }else if (!cmd.more()) {untested();
+      }else if (!cmd.more()) {
 	break; // done.  premature end of line.
       }else if (OPT::keys_between_nodes &&
 		(cmd.umatch("poly ")
@@ -254,6 +265,13 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 	size_t here = cmd.cursor();
 	std::string node_name;
 	cmd >> node_name;
+	int mapsize = 0;
+	if (all_new) {
+	  assert(x->subckt());
+	  assert(x->subckt()->nodes());
+	  mapsize = x->subckt()->nodes()->size();
+	}else{
+	}
 	if (cmd.stuck(&here)) {untested();
 	  // didn't move, probably a terminator.
 	  throw Exception("bad node name");
@@ -262,13 +280,18 @@ void LANG_SPICE_BASE::parse_ports(CS& cmd, COMPONENT* x, int minnodes,
 	  x->set_port_by_index(index, node_name);
 	}
 	//----------------------
-	if (!(x->node_is_connected(index))) {untested();
+	if (/*node_name!="0" && */!(x->node_is_connected(index))) {untested();
 	  break; // illegal node name, might be proper exit.
-	}else{
+        }else{
+	  //?
+	}
+
+	{
 	  if (all_new) {
-	    if (x->node_is_grounded(index)) {
+	    if (/*x->node_is_grounded(index)*/ node_name=="0") {
 	      cmd.warn(bDANGER, here1, "node 0 not allowed here");
-	    }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {
+	    }else if (x->subckt() && x->subckt()->nodes()->size() == mapsize) {
+	      trace3("hmm", node_name, x->subckt()->nodes()->size(), index);
 	      cmd.warn(bDANGER, here1, "duplicate port name, skipping");
 	    }else{
 	      ++index;
@@ -558,6 +581,16 @@ BASE_SUBCKT* LANG_SPICE_BASE::parse_module(CS& cmd, BASE_SUBCKT* x)
 void LANG_SPICE_BASE::parse_module_body(CS& cmd, BASE_SUBCKT* x, CARD_LIST* Scope,
 		const std::string& prompt, EOB exit_on_blank, const std::string& exit_key)
 {
+  if (x && want_ground_zero) {
+    assert(x->scope()==x->subckt());
+    assert(x->scope()==Scope);
+    NODE* gnd = Scope->nodes()->new_node("0");
+    USER_NODE* g = prechecked_cast<USER_NODE*>(gnd);
+    assert(g);
+    g->set_to_ground();
+  }else{
+  }
+
   try {
     for (;;) {
       cmd.get_line(prompt);
@@ -905,7 +938,10 @@ static void getmerge(CS& cmd, Skip_Header skip_header, CARD_LIST* Scope)
   }
   cmd.check(bWARNING, "need section, echo, list, or quiet");
 
+ // lang_spice.set_ground(Scope);
+
   CS file(CS::_INC_FILE, file_name);
+  trace2("file_name", file_name, bool(file));
 
   if (skip_header) { // get and store the header line
     file.get_line(">>>>");
@@ -1040,6 +1076,7 @@ class CMD_SPICE : public CMD {
 public:
   void do_it(CS&, CARD_LIST* Scope)override {
     command("options lang=spice", Scope);
+   // lang_spice.set_ground(Scope);
   }
 } p8;
 DISPATCHER<CMD>::INSTALL d8(&command_dispatcher, "spice|`spice", &p8);

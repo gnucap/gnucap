@@ -1,5 +1,6 @@
  
-x1: need more nodes
+#          
+ 27.       
 .subckt foo ( 1 2 3 4 )
 e1 ( 1 2 3 4 )  1.
 .ends foo

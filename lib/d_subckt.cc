@@ -54,7 +54,7 @@ static void grow_nodes(int Index, node_t*& n, int& capacity, int capacity_floor)
     }
     node_t* new_nodes = new node_t[new_capacity];
     for(int i=0; i<capacity; ++i){
-      new_nodes[i] = n[i];
+      new_nodes[i] = std::move(n[i]);
     }
     delete[] n;
     n = new_nodes;
@@ -190,7 +190,7 @@ public: // override virtual
   CARD*		clone()const override		{return new DEV_SUBCKT_PROTO(*this);}
   bool		is_device()const override	{return false;}
   bool		makes_own_scope()const override	{return true;}
-  CARD_LIST*	   scope()override		{untested();return subckt();}
+  CARD_LIST*	   scope()override		{return subckt();}
   const CARD_LIST* scope()const override	{return subckt();}
 private: // no-ops for prototype
   void precalc_first()override {}
@@ -480,16 +480,7 @@ void DEV_SUBCKT::expand()
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
     }
     assert(!_parent->is_device()); // really?
-  }else if(_sim->is_first_expand()){
-    trace1("DEV_SUBCKT::expand0", max_nodes());
-    for(int i=0; i<max_nodes(); ++i) {
-      if(n_(i).is_connected()){
-      }else{
-	n_(i).new_model_node("." + long_label() + "." + port_name(i), this);
-	n_(i).n_()->set_label("");
-      }
-    }
-  }else{ untested();
+  }else{itested();
   }
 
   trace1("DEV_SUBCKT::expand1", max_nodes());

@@ -166,6 +166,18 @@ bool ELEMENT::skip_dev_type(CS& cmd)
   return cmd.umatch(dev_type() + ' ');
 }
 /*--------------------------------------------------------------------------*/
+void ELEMENT::expand_last()
+{
+  trace4("ELEMENT::expand_last", long_label(), ext_nodes(), int_nodes(), net_nodes());
+  COMPONENT::expand_last();
+
+  // deal with internal nodes requested with new_model_node
+  // can't use CARD_LIST::expand, because there is no sckt
+  for(int i=ext_nodes()+int_nodes(); i>net_nodes();){
+    n_(--i).allocate(2);
+  }
+}
+/*--------------------------------------------------------------------------*/
 void ELEMENT::precalc_last()
 {
   COMPONENT::precalc_last();

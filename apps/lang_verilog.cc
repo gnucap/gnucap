@@ -345,7 +345,7 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	    if (x->node_is_grounded(Index)) {
 	      cmd.warn(bDANGER, here, "node 0 not allowed here");
 	      --Index;
-	    }else if (x->subckt() && x->subckt()->nodes()->how_many() != Index+1) {
+	    }else if (x->subckt() && x->subckt()->nodes()->size() != Index+1) {
 	      cmd.warn(bDANGER, here, "duplicate port name, skipping");
 	      --Index;
 	    }else{
@@ -870,7 +870,7 @@ void LANG_VERILOG::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 }
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::print_command(OMSTREAM& o, const DEV_DOT* x)
-{untested();
+{
   assert(x);
   o << x->s() << '\n';
 }

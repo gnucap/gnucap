@@ -33,6 +33,14 @@ class MODEL_LOGIC;
 /*--------------------------------------------------------------------------*/
 class INTERFACE LOGIC_NODE : public NODE {
 private:
+  int _flat_number{0};
+//  int user_number()const override { return _flat_number;} // obsolete.
+  int flat_number()const {return _flat_number;}
+public: // BUG: _nstat ...
+  void set_flat_number(int i) { _flat_number=i; }
+  int	matrix_number()const override;
+
+private:
   const MODEL_LOGIC *_family;	/* logic family */
   int 	      _d_iter;		/* iteration of last update - digital */
   int 	      _a_iter;		/* iteration of last update - analog */
@@ -120,7 +128,8 @@ public: // action, used by logic
 private: // inhibited
   explicit LOGIC_NODE(const LOGIC_NODE&):NODE(){incomplete();unreachable();}
 public: // general use
-  explicit LOGIC_NODE();
+  explicit LOGIC_NODE(std::string const& s) : NODE(s), _flat_number{INVALID_NODE} {}
+  explicit LOGIC_NODE(int i=-1);
 	   ~LOGIC_NODE() {}
 
 public: // used by matrix

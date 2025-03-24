@@ -27,6 +27,7 @@
 #include "e_node.h"
 #include "u_nodemap.h"
 #include "e_model.h"
+#include "m_union.h"
 /*--------------------------------------------------------------------------*/
 #define trace_func_comp() trace1(__func__, (**ci).short_label())
 /*--------------------------------------------------------------------------*/
@@ -37,10 +38,21 @@ CARD_LIST::CARD_LIST()
 {
 }
 /*--------------------------------------------------------------------------*/
+CARD_LIST::CARD_LIST(CARD_LIST::with_ground)
+  :_parent(nullptr),
+   _nm(new NODE_MAP),
+   _params(nullptr)
+{
+  // NB: erase_all does not clear the node map.
+  //     perhaps it should, but it must retain "0".
+  _nm->new_node("0");
+  assert(_nm->size()==1);
+  // assert(CARD_LIST::card_list.nodes()->at(0).is_grounded()); later.
+}
+/*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
 		     const CARD_LIST* scope, PARAM_LIST const* p)
   :_parent(nullptr),
-   _nm(new NODE_MAP),
    _params(nullptr)
 {
   assert(model);
@@ -53,6 +65,8 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
   attach_params(p, scope);
   shallow_copy(model->subckt());
   //set_owner(owner);
+
+  _nm = new NODE_MAP(*model->subckt()->nodes());
   map_subckt_nodes(model, owner);
 }
 /*--------------------------------------------------------------------------*/
@@ -112,8 +126,8 @@ CARD_LIST& CARD_LIST::erase(iterator ci)
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::erase(CARD* c)
-{untested();
-  if (c) {untested();
+{
+  if (c) {
     c->purge();
     delete c;
     _cl.remove(c);
@@ -173,7 +187,7 @@ CARD_LIST& CARD_LIST::expand()
     trace_func_comp();
     (**ci).expand_first();
   }
-  for (iterator ci=begin(); ci!=end(); ++ci) { // TODO: reverse.
+  for (reverse_iterator ci=rbegin(); ci!=rend(); ++ci) {
     trace_func_comp();
     (**ci).expand();
   }
@@ -181,6 +195,14 @@ CARD_LIST& CARD_LIST::expand()
     trace_func_comp();
     (**ci).expand_last();
   }
+
+  // fill in missing nodes.
+  assert(nodes());
+  for(int i = nodes()->size(); i;) {
+    int select_counter = this==&CARD_LIST::card_list;
+    nodes()->at(--i).allocate(select_counter);
+  }
+
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -206,6 +228,11 @@ CARD_LIST& CARD_LIST::precalc_last()
  */
 CARD_LIST& CARD_LIST::map_nodes()
 {
+  if(_nm){
+    // needed for probes
+    _nm->map_nodes();
+  }else{ untested();
+  }
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
     (**ci).map_nodes();
@@ -516,6 +543,9 @@ void CARD_LIST::shallow_copy(const CARD_LIST* p)
 }
 /*--------------------------------------------------------------------------*/
 // set up the map of external to expanded node numbers
+#ifndef NDEBUG
+extern NODE ground_node;
+#endif
 void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 {
   assert(model);
@@ -524,45 +554,56 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   assert(owner);
   //assert(owner->subckt());
   //assert(owner->subckt() == this);
+  if(owner->subckt()) { untested();
+    assert(owner->subckt() == this);
+  }else{
+    // coming from e_card.cc:253, presumably
+  }
   trace0(model->long_label().c_str());
   trace0(owner->long_label().c_str());
+  assert(nodes());
 
-  int num_nodes_in_subckt = model->subckt()->nodes()->how_many();
-  trace2("",  model->net_nodes(),  num_nodes_in_subckt);
-  assert(model->net_nodes() <= num_nodes_in_subckt);
-  int* map = new int[num_nodes_in_subckt+1];
-  {
-    map[0] = 0;
-    // self test: verify that port node numbering is correct
-    for (int port = 0; port < model->net_nodes(); ++port) {
-      assert(model->n_(port).e_() <= num_nodes_in_subckt);
-      //assert(model->n_(port).e_() == port+1);
-      trace3("ports", port, model->n_(port).e_(), owner->n_(port).t_());
-    }
-    {
-      // take care of the "port" nodes (external connections)
-      // map them to what the calling circuit wants
-      int i=0;
-      for (i=1; i <= model->net_nodes(); ++i) {
-	assert(i <= num_nodes_in_subckt);
-	map[i] = owner->n_(i-1).t_();
-	trace3("ports", i, map[i], owner->n_(i-1).t_());
-      }
-    
-      // get new node numbers, and assign them to the remaining
-      for (assert(i==model->net_nodes() + 1); i <= num_nodes_in_subckt; ++i) {
-	// for each remaining node in card_list
-	map[i] = CKT_BASE::_sim->newnode_subckt();
-	trace2("internal", i, map[i]);
-      }
-    }
+  int num_nodes_in_subckt = model->subckt()->nodes()->size();
+  trace2("map_sckt_nodes",  model->net_nodes(),  num_nodes_in_subckt);
+  if(model->net_nodes() <= num_nodes_in_subckt){
+  }else{
   }
-  // "map" now contains a translation list,
-  // from subckt local numbers to matrix index numbers
+  assert(owner->net_nodes() <= model->net_nodes());
 
+  NODE_MAP& node_map = *nodes();
+  for (int i=model->net_nodes(); i < num_nodes_in_subckt; ++i) {
+#if 0
+    if(node_map[i].link()){
+      assert(node_map[i].root());
+      assert(node_map[i].root().n_() == &ground_node
+	  || node_map[i].root().n_()->short_label()=="0");
+    }else{
+    }
+#endif
+  }
   // The node list (_nm) in an instance of a subckt does not exist.
   // Device nodes (type node_t) points to the NODE in the parent.
   // Mapping is done in node_t.
+  //
+  // node_map supposedy contains the actual connections
+  { // connect ports. this is probably obsolete.
+    for (int port = 0; port < model->net_nodes(); ++port) {
+      assert(model->n_(port).e_() <= num_nodes_in_subckt);
+      //assert(model->n_(port).e_() == port+1);
+      int idx = model->n_(port).e_();
+      if(owner->n_(port).is_connected()){
+	trace5("connected port", owner->long_label(), idx, port, owner->n_(port).link(), owner->n_(port).e_());
+	build_union(&node_map[idx], &owner->n_(port));
+	assert(&node_map[idx].root()==&owner->n_(port).root());
+      }else{
+	trace5("floating port", owner->long_label(), idx, port, model->n_(port).link(), owner->n_(port).e_());
+	// floating?
+      }
+    }
+    for (int port = 0; port < model->net_nodes(); ++port) {
+      trace3("union2", owner->long_label(), port, &owner->n_(port).root());
+    }
+  }
 
   // scan the list, map the nodes
   for (CARD_LIST::iterator ci = begin(); ci != end(); ++ci) {
@@ -570,18 +611,14 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
-	try{
-	  (**ci).n_(ii).map_subckt_node(map, owner);
-	}catch(...){
-	  delete[] map;
-	  throw;
-	}
+	(**ci).n_(ii).map_subckt_node(&node_map[0], owner);
+	assert(&node_map[(**ci).n_(ii).e_()].root() == &(**ci).n_(ii).root());
       }
     }else{
       assert(dynamic_cast<MODEL_CARD*>(*ci));
     }
   }
-  delete[] map;
+
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

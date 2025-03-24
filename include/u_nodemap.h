@@ -25,32 +25,48 @@
 #ifndef U_NODEMAP_H
 #define U_NODEMAP_H
 #include "md.h"
+#include "e_node.h" // node_t
 /*--------------------------------------------------------------------------*/
 class NODE;
+class node_t;
 /*--------------------------------------------------------------------------*/
 class NODE_MAP {
   typedef std::map<std::string, NODE*> map_t;
+  typedef std::vector<node_t> vector_t;
 public:
   typedef map_t::iterator iterator;
   typedef map_t::const_iterator const_iterator;
 private:
-  map_t _map;
+  map_t* _map{nullptr};
+  vector_t _nodes;
+
+public:
   explicit  NODE_MAP(const NODE_MAP&);
 
 public:
   explicit  NODE_MAP();
 	   ~NODE_MAP();
   NODE*     operator[](std::string);
+  node_t    const& at(int i)const;
+  node_t&          at(int i);
+  node_t    const& operator[](int i)const { untested();return at(i);}
+  node_t&          operator[](int i) {return at(i);}
+
   NODE*     new_node(std::string);
 
+  iterator begin()			{return map().begin();}
+  iterator end()			{return map().end();}
   const_iterator begin()const		{return map().begin();}
   const_iterator end()const		{return map().end();}
-  int		 how_many()const	{return static_cast<int>(map().size()-1);}
-  int		 size()const		{untested(); return static_cast<int>(map().size());}
+  int		 how_many()const	{itested(); return static_cast<int>(map().size());}
+  int		 size()const		{ return static_cast<int>(_nodes.size());}
+
+  std::string const& name(int)const;
+  void map_nodes();
 
 private:
-  map_t& map() {return _map;}
-  map_t const& map() const {return _map;}
+  map_t& map() {assert(_map); return *_map;}
+  map_t const& map() const {assert(_map); return *_map;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

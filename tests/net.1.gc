@@ -1,0 +1,20 @@
+
+
+module net(.a(i), .b(i));
+endmodule
+
+.subckt main
+R1 2 0 1
+*X1 2 1 net
+.net n1 1 2 net
+V1 1 0 1
+.ends
+
+list
+verilog
+
+main Xm();
+
+print op i(Xm.R1)
+op
+status notime

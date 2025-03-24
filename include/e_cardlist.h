@@ -94,8 +94,8 @@ public: // more types
 					{return find_again(short_name, begin());}
 
 private: // expand
-  reverse_iterator rbegin()		{untested(); return _cl.rbegin();}
-  reverse_iterator rend()		{untested(); return _cl.rend();}
+  reverse_iterator rbegin()		{ return _cl.rbegin();}
+  reverse_iterator rend()		{ return _cl.rend();}
 
 public:
   // return a const_iterator
@@ -154,7 +154,9 @@ public:
   void shallow_copy(const CARD_LIST*);
   void map_subckt_nodes(const CARD* model, const CARD* owner);
 
+  enum with_ground {_with_ground};
   explicit CARD_LIST();
+  explicit CARD_LIST(with_ground);
   explicit CARD_LIST(const CARD* model, CARD* owner, const CARD_LIST* scope, PARAM_LIST const* p);
   ~CARD_LIST();
 private:

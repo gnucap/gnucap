@@ -1,0 +1,20 @@
+
+simulator lang=verilog
+
+module sink (a);
+  ground gnd;
+  resistor #(1) r(gnd, a);
+endmodule
+
+ground gg
+vsource #(3) v1(\2 ,\1 );
+resistor #(2) r(gg, \2 );
+sink s(\1 );
+
+list
+
+print op v(nodes) i(v1) v(s.r) v(r)
+op
+
+status notime
+end

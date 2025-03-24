@@ -28,6 +28,9 @@
 #include "e_subckt.h"
 #include "e_model.h"
 #include "u_lang.h"
+#include "u_node.h"
+/*--------------------------------------------------------------------------*/
+static const bool want_ground_zero = true; // "ground 0;"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -115,11 +118,18 @@ static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
       try{
 	std::string value;
 	cmd >> value;
+	int mapsize = 0;
+	if (all_new) {
+	  assert(x->subckt());
+	  assert(x->subckt()->nodes());
+	  mapsize = x->subckt()->nodes()->size();
+	}else{
+	}
 	x->set_port_by_index(index, value);
 	if (all_new) {
-	  if (x->node_is_grounded(index)) {
+	  if (value == "0"/*x->node_is_grounded(index)*/) {
 	    cmd.warn(bDANGER, here, "node 0 not allowed here");
-	  }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {
+	  }else if (x->subckt() && x->subckt()->nodes()->size() != mapsize+1) {
 	    cmd.warn(bDANGER, here, "duplicate port name, skipping");
 	  }else{
 	    ++index;
@@ -145,9 +155,9 @@ static void parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	cmd >> value;
 	x->set_port_by_index(index, value);
 	if (all_new) {untested();
-	  if (x->node_is_grounded(index)) {untested();
+	  if (value == "0" /*x->node_is_grounded(index)*/) {untested();
 	    cmd.warn(bDANGER, here, "node 0 not allowed here");
-	  }else if (x->subckt() && x->subckt()->nodes()->how_many() != index+1) {untested();
+	  }else if (x->subckt() && x->subckt()->nodes()->size() != index+1) {untested();
 	    cmd.warn(bDANGER, here, "duplicate port name, skipping");
 	  }else{untested();
 	    ++index;
@@ -229,6 +239,17 @@ BASE_SUBCKT* LANG_SPECTRE::parse_module(CS& cmd, BASE_SUBCKT* x)
   cmd >> "subckt ";
   parse_label(cmd, x);
   parse_ports(cmd, x, true/*all new*/);
+
+  if (want_ground_zero) {
+    assert(x->scope()==x->subckt());
+    CARD_LIST* scope = x->scope();
+    assert(scope);
+    NODE* g = scope->nodes()->new_node("0");
+    USER_NODE* gnd = prechecked_cast<USER_NODE*>(g);
+    assert(gnd);
+    gnd->set_to_ground();
+  }else{
+  }
 
   // body
   for (;;) {

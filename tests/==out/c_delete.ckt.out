@@ -38,7 +38,7 @@ C3 ( 5 0 )  2.
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
- 27.        1.         0.5        0.         0.         0.        
+ 27.        1.         0.5        ??         0.         0.        
 >>>>>.delete L* 
 .delete L* 
         ^ ? no match
@@ -50,9 +50,15 @@ C1 ( 4 0 )  5.
 C2 ( 4 5 )  5.
 C3 ( 5 0 )  2.
 >>>>>.print op v(nodes) 
+>>>>>.status notime 
+Gnucap   System status
+iterations: op=3, dc=0, tran=0, fourier=0, total=9
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=4, subckt=0, model=0, total=4
+dctran density=50.0%, ac density=50.0%
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
- 27.        1.         0.5        0.         0.         0.        
+ 27.        1.         0.5        ??         0.         0.        
 >>>>>.delete c* 
 >>>>>.list 
 V1 ( 1 0 )  DC  1.
@@ -61,7 +67,7 @@ R2 ( 2 0 )  1.
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
- 27.        1.         0.5        0.         0.         0.        
+ 27.        1.         0.5        ??         ??         ??        
 >>>>>.delete r2 
 >>>>>.list 
 V1 ( 1 0 )  DC  1.
@@ -69,11 +75,17 @@ R1 ( 1 2 )  1.
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
- 27.        1.         1.         0.         0.         0.        
+ 27.        1.         1.         ??         ??         ??        
 >>>>>.delete r* 
 >>>>>.list 
 V1 ( 1 0 )  DC  1.
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
- 27.        1.         0.         0.         0.         0.        
+ 27.        1.         ??         ??         ??         ??        
+>>>>>.status notime 
+Gnucap   System status
+iterations: op=3, dc=0, tran=0, fourier=0, total=21
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%

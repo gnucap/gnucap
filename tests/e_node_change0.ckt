@@ -54,12 +54,13 @@ v2 1 0 0
 .status notime
 .portdump
 
+* BUG/feature? norstray does not trigger re-expand
 .options norstray
 .DC
 .status notime
 .portdump
 
-* BUG: !is_first_expand and rstray change hits assertion
-* delete v2
-* .DC
-* .status notime
+* .. but device change does.
+.delete v2
+.DC
+.status notime

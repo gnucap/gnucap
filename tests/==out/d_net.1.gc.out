@@ -1,0 +1,48 @@
+module net (.a(i),.b(i));
+endmodule // net
+
+#           v(m.r)    
+ 0.         1.        
+module net (.a(i),.b(i));
+endmodule // net
+
+module main ();
+ground \0 ; 
+resistor #(.r(1)) r (.p(n),.n(\0 ));
+isource #(.dc(1)) i (.p(\0 ),.n(m));
+net #() n1 (.a(n),.b(m));
+endmodule // main
+
+main #() m ();
+Gnucap   System status
+iterations: op=0, dc=4, tran=0, fourier=0, total=4
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=0, subckt=1, model=0, total=1
+dctran density=100.0%, ac density=100.0%
+name   ...
+have 1 nodes. model: 0 sckt: 1
+
+net 2 2 0
+0 -1
+1 -1
+main 0 0 0
+ 
+ main.r 2 2 0
+ 0 -1
+ 1 -1
+ main.i 2 2 0
+ 0 -1
+ 1 -1
+ main.n1 2 2 0
+ 0 -1
+ 1 -1
+m 0 0 0
+ m.r 2 2 0
+ 0 1
+ 1 0
+ m.i 2 2 0
+ 0 0
+ 1 1
+ m.n1 2 2 0
+ 0 1
+ 1 1

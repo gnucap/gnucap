@@ -24,44 +24,57 @@
 //testing=script,complete 2006.07.14
 #include "e_node.h"
 #include "u_nodemap.h"
+#include "u_node.h"
 /*--------------------------------------------------------------------------*/
-NODE ground_node("0",0);
+NODE ground_node("0", 0);
 /*--------------------------------------------------------------------------*/
 NODE_MAP::NODE_MAP()
 {
-  map()["0"] = &ground_node;
+  _map = new map_t;
 }
 /*--------------------------------------------------------------------------*/
 /* copy constructor: deep copy
- * The std::map copy constructor does a shallow copy,
- * then replace second with a deep copy.
+ * replicate number of nodes and their names
  */
-NODE_MAP::NODE_MAP(const NODE_MAP&)
-{ untested();
-  incomplete();
-  unreachable();
-  for (iterator i = map().begin(); i != map().end(); ++i) { untested();
-    if (i->first != "0") { untested();
-      assert(i->second);
-      i->second = new NODE(i->second);
-    }else{ untested();
+NODE_MAP::NODE_MAP(const NODE_MAP& p)
+{
+  _map = new map_t(); // additional names
+		    // TODO: share/keep exising names
+  _nodes.resize(p.size());
+
+  for(int i = 0; i<p.size(); ++i){
+    trace2("NODE_MAP::NODE_MAP", i, p._nodes[i].link());
+  }
+  for(auto const& i : p) {
+    assert(i.second);
+    int idx = i.second->user_number();
+    // copy indes, and possibly link to global node or ground
+    _nodes[idx] = i.second->n_(0);
+    trace3("NODE_MAP::NODE_MAP1", idx, i.first, i.second->n_(0).link());
+    trace3("NODE_MAP::NODE_MAP1", idx, i.first, i.second->n_(0).n_());
+    if(_nodes[idx].link()){
+      // global node, ground
+    }else{
+      // allocate one, later.
     }
   }
 }
 /*--------------------------------------------------------------------------*/
 NODE_MAP::~NODE_MAP()
 {
-  if(1 /*map*/) {
+  if(_map) {
     for (iterator i = map().begin(); i != map().end(); ++i) {
-      if (i->second != &ground_node) {
+      if (!i->second){
+	incomplete();
+      }else if (i->second != &ground_node) {
 	assert(i->second);
 	i->second->purge();
 	delete i->second;
       }else{
       }
     }
-   // delete _map;
-   // _map = nullptr;
+    delete _map;
+    _map = nullptr;
   }else{ untested();
     incomplete();
   }
@@ -72,37 +85,97 @@ NODE_MAP::~NODE_MAP()
  */
 NODE* NODE_MAP::operator[](std::string s)
 {
+  assert(_map);
   const_iterator i = map().find(s);
   if (i != map().end()) {
     return i->second;
   }else if (OPT::case_insensitive) {
     notstd::to_lower(&s);
-    i = map().find(s);
+    i = _map->find(s);
   }else{
     return nullptr;
   }
-  return (i != map().end()) ? i->second : nullptr;
+  return (i != _map->end()) ? i->second : nullptr;
+}
+/*--------------------------------------------------------------------------*/
+node_t const& NODE_MAP::at(int i)const
+{
+  assert(i<int(_nodes.size()));
+  return _nodes[i];
+}
+/*--------------------------------------------------------------------------*/
+node_t& NODE_MAP::at(int i)
+{
+  assert(i<int(_nodes.size()));
+  return _nodes[i];
 }
 /*--------------------------------------------------------------------------*/
 /* return a pointer to a node given a string
  * creates a new one if it isn't already there.
  */
 NODE* NODE_MAP::new_node(std::string s)
-{  
+{
   if (OPT::case_insensitive) {
     notstd::to_lower(&s);
   }else{
   }
-  NODE* node = map()[s];
+  assert(_map);
+  NODE*& node = map()[s];
 
-  // increments how_many() when lookup fails (new s)  
+  // increments how_many() when lookup fails (new s)░░
   if (!node) {
-    node = new NODE(s, how_many());
-    //                 ^^^^ is really the map number of the new node
-    map()[s] = node;
+    node = new USER_NODE(s, size());
+    //                      ^^^^ is really the map number of the new node
+    node->set_owner(nullptr); // here?
+    _nodes.push_back(node_t());
+    assert(node->user_number() == size()-1);
   }
   assert(node);
+  assert(_map->size() == _nodes.size());
   return node;
+}
+/*--------------------------------------------------------------------------*/
+std::string const& NODE_MAP::name(int i) const
+{
+  assert(i<size());
+  static std::string dunno("??????");
+  node_t const& n = at(i);
+  if(n.n_()) {
+    std::string const& l = n.n_()->short_label();
+    assert(!_map || _map->at(l)->user_number() == i);
+    trace2("NODE_MAP::name", i, l);
+    return l;
+  }else if(_map){
+    // fallback, getting here in a few corner cases,
+    // top level only.
+    for(auto const& p : map()){
+      assert(p.second);
+      if(p.second->user_number() == i){
+	return p.first;
+      }else{
+      }
+    }
+    unreachable();
+    return dunno;
+  }else{ untested();
+    unreachable();
+    return dunno;
+  }
+}
+/*--------------------------------------------------------------------------*/
+// resurrect string->node map after allocation.
+// nodes are _nodes[idx].n_()
+void NODE_MAP::map_nodes()
+{
+  if(_map) {
+    for(auto& p : *_map){
+      assert(p.second);
+      NODE* n = p.second;
+      n->map_nodes();
+      continue;
+    }
+  }else{ untested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

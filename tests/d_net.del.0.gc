@@ -1,0 +1,24 @@
+verilog
+
+ground gnd;
+module net(.a(i), .b(i));
+endmodule
+
+net s1(\2 , \1 );
+
+isource #(.dc(1)) v1(gnd, \1 );
+resistor #(.r(2)) r1(\2 , gnd)
+resistor #(.r(2)) r2(\2 , \1 )
+
+list
+
+print op v(1) v(2) i(r1) v(gnd)
+op
+status notime
+
+delete s1
+print op v(1) v(2) i(r1)
+op
+status notime
+
+end

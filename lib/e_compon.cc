@@ -25,6 +25,7 @@
 #include "u_lang.h"
 #include "e_model.h"
 #include "e_elemnt.h"
+#include "u_nodemap.h"
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),
@@ -492,6 +493,9 @@ void COMPONENT::set_port_by_index(int num, std::string& ext_name)
   }else{
     throw Exception_Too_Many(num+1, max_nodes(), 0/*offset*/);
   }
+
+  // why store user number in NODE?
+  // assert(n_(num).n_()->user_number() == n_(num).e_());
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_port_to_ground(int num)
@@ -549,6 +553,12 @@ void COMPONENT::deflate_common()
 void COMPONENT::expand()
 {
   CARD::expand();
+  if (_sim->is_first_expand()) {
+    for(int i=net_nodes(); i<ext_nodes()+int_nodes(); ++i){
+      n_(i).clear();
+    }
+  }else{
+  }
   if (has_common()) {
     COMMON_COMPONENT* new_common = common()->clone();
     new_common->expand(this);
@@ -624,6 +634,7 @@ void COMPONENT::map_nodes()
   //assert(min_nodes() <= net_nodes());
   assert(net_nodes() <= max_nodes());
   //assert(ext_nodes() + int_nodes() == matrix_nodes());
+  trace3("COMPONENT::map_nodes", long_label(), ext_nodes(), int_nodes());
 
   for (int ii = 0; ii < ext_nodes()+int_nodes(); ++ii) {
     n_(ii).map();
@@ -860,7 +871,17 @@ const std::string COMPONENT::port_value(int i)const
 {
   assert(i >= 0);
   assert(i < net_nodes());
-  return n_(i).short_label();
+
+  int idx = n_(i).e_();
+  trace3("PV", long_label(), i, idx);
+  assert(scope());
+  assert(scope()->nodes());
+  if(idx>=0){
+    return scope()->nodes()->name(idx);
+  }else{
+    // d_subckt.error.2.gc
+    return "?????";
+  }
 }
 /*--------------------------------------------------------------------------*/
 double COMPONENT::tr_probe_num(const std::string& x)const

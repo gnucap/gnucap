@@ -25,7 +25,7 @@
 #include "e_logicmod.h"
 #include "e_logicnode.h"
 /*--------------------------------------------------------------------------*/
-LOGIC_NODE::LOGIC_NODE()
+LOGIC_NODE::LOGIC_NODE(int i)
   :NODE(),
    _family(0),
    _d_iter(-1), // initially d_iter is older than a_iter
@@ -39,6 +39,10 @@ LOGIC_NODE::LOGIC_NODE()
    _quality(qBAD),
    _failure_mode("initial")
 {
+  if(i!=-1){
+    set_flat_number(i);
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 double LOGIC_NODE::tr_probe_num(const std::string& x)const
@@ -324,6 +328,11 @@ void LOGIC_NODE::set_event(double delay, LOGICVAL v)
 	  long_label().c_str(), d_iter(), final_time());
   }
   set_last_change_time();
+}
+/*--------------------------------------------------------------------------*/
+int LOGIC_NODE::matrix_number() const
+{
+  return _sim->_nm[flat_number()]; // TODO: -> MATRIX_NODE
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

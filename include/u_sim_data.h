@@ -85,7 +85,9 @@ struct INTERFACE SIM_DATA {
 			/*  used to restore after rejected step	*/
   COMPLEX *_ac;		/* ac right side			*/
   COMPLEX *_noise;	/* noise vector				*/
-  LOGIC_NODE* _nstat;	/* digital data				*/
+private:
+  bool _nstat;		/* indicate status, use _vdc?		*/
+public:
   double *_vdc;		/* saved dc voltages			*/
   BSMATRIX<double> _aa;	/* raw matrix for DC & tran */
   BSMATRIX<double>& _lu;/* alias used in modelgen models */
@@ -121,6 +123,7 @@ struct INTERFACE SIM_DATA {
   int init_node_count(int user, int sub, int mod) {
     _user_nodes=user; _subckt_nodes=sub; _model_nodes=mod; return (_total_nodes=user+sub+mod);
   }
+  int newnode_user()   {++_user_nodes;   return ++_total_nodes;}
   int newnode_subckt() {++_subckt_nodes; return ++_total_nodes;}
   int newnode_model()  {++_model_nodes;  return ++_total_nodes;}
   bool is_inc_mode()	 {return _inc_mode;}

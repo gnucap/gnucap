@@ -47,7 +47,7 @@ void SIM::command_base(CS& cmd)
     _sim->_aa.reallocate();
     _sim->_aa.dezero(OPT::gmin);
     _sim->_aa.set_min_pivot(OPT::pivtol);
-    assert(_sim->_nstat);
+    assert(_sim->_vdc);
     ::status.set_up.stop();
 
     switch (ENV::run_mode) {

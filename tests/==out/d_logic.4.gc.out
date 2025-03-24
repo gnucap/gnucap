@@ -1,0 +1,134 @@
+myda.i0: can't find subckt: logicinv1, forcing digital
+h1.x.b: can't find subckt: logicinv1, forcing digital
+.print tran v(d0) v(d1) v(d2) v(clk) v(aout) iter(0) 
+                    ^ ? no match
+.print tran v(d0) v(d1) v(d2) v(clk) v(aout) iter(0) 
+                          ^ ? no match
+#          
+ 0.        
+Gnucap   System status
+iterations: op=0, dc=3, tran=0, fourier=0, total=3
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=7, subckt=2, model=0, total=9
+dctran density=11.1%, ac density=11.1%
+name   ...
+have 9 nodes. model: 0 sckt: 2
+
+logic
+mypmos
+my_pmos 4 4 0
+0 -1
+1 -1
+2 -1
+3 -1
+ my_pmos.M2 4 4 2
+ 0 -1
+ 1 -1
+ 2 -1
+ 3 -1
+ 4 -1
+ 5 -1
+my_nmos 4 4 0
+0 -1
+1 -1
+2 -1
+3 -1
+xor2 3 4 0
+0 -1
+1 -1
+2 -1
+3 -1
+ xor2.b 2 10 0
+ 0 -1
+ 1 -1
+ 2 -1
+ 3 -1
+ 4 -1
+ 5 -1
+ 6 -1
+ 7 -1
+ 8 -1
+ 9 -1
+da 4 4 0
+0 -1
+1 -1
+2 -1
+3 -1
+ da.n0 4 4 0
+ 0 -1
+ 1 -1
+ 2 -1
+ 3 -1
+ da.i0 2 10 0
+ 0 -1
+ 1 -1
+ 2 -1
+ 3 -1
+ 4 -1
+ 5 -1
+ 6 -1
+ 7 -1
+ 8 -1
+ 9 -1
+ha 4 4 0
+0 -1
+1 -1
+2 -1
+3 -1
+ ha.x 3 3 0
+ 0 -1
+ 1 -1
+ 2 -1
+
+h1 4 4 0
+0 9
+1 8
+2 7
+3 6
+ h1.x 3 3 0
+ 0 9
+ 1 7
+ 2 6
+ h1.x.b 2 10 0
+ 0 9
+ 1 2
+ 2 -1
+ 3 -1
+ 4 -1
+ 5 -1
+ 6 -1
+ 7 -1
+ 8 -1
+ 9 -1
+myda 4 4 0
+0 5
+1 0
+2 6
+3 7
+ myda.n0 4 4 0
+ 0 5
+ 1 1
+ 2 0
+ 3 0
+ myda.i0 2 10 0
+ 0 1
+ 1 7
+ 2 -1
+ 3 -1
+ 4 -1
+ 5 -1
+ 6 -1
+ 7 -1
+ 8 -1
+ 9 -1
+
+V1 2 2 0
+0 4
+1 0
+Vr 2 2 0
+0 3
+1 0
+Vdd 2 2 0
+0 6
+1 0
+

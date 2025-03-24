@@ -53,7 +53,7 @@ DISPATCHER<PROBELIST> probe_dispatcher;
 INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
 INDIRECT<CARD::owner_tag_t,CARD*> CARD::_owner_index;
 INDIRECT<CARD::owner_scope_t,CARD::owner_tag_t> CARD::_owners;
-CARD_LIST CARD_LIST::card_list;	// root circuit 
+CARD_LIST CARD_LIST::card_list(CARD_LIST::_with_ground); // root circuit 
 
 // the rest of this should not be here, is residue of old stuff
 STATUS status;

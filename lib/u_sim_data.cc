@@ -27,6 +27,7 @@
 #include "u_nodemap.h"
 #include "e_cardlist.h"
 #include "u_status.h"
+#include "u_node.h"
 /*--------------------------------------------------------------------------*/
 SIM_DATA::SIM_DATA()
   :_time0(0.),
@@ -57,7 +58,7 @@ SIM_DATA::SIM_DATA()
    _vt1(nullptr),
    _ac(nullptr),
    _noise(nullptr),
-   _nstat(nullptr),
+   _nstat(false),
    _vdc(nullptr),
    _aa(),
    _lu(_aa), // alias.
@@ -118,8 +119,7 @@ SIM_DATA::~SIM_DATA()
   }else{
   }
   if (_nstat) {unreachable();
-    delete [] _nstat;
-    _nstat = nullptr;
+    _nstat = false;
   }else{
   }
   if (_vdc) {unreachable();
@@ -221,6 +221,10 @@ void SIM_DATA::map__nodes()
   case oFORWARD: order_forward(); break;
   }
   ::status.order.stop();
+  NODE_MAP* top_nodes = CARD_LIST::card_list.nodes();
+  assert(top_nodes);
+  top_nodes->at(0).map();
+  assert(top_nodes->at(0).m_()==0);
 }
 /*--------------------------------------------------------------------------*/
 /* order_reverse: force ordering to reverse of user ordering
@@ -228,9 +232,10 @@ void SIM_DATA::map__nodes()
  */
 void SIM_DATA::order_reverse()
 {
+  // it is already reversed. leave it like that.
   _nm[0] = 0;
   for (int node = 1;  node <= _total_nodes;  ++node) {
-    _nm[node] = _total_nodes - node + 1;
+    _nm[node] = node;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -239,9 +244,10 @@ void SIM_DATA::order_reverse()
  */
 void SIM_DATA::order_forward()
 {
+  // need to reverse for forward ordering.
   _nm[0] = 0;
   for (int node = 1;  node <= _total_nodes;  ++node) {
-    _nm[node] = node;
+    _nm[node] = _total_nodes - node + 1;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -250,12 +256,69 @@ void SIM_DATA::order_forward()
  */
 void SIM_DATA::order_auto()
 {
-  _nm[0] = 0;
-  for (int node = 1;  node <= _total_nodes;  ++node) {
-    _nm[node] = _total_nodes - node + 1;
-  }
+  order_reverse();
 }
 /*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+/* CARD_LIST::card_list.map_subckt_nodes(top_nodes); <= similar
+ * reset top level device ports to what was read in.
+ */
+extern NODE ground_node;
+static void map_toplevel_nodes(CARD_LIST& tcl)
+{
+  assert(tcl.nodes());
+  NODE_MAP& top_nodes = *tcl.nodes();
+  // assert(top_nodes[0].n_() == &ground_node);
+
+  for (int i=0; i<top_nodes.size(); ++i) {
+    node_t none;
+    top_nodes[i] = none;
+    assert(!top_nodes[i].link());
+  }
+#if 0
+  top_nodes[0].set_to_ground(nullptr); // link_to(top_nodes["0"]);
+#else
+  top_nodes[0] = &ground_node;
+#endif
+
+  for (CARD_LIST::iterator ci = tcl.begin(); ci != tcl.end(); ++ci) {
+    // for each card in card_list
+    if ((**ci).is_device()) {
+      for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
+	// for each connection node in card
+	(**ci).n_(ii).map_subckt_node(&top_nodes[0], *ci);
+      }
+    }else{
+      //	assert(dynamic_cast<MODEL_CARD*>(*ci));
+    }
+  }
+
+  // also map USER_NODEs
+  for (NODE_MAP::iterator p = top_nodes.begin(); p != top_nodes.end(); ++p ){
+    USER_NODE* un = dynamic_cast<USER_NODE*>((*p).second);
+    NODE* n = (*p).second;
+    assert(n->net_nodes()==1);
+
+    if(un->user_number()==0){
+      n->n_(0).map_subckt_node(&top_nodes[0], nullptr);
+    }else if(un->is_global()){
+      // node has link. must be global.. map as usual
+      n->n_(0).map_subckt_node(&top_nodes[0], nullptr);
+    }else{
+      // just link, but do not mark for allocation.
+      int u = n->user_number();
+      assert(u == n->n_(0).e_());
+      n->n_(0).clear();
+      n->n_(0).link_to(&top_nodes[u].root());
+    }
+    assert((*p).first == n->short_label()); // BUG: redundant storage.
+					    // use std::set and c++14?
+  }
+
+  for (int ii=top_nodes.size(); --ii;) {
+    trace4("map top level done", top_nodes.size(), ii, &top_nodes[ii], top_nodes[ii].link());
+  }
+}
 /*--------------------------------------------------------------------------*/
 /* init: allocate, set up, etc ... for any type of simulation
  * also called by status and probe for access to internals and subckts
@@ -268,11 +331,12 @@ void SIM_DATA::init(CARD_LIST* scope)
   }
   if (is_first_expand()) {
     uninit();
-    init_node_count(scope->nodes()->how_many(), 0, 0);
+    init_node_count(0, 0, 0);
+    map_toplevel_nodes(CARD_LIST::card_list);
     scope->expand();
+    alloc_hold_vectors();
     map__nodes();
     scope->map_nodes();
-    alloc_hold_vectors();
     _aa.reinit(_total_nodes);
     _acx.reinit(_total_nodes);
     scope->tr_iwant_matrix();
@@ -290,15 +354,30 @@ void SIM_DATA::init(CARD_LIST* scope)
  * but after mapping
  * if they already exist, leave them alone to save data
  */
+extern NODE ground_node;
 void SIM_DATA::alloc_hold_vectors()
 {
   assert(is_first_expand());
+  NODE_MAP& top_nodes = *CARD_LIST::card_list.nodes();
 
   assert(!_nstat);
-  _nstat = new LOGIC_NODE[_total_nodes+1];
-  for (int ii=0;  ii <= _total_nodes;  ++ii) {
-    _nstat[_nm[ii]].set_owner(nullptr);
-    _nstat[_nm[ii]].set_user_number(ii);
+  _nstat = true;
+
+  assert(top_nodes.size());
+  for (int ii=top_nodes.size(); --ii;) {
+    trace3("allocate top level", top_nodes.size(), ii, top_nodes[ii].link());
+    top_nodes[ii].allocate(1 /*bump user node count*/);
+  }
+
+  ground_node.set_owner(nullptr);
+  top_nodes[0].root() = &ground_node;
+  for(auto p : top_nodes) {
+    int idx = p.second->user_number();
+    if( top_nodes[idx].n_()){
+      top_nodes[idx].n_()->set_label(p.first);
+      p.second->n_(0).link_to(&top_nodes[idx]); // too late?
+    }else{
+    }
   }
 
   assert(!_vdc);
@@ -362,8 +441,7 @@ void SIM_DATA::uninit()
     _aa.reinit(0);
     delete [] _vdc;
     _vdc = nullptr;
-    delete [] _nstat;
-    _nstat = nullptr;
+    _nstat = false;
     delete [] _nm;
     _nm = nullptr;
   }else{

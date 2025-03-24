@@ -8,6 +8,7 @@ resistor #(.r(r)) R1 (.p(a),.n(b));
 endmodule // dumb_resistor
 
 module foo (.vcc(vcc),.in(in),.out(out));
+ground \0 ; 
 resistor #(.r(z)) Rc (.p(c),.n(vcc));
 zz #(.area(NA( 1.))) q1 (.c(c),.b(b),.e(e));
 dumb_resistor #(.r(abs(-z)/10)) Re (.aa(e),.bb(\0 ));

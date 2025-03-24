@@ -4,6 +4,8 @@ associated tarball. This file summarizes the important changes.
 == 20250*****-dev
 - predictor for node voltages
 - fix module instanciation in spice
+- support same_port device aka "net"
+- ground statement
 
 == 20250301-dev
 - arbitrary number of module ports

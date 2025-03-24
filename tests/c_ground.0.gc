@@ -1,0 +1,14 @@
+
+simulator lang=verilog
+
+ground gg;
+vsource #(3) v1(\2 , gg);
+resistor #(1) r(gg, \2 );
+
+list
+
+print op v(nodes) i(v1)
+op
+
+status notime
+end

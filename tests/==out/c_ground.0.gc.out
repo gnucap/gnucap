@@ -1,0 +1,10 @@
+ground gg; 
+vsource #(.dc(3)) v1 (.p(\2 ),.n(gg));
+resistor #(.r(1)) r (.p(gg),.n(\2 ));
+#           v(2)       v(gg)      i(v1)     
+ 27.        3.         0.        -3.        
+Gnucap   System status
+iterations: op=2, dc=0, tran=0, fourier=0, total=2
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%

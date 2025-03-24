@@ -1,0 +1,26 @@
+load ./c_debug.so
+verilog
+
+module net(.a(i), .b(i));
+endmodule
+
+list
+
+module main();
+  ground \0 ;
+  resistor #(.r(1)) r(n, \0 );
+  isource #(.dc(1)) i(\0 , m );
+  net n1(.a(n), .b(m));
+endmodule
+
+main m();
+
+
+print dc v(m.r)
+dc
+
+list
+
+status notime
+
+portdump
