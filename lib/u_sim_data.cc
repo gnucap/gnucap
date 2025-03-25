@@ -208,8 +208,12 @@ void SIM_DATA::zero_voltages()
  * Ideally, this function would find some near-optimal order
  * and squash out gaps.
  */
-void SIM_DATA::map__nodes()
+void SIM_DATA::map__nodes(CARD_LIST* scope)
 {
+  assert(scope);
+  if (scope == &CARD_LIST::card_list) {
+  }else{itested();
+  }
   _nm = new int[_total_nodes+1];
   ::status.order.reset().start();
   switch (OPT::order) {
@@ -221,7 +225,7 @@ void SIM_DATA::map__nodes()
   case oFORWARD: order_forward(); break;
   }
   ::status.order.stop();
-  NODE_MAP* top_nodes = CARD_LIST::card_list.nodes();
+  NODE_MAP* top_nodes = scope->nodes();
   assert(top_nodes);
   top_nodes->at(0).map();
   assert(top_nodes->at(0).m_()==0);
@@ -264,10 +268,14 @@ void SIM_DATA::order_auto()
  * reset top level device ports to what was read in.
  */
 extern NODE ground_node;
-static void map_toplevel_nodes(CARD_LIST& tcl)
+static void map_toplevel_nodes(CARD_LIST* scope)
 {
-  assert(tcl.nodes());
-  NODE_MAP& top_nodes = *tcl.nodes();
+  assert(scope);
+  if (scope == &CARD_LIST::card_list) {
+  }else{itested();
+  }
+  assert(scope->nodes());
+  NODE_MAP& top_nodes = *scope->nodes();
   // assert(top_nodes[0].n_() == &ground_node);
 
   for (int i=0; i<top_nodes.size(); ++i) {
@@ -281,7 +289,7 @@ static void map_toplevel_nodes(CARD_LIST& tcl)
   top_nodes[0] = &ground_node;
 #endif
 
-  for (CARD_LIST::iterator ci = tcl.begin(); ci != tcl.end(); ++ci) {
+  for (CARD_LIST::iterator ci = scope->begin(); ci != scope->end(); ++ci) {
     // for each card in card_list
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
@@ -332,10 +340,10 @@ void SIM_DATA::init(CARD_LIST* scope)
   if (is_first_expand()) {
     uninit();
     init_node_count(0, 0, 0);
-    map_toplevel_nodes(CARD_LIST::card_list);
+    map_toplevel_nodes(scope);
     scope->expand();
-    alloc_hold_vectors();
-    map__nodes();
+    alloc_hold_vectors(scope);
+    map__nodes(scope);
     scope->map_nodes();
     _aa.reinit(_total_nodes);
     _acx.reinit(_total_nodes);
@@ -355,10 +363,15 @@ void SIM_DATA::init(CARD_LIST* scope)
  * if they already exist, leave them alone to save data
  */
 extern NODE ground_node;
-void SIM_DATA::alloc_hold_vectors()
+void SIM_DATA::alloc_hold_vectors(CARD_LIST* scope)
 {
   assert(is_first_expand());
-  NODE_MAP& top_nodes = *CARD_LIST::card_list.nodes();
+  assert(scope);
+  if (scope == &CARD_LIST::card_list) {
+  }else{itested();
+  }
+  assert(scope->nodes());
+  NODE_MAP& top_nodes = *scope->nodes();
 
   assert(!_nstat);
   _nstat = true;

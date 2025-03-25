@@ -705,8 +705,8 @@ T const& BSMATRIX_DATA<T>::s(int row, int col)const
 /*--------------------------------------------------------------------------*/
 template <class T>
 void BSMATRIX_SOLVER<T>::load_point(int i, int j, T value)
-{ untested();
-  if (i > 0 && j > 0) { untested();
+{itested();
+  if (i > 0 && j > 0) {itested();
     // BUG only 1 change //
     set_changed(j);
     set_changed(i);
