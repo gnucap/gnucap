@@ -105,7 +105,7 @@ public:
   SIM_DATA();
   ~SIM_DATA();
   bool is_first_expand() {return !_nstat;}
-  void alloc_hold_vectors(); /* s__init.cc */
+  void alloc_hold_vectors(CARD_LIST* scope); /* s__init.cc */
   void alloc_vectors();
   void unalloc_vectors();
   void init(CARD_LIST* scope);
@@ -116,7 +116,7 @@ public:
   void keep_voltages();
   void restore_voltages();
   void zero_voltages();
-  void map__nodes();		/* s__map.cc */
+  void map__nodes(CARD_LIST* scope);		/* s__map.cc */
   void order_reverse();
   void order_forward();
   void order_auto();

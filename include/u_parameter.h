@@ -59,8 +59,7 @@ public:
   virtual bool  is_given()const       {untested(); return (_s != "");}
   void	print(OMSTREAM& o)const       { o << string();}
 
-  virtual void	parse(CS&) {unreachable(); incomplete();} // TODO: pure
-  virtual void	obsolete_parse(CS& cmd) /*deprecated*/ {itested(); parse(cmd);}
+  virtual void	parse(CS& cmd) = 0;
   virtual PARA_BASE& operator=(const std::string& s) = 0;
   virtual PARA_BASE& operator=(Base const*) = 0;
   virtual std::string string()const = 0;
@@ -391,7 +390,6 @@ public:
   void parse(CS& cmd) {
     base()->parse(cmd);
   }
-  void obsolete_parse(CS& cmd) /*deprecated*/ {itested(); parse(cmd);}
  //  operator PARAMETER<double> const&()const {
  //    if(auto d = dynamic_cast<PARAMETER<double> const*>(_data.base())){
  //      return *d;
@@ -423,7 +421,6 @@ public:
     return *this;
   }
   void	parse(CS& cmd);
-  void obsolete_parse(CS& cmd) /*deprecated*/ {itested(); parse(cmd);}
   void	print(OMSTREAM&, LANGUAGE*)const;
   
   size_t size()const {return _pl.size();}
