@@ -49,6 +49,13 @@ core-lib version: [..]
 default plugins: [..]
 gnucap> _
 
+== readline support
+
+There is a historic dependency on readline, enabled by default. To disable,
+edit include/MakeConf.default following remarks, or build using
+
+$ make HAVE_LIBREADLINE= LIBREADLINE=
+
 == Submodules
 
 Additional packages can be compiled/installed using a similar method once this

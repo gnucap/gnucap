@@ -25,9 +25,11 @@ TARGET_LIB_EXT = .so
 INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
 INSTALL_DIR = $(PREFIX)/lib
 #------------------------------------------------------------------------
-LIBS = \
--lreadline -ltermcap \
--ldl
+# enable readline according to MakeConf.$preset
+LIBGNUCAP_LIBS = ${LIBREADLINE}
+LIST_CPPFLAGS = ${HAVE_LIBREADLINE}
+#------------------------------------------------------------------------
+LIBS = ${LIBGNUCAP_LIBS} -ldl
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
