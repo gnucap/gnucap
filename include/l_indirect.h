@@ -30,18 +30,16 @@ template <class T, class tag_t=intptr_t>
 class INDIRECT {
 private:
   std::map<tag_t, T> _map;
+  T _dummy;
   INDIRECT(const INDIRECT&) = delete;
 public:
-  INDIRECT() : _map() {_map[tag_t(0)];}
+  INDIRECT() : _map() {}
   ~INDIRECT() {}
   
   size_t count(tag_t x)const {return _map.count(x);}
     
   T& operator[](tag_t x) {
-    assert(x);
-    if (!x) {untested();
-      // null tag, not allowed here
-    }else if (_map.count(x) == 0) {
+    if (_map.count(x) == 0) {
       // first use of this tag
     }else{
       // repeat, adding or replacing
@@ -50,12 +48,8 @@ public:
     return _map[x];
   }
   const T& at(tag_t x)const {
-    assert(x);
-    assert(_map.count(x) > 0);
-    if (!x) {untested();
-      return _map.at(tag_t(0));
-    }else if (_map.count(x) == 0) {untested();
-      return _map.at(tag_t(0));
+    if (_map.count(x) == 0) {untested();
+      return _dummy;
     }else{
       return _map.at(x);
     }
