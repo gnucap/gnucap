@@ -53,7 +53,7 @@ public:
   void dump(std::ostream&)const override;
 protected:
   explicit Token(const Base* Data, std::string Args="")
-    : _data(Data) {assert(Args==""); }
+    : _data(Data) { untested(); (void)Args; assert(Args==""); }
   explicit Token(const Token& P)
     : Base(), _data(P._data) {assert(!_data);}
 public:
@@ -74,7 +74,7 @@ protected:
     : Token(Data), _name(Name) {}
 public:
   explicit Token_SYMBOL(std::string Name, std::string Args="")
-    : Token(nullptr), _name(Name) {assert(Args=="");}
+    : Token(nullptr), _name(Name) {untested(); (void)Args; assert(Args=="");}
   explicit Token_SYMBOL(const Token_SYMBOL& P) : Token(P), _name(P._name) {}
   Token* clone()const  override{return new Token_SYMBOL(*this);}
   void stack_op(Expression*)const override;
@@ -190,7 +190,7 @@ public:
 class Token_CONSTANT : public Token {
 public:
   explicit Token_CONSTANT(Base const* Data, std::string Args="")
-    : Token(Data) {assert(Args=="");}
+    : Token(Data) {untested(); (void)Args; assert(Args=="");}
   explicit Token_CONSTANT(const Token_CONSTANT& P) : Token(P) {untested();}
   Token* clone()const override { untested();
     if (auto q = dynamic_cast<vString const*>(data())) { untested();

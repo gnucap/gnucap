@@ -164,7 +164,7 @@ protected: // const xs
   }
   T const& m(int r, int c) const { untested();
     auto& x = const_cast<BSMATRIX_DATA<T>&>(*this);
-    return x.m(r);
+    return x.m(r, c);
   }
   int lownode(int n) const{ assert(_lownode); return _lownode[n]; }
   // int		lownode(int i)const	{ untested();return _lownode[i];}

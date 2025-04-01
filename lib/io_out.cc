@@ -57,7 +57,7 @@ const char* octal(int x)
  */
 OMSTREAM & OMSTREAM::tab(size_t count)
 {
-  for (int ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
+  for (unsigned ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
     if (_mask & mm) {
       OMSTREAM this_file(_mask & mm);
       if (_cpos[ii] > count) {
@@ -126,7 +126,7 @@ OMSTREAM & OMSTREAM::operator<<(const char *str)
   }
 
   /* auto line break, with a '+' to continue. */
-  for (int ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
+  for (unsigned ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
     if ((_mask & mm)
 	&& (sl+_cpos[ii]) >= OPT::outwidth
 	&& _cpos[ii] != 0) {
@@ -189,7 +189,7 @@ OMSTREAM & OMSTREAM::operator<<(char chr)
   }else{
   }
   
-  for (int ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
+  for (unsigned ii=0, mm=1;   ii<=MAXHANDLE;   ++ii, mm<<=1) {
     if (_mask & mm) {
       assert(_stream[ii]);
       if (chr=='\b') {untested();

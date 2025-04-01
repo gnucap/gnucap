@@ -1,0 +1,12 @@
+American fuzzy lop
+
+(under construction)
+
+configure with --preset=afl, build
+
+run
+ $ make check
+or
+ $ AFL_IGNORE_PROBLEMS=1 make check
+
+[..]
