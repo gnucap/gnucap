@@ -39,6 +39,7 @@ public:
   }
 public:
   int user_number()const override {return _n.e_();}
+  int matrix_number()const override {itested(); return _n.m_();}
   void set_to_ground() { _global=true; _n.set_to_ground(nullptr); }
   bool is_global()const {return _global;}
 private: // probe proxy

@@ -33,12 +33,14 @@ double USER_NODE::tr_probe_num(const std::string& s) const
   }
 }
 /*--------------------------------------------------------------------------*/
-inline XPROBE USER_NODE::ac_probe_ext(const std::string& s) const
+XPROBE USER_NODE::ac_probe_ext(const std::string& s) const
 {
   if(_n) {
     return _n->ac_probe_ext(s);
   }else{ untested();
-	  return XPROBE(NOT_VALID);
+    return XPROBE(NOT_VALID);
   }
 }
 /*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+// vim:ts=8:sw=2:noet:
