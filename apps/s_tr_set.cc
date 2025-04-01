@@ -171,7 +171,7 @@ void TRANSIENT::setup(CS& Cmd)
   }else{
     // use larger of soft values
     double newdtmin = _dtmax/_dtratio_in;
-    if(_dtmin_in != newdtmin && _sim->_dtmin) {
+    if(_dtmin_in != newdtmin && _sim->_dtmin!=0.) {
       error(bDEBUG, "adjusting dtmin to " + to_string(newdtmin) + ". requested: " + to_string(_dtmin_in) + "\n");
     }else{
     }
