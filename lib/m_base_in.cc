@@ -159,9 +159,10 @@ void Tail_String::parse(CS& File)
 {untested(); // c_str
   static char end_marks[] = "\n";
 
-  const char* begin = File.tail().c_str();
+  std::string tail = File.tail();
+  const char* begin = tail.c_str();
   File.skipto1(end_marks);
-  const char* end = File.tail().c_str();
+  const char* end = tail.c_str();
   assert(end >= begin);
 
   while ((--end >= begin) && (isspace(*end))) {untested();
