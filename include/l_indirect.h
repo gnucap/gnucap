@@ -48,10 +48,10 @@ public:
     return _map[x];
   }
   const T& at(tag_t x)const {
-    if (_map.count(x) == 0) {untested();
-      return _dummy;
-    }else{
+    try {
       return _map.at(x);
+    }catch (std::out_of_range const&) { untested();
+      return _dummy;
     }
   }
   size_t erase(tag_t x) {
