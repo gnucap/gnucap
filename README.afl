@@ -1,8 +1,10 @@
 American fuzzy lop
 
-(under construction)
+$ apt install afl++
 
-configure with --preset=afl, build
+There is a preset
+$ ../configure --preset=afldebug
+$ make
 
 run
  $ make check
