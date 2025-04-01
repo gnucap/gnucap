@@ -79,9 +79,9 @@ model BUILT_IN_MOS1 {
 	  }
 	  if (vto == NA) {
 	    double phi_ms = (tpg == gtMETAL)
-	      ? polarity * (-.05 - (egap + polarity * phi) / 2.)
+	      ? double(polarity) * (-.05 - (egap + double(polarity) * phi) / 2.)
 	      : -(tpg * egap + phi) / 2.;
-	    double vfb = phi_ms - polarity * P_Q * nss / cox;
+	    double vfb = phi_ms - double(polarity) * P_Q * nss / cox;
 	    vto = vfb + phi + gamma * sqrt(phi);
 	    calc_vto = true;
 	  }

@@ -140,7 +140,7 @@ model BUILT_IN_MOS2 {
       double uo "" calculate="m->uo * tempratio4";
       double vbi "" calculate="(fixzero(
 	(m->vto - m->gamma * sqrt(m->phi)
-	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi))";
+	 +.5*(m->egap-egap) + double(m->polarity)* .5 * (phi-m->phi)), m->phi))";
     }
     code_pre {
       double temp = d->_sim->_temp_c + P_CELSIUS0;

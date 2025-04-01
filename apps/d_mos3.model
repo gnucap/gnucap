@@ -101,7 +101,7 @@ model BUILT_IN_MOS3 {
 	}
 	if (vto == NA) {
 	  double phi_ms = (tpg == gtMETAL)
-	    ? polarity * (-.05 - (egap + polarity * phi) / 2.)
+	    ? polarity * (-.05 - (egap + double(polarity) * phi) / 2.)
 	    : -(tpg * egap + phi) / 2.;
 	  double vfb = phi_ms - polarity * P_Q * nss / cox;
 	  vto = vfb + phi + gamma * sqrt(phi);
@@ -119,7 +119,7 @@ model BUILT_IN_MOS3 {
       double uo "" calculate="m->uo * tempratio4";
       double vbi "" calculate="(fixzero(
 	(m->vto - m->gamma * sqrt(m->phi)
-	 +.5*(m->egap-egap) + m->polarity* .5 * (phi-m->phi)), m->phi))";
+	 +.5*(m->egap-egap) + double(m->polarity)* .5 * (phi-m->phi)), m->phi))";
     }
     code_pre {
       double temp = d->_sim->_temp_c + P_CELSIUS0;
