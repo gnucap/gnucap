@@ -112,20 +112,20 @@ void CARD::set_owner(CARD* o)
   assert(!o                                  // reset owner.
       || !_owner_tag                         // uninitialised.
       || !_owners[_owner_tag]._owner         // owner was reset.
-      || _owner_index.at(o+1) == _owner_tag  // new owner==old_owner. no-op
+      || _owner_index.at(o) == _owner_tag    // new owner==old_owner. no-op
       );
 
   trace2("", __LINE__, _owner_tag);
-  if (_owner_index.count(o+1) == 0) {	// based on o+1 because o==0 is legit.
+  if (_owner_index.count(o) == 0) {
     static owner_tag_t _owner_count = 0; // o==0 is the root.
     _owner_tag =  ++_owner_count;	// still a nonzero tag.
     assert(_owner_count > 0);
-    _owner_index[o+1] = _owner_tag;
+    _owner_index[o] = _owner_tag;
     owner_scope_t& os = _owners[_owner_tag];
     os._owner = o;
     os._scope = ((o) ? o->subckt() : &(CARD_LIST::card_list));
   }else{
-    _owner_tag = _owner_index.at(o+1);
+    _owner_tag = _owner_index.at(o);
     // BUG: scope may have changed. update just in case.
     _owners[_owner_tag]._scope = ((o) ? o->subckt() : &(CARD_LIST::card_list));
   }

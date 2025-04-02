@@ -67,7 +67,7 @@ double LOGIC_NODE::tr_probe_num(const std::string& x)const
  */
 double LOGIC_NODE::annotated_logic_value()const
 {
-  return (_lv + (.1 * (OPT::transits - quality())) + (.01 * (2 - _mode)));
+  return (double(_lv) + (.1 * (OPT::transits - quality())) + (.01 * (2 - _mode)));
 }
 /*--------------------------------------------------------------------------*/
 static bool newly_stable[lvUNKNOWN+1][lvUNKNOWN+1] = { // oldlv, _lv

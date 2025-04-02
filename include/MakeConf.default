@@ -1,14 +1,18 @@
+# default preset for Gnucap.
 #------------------------------------------------------------------------
-
-MAKE_CXXFLAGS = -fPIC -std=c++11 -O2 -W ${CXXFLAGS}
-MAKE_CPPFLAGS = -DUNIX $(INCLUDE) -DNDEBUG -DHAVE_LIBREADLINE ${CPPFLAGS}
-
+# comment out to build witout readline support
+HAVE_LIBREADLINE = -DHAVE_LIBREADLINE
+LIBREADLINE = -lreadline -ltermcap
+#------------------------------------------------------------------------
+MAKE_CXXFLAGS = -fPIC -std=c++11 -O2 -W ${LIST_CXXFLAGS} ${CXXFLAGS}
+MAKE_CPPFLAGS = -DUNIX $(INCLUDE) -DNDEBUG ${LIST_CPPFLAGS} ${CPPFLAGS}
+#------------------------------------------------------------------------
 .SUFFIXES : .so .o .cc
-.cc.o:; $(CXX) $(MAKE_CXXFLAGS) $(CXXFLAGS) ${MAKE_CPPFLAGS} -c $< # configure/Make2
+.cc.o:; $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} -c $< # include/MakeConf.default
 .cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
-MAKE_EXE = $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} $(OBJS) $(LIBS) $(LDFLAGS) -o $@ # Make2.default
-MAKE_LIB = $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ # Make2.default
+MAKE_EXE = $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} $(OBJS) $(LIBS) $(LDFLAGS) -o $@ # MakeConf.default
+MAKE_LIB = $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ # MakeConf.default
 all: $(TARGET_EXE) $(TARGET)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------

@@ -1,0 +1,14 @@
+American fuzzy lop
+
+$ apt install afl++
+
+There is a preset
+$ ../configure --preset=afldebug
+$ make
+
+run
+ $ make check
+or
+ $ AFL_IGNORE_PROBLEMS=1 make check
+
+[..]

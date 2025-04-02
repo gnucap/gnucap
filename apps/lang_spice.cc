@@ -434,7 +434,7 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
     }else{				// only name=value pairs
     }
     size_t here = cmd.cursor();
-    for (int i=0; ; ++i) {
+    for ( ; ; ) {
       if (paren && cmd.skip1b(')')) {
 	break;
       }else if (!cmd.more()) {

@@ -1,0 +1,66 @@
+#------------------------------------------------------------------------
+# BUG: VPATH = .:..
+PREFIX =  /usr/local
+
+# Standard base for g++, debugging, no optimization
+# Running the program will give a spew of line markers for debugging.
+
+CXX = afl-clang-fast++
+
+CCFLAGS = \
+-fPIC \
+-std=c++11 -g -O0 \
+-Wall -Wextra \
+-Wsuggest-override \
+-Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
+-Wcast-qual -Wcast-align -Wpacked -Wshadow -Wconversion \
+-Winit-self -Wmissing-include-dirs -Winvalid-pch \
+-Wvolatile-register-var -Wstack-protector \
+-Wvla -Woverlength-strings -Wno-sign-conversion
+#last line not in 4.1
+
+MAKE_CPPFLAGS = -DUNIX ${INCLUDE} -DTRACE_UNTESTED ${CPPFLAGS} ${LIST_CPPFLAGS}
+MAKE_CXXFLAGS = ${CCFLAGS} ${CXXFLAGS} ${LIST_CXXFLAGS} -fPIC -std=c++11 -fsanitize=address,undefined ${CCFLAGS}
+
+.SUFFIXES:
+.SUFFIXES: .so .o .cc
+.cc.o:; $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} -c $<
+.cc.so:; $(MAKE_LIB) $<
+#------------------------------------------------------------------------
+MAKE_EXE = $(CXX) $(CCFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ #afldebug
+MAKE_LIB = $(CXX) $(CCFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ #afldebug
+#------------------------------------------------------------------------
+# warnings turned off, because they warn of nothing wrong
+# 4.3
+#-Wswitch-default -- lack of default is correct with enum
+#-Wfloat-equal -- warns on NA, div by zero trap
+#-Wpadded -- a bool in a class is enough
+#-Wredundant-decls -- in both header and func is an error check
+#-Wmissing-declarations -- pascal style
+#-Wmissing-noreturn -- warns when always throws exception
+#-Wunreachable-code -- warns even if reachable .. compiler bug??
+#-Waggregate-return -- warns even if passed by reference
+#-Wunsafe-loop-optimizations -- if can't unroll a loop
+#-Winline
+#-Wdisabled-optimization -- -O0 disables optimization, so it warns
+
+# 4.2
+#-Wpadded -- a bool in a class is enough
+#-Winline
+#-Waggregate-return -- warns even if passed by reference
+#-Wfloat-equal -- warns on NA, div by zero trap
+#-Wredundant-decls -- in both header and func is an error check
+#-Wunsafe-loop-optimizations -- warns on any loop with variable count
+
+# warnings turned off, because of the public headers
+#-Wunreachable-code -- didn't use nonportable syntax to hide
+#-Wmissing-noreturn -- didn't use nonportable syntax to hide
+
+# warnings turned off, issues with clang
+#-Wlogical-op -- not recognized
+#-Wsign-conversion -- int to size_t
+#-Wunused-const-variable -- generated code
+
+# warnings that should be on, but ...
+#-Wshadow -- lambda functions
+#------------------------------------------------------------

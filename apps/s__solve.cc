@@ -159,7 +159,7 @@ void SIM::advance_time(void)
   if (_sim->_time0 > 0) {//44061 // not initial DC
     if (_sim->_time0 > time1) {//43294 // moving forward
       std::swap(_sim->_v0,_sim->_vt1);
-      if (OPT::predictor && time1 > time2) {//42447 // 
+      if (OPT::predictor!=0. && time1 > time2) {//42447 // 
 	double dtdt = (_sim->_time0 - time1) / (time1 - time2);
 	trace4("", _sim->_time0, time1, time2, dtdt);
 	if (dtdt <= OPT::predictor) {//42094 // normal prediction

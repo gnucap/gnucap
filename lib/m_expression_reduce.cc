@@ -199,7 +199,6 @@ void Token_SYMBOL::stack_op(Expression* E)const
     }else{
       // a name
       PARAM_INSTANCE p = (*(E->_scope->params()))[name()];
-      trace2("PARAM_INSTANCE name?", name(), typeid(**p).name());
       assert(name().size());
       if (p.has_hard_value()) {
 	trace1("hard value", name());

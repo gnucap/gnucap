@@ -529,10 +529,10 @@ model BUILT_IN_MOS7 {
       vbsc = std::min(vbsc, s->vbm);
       if (s->vth0 == NA) {
 	vfb = -1.0;
-	vth0 = m->polarity * (vfb + phi + k1 * sqrtPhi);
+	vth0 = double(m->polarity) * (vfb + phi + k1 * sqrtPhi);
       }else{
 	vth0 = s->vth0;
-	vfb = m->polarity * vth0 - phi - k1 * sqrtPhi;
+	vfb = double(m->polarity) * vth0 - phi - k1 * sqrtPhi;
       }
       trace3("", s->vth0, vth0, vfb);
       {
@@ -709,7 +709,7 @@ model BUILT_IN_MOS7 {
       trace4("", t->k2, Vbseff, Delt_vth, T2);
       trace4("", s->k3, s->k3b, Vbseff, tmp2);
       trace2("", T1, DIBL_Sft);
-      double Vth = m->polarity * t->vth0 + t->k1 * (sqrtPhis - t->sqrtPhi) 
+      double Vth = double(m->polarity) * t->vth0 + t->k1 * (sqrtPhis - t->sqrtPhi) 
 	- t->k2 * Vbseff - Delt_vth - T2 + (s->k3 + s->k3b * Vbseff) * tmp2
 	+ T1 - DIBL_Sft;
       d->von = Vth;
