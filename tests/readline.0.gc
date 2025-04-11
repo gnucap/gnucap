@@ -1,0 +1,4 @@
+verilog
+options log
+// no trailing \n
+op trace=i

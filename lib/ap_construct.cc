@@ -30,6 +30,8 @@
   #include <readline/history.h>
 #endif
 /*--------------------------------------------------------------------------*/
+static int getline_initial_chunksize = 8; // need at least 2 to read 1 byte
+/*--------------------------------------------------------------------------*/
 static std::string getlines(FILE*);
 OMSTREAM mout; // > file bitmap //BUG//encapsulation
 OMSTREAM mlog; // log file bitmap
@@ -147,29 +149,35 @@ CS& CS::operator=(const CS& p)
 // mimic std::getline if is_file(), otherwise fall back to get_line.
 // char delim does not work, because fgets hardcodes '\n';
 // (would need a complete rework to C++)
+// BUG: string.resize initialises memory (unnecessarily)
 CS& CS::getline(const std::string& prompt /*, char delim*/)
 {
-  int chunk_size = 4;
+  int chunk_size = getline_initial_chunksize;
   ++_line_number;
   if (is_file()) {
-    _cmd.resize(chunk_size); // allocates chunk_size+1 chars.
+    _cmd.resize(chunk_size-1); // allocate chunk_size bytes
     _length = 0;
     int c = 0;
 
-    // read at most chunk_size bytes
-    while(fgets((&_cmd[0])+_length, chunk_size+1, _file)){
+    // read at most chunk_size-1 bytes
+    while(fgets((&_cmd[0])+_length, chunk_size, _file)){
       c = int(strlen(_cmd.data()+_length));
       assert(c);
-      assert(c<=chunk_size);
+      assert(c<chunk_size);
       assert(_cmd.data()[_length+c] == '\0');
       _length += c;
       if(_cmd[_length-1] == '\n'){
 	assert(_length);
 	_cmd.resize(--_length); // drop '\n'
 	break;
+      }else if(_cmd.size() == _length){
+	// throws std::length_error in case of overflow.
+	_cmd.resize(int(2 * _length) + 1);
+	trace4("getline", _cmd.size(), _length, c, _cmd);
+	chunk_size = int(_length + 2);
+	assert(chunk_size > 0);
       }else{
-	chunk_size *= 2;
-	_cmd.resize(_cmd.size()+chunk_size);
+	warn(bLOG, _length, "abrupt end of file\n");
       }
     }
     _cnt = 0;
