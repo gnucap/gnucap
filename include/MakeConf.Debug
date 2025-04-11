@@ -48,11 +48,11 @@ MAKE_CXXFLAGS = ${CCFLAGS} ${CXXFLAGS} ${LIST_CXXFLAGS}
 
 .SUFFIXES:
 .SUFFIXES: .so .o .cc
-.cc.o:; $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} -c $<
+.cc.o:; $(CXX) $(MAKE_CXXFLAGS) ${MAKE_CPPFLAGS} -c $< # MakeConf.Debug
 .cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
 MAKE_EXE = $(CXX) $(CCFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
-MAKE_LIB = $(CXX) $(CCFLAGS) $(CXXFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
+MAKE_LIB = $(CXX) $(MAKE_CXXFLAGS) $(MAKE_CPPFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # warnings turned off, because they warn of nothing wrong
 # 4.3
