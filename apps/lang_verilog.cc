@@ -342,7 +342,7 @@ void LANG_VERILOG::parse_ports(CS& cmd, COMPONENT* x, bool all_new)
 	  x->set_port_by_index(Index, value);
 	  store_attributes(attribs,  x->port_id_tag(Index));
 	  if (all_new) {
-	    if (x->node_is_grounded(Index)) {
+	    if (x->node_is_grounded(Index)) { untested();
 	      cmd.warn(bDANGER, here, "node 0 not allowed here");
 	      --Index;
 	    }else if (x->subckt() && x->subckt()->nodes()->size() != Index+1) {
@@ -435,7 +435,7 @@ MODEL_CARD* LANG_VERILOG::parse_paramset(CS& cmd, MODEL_CARD* x)
     if (cmd >> "endparamset ") {
       break;
     }else if (!cmd.more()) {
-      cmd.get_line("verilog-paramset>");
+      cmd.getline("verilog-paramset>");
     }else{untested();
       cmd.check(bWARNING, "what's this?");
       break;
@@ -514,17 +514,17 @@ public:
     return ret;
   }
 #if 0
-  void parse(CS& cmd) override {
+  void parse(CS& cmd) override { untested();
     std::string name;
     //cmd >> name;
     name = cmd.ctos(",=();", "'{\"", "'}\"");
-    if (cmd) {
+    if (cmd) { untested();
       if (cmd.match1('(')) { untested();
 	_s = name + '(' + cmd.ctos("", "(", ")") + ')';
-      }else{
+      }else{ untested();
 	_s = name;
       }
-    }else{
+    }else{ untested();
     }
   }
   PARA_BASE& operator=(const std::string&s) override{ untested(); _s = s; return *this;}
@@ -668,7 +668,7 @@ BASE_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, BASE_SUBCKT* x)
 
   // body
   for (;;) {
-    cmd.get_line("verilog-module>");
+    cmd.getline("verilog-module>");
 
     if (cmd >> "endmodule ") {
       break;
@@ -714,7 +714,7 @@ std::string LANG_VERILOG::find_type_in_string(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_top_item(CS& cmd, CARD_LIST* Scope)
 {
-  cmd.get_line("gnucap-verilog>");
+  cmd.getline("gnucap-verilog>");
   new__instance(cmd, nullptr, Scope);
 }
 /*--------------------------------------------------------------------------*/
@@ -759,7 +759,7 @@ void LANG_VERILOG::print_args(OMSTREAM& o, const COMPONENT* x)
     arg_count = INACTIVE;
   }else{
     std::string sep = "";
-    //for (int ii = x->param_count() - 1;  ii >= 0;  --ii) {
+    //for (int ii = x->param_count() - 1;  ii >= 0;  --ii) { untested();
     for (int ii = 0; ii < x->param_count(); ++ii) {
       if (x->param_is_printable(ii)) {
 	o << sep;
@@ -921,7 +921,7 @@ class CMD_MODULE : public CMD {
     }catch(Exception const& e) { untested();
       cmd.warn(bDANGER, e.message());
       for (;;) { untested();
-	cmd.get_line("verilog-module>");
+	cmd.getline("verilog-module>");
 
 	if (cmd >> "endmodule ") { untested();
 	  break;

@@ -1,4 +1,4 @@
-module crash (n0, n1, n2, n3, n0, n4); 
+module crash (n0, n1, n2, n3, n0, n4);
                               ^ ? duplicate port name, skipping
 #          
  27.       

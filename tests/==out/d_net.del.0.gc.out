@@ -1,4 +1,4 @@
-ground gnd; 
+ground gnd;
 module net (.a(i),.b(i));
 endmodule // net
 

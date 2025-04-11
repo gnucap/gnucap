@@ -1,0 +1,7 @@
+op trace=i
+          ^ ? abrupt end of file
+
+#          
+ 0.        
+-1.        
+ 27.       

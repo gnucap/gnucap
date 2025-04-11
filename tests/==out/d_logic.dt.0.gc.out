@@ -1,4 +1,4 @@
-inv #(.model(dummy_tmp)) (.out(a), .in1(b)); 
+inv #(.model(dummy_tmp)) (.out(a), .in1(b));
                          ^ ? label required
 module test (.a(a),.b(b));
 inv #(.model(dummy_tmp)) U_unnamed (.out(a),.in1(b));

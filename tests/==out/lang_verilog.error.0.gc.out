@@ -1,11 +1,11 @@
-module m(a, 1, c, d ); 
+module m(a, 1, c, d );
             ^ ? invalid identifier
-m #() a(.); 
+m #() a(.);
         ^ ? a: mismatch ); ignored
 module m (.a(a),.\1 (\1 ),.c(c),.d(d));
 endmodule // m
 
-// BUG, need ',' 
+// BUG, need ','
 module m (.a(a),.\2, (\2, ),.c(c),.d(d));
 endmodule // m
 

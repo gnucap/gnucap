@@ -1,4 +1,4 @@
-ground gg; 
+ground gg;
 vsource #(.dc(3)) v1 (.p(\2 ),.n(gg));
 resistor #(.r(1)) r (.p(gg),.n(\2 ));
 #           v(2)       v(gg)      i(v1)     

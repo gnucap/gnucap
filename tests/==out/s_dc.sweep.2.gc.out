@@ -1,9 +1,9 @@
-parameter U=1m 
+ parameter U=1m
                ^ ? missing ';'?
 
-parameter U=1m 
-            ^ ? syntax error
-*// qucs style component macros. 
+ parameter U=1m
+             ^ ? syntax error
+*// qucs style component macros.
 .subckt Idc ( 1 2 )
 dev ( 2 1 )  isource I
 .ends Idc
@@ -11,7 +11,7 @@ dev ( 2 1 )  isource I
 dev ( p n )  vsource U
 .ends Vdc
 .subckt R ( p n )
-*// local? 
+* // local?
 dev ( p n )  resistor R * (1. + dT*(Tc1 + dT*Tc2))
 .ends R
 i1 ( 1 0 )  Idc  I=ii

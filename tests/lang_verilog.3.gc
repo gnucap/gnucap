@@ -1,8 +1,8 @@
 
 simulator lang=verilog
 
-paramset zz npn;\
- .bf=150;\
+paramset zz npn;
+ .bf=150;
 endparamset
 
 module dumb_resistor (a b);

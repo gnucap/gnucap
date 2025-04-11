@@ -1,4 +1,4 @@
-\\ ground \0 
+\\ ground \0
 ^ ? \\: no match
 module aaa (.\1 (\1 ),.\2 (\2 ));
 vsource #(.dc(0)) vs (.p(\1 ),.n(\2 ));

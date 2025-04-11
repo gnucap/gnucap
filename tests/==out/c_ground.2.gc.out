@@ -2,15 +2,15 @@ module net (.a(i),.b(i));
 endmodule // net
 
 module sink (.a(a));
-ground gnd; 
+  ground gnd;
 net #() n (.a(gnd),.b(a));
 endmodule // sink
 
-ground gg 
+ground gg
 vsource #(.dc(3)) v1 (.p(\2 ),.n(\1 ));
 resistor #(.r(2)) r (.p(gg),.n(\2 ));
 sink #() s (.a(\1 ));
-print op v(nodes) i(v1) v(s.r) v(r) 
+print op v(nodes) i(v1) v(s.r) v(r)
                           ^ ? no match
 #           v(1)       v(2)       v(gg)      i(v1)      v(r)      
  27.        0.         3.         0.        -1.5       -3.        

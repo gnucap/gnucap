@@ -122,8 +122,8 @@ class BSSMATRIX {
   T	_zero;		// always 0 but not const
   T	_trash;		// depository for row and col 0, write only
 public:
-  explicit BSSMATRIX<T>(int s=0);
-  ~BSSMATRIX<T>(){ untested();
+  explicit BSSMATRIX(int s=0);
+  ~BSSMATRIX(){ untested();
     uninit();
   }
 

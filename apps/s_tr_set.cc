@@ -132,7 +132,7 @@ void TRANSIENT::setup(CS& Cmd)
 
   _tstart.e_val(0., _scope);
   _tstop.e_val(NOT_INPUT, _scope);
-  if (_tstart < 0 || _tstop <= _tstart) {untested();
+  if (_tstart < 0 || _tstop <= _tstart) {
     throw Exception("transient: bad time args");
   }else{
   }
