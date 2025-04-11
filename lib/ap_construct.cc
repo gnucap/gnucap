@@ -74,11 +74,11 @@ CS::CS(CS::WHOLE_FILE, const std::string& name)
    _end_match(0),
    _ok(true),
    _line_number(0)
-{
+{ untested();
   int f = open(name.c_str(), O_RDONLY);
   if (f == EOF) {itested();
     throw Exception_File_Open(name + ": " + strerror(errno));
-  }else{
+  }else{ untested();
   }
   _length = static_cast<size_t>(lseek(f, off_t(0), SEEK_END));
   lseek(f, off_t(0), SEEK_SET);
@@ -143,6 +143,51 @@ CS& CS::operator=(const CS& p)
   return *this;
 }
 #endif
+/*--------------------------------------------------------------------------*/
+// mimic std::getline if is_file(), otherwise fall back to get_line.
+// char delim does not work, because fgets hardcodes '\n';
+// (would need a complete rework to C++)
+CS& CS::getline(const std::string& prompt /*, char delim*/)
+{
+  int chunk_size = 4;
+  ++_line_number;
+  if (is_file()) {
+    _cmd.resize(chunk_size); // allocates chunk_size+1 chars.
+    _length = 0;
+    int c = 0;
+
+    // read at most chunk_size bytes
+    while(fgets((&_cmd[0])+_length, chunk_size+1, _file)){
+      c = int(strlen(_cmd.data()+_length));
+      assert(c);
+      assert(c<=chunk_size);
+      assert(_cmd.data()[_length+c] == '\0');
+      _length += c;
+      if(_cmd[_length-1] == '\n'){
+	assert(_length);
+	_cmd.resize(--_length); // drop '\n'
+	break;
+      }else{
+	chunk_size *= 2;
+	_cmd.resize(_cmd.size()+chunk_size);
+      }
+    }
+    _cnt = 0;
+    _ok = true;
+
+    if(!c){
+      throw Exception_End_Of_Input("");
+    }else if (OPT::listing) {
+      IO::mstdout << "\"" << fullstring() << "\"\n";
+    }else{
+    }
+    return *this;
+  }else{untested();
+    // no known issue with get_line.
+    return get_line(prompt);
+  }
+
+}
 /*--------------------------------------------------------------------------*/
 CS& CS::get_line(const std::string& prompt)
 {
@@ -243,7 +288,7 @@ static std::string getlines(FILE *fileptr)
     }else{
       trim(buffer);
       size_t count = strlen(buffer);
-      if (count && buffer[count-1] == '\\') {
+      if (count && buffer[count-1] == '\\') { untested();
 	buffer[count-1] = '\0';
       }else{
 	// look ahead at next line

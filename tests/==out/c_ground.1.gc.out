@@ -1,9 +1,9 @@
 module sink (.a(a));
-ground gnd; 
+  ground gnd;
 resistor #(.r(1)) r (.p(gnd),.n(a));
 endmodule // sink
 
-ground gg 
+ground gg
 vsource #(.dc(3)) v1 (.p(\2 ),.n(\1 ));
 resistor #(.r(2)) r (.p(gg),.n(\2 ));
 sink #() s (.a(\1 ));

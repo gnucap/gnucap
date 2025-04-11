@@ -66,6 +66,7 @@ public:
   CS&	      operator=(const std::string& s);
   CS&	      operator=(const CS& p);
   CS&	      get_line(const std::string& prompt);
+  CS&	      getline(const std::string& prompt /*,char eol='\n'*/);
 	      ~CS()		{if (is_file()) {fclose(_file);}}
   
   // status - non-consuming

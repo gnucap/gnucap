@@ -2,7 +2,7 @@ module net (.a(i),.b(i),.c(j),.d(j));
 endmodule // net
 
 module main ();
-ground g; 
+ground g;
 resistor #(.r(1.)) r1 (.p(\2 ),.n(g));
 net #() n1 (.a(\1 ),.b(\2 ),.c(\4 ),.d(g));
 vsource #(.dc(1.)) v1 (.p(\1 ),.n(\4 ));

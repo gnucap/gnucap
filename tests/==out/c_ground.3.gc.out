@@ -1,5 +1,5 @@
 module gnd (.a(gnd));
-ground gnd; 
+  ground gnd;
 endmodule // gnd
 
 resistor #(.r(10k)) r (.p(\2 ),.n(\1 ));

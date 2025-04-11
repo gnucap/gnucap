@@ -1,22 +1,22 @@
 vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), .width( 0.002), .period( 0.01)  AC  1.) v1 (.p(\1 ),.n(\0 ));
 //vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), 
-// .width( 0.002), .period( 0.01)  AC  1.) v1 (.p(\1 ),.n(\0 )); 
+// .width( 0.002), .period( 0.01)  AC  1.) v1 (.p(\1 ),.n(\0 ));
 resistor #(.r( 22.)) r1a (.p(\1 ),.n(\2 ));
 mutual_inductor #(.k(.75)) k1 (.l1(l1a),.l2(l1b));
 inductor #(.l( 0.56)) l1a (.p(\2 ),.n(\0 ));
 inductor #(.l( 0.79)) l1b (.p(\3 ),.n(\0 ));
 resistor #(.r( 75.)) r1b (.p(\3 ),.n(\0 ));
 vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), .width( 0.002), .period( 0.01)  AC  1.) v2 (.p(\4 ),.n(\0 ));
-//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), 
-// .width( 0.002), .period( 0.01)  AC  1.) v2 (.p(\4 ),.n(\0 )); 
+//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002),
+// .width( 0.002), .period( 0.01)  AC  1.) v2 (.p(\4 ),.n(\0 ));
 resistor #(.r( 22.)) r2a (.p(\4 ),.n(\5 ));
 inductor #(.l( 0.061151326)) l2a (.p(\5 ),.n(\6 ));
 inductor #(.l( 0.498848674)) l2b (.p(\6 ),.n(\0 ));
 inductor #(.l( 0.291151326)) l2c (.p(\6 ),.n(\7 ));
 resistor #(.r( 75.)) r2b (.p(\7 ),.n(\0 ));
 vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), .width( 0.002), .period( 0.01)  AC  1.) v3 (.p(\8 ),.n(\0 ));
-//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), 
-// .width( 0.002), .period( 0.01)  AC  1.) v3 (.p(\8 ),.n(\0 )); 
+//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002),
+// .width( 0.002), .period( 0.01)  AC  1.) v3 (.p(\8 ),.n(\0 ));
 resistor #(.r( 22.)) r3a (.p(\8 ),.n(\9 ));
 inductor #(.l( 0.56)) l3a (.p(\10 ),.n(\0 ));
 inductor #(.l( 0.79)) l3b (.p(\11 ),.n(\0 ));
@@ -48,7 +48,7 @@ resistor #(.r( 75.)) r3b (.p(\12 ),.n(\0 ));
 vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), .width( 0.002), .period( 0.01)  AC  1.) v1
 + (.p(\1 ),.n(\0 ));
 //vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), 
-// .width( 0.002), .period( 0.01)  AC  1.) v1 (.p(\1 ),.n(\0 )); 
+// .width( 0.002), .period( 0.01)  AC  1.) v1 (.p(\1 ),.n(\0 ));
 resistor #(.r( 22.)) r1a (.p(\1 ),.n(\2 ));
 mutual_inductor #(.k(.75)) k1 (.l1(l1a),.l2(l1b));
 inductor #(.l( 0.56)) l1a (.p(\2 ),.n(\0 ));
@@ -56,8 +56,8 @@ inductor #(.l( 0.79)) l1b (.p(\3 ),.n(\0 ));
 resistor #(.r( 75.)) r1b (.p(\3 ),.n(\0 ));
 vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), .width( 0.002), .period( 0.01)  AC  1.) v2
 + (.p(\4 ),.n(\0 ));
-//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), 
-// .width( 0.002), .period( 0.01)  AC  1.) v2 (.p(\4 ),.n(\0 )); 
+//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002),
+// .width( 0.002), .period( 0.01)  AC  1.) v2 (.p(\4 ),.n(\0 ));
 resistor #(.r( 22.)) r2a (.p(\4 ),.n(\5 ));
 inductor #(.l( 0.061151326)) l2a (.p(\5 ),.n(\6 ));
 inductor #(.l( 0.498848674)) l2b (.p(\6 ),.n(\0 ));
@@ -65,8 +65,8 @@ inductor #(.l( 0.291151326)) l2c (.p(\6 ),.n(\7 ));
 resistor #(.r( 75.)) r2b (.p(\7 ),.n(\0 ));
 vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), .width( 0.002), .period( 0.01)  AC  1.) v3
 + (.p(\8 ),.n(\0 ));
-//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002), 
-// .width( 0.002), .period( 0.01)  AC  1.) v3 (.p(\8 ),.n(\0 )); 
+//vsource #(pulse.iv( 0.), .pv( 1.), .delay( 0.002), .rise( 0.002), .fall( 0.002),
+// .width( 0.002), .period( 0.01)  AC  1.) v3 (.p(\8 ),.n(\0 ));
 resistor #(.r( 22.)) r3a (.p(\8 ),.n(\9 ));
 inductor #(.l( 0.56)) l3a (.p(\10 ),.n(\0 ));
 inductor #(.l( 0.79)) l3b (.p(\11 ),.n(\0 ));

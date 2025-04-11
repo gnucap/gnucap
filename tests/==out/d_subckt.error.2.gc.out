@@ -1,6 +1,6 @@
-m #() mm(.a(\1 ), .b(\0 )); 
+m #() mm(.a(\1 ), .b(\0 ));
                   ^ ? mm: mismatch b ignored
-m #() mm(.x(\1 ), .d(\0 )); 
+m #() mm(.x(\1 ), .d(\0 ));
          ^ ? mm: mismatch x ignored
 module m (.a(a),.d(d));
 resistor #(.r(1)) r0 (.p(a),.n(b));
