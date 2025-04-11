@@ -184,6 +184,7 @@ CS& CS::getline(const std::string& prompt /*, char delim*/)
     _ok = true;
 
     if(!c){
+      _cmd.resize(0);
       throw Exception_End_Of_Input("");
     }else if (OPT::listing) {
       IO::mstdout << "\"" << fullstring() << "\"\n";
