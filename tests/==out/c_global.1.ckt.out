@@ -1,0 +1,20 @@
+* test missing .global declaration 
+.global vdd 
+        ^ ? not a global node
+.subckt thing ( pp )
+.global vdd 
+R1 ( vdd pp )  0.
+.ends thing
+V1 ( vdd 0 )  DC  5.
+X1 ( t )  thing 
+R2 ( 0 t )  2.
+#           v(t)       v(vdd)     i(R2)     
+X1.R1: short circuit
+X1.R1: short circuit
+ 27.        0.         5.         0.        
+Gnucap   System status
+iterations: op=3, dc=0, tran=0, fourier=0, total=3
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=1, model=0, total=3
+dctran density=55.6%, ac density=55.6%
+end

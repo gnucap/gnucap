@@ -1,0 +1,21 @@
+* test missing .global declaration
+
+.subckt thing pp
+  .global vdd
+  R1 vdd pp 0
+.ends
+
+V1 vdd 0 5
+
+X1 t thing
+R2 0 t 2
+
+*>.list
+*>.print op v(nodes) i(R2)
+*>.op
+*>.status notime
+*>.end
+
+.op
+.print op v(t)
+

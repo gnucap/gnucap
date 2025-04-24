@@ -48,7 +48,7 @@ NODE_MAP::NODE_MAP(const NODE_MAP& p)
   for(auto const& i : p) {
     assert(i.second);
     int idx = i.second->user_number();
-    // copy indes, and possibly link to global node or ground
+    // copy index, and possibly link to global node or ground
     _nodes[idx] = i.second->n_(0);
     trace3("NODE_MAP::NODE_MAP1", idx, i.first, i.second->n_(0).link());
     trace3("NODE_MAP::NODE_MAP1", idx, i.first, i.second->n_(0).n_());
