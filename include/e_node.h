@@ -107,6 +107,12 @@ private: // this should eventually fit into 64 bits.
   NODE* _nnn{nullptr};
   mutable node_t* _link{nullptr};
   bool _own{false}; // indicate that _nnn is ours.
+  enum dir_t {
+    dir_none = 0,
+    dir_in   = 1,
+    dir_out  = 2,
+    dir_io   = 3
+  } _dir{dir_none};
 private: // treee stuff.
   bool is_node()const;
   bool is_link()const;
@@ -131,6 +137,12 @@ private: // union find
   friend node_t* parent(node_t*);
   friend node_t* set_parent(node_t* n, node_t* p);
 public:
+  void set_input(){ _dir = dir_t(_dir | dir_in); }
+  void set_output(){ _dir = dir_t(_dir | dir_out); }
+  bool is_port()const {untested(); return _dir == dir_none; }
+  bool is_input()const {return _dir & dir_in; }
+  bool is_output()const {return _dir & dir_out; }
+  bool is_inout()const {return _dir == dir_none || _dir == dir_io; }
   void allocate(int u=0);
 private:
   int _index{INVALID_NODE}; // index in node map

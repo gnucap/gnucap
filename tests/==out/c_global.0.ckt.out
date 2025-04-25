@@ -1,0 +1,42 @@
+ 
+.global vdd 
+.subckt thing ( pp )
+.global vdd 
+R1 ( vdd pp )  0.
+.ends thing
+V1 ( vdd 0 )  DC  5.
+X1 ( t )  thing 
+R2 ( 0 t )  2.
+#           v(t)       v(vdd)     i(R2)     
+X1.R1: short circuit
+X1.R1: short circuit
+ 27.        5.         5.        -2.5       
+Gnucap   System status
+iterations: op=4, dc=0, tran=0, fourier=0, total=4
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=100.0%, ac density=100.0%
+name   ...
+have 2 nodes. model: 0 sckt: 0
+
+
+thing 1 2 0
+0 -1
+1 -1
+ 
+ thing.R1 2 2 0
+ 0 -1
+ 1 -1
+V1 2 2 0
+0 2
+1 0
+X1 1 2 0
+0 1
+1 -1
+ X1.R1 2 2 0
+ 0 2
+ 1 1
+R2 2 2 0
+0 0
+1 1
+end

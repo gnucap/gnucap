@@ -460,6 +460,44 @@ private:
   void parse_def(CS& cmd, PARAM_INSTANCE& par)const;
 } module_param;
 /*--------------------------------------------------------------------------*/
+class CMD_NET_DECL : public CMD {
+public:
+  void do_it(CS& cmd, CARD_LIST* Scope)override {
+    assert(Scope);
+    assert(cmd.last_match().size()>2);
+    DEV_DOT* dot = new DEV_DOT();
+    dot->set(cmd.fullstring());
+    Scope->push_back(dot);
+    assert(Scope->nodes());
+    NODE_MAP& nm = *Scope->nodes();
+
+    std::string name;
+    while(cmd.more() && !(cmd >> ';')){
+      name = get_identifier(cmd, ",;");
+      NODE* n = nm.new_node(name);
+      assert(n);
+      node_t& nn = n->n_(0);
+      switch(cmd.last_match()[2]) {
+      case 'p': // inPut
+	nn.set_input();
+	break;
+      case 't': // ouTput
+	nn.set_output();
+	break;
+      case 'o': // inOut
+	nn.set_output();
+	nn.set_input();
+	break;
+      case 'e': // elEctrical
+      case 'r': // wiRe
+	// not yet.
+      default:
+	break;
+      }
+    }
+  }
+} net_decl;
+/*--------------------------------------------------------------------------*/
 // essentially PARAM_INSTANCE::PARAM_NONE, untyped parameter
 // but resolve to verilog types.
 class PARAM_ANY : public PARA_BASE {
@@ -673,9 +711,9 @@ BASE_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, BASE_SUBCKT* x)
     if (cmd >> "endmodule ") {
       break;
     }else if (cmd >> "parameter ") {
-      trace1("parameter", cmd.tail());
       module_param.do_it(cmd, x->subckt());
-      trace1("/parameter", cmd.tail());
+    }else if (cmd >> "wire|electrical|inout|input|output") {
+      net_decl.do_it(cmd, x->subckt());
     }else{
       new__instance(cmd, x, x->subckt());
     }
