@@ -57,5 +57,6 @@ cat ${srcdir}/Makefile.in >> Makefile
 echo "include ${srcdir}/Make.test" >> Makefile
 echo "include ../MakeConf" >> Makefile
 echo "include ${top_srcdir}/include/MakeBase" >> Makefile
+echo "-include Make.depend" >> Makefile
 
 [ -d \=\=out ] || ln -sf ${srcdir}/\=\=out
