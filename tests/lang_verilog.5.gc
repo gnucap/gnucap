@@ -1,0 +1,11 @@
+verilog
+
+module test(.p(x), .q(y));
+electrical x, y;
+inout x, y;
+wire w;
+
+resistor r1(a, b);
+endmodule;
+
+list
