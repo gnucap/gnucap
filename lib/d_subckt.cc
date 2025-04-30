@@ -504,19 +504,6 @@ void DEV_SUBCKT::expand()
     trace3("expand", short_label(), net_nodes(), max_nodes());
     renew_subckt(_parent, &(c->_params));
     subckt()->expand();
-
-#if 1 // move to CARD_LIST::expand?
-    for(CARD_LIST::iterator i=subckt()->begin(); i!=subckt()->end(); ++i){
-      CARD* d = (*i)->deflate();
-
-      if(d == (*i)){
-      }else{itested();
-	assert(d->owner() == this);
-	delete *i;
-	*i = d;
-      }
-    }
-#endif
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -461,7 +461,7 @@ public:
   }
   std::string val_string()const override { return *this; }
   bool to_bool()const override			{untested();return (_data && *_data);}
-  bool operator==(String const& s)const { untested(); return _data && s._data && !strcmp(_data, s._data); }
+  bool operator==(String const& s)const { return _data && s._data && !strcmp(_data, s._data); }
   bool operator!=(String const& s)const { untested(); return !operator==(s); }
 
   Base* minus()const override			{untested(); return nullptr;}
