@@ -297,7 +297,7 @@ static std::string getlines(FILE *fileptr)
     }else{
       trim(buffer);
       size_t count = strlen(buffer);
-      if (count && buffer[count-1] == '\\') { untested();
+      if (count && buffer[count-1] == '\\') {itested();
 	buffer[count-1] = '\0';
       }else{
 	// look ahead at next line

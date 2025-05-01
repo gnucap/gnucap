@@ -196,7 +196,7 @@ CARD_LIST& CARD_LIST::expand()
     CARD* d = (*ci)->deflate();
 
     if(d == (*ci)){
-    }else{untested();
+    }else{itested();
       assert(d->owner() == (*ci)->owner());
       delete *ci;
       *ci = d;

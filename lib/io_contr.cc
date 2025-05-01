@@ -84,7 +84,7 @@ void decipher(char *buf)
  */
 void outreset(void)
 {
-  if (to_pipe) { untested();
+  if (to_pipe) {itested();
     pclose(to_pipe);
     to_pipe = nullptr;
   }else{
