@@ -191,6 +191,18 @@ CARD_LIST& CARD_LIST::expand()
     trace_func_comp();
     (**ci).expand();
   }
+
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    CARD* d = (*ci)->deflate();
+
+    if(d == (*ci)){
+    }else{itested();
+      assert(d->owner() == (*ci)->owner());
+      delete *ci;
+      *ci = d;
+    }
+  }
+
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
     (**ci).expand_last();

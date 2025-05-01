@@ -81,7 +81,7 @@ void do_probe(CS& cmd, PROBELIST *probes, CARD_LIST *scope)
       throw Exception_CS("what's this?", cmd);
     }
   }else{
-    if (cmd.is_end()) {untested();		/* list */
+    if (cmd.is_end()) {itested();		/* list */
       probes[simtype].listing("");
     }else if (cmd.umatch("clear ")) {itested();/* clear */
       probes[simtype].clear();
