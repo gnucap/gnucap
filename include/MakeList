@@ -45,7 +45,7 @@ u_time_pair.h u_xprobe.h u_attrib.h u_node.h
 #------------------------------------------------------------------------
 RAW_OTHER_INSTALL = \
 MakeBase MakeConf.default MakeConf.g++ MakeConf.Debug \
-MakeConf.afl MakeConf.afldebug
+MakeConf.afldebug
 #------------------------------------------------------------------------
 RAW_OTHER_NO_INSTALL = MakeList configure config.h
 # -- config.h is installed by conf
