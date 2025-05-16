@@ -1,0 +1,14 @@
+module foo (.a(a),.b(b));
+resistor #(.r(1.)) R (.p(a),.n(b));
+endmodule // foo
+
+foo #() X1 (.a(?????),.b(b));
+ground gnd;
+vsource #(.dc(1)) vv (.p(b),.n(gnd));
+X1: invalid nodes
+X1: invalid nodes
+Gnucap   System status
+iterations: op=0, dc=0, tran=0, fourier=0, total=1
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=0, subckt=0, model=0, total=0
+dctran density=0.0%, ac density=0.0%
