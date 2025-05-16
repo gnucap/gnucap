@@ -56,6 +56,10 @@ edit include/MakeConf.default following remarks, or build using
 
 $ make HAVE_LIBREADLINE= LIBREADLINE=
 
+On ancient systems, additional explicit linking may be required, such as
+
+$ make LIBREADLINE="-lreadline -ltermcap"
+
 == Submodules
 
 Additional packages can be compiled/installed using a similar method once this

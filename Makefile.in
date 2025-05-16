@@ -6,9 +6,10 @@ include ${srcdir}/MakeList
 RECURSIVE_TARGETS = all install clean depend distclean \
                     ${EXTRA_RECURSIVE_TARGETS}
 #-----------------------------------------------------------------------------
+K_FLAG = $(findstring k,$(firstword -$(MAKEFLAGS)))
 ${RECURSIVE_TARGETS:%=%-recursive}: %-recursive:
 	for i in ${SUBDIRS}; do \
-	  $(MAKE) -C $${i} $*; \
+	  $(MAKE) -C $${i} $* || [ -n "${K_FLAG}" ] || exit 1; \
 	done
 #-----------------------------------------------------------------------------
 ${RECURSIVE_TARGETS}: %: %-recursive
