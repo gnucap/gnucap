@@ -2,13 +2,13 @@ module foo (.a(a),.b(b));
 resistor #(.r(1.)) R (.p(a),.n(b));
 endmodule // foo
 
-foo #() X1 (.a(?????),.b(b));
+foo #() X1 (.b(b));
 ground gnd;
 vsource #(.dc(1)) vv (.p(b),.n(gnd));
-X1: invalid nodes
-X1: invalid nodes
+#           v(b)       v(gnd)     v(X1.R)   
+ 27.        1.         0.        -1.0001p   
 Gnucap   System status
-iterations: op=0, dc=0, tran=0, fourier=0, total=1
+iterations: op=3, dc=0, tran=0, fourier=0, total=3
 transient timesteps: accepted=0, rejected=0, total=0
-nodes: user=0, subckt=0, model=0, total=0
-dctran density=0.0%, ac density=0.0%
+nodes: user=1, subckt=1, model=0, total=2
+dctran density=100.0%, ac density=100.0%

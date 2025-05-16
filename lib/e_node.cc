@@ -280,7 +280,7 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
     }
     _nnn = nullptr;
   }else{
-    throw Exception(d->long_label() + ": invalid nodes");
+    (void)d; // probably floating. handle elsewhere
   }
 }
 /*--------------------------------------------------------------------------*/

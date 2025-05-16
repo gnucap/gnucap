@@ -21,9 +21,9 @@ dumb_resistor #(.r(abs(-z)/10)) Re (.a(e),.b(\0 ));
 resistor #(.r(100k)) Rb1 (.p(b),.n(vcc));
 dumb_resistor #(.r(r)) Rb2 (.a(b),.b(\0 ));
 capacitor #(.c(1u)) Cin (.p(b),.n(in));
-capacitor #(.c(1u)) Cout (.p(c),.n(?????));
+capacitor #(.c(1u)) Cout (.p(c));
 resistor #(.r(100k)) Rin (.p(in),.n(\0 ));
-resistor #(.r(100k)) Rout (.p(out),.n(?????));
+resistor #(.r(100k)) Rout (.p(out));
 endmodule // foo
 
 foo #(.r(10k)) X1 (.vcc(V_cc),.in(amp_in),.out(out));
@@ -31,9 +31,9 @@ resistor #(.r(10*(1-gain))) Rin1 (.p(in),.n(amp_in));
 resistor #(.r(10*gain)) Rin2 (.p(amp_in),.n(\0 ));
 vsource #( DC  20.) Vcc (.p(V_cc),.n(\0 ));
 vsource #( AC  0.2) Vin (.p(in),.n(\0 ));
-X1: invalid nodes
-X1: invalid nodes
-X1: invalid nodes
-X1: invalid nodes
-X1: invalid nodes
-X1: invalid nodes
+X1.Cout: invalid nodes
+X1.Cout: invalid nodes
+X1.Cout: invalid nodes
+X1.Cout: invalid nodes
+X1.Cout: invalid nodes
+X1.Cout: invalid nodes
