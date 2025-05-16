@@ -27,7 +27,7 @@ PREFIX =  /usr/local
 #------------------------------------------------------------------------
 # comment out to build witout readline support
 HAVE_LIBREADLINE = -DHAVE_LIBREADLINE
-LIBREADLINE = -lreadline -ltermcap
+LIBREADLINE = -lreadline
 #------------------------------------------------------------------------
 CXX = g++ -fno-diagnostics-color
 

@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------
 # comment out to build witout readline support
 HAVE_LIBREADLINE = -DHAVE_LIBREADLINE
-LIBREADLINE = -lreadline -ltermcap
+LIBREADLINE = -lreadline
 #------------------------------------------------------------------------
 MAKE_CXXFLAGS = -fPIC -std=c++11 -O2 -W ${LIST_CXXFLAGS} ${CXXFLAGS}
 MAKE_CPPFLAGS = -DUNIX $(INCLUDE) -DNDEBUG ${LIST_CPPFLAGS} ${CPPFLAGS}
