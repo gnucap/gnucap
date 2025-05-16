@@ -470,14 +470,14 @@ void DEV_SUBCKT::expand()
     // first time spice
     assert(c->modelname()!="");
     const CARD* model = find_looking_out(c->modelname());
-    if ((_parent = dynamic_cast<const DEV_SUBCKT_PROTO*>(model))) {
+    if (_parent == dynamic_cast<const DEV_SUBCKT_PROTO*>(model)) {
       // good
-    }else if ((_parent = dynamic_cast<const DEV_MODULE_PROTO*>(model))) {
+    }else if (_parent == dynamic_cast<const DEV_MODULE_PROTO*>(model)) {
       // good
-    }else if (dynamic_cast<const BASE_SUBCKT*>(model)) {
-      throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt proto");
-    }else{
-      throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
+    }else if (dynamic_cast<const BASE_SUBCKT*>(model)) { untested();
+      // bad
+    }else{ untested();
+      // bad
     }
     assert(!_parent->is_device()); // really?
   }else{itested();
@@ -496,7 +496,7 @@ void DEV_SUBCKT::expand()
     assert(_parent->subckt()->params());
     PARAM_LIST* pl = const_cast<PARAM_LIST*>(_parent->subckt()->params());
     assert(pl);
-    c->_params.set_try_again(pl);
+    assert(c->_params.is_try_again(pl)); // precalc_first?
     for(auto p : c->_params){
       trace2("expand param", p.first, p.second.string());
     }
@@ -516,18 +516,46 @@ void DEV_SUBCKT::precalc_first()
     new_subckt();
   }
 
+  assert(is_device());
+  if(_parent == &pp){
+    COMMON_PARAMLIST const* c = prechecked_cast<COMMON_PARAMLIST const*>(common());
+    assert(c);
+    // first time spice
+    assert(c->modelname()!="");
+    const CARD* model = find_looking_out(c->modelname());
+    if ((_parent = dynamic_cast<const DEV_SUBCKT_PROTO*>(model))) {
+      // good
+    }else if ((_parent = dynamic_cast<const DEV_MODULE_PROTO*>(model))) {
+      // good
+    }else if (dynamic_cast<const BASE_SUBCKT*>(model)) {
+      throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt proto");
+    }else{
+      throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
+    }
+    assert(!_parent->is_device()); // really?
+  }else{itested();
+  }
+
   if(_parent) {
     auto c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
     assert(c);
 
     PARAM_LIST* pl = const_cast<PARAM_LIST*>(_parent->subckt()->params());
     assert(pl);
+#ifndef NDEBUG
+    if(c->_params.is_try_again(pl)){
+    }else{
+    }
+#endif
     c->_params.set_try_again(pl);
 
     subckt()->attach_params(&(c->_params), scope());
     subckt()->precalc_first();
+
+    assert(c->_params.is_try_again(pl));
   }else{
   }
+
 }
 /*--------------------------------------------------------------------------*/
 bool DEV_SUBCKT::makes_own_scope() const

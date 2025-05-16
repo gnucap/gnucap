@@ -9,4 +9,4 @@ resistor #(.r(1)) r2 (.p(c),.n(d));
 endmodule // m
 
 m #() mm (.a(\1 ));
-m #() mm (.a(?????),.d(\0 ));
+m #() mm (.d(\0 ));

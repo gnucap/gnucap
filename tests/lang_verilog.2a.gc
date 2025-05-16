@@ -1,0 +1,17 @@
+
+simulator lang=verilog
+
+module foo (a, b);
+resistor     #(.r(1.))        R (a, b);
+endmodule
+
+foo      #()         X1   (.b(b));
+ground gnd;
+vsource #(.dc(1)) vv(b, gnd);
+
+list
+print op v(nodes) v(X1.R)
+op
+status notime
+
+end

@@ -831,10 +831,13 @@ void LANG_VERILOG::print_ports_long(OMSTREAM& o, const COMPONENT* x)
   o << " (";
   std::string sep = "";
   for (int ii = 0;  x->port_exists(ii);  ++ii) {
-    o << sep;
-    print_attributes(o, x->port_id_tag(ii));
-    o << '.' << mangle(x->port_name(ii)) << '(' << mangle(x->port_value(ii)) << ')';
-    sep = ',';
+    if(x->node_is_connected(ii)){
+      o << sep;
+      print_attributes(o, x->port_id_tag(ii));
+      o << '.' << mangle(x->port_name(ii)) << '(' << mangle(x->port_value(ii)) << ')';
+      sep = ',';
+    }else{
+    }
   }
   o << ')';
 }
