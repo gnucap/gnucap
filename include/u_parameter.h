@@ -437,6 +437,9 @@ public:
   void set(std::string, const std::string&);
   void set(std::string, const PARAM_INSTANCE&);
   void set_try_again(PARAM_LIST const* t) {_try_again = t;}
+#ifndef NDEBUG
+  bool is_try_again(PARAM_LIST const* t)const {return _try_again == t;}
+#endif
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
