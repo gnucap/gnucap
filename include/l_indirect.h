@@ -50,7 +50,7 @@ public:
   const T& at(tag_t x)const {
     try {
       return _map.at(x);
-    }catch (std::out_of_range const&) { untested();
+    }catch (std::out_of_range const&) { itested();
       return _dummy;
     }
   }
