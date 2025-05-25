@@ -416,9 +416,13 @@ int DEV_SUBCKT::set_param_by_name(std::string Name, std::string Value)
     // spice.
     trace2("spice spbn", Name, Value);
     int i = BASE_SUBCKT::set_param_by_name(Name,Value);
+#ifdef DO_TRACE
+    COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
+    assert(c);
     for(auto p : c->_params){
       trace2("spbn param spice", p.first, p.second.string());
     }
+#endif
     return i;
   }else{
     trace2("normal spbn", Name, Value);
