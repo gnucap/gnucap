@@ -1,11 +1,20 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 20250*****-dev
+== 20250525-dev
 - predictor for node voltages
-- fix module instanciation in spice
 - support same_port device aka "net"
-- ground statement
+- ground and .ground statement
+- add build preset for afl; afl related fixes
+- fold in d_subckt.cc from mg-vams
+- move deflate call to CARD_LIST::expand
+- port directions and type declarations
+- provide CS::getline following STL convention
+- drop termcap from default build, better override
+- fix gaps in port connections, floating ports
+- fix module instanciation in spice
+- fix port names in subcircuits instanciated using 'X'
+- build fix: propagate make errors in subdirs
 
 == 20250301-dev
 - arbitrary number of module ports
