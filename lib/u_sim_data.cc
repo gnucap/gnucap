@@ -377,6 +377,7 @@ void SIM_DATA::alloc_hold_vectors(CARD_LIST* scope)
   assert(top_nodes[0].n_() == &ground_node);
   for(auto p : top_nodes) {
     int idx = p.second->user_number();
+    assert(idx!=INVALID_NODE);
     if( top_nodes[idx].n_()){
       top_nodes[idx].n_()->set_label(p.first);
       // assert(&top_nodes[idx] == &top_nodes[idx].root());
