@@ -241,6 +241,28 @@ public:
   bool operator==(const node_t& p)const { return _link==p._link && _nnn==p._nnn && _m==p._m;}
 
 private:
+public: // used in set_parent.
+  node_t& link_to_(node_t* nn){
+    if(nn != this){
+    }else if(!_nnn){
+      _link = this;
+      return *this;
+    }else{
+    }
+    assert(nn);
+    assert(nn==&nn->root());
+    if(_own){ untested();
+      delete _nnn;
+    }else if(_nnn){ untested();
+    }else{
+    }
+    _nnn = nullptr;
+    if(!_link){
+    }else{
+    }
+    _link = nn;
+    return *this;
+  }
 public: // top level kludge. u_sim_data.cc line 457
   node_t& link_to(node_t* nn){
     assert(nn);
@@ -336,7 +358,7 @@ inline node_t* set_parent(node_t* n, node_t* p)
 {
   assert(n);
   assert(p);
-  n->link_to(p);
+  n->link_to_(p);
   return p;
 }
 /*--------------------------------------------------------------------------*/
