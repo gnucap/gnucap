@@ -277,7 +277,6 @@ static void map_toplevel_nodes(CARD_LIST* scope)
   for (int i=0; i<top_nodes.size(); ++i) {
     node_t none;
     top_nodes[i] = none;
-    assert(!top_nodes[i].link());
   }
 #if 0
   top_nodes[0].set_to_ground(nullptr); // link_to(top_nodes["0"]);
@@ -319,9 +318,6 @@ static void map_toplevel_nodes(CARD_LIST* scope)
 					    // use std::set and c++14?
   }
 
-  for (int ii=top_nodes.size(); --ii;) {
-    trace4("map top level done", top_nodes.size(), ii, &top_nodes[ii], top_nodes[ii].link());
-  }
 }
 /*--------------------------------------------------------------------------*/
 /* init: allocate, set up, etc ... for any type of simulation
@@ -374,7 +370,6 @@ void SIM_DATA::alloc_hold_vectors(CARD_LIST* scope)
 
   assert(top_nodes.size());
   for (int ii=top_nodes.size(); --ii;) {
-    trace3("allocate top level", top_nodes.size(), ii, top_nodes[ii].link());
     top_nodes[ii].allocate(1 /*bump user node count*/);
   }
 

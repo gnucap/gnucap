@@ -124,12 +124,12 @@ public: // debugging. not yet
     return const_cast<node_t*>(this)->root();
   }
 #endif
-public: // debugging
-  node_t*       link() {return _link;}
+private:
+  node_t*       link() { return _link;}
   node_t const* link()const { untested();return _link;}
+private: // union find
   int rank()const {return !!_nnn;} // TODO: hierarchy.
   int inc_rank()const {return 0;} // TODO
-private: // union find
   friend node_t* root(node_t const*);
   friend int     rank(node_t const*);
   friend int     inc_rank(node_t*);
