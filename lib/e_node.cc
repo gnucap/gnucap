@@ -112,7 +112,7 @@ node_t& node_t::operator=(NODE* n)
     _own = false;
   }else{
   }
-  _link = this;
+  _link = this; // yikes.
   _nnn = n;
 
   _index = n->user_number();
