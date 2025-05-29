@@ -123,7 +123,7 @@ private: // debugging. not yet
     return const_cast<node_t*>(this)->root();
   }
 private:
-  node_t*       link() { return _link;}
+  node_t*       link() { assert(!_nnn || !_link); return _link; }
   node_t const* link()const { untested();return _link;}
 private: // union find
   int rank()const {return !!_nnn;} // TODO: hierarchy.
@@ -206,12 +206,12 @@ public:
     }else if (_link) {
       _own = false;
       _nnn = root()._nnn;
-      _link = this;
     }else{
       assert(_m == INVALID_NODE);
     }
     if (_nnn) {
       _m = _nnn->matrix_number();
+      _link = nullptr;
     }else{
     }
     return *this;
@@ -304,18 +304,19 @@ public:
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_node() const
 {
-  assert(!_nnn || _link == this || !_link);
+  assert(!_nnn || !_link);
   return _nnn;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_link() const
 {
-  assert(!_nnn || _link == this || !_link);
+  assert(!_nnn || !_link);
   return !_nnn && _link;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_root() const
 { untested();
+  assert(!_nnn || !_link);
   if(is_node()){ untested();
     return true;
   }else if(is_link()) { untested();
@@ -327,6 +328,7 @@ inline bool node_t::is_root() const
 /*--------------------------------------------------------------------------*/
 inline node_t& node_t::root()
 {
+  assert(!_nnn || !_link);
  // call find_subset?
   node_t* r = this;
   while (r->is_link() && r->link() != r) {

@@ -411,11 +411,8 @@ void node_t::clear()
 void node_t::connect(node_t& target)
 {
   build_union(&target, this);
-  if(!n_() && !_link){
-    // stopgap
-    _link = this;
-  }else{
-  }
+  assert(_nnn || _link);
+  assert(!_nnn || !_link);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
