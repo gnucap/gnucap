@@ -312,7 +312,7 @@ static void map_toplevel_nodes(CARD_LIST* scope)
       int u = n->user_number();
       assert(u == n->n_(0).e_());
       n->n_(0).clear();
-      n->n_(0).link_to(&top_nodes[u].root());
+      n->n_(0).link_to(&top_nodes[u]);
     }
     assert((*p).first == n->short_label()); // BUG: redundant storage.
 					    // use std::set and c++14?
@@ -373,12 +373,13 @@ void SIM_DATA::alloc_hold_vectors(CARD_LIST* scope)
     top_nodes[ii].allocate(1 /*bump user node count*/);
   }
 
-  ground_node.set_owner(nullptr);
-  top_nodes[0].root() = &ground_node;
+  assert(ground_node.owner() == nullptr);
+  assert(top_nodes[0].n_() == &ground_node);
   for(auto p : top_nodes) {
     int idx = p.second->user_number();
     if( top_nodes[idx].n_()){
       top_nodes[idx].n_()->set_label(p.first);
+      // assert(&top_nodes[idx] == &top_nodes[idx].root());
       p.second->n_(0).link_to(&top_nodes[idx]); // too late?
     }else{
     }

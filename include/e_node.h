@@ -117,13 +117,11 @@ private: // treee stuff.
   bool is_node()const;
   bool is_link()const;
   bool is_root()const;
-#ifndef NDEBUG_
-public: // debugging. not yet
+private: // debugging. not yet
   node_t&       root();
   node_t const& root()const {
     return const_cast<node_t*>(this)->root();
   }
-#endif
 private:
   node_t*       link() { return _link;}
   node_t const* link()const { untested();return _link;}
@@ -244,6 +242,7 @@ private:
 public: // top level kludge. u_sim_data.cc line 457
   node_t& link_to(node_t* nn){
     assert(nn);
+    assert(nn==&nn->root());
     if(_own){ untested();
       delete _nnn;
     }else if(_nnn){ untested();

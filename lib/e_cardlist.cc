@@ -605,13 +605,10 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       int idx = model->n_(port).e_();
       if(owner->n_(port).is_connected()){
 	build_union(&node_map[idx], &owner->n_(port));
-	assert(&node_map[idx].root()==&owner->n_(port).root());
+	// assert(&node_map[idx].root()==&owner->n_(port).root());
       }else{
 	// floating?
       }
-    }
-    for (int port = 0; port < model->net_nodes(); ++port) {
-      trace3("union2", owner->long_label(), port, &owner->n_(port).root());
     }
   }
 
