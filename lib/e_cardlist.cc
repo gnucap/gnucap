@@ -66,7 +66,7 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
   shallow_copy(model->subckt());
   //set_owner(owner);
 
-  _nm = new NODE_MAP(*model->subckt()->nodes());
+  _nm = model->subckt()->nodes()->clone();
   map_subckt_nodes(model, owner);
 }
 /*--------------------------------------------------------------------------*/
