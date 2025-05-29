@@ -268,7 +268,7 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
   assert(m);
   if (e_() != INVALID_NODE) {
     clear(); // keep index.
-    build_union(this, &m[e_()]);
+    m[e_()].connect(*this);
     assert(_link);
     assert(!_nnn);
     if(!_nnn){
@@ -371,6 +371,18 @@ void node_t::clear()
   }
   _own = false;
   _nnn = nullptr;
+}
+/*--------------------------------------------------------------------------*/
+// make a connection to a node, usually further up the hierarchy.
+// this will have to transport type information,
+// negotiate with the target node, and flag it as used.
+// next steps after connect
+// - resolve target node type
+// - expand/deflate target node
+// - map to resulting structure
+void node_t::connect(node_t& target)
+{
+  build_union(&target, this);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

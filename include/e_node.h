@@ -257,6 +257,7 @@ public: // top level kludge. u_sim_data.cc line 457
   }
 private:
   node_t& set_own(NODE* p);
+  void connect(node_t&);
 
 public:
   double      v0()const {
