@@ -219,6 +219,7 @@ public:
 
   explicit    node_t(int i=INVALID_NODE) : _index(i) {};
 	      node_t(const node_t&);
+	      node_t(node_t&);
 	      node_t(node_t&&);
   explicit    node_t(NODE*);
 	      ~node_t();
@@ -232,6 +233,7 @@ public:
   LOGIC_NODE*	    operator->()	{return &data();}
   operator bool()const {return _nnn;}
 
+  node_t& operator=(node_t& p);
   node_t& operator=(const node_t& p);
   node_t& operator=(node_t&& p);
   node_t& operator=(NODE* p);

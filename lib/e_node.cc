@@ -39,6 +39,19 @@ NODE::NODE(const NODE* p)
   unreachable();
 }
 /*--------------------------------------------------------------------------*/
+node_t::node_t(node_t& p)
+  :_nnn(p._nnn),
+   _link(p._link),
+   _index(p._index),
+   _m(p._m)
+{
+  if(_nnn){ untested();
+    _nnn = nullptr;
+    _link = &p;
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
 node_t::node_t(const node_t& p)
   :_nnn(p._nnn),
    _link(p._link),
@@ -70,18 +83,33 @@ node_t::node_t(NODE* n)
   assert(n!=&ground_node || _m==0);
 }
 /*--------------------------------------------------------------------------*/
-node_t& node_t::operator=(const node_t& p)
+node_t& node_t::operator=(node_t& p)
 {
   if(_own){
     delete _nnn;
   }else{
   }
   _nnn = nullptr;
-  _link = p._link;
+
+  if(!p.n_()){
+    _link = p._link;
+  }else{
+    _link = &p;
+  }
+
   _index = p._index;// wrong scope ??
   _m   = p._m;
   _own = false;
   return *this;
+}
+/*--------------------------------------------------------------------------*/
+node_t& node_t::operator=(const node_t& p)
+{
+  if(!p.n_()){
+  }else{ untested();
+    // not sure if this is UB, note the const_cast...
+  }
+  return operator=(const_cast<node_t&>(p));
 }
 /*--------------------------------------------------------------------------*/
 node_t& node_t::operator=(node_t&& p)
@@ -110,7 +138,7 @@ node_t& node_t::operator=(NODE* n)
     _nnn->purge();
     delete _nnn;
     _own = false;
-  }else{
+  }else{ untested();
   }
   _link = this; // yikes.
   _nnn = n;
@@ -347,7 +375,7 @@ void node_t::set_to_ground(CARD* Owner)
 /*--------------------------------------------------------------------------*/
 bool node_t::is_grounded() const
 {
-  if(_m==0){
+  if(_m==0){ untested();
     assert(_nnn == &ground_node);
     return true;
   }else{
