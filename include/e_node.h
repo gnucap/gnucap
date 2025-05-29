@@ -248,6 +248,7 @@ public: // used in set_parent.
       _link = this;
       return *this;
     }else{
+      return *this;
     }
     assert(nn);
     assert(nn==&nn->root());
@@ -320,7 +321,7 @@ public:
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_node() const
 {
-  assert(!_nnn || _link == this);
+  assert(!_nnn || _link == this || !_link);
   return _nnn;
 }
 /*--------------------------------------------------------------------------*/
