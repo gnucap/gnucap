@@ -328,7 +328,7 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const CARD_LIST*
     delete _v;
     _v = nullptr;
     // blank string means to use default value
-    if(Def){ untested();
+    if(Def){itested();
       _v = Def->clone();
     }else{
     }

@@ -66,7 +66,7 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
   shallow_copy(model->subckt());
   //set_owner(owner);
 
-  _nm = new NODE_MAP(*model->subckt()->nodes());
+  _nm = model->subckt()->nodes()->clone();
   map_subckt_nodes(model, owner);
 }
 /*--------------------------------------------------------------------------*/
@@ -604,16 +604,11 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
       //assert(model->n_(port).e_() == port+1);
       int idx = model->n_(port).e_();
       if(owner->n_(port).is_connected()){
-	trace5("connected port", owner->long_label(), idx, port, owner->n_(port).link(), owner->n_(port).e_());
 	build_union(&node_map[idx], &owner->n_(port));
-	assert(&node_map[idx].root()==&owner->n_(port).root());
+	// assert(&node_map[idx].root()==&owner->n_(port).root());
       }else{
-	trace5("floating port", owner->long_label(), idx, port, model->n_(port).link(), owner->n_(port).e_());
 	// floating?
       }
-    }
-    for (int port = 0; port < model->net_nodes(); ++port) {
-      trace3("union2", owner->long_label(), port, &owner->n_(port).root());
     }
   }
 

@@ -40,12 +40,13 @@ private:
   map_t* _map{nullptr};
   vector_t _nodes;
 
-public:
+protected:
   explicit  NODE_MAP(const NODE_MAP&);
 
 public:
   explicit  NODE_MAP();
 	   ~NODE_MAP();
+  NODE_MAP* clone()const {return new NODE_MAP(*this);}
   NODE*     operator[](std::string);
   node_t    const& at(int i)const;
   node_t&          at(int i);

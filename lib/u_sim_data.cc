@@ -277,12 +277,15 @@ static void map_toplevel_nodes(CARD_LIST* scope)
   for (int i=0; i<top_nodes.size(); ++i) {
     node_t none;
     top_nodes[i] = none;
-    assert(!top_nodes[i].link());
   }
 #if 0
   top_nodes[0].set_to_ground(nullptr); // link_to(top_nodes["0"]);
 #else
   top_nodes[0] = &ground_node;
+  assert(ground_node.matrix_number()==0);
+  // assert(top_nodes[0].m_()==0);
+  top_nodes[0].map();
+  assert(top_nodes[0].m_()==0);
 #endif
 
   for (CARD_LIST::iterator ci = scope->begin(); ci != scope->end(); ++ci) {
@@ -313,15 +316,12 @@ static void map_toplevel_nodes(CARD_LIST* scope)
       int u = n->user_number();
       assert(u == n->n_(0).e_());
       n->n_(0).clear();
-      n->n_(0).link_to(&top_nodes[u].root());
+      n->n_(0).link_to(&top_nodes[u]);
     }
     assert((*p).first == n->short_label()); // BUG: redundant storage.
 					    // use std::set and c++14?
   }
 
-  for (int ii=top_nodes.size(); --ii;) {
-    trace4("map top level done", top_nodes.size(), ii, &top_nodes[ii], top_nodes[ii].link());
-  }
 }
 /*--------------------------------------------------------------------------*/
 /* init: allocate, set up, etc ... for any type of simulation
@@ -374,16 +374,17 @@ void SIM_DATA::alloc_hold_vectors(CARD_LIST* scope)
 
   assert(top_nodes.size());
   for (int ii=top_nodes.size(); --ii;) {
-    trace3("allocate top level", top_nodes.size(), ii, top_nodes[ii].link());
     top_nodes[ii].allocate(1 /*bump user node count*/);
   }
 
-  ground_node.set_owner(nullptr);
-  top_nodes[0].root() = &ground_node;
+  assert(ground_node.owner() == nullptr);
+  assert(top_nodes[0].n_() == &ground_node);
   for(auto p : top_nodes) {
     int idx = p.second->user_number();
+    assert(idx!=INVALID_NODE);
     if( top_nodes[idx].n_()){
       top_nodes[idx].n_()->set_label(p.first);
+      // assert(&top_nodes[idx] == &top_nodes[idx].root());
       p.second->n_(0).link_to(&top_nodes[idx]); // too late?
     }else{
     }

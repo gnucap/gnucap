@@ -39,6 +39,19 @@ NODE::NODE(const NODE* p)
   unreachable();
 }
 /*--------------------------------------------------------------------------*/
+node_t::node_t(node_t& p)
+  :_nnn(p._nnn),
+   _link(p._link),
+   _index(p._index),
+   _m(p._m)
+{
+  if(_nnn){ untested();
+    _nnn = nullptr;
+    _link = &p;
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
 node_t::node_t(const node_t& p)
   :_nnn(p._nnn),
    _link(p._link),
@@ -70,18 +83,33 @@ node_t::node_t(NODE* n)
   assert(n!=&ground_node || _m==0);
 }
 /*--------------------------------------------------------------------------*/
-node_t& node_t::operator=(const node_t& p)
+node_t& node_t::operator=(node_t& p)
 {
   if(_own){
     delete _nnn;
   }else{
   }
   _nnn = nullptr;
-  _link = p._link;
+
+  if(!p.n_()){
+    _link = p._link;
+  }else{
+    _link = &p;
+  }
+
   _index = p._index;// wrong scope ??
   _m   = p._m;
   _own = false;
   return *this;
+}
+/*--------------------------------------------------------------------------*/
+node_t& node_t::operator=(const node_t& p)
+{
+  if(!p.n_()){
+  }else{ untested();
+    // not sure if this is UB, note the const_cast...
+  }
+  return operator=(const_cast<node_t&>(p));
 }
 /*--------------------------------------------------------------------------*/
 node_t& node_t::operator=(node_t&& p)
@@ -102,6 +130,7 @@ node_t& node_t::operator=(node_t&& p)
 // ordinary pointer assignment
 node_t& node_t::operator=(NODE* n)
 {
+  assert(n);
   assert(!_link || _link == this);
   // clear();
   if(!_nnn){
@@ -110,9 +139,9 @@ node_t& node_t::operator=(NODE* n)
     _nnn->purge();
     delete _nnn;
     _own = false;
-  }else{
+  }else{ untested();
   }
-  _link = this;
+  _link = nullptr;
   _nnn = n;
 
   _index = n->user_number();
@@ -268,7 +297,7 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
   assert(m);
   if (e_() != INVALID_NODE) {
     clear(); // keep index.
-    build_union(this, &m[e_()]);
+    m[e_()].connect(*this);
     assert(_link);
     assert(!_nnn);
     if(!_nnn){
@@ -298,7 +327,6 @@ void node_t::allocate(int u /*, CARD* owner*/)
   if(is_node()) {
     // done.
     trace3("node_t::allocate is_node", this, &root(), _nnn->short_label());
-    assert(_link);
   }else if(_link==this) {
     int flat_number = INVALID_NODE;
     switch(u) {
@@ -329,15 +357,30 @@ void node_t::set_to_ground(CARD* Owner)
   int idx = _index;
   clear();
   assert(!_nnn);
-  new_node("0", Owner);
   if(Owner){
     assert(Owner->scope());
     assert(Owner->scope()->nodes());
     NODE_MAP& nodes = *Owner->scope()->nodes();
-    _link = &nodes["0"]->n_(0);
-    _index = nodes["0"]->user_number();
+    if(nodes.size() && nodes[0].is_grounded()){itested();
+      // use that, maybe a spice scope?
+    }else{
+      // there is no ground here. resort to global
+      // (don't try to create one, makes no sense.)
+      Owner = nullptr;
+    }
+  }else{
+  }
+  if(Owner){itested();
+    // fallback
+    // maybe reached from spice?
+    assert(Owner->scope());
+    assert(Owner->scope()->nodes());
+    new_node("0", Owner);
+    assert(_index==0);
+    _m = 0;
   }else{
     NODE_MAP& nodes = *CARD_LIST::card_list.nodes();
+    // kludge: "0" always exists at top level.
     _link = &nodes["0"]->n_(0);
     // must retain index. connection is in _link...
     _index = idx;
@@ -347,16 +390,18 @@ void node_t::set_to_ground(CARD* Owner)
 /*--------------------------------------------------------------------------*/
 bool node_t::is_grounded() const
 {
-  if(_m==0){
+  if(_m==0){itested();
     assert(_nnn == &ground_node);
     return true;
   }else{
     assert(_nnn != &ground_node);
   }
 
-  if(&root()!=this){ untested();
-    return root().is_grounded();
-  }else{
+  if(&root()==this){
+    return false;
+  }else if(root().is_grounded()){ untested();
+    return true;
+  }else{itested();
     return false;
   }
 }
@@ -371,6 +416,20 @@ void node_t::clear()
   }
   _own = false;
   _nnn = nullptr;
+}
+/*--------------------------------------------------------------------------*/
+// make a connection to a node, usually further up the hierarchy.
+// this will have to transport type information,
+// negotiate with the target node, and flag it as used.
+// next steps after connect
+// - resolve target node type
+// - expand/deflate target node
+// - map to resulting structure
+void node_t::connect(node_t& target)
+{
+  build_union(&target, this);
+  assert(_nnn || _link);
+  assert(!_nnn || !_link);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

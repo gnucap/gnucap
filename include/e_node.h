@@ -117,19 +117,17 @@ private: // treee stuff.
   bool is_node()const;
   bool is_link()const;
   bool is_root()const;
-#ifndef NDEBUG_
-public: // debugging. not yet
+private: // debugging. not yet
   node_t&       root();
   node_t const& root()const {
     return const_cast<node_t*>(this)->root();
   }
-#endif
-public: // debugging
-  node_t*       link() {return _link;}
+private:
+  node_t*       link() { assert(!_nnn || !_link); return _link; }
   node_t const* link()const { untested();return _link;}
+private: // union find
   int rank()const {return !!_nnn;} // TODO: hierarchy.
   int inc_rank()const {return 0;} // TODO
-private: // union find
   friend node_t* root(node_t const*);
   friend int     rank(node_t const*);
   friend int     inc_rank(node_t*);
@@ -208,12 +206,13 @@ public:
     }else if (_link) {
       _own = false;
       _nnn = root()._nnn;
-      _link = this;
+    }else if(_m==0){itested();
     }else{
       assert(_m == INVALID_NODE);
     }
     if (_nnn) {
       _m = _nnn->matrix_number();
+      _link = nullptr;
     }else{
     }
     return *this;
@@ -221,6 +220,7 @@ public:
 
   explicit    node_t(int i=INVALID_NODE) : _index(i) {};
 	      node_t(const node_t&);
+	      node_t(node_t&);
 	      node_t(node_t&&);
   explicit    node_t(NODE*);
 	      ~node_t();
@@ -234,6 +234,7 @@ public:
   LOGIC_NODE*	    operator->()	{return &data();}
   operator bool()const {return _nnn;}
 
+  node_t& operator=(node_t& p);
   node_t& operator=(const node_t& p);
   node_t& operator=(node_t&& p);
   node_t& operator=(NODE* p);
@@ -242,22 +243,30 @@ public:
 
 private:
 public: // top level kludge. u_sim_data.cc line 457
+        // & used in set_parent.
   node_t& link_to(node_t* nn){
-    assert(nn);
-    if(_own){ untested();
-      delete _nnn;
-    }else if(_nnn){ untested();
+    if(nn != this){
+      assert(nn);
+      assert(nn==&nn->root());
+      if(_own){ untested();
+	delete _nnn;
+      }else if(_nnn){ untested();
+      }else{
+      }
+      _nnn = nullptr;
+      if(!_link){
+      }else{
+      }
+      _link = nn;
+    }else if(!_nnn){
+      _link = this;
     }else{
     }
-    _nnn = nullptr;
-    if(!_link){
-    }else{
-    }
-    _link = nn;
     return *this;
   }
 private:
   node_t& set_own(NODE* p);
+  void connect(node_t&);
 
 public:
   double      v0()const {
@@ -296,18 +305,19 @@ public:
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_node() const
 {
-  assert(!_nnn || _link == this);
+  assert(!_nnn || !_link);
   return _nnn;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_link() const
 {
-  assert(!_nnn || _link == this || !_link);
+  assert(!_nnn || !_link);
   return !_nnn && _link;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_root() const
 { untested();
+  assert(!_nnn || !_link);
   if(is_node()){ untested();
     return true;
   }else if(is_link()) { untested();
@@ -319,6 +329,7 @@ inline bool node_t::is_root() const
 /*--------------------------------------------------------------------------*/
 inline node_t& node_t::root()
 {
+  assert(!_nnn || !_link);
  // call find_subset?
   node_t* r = this;
   while (r->is_link() && r->link() != r) {
