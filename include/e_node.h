@@ -206,6 +206,7 @@ public:
     }else if (_link) {
       _own = false;
       _nnn = root()._nnn;
+    }else if(_m==0){itested();
     }else{
       assert(_m == INVALID_NODE);
     }

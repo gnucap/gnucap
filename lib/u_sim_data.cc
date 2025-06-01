@@ -282,6 +282,10 @@ static void map_toplevel_nodes(CARD_LIST* scope)
   top_nodes[0].set_to_ground(nullptr); // link_to(top_nodes["0"]);
 #else
   top_nodes[0] = &ground_node;
+  assert(ground_node.matrix_number()==0);
+  // assert(top_nodes[0].m_()==0);
+  top_nodes[0].map();
+  assert(top_nodes[0].m_()==0);
 #endif
 
   for (CARD_LIST::iterator ci = scope->begin(); ci != scope->end(); ++ci) {

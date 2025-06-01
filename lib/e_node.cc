@@ -357,15 +357,30 @@ void node_t::set_to_ground(CARD* Owner)
   int idx = _index;
   clear();
   assert(!_nnn);
-  new_node("0", Owner);
   if(Owner){
     assert(Owner->scope());
     assert(Owner->scope()->nodes());
     NODE_MAP& nodes = *Owner->scope()->nodes();
-    _link = &nodes["0"]->n_(0);
-    _index = nodes["0"]->user_number();
+    if(nodes.size() && nodes[0].is_grounded()){itested();
+      // use that, maybe a spice scope?
+    }else{
+      // there is no ground here. resort to global
+      // (don't try to create one, makes no sense.)
+      Owner = nullptr;
+    }
+  }else{
+  }
+  if(Owner){itested();
+    // fallback
+    // maybe reached from spice?
+    assert(Owner->scope());
+    assert(Owner->scope()->nodes());
+    new_node("0", Owner);
+    assert(_index==0);
+    _m = 0;
   }else{
     NODE_MAP& nodes = *CARD_LIST::card_list.nodes();
+    // kludge: "0" always exists at top level.
     _link = &nodes["0"]->n_(0);
     // must retain index. connection is in _link...
     _index = idx;
@@ -375,16 +390,18 @@ void node_t::set_to_ground(CARD* Owner)
 /*--------------------------------------------------------------------------*/
 bool node_t::is_grounded() const
 {
-  if(_m==0){ untested();
+  if(_m==0){itested();
     assert(_nnn == &ground_node);
     return true;
   }else{
     assert(_nnn != &ground_node);
   }
 
-  if(&root()!=this){ untested();
-    return root().is_grounded();
-  }else{
+  if(&root()==this){
+    return false;
+  }else if(root().is_grounded()){ untested();
+    return true;
+  }else{itested();
     return false;
   }
 }
