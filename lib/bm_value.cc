@@ -41,7 +41,7 @@ void EVAL_BM_VALUE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)c
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_VALUE::precalc_first(const CARD_LIST* Scope)
+void EVAL_BM_VALUE::precalc_first(const PARAM_LIST* Scope)
 {
   if (modelname() != "") {
     (_value = "") = modelname();

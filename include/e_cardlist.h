@@ -78,8 +78,8 @@ public: // more types
   };
 
   // influence arithmetics
-  bool is_verilog_math()const {return _verilog_math;}
-  void set_verilog_math(bool m=true) { _verilog_math = m; }
+  bool is_verilog_math()const;
+  void set_verilog_math(bool m=true);
 
   // status queries
   bool is_empty()const			{return _cl.empty();}
@@ -147,7 +147,7 @@ public:
 
   NODE_MAP*   nodes()const {assert(_nm); return _nm;}
   PARAM_LIST* params();
-  PARAM_LIST* params()const;
+  PARAM_LIST const* params()const;
 
   // more complex stuff
   void attach_params(PARAM_LIST const* p, const CARD_LIST* scope);

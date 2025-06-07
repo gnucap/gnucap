@@ -140,7 +140,13 @@ static Base* eval_base(PARAM_INSTANCE const& p, Expression const& e)
 void Token_SYMBOL::stack_op(Expression* E)const
 {
   assert(E);
-  bool verilog_mode = E->_scope->is_verilog_math();
+  bool verilog_mode;
+  if(E->_scope){
+    verilog_mode = E->_scope->is_verilog();
+    trace1("Token_SYMBOL::stack_op", verilog_mode);
+  }else{ untested();
+    verilog_mode = false;
+  }
   // replace single token with its value
   if (!E->is_empty() && dynamic_cast<const Token_PARLIST*>(E->back())) {
     trace1("SYM stackop", name());
@@ -198,11 +204,13 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	  E->push_back(new Token_CONSTANT(s));
     }else{
       // a name
-      PARAM_INSTANCE p = (*(E->_scope->params()))[name()];
+      assert(E->_scope);
+      PARAM_INSTANCE p = (*(E->_scope))[name()];
+      trace2("PARAM_INSTANCE name?", name(), typeid(**p).name());
       assert(name().size());
       if (p.has_hard_value()) {
 	trace1("hard value", name());
-	assert((*(E->_scope->params()))[name()].has_hard_value());
+	assert((*(E->_scope))[name()].has_hard_value());
 	CS cmd(CS::_STRING, p.string());
 	Expression pp(cmd);
 	Expression e(pp, E->_scope);
@@ -494,6 +502,11 @@ void Expression::reduce_copy(const Expression& Proto)
 }
 /*--------------------------------------------------------------------------*/
 Expression::Expression(const Expression& Proto, const CARD_LIST* Scope)
+  : Expression(Proto, Scope?Scope->params():NULL)
+{
+}
+/*--------------------------------------------------------------------------*/
+Expression::Expression(const Expression& Proto, const PARAM_LIST* Scope)
   :_scope(Scope)
 {
   //BUG// is this thread-safe?

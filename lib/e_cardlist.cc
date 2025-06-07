@@ -82,19 +82,20 @@ CARD_LIST::~CARD_LIST()
 /*--------------------------------------------------------------------------*/
 PARAM_LIST* CARD_LIST::params()
 {
-  if (!_params) {
-    assert(!_parent);
-    _params = new PARAM_LIST;
+  if (_params) {
+  }else if(_parent){
+    assert(_params);
   }else{
+    _params = new PARAM_LIST;
   }
   return _params;
 }
 /*--------------------------------------------------------------------------*/
-PARAM_LIST* CARD_LIST::params()const
+PARAM_LIST const* CARD_LIST::params()const
 {
   if (_params) {
     return _params;
-  }else{ //BUG//const
+  }else{
     static PARAM_LIST empty_params;
     return &empty_params;
   }
@@ -535,7 +536,7 @@ void CARD_LIST::attach_params(PARAM_LIST const* p, const CARD_LIST* scope)
     }else{
     }
     _params = new PARAM_LIST;
-    _params->eval_copy(*p, scope);
+    _params->eval_copy(*p, scope->params());
   }else{
   }
 }
@@ -626,6 +627,18 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     }
   }
 
+}
+/*--------------------------------------------------------------------------*/
+bool CARD_LIST::is_verilog_math() const
+{
+  return _params && _params->is_verilog();
+}
+/*--------------------------------------------------------------------------*/
+void CARD_LIST::set_verilog_math(bool m)
+{
+  params();
+  assert(_params);
+  _params->set_verilog(m);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

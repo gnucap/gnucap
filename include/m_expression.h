@@ -28,6 +28,7 @@
 /*--------------------------------------------------------------------------*/
 //class Symbol_Table;
 class CARD_LIST;
+class PARAM_LIST;
 class Expression;
 /*--------------------------------------------------------------------------*/
 class Token : public Base {
@@ -215,7 +216,7 @@ public:
 /*--------------------------------------------------------------------------*/
 class INTERFACE Expression : public List_Base<Token> {
 public:
-  const CARD_LIST* _scope;
+  const PARAM_LIST* _scope;
 public:
   void parse(CS&) override;
   void dump(std::ostream&)const override;
@@ -242,6 +243,7 @@ public:
 private: // expression-reduce.cc
   void reduce_copy(const Expression&);
 public:
+  explicit Expression(const Expression&, const PARAM_LIST*);
   explicit Expression(const Expression&, const CARD_LIST*);
 public: // other
   bool as_bool()const {untested();return (!is_empty() && back()->data());}

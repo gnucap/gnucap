@@ -76,15 +76,15 @@ std::string COMMON_PARAMLIST::param_value(int i)const
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_PARAMLIST::precalc_first(const CARD_LIST* Scope)
+void COMMON_PARAMLIST::precalc_first(const PARAM_LIST* Scope)
 {
-  assert(Scope);
+  // assert(Scope);
   COMMON_COMPONENT::precalc_first(Scope);
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_PARAMLIST::precalc_last(const CARD_LIST* Scope)
+void COMMON_PARAMLIST::precalc_last(const PARAM_LIST* Scope)
 {
-  assert(Scope);
+  // assert(Scope);
   COMMON_COMPONENT::precalc_last(Scope);
 
   for (PARAM_LIST::iterator i = _params.begin(); i != _params.end(); ++i) {

@@ -46,10 +46,10 @@ private: // override virtual
   void  parse_common_obsolete_callback(CS&) override;
   void  print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
   
-  void  	precalc_first(const CARD_LIST*) override;
+  void  	precalc_first(const PARAM_LIST*) override;
   void		expand(const COMPONENT*) override;
   COMMON_COMPONENT* deflate() override;
-  void  	precalc_last(const CARD_LIST*) override;
+  void  	precalc_last(const PARAM_LIST*) override;
 
   bool	has_tr_eval()const override	{ return true;}
   void  tr_eval(ELEMENT*d)const override
@@ -247,7 +247,7 @@ COMMON_COMPONENT* EVAL_BM_COND::deflate()
   return c;
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COND::precalc_first(const CARD_LIST* Scope)
+void EVAL_BM_COND::precalc_first(const PARAM_LIST* Scope)
 {
   EVAL_BM_BASE::precalc_first(Scope);
   //BUG// calls the individual precalc more than once
@@ -267,7 +267,7 @@ void EVAL_BM_COND::precalc_first(const CARD_LIST* Scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_COND::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_COND::precalc_last(const PARAM_LIST* Scope)
 {
   EVAL_BM_BASE::precalc_last(Scope);
   //BUG// calls the individual precalc more than once

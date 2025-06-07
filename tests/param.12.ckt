@@ -1,0 +1,13 @@
+bug in 2021.01.07, fixed.
+
+.subckt a 1 2
+.parameter x=y
+.parameter y=x
+v1 1 2 x
+.ends
+
+x1 1 2 a
+
+.print op v(nodes)
+.op
+.end

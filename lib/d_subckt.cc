@@ -324,7 +324,7 @@ int DEV_SUBCKT::is_valid() const
   trace1("DEV_SUBCKT::is_valid I", long_label());
   PARAM_INSTANCE v = params->deep_lookup("_..is_valid");
   trace2("DEV_SUBCKT::is_valid II", long_label(), v.string());
-  Base const* x = v.e_val(nullptr, subckt());
+  Base const* x = v.e_val(nullptr, subckt()->params());
   Integer c;
   Integer* res = c.assign(x);
   if(!res) {itested();

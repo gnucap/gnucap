@@ -270,7 +270,8 @@ void MODEL_SWITCH::precalc_first()
 {
   MODEL_CARD::precalc_first();
 
-  const CARD_LIST* par_scope = scope();
+  assert(scope());
+  const PARAM_LIST* par_scope = scope()->params();
   assert(par_scope);
 
   vt.e_val(_default_vt, par_scope);

@@ -59,8 +59,8 @@ public:
 			"in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
     return names[i];
   }
-  void precalc_first(const CARD_LIST*)override;
-  void precalc_last(const CARD_LIST*)override;
+  void precalc_first(const PARAM_LIST*)override;
+  void precalc_last(const PARAM_LIST*)override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

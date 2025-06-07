@@ -57,7 +57,7 @@ protected: // override virtual
   int param_count()const override { return COMMON_COMPONENT::param_count() + 1; }
   std::string name()const override { return ""; } // cf COMMON_VALUE?
 
-  void precalc_last(const CARD_LIST* scope)override {
+  void precalc_last(const PARAM_LIST* scope)override {
     COMMON_COMPONENT::precalc_last(scope);
     _value.e_val(0., scope);
   }
@@ -137,7 +137,7 @@ public: // override virtual
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
   bool use_obsolete_callback_print()const override	{ return true;}
 
-  void		precalc_last(const CARD_LIST*)override;
+  void		precalc_last(const PARAM_LIST*)override;
   void		ac_eval(ELEMENT*)const override;
   virtual bool	ac_too()const = 0;
 protected: // override virtual
@@ -168,7 +168,7 @@ private: // override virtual
   bool		has_tr_eval()const override	{ return true;}
   bool		has_ac_eval()const override	{ return true;}
 
-  void		precalc_first(const CARD_LIST*)override;
+  void		precalc_first(const PARAM_LIST*)override;
   void		tr_eval(ELEMENT*)const override;
   std::string	name()const override	{itested();return "VALUE";}
   bool		ac_too()const override	{return false;}

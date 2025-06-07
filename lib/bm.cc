@@ -191,7 +191,7 @@ bool EVAL_BM_ACTION_BASE::param_is_printable(int i) const
   }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_ACTION_BASE::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_ACTION_BASE::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
   EVAL_BM_BASE::precalc_last(Scope);

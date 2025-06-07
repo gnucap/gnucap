@@ -46,7 +46,7 @@ protected: // override virtual
   COMMON_COMPONENT* clone()const override = 0;
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
-  void		precalc_last(const CARD_LIST*) override;
+  void		precalc_last(const PARAM_LIST*) override;
   void  	expand(const COMPONENT*) override;
   void		tr_eval(ELEMENT*)const override;
   std::string	name()const override	{untested();return modelname().c_str();}
@@ -67,7 +67,7 @@ private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
   COMMON_COMPONENT* clone()const override{return new EVAL_BM_SEMI_CAPACITOR(*this);}
   void  	expand(const COMPONENT*)override;
-  void		precalc_last(const CARD_LIST*)override;
+  void		precalc_last(const PARAM_LIST*)override;
 };
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_RESISTOR : public EVAL_BM_SEMI_BASE {
@@ -82,7 +82,7 @@ private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
   COMMON_COMPONENT* clone()const override {return new EVAL_BM_SEMI_RESISTOR(*this);}
   void  	expand(const COMPONENT*)override;
-  void		precalc_last(const CARD_LIST*)override;
+  void		precalc_last(const PARAM_LIST*)override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -221,7 +221,7 @@ void EVAL_BM_SEMI_BASE::expand(const COMPONENT* d)
   attach_model(d);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_BASE::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_SEMI_BASE::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
   EVAL_BM_ACTION_BASE::precalc_last(Scope);
@@ -281,7 +281,7 @@ void EVAL_BM_SEMI_CAPACITOR::expand(const COMPONENT* d)
   }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_CAPACITOR::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_SEMI_CAPACITOR::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
   EVAL_BM_SEMI_BASE::precalc_last(Scope);
@@ -329,7 +329,7 @@ void EVAL_BM_SEMI_RESISTOR::expand(const COMPONENT* d)
   }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_RESISTOR::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_SEMI_RESISTOR::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
   EVAL_BM_SEMI_BASE::precalc_last(Scope);

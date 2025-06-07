@@ -610,7 +610,7 @@ public:
     return _value;
   }
   bool has_good_value()const override { untested();unreachable(); return false;}
-  Base const* e_val_(const Base* def, const CARD_LIST* s, int)const override { untested();
+  Base const* e_val_(const Base* def, const PARAM_LIST* s, int)const override { untested();
     // def does not seem to carry type info...
     // see s_dc.vcvs1{a,b,c}.gc
     error(bDEBUG, "assuming double in " + _s + "\n");

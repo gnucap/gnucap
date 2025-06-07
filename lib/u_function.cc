@@ -82,7 +82,7 @@ void FUNCTION::stack_op(Expression* E) const
 
 }
 /*--------------------------------------------------------------------------*/
-std::string FUNCTION::eval(CS& cmd, const CARD_LIST* scope) const
+std::string FUNCTION::eval(CS& cmd, const PARAM_LIST* scope) const
 { untested();
   assert(++_which && "need stack_op or eval");
 

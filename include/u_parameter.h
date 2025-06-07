@@ -30,7 +30,7 @@
 #include "io_.h"
 #include "m_expression.h"
 #include "m_base_vams.h"
-#include "e_cardlist.h"
+#include "e_cardlist.h" // needed for free e_val (legacy)
 /*--------------------------------------------------------------------------*/
 class LANGUAGE;
 /*--------------------------------------------------------------------------*/
@@ -64,7 +64,7 @@ public:
   virtual PARA_BASE& operator=(Base const*) = 0;
   virtual std::string string()const = 0;
 
-  virtual Base const* e_val_(const Base* def, const CARD_LIST* scope, int recursion=0)const = 0;
+  virtual Base const* e_val_(const Base* def, const PARAM_LIST* scope, int recursion=0)const = 0;
   virtual Base const* value()const = 0;
 };
 /*--------------------------------------------------------------------------*/
@@ -115,7 +115,8 @@ public:
   //bool has_soft_value()const {untested(); return (has_good_value() && !has_hard_value());}
 
   operator T()const {return _v;}
-  T e_val(const T& def, const CARD_LIST* scope, int recurse=0)const;
+  T e_val(const T& def, const PARAM_LIST*, int recurse=0)const;
+  T e_val(const T& def, const CARD_LIST*, int recurse=0)const;
   Base const* value()const override { return &_v;}
   void	parse(CS& cmd) override;
 
@@ -174,10 +175,10 @@ public:
   //}
 protected:
   // virtual value_type not_input()const { return value_type().not_input(); }
-  Base const* e_val_(const Base* def, const CARD_LIST* scope, int recursion=0)const override;
+  Base const* e_val_(const Base* def, const PARAM_LIST* scope, int recursion=0)const override;
   friend class PARAM_INSTANCE;
 private:
-  T lookup_solve(const T& def, const CARD_LIST* scope)const;
+  T lookup_solve(const T& def, const PARAM_LIST* scope)const;
 }; // PARAMETER
 /*--------------------------------------------------------------------------*/
 /* non-class interface, so non-paramaters can have same syntax */
@@ -232,17 +233,33 @@ void set_default(T* p, const T& v)
 }
 
 template <class T>
-void e_val(PARAMETER<T>* p, const PARAMETER<T>& def, const CARD_LIST* scope)
+void e_val(PARAMETER<T>* p, const PARAMETER<T>& def, const PARAM_LIST* scope)
 {
   assert(p);
   p->e_val(def, scope);
 }
 
 template <class T>
-void e_val(PARAMETER<T>* p, const T& def, const CARD_LIST* scope)
+void e_val(PARAMETER<T>* p, const T& def, const PARAM_LIST* scope)
 {
   assert(p);
   p->e_val(def, scope);
+}
+
+template <class T>
+void e_val(PARAMETER<T>* p, const PARAMETER<T>& def, const CARD_LIST* scope)
+{
+  assert(p);
+  assert(scope);
+  p->e_val(def, scope->params());
+}
+
+template <class T>
+void e_val(PARAMETER<T>* p, const T& def, const CARD_LIST* scope)
+{
+  assert(p);
+  assert(scope);
+  p->e_val(def, scope->params());
 }
 
 #if 0
@@ -276,9 +293,9 @@ private:
     PARAM_ANY& operator=(const Base*)override { untested();unreachable(); return *this;}
     std::string string()const override{ return _s;}
     Base const* value()const override{return nullptr;}
-    Base const* e_val_(const Base* def, const CARD_LIST* scope, int)const override;
+    Base const* e_val_(const Base* def, const PARAM_LIST* scope, int)const override;
   private:
-    void lookup_solve(const CARD_LIST* scope)const;
+    void lookup_solve(const PARAM_LIST* scope)const;
   };
   char _mem[sizeof(PARAMETER<double>)]{'\0'}; // biggest allowed type...
 private:
@@ -362,11 +379,11 @@ public:
     assert(base());
     return base()->has_hard_value();
   }
-  Base const* e_val(Base const* def, const CARD_LIST* scope)const;
-  double e_val(int def, const CARD_LIST* scope)const{untested();
+  Base const* e_val(Base const* def, const PARAM_LIST* scope)const;
+  double e_val(int def, const PARAM_LIST* scope)const{untested();
     return e_val(double(def), scope);
   }
-  double e_val(double def, const CARD_LIST* scope)const{itested();
+  double e_val(double def, const PARAM_LIST* scope)const{itested();
     Float d(def);
     Base const* v = e_val(&d, scope);
     Float* x = d.assign(v);
@@ -411,13 +428,16 @@ private:
   map _pl;
   PARAM_LIST const* _try_again; // if you don't find it, also look here
   mutable const_iterator _previous;
+  bool _is_verilog{false};
 public:
   explicit PARAM_LIST() :_try_again(nullptr) {}
-  explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl), _try_again(p._try_again) {}
+  explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl),
+     _try_again(p._try_again), _is_verilog(p._is_verilog) {}
   //explicit PARAM_LIST(PARAM_LIST* ta) :_try_again(ta) {untested();}
   ~PARAM_LIST() {}
   PARAM_LIST& operator=(const PARAM_LIST& p) { itested();
     _pl = p._pl;
+    _is_verilog = p._is_verilog;
     return *this;
   }
   void	parse(CS& cmd);
@@ -428,8 +448,9 @@ public:
   bool	 is_printable(int)const;
   std::string name(int)const;
   std::string value(int)const;
+  bool	 is_verilog()const {return _is_verilog;}
 
-  void	eval_copy(PARAM_LIST const&, const CARD_LIST*);
+  void	eval_copy(PARAM_LIST const&, const PARAM_LIST*);
   bool  operator==(const PARAM_LIST& p)const{return _pl == p._pl;}
   const PARAM_INSTANCE& deep_lookup(std::string)const;
   const PARAM_INSTANCE& operator[](std::string i)const {return deep_lookup(i);}
@@ -440,6 +461,7 @@ public:
 #ifndef NDEBUG
   bool is_try_again(PARAM_LIST const* t)const {return _try_again == t;}
 #endif
+  void set_verilog(bool x=true) {_is_verilog = x;}
 
   iterator begin() {return _pl.begin();}
   iterator end() {return _pl.end();}
@@ -450,7 +472,7 @@ public:
 };
 /*--------------------------------------------------------------------------*/
 template <>
-inline bool PARAMETER<bool>::lookup_solve(const bool&, const CARD_LIST*)const
+inline bool PARAMETER<bool>::lookup_solve(const bool&, const PARAM_LIST*)const
 {
   CS cmd(CS::_STRING, _s);
   return cmd.ctob();
@@ -502,7 +524,7 @@ inline bool get<bool>(Base const* t)
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
+inline T PARAMETER<T>::lookup_solve(const T& Def, const PARAM_LIST* scope)const
 {
   CS cmd(CS::_STRING, _s);
   Expression e(cmd);
@@ -523,9 +545,8 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
     delete v;
     return ret;
   }else if(scope) {
-    const PARAM_LIST* pl = scope->params();
     trace2("los0b", _s, v);
-    Base const* b = pl->deep_lookup(_s).e_val(nullptr, scope);
+    Base const* b = scope->deep_lookup(_s).e_val(nullptr, scope);
     T ret;
     if(b){
       ret = get<T>(b);
@@ -551,7 +572,7 @@ inline T PARAMETER<T>::lookup_solve(const T& def, const CARD_LIST* scope)const
 #endif
 /*--------------------------------------------------------------------------*/
 template <class T>
-T PARAMETER<T>::e_val(const T& Def, const CARD_LIST* scope, int recurse)const
+T PARAMETER<T>::e_val(const T& Def, const PARAM_LIST* scope, int recurse)const
 {
   trace2("e_val", Def, typeid(T).name());
   value_type def = Def;
@@ -560,7 +581,7 @@ T PARAMETER<T>::e_val(const T& Def, const CARD_LIST* scope, int recurse)const
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int recurse)const
+Base const* PARAMETER<T>::e_val_(const Base* Def, const PARAM_LIST* scope, int recurse)const
 {
   trace3("PARAMETER<T>::e_val_", typeid(T).name(), _v, _s);
   if(scope) {
@@ -600,6 +621,13 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int re
     // start with # means we have a final value
   }
   return &_v;
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+T PARAMETER<T>::e_val(const T& Def, const CARD_LIST* scope, int recurse)const
+{
+  assert(scope);
+  return e_val(Def, scope->params(), recurse);
 }
 /*--------------------------------------------------------------------------*/
 template <>
