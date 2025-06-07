@@ -75,7 +75,8 @@ static void make_sdp_constructor(std::ofstream& out, const Model& m)
       "  const MODEL_" << m.name() << "* m = prechecked_cast<const MODEL_" 
 	<< m.name() << "*>(c->model());\n"
       "  assert(m);\n"
-      "  const CARD_LIST* par_scope = m->scope();\n"
+      "  assert(m->scope());\n"
+      "  const PARAM_LIST* par_scope = m->scope()->params();\n"
       "  assert(par_scope);\n";
     
     out << m.size_dependent().code_pre();

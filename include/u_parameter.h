@@ -115,7 +115,6 @@ public:
 
   operator T()const {return _v;}
   T e_val(const T& def, const PARAM_LIST*, int recurse=0)const;
-  T e_val(const T& def, const CARD_LIST*, int recurse=0)const;
   Base const* value()const override { return &_v;}
   void	parse(CS& cmd) override;
 

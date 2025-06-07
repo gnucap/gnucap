@@ -25,8 +25,9 @@
 //testing=script 2016.03.25
 #include "globals.h"
 #include "u_lang.h"
-#include "e_model.h" 
+#include "e_model.h"
 #include "bm.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_BASE : public EVAL_BM_ACTION_BASE {
 protected:
@@ -451,10 +452,10 @@ void MODEL_SEMI_BASE::precalc_first()
   const CARD_LIST* s = scope();
   assert(s);
 
-  _narrow.e_val(_default_narrow, s);
-  _defw.e_val(_default_defw, s);
-  _tc1.e_val(_default_tc1, s);
-  _tc2.e_val(_default_tc2, s);
+  _narrow.e_val(_default_narrow, s->params());
+  _defw.e_val(_default_defw, s->params());
+  _tc1.e_val(_default_tc1, s->params());
+  _tc2.e_val(_default_tc2, s->params());
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -529,8 +530,8 @@ void MODEL_SEMI_CAPACITOR::precalc_first()
   const CARD_LIST* s = scope();
   assert(s);
 
-  _cj.e_val(_default_cj, s);
-  _cjsw.e_val(_default_cjsw, s);
+  _cj.e_val(_default_cj, s->params());
+  _cjsw.e_val(_default_cjsw, s->params());
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -595,7 +596,8 @@ void MODEL_SEMI_RESISTOR::precalc_first()
 {
   MODEL_SEMI_BASE::precalc_first();
 
-  const CARD_LIST* par_scope = scope();
+  assert(scope());
+  const PARAM_LIST* par_scope = scope()->params();
   assert(par_scope);
 
   _rsh.e_val(_default_rsh, par_scope);

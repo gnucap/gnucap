@@ -29,6 +29,7 @@
 #include "m_spline.h"
 #include "e_model.h" 
 #include "bm.h"
+#include "e_cardlist.h" 
 /*--------------------------------------------------------------------------*/
 class SPLINE;
 /*--------------------------------------------------------------------------*/
@@ -211,7 +212,8 @@ void MODEL_TABLE::precalc_first()
 {
   MODEL_CARD::precalc_first();
 
-  const CARD_LIST* par_scope = scope();
+  assert(scope());
+  const PARAM_LIST* par_scope = scope()->params();
   assert(par_scope);
 
   _order.e_val(_default_order, par_scope);

@@ -169,9 +169,10 @@ void AC::setup(CS& Cmd)
   }while (Cmd.more() && !Cmd.stuck(&here));
   Cmd.check(bWARNING, "what's this??");
 
-  _start.e_val(0., _scope);
-  _stop.e_val(0., _scope);
-  _step_in.e_val(0., _scope);
+  assert(_scope);
+  _start.e_val(0., _scope->params());
+  _stop.e_val(0., _scope->params());
+  _step_in.e_val(0., _scope->params());
   _step = _step_in;
 
   switch (_stepmode) {

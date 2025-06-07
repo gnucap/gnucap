@@ -190,14 +190,6 @@ void e_val(PARAMETER<T>* p, const T& def, const CARD_LIST* scope)
   p->e_val(def, scope->params());
 }
 /*--------------------------------------------------------------------------*/
-// used in legacy code.
-template <class T>
-T PARAMETER<T>::e_val(const T& Def, const CARD_LIST* scope, int recurse)const
-{
-  assert(scope);
-  return e_val(Def, scope->params(), recurse);
-}
-/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif
 // vim:ts=8:sw=2:noet:

@@ -361,9 +361,10 @@ public:
     _p[0] = x;
   }
   void precalc(CARD_LIST const* scope){
-    _p[0].e_val(1., scope);
+    assert(scope);
+    _p[0].e_val(1., scope->params());
     for(int i=1; i< sysparams_count; ++i){
-      _p[i].e_val(0, scope);
+      _p[i].e_val(0, scope->params());
     }
   }
 
