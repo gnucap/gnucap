@@ -38,20 +38,21 @@ protected:
   void	   store_values()		{assert(_y[0]==_y[0]); _y1=_y[0];}
   //void   reject_values()		{ _y0 = _y1;}
 public:
-  void	set_value(const PARAMETER<double>& v)	{_value = v;}
-  void	set_value(double v)			{_value = v;}
-  void	set_value(const std::string& v)		{itested(); _value = v;}
+  void	set_value(double v);
+  void	set_value(const std::string& v);
   void	set_value(double v, COMMON_COMPONENT* c);
-  const PARAMETER<double>& value()const		{return _value;}
+  double value()const;
 
   bool	   skip_dev_type(CS&);
-public: // obsolete -- do not use in new code
-  void     obsolete_move_parameters_from_common(const COMMON_COMPONENT*);
+private:
+  std::string value_string() const;
 private: // obsolete -- do not use in new code
-  void     obsolete_set_value(double v) final override{set_value(v);}
+  void     obsolete_set_value(double v) final override{
+    assert(!has_common() || !common()->has_value() );
+    set_value(v);
+  }
 public: // override virtual
   bool	   print_type_in_spice()const override {return false;}
-  void	   precalc_last() override;
   void	   expand_last()override;
   void	   ac_begin() override;
   void	   tr_begin() override;
@@ -157,25 +158,20 @@ public:
   virtual double error_factor()const	{return OPT::trstepcoef[OPT::trsteporder];}
 protected:
   int param_count()const override {
-    if(has_common()) {
-      return COMPONENT::param_count();
+    if(!has_common()) {
+      return 1 + COMPONENT::param_count();
     }else{
-      // add common params (BUG?) and value
-      return 3 + 1 + COMPONENT::param_count();
+      return COMPONENT::param_count();
     }
   }
   int  set_param_by_name(std::string, std::string)override;
   void set_param_by_index(int, std::string&, int)override;
-  bool param_is_printable(int)const override;
-  std::string param_name(int)const override;
-  std::string param_name(int,int)const override;
-  std::string param_value(int)const override;
+private:
+  double _value;    // value, still needed in modelgen commons.
 public:
   node_t& n_(int i)const override{
     assert(_nodes); assert(i>=0); assert(i<NODES_PER_BRANCH); return _nodes[i];
   }
-protected:
-  PARAMETER<double> _value;	// value, for simple parts
 protected:
   mutable node_t _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
 public:

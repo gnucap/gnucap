@@ -522,7 +522,7 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
     value_type ret = *v;
     delete v;
     return ret;
-  }else{
+  }else if(scope) {
     const PARAM_LIST* pl = scope->params();
     trace2("los0b", _s, v);
     Base const* b = pl->deep_lookup(_s).e_val(nullptr, scope);
@@ -535,6 +535,9 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const CARD_LIST* scope)const
     }
     trace3("los1", _s, v, ret);
     return ret;
+  }else{
+    // no scope. silently accept default
+    return def;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -560,7 +563,9 @@ template <class T>
 Base const* PARAMETER<T>::e_val_(const Base* Def, const CARD_LIST* scope, int recurse)const
 {
   trace3("PARAMETER<T>::e_val_", typeid(T).name(), _v, _s);
-  assert(scope);
+  if(scope) {
+  }else{
+  }
 
   auto d = dynamic_cast<value_type const*>(Def);
 

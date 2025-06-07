@@ -86,8 +86,8 @@ bool EVAL_BM_PWL::operator==(const COMMON_COMPONENT& x)const
     && _raw_table == p->_raw_table
     && _num_table == p->_num_table
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) { untested();
-    untested();
+  if (rv) {
+  }else{
   }
   return rv;
 }

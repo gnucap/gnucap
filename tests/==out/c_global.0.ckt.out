@@ -9,7 +9,6 @@ X1 ( t )  thing
 R2 ( 0 t )  2.
 #           v(t)       v(vdd)     i(R2)     
 X1.R1: short circuit
-X1.R1: short circuit
  27.        5.         5.        -2.5       
 Gnucap   System status
 iterations: op=4, dc=0, tran=0, fourier=0, total=4

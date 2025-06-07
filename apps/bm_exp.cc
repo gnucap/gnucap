@@ -104,8 +104,8 @@ bool EVAL_BM_EXP::operator==(const COMMON_COMPONENT& x)const
     && _tau2== p->_tau2
     && _period== p->_period
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) { untested();
-    untested();
+  if (rv) {
+  }else{
   }
   return rv;
 }

@@ -2,8 +2,6 @@
 "(*x*)(*y,z*)module aaa ((*c*)(*d=e*)c,(*d*)d);"
 " resistor #(100) r1(a,b); "
 " resistor #((*r*)200,(*m*)2) r2(a,b);"
- resistor #((*r*)200,(*m*)2) r2(a,b);
-                          ^ ? too many: requested=2 max=1
 " r1 r3(a,b);"
 " r2 r4(a,b);"
 " r1 r5(a,b);"
@@ -27,11 +25,11 @@
 "list"
 (* x, y,z *) module aaa ((* c, d=e *) .c(c),(* d *) .d(d));
 resistor #(.r(100)) r1 (.p(a),.n(b));
-resistor #((* r *) .r(200)) r2 (.p(a),.n(b));
+resistor #((* r *) .r(200),(* m *) .$mfactor(2)) r2 (.p(a),.n(b));
 resistor #(.r(100)) r3 (.p(a),.n(b));
-resistor #(.r(200)) r4 (.p(a),.n(b));
+resistor #(.r(200),.$mfactor(2)) r4 (.p(a),.n(b));
 resistor #(.r(100)) r5 (.p(a),.n(b));
-resistor #(.r(200)) r6 (.p(a),.n(b));
+resistor #(.r(200),.$mfactor(2)) r6 (.p(a),.n(b));
 endmodule // aaa
 
 module bbb ((* b *) .e(e),.f(f));

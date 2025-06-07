@@ -110,8 +110,8 @@ bool EVAL_BM_SFFM::operator==(const COMMON_COMPONENT& x)const
     && _zero == p->_zero
     && _peak == p->_peak
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) { untested();
-    untested();
+  if (rv) {
+  }else{
   }
   return rv;
 }

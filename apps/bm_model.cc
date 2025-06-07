@@ -43,13 +43,27 @@ private: // override virtual
   void		parse_common_obsolete_callback(CS&)override;
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
   void		expand(const COMPONENT*)override;
-  COMMON_COMPONENT* deflate()override		{return (_func) ? _func->deflate() : this;}
-  void		tr_eval(ELEMENT*d)const override{assert(_func); _func->tr_eval(d);}
-  void		ac_eval(ELEMENT*d)const override{assert(_func); _func->ac_eval(d);}
+  COMMON_COMPONENT* deflate()override;
+  void		tr_eval(ELEMENT*d)const override{untested(); assert(_func); _func->tr_eval(d);}
+  void		ac_eval(ELEMENT*d)const override{untested(); assert(_func); _func->ac_eval(d);}
   std::string	name()const override		{itested();return modelname();}
   bool		ac_too()const override		{return true;}
+  bool has_ac_eval()const override	{untested(); return _func && _func->has_ac_eval();}
+  bool has_tr_eval()const override	{untested(); return _func && _func->has_tr_eval();}
 };
 /*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+COMMON_COMPONENT* EVAL_BM_MODEL::deflate()
+{
+  trace4("EVAL_BM_MODEL::deflate0", modelname(), name(), _arglist, _func);
+  if (_func) {
+    return _func->deflate();
+  }else if(has_ext_args()) { untested();
+    return this;
+  }else{
+    return this;
+  }
+}
 /*--------------------------------------------------------------------------*/
 EVAL_BM_MODEL::EVAL_BM_MODEL(int c)
   :EVAL_BM_ACTION_BASE(c),
@@ -67,14 +81,13 @@ EVAL_BM_MODEL::EVAL_BM_MODEL(const EVAL_BM_MODEL& p)
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_MODEL::operator==(const COMMON_COMPONENT& x)const
-{ untested();
+{
   const EVAL_BM_MODEL* p = dynamic_cast<const EVAL_BM_MODEL*>(&x);
   bool rv = p
     && _arglist == p->_arglist
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) { untested();
-    incomplete();
-    untested();
+  if (rv) {
+  }else{ untested();
   }
   return rv;
 }
@@ -129,6 +142,7 @@ void EVAL_BM_MODEL::expand(const COMPONENT* d)
   // link to the real one
   // later, a "deflate" will push it down to proper place.
 
+  trace1("EVAL_BM_MODEL::expand", modelname());
   c->set_modelname(modelname());
   CS args(CS::_STRING, _arglist);
   c->parse_common_obsolete_callback(args);

@@ -104,7 +104,7 @@ bool EVAL_BM_PULSE::operator==(const COMMON_COMPONENT& x)const
     && _width == p->_width
     && _period == p->_period
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;

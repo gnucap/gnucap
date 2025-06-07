@@ -42,7 +42,7 @@ public:
   explicit DEV_VCG()		:ELEMENT() {}
 private: // override virtual
   char	   id_letter()const override	{untested();return '\0';}
-  std::string value_name()const override {untested(); return "g";}
+  std::string value_name()const override { return "g";}
   std::string dev_type()const override	{return "vcg";}
   int	   max_nodes()const override	{return 4;}
   int	   min_nodes()const override	{return 4;}

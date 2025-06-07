@@ -15,7 +15,7 @@ rr #(.x(6.1)) s3 (.a(\1 ),.b(\0 ));
  27.        0.99998    2.         2.         2.         3.        
 vsource #(.dc(1)) v1 (.p(\1 ),.n(\0 ));
 module r (.\1 (\1 ),.\2 (\2 ));
-resistor #(.r(X+Y)) R1 (.p(\1 ),.n(\2 ));
+resistor #(X+Y) R1 (.p(\1 ),.n(\2 ));
 endmodule // r
 
 module rr (.\1 (\1 ),.\2 (\2 ));

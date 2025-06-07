@@ -100,8 +100,7 @@ bool EVAL_BM_TABLE::operator==(const COMMON_COMPONENT& x)const
 {
   const EVAL_BM_TABLE* p = dynamic_cast<const EVAL_BM_TABLE*>(&x);
   bool rv = p && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) { untested();
-    untested();
+  if (rv) {
   }else{
   }
   return rv;

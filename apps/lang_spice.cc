@@ -392,19 +392,11 @@ void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* 
   // dc == deflated_common
   // It might be just "c".
   // It might be something else that is simpler but equivalent.
-  if (dc->is_trivial()) {
-    assert(dynamic_cast<EVAL_BM_VALUE*>(dc));
-    // If it is a simple value, don't use a common.
-    // Just store the value directly.
-    xx->obsolete_move_parameters_from_common(dc);
+  if (dc != c) {
     delete c;
   }else{
-    x->attach_common(dc);
-    if (dc != c) {
-      delete c;
-    }else{
-    }
   }
+  x->attach_common(dc);
   cmd.check(bDANGER, "what's this?");
 }
 /*--------------------------------------------------------------------------*/

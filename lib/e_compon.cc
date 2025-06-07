@@ -29,10 +29,6 @@
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),
-   _tnom_c(p._tnom_c),
-   _dtemp(p._dtemp),
-   _temp_c(p._temp_c),
-   _value(p._value),
    _modelname(p._modelname),
    _model(p._model),
    _attach_count(0)
@@ -41,10 +37,6 @@ COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(int c)
   :CKT_BASE(),
-   _tnom_c(NOT_INPUT),
-   _dtemp(0),
-   _temp_c(NOT_INPUT),
-   _value(0),
    _modelname(),
    _model(0),
    _attach_count(c)
@@ -142,6 +134,7 @@ bool COMMON_COMPONENT::parse_param_list(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
 {
+  trace2("CC::parse_common_oc", modelname(), cmd.fullstring());
   if (cmd.skip1b('(')) {
     // start with a paren
     size_t start = cmd.cursor();
@@ -222,41 +215,23 @@ void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
-{
-  assert(lang);
-  print_pair(o, lang, "tnom", _tnom_c,  _tnom_c.has_hard_value());
-  print_pair(o, lang, "dtemp",_dtemp,   _dtemp.has_hard_value());
-  print_pair(o, lang, "temp", _temp_c,  _temp_c.has_hard_value());
+void COMMON_COMPONENT::set_param_by_index(int i, std::string& , int Offset)
+{ untested();
+  unreachable();
+  throw Exception_Too_Many(i+1, 0, Offset);
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::set_param_by_index(int i, std::string& Value, int Offset)
+bool COMMON_COMPONENT::param_is_printable(int)const
 {
-  switch (i) {
-  case 0:untested();  _tnom_c = Value; break;
-  case 1:untested();  _dtemp = Value; break;
-  case 2:itested();  _temp_c = Value; break;
-  default:untested(); assert(0); throw Exception_Too_Many(i, 2, Offset); break;
-  }
-}
-/*--------------------------------------------------------------------------*/
-bool COMMON_COMPONENT::param_is_printable(int i)const
-{
-  switch (i) {
-  case 0:  return _tnom_c.has_hard_value();
-  case 1:  return _dtemp.has_hard_value();
-  case 2:  return _temp_c.has_hard_value();
-  default: return false;
-  }
+  return false;
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i)const
 {
-  switch (i) {
-  case 0:  return "tnom";
-  case 1:  return "dtemp";
-  case 2:  return "temp";
-  default:itested(); return "";
+  if(_next){
+    return _next->param_name(i);
+  }else{
+    return "";
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -269,23 +244,14 @@ std::string COMMON_COMPONENT::param_name(int i, int j)const
   }
 }
 /*--------------------------------------------------------------------------*/
-std::string COMMON_COMPONENT::param_value(int i)const
+std::string COMMON_COMPONENT::param_value(int)const
 {
-  switch (i) {
-  case 0:itested();  return _tnom_c.string();
-  case 1:itested();  return _dtemp.string();
-  case 2:itested();  return _temp_c.string();
-  default:itested(); return "";
-  }
+  untested(); return "";
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::precalc_last(const CARD_LIST* Scope)
 {
   assert(Scope);
-  _tnom_c.e_val(OPT::tnom_c, Scope);
-  _dtemp.e_val(0., Scope);
-  _temp_c.e_val(_sim->_temp_c + _dtemp, Scope);
-  _value.e_val(0, Scope);
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::tr_eval(ELEMENT*x)const
@@ -295,19 +261,20 @@ void COMMON_COMPONENT::tr_eval(ELEMENT*x)const
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::ac_eval(ELEMENT*x)const
-{untested();
-  assert(_model);
-  _model->ac_eval(x);
+{
+  if(_model){
+    _model->ac_eval(x);
+  }else{
+    // should not get here.
+    // but need to get rid of _model anyway.
+    // incomplete();
+  }
 }
 /*--------------------------------------------------------------------------*/
 bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
   return (_modelname == x._modelname
-	  && _model == x._model
-	  && _tnom_c == x._tnom_c
-	  && _dtemp == x._dtemp
-	  && _temp_c == x._temp_c
-	  && _value == x._value);
+	  && _model == x._model);
 }
 /*--------------------------------------------------------------------------*/
 int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
@@ -363,13 +330,9 @@ bool COMMON_COMPONENT::parse_numlist(CS&)
   return false;
 }
 /*--------------------------------------------------------------------------*/
-bool COMMON_COMPONENT::parse_params_obsolete_callback(CS& cmd)
+bool COMMON_COMPONENT::parse_params_obsolete_callback(CS&)
 {
-  return ONE_OF
-    || Get(cmd, "tnom",   &_tnom_c)
-    || Get(cmd, "dtemp",  &_dtemp)
-    || Get(cmd, "temp",   &_temp_c)
-    ;
+  return false;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -679,8 +642,8 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
 {
   set_label(Label);
   set_owner(Owner);
-  obsolete_set_value(Value);
   attach_common(Common);
+  obsolete_set_value(Value);
 
   assert(node_count <= net_nodes());
   std::copy_n(Nodes, node_count, &n_(0));
@@ -777,10 +740,10 @@ void COMPONENT::set_param_by_index(int I, std::string& Value, int offset)
     hsparam().set_by_index(i, Value);
   }else if (!has_common()) {
     throw Exception_Too_Many(I+1, 1, offset);
-  }else if(!common()->is_shared()) { untested();
+  }else if(!common()->is_shared()) {
     // it's us!
     mutable_common()->set_param_by_index(I, Value, offset);
-  }else{ untested();
+  }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     c->set_param_by_index(I, Value, offset);

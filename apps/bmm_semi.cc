@@ -193,7 +193,7 @@ bool EVAL_BM_SEMI_BASE::operator==(const COMMON_COMPONENT& x)const
     && _length == p->_length
     && _width == p->_width
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;
@@ -204,12 +204,15 @@ void EVAL_BM_SEMI_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* la
   assert(lang);
   o << modelname();
   if (_value.has_hard_value()) {
-    o << " " << _value;
+    o << " ";
+    EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
+    print_pair(o, lang, "l", _length, _length.has_hard_value());
+    print_pair(o, lang, "w", _width, _width.has_hard_value());
   }else{
+    print_pair(o, lang, "l", _length, _length.has_hard_value());
+    print_pair(o, lang, "w", _width, _width.has_hard_value());
+    EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
   }
-  print_pair(o, lang, "l", _length, _length.has_hard_value());
-  print_pair(o, lang, "w", _width, _width.has_hard_value());
-  EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::expand(const COMPONENT* d)
@@ -260,7 +263,7 @@ bool EVAL_BM_SEMI_CAPACITOR::operator==(const COMMON_COMPONENT& x)const
     p = dynamic_cast<const EVAL_BM_SEMI_CAPACITOR*>(&x);
   bool rv = p
     && EVAL_BM_SEMI_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;
@@ -289,7 +292,7 @@ void EVAL_BM_SEMI_CAPACITOR::precalc_last(const CARD_LIST* Scope)
   double eff_width = width - m->_narrow;
   double eff_length = _length - m->_narrow;
   _va_lue = m->_cj * eff_length * eff_width + 2. * m->_cjsw * (eff_length + eff_width);
-  double tempdiff = (_temp_c - m->_tnom_c);
+  double tempdiff = (temp_c() - m->_tnom_c);
   _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (eff_width <= 0.) {untested();
@@ -308,7 +311,7 @@ bool EVAL_BM_SEMI_RESISTOR::operator==(const COMMON_COMPONENT& x)const
     p = dynamic_cast<const EVAL_BM_SEMI_RESISTOR*>(&x);
   bool rv = p
     && EVAL_BM_SEMI_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;
@@ -345,7 +348,7 @@ void EVAL_BM_SEMI_RESISTOR::precalc_last(const CARD_LIST* Scope)
   }else{untested();
     _va_lue = BIGBIG;
   }
-  double tempdiff = (_temp_c - m->_tnom_c);
+  double tempdiff = (temp_c() - m->_tnom_c);
   _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (has_hard_value(m->_rsh)) {

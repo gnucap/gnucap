@@ -54,7 +54,7 @@ private: // override virtual
   void	   tr_load()override		{tr_load_shunt(); tr_load_source();}
   void	   tr_unload()override		{tr_unload_source();}
   double   tr_involts()const override	{return 0.;}
-  double   tr_involts_limited()const override{unreachable(); return 0.;}
+  double   tr_involts_limited()const override{ untested();unreachable(); return 0.;}
   void	   ac_iwant_matrix()override	{ac_iwant_matrix_passive();}
   void	   ac_begin()override		{_loss1 = _loss0 = 1./OPT::shortckt; _acg = _ev = 0.;}
   void	   do_ac()override;
@@ -74,6 +74,7 @@ private: // override virtual
 void DEV_VS::precalc_last()
 {
   ELEMENT::precalc_last();
+  trace3("DEV_VS::pl", has_common(), value(), has_tr_eval());
   set_constant(!using_tr_eval());
   set_converged(!has_tr_eval());
 }
@@ -85,6 +86,7 @@ void DEV_VS::dc_advance()
   if(using_tr_eval()){
   }else{
     _y[0].f1 = value();
+    trace2("DEV_VS::dc_adv", value(), has_common());
     if(_y[0].f1 != _y1.f1){
       store_values();
       q_load();
@@ -135,7 +137,7 @@ bool DEV_VS::do_tr()
     q_load();
     _m0.c0 = -_loss0 * _y[0].f1;
     assert(_m0.c1 == 0.);
-  }else{itested();
+  }else{untested();
     assert(conchk(_loss0, 1./OPT::shortckt));
     assert(_y[0].x == 0.);
     assert(_y[0].f0 == 0.);

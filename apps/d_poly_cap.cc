@@ -51,7 +51,7 @@ public:
   ~DEV_CPOLY_CAP();
 protected: // override virtual
   char	   id_letter()const override	{unreachable(); return '\0';}
-  std::string value_name()const override{incomplete(); return "";}
+  std::string value_name()const override{return "";}
   std::string dev_type()const override	{unreachable(); return "cpoly_cap";}
   int	   max_nodes()const override	{return net_nodes();}
   int	   min_nodes()const override	{return net_nodes();}
@@ -259,8 +259,8 @@ void DEV_CPOLY_CAP::set_parameters(const std::string& Label, CARD *Owner,
 
   set_label(Label);
   set_owner(Owner);
-  set_value(Value);
   attach_common(Common);
+  set_value(Value);
 
   if (first_time) {
     _n_ports = n_nodes/2; // sets num_nodes() = _n_ports*2

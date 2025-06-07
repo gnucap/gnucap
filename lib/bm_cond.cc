@@ -51,8 +51,10 @@ private: // override virtual
   COMMON_COMPONENT* deflate() override;
   void  	precalc_last(const CARD_LIST*) override;
 
+  bool	has_tr_eval()const override	{ return true;}
   void  tr_eval(ELEMENT*d)const override
-	{assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_eval(d);}
+	{ trace1("COND::eval", d->long_label());
+	  assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_eval(d);}
   void  ac_eval(ELEMENT*d)const override
 	{assert(_func[s_AC]);	   _func[s_AC]->ac_eval(d);}
   TIME_PAIR tr_review(COMPONENT*d)const override
@@ -60,6 +62,7 @@ private: // override virtual
   void  tr_accept(COMPONENT*d)const override
 	{assert(_func[d->_sim->sim_mode()]); _func[d->_sim->sim_mode()]->tr_accept(d);}
   std::string name()const override	{itested(); return "????";}
+  bool is_trivial()const override { untested(); return false; }
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -92,9 +95,17 @@ bool EVAL_BM_COND::operator==(const COMMON_COMPONENT& x)const
   const EVAL_BM_COND* p = dynamic_cast<const EVAL_BM_COND*>(&x);
   bool rv = p
     && EVAL_BM_BASE::operator==(x);
-  if (rv) {untested();
-    incomplete();
+
+  for (int i=0; rv && i<sCOUNT; ++i) {
+    if(_func[i] && p->_func[i]){
+      rv = *_func[i] == *p->_func[i];
+    }else if(_func[i] || p->_func[i]){ untested();
+      rv = false;
+    }else{
+      // go on..
+    }
   }
+
   return rv;
 }
 /*--------------------------------------------------------------------------*/
@@ -191,8 +202,9 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
 				   {attach_common(_func[s_NONE],&(_func[s_AC]));}
   if (!_func[s_AC])		   {attach_common(&func_zero,  &(_func[s_AC]));}
   
-  for (int i = 1; i < sCOUNT; ++i) {
-    assert(_func[i]);
+  for (int i = 0; i < sCOUNT; ++i) {
+    trace3("parsed", cmd.fullstring(), i, _func[i]);
+    assert(!i || _func[i]);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -218,16 +230,26 @@ COMMON_COMPONENT* EVAL_BM_COND::deflate()
 {
   for (int i = 1; i < sCOUNT; ++i) {
     if (_func[i] != _func[s_NONE]) {
+      trace1("not the same", i);
       // they are not all the same, don't deflate
       return this;
+    }else{
     }
   }
   // they are all the same.  Take one of them.
-  return _func[s_NONE]->deflate();
+  trace0("all the same");
+  COMMON_COMPONENT* c = _func[s_NONE]->deflate();
+  if(c == _func[s_NONE]){
+    // transfer ownership to caller.
+    _func[s_NONE] = nullptr;
+  }else{
+  }
+  return c;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_COND::precalc_first(const CARD_LIST* Scope)
 {
+  EVAL_BM_BASE::precalc_first(Scope);
   //BUG// calls the individual precalc more than once
   // wastes time and makes multiple "has no value" warnings
   // when there should be only one
@@ -245,6 +267,7 @@ void EVAL_BM_COND::precalc_first(const CARD_LIST* Scope)
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_COND::precalc_last(const CARD_LIST* Scope)
 {
+  EVAL_BM_BASE::precalc_last(Scope);
   //BUG// calls the individual precalc more than once
   // wastes time and makes multiple "has no value" warnings
   // when there should be only one

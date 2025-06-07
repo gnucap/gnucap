@@ -66,7 +66,7 @@ bool EVAL_BM_GENERATOR::operator==(const COMMON_COMPONENT& x)const
   }else{untested();
   }
   bool rv = p && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;
