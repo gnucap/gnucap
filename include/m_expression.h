@@ -107,8 +107,9 @@ protected:
   explicit Token_TERNARY(Base const* Data)
     : Token(Data) {}
 public:
-  explicit Token_TERNARY(Expression const* t, Expression const* f)
-    : Token(nullptr), _true(t), _false(f) {}
+  explicit Token_TERNARY(Expression const* t,
+                         Expression const* f, Base const* b=nullptr)
+    : Token(b), _true(t), _false(f) {}
   explicit Token_TERNARY(const Token_TERNARY& P) : Token(P) {}
   ~Token_TERNARY();
   Token* clone()const override{return new Token_TERNARY(*this);}
