@@ -24,6 +24,7 @@
 #include "globals.h"
 #include "m_expression.h"
 #include "c_comand.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -34,7 +35,7 @@ public:
     Expression e(cmd);
     cmd.check(bDANGER, "syntax error");
     try{
-      Expression r(e, Scope);
+      Expression r(e, Scope?Scope->params():nullptr);
       std::cout << e << '=' << r << '\n';
     }catch(Exception const& ee){
       cmd.warn(bWARNING, here, ee.message());

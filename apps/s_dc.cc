@@ -26,11 +26,13 @@
 #include "u_prblst.h"
 #include "u_cardst.h"
 #include "e_elemnt.h"
+#include "e_cardlist.h"
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
 class SWEEPVAL : public COMMON_COMPONENT {
+  double _value;
 public:
   explicit	SWEEPVAL(int c=0)
     :COMMON_COMPONENT(c) {}
@@ -40,6 +42,12 @@ public:
   COMMON_COMPONENT* clone()const override{
     return new SWEEPVAL(*this);
   }
+
+public:
+  void set_value(double v) { _value = v; }
+  bool has_value()const override{ return true; }
+  double value()const override { return _value; }
+
 
 private:
   std::string name()const override{untested(); return "sweepval";}
@@ -84,7 +92,7 @@ private:
   void	final()override		{_scope->dc_final();}
   void	finish()override;
 
-  explicit DCOP(const DCOP&): SIM() {unreachable(); incomplete();}
+  explicit DCOP(const DCOP&): SIM() { untested();unreachable(); incomplete();}
 protected:
   void set_sweepval(int i, double d){
     ::status.set_up.start();
@@ -143,7 +151,7 @@ public:
   void	do_it(CS&, CARD_LIST*)override;
 private:
   void	setup(CS&)override;
-  explicit DC(const DC&): DCOP() {unreachable(); incomplete();}
+  explicit DC(const DC&): DCOP() { untested();unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
 class OP : public DCOP {
@@ -153,7 +161,7 @@ public:
   void	do_it(CS&, CARD_LIST*)override;
 private:
   void	setup(CS&)override;
-  explicit OP(const OP&): DCOP() {unreachable(); incomplete();}
+  explicit OP(const OP&): DCOP() { untested();unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -272,7 +280,7 @@ void OP::setup(CS& Cmd)
   IO::plotout = (ploton) ? IO::mstdout : OMSTREAM();
   initio(_out);
 
-  _start[0].e_val(OPT::temp_c, _scope);
+  _start[0].e_val(OPT::temp_c, _scope->params());
   fix_args(0);
 }
 /*--------------------------------------------------------------------------*/
@@ -293,7 +301,7 @@ void DC::setup(CS& Cmd)
 	if (ELEMENT* c = dynamic_cast<ELEMENT*>(*ci)) {
 	  _zap[_n_sweeps] = c;
 	  _param_name[_n_sweeps] = ""; // not used.
-	  trace2("_zap", c->value(), c->value().string());
+	 // trace2("_zap", c->value(), c->value().string());
 	}else{untested();
 	  throw Exception("dc/op: can't sweep " + (**ci).long_label() + '\n');
 	}
@@ -338,7 +346,7 @@ void DC::setup(CS& Cmd)
 
   assert(_n_sweeps > 0);
   for (int ii = 0;  ii < _n_sweeps;  ++ii) {
-    _start[ii].e_val(0., _scope);
+    _start[ii].e_val(0., _scope->params());
     fix_args(ii);
 
     if (_zap[ii]) { // component
@@ -359,8 +367,8 @@ void DC::setup(CS& Cmd)
 /*--------------------------------------------------------------------------*/
 void DCOP::fix_args(int Nest)
 {
-  _stop[Nest].e_val(_start[Nest], _scope);
-  _step_in[Nest].e_val(0., _scope);
+  _stop[Nest].e_val(_start[Nest], _scope->params());
+  _step_in[Nest].e_val(0., _scope->params());
   _step[Nest] = _step_in[Nest];
   
   switch (_stepmode[Nest]) {

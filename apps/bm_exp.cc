@@ -56,7 +56,7 @@ private: // override vitrual
   COMMON_COMPONENT* clone()const override {return new EVAL_BM_EXP(*this);}
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
-  void		precalc_last(const CARD_LIST*)override;
+  void		precalc_last(const PARAM_LIST*)override;
   void		tr_eval(ELEMENT*)const override;
   TIME_PAIR	tr_review(COMPONENT*)const override;
   std::string	name()const override		{return "exp";}
@@ -104,8 +104,8 @@ bool EVAL_BM_EXP::operator==(const COMMON_COMPONENT& x)const
     && _tau2== p->_tau2
     && _period== p->_period
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) { untested();
-    untested();
+  if (rv) {
+  }else{
   }
   return rv;
 }
@@ -124,7 +124,7 @@ void EVAL_BM_EXP::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)con
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_EXP::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_EXP::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
   EVAL_BM_ACTION_BASE::precalc_last(Scope);

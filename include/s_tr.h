@@ -25,6 +25,7 @@
 #ifndef S_TR_H
 #define S_TR_H
 #include "u_parameter.h"
+#include "e_cardlist.h"
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 class TRANSIENT : public SIM {

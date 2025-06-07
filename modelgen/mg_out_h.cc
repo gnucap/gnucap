@@ -179,7 +179,7 @@ static void make_common(std::ofstream& out, const Device& d)
 	     << d.common().override().size() + d.common().raw().size()
 	     << " + COMMON_COMPONENT::param_count());}\n"
     "  void     expand(const COMPONENT*)override;\n"
-    "  void     precalc_last(const CARD_LIST*)override;\n"
+    "  void     precalc_last(const PARAM_LIST*)override;\n"
     "  std::string name()const override{itested();return \"" << d.parse_name() << "\";}\n"
     "  const SDP_CARD* sdp()const{return _sdp;}\n"
     "  bool     has_sdp()const {untested();return _sdp;}\n"

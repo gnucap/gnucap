@@ -7,7 +7,7 @@ Mutual inductance test circuit
 
 * using 'k' pseudo element
 .subckt trans2a (a1 a2 b1 b2)
-k1 (l1 l2) {K12}
+k1 (l1 l2) k=K12
 l1 (a1 a2) {L1}
 l2 (b1 b2) {L2}
 .ends

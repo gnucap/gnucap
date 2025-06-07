@@ -249,8 +249,8 @@ void FOURIER::setup(CS& Cmd)
       _fstep  = arg3;
     }else if (arg2.has_hard_value()) {untested(); /* 2 args: start = 0 */
       assert(arg1.has_hard_value());
-      arg1.e_val(0.,_scope);
-      arg2.e_val(0.,_scope);
+      arg1.e_val(0.,_scope->params());
+      arg2.e_val(0.,_scope->params());
       if (arg1 >= arg2) {untested();	    /* 2 args: stop, step */
 	_fstart = "NA";		    	    /* 	(stop > step) */
 	_fstop  = arg1;
@@ -262,7 +262,7 @@ void FOURIER::setup(CS& Cmd)
       }
     }else{untested();
       assert(arg1.has_hard_value());
-      arg1.e_val(0.,_scope);
+      arg1.e_val(0.,_scope->params());
       if (arg1 == 0.) {untested();	    /* 1 arg: start */
 	_fstart = 0.;
 	/* _fstop unchanged */
@@ -279,9 +279,9 @@ void FOURIER::setup(CS& Cmd)
 
   options(Cmd);
 
-  _fstart.e_val(0., _scope);
-  _fstep.e_val(0., _scope);
-  _fstop.e_val(OPT::harmonics * _fstep, _scope);
+  _fstart.e_val(0., _scope->params());
+  _fstep.e_val(0., _scope->params());
+  _fstop.e_val(OPT::harmonics * _fstep, _scope->params());
   
   if (_fstep == 0.) {untested();
     throw Exception("frequency step = 0");

@@ -201,7 +201,7 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	  std::string value = cmd.ctos(",)", "", "");
 	  x->set_param_by_index(Index, value, 0/*offset*/);
 	  store_attributes(attribs,  x->param_id_tag(Index));
-	}catch (Exception_Too_Many& e) {untested();
+	}catch (Exception_Too_Many& e) {
 	  cmd.warn(bDANGER, here, e.message());
 	}catch (Exception_Clash&) {untested();
 	  unreachable();
@@ -610,7 +610,7 @@ public:
     return _value;
   }
   bool has_good_value()const override { untested();unreachable(); return false;}
-  Base const* e_val_(const Base* def, const CARD_LIST* s, int)const override { untested();
+  Base const* e_val_(const Base* def, const PARAM_LIST* s, int)const override { untested();
     // def does not seem to carry type info...
     // see s_dc.vcvs1{a,b,c}.gc
     error(bDEBUG, "assuming double in " + _s + "\n");
@@ -959,14 +959,14 @@ class CMD_MODULE : public CMD {
     try {
       lang_verilog.parse_module(cmd, new_module);
       Scope->push_back(new_module);
-    }catch(Exception const& e) { untested();
+    }catch(Exception const& e) {
       cmd.warn(bDANGER, e.message());
       for (;;) { untested();
 	cmd.getline("verilog-module>");
 
-	if (cmd >> "endmodule ") { untested();
+	if (cmd >> "endmodule ") {
 	  break;
-	}else{ untested();
+	}else{
 	}
       }
       delete new_module;

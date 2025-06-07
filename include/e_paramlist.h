@@ -47,8 +47,8 @@ public:
   int param_count()const override
 	{return (static_cast<int>(_params.size()) + COMMON_COMPONENT::param_count());}
 
-  void		precalc_first(const CARD_LIST*) override;
-  void		precalc_last(const CARD_LIST*) override;
+  void		precalc_first(const PARAM_LIST*) override;
+  void		precalc_last(const PARAM_LIST*) override;
 private:
   static int	_count;
 public:

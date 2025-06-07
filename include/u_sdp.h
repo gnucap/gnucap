@@ -46,7 +46,7 @@ public:
   ~SDP() {}
   explicit SDP(double Nom) :_nom(Nom), _ld(0.), _wd(0.), _pd(0.) {}
   //void print(OMSTREAM& o, LANGUAGE*, const std::string& name)const;
-  double operator()(double L,double W,double def,const CARD_LIST* scope)const {
+  double operator()(double L,double W,double def,const PARAM_LIST* scope)const {
     return _nom.e_val(def,scope) + _ld.e_val(0.,scope)/L
       + _wd.e_val(0.,scope)/W + _pd.e_val(0.,scope)/(W*L);
   }

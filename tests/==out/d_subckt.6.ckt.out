@@ -13,4 +13,4 @@ R2 ( 1 3 )  10.K
 R2 ( 1 3 )  10.K
 X2 ( 3 0 )  xx  r=5k
 R3 ( 1 4 )  10.K
-X3 ( 4 0 )  xx  $mfactor=2 r=20k
+X3 ( 4 0 )  xx  r=20k $mfactor=2

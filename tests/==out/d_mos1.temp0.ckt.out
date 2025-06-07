@@ -1,0 +1,15 @@
+mos1 temp test 
+M1   2  1  0  0  nnn l=9.u w=9.u ignored0=1 temp=50 
+                                 ^ ? M1: bad parameter ignored0 ignored
+M1   2  1  0  0 ... .u w=9.u ignored0=1 temp=50 
+                                        ^ ? M1: bad parameter temp ignored
+nnn: is - js conflict
+#           i(Vds)    
+ 0.        -381.66u   
+#           i(Vds)    
+ 0.        -350.32u   
+#           i(Vds)    
+ 0.        -427.2u    
+ 25.       -384.67u   
+ 50.       -350.32u   
+ 75.       -322.17u   

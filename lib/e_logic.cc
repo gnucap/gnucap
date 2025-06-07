@@ -88,7 +88,7 @@ std::string COMMON_LOGIC::param_value(int I)const
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_LOGIC::precalc_first(CARD_LIST const* scope)
+void COMMON_LOGIC::precalc_first(PARAM_LIST const* scope)
 {
   COMMON_COMPONENT::precalc_first(scope);
   if(modelname()=="") {
@@ -98,7 +98,7 @@ void COMMON_LOGIC::precalc_first(CARD_LIST const* scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_LOGIC::precalc_last(CARD_LIST const* scope)
+void COMMON_LOGIC::precalc_last(PARAM_LIST const* scope)
 {
   _delay.e_val(1, scope);
   const MODEL_LOGIC* m = dynamic_cast<MODEL_LOGIC const*>(model());

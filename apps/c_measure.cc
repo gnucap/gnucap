@@ -24,6 +24,7 @@
 #include "u_parameter.h"
 #include "u_function.h"
 #include "c_comand.h"
+#include "e_cardlist.h"
 #include "globals.h"
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -32,10 +33,13 @@ namespace {
 class CMD_MEASURE : public CMD {
 public:
   void do_it(CS& Cmd, CARD_LIST* Scope)override {
+    assert(Scope);
+    PARAM_LIST* Params = Scope->params();
+
     std::string assign_to, function;
     Cmd >> assign_to >> '=' >> function >> '(';
     if (FUNCTION* f = measure_dispatcher[function]) {
-      std::string value = f->eval(Cmd, Scope);
+      std::string value = f->eval(Cmd, Params);
       if (!Cmd.skip1b(')')) { untested();
 	Cmd.warn(bWARNING, "need )");
       }else{

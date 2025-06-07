@@ -29,6 +29,7 @@
 #include "m_spline.h"
 #include "e_model.h" 
 #include "bm.h"
+#include "e_cardlist.h" 
 /*--------------------------------------------------------------------------*/
 class SPLINE;
 /*--------------------------------------------------------------------------*/
@@ -100,8 +101,7 @@ bool EVAL_BM_TABLE::operator==(const COMMON_COMPONENT& x)const
 {
   const EVAL_BM_TABLE* p = dynamic_cast<const EVAL_BM_TABLE*>(&x);
   bool rv = p && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) { untested();
-    untested();
+  if (rv) {
   }else{
   }
   return rv;
@@ -212,7 +212,8 @@ void MODEL_TABLE::precalc_first()
 {
   MODEL_CARD::precalc_first();
 
-  const CARD_LIST* par_scope = scope();
+  assert(scope());
+  const PARAM_LIST* par_scope = scope()->params();
   assert(par_scope);
 
   _order.e_val(_default_order, par_scope);

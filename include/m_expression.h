@@ -27,7 +27,7 @@
 #include "m_base_vams.h"
 /*--------------------------------------------------------------------------*/
 //class Symbol_Table;
-class CARD_LIST;
+class PARAM_LIST;
 class Expression;
 /*--------------------------------------------------------------------------*/
 class Token : public Base {
@@ -107,8 +107,9 @@ protected:
   explicit Token_TERNARY(Base const* Data)
     : Token(Data) {}
 public:
-  explicit Token_TERNARY(Expression const* t, Expression const* f)
-    : Token(nullptr), _true(t), _false(f) {}
+  explicit Token_TERNARY(Expression const* t,
+                         Expression const* f, Base const* b=nullptr)
+    : Token(b), _true(t), _false(f) {}
   explicit Token_TERNARY(const Token_TERNARY& P) : Token(P) {}
   ~Token_TERNARY();
   Token* clone()const override{return new Token_TERNARY(*this);}
@@ -214,7 +215,7 @@ public:
 /*--------------------------------------------------------------------------*/
 class INTERFACE Expression : public List_Base<Token> {
 public:
-  const CARD_LIST* _scope;
+  const PARAM_LIST* _scope;
 public:
   void parse(CS&) override;
   void dump(std::ostream&)const override;
@@ -241,7 +242,7 @@ public:
 private: // expression-reduce.cc
   void reduce_copy(const Expression&);
 public:
-  explicit Expression(const Expression&, const CARD_LIST*);
+  explicit Expression(const Expression&, const PARAM_LIST*);
 public: // other
   bool as_bool()const {untested();return (!is_empty() && back()->data());}
   double eval()const { itested();

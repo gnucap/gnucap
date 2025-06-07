@@ -25,6 +25,7 @@
 #ifndef E_CARDLIST_H
 #define E_CARDLIST_H
 #include "md.h"
+#include "u_parameter.h"
 /*--------------------------------------------------------------------------*/
 // defined here
 class CARD_LIST;
@@ -78,8 +79,8 @@ public: // more types
   };
 
   // influence arithmetics
-  bool is_verilog_math()const {return _verilog_math;}
-  void set_verilog_math(bool m=true) { _verilog_math = m; }
+  bool is_verilog_math()const;
+  void set_verilog_math(bool m=true);
 
   // status queries
   bool is_empty()const			{return _cl.empty();}
@@ -147,7 +148,7 @@ public:
 
   NODE_MAP*   nodes()const {assert(_nm); return _nm;}
   PARAM_LIST* params();
-  PARAM_LIST* params()const;
+  PARAM_LIST const* params()const;
 
   // more complex stuff
   void attach_params(PARAM_LIST const* p, const CARD_LIST* scope);
@@ -171,6 +172,22 @@ inline CARD_LIST::fat_iterator findbranch(CS& cmd, CARD_LIST* cl)
 {
   assert(cl);
   return findbranch(cmd, CARD_LIST::fat_iterator(cl, cl->begin()));
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void e_val(PARAMETER<T>* p, const PARAMETER<T>& def, const CARD_LIST* scope)
+{
+  assert(p);
+  assert(scope);
+  p->e_val(def, scope->params());
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void e_val(PARAMETER<T>* p, const T& def, const CARD_LIST* scope)
+{
+  assert(p);
+  assert(scope);
+  p->e_val(def, scope->params());
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

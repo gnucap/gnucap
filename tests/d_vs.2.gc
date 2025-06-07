@@ -1,0 +1,21 @@
+
+verilog
+
+.subckt Vac(1)
+.parameter U=1
+.parameter f=1
+.parameter Phase=0
+.parameter Theta=0
+
+V1 1 0 dc=0 ac={U} tran sin amplitude=U frequency=f delay={(-Phase/360.-10)/f}
+.ends
+
+module main (a, b);
+Vac #(.Phase(0),.Theta(0),.U(1m),.f(1k)) RF (b);
+Vac #(.Phase(0),.Theta(0),.U(3),.f(10k)) LO (a);
+endmodule // main
+
+main #() m(a, b);
+
+print tran v(a) v(b)
+tran .1m

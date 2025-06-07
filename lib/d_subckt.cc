@@ -97,7 +97,7 @@ private: // override virtual
   int		net_nodes()const override	{return _net_nodes;}
   void		precalc_first()override;
   bool		makes_own_scope()const override;
-  bool		is_valid()const override;
+  int		is_valid()const override;
   CARD_LIST*	   scope()override;
   const CARD_LIST* scope()const override	{return const_cast<DEV_SUBCKT*>(this)->scope();}
 
@@ -309,7 +309,8 @@ CARD_LIST* DEV_SUBCKT::scope()
   }
 }
 /*--------------------------------------------------------------------------*/
-bool DEV_SUBCKT::is_valid() const
+// TODO: local parameters with ranges
+int DEV_SUBCKT::is_valid() const
 {itested();
   PARAM_LIST const* params;
   if(_parent){itested();
@@ -323,7 +324,7 @@ bool DEV_SUBCKT::is_valid() const
   trace1("DEV_SUBCKT::is_valid I", long_label());
   PARAM_INSTANCE v = params->deep_lookup("_..is_valid");
   trace2("DEV_SUBCKT::is_valid II", long_label(), v.string());
-  Base const* x = v.e_val(nullptr, subckt());
+  Base const* x = v.e_val(nullptr, subckt()->params());
   Integer c;
   Integer* res = c.assign(x);
   if(!res) {itested();

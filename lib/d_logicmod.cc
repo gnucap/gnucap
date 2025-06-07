@@ -26,6 +26,7 @@
  */
 //testing=script 2006.07.17
 #include "e_logicmod.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 int MODEL_LOGIC::_count = -1; // there is one in e_node.cc, and the dispatcher
 /*--------------------------------------------------------------------------*/
@@ -73,7 +74,7 @@ void MODEL_LOGIC::precalc_first()
 {
   MODEL_CARD::precalc_first();
 
-  const CARD_LIST* par_scope = scope();
+  const PARAM_LIST* par_scope = scope()->params();
   assert(par_scope);
 
   delay.e_val(1e-9, par_scope);

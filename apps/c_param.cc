@@ -23,6 +23,7 @@
 //testing=script,complete 2006.07.17
 #include "c_comand.h"
 #include "u_parameter.h"
+#include "e_cardlist.h"
 #include "globals.h"
 /*--------------------------------------------------------------------------*/
 namespace {

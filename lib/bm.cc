@@ -27,6 +27,9 @@
 #include "e_elemnt.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
+const double _default_tnom_c	(NOT_INPUT);
+const double _default_dtemp	(0.);
+const double _default_temp_c	(NOT_INPUT);
 const double _default_bandwidth	(NOT_INPUT);
 const double _default_delay	(0.);
 const double _default_phase	(0.);
@@ -40,6 +43,9 @@ const double _default_ic	(0.);
 /*--------------------------------------------------------------------------*/
 EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(int c)
   :EVAL_BM_BASE(c),
+   _tnom_c(_default_tnom_c),
+   _dtemp(_default_dtemp),
+   _temp_c(_default_temp_c),
    _bandwidth(_default_bandwidth),
    _delay(_default_delay),
    _phase(_default_phase),
@@ -54,6 +60,9 @@ EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(int c)
 /*--------------------------------------------------------------------------*/
 EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(const EVAL_BM_ACTION_BASE& p)
   :EVAL_BM_BASE(p),
+   _tnom_c(p._tnom_c),
+   _dtemp(p._dtemp),
+   _temp_c(p._temp_c),
    _bandwidth(p._bandwidth),
    _delay(p._delay),
    _phase(p._phase),
@@ -68,7 +77,7 @@ EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(const EVAL_BM_ACTION_BASE& p)
 /*--------------------------------------------------------------------------*/
 double EVAL_BM_ACTION_BASE::temp_adjust()const
 {
-  double tempdiff = _temp_c - _tnom_c;
+  double tempdiff = temp_diff();
   return (_scale * (1 + _tc1*tempdiff + _tc2*tempdiff*tempdiff));
 }
 /*--------------------------------------------------------------------------*/
@@ -126,6 +135,9 @@ bool EVAL_BM_ACTION_BASE::operator==(const COMMON_COMPONENT& x)const
 {
   const EVAL_BM_ACTION_BASE* p = dynamic_cast<const EVAL_BM_ACTION_BASE*>(&x);
   bool rv = p
+    && _tnom_c == p->_tnom_c
+    && _dtemp == p->_dtemp
+    && _temp_c == p->_temp_c
     && _bandwidth == p->_bandwidth
     && _delay == p->_delay
     && _phase == p->_phase
@@ -136,7 +148,7 @@ bool EVAL_BM_ACTION_BASE::operator==(const COMMON_COMPONENT& x)const
     && _tc2 == p->_tc2
     && _ic == p->_ic
     && EVAL_BM_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;
@@ -144,6 +156,7 @@ bool EVAL_BM_ACTION_BASE::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
+  EVAL_BM_BASE::print_common_obsolete_callback(o, lang);
   print_pair(o, lang, "bandwidth",_bandwidth,_bandwidth.has_hard_value());
   print_pair(o, lang, "delay",	  _delay,    _delay.has_hard_value());
   print_pair(o, lang, "phase",	  _phase,    _phase.has_hard_value());
@@ -153,13 +166,39 @@ void EVAL_BM_ACTION_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* 
   print_pair(o, lang, "tc1",	  _tc1,	     _tc1.has_hard_value());
   print_pair(o, lang, "tc2",	  _tc2,	     _tc2.has_hard_value());
   print_pair(o, lang, "ic",	  _ic,	     _ic.has_hard_value());
-  COMMON_COMPONENT::print_common_obsolete_callback(o, lang);
+  print_pair(o, lang, "tnom", _tnom_c,  _tnom_c.has_hard_value());
+  print_pair(o, lang, "dtemp",_dtemp,   _dtemp.has_hard_value());
+  print_pair(o, lang, "temp", _temp_c,  _temp_c.has_hard_value());
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_ACTION_BASE::precalc_last(const CARD_LIST* Scope)
+std::string EVAL_BM_ACTION_BASE::param_value(int i) const
+{ untested();
+  switch (i) {
+  case 0:itested();  return _tnom_c.string();
+  case 1:itested();  return _dtemp.string();
+  case 2:itested();  return _temp_c.string();
+  default:untested(); return "";
+  }
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_ACTION_BASE::param_is_printable(int i) const
+{ untested();
+  switch (i) {
+  case 0:  return _tnom_c.has_hard_value();
+  case 1:  return _dtemp.has_hard_value();
+  case 2:  return _temp_c.has_hard_value();
+  default: return false;
+  }
+}
+/*--------------------------------------------------------------------------*/
+void EVAL_BM_ACTION_BASE::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
-  COMMON_COMPONENT::precalc_last(Scope);
+  EVAL_BM_BASE::precalc_last(Scope);
+  _tnom_c.e_val(OPT::tnom_c, Scope);
+  _dtemp.e_val(0., Scope);
+  _temp_c.e_val(_sim->_temp_c + _dtemp, Scope);
+
   _bandwidth.e_val(_default_bandwidth, Scope);
   _delay.e_val(_default_delay, Scope);
   _phase.e_val(_default_phase, Scope);
@@ -181,6 +220,9 @@ void EVAL_BM_ACTION_BASE::ac_eval(ELEMENT* d)const
 bool EVAL_BM_ACTION_BASE::parse_params_obsolete_callback(CS& cmd)
 {
   return ONE_OF
+    || Get(cmd, "tnom",     &_tnom_c)
+    || Get(cmd, "dtemp",    &_dtemp)
+    || Get(cmd, "temp",     &_temp_c)
     || Get(cmd, "bandwidth",&_bandwidth)
     || Get(cmd, "delay",    &_delay)
     || Get(cmd, "phase",    &_phase)
@@ -190,12 +232,12 @@ bool EVAL_BM_ACTION_BASE::parse_params_obsolete_callback(CS& cmd)
     || Get(cmd, "tc1",      &_tc1)
     || Get(cmd, "tc2",      &_tc2)
     || Get(cmd, "ic",       &_ic)
-    || COMMON_COMPONENT::parse_params_obsolete_callback(cmd);
+    || EVAL_BM_BASE::parse_params_obsolete_callback(cmd);
     ;
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_ACTION_BASE::has_ext_args()const
-{ untested();
+{
   return  (_bandwidth.has_hard_value()
 	   || _delay.has_hard_value()
 	   || _phase.has_hard_value()
@@ -222,5 +264,15 @@ COMMON_COMPONENT* EVAL_BM_ACTION_BASE::parse_func_type(CS& cmd)
   }
 }
 /*--------------------------------------------------------------------------*/
+void EVAL_BM_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang) const
+{
+#if 1
+  if (_value.has_hard_value()) {
+    o << _value;
+  }else{
+  }
+#endif
+  COMMON_COMPONENT::print_common_obsolete_callback(o, lang);
+}
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

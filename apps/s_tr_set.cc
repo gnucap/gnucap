@@ -35,9 +35,10 @@
  */
 void TRANSIENT::setup(CS& Cmd)
 {
-  _tstart.e_val(NOT_INPUT, _scope);
-  _tstop.e_val(NOT_INPUT, _scope);
-  _tstrobe.e_val(NOT_INPUT, _scope);
+  assert(_scope);
+  _tstart.e_val(NOT_INPUT, _scope->params());
+  _tstop.e_val(NOT_INPUT, _scope->params());
+  _tstrobe.e_val(NOT_INPUT, _scope->params());
 
   if (_sim->is_first_expand()) {
     _sim->_last_time = 0;
@@ -59,8 +60,8 @@ void TRANSIENT::setup(CS& Cmd)
     if (arg3.has_hard_value()) {	    /* 3 args: all */
       assert(arg2.has_hard_value());
       assert(arg1.has_hard_value());
-      arg1.e_val(0.,_scope);
-      arg3.e_val(0.,_scope);
+      arg1.e_val(0., _scope->params());
+      arg3.e_val(0., _scope->params());
       if (arg3 == 0.) {			    /* spice (illogical) order */
 	_tstart = arg3;		    	    /* _tstrobe _tstop _tstart */
 	_tstop  = arg2;
@@ -80,8 +81,8 @@ void TRANSIENT::setup(CS& Cmd)
       }
     }else if (arg2.has_hard_value()) {	    /* 2 args */
       assert(arg1.has_hard_value());
-      arg1.e_val(0.,_scope);
-      arg2.e_val(0.,_scope);
+      arg1.e_val(0., _scope->params());
+      arg2.e_val(0., _scope->params());
       if (arg1 == 0.) {		 	    /* 2 args: _tstart, _tstop */
 	_tstart = arg1;
 	_tstop  = arg2;
@@ -98,7 +99,7 @@ void TRANSIENT::setup(CS& Cmd)
       }
     }else{				    /* 1 arg */
       assert(arg1.has_hard_value());
-      arg1.e_val(0.,_scope);
+      arg1.e_val(0., _scope->params());
       if (arg1 > _sim->_last_time) {	    /* 1 arg: _tstop */
 	_tstart = _sim->_last_time;
 	_tstop  = arg1;
@@ -130,19 +131,19 @@ void TRANSIENT::setup(CS& Cmd)
 
   options(Cmd);
 
-  _tstart.e_val(0., _scope);
-  _tstop.e_val(NOT_INPUT, _scope);
+  _tstart.e_val(0., _scope->params());
+  _tstop.e_val(NOT_INPUT, _scope->params());
   if (_tstart < 0 || _tstop <= _tstart) {
     throw Exception("transient: bad time args");
   }else{
   }
 
-  _tstrobe.e_val(NOT_INPUT, _scope);
+  _tstrobe.e_val(NOT_INPUT, _scope->params());
   if (_tstrobe <= 0.) {
     _tstrobe.set_default(NOT_INPUT);
   }else{
   }
-  _tstrobe.e_val(_tstop-_tstart, _scope);
+  _tstrobe.e_val(_tstop-_tstart, _scope->params());
 
   if  (_cold || _tstart < _sim->_last_time  ||  _sim->_last_time <= 0.) {
     _cont = false;
@@ -225,10 +226,11 @@ void TRANSIENT::options(CS& Cmd)
   IO::plotout = (ploton) ? IO::mstdout : OMSTREAM();
   initio(_out);
 
-  _dtmax_in.e_val(BIGBIG, _scope);
-  _dtmin_in.e_val(OPT::dtmin, _scope);
-  _dtratio_in.e_val(OPT::dtratio, _scope);
-  _skip_in.e_val(1, _scope);
+  assert(_scope);
+  _dtmax_in.e_val(BIGBIG, _scope->params());
+  _dtmin_in.e_val(OPT::dtmin, _scope->params());
+  _dtratio_in.e_val(OPT::dtratio, _scope->params());
+  _skip_in.e_val(1, _scope->params());
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

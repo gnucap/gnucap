@@ -110,7 +110,7 @@ void DEV_CCVS::do_ac_last()
 {
   assert(_input);
   ac_load_shunt();
-  if (using_ac_eval()) {untested();
+  if (using_ac_eval()) {
     ac_eval();
   }else{
     assert(_ev == _y[0].f1);

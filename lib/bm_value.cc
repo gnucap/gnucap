@@ -37,27 +37,11 @@ bool EVAL_BM_VALUE::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_VALUE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
-  o << _value;
+ // o << _value;
   EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
-bool EVAL_BM_VALUE::is_trivial()const
-{
-  return  !(_bandwidth.has_hard_value()
-	    || _delay.has_hard_value()
-	    || _phase.has_hard_value()
-	    || _ooffset.has_hard_value()
-	    || _ioffset.has_hard_value()
-	    || _scale.has_hard_value()
-	    || _tc1.has_hard_value()
-	    || _tc2.has_hard_value()
-	    || _ic.has_hard_value()
-	    || _tnom_c.has_hard_value()
-	    || _dtemp.has_hard_value()
-	    || _temp_c.has_hard_value());
-}
-/*--------------------------------------------------------------------------*/
-void EVAL_BM_VALUE::precalc_first(const CARD_LIST* Scope)
+void EVAL_BM_VALUE::precalc_first(const PARAM_LIST* Scope)
 {
   if (modelname() != "") {
     (_value = "") = modelname();
@@ -92,5 +76,17 @@ bool EVAL_BM_VALUE::parse_params_obsolete_callback(CS& cmd)
     ;
 }
 /*--------------------------------------------------------------------------*/
+COMMON_COMPONENT* EVAL_BM_VALUE::deflate()
+{
+  if(has_ext_args()){
+    return this; // no deflate.
+  }else if(modelname() != ""){
+    return this; // not sure what this is.
+		 // but need to get rid of model anyway
+  }else{
+    trace3("EVAL_BM_VALUE::deflate to base", _value, _value.string(), modelname());
+    return new EVAL_BM_BASE(*this);
+  }
+}
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

@@ -23,16 +23,14 @@
  */
 //testing=script 2014.07.04
 #include "u_lang.h"
+#include "u_nodemap.h"
+#include "u_parameter.h"
 #include "e_model.h"
 #include "e_elemnt.h"
-#include "u_nodemap.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),
-   _tnom_c(p._tnom_c),
-   _dtemp(p._dtemp),
-   _temp_c(p._temp_c),
-   _value(p._value),
    _modelname(p._modelname),
    _model(p._model),
    _attach_count(0)
@@ -41,10 +39,6 @@ COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(int c)
   :CKT_BASE(),
-   _tnom_c(NOT_INPUT),
-   _dtemp(0),
-   _temp_c(NOT_INPUT),
-   _value(0),
    _modelname(),
    _model(0),
    _attach_count(c)
@@ -142,6 +136,7 @@ bool COMMON_COMPONENT::parse_param_list(CS& cmd)
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
 {
+  trace2("CC::parse_common_oc", modelname(), cmd.fullstring());
   if (cmd.skip1b('(')) {
     // start with a paren
     size_t start = cmd.cursor();
@@ -222,41 +217,23 @@ void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
-{
-  assert(lang);
-  print_pair(o, lang, "tnom", _tnom_c,  _tnom_c.has_hard_value());
-  print_pair(o, lang, "dtemp",_dtemp,   _dtemp.has_hard_value());
-  print_pair(o, lang, "temp", _temp_c,  _temp_c.has_hard_value());
+void COMMON_COMPONENT::set_param_by_index(int i, std::string& , int Offset)
+{ untested();
+  unreachable();
+  throw Exception_Too_Many(i+1, 0, Offset);
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::set_param_by_index(int i, std::string& Value, int Offset)
+bool COMMON_COMPONENT::param_is_printable(int)const
 {
-  switch (i) {
-  case 0:untested();  _tnom_c = Value; break;
-  case 1:untested();  _dtemp = Value; break;
-  case 2:itested();  _temp_c = Value; break;
-  default:untested(); assert(0); throw Exception_Too_Many(i, 2, Offset); break;
-  }
-}
-/*--------------------------------------------------------------------------*/
-bool COMMON_COMPONENT::param_is_printable(int i)const
-{
-  switch (i) {
-  case 0:  return _tnom_c.has_hard_value();
-  case 1:  return _dtemp.has_hard_value();
-  case 2:  return _temp_c.has_hard_value();
-  default: return false;
-  }
+  return false;
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i)const
 {
-  switch (i) {
-  case 0:  return "tnom";
-  case 1:  return "dtemp";
-  case 2:  return "temp";
-  default:itested(); return "";
+  if(_next){
+    return _next->param_name(i);
+  }else{
+    return "";
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -269,23 +246,14 @@ std::string COMMON_COMPONENT::param_name(int i, int j)const
   }
 }
 /*--------------------------------------------------------------------------*/
-std::string COMMON_COMPONENT::param_value(int i)const
+std::string COMMON_COMPONENT::param_value(int)const
 {
-  switch (i) {
-  case 0:itested();  return _tnom_c.string();
-  case 1:itested();  return _dtemp.string();
-  case 2:itested();  return _temp_c.string();
-  default:itested(); return "";
-  }
+  untested(); return "";
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::precalc_last(const CARD_LIST* Scope)
+void COMMON_COMPONENT::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
-  _tnom_c.e_val(OPT::tnom_c, Scope);
-  _dtemp.e_val(0., Scope);
-  _temp_c.e_val(_sim->_temp_c + _dtemp, Scope);
-  _value.e_val(0, Scope);
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::tr_eval(ELEMENT*x)const
@@ -295,19 +263,20 @@ void COMMON_COMPONENT::tr_eval(ELEMENT*x)const
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::ac_eval(ELEMENT*x)const
-{untested();
-  assert(_model);
-  _model->ac_eval(x);
+{
+  if(_model){
+    _model->ac_eval(x);
+  }else{
+    // should not get here.
+    // but need to get rid of _model anyway.
+    // incomplete();
+  }
 }
 /*--------------------------------------------------------------------------*/
 bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
   return (_modelname == x._modelname
-	  && _model == x._model
-	  && _tnom_c == x._tnom_c
-	  && _dtemp == x._dtemp
-	  && _temp_c == x._temp_c
-	  && _value == x._value);
+	  && _model == x._model);
 }
 /*--------------------------------------------------------------------------*/
 int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
@@ -363,13 +332,9 @@ bool COMMON_COMPONENT::parse_numlist(CS&)
   return false;
 }
 /*--------------------------------------------------------------------------*/
-bool COMMON_COMPONENT::parse_params_obsolete_callback(CS& cmd)
+bool COMMON_COMPONENT::parse_params_obsolete_callback(CS&)
 {
-  return ONE_OF
-    || Get(cmd, "tnom",   &_tnom_c)
-    || Get(cmd, "dtemp",  &_dtemp)
-    || Get(cmd, "temp",   &_temp_c)
-    ;
+  return false;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -396,9 +361,10 @@ public:
     _p[0] = x;
   }
   void precalc(CARD_LIST const* scope){
-    _p[0].e_val(1., scope);
+    assert(scope);
+    _p[0].e_val(1., scope->params());
     for(int i=1; i< sysparams_count; ++i){
-      _p[i].e_val(0, scope);
+      _p[i].e_val(0, scope->params());
     }
   }
 
@@ -582,11 +548,17 @@ void COMPONENT::precalc_first()
   }
   CARD::precalc_first();
   if (has_common()) {
+    COMMON_COMPONENT* c = common()->clone();
+    assert(c);
     try {
-      mutable_common()->precalc_first(scope());
+      c->precalc_first(scope()->params());
     }catch (Exception_Precalc& e) {untested();
       error(bWARNING, long_label() + ": " + e.message());
+    }catch (Exception& e) {
+      delete c;
+      throw e;
     }
+    attach_common(c);
   }else{
   }
 
@@ -615,7 +587,7 @@ void COMPONENT::precalc_last()
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     try {
-      c->precalc_last(scope());
+      c->precalc_last(scope()->params());
     }catch (Exception_Precalc& e) {
       error(bWARNING, long_label() + ": " + e.message());
     }catch (Exception& e) {
@@ -679,8 +651,8 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
 {
   set_label(Label);
   set_owner(Owner);
-  obsolete_set_value(Value);
   attach_common(Common);
+  obsolete_set_value(Value);
 
   assert(node_count <= net_nodes());
   std::copy_n(Nodes, node_count, &n_(0));
@@ -753,63 +725,64 @@ double COMPONENT::my_mfactor() const
 int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(int idx = set_hsparam(Name, Value)){
-    trace3("COMPONENT::spbn", Name, Value, idx);
-    return idx-1;
+    trace3("COMPONENT::spbn hs", Name, Value, idx);
+    return param_count() - sysparams_count + idx - 1;
   }else if (!has_common()) { itested();
-    return CARD::set_param_by_name(Name, Value) + sysparams_count;
+    return CARD::set_param_by_name(Name, Value);
   }else if(!common()->is_shared()) {
     // it's us!
-    return mutable_common()->set_param_by_name(Name, Value) + sysparams_count;
+    return mutable_common()->set_param_by_name(Name, Value);
   }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     int index = c->set_param_by_name(Name, Value);
     attach_common(c);
-    return index + sysparams_count;
+    return index;
   }
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_param_by_index(int I, std::string& Value, int offset)
 {
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
-  if( I < sysparams_count ){
-    hsparam().set_by_index(I, Value);
-  }else if (!has_common()) { untested();
-  }else if(!common()->is_shared()) { untested();
+  if( i>=0 && i < sysparams_count ){
+    hsparam().set_by_index(i, Value);
+  }else if (!has_common()) {
+    throw Exception_Too_Many(I+1, 1, offset);
+  }else if(!common()->is_shared()) {
     // it's us!
-    mutable_common()->set_param_by_index(i, Value, offset);
-  }else{ untested();
+    mutable_common()->set_param_by_index(I, Value, offset);
+  }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
-    c->set_param_by_index(i, Value, offset);
+    c->set_param_by_index(I, Value, offset);
     attach_common(c);
   }
 }
 /*--------------------------------------------------------------------------*/
 bool COMPONENT::param_is_printable(int I)const
 {
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
-  if( I < sysparams_count ){
+  if( i>=0 && i < sysparams_count ){
     if(_hsparam){
-      return _hsparam->is_printable(I);
+      return _hsparam->is_printable(i);
     }else{
       return false;
     }
   }else if (has_common()) {
-    return common()->param_is_printable(i);
+    return common()->param_is_printable(I);
   }else{
-    return CARD::param_is_printable(i);
+    return CARD::param_is_printable(I);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMPONENT::param_name(int I)const
 {
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
   assert(sysparams_count == 8);
-  switch (I) {
+  switch (i) {
   case 0: return "$mfactor";
   case 1:itested(); return "$xposition";
   case 2:itested(); return "$yposition";
@@ -821,49 +794,48 @@ std::string COMPONENT::param_name(int I)const
   // case 7:untested(); return "$nflip"; // 'n' for "normal"
   default:
     if (has_common()) {
-      return common()->param_name(i);
-      return to_string(i) + common()->param_name(i);
+      return common()->param_name(I);
     }else{itested();
-      return CARD::param_name(i);
+      return CARD::param_name(I);
     }
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMPONENT::param_name(int I, int j)const
 {itested();
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
-  if(I < sysparams_count && j) {itested();
+  if(i>=0 && i < sysparams_count && j) {itested();
     return "";
-  }else if(I < sysparams_count) {itested();
-    return param_name(i);
+  }else if(i >= sysparams_count) {itested();
+    return param_name(I);
   }else if (has_common()) {untested();
-    return common()->param_name(i,j);
+    return common()->param_name(I,j);
   }else{ untested();
     if (j == 0) { untested();
-      return param_name(i);
+      return param_name(I);
     }else if (i >= CARD::param_count()) {
       return "";
     }else{untested();
-      return CARD::param_name(i,j);
+      return CARD::param_name(I,j);
     }
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMPONENT::param_value(int I)const
 {
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
-  if(I>=0 && I < sysparams_count) {
+  if(i>=0 && i < sysparams_count) {
     if(_hsparam){
-      return _hsparam->param_value(I);
+      return _hsparam->param_value(i);
     }else{itested();
       return "";
     }
   }else if (has_common()) {
-    return common()->param_value(i);
+    return common()->param_value(I);
   }else{ untested();
-    return CARD::param_value(i);
+    return CARD::param_value(I);
   }
 }
 /*--------------------------------------------------------------------------*/

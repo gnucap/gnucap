@@ -25,8 +25,9 @@
 //testing=script 2016.03.25
 #include "globals.h"
 #include "u_lang.h"
-#include "e_model.h" 
+#include "e_model.h"
 #include "bm.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_BASE : public EVAL_BM_ACTION_BASE {
 protected:
@@ -46,7 +47,7 @@ protected: // override virtual
   COMMON_COMPONENT* clone()const override = 0;
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
-  void		precalc_last(const CARD_LIST*) override;
+  void		precalc_last(const PARAM_LIST*) override;
   void  	expand(const COMPONENT*) override;
   void		tr_eval(ELEMENT*)const override;
   std::string	name()const override	{untested();return modelname().c_str();}
@@ -67,7 +68,7 @@ private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
   COMMON_COMPONENT* clone()const override{return new EVAL_BM_SEMI_CAPACITOR(*this);}
   void  	expand(const COMPONENT*)override;
-  void		precalc_last(const CARD_LIST*)override;
+  void		precalc_last(const PARAM_LIST*)override;
 };
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_RESISTOR : public EVAL_BM_SEMI_BASE {
@@ -82,7 +83,7 @@ private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
   COMMON_COMPONENT* clone()const override {return new EVAL_BM_SEMI_RESISTOR(*this);}
   void  	expand(const COMPONENT*)override;
-  void		precalc_last(const CARD_LIST*)override;
+  void		precalc_last(const PARAM_LIST*)override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -193,7 +194,7 @@ bool EVAL_BM_SEMI_BASE::operator==(const COMMON_COMPONENT& x)const
     && _length == p->_length
     && _width == p->_width
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;
@@ -204,12 +205,15 @@ void EVAL_BM_SEMI_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* la
   assert(lang);
   o << modelname();
   if (_value.has_hard_value()) {
-    o << " " << _value;
+    o << " ";
+    EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
+    print_pair(o, lang, "l", _length, _length.has_hard_value());
+    print_pair(o, lang, "w", _width, _width.has_hard_value());
   }else{
+    print_pair(o, lang, "l", _length, _length.has_hard_value());
+    print_pair(o, lang, "w", _width, _width.has_hard_value());
+    EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
   }
-  print_pair(o, lang, "l", _length, _length.has_hard_value());
-  print_pair(o, lang, "w", _width, _width.has_hard_value());
-  EVAL_BM_ACTION_BASE::print_common_obsolete_callback(o, lang);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::expand(const COMPONENT* d)
@@ -218,7 +222,7 @@ void EVAL_BM_SEMI_BASE::expand(const COMPONENT* d)
   attach_model(d);
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_BASE::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_SEMI_BASE::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
   EVAL_BM_ACTION_BASE::precalc_last(Scope);
@@ -260,7 +264,7 @@ bool EVAL_BM_SEMI_CAPACITOR::operator==(const COMMON_COMPONENT& x)const
     p = dynamic_cast<const EVAL_BM_SEMI_CAPACITOR*>(&x);
   bool rv = p
     && EVAL_BM_SEMI_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;
@@ -278,7 +282,7 @@ void EVAL_BM_SEMI_CAPACITOR::expand(const COMPONENT* d)
   }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_CAPACITOR::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_SEMI_CAPACITOR::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
   EVAL_BM_SEMI_BASE::precalc_last(Scope);
@@ -289,7 +293,7 @@ void EVAL_BM_SEMI_CAPACITOR::precalc_last(const CARD_LIST* Scope)
   double eff_width = width - m->_narrow;
   double eff_length = _length - m->_narrow;
   _va_lue = m->_cj * eff_length * eff_width + 2. * m->_cjsw * (eff_length + eff_width);
-  double tempdiff = (_temp_c - m->_tnom_c);
+  double tempdiff = (temp_c() - m->_tnom_c);
   _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (eff_width <= 0.) {untested();
@@ -308,7 +312,7 @@ bool EVAL_BM_SEMI_RESISTOR::operator==(const COMMON_COMPONENT& x)const
     p = dynamic_cast<const EVAL_BM_SEMI_RESISTOR*>(&x);
   bool rv = p
     && EVAL_BM_SEMI_BASE::operator==(x);
-  if (rv) {untested();
+  if (rv) {
   }else{
   }
   return rv;
@@ -326,7 +330,7 @@ void EVAL_BM_SEMI_RESISTOR::expand(const COMPONENT* d)
   }
 }
 /*--------------------------------------------------------------------------*/
-void EVAL_BM_SEMI_RESISTOR::precalc_last(const CARD_LIST* Scope)
+void EVAL_BM_SEMI_RESISTOR::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
   EVAL_BM_SEMI_BASE::precalc_last(Scope);
@@ -345,7 +349,7 @@ void EVAL_BM_SEMI_RESISTOR::precalc_last(const CARD_LIST* Scope)
   }else{untested();
     _va_lue = BIGBIG;
   }
-  double tempdiff = (_temp_c - m->_tnom_c);
+  double tempdiff = (temp_c() - m->_tnom_c);
   _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (has_hard_value(m->_rsh)) {
@@ -448,10 +452,10 @@ void MODEL_SEMI_BASE::precalc_first()
   const CARD_LIST* s = scope();
   assert(s);
 
-  _narrow.e_val(_default_narrow, s);
-  _defw.e_val(_default_defw, s);
-  _tc1.e_val(_default_tc1, s);
-  _tc2.e_val(_default_tc2, s);
+  _narrow.e_val(_default_narrow, s->params());
+  _defw.e_val(_default_defw, s->params());
+  _tc1.e_val(_default_tc1, s->params());
+  _tc2.e_val(_default_tc2, s->params());
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -526,8 +530,8 @@ void MODEL_SEMI_CAPACITOR::precalc_first()
   const CARD_LIST* s = scope();
   assert(s);
 
-  _cj.e_val(_default_cj, s);
-  _cjsw.e_val(_default_cjsw, s);
+  _cj.e_val(_default_cj, s->params());
+  _cjsw.e_val(_default_cjsw, s->params());
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -592,7 +596,8 @@ void MODEL_SEMI_RESISTOR::precalc_first()
 {
   MODEL_SEMI_BASE::precalc_first();
 
-  const CARD_LIST* par_scope = scope();
+  assert(scope());
+  const PARAM_LIST* par_scope = scope()->params();
   assert(par_scope);
 
   _rsh.e_val(_default_rsh, par_scope);

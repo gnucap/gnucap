@@ -158,6 +158,7 @@ bool DEV_CAPACITANCE::do_tr()
 /*--------------------------------------------------------------------------*/
 void DEV_CAPACITANCE::do_ac()
 {
+  trace1("DEV_CAPACITANCE::do_ac", using_ac_eval());
   if (using_ac_eval()) {
     ac_eval();
   }else{

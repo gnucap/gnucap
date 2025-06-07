@@ -60,10 +60,6 @@ enum {CC_STATIC=27342}; // mid-sized arbitrary positive int
 class INTERFACE COMMON_COMPONENT : public CKT_BASE {
   mutable COMMON_COMPONENT* _next{nullptr};
 protected: // probably obsolete
-  PARAMETER<double>	_tnom_c;  // specification temperature
-  PARAMETER<double>	_dtemp;   // rise over enclosing temperature
-  PARAMETER<double>	_temp_c;  // actual temperature of device
-  PARAMETER<double>	_value; // not counted in param_count
   std::string	_modelname;
 private:
   mutable const MODEL_CARD* _model;
@@ -95,9 +91,9 @@ public:
   virtual bool use_obsolete_callback_parse()const {return false;}
   virtual bool use_obsolete_callback_print()const {return false;}
   virtual void parse_common_obsolete_callback(CS&);
-  virtual void print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
+  virtual void print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const { }
   virtual bool has_parse_params_obsolete_callback()const {return false;}
-  virtual bool is_trivial()const {return false;}
+  virtual bool is_trivial()const {untested(); return false;} // obsolete
 
   virtual bool param_is_printable(int)const;
   virtual std::string param_name(int)const;
@@ -106,19 +102,19 @@ public:
   virtual int  set_param_by_name(std::string, std::string);
   int Set_param_by_name(std::string, std::string); //BUG// see implementation
   virtual void set_param_by_index(int, std::string&, int);
-  virtual int param_count()const {return 3;}
+  virtual int param_count()const { return 0; }
 public:
-  virtual void precalc_first(const CARD_LIST*)	{}
+  virtual void precalc_first(const PARAM_LIST*)	{}
   virtual void expand(const COMPONENT*)		{}
   virtual COMMON_COMPONENT* deflate()		{return this;}
-  virtual void precalc_last(const CARD_LIST*);
+  virtual void precalc_last(const PARAM_LIST*);
 
   virtual void	tr_eval(ELEMENT*)const;
   virtual void	ac_eval(ELEMENT*)const;
   virtual TIME_PAIR tr_review(COMPONENT*)const {return TIME_PAIR(NEVER,NEVER);}
   virtual void  tr_accept(COMPONENT*)const	{}
   virtual bool	has_tr_eval()const	{untested(); return false;}
-  virtual bool	has_ac_eval()const	{untested(); return false;}
+  virtual bool	has_ac_eval()const	{ return false;}
 
   virtual bool	parse_numlist(CS&);
   virtual bool	parse_params_obsolete_callback(CS&);
@@ -131,8 +127,11 @@ public:
   std::string	      modelname()const	{return _modelname;}
   const MODEL_CARD*   model()const	{assert(_model); return _model;}
   bool		      has_model()const	{return _model;}
-  void set_value(double v) {_value = v;}
-  const PARAMETER<double>& value()const {return _value;}
+
+public: // value. is this needed?
+  virtual double value()const { unreachable(); return NOT_VALID; }
+  virtual bool has_value()const { return false; }
+
 private:
   bool parse_param_list(CS&);
 };
@@ -176,7 +175,7 @@ public:	// "elaborate"
   void	precalc_first() override;
   void	expand() override;
   void	precalc_last() override;
-  virtual bool is_valid()const	{return true;}
+  virtual int is_valid()const	{return 1;}
   //--------------------------------------------------------------------
 public:	// dc-tran
   void      tr_iwant_matrix() override;

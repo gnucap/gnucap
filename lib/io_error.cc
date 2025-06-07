@@ -47,12 +47,12 @@ Exception_CS::Exception_CS(const std::string& Message, const CS& cmd)
 }
 /*--------------------------------------------------------------------------*/
 const std::string Exception_CS::message()const
-{itested();
+{
   std::string s;
-  if (_cursor < 40) {itested();
+  if (_cursor < 40) {
     s = _cmd.substr(0,60)
       + '\n' + std::string(_cursor, ' ') + "^ ? " + Exception::message();
-  }else{itested();
+  }else{untested();
     s = "... " + _cmd.substr(_cursor-36, 56)
       + "\n                                        ^ ? " + Exception::message();
   }

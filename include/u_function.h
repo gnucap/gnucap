@@ -25,7 +25,7 @@
 #define U_FUNCTION_H
 #include "e_base.h"
 /*--------------------------------------------------------------------------*/
-class CARD_LIST;
+class PARAM_LIST;
 class Expression;
 /*--------------------------------------------------------------------------*/
 class FUNCTION : public CKT_BASE {
@@ -36,7 +36,7 @@ class FUNCTION : public CKT_BASE {
   //BUG//needs constructors
   //BUG//need label support
 public:
-  virtual std::string eval(CS&, const CARD_LIST*)const;
+  virtual std::string eval(CS&, const PARAM_LIST*)const;
   virtual void stack_op(Expression*)const;
 };
 /*--------------------------------------------------------------------------*/

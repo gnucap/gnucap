@@ -66,8 +66,8 @@ bool EVAL_BM_COMPLEX::operator==(const COMMON_COMPONENT& x)const
   bool rv = p
     && _value == p->_value
     && EVAL_BM_ACTION_BASE::operator==(x);
-  if (rv) { untested();
-    untested();
+  if (rv) {
+  }else{
   }
   return rv;
 }
