@@ -176,7 +176,7 @@ public:	// "elaborate"
   void	precalc_first() override;
   void	expand() override;
   void	precalc_last() override;
-  virtual bool is_valid()const	{return true;}
+  virtual int is_valid()const	{return 1;}
   //--------------------------------------------------------------------
 public:	// dc-tran
   void      tr_iwant_matrix() override;
