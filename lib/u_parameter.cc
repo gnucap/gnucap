@@ -304,7 +304,7 @@ void PARAM_INSTANCE::PARAM_ANY::lookup_solve(const PARAM_LIST* scope) const
 
   if (_v) {
     // OK
-  }else{untested();
+  }else{
     Base const* b = scope->deep_lookup(_s).e_val(nullptr, scope);
     if(b && !b->is_NA()){ untested();
       error(bWARNING, "parameter " + _s +  "  specified\n");
@@ -322,7 +322,7 @@ void PARAM_INSTANCE::PARAM_ANY::lookup_solve(const PARAM_LIST* scope) const
 Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const PARAM_LIST*
     scope, int recurse) const
 {
-  if (_s == "") {untested();
+  if (_s == "") {
     delete _v;
     _v = nullptr;
     // blank string means to use default value

@@ -30,7 +30,6 @@
 #include "io_.h"
 #include "m_expression.h"
 #include "m_base_vams.h"
-#include "e_cardlist.h" // needed for free e_val (legacy)
 /*--------------------------------------------------------------------------*/
 class LANGUAGE;
 /*--------------------------------------------------------------------------*/
@@ -244,22 +243,6 @@ void e_val(PARAMETER<T>* p, const T& def, const PARAM_LIST* scope)
 {
   assert(p);
   p->e_val(def, scope);
-}
-
-template <class T>
-void e_val(PARAMETER<T>* p, const PARAMETER<T>& def, const CARD_LIST* scope)
-{
-  assert(p);
-  assert(scope);
-  p->e_val(def, scope->params());
-}
-
-template <class T>
-void e_val(PARAMETER<T>* p, const T& def, const CARD_LIST* scope)
-{
-  assert(p);
-  assert(scope);
-  p->e_val(def, scope->params());
 }
 
 #if 0
@@ -621,13 +604,6 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const PARAM_LIST* scope, int r
     // start with # means we have a final value
   }
   return &_v;
-}
-/*--------------------------------------------------------------------------*/
-template <class T>
-T PARAMETER<T>::e_val(const T& Def, const CARD_LIST* scope, int recurse)const
-{
-  assert(scope);
-  return e_val(Def, scope->params(), recurse);
 }
 /*--------------------------------------------------------------------------*/
 template <>

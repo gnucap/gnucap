@@ -26,6 +26,7 @@
 #include "u_prblst.h"
 #include "u_cardst.h"
 #include "e_elemnt.h"
+#include "e_cardlist.h"
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 namespace {

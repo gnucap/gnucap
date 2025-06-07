@@ -25,6 +25,7 @@
 #ifndef E_SUBCKT_H
 #define E_SUBCKT_H
 #include "e_compon.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 class BASE_SUBCKT : public COMPONENT {
 protected:

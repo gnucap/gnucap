@@ -23,9 +23,11 @@
  */
 //testing=script 2014.07.04
 #include "u_lang.h"
+#include "u_nodemap.h"
+#include "u_parameter.h"
 #include "e_model.h"
 #include "e_elemnt.h"
-#include "u_nodemap.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),

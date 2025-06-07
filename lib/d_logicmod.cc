@@ -26,6 +26,7 @@
  */
 //testing=script 2006.07.17
 #include "e_logicmod.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 int MODEL_LOGIC::_count = -1; // there is one in e_node.cc, and the dispatcher
 /*--------------------------------------------------------------------------*/

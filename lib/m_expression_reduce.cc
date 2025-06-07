@@ -501,11 +501,6 @@ void Expression::reduce_copy(const Expression& Proto)
   }
 }
 /*--------------------------------------------------------------------------*/
-Expression::Expression(const Expression& Proto, const CARD_LIST* Scope)
-  : Expression(Proto, Scope?Scope->params():NULL)
-{
-}
-/*--------------------------------------------------------------------------*/
 Expression::Expression(const Expression& Proto, const PARAM_LIST* Scope)
   :_scope(Scope)
 {

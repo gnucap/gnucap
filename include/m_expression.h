@@ -27,7 +27,6 @@
 #include "m_base_vams.h"
 /*--------------------------------------------------------------------------*/
 //class Symbol_Table;
-class CARD_LIST;
 class PARAM_LIST;
 class Expression;
 /*--------------------------------------------------------------------------*/
@@ -244,7 +243,6 @@ private: // expression-reduce.cc
   void reduce_copy(const Expression&);
 public:
   explicit Expression(const Expression&, const PARAM_LIST*);
-  explicit Expression(const Expression&, const CARD_LIST*);
 public: // other
   bool as_bool()const {untested();return (!is_empty() && back()->data());}
   double eval()const { itested();

@@ -24,6 +24,7 @@
 //testing=script 2006.07.12
 #include "e_compon.h"
 #include "e_model.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 MODEL_CARD::MODEL_CARD(const COMPONENT* p)
   :CARD(),

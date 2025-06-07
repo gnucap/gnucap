@@ -21,10 +21,11 @@
  */
 //testing=script,sparse 2006.07.17
 #include "globals.h"
-#include "e_elemnt.h"
 #include "u_cardst.h"
 #include "c_comand.h"
-
+#include "e_elemnt.h"
+#include "e_cardlist.h"
+/*--------------------------------------------------------------------------*/
 extern const int swp_type[];
 extern const int swp_count[], swp_steps[];
 extern const int swp_nest;

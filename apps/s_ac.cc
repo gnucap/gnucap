@@ -27,6 +27,7 @@
 #include "u_status.h"
 #include "u_parameter.h"
 #include "u_prblst.h"
+#include "e_cardlist.h"
 #include "s__.h"
 /*--------------------------------------------------------------------------*/
 namespace {

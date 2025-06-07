@@ -25,6 +25,7 @@
 #ifndef E_CARDLIST_H
 #define E_CARDLIST_H
 #include "md.h"
+#include "u_parameter.h"
 /*--------------------------------------------------------------------------*/
 // defined here
 class CARD_LIST;
@@ -171,6 +172,30 @@ inline CARD_LIST::fat_iterator findbranch(CS& cmd, CARD_LIST* cl)
 {
   assert(cl);
   return findbranch(cmd, CARD_LIST::fat_iterator(cl, cl->begin()));
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void e_val(PARAMETER<T>* p, const PARAMETER<T>& def, const CARD_LIST* scope)
+{
+  assert(p);
+  assert(scope);
+  p->e_val(def, scope->params());
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void e_val(PARAMETER<T>* p, const T& def, const CARD_LIST* scope)
+{
+  assert(p);
+  assert(scope);
+  p->e_val(def, scope->params());
+}
+/*--------------------------------------------------------------------------*/
+// used in legacy code.
+template <class T>
+T PARAMETER<T>::e_val(const T& Def, const CARD_LIST* scope, int recurse)const
+{
+  assert(scope);
+  return e_val(Def, scope->params(), recurse);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

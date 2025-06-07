@@ -24,8 +24,9 @@
  */
 //testing=script 2006.07.10
 #include "u_time_pair.h"
-#include "e_node.h"
 #include "u_nodemap.h"
+#include "e_cardlist.h"
+#include "e_node.h"
 #include "e_model.h"
 #include "m_union.h"
 /*--------------------------------------------------------------------------*/
