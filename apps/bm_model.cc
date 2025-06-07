@@ -142,7 +142,6 @@ void EVAL_BM_MODEL::expand(const COMPONENT* d)
   // link to the real one
   // later, a "deflate" will push it down to proper place.
 
-  trace1("EVAL_BM_MODEL::expand", modelname());
   c->set_modelname(modelname());
   CS args(CS::_STRING, _arglist);
   c->parse_common_obsolete_callback(args);

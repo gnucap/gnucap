@@ -69,7 +69,7 @@ private: // override virtual
 EVAL_BM_COND::EVAL_BM_COND(int c)
   :EVAL_BM_BASE(c)
 {
-  std::fill_n(_func, sCOUNT, static_cast<COMMON_COMPONENT*>(0));
+  std::fill_n(_func, sCOUNT, nullptr);
   std::fill_n(_set, sCOUNT, false);
 }
 /*--------------------------------------------------------------------------*/
@@ -77,7 +77,7 @@ EVAL_BM_COND::EVAL_BM_COND(const EVAL_BM_COND& p)
   :EVAL_BM_BASE(p)
 {
   for (int i=0; i<sCOUNT; ++i) {
-    _func[i] = 0;
+    _func[i] = nullptr;
     attach_common(p._func[i], &(_func[i]));
     _set[i]  = p._set[i];
   }
@@ -257,9 +257,11 @@ void EVAL_BM_COND::precalc_first(const CARD_LIST* Scope)
   for (int i = 1; i < sCOUNT; ++i) {
     assert(_func[i]);
     if (_func[i] != did_this) {
-      _func[i]->precalc_first(Scope);
+      COMMON_COMPONENT* cl = _func[i]->clone();
+      cl->precalc_first(Scope);
+      attach_common(cl, &_func[i]);
       did_this = _func[i];
-    }else{
+    }else{itested();
       // already did
     }
   }
@@ -275,7 +277,9 @@ void EVAL_BM_COND::precalc_last(const CARD_LIST* Scope)
   for (int i = 1; i < sCOUNT; ++i) {
     assert(_func[i]);
     if (_func[i] != did_this) {
-      _func[i]->precalc_last(Scope);
+      COMMON_COMPONENT* cl = _func[i]->clone();
+      cl->precalc_last(Scope);
+      attach_common(cl, &_func[i]);
       did_this = _func[i];
     }else{itested();
       // already did

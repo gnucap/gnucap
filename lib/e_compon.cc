@@ -545,11 +545,17 @@ void COMPONENT::precalc_first()
   }
   CARD::precalc_first();
   if (has_common()) {
+    COMMON_COMPONENT* c = common()->clone();
+    assert(c);
     try {
-      mutable_common()->precalc_first(scope());
-    }catch (Exception_Precalc& e) {untested();
+      c->precalc_first(scope());
+    }catch (Exception_Precalc& e) {
       error(bWARNING, long_label() + ": " + e.message());
+    }catch (Exception& e) {
+      delete c;
+      throw e;
     }
+    attach_common(c);
   }else{
   }
 
