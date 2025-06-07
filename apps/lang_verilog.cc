@@ -201,7 +201,7 @@ void LANG_VERILOG::parse_args_instance(CS& cmd, CARD* x)
 	  std::string value = cmd.ctos(",)", "", "");
 	  x->set_param_by_index(Index, value, 0/*offset*/);
 	  store_attributes(attribs,  x->param_id_tag(Index));
-	}catch (Exception_Too_Many& e) {untested();
+	}catch (Exception_Too_Many& e) {
 	  cmd.warn(bDANGER, here, e.message());
 	}catch (Exception_Clash&) {untested();
 	  unreachable();

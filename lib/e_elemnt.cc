@@ -89,7 +89,7 @@ int ELEMENT::set_param_by_name(std::string Name, std::string Value)
 /*--------------------------------------------------------------------------*/
 void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
 {
-  if (has_common()) {itested();
+  if (has_common()) {
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     c->set_param_by_index(i, Value, offset);
@@ -98,8 +98,14 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
     switch (i) {
     case 0:
       _value = Value; break;
+    case 1:  // COMMON_COMPONENT::_tnom_c;
+    case 2:  // COMMON_COMPONENT::_dtemp;
+    case 3:  // COMMON_COMPONENT::_temp_c;
+      COMPONENT::set_param_by_index(i, Value, offset);
+      break;
     default:
-      COMPONENT::set_param_by_index(i-1, Value, offset+1);
+      incomplete();
+      COMPONENT::set_param_by_index(i+3, Value, offset);
     }
   }
 }

@@ -180,7 +180,8 @@ static int count_ports(CS& cmd, int maxnodes, int minnodes, int leave_tail, int 
 	num_nodes = i - leave_tail - 1;
       }
       break;
-    }else{
+    }else if (cmd.skip1b(';')) { untested();
+      // need test
     }
   }
   if (num_nodes < start) {untested();

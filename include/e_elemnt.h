@@ -160,8 +160,8 @@ protected:
     if(has_common()) {
       return COMPONENT::param_count();
     }else{
-      // add /*value*/
-      return 1 + COMPONENT::param_count();
+      // add common params (BUG?) and value
+      return 3 + 1 + COMPONENT::param_count();
     }
   }
   int  set_param_by_name(std::string, std::string)override;

@@ -753,63 +753,64 @@ double COMPONENT::my_mfactor() const
 int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(int idx = set_hsparam(Name, Value)){
-    trace3("COMPONENT::spbn", Name, Value, idx);
-    return idx-1;
+    trace3("COMPONENT::spbn hs", Name, Value, idx);
+    return param_count() - sysparams_count + idx - 1;
   }else if (!has_common()) { itested();
-    return CARD::set_param_by_name(Name, Value) + sysparams_count;
+    return CARD::set_param_by_name(Name, Value);
   }else if(!common()->is_shared()) {
     // it's us!
-    return mutable_common()->set_param_by_name(Name, Value) + sysparams_count;
+    return mutable_common()->set_param_by_name(Name, Value);
   }else{
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
     int index = c->set_param_by_name(Name, Value);
     attach_common(c);
-    return index + sysparams_count;
+    return index;
   }
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::set_param_by_index(int I, std::string& Value, int offset)
 {
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
-  if( I < sysparams_count ){
-    hsparam().set_by_index(I, Value);
-  }else if (!has_common()) { untested();
+  if( i>=0 && i < sysparams_count ){
+    hsparam().set_by_index(i, Value);
+  }else if (!has_common()) {
+    throw Exception_Too_Many(I+1, 1, offset);
   }else if(!common()->is_shared()) { untested();
     // it's us!
-    mutable_common()->set_param_by_index(i, Value, offset);
+    mutable_common()->set_param_by_index(I, Value, offset);
   }else{ untested();
     COMMON_COMPONENT* c = common()->clone();
     assert(c);
-    c->set_param_by_index(i, Value, offset);
+    c->set_param_by_index(I, Value, offset);
     attach_common(c);
   }
 }
 /*--------------------------------------------------------------------------*/
 bool COMPONENT::param_is_printable(int I)const
 {
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
-  if( I < sysparams_count ){
+  if( i>=0 && i < sysparams_count ){
     if(_hsparam){
-      return _hsparam->is_printable(I);
+      return _hsparam->is_printable(i);
     }else{
       return false;
     }
   }else if (has_common()) {
-    return common()->param_is_printable(i);
+    return common()->param_is_printable(I);
   }else{
-    return CARD::param_is_printable(i);
+    return CARD::param_is_printable(I);
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMPONENT::param_name(int I)const
 {
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
   assert(sysparams_count == 8);
-  switch (I) {
+  switch (i) {
   case 0: return "$mfactor";
   case 1:itested(); return "$xposition";
   case 2:itested(); return "$yposition";
@@ -821,49 +822,48 @@ std::string COMPONENT::param_name(int I)const
   // case 7:untested(); return "$nflip"; // 'n' for "normal"
   default:
     if (has_common()) {
-      return common()->param_name(i);
-      return to_string(i) + common()->param_name(i);
+      return common()->param_name(I);
     }else{itested();
-      return CARD::param_name(i);
+      return CARD::param_name(I);
     }
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMPONENT::param_name(int I, int j)const
 {itested();
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
-  if(I < sysparams_count && j) {itested();
+  if(i>=0 && i < sysparams_count && j) {itested();
     return "";
-  }else if(I < sysparams_count) {itested();
-    return param_name(i);
+  }else if(i >= sysparams_count) {itested();
+    return param_name(I);
   }else if (has_common()) {untested();
-    return common()->param_name(i,j);
+    return common()->param_name(I,j);
   }else{ untested();
     if (j == 0) { untested();
-      return param_name(i);
+      return param_name(I);
     }else if (i >= CARD::param_count()) {
       return "";
     }else{untested();
-      return CARD::param_name(i,j);
+      return CARD::param_name(I,j);
     }
   }
 }
 /*--------------------------------------------------------------------------*/
 std::string COMPONENT::param_value(int I)const
 {
-  int i = I - sysparams_count;
+  int i = I - param_count() + sysparams_count;
 
-  if(I>=0 && I < sysparams_count) {
+  if(i>=0 && i < sysparams_count) {
     if(_hsparam){
-      return _hsparam->param_value(I);
+      return _hsparam->param_value(i);
     }else{itested();
       return "";
     }
   }else if (has_common()) {
-    return common()->param_value(i);
+    return common()->param_value(I);
   }else{ untested();
-    return CARD::param_value(i);
+    return CARD::param_value(I);
   }
 }
 /*--------------------------------------------------------------------------*/
