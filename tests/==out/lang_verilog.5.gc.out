@@ -1,7 +1,10 @@
+ wireww; // no match
+ ^ ? wireww: no match
 module test (.p(x),.q(y));
-electrical x, y;
-inout x, y;
-wire w;
+ electrical x, y;
+ inout x;
+ inout y;
+ wire w;
 resistor #() r1 (.p(a),.n(b));
 endmodule // test
 
