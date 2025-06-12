@@ -1,0 +1,13 @@
+
+option list
+verilog
+
+module aaa (c,d);
+parameter y,x,a,b;
+endmodule;
+
+module bbb (e,f);
+aaa #((*x*).x(1), (*a*).a(2), (*b*).b(3), (*y*).y(4)) a1(a,b);
+endmodule;
+	
+list
