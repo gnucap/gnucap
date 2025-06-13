@@ -128,7 +128,7 @@ public:
     }
   }
   void	set_default(const T& v)		{_v = v; _s = "";}
-  void	set_fixed(const T& v)		{_v = v; _s = "#";}
+  void	set_fixed(const T& v)		{ untested();_v = v; _s = "#";}
   PARAMETER& operator=(Base const* v) override {
     value_type* x = _v.assign(v);
     assert(x);
@@ -172,7 +172,7 @@ public:
   //  return !(*this == v);
   //}
 protected:
-  // virtual value_type not_input()const { return value_type().not_input(); }
+  // virtual value_type not_input()const { untested(); return value_type().not_input(); }
   Base const* e_val_(const Base* def, const PARAM_LIST* scope, int recursion=0)const override;
   friend class PARAM_INSTANCE;
 private:
@@ -232,7 +232,7 @@ void set_default(T* p, const T& v)
 
 template <class T>
 void e_val(PARAMETER<T>* p, const PARAMETER<T>& def, const PARAM_LIST* scope)
-{
+{itested();
   assert(p);
   p->e_val(def, scope);
 }
@@ -303,7 +303,7 @@ public:
     p.base()->pclone(&_mem);
     return *this;
   }
- // PARAM_INSTANCE& operator=(Base const&b) {
+ // PARAM_INSTANCE& operator=(Base const&b) { untested();
  //   assert(base());
  //   *base() = &b;
  //   return *this;
@@ -325,20 +325,20 @@ public:
     return *this;
   }
   void set_fixed(Base const* v) {
-    if(dynamic_cast<PARAM_ANY*>(base())) {
+    if(dynamic_cast<PARAM_ANY*>(base())) {itested();
       // BUG?
-      if(dynamic_cast<Float const*>(v)){
+      if(dynamic_cast<Float const*>(v)){itested();
 	*this = PARAMETER<Float>();
 	*base() = v;
-      }else if(dynamic_cast<Integer const*>(v)){
+      }else if(dynamic_cast<Integer const*>(v)){ untested();
 	*this = PARAMETER<Integer>();
 	*base() = v;
-      }else{
+      }else{ untested();
 	incomplete();
       }
     }else if(dynamic_cast<PARA_BASE*>(base())) {
       *base() = v;
-    }else{
+    }else{ untested();
       *base() = v;
     }
   }
@@ -362,7 +362,7 @@ public:
     return base()->has_hard_value();
   }
   Base const* e_val(Base const* def, const PARAM_LIST* scope)const;
-  double e_val(int def, const PARAM_LIST* scope)const{untested();
+  double e_val(int def, const PARAM_LIST* scope)const{itested();
     return e_val(double(def), scope);
   }
   double e_val(double def, const PARAM_LIST* scope)const{itested();
@@ -377,67 +377,100 @@ public:
     }
     return ret;
   }
-  operator double() const{ itested();
+  operator double() const{ untested();
     // still used in Gnucsator.
     Base const* v = base()->value();
-    if(auto f = dynamic_cast<Float const*>(v)){
+    if(auto f = dynamic_cast<Float const*>(v)){ untested();
       return *f;
-    }else{
+    }else{ untested();
       return NOT_VALID;
     }
   }
   void parse(CS& cmd) {
     base()->parse(cmd);
   }
- //  operator PARAMETER<double> const&()const {
- //    if(auto d = dynamic_cast<PARAMETER<double> const*>(_data.base())){
+ //  operator PARAMETER<double> const&()const { untested();
+ //    if(auto d = dynamic_cast<PARAMETER<double> const*>(_data.base())){ untested();
  //      return *d;
  //    }else{ untested();
  //      throw Exception("not a double");
  //    }
  //  }
   PARA_BASE const* operator->()const {return base();}
-  PARA_BASE const* operator*()const {return base();}
+  PARA_BASE const* operator*()const { untested();return base();}
 }; // PARAM_INSTANCE
 /*--------------------------------------------------------------------------*/
 class INTERFACE PARAM_LIST {
 private:
-  typedef std::map<std::string, PARAM_INSTANCE> map;
+  typedef std::pair<std::string, PARAM_INSTANCE> value_type;
+  typedef std::vector<value_type> vector;
+  typedef std::map<std::string, int> map; // BUG: dup key
 public:
-  typedef map::const_iterator const_iterator;
-  typedef map::iterator iterator;
+  class const_iterator{
+    map::const_iterator _i;
+    PARAM_LIST const* _ctx{nullptr};
+  public:
+    const_iterator() = default;
+    const_iterator(const_iterator const& x) = default;
+    const_iterator(map::const_iterator const& x, PARAM_LIST const& c) : _i(x), _ctx(&c) {}
+    bool operator!=(const_iterator const& p)const {return _i!=p._i;}
+    bool operator==(const_iterator const& p)const {return _i==p._i;}
+    const_iterator& operator++(){itested();++_i; return *this;}
+    std::string const& name(){ itested();
+      assert(_ctx);
+      assert(_i->second);
+      assert(_i->second<=int(_ctx->_pv.size()));
+      return _ctx->_pv[_i->second-1].first;
+    }
+    PARAM_INSTANCE const& ref(){
+      assert(_ctx);
+      assert(_i->second);
+      assert(_i->second<=int(_ctx->_pv.size()));
+      return _ctx->_pv[_i->second-1].second;
+    }
+  };
+  class iterator{
+    map::iterator _i;
+    PARAM_LIST* _ctx{nullptr};
+  public:
+    iterator() = default;
+    iterator(iterator const& x) = default;
+    iterator(map::iterator const& x, PARAM_LIST& c) : _i(x), _ctx(&c) { untested();}
+  public:
+    bool operator!=(iterator const& p)const { untested();return _i!=p._i;}
+    bool operator==(iterator const& p)const { untested();return _i==p._i;}
+    iterator& operator++(){ untested();++_i; return *this;}
+    PARAM_INSTANCE& operator*(){ untested();assert(_ctx); return _ctx->_pv[_i->second-1].second;}
+  };
 private:
-  map _pl;
+  vector _pv;
+  map _pi;
   PARAM_LIST const* _try_again; // if you don't find it, also look here
   mutable const_iterator _previous;
   bool _is_verilog{false};
 public:
   explicit PARAM_LIST() :_try_again(nullptr) {}
-  explicit PARAM_LIST(const PARAM_LIST& p) :_pl(p._pl),
-     _try_again(p._try_again), _is_verilog(p._is_verilog) {}
+  explicit PARAM_LIST(const PARAM_LIST& p) : _try_again(p._try_again) { assign(p);}
   //explicit PARAM_LIST(PARAM_LIST* ta) :_try_again(ta) {untested();}
   ~PARAM_LIST() {}
-  PARAM_LIST& operator=(const PARAM_LIST& p) { itested();
-    _pl = p._pl;
-    _is_verilog = p._is_verilog;
-    return *this;
-  }
+  PARAM_LIST& operator=(const PARAM_LIST& p) {itested(); assign(p); return *this;}
   void	parse(CS& cmd);
   void	print(OMSTREAM&, LANGUAGE*)const;
   
-  size_t size()const {return _pl.size();}
-  //bool is_empty()const {untested();return _pl.empty();}
+  int size()const {assert(_pv.size()==_pi.size()); return int(_pi.size());}
+  //bool is_empty()const {untested();return _pi.empty();}
   bool	 is_printable(int)const;
   std::string name(int)const;
   std::string value(int)const;
   bool	 is_verilog()const {return _is_verilog;}
 
   void	eval_copy(PARAM_LIST const&, const PARAM_LIST*);
-  bool  operator==(const PARAM_LIST& p)const{return _pl == p._pl;}
+  bool  operator==(const PARAM_LIST& p)const{return _pv==p._pv && _pi == p._pi;}
   const PARAM_INSTANCE& deep_lookup(std::string)const;
   const PARAM_INSTANCE& operator[](std::string i)const {return deep_lookup(i);}
+  const PARAM_INSTANCE& operator[](int i)const {return _pv[i].second;}
   void set(std::string, const double&);
-  void set(std::string, const std::string&);
+  int  set(std::string, const std::string&);
   void set(std::string, const PARAM_INSTANCE&);
   void set_try_again(PARAM_LIST const* t) {_try_again = t;}
 #ifndef NDEBUG
@@ -445,12 +478,20 @@ public:
 #endif
   void set_verilog(bool x=true) {_is_verilog = x;}
 
-  iterator begin() {return _pl.begin();}
-  iterator end() {return _pl.end();}
-  iterator find(std::string const& k) { return _pl.find(k); }
-  const_iterator begin()const {itested(); return _pl.begin();}
-  const_iterator end()const { return _pl.end();}
-  const_iterator find(std::string const& k) const { return _pl.find(k); }
+  iterator begin() { untested();return iterator(_pi.begin(), *this);}
+  iterator end() { untested();return iterator(_pi.end(), *this);}
+  iterator find(std::string const& k) { untested(); return iterator(_pi.find(k), *this); }
+  const_iterator begin()const {itested(); return const_iterator(_pi.begin(), *this);}
+  const_iterator end()const { return const_iterator(_pi.end(), *this);}
+  const_iterator find(std::string const& k) const { return const_iterator(_pi.find(k), *this); }
+private:
+  PARAM_INSTANCE& ref(std::string const&);
+  PARAM_INSTANCE& at(std::string const&);
+  void assign(const PARAM_LIST& p) {
+    _pi = p._pi;
+    _pv = p._pv;
+    _is_verilog = p._is_verilog;
+  }
 };
 /*--------------------------------------------------------------------------*/
 template <>
@@ -462,7 +503,7 @@ inline bool PARAMETER<bool>::lookup_solve(const bool&, const PARAM_LIST*)const
 /*--------------------------------------------------------------------------*/
 template <class T>
 T get(Base const* t)
-{
+{ untested();
   auto f = prechecked_cast<T const*>(t);
   assert(f);
   return *f;
@@ -470,7 +511,7 @@ T get(Base const* t)
 
 // template <>
 // inline Float get<Float>(Base const* t)
-// {
+// { untested();
 //   auto f = prechecked_cast<Float const*>(t);
 //   assert(f);
 //   return *f;
@@ -485,7 +526,7 @@ inline double get<double>(Base const* t)
 }
 // template <>
 // inline Integer get<Integer>(Base const* t)
-// {
+// { untested();
 //   auto f = prechecked_cast<Integer const*>(t);
 //   assert(f);
 //   return *f;
@@ -515,7 +556,7 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const PARAM_LIST* scope)const
 
  // T v = T(reduced.eval());
   value_type const* v = def.assign(reduced.value());
-  if(v && v->is_NA()) {
+  if(v && v->is_NA()) { untested();
     delete v;
     v = nullptr;
   }else{
@@ -538,7 +579,7 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const PARAM_LIST* scope)const
     }
     trace3("los1", _s, v, ret);
     return ret;
-  }else{
+  }else{ untested();
     // no scope. silently accept default
     return def;
   }
@@ -567,7 +608,7 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const PARAM_LIST* scope, int r
 {
   trace3("PARAMETER<T>::e_val_", typeid(T).name(), _v, _s);
   if(scope) {
-  }else{
+  }else{ untested();
   }
 
   auto d = dynamic_cast<value_type const*>(Def);
@@ -585,7 +626,7 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const PARAM_LIST* scope, int r
   if (_s == "") {
     // blank string means to use default value
     _v = def;
-    if (recurse) { itested();
+    if (recurse) { untested();
       // error(bWARNING, "parameter " + _s +  " not specified, using default\n");
     }else{
     }
@@ -651,7 +692,7 @@ inline void PARAMETER<T>::parse(CS& cmd)
       }else{
 	_s = name;
       }
-      if (name == "NA") {
+      if (name == "NA") {itested();
         _s = "";
       }else{
       }

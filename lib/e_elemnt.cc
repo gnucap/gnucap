@@ -85,7 +85,7 @@ private: // param overrides, EVAL_BM_BASE?
     if(Name == _name){
       _value = Value;
       return 0;
-    }else{ untested();
+    }else{
       return EVAL_BM_BASE::set_param_by_name(Name, Value) + 1;
     }
   }
