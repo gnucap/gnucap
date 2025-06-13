@@ -68,6 +68,7 @@ CS& CS::umatch(const std::string& s)
       if (bar && (bar[-1] != '\\')) {
 	str2 = bar+1;
 	reset(start);
+	skipbl();
       }else{
 	_ok = false;
 	break;

@@ -712,7 +712,7 @@ BASE_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, BASE_SUBCKT* x)
       break;
     }else if (cmd >> "parameter ") {
       module_param.do_it(cmd, x->subckt());
-    }else if (cmd >> "wire|electrical|inout|input|output") {
+    }else if (cmd >> "wire |electrical |inout |input |output ") {
       net_decl.do_it(cmd, x->subckt());
     }else{
       new__instance(cmd, x, x->subckt());

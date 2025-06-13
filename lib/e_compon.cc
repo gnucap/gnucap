@@ -281,11 +281,11 @@ bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
-  if (has_parse_params_obsolete_callback()) {untested();
+  if (has_parse_params_obsolete_callback()) {
     std::string args(Name + "=" + Value);
     CS cmd(CS::_STRING, args); //obsolete_callback
     bool ok = parse_params_obsolete_callback(cmd); //BUG//callback
-    if (!ok) {untested();
+    if (!ok) {
       throw Exception_No_Match(Name);
     }else{itested();
     }

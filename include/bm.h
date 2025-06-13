@@ -46,7 +46,7 @@ protected: // override virtual
   bool operator==(const COMMON_COMPONENT&)const override;
   bool use_obsolete_callback_parse()const override	{return true;}
   bool use_obsolete_callback_print()const override	{ return true;}
-  bool has_parse_params_obsolete_callback()const override {untested(); return true;}
+  bool has_parse_params_obsolete_callback()const override { return true;}
   bool parse_params_obsolete_callback(CS&)override;
   bool has_tr_eval()const override	{ return false;} // ???
   bool has_ac_eval()const override	{ return true;}

@@ -87,8 +87,8 @@ void COMMON_PARAMLIST::precalc_last(const PARAM_LIST* Scope)
   // assert(Scope);
   COMMON_COMPONENT::precalc_last(Scope);
 
-  for (PARAM_LIST::iterator i = _params.begin(); i != _params.end(); ++i) {
-    i->second.e_val(nullptr, Scope);
+  for (int i=0; i<_params.size(); ++i){
+    _params[i].e_val(nullptr, Scope);
   }
 }
 /*--------------------------------------------------------------------------*/

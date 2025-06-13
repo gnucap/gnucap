@@ -49,17 +49,16 @@ void PARAM_LIST::parse(CS& cmd)
       notstd::to_lower(&Name);
     }else{itested();
     }
-    _pl[Name] = Value;
-    trace4("assigned", _pl[Name].string(), Value.string(), &_pl[Name], _pl[Name].operator->());
+    ref(Name) = Value;
   }
   cmd.check(bDANGER, "syntax error");
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::print(OMSTREAM& o, LANGUAGE* lang)const
 {
-  for (const_iterator i = _pl.begin(); i != _pl.end(); ++i) {
-    if (i->second.has_hard_value()) {
-      print_pair(o, lang, i->first, i->second);
+  for (int i=0; i<int(_pv.size()); ++i) {
+    if (_pv[i].second.has_hard_value()) {
+      print_pair(o, lang, _pv[i].first, _pv[i].second);
     }else{ untested();
     }
   }
@@ -67,41 +66,20 @@ void PARAM_LIST::print(OMSTREAM& o, LANGUAGE* lang)const
 /*--------------------------------------------------------------------------*/
 bool PARAM_LIST::is_printable(int i)const
 {
-  //BUG// ugly linear search
-  int i_try = 0;
-  for (const_iterator ii = _pl.begin(); ii != _pl.end(); ++ii) {
-    if (i_try++ == i) {
-      return ii->second.has_hard_value();
-    }else{
-    }
-  }
-  return false;
+  assert(i<int(_pv.size()));
+  return _pv[i].second.has_hard_value();
 }
 /*--------------------------------------------------------------------------*/
 std::string PARAM_LIST::name(int i)const
 {
-  //BUG// ugly linear search
-  int i_try = 0;
-  for (const_iterator ii = _pl.begin(); ii != _pl.end(); ++ii) {
-    if (i_try++ == i) {
-      return ii->first;
-    }else{
-    }
-  }
-  return "";
+  assert(i<int(_pv.size()));
+  return _pv[i].first;
 }
 /*--------------------------------------------------------------------------*/
 std::string PARAM_LIST::value(int i)const
 {
-  //BUG// ugly linear search
-  int i_try = 0;
-  for (const_iterator ii = _pl.begin(); ii != _pl.end(); ++ii) {
-    if (i_try++ == i) {
-      return ii->second.string();
-    }else{
-    }
-  }
-  return "";
+  assert(i<int(_pv.size()));
+  return _pv[i].second.string();
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)
@@ -111,16 +89,16 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)
   _try_again = p._try_again;
   _is_verilog = scope->_is_verilog;
 
-  for (const_iterator i = p._pl.begin(); i != p._pl.end(); ++i) {
+  for (auto i = p._pv.begin(); i != p._pv.end(); ++i) {
     if (i->second.has_hard_value()) {
-      auto j = _pl.find(i->first);
-      if(j == _pl.end()){
-	PARAM_INSTANCE& pi = _pl[i->first]; // create one.
+      auto j = _pi.find(i->first);
+      if(j == _pi.end()){
+	PARAM_INSTANCE& pi = ref(i->first); // create one.
 	
-	trace2("eval_copy not there", i->first, _pl.size());
+	trace2("eval_copy not there", i->first, _pi.size());
 	if(!_try_again){itested();
 	}else{
-	  auto k = _try_again->find(i->first);
+	  const_iterator k = _try_again->find(i->first);
 	  if(k == _try_again->end()){
 	    trace0("not again");
 	    // spice feature: create parameters from arglist
@@ -128,10 +106,8 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)
 	    static PARAMETER<double> f;
 	    pi = f; // what it used to be.
 	  }else{
-	    trace2("got one", i->first, k->second.string());
 	    // get type from proto
-	    pi = k->second;
-	    trace1("set type", pi.string());
+	    pi = k.ref();
 	  }
 
 	}
@@ -142,8 +118,8 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)
 	}else{
 	}
 
-      }else if(j->second.has_hard_value()) {untested();
-	j->second.set_fixed(i->second.e_val(j->second.value(), scope));
+      }else if(_pv[j->second].second.has_hard_value()) {untested();
+	_pv[j->second].second.set_fixed(i->second.e_val(_pv[j->second].second.value(), scope));
       }else{ untested();
 	// this is not needed.
       }
@@ -159,10 +135,10 @@ const PARAM_INSTANCE& PARAM_LIST::deep_lookup(std::string Name)const
     notstd::to_lower(&Name);
   }else{
   }
-  const_iterator i = _pl.find(Name);
-  if (i!=_pl.end() && i->second.has_hard_value()) {
+  const_iterator i = find(Name);
+  if (i!=end() && i.ref().has_hard_value()) {
     // found a value, return it
-    return i->second;
+    return i.ref();
   }else if (_try_again) {
     // didn't find one, look in enclosing scope
     return _try_again->deep_lookup(Name);
@@ -211,20 +187,20 @@ void PARAM_LIST::set(std::string Name, const double& Value)
   }
   Float v(Value);
   try{
-    _pl[Name].set_fixed(&v);
+    ref(Name).set_fixed(&v);
   }catch(Exception_Clash const&){ untested();
-    (_pl[Name] = "").set_fixed(&v);
+    (ref(Name) = "").set_fixed(&v);
     error(bTRACE, Name + " already set. replacing\n");
   }
 }
 /*--------------------------------------------------------------------------*/
-void PARAM_LIST::set(std::string Name, const std::string& Value)
+int PARAM_LIST::set(std::string Name, const std::string& Value)
 {
   if (OPT::case_insensitive) {
     notstd::to_lower(&Name);
   }else{
   }
-  PARAM_INSTANCE& p = _pl[Name];
+  PARAM_INSTANCE& p = ref(Name);
   if(p.exists()){
     try{
       p = Value;
@@ -236,6 +212,8 @@ void PARAM_LIST::set(std::string Name, const std::string& Value)
     trace2("PARAM_LIST::set", Name, Value);
     p = Value;
   }
+  assert(_pi[Name]);
+  return _pi[Name]-1;
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::set(std::string Name, const PARAM_INSTANCE& Value)
@@ -245,9 +223,9 @@ void PARAM_LIST::set(std::string Name, const PARAM_INSTANCE& Value)
   }else{
   }
   try{
-    _pl[Name] = Value;
+    ref(Name) = Value;
   }catch(Exception_Clash const&){ untested();
-    (_pl[Name] = "") = Value;
+    (ref(Name) = "") = Value;
     error(bTRACE, Name + " already set. replacing\n");
   }
 }
@@ -352,6 +330,28 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const PARAM_LIST*
   }
 
   return _v;
+}
+/*--------------------------------------------------------------------------*/
+PARAM_INSTANCE& PARAM_LIST::ref(std::string const& Name)
+{
+  if(int& idx = _pi[Name]){
+    assert(_pv[idx-1].first == Name);
+    return _pv[idx-1].second;
+  }else{
+    _pv.push_back(std::make_pair(Name, PARAM_INSTANCE()));
+    idx = int(_pv.size());
+    return _pv.back().second;
+  }
+}
+/*--------------------------------------------------------------------------*/
+PARAM_INSTANCE& PARAM_LIST::at(std::string const& Name)
+{ untested();
+  if(int& idx = _pi[Name]){ untested();
+    assert(_pv[idx-1].first == Name);
+    return _pv[idx-1].second;
+  }else{ untested();
+    throw std::out_of_range("");
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

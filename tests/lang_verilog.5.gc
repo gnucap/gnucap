@@ -1,11 +1,13 @@
 verilog
 
 module test(.p(x), .q(y));
-electrical x, y;
-inout x, y;
-wire w;
+ electrical x, y;
+	inout x;
+ inout y;
+ wire w;
+ wireww; // no match
 
-resistor r1(a, b);
+ resistor r1(a, b);
 endmodule;
 
 list

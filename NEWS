@@ -1,6 +1,11 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 20250***-dev
+- refactor ELEMENT commons
+- fix parameter ordering
+- bugfix net_decl parse
+
 == 20250525-dev
 - predictor for node voltages
 - support same_port device aka "net"
