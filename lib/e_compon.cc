@@ -563,7 +563,7 @@ void COMPONENT::precalc_first()
   }else{
   }
 
-  //BUG//  _mfactor must be in precalc_first
+  //BUG//  _mfactor still in precalc_first
 
 //  _mfactor.e_val(1, scope());
   if(_hsparam){
@@ -597,6 +597,16 @@ void COMPONENT::precalc_last()
     }
     attach_common(c);
   }else{
+  }
+  if(_hsparam){
+    _hsparam->precalc(scope());
+  }else{
+  }
+  if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
+    _mfactor_fixed = float(o->mfactor() * my_mfactor());
+  }else{
+    assert(!owner());
+    _mfactor_fixed = float(my_mfactor());
   }
 }
 /*--------------------------------------------------------------------------*/
