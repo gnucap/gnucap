@@ -1,35 +1,61 @@
+".options temp=1 "
+"rtemp1 2 0 t1 (w=1 l=1) "
+".model t1 r tnom=0 rsh=1 tc2=0 tc1=1 "
+"* skipping L= "
+".model t2 r tnom=0 tc1=10 "
+"rtemp2 2 0 t1 (l=2 w=1) "
+"rtemp3 2 0 t2 (.5) "
+".list "
 rtemp1 ( 2 0 ) t1(w=1 l=1)
 .model t1 r ( rsh=1 narrow=NA( 0.) defw=NA( 1.u) tc1=1 tc2=0 tnom=0)
 * skipping L= 
 .model t2 r ( rsh=NA( NA) narrow=NA( 0.) defw=NA( 1.u) tc1=10 tc2=NA( 0.) tnom=0)
 rtemp2 ( 2 0 ) t1(l=2 w=1)
 rtemp3 ( 2 0 ) t2(.5)
+".print dc r(rtemp*) temp(0) "
+".store dc r(rtemp*) temp(0) "
+".list "
 rtemp1 ( 2 0 ) t1 l= 1. w= 1.
 .model t1 r ( rsh=1 narrow=NA( 0.) defw=NA( 1.u) tc1=1 tc2=0 tnom=0)
 * skipping L= 
 .model t2 r ( rsh=NA( NA) narrow=NA( 0.) defw=NA( 1.u) tc1=10 tc2=NA( 0.) tnom=0)
 rtemp2 ( 2 0 ) t1 l= 2. w= 1.
 rtemp3 ( 2 0 ) t2  0.5
+".dc temp=2 "
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         3.         6.         10.5       2.        
+".dc "
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         2.         4.         5.5        1.        
+".dc temp=3 "
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         4.         8.         15.5       3.        
+".measure rt1 at(probe="r(rtemp1)") "
 rt1= 4.
+".measure rt2 at(probe="r(rtemp2)") "
 rt2= 8.
+".measure rt3 at(probe="r(rtemp3)") "
 rt3= 15.5
+".dc "
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         2.         4.         5.5        1.        
+".dc dtemp=10 "
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         12.        24.        55.5       11.       
+".options temperature=20 "
+".dc dtemp=0 "
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         21.        42.        100.5      20.       
+".measure rt1 at(probe="r(rtemp1)") "
 rt1= 21.
+".measure rt2 at(probe="r(rtemp2)") "
 rt2= 42.
+".measure rt3 at(probe="r(rtemp3)") "
 rt3= 100.5
+".status notime "
 Gnucap   System status
 iterations: op=0, dc=3, tran=0, fourier=0, total=18
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=1, subckt=0, model=0, total=1
 dctran density=100.0%, ac density=100.0%
+".end "
