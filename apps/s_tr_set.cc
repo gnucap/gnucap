@@ -186,7 +186,7 @@ void TRANSIENT::options(CS& Cmd)
 {
   _out = IO::mstdout;
   _out.reset(); //BUG// don't know why this is needed
-  _sim->_temp_c = OPT::temp_c;
+  _sim->_temp_k = OPT::temp_k;
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
   _sim->_uic = _cold = false;
   _trace = tNONE;
@@ -194,7 +194,7 @@ void TRANSIENT::options(CS& Cmd)
   do{
     ONE_OF
       || Get(Cmd, "c{old}",	   &_cold)
-      || Get(Cmd, "dte{mp}",	   &_sim->_temp_c,  mOFFSET, OPT::temp_c)
+      || Get(Cmd, "dte{mp}",	   &_sim->_temp_k,  mOFFSET, OPT::temp_k)
       || Get(Cmd, "dtma{x}",	   &_dtmax_in)
       || Get(Cmd, "dtmi{n}",	   &_dtmin_in)
       || Get(Cmd, "dtr{atio}",	   &_dtratio_in)
@@ -203,7 +203,8 @@ void TRANSIENT::options(CS& Cmd)
       || Get(Cmd, "sta{rt}",	   &_tstart)
       || Get(Cmd, "sto{p}",	   &_tstop)
       || Get(Cmd, "str{obeperiod}",&_tstrobe)
-      || Get(Cmd, "te{mperature}", &_sim->_temp_c)
+      || Get(Cmd, "te{mperature}", &_sim->_temp_k, mOFFSET, P_CELSIUS0)
+      || Get(Cmd, "$temp{erature}",&_sim->_temp_k)
       || Get(Cmd, "uic",	   &_sim->_uic)
       || (Cmd.umatch("tr{ace} {=}") &&
 	  (ONE_OF

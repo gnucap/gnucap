@@ -132,6 +132,9 @@ public: // value. is this needed?
   virtual double value()const { unreachable(); return NOT_VALID; }
   virtual bool has_value()const { return false; }
 
+public: // TODO: provide effective device temperature.
+  double temp_k()const{ return _sim->_temp_k; }
+
 private:
   bool parse_param_list(CS&);
 };

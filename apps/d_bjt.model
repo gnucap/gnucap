@@ -376,8 +376,8 @@ model BUILT_IN_BJT {
     }
     code_pre {
       const double reftemp = 300.15;
-      double temp_k = 
-	((has_hard_value(c->temp_c)) ? c->temp_c : d->_sim->_temp_c) + P_CELSIUS0;
+      double temp_k =
+	((has_hard_value(c->temp_c)) ? (c->temp_c + P_CELSIUS0) : c->temp_k());
       double fact1 = m->tnom_k / reftemp;
       double fact2 = temp_k / reftemp;
       double tempratio  = temp_k / m->tnom_k; // fact2/fact1
@@ -709,7 +709,7 @@ bool DEV_BUILT_IN_BJT::do_tr()
     if (c->off) {
       vbe = 0.;
     }else{
-      double vt = (_sim->_temp_c + P_CELSIUS0) * P_K_Q;
+      double vt = c->temp_k() * P_K_Q;
       vbe = vt * log(vt / (M_SQRT2 * m->ibe));
     }
     vbc = 0.;

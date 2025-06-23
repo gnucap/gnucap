@@ -120,7 +120,7 @@ public:
   static double dampmin;    // Newton-Raphson damping coefficient min
   static int dampstrategy;  // bit flags, damping strategy options
   static double roundofftol;// rel tolerance for zeroing after subtraction
-  static double temp_c;    // ambient temperature
+  static double temp_k;     // ambient temperature
   static double shortckt;   // short resistance
   static int picky;	    // error picky-ness
   static unsigned outwidth; // width of output devices

@@ -532,7 +532,7 @@ model BUILT_IN_MOS8 {
       double vfbzb;
     }
     code_pre {
-      temp = d->_sim->_temp_c + P_CELSIUS0;
+      temp = c->temp_k();
       double egap = 1.16 - 7.02e-4 * temp * temp / (temp + 1108.0);
     }
     code_post {
