@@ -24,6 +24,7 @@
  */
 //testing=script 2005.10.07
 #include "globals.h"
+#include "e_elemnt.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
 static EVAL_BM_VALUE p1(CC_STATIC);
@@ -76,6 +77,26 @@ bool EVAL_BM_VALUE::parse_params_obsolete_callback(CS& cmd)
     ;
 }
 /*--------------------------------------------------------------------------*/
+namespace {
+class EVAL_BM_SIMPLE : public EVAL_BM_BASE {
+public:
+  explicit EVAL_BM_SIMPLE (EVAL_BM_VALUE const& b)
+    : EVAL_BM_BASE(b) {
+  }
+private:
+  EVAL_BM_SIMPLE* clone()const override {
+    return new EVAL_BM_SIMPLE(*this);
+  }
+  void tr_eval(ELEMENT* d)const override {
+    d->_y[0] = FPOLY1(CPOLY1(d->_y[0].x, 0., _value));
+  }
+  void ac_eval(ELEMENT* d)const override {
+    tr_eval(d);
+    d->_ev = d->_y[0].f1;
+  }
+};
+} // namespace
+/*--------------------------------------------------------------------------*/
 COMMON_COMPONENT* EVAL_BM_VALUE::deflate()
 {
   if(has_ext_args()){
@@ -84,8 +105,9 @@ COMMON_COMPONENT* EVAL_BM_VALUE::deflate()
     return this; // not sure what this is.
 		 // but need to get rid of model anyway
   }else{
-    trace3("EVAL_BM_VALUE::deflate to base", _value, _value.string(), modelname());
-    return new EVAL_BM_BASE(*this);
+    // return this; // itested: more numerical noise.
+    // use a simpler version
+    return new EVAL_BM_SIMPLE(*this);
   }
 }
 /*--------------------------------------------------------------------------*/

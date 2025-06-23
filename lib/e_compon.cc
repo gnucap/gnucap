@@ -275,6 +275,7 @@ void COMMON_COMPONENT::ac_eval(ELEMENT*x)const
 /*--------------------------------------------------------------------------*/
 bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
+  // return false; // test re-attach logic. BUG: breaks mos1.
   return (_modelname == x._modelname
 	  && _model == x._model);
 }
