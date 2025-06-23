@@ -37,7 +37,7 @@ public:
   explicit	SWEEPVAL(int c=0)
     :COMMON_COMPONENT(c) {}
   explicit	SWEEPVAL(const SWEEPVAL& p)
-    :COMMON_COMPONENT(p) {}
+    :COMMON_COMPONENT(p), _value(p._value) {}
 		~SWEEPVAL() { trace1("~SWEEPVAL", this);}
   COMMON_COMPONENT* clone()const override{
     return new SWEEPVAL(*this);
