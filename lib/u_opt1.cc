@@ -24,6 +24,7 @@
  */
 //testing=trivial 2006.07.17
 #include "u_opt.h"
+#include "constant.h"
 
 bool	OPT::acct = false;
 bool	OPT::listing = false;
@@ -63,7 +64,7 @@ int	OPT::dampstrategy = 0; //dsINIT|dsDEVREGION|dsREVERSE;
 double	OPT::floor = 1e-21;
 double	OPT::vfloor = 1e-15;
 double	OPT::roundofftol = 1e-13;
-double	OPT::temp_c = 27.0;
+double	OPT::temp_k = P_CELSIUS0 + 27.0;
 double	OPT::shortckt = 10e-6;
 int	OPT::picky = bPICKY;
 unsigned OPT::outwidth = 9999;

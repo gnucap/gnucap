@@ -193,8 +193,8 @@ device BUILT_IN_DIODE {
     trace2(d->long_label().c_str(), volts, amps);
     
     int flags = (m->flags & USE_OPT) ? OPT::diodeflags : m->flags;
-    double tempratio = (d->_sim->_temp_c+P_CELSIUS0) / (m->_tnom_c+P_CELSIUS0);
-    double vt = P_K_Q * (d->_sim->_temp_c+P_CELSIUS0) * m->n_factor;
+    double tempratio = c->temp_k() / (m->_tnom_c+P_CELSIUS0);
+    double vt = P_K_Q * c->temp_k() * m->n_factor;
     region_t oldregion = p->_region;
     p->_isat = c->is_adjusted * pow(tempratio, m->xti)
       * exp((m->eg/vt) *(tempratio-1));

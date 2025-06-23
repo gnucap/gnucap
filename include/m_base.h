@@ -149,7 +149,7 @@ public:
   size_t	 size()const	 {return _list.size();}
   const_iterator begin()const	 {return _list.begin();}
   const_iterator end()const	 {return _list.end();}
-  const T*	 front()const	 {untested();assert(!is_empty()); return _list.front();}
+  const T*	 front()const	 {assert(!is_empty()); return _list.front();}
   const T*	 back()const	 {assert(!is_empty()); return _list.back();}
   T*		 back()		 {assert(!is_empty()); return _list.back();}
   void		 push_back(T* x) {assert(x);	       _list.push_back(x);}

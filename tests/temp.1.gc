@@ -7,6 +7,7 @@ R1 1 0 TESTR(w=2, l=4)
 .print op r(R1) temp(0)
 .print dc r(R1) temp(0)
 .ac 1
+.ac 1 dtemp=0
 .dc
 .dc temp=400
 .ac 1

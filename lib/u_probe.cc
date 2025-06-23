@@ -127,7 +127,8 @@ double PROBE::probe_node(void)const
   }else if (Umatch(_what, "hidden ")) {
     return ::status.hidden_steps;
   }else if (Umatch(_what, "temp{erature} ")) {
-    return _sim->_temp_c;
+    // incomplete(); // scope?
+    return _sim->_temp_k - P_CELSIUS0;
   }else if (Umatch(_what, "time ")) {untested();
     return _sim->_time0;
   }else{

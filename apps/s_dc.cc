@@ -37,7 +37,7 @@ public:
   explicit	SWEEPVAL(int c=0)
     :COMMON_COMPONENT(c) {}
   explicit	SWEEPVAL(const SWEEPVAL& p)
-    :COMMON_COMPONENT(p) {}
+    :COMMON_COMPONENT(p), _value(p._value) {}
 		~SWEEPVAL() { trace1("~SWEEPVAL", this);}
   COMMON_COMPONENT* clone()const override{
     return new SWEEPVAL(*this);
@@ -80,6 +80,8 @@ static DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher,
 namespace {
 /*--------------------------------------------------------------------------*/
 class DCOP : public SIM {
+protected: // tmp hack
+  double _temp_c;
 protected:
   void	fix_args(int);
   void	options(CS&, int);
@@ -110,6 +112,10 @@ protected:
     }else{
     }
     *_sweepval[i] = d;
+    if(_sweepval[i] == &_temp_c){
+      _sim->_temp_k = _temp_c + P_CELSIUS0;
+    }else{
+    }
     ::status.set_up.stop();
   }
   double get_sweepval(int i) const{
@@ -247,7 +253,7 @@ void DCOP::finish(void)
 /*--------------------------------------------------------------------------*/
 void OP::setup(CS& Cmd)
 {
-  _sim->_temp_c = OPT::temp_c;
+  _temp_c = OPT::temp_k - P_CELSIUS0;
   _cont = false;
   _trace = tNONE;
   _out = IO::mstdout;
@@ -255,7 +261,7 @@ void OP::setup(CS& Cmd)
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
 
   _zap[0] = nullptr;
-  _sweepval[0] = &(_sim->_temp_c);
+  _sweepval[0] = &_temp_c;
   _have_param = true; // temp requires precalc
 
   if (Cmd.match1("'\"({") || Cmd.is_float()) {
@@ -280,13 +286,13 @@ void OP::setup(CS& Cmd)
   IO::plotout = (ploton) ? IO::mstdout : OMSTREAM();
   initio(_out);
 
-  _start[0].e_val(OPT::temp_c, _scope->params());
+  _start[0].e_val(OPT::temp_k - P_CELSIUS0, _scope->params());
   fix_args(0);
 }
 /*--------------------------------------------------------------------------*/
 void DC::setup(CS& Cmd)
 {
-  _sim->_temp_c = OPT::temp_c;
+  _sim->_temp_k = OPT::temp_k;
   _cont = false;
   _trace = tNONE;
   _out = IO::mstdout;
@@ -419,6 +425,7 @@ void DCOP::options(CS& Cmd, int Nest)
 {
   _sim->_uic = _loop[Nest] = _reverse_in[Nest] = false;
   size_t here = Cmd.cursor();
+
   do{
     ONE_OF
       || (Cmd.match1("'\"({")	&& ((Cmd >> _step_in[Nest]), (_stepmode[Nest] = LIN_STEP)))
@@ -432,10 +439,11 @@ void DCOP::options(CS& Cmd, int Nest)
       || (Get(Cmd, "lin",	  &_step_in[Nest]) && (_stepmode[Nest] = LIN_PTS))
       || (Get(Cmd, "o{ctave}",	  &_step_in[Nest]) && (_stepmode[Nest] = OCTAVE))
       || Get(Cmd, "c{ontinue}",   &_cont)
-      || Get(Cmd, "dt{emp}",	  &(_sim->_temp_c),   mOFFSET, OPT::temp_c)
+      || Get(Cmd, "dt{emp}",	  &_sim->_temp_k, mOFFSET, OPT::temp_k)
       || Get(Cmd, "lo{op}", 	  &_loop[Nest])
       || Get(Cmd, "re{verse}",	  &_reverse_in[Nest])
-      || Get(Cmd, "te{mperature}",&(_sim->_temp_c))
+      || Get(Cmd, "te{mperature}",&_sim->_temp_k, mOFFSET, P_CELSIUS0)
+      || Get(Cmd, "$temperature", &_sim->_temp_k)
       || (Cmd.umatch("tr{ace} {=}") &&
 	  (ONE_OF
 	   || Set(Cmd, "n{one}",      &_trace, tNONE)
@@ -538,6 +546,10 @@ void DCOP::first(int Nest)
   }else{
   }
   _sim->_phase = p_INIT_DC;
+  if(_sweepval[Nest] == &_temp_c){
+    _sim->_temp_k = _temp_c + P_CELSIUS0;
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 bool DCOP::next(int Nest)

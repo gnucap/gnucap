@@ -66,20 +66,32 @@ void PARAM_LIST::print(OMSTREAM& o, LANGUAGE* lang)const
 /*--------------------------------------------------------------------------*/
 bool PARAM_LIST::is_printable(int i)const
 {
-  assert(i<int(_pv.size()));
-  return _pv[i].second.has_hard_value();
+  if(i<0){ untested();
+  }else if(i<int(_pv.size())){
+    return _pv[i].second.has_hard_value();
+  }else{ untested();
+  }
+  return false;
 }
 /*--------------------------------------------------------------------------*/
 std::string PARAM_LIST::name(int i)const
 {
-  assert(i<int(_pv.size()));
-  return _pv[i].first;
+  if(i<0){ untested();
+  }else if(i<int(_pv.size())){
+    return _pv[i].first;
+  }else{ untested();
+  }
+  return "??";
 }
 /*--------------------------------------------------------------------------*/
 std::string PARAM_LIST::value(int i)const
 {
-  assert(i<int(_pv.size()));
-  return _pv[i].second.string();
+  if(i<0){ untested();
+  }else if(i<int(_pv.size())){
+    return _pv[i].second.string();
+  }else{ untested();
+  }
+  return "??";
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)

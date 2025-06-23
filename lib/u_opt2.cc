@@ -77,7 +77,7 @@ bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
       || Get(cmd, "pivtol",	&pivtol, mPOSITIVE)
       || Get(cmd, "pivrel",	&pivrel, mPOSITIVE)
       || Get(cmd, "numdgt",	&numdgt)
-      || Get(cmd, "tnom",	&tnom_c)
+      || Get(cmd, "tnom{_c}",	&tnom_c)
       || Get(cmd, "cptime",	&cptime)
       || Get(cmd, "limtim",	&limtim)
       || Get(cmd, "limpts",	&limpts)
@@ -96,8 +96,9 @@ bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
       || Get(cmd, "floor",	   &floor,	mPOSITIVE)
       || Get(cmd, "vfloor",	   &vfloor,	mPOSITIVE)
       || Get(cmd, "roundofftol",   &roundofftol, mPOSITIVE)
-      || Get(cmd, "t{empamb}",	   &temp_c)
-      || Get(cmd, "t{emperature}", &temp_c)
+      || Get(cmd, "$temperature",  &temp_k)
+      || Get(cmd, "t{empamb}",	   &temp_k, mOFFSET, P_CELSIUS0)
+      || Get(cmd, "t{emperature}", &temp_k, mOFFSET, P_CELSIUS0)
       || Get(cmd, "short",	   &shortckt,	mPOSITIVE)
       || Get(cmd, "out{width}",    &outwidth)
       || Get(cmd, "ydiv{isions}",  &ydivisions, mPOSITIVE)
@@ -297,7 +298,7 @@ void OPT::print(OMSTREAM& o)
   o << "* circuit environment\n";
   o << ".options";
   o << "  tnom="   << tnom_c;
-  o << "  temperature="<< temp_c;
+  o << "  temperature="<< temp_k - P_CELSIUS0;
   o << ((rstray)?"  rstray":"  norstray");
   o << ((cstray)?"  cstray":"  nocstray");
   o << "  defl="   << defl;

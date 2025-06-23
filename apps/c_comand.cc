@@ -93,9 +93,9 @@ public:
     size_t here = cmd.cursor();
     cmd >> '=' >> t;
     if (!cmd.stuck(&here)) {itested();
-      OPT::temp_c = t;
+      OPT::temp_k = t + P_CELSIUS0;
     }else{itested();
-      IO::mstdout << ".temp = " << OPT::temp_c << '\n';
+      IO::mstdout << ".temp = " << OPT::temp_k - P_CELSIUS0 << '\n';
     }
   }
 } p3;

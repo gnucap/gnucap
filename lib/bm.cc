@@ -197,7 +197,7 @@ void EVAL_BM_ACTION_BASE::precalc_last(const PARAM_LIST* Scope)
   EVAL_BM_BASE::precalc_last(Scope);
   _tnom_c.e_val(OPT::tnom_c, Scope);
   _dtemp.e_val(0., Scope);
-  _temp_c.e_val(_sim->_temp_c + _dtemp, Scope);
+  _temp_c.e_val(_sim->_temp_k - P_CELSIUS0 + _dtemp, Scope);
 
   _bandwidth.e_val(_default_bandwidth, Scope);
   _delay.e_val(_default_delay, Scope);
