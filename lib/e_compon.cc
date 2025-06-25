@@ -25,8 +25,10 @@
 #include "u_lang.h"
 #include "u_nodemap.h"
 #include "u_parameter.h"
-#include "e_model.h"
+#include "u_nodemap.h"
+#include "e_hsparam.h"
 #include "e_elemnt.h"
+#include "e_model.h"
 #include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
@@ -382,39 +384,6 @@ bool COMMON_COMPONENT::parse_params_obsolete_callback(CS&)
 {
   return false;
 }
-/*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-class HS_PARAM {
-  std::array<PARAMETER<double>, sysparams_count> _p;
-  explicit HS_PARAM(HS_PARAM const& p) : _p(p._p) {}
-public:
-  explicit HS_PARAM(){}
-  HS_PARAM* clone() const{ return new HS_PARAM(*this); }
-
-  void set_by_index(int i, std::string const& v){
-    _p[i] = v;
-  }
-  bool is_printable(int i)const {
-    return _p[i].has_hard_value();
-  }
-  std::string const param_value(int i) const {
-    return _p[i].string();
-  }
-  double mfactor() const{
-    return _p[0];
-  }
-  void set_mfactor(double x) {itested();
-    _p[0] = x;
-  }
-  void precalc(CARD_LIST const* scope){
-    assert(scope);
-    _p[0].e_val(1., scope->params());
-    for(int i=1; i< sysparams_count; ++i){
-      _p[i].e_val(0, scope->params());
-    }
-  }
-
-};
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 COMPONENT::COMPONENT(COMMON_COMPONENT* c)
