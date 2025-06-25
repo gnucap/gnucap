@@ -130,10 +130,8 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)
 	}else{
 	}
 
-      }else if(_pv[j->second].second.has_hard_value()) {untested();
-	_pv[j->second].second.set_fixed(i->second.e_val(_pv[j->second].second.value(), scope));
-      }else{ untested();
-	// this is not needed.
+      }else{ itested();
+	_pv[j->second-1].second.set_fixed(i->second.e_val(_pv[j->second-1].second.value(), scope));
       }
     }else{itested();
     }
