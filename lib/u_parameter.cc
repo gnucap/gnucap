@@ -101,6 +101,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)
   _try_again = p._try_again;
   _is_verilog = scope->_is_verilog;
 
+  // BUG: wrong order.
   for (auto i = p._pv.begin(); i != p._pv.end(); ++i) {
     if (i->second.has_hard_value()) {
       auto j = _pi.find(i->first);

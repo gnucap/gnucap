@@ -266,13 +266,12 @@ DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
 void DEV_LOGIC::precalc_last()
 {
   ELEMENT::precalc_last();
+  // duplicate in e_subckt.
   if (subckt()) {
-    // TODO: handle in common??
-    double mfactor_hier = hsparam()->mfactor();
-    trace3("DEV_SUBCKT::precalc_last", long_label(), mfactor_hier, mfactor());
-    subckt()->params()->set("$mfactor_hier", to_string(mfactor_hier));
-    assert(mfactor() == mfactor_hier);
-
+    if(HS_PARAM const* h = hsparam()){ untested();
+      h->export_to(subckt()->params());
+    }else{
+    }
     subckt()->precalc_last();
   }else{
   }

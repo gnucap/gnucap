@@ -43,8 +43,7 @@ public:
 
   int  set_param_by_name(std::string Name, std::string Value) override {
     if(Name[0] != '$'){
-      _params.set(Name, Value);
-      return 0;
+      return _params.set(Name, Value);
     }else{
       return COMMON_COMPONENT::set_param_by_name(Name, Value);
     }

@@ -12,6 +12,6 @@ module aaa (.c(c),.d(d));
 endmodule // aaa
 
 module bbb (.e(e),.f(f));
-aaa #((* x, a, b, y *) .x(1),.a(2),.b(3),.y(4)) a1 (.c(a),.d(b));
+aaa #((* x *) .x(1),(* a *) .a(2),(* b *) .b(3),(* y *) .y(4)) a1 (.c(a),.d(b));
 endmodule // bbb
 

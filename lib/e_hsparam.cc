@@ -36,7 +36,7 @@ bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
       && _vflip == p->_vflip
       && _zflip == p->_zflip
       && _angle == p->_angle
-      && _mfactor_fixed == p->_mfactor_fixed // needed? must be in device anyway
+      && _mfactor_fixed == p->_mfactor_fixed
       && COMMON_PARAMLIST::operator==(x));
 }
 /*--------------------------------------------------------------------------*/
@@ -104,7 +104,7 @@ int HS_PARAM::set_param_by_name(std::string Name, std::string Value)
     if(Name == param_name(i)) {
       which = i;
       break;
-    }else{ untested();
+    }else{
     }
   }
   if(which>=0){
@@ -131,9 +131,8 @@ std::string HS_PARAM::param_name(int I) const
   assert(I>=0);
   if(I<sysparams_count){
     return hspname[I];
-  }else{ untested();
-    unreachable();
-    return "";
+  }else{
+    return COMMON_PARAMLIST::param_name(I-sysparams_count);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -156,9 +155,8 @@ std::string HS_PARAM::param_value(int I) const
     return _zflip.string();
   case 7: untested();
     return _angle.string();
-  default: untested();
-	   unreachable();
-	   return "???";
+  default:
+    return COMMON_PARAMLIST::param_value(I-sysparams_count);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -167,22 +165,11 @@ void HS_PARAM::expand(COMPONENT const* c)
   assert(c);
   CARD const* owner = c->owner();
   CARD_LIST const* scope;
-  double mfactor_hier;
   if(auto comp = dynamic_cast<COMPONENT const*>(owner)){
-    scope = owner->scope();
-    if(comp->hsparam()){
-      mfactor_hier = comp->hsparam()->mfactor();
-    }else{ untested();
-      mfactor_hier = 1.; // assert?
-    }
+    scope = comp->scope();
   }else{
     scope = &CARD_LIST::card_list;
-    mfactor_hier = 1.;
   }
-
-  _mfactor.e_val(1., scope->params());
-  _mfactor_fixed = _mfactor * mfactor_hier;
-  trace4("hsp expand", c->long_label(), scope, _mfactor, _mfactor_fixed);
 
   _xposition.e_val(0., scope->params());
   _yposition.e_val(0., scope->params());
@@ -195,16 +182,26 @@ void HS_PARAM::expand(COMPONENT const* c)
 /*--------------------------------------------------------------------------*/
 void HS_PARAM::precalc_last(PARAM_LIST const* Scope)
 {
+  precalc_mfactor(Scope);
+}
+/*--------------------------------------------------------------------------*/
+void HS_PARAM::precalc_mfactor(PARAM_LIST const* Scope)
+{
   PARAMETER<double> mfactor_hier;
-  mfactor_hier = "$mfactor_hier"; // $mfactor?
-
-  mfactor_hier.e_val(1., Scope);
-  _mfactor.e_val(1., Scope);
+  mfactor_hier = "$mfactor";
+  mfactor_hier.e_val(1., Scope); // incoming, from parent scope
+  _mfactor.e_val(1., Scope);     // incoming from arg
 
   _mfactor_fixed = _mfactor * mfactor_hier;
-
- // _params.set("$mfactor_hier", _mfactor_fixed);
-  trace4("HSP::precalc_last", _mfactor.string(), _mfactor, mfactor_hier, _mfactor_fixed);
+}
+/*--------------------------------------------------------------------------*/
+void HS_PARAM::export_to(PARAM_LIST* Scope) const
+{
+  assert(Scope);
+  if(_mfactor_fixed!=NOT_INPUT){
+    Scope->set("$mfactor", _mfactor_fixed);
+  }else{ untested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

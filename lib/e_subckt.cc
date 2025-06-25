@@ -23,26 +23,12 @@
 #include "e_subckt.h"
 #include "e_hsparam.h"
 /*--------------------------------------------------------------------------*/
-static HS_PARAM const* get_hsparam(CARD const* c)
-{
-  if(auto comp = dynamic_cast<COMPONENT const*>(c)) {
-    assert(comp->has_hsparam());
-    return comp->hsparam();
-  }else{
-    return nullptr;
-  }
-}
-/*--------------------------------------------------------------------------*/
 void BASE_SUBCKT::precalc_first()
 {
   COMPONENT::precalc_first();
 
   // check HS_PARAM
-  if(!get_hsparam(owner())) {
-    // not needed or explicit (already attached)
-  }else if(dynamic_cast<HS_PARAM const*>(common())) {
-    incomplete();
-  }else if(has_common()) {
+  if(has_common()) {
     if(dynamic_cast<HS_PARAM*>(mutable_common()->next_common())){
       // already there.
     }else{
@@ -64,25 +50,9 @@ void BASE_SUBCKT::precalc_last()
   assert(subckt());
 
   if(HS_PARAM const* h = hsparam()){
-    subckt()->params()->set_try_again(nullptr);
-    subckt()->params()->eval_copy(h->_params, scope()->params());
+    h->export_to(subckt()->params());
   }else{
   }
-
-
-  { // is this needed? DEV_SUBCKT could take care of it.
-    COMMON_PARAMLIST const* c = dynamic_cast<COMMON_PARAMLIST const*>(common());
-    if(c){
-      subckt()->params()->set_try_again(&c->_params);
-    }else{
-    }
-  }
-  // TODO: handle in common??
-  double mfactor_hier = hsparam()->mfactor();
-  trace3("DEV_SUBCKT::precalc_last", long_label(), mfactor_hier, mfactor());
-  subckt()->params()->set("$mfactor_hier", "");
-  subckt()->params()->set("$mfactor_hier", to_string(mfactor_hier));
-  assert(mfactor() == mfactor_hier);
 
   subckt()->precalc_last();
 }

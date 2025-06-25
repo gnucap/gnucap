@@ -496,17 +496,6 @@ void DEV_SUBCKT::expand()
     trace3("expand", short_label(), net_nodes(), max_nodes());
     renew_subckt(_parent, &(c->_params));
 
-    if(auto hspl = dynamic_cast<COMMON_PARAMLIST*>(mutable_common()->next_common())) {
-      // hspl have been evaluated in precalc_first. but subckt() didn't exist at the time
-      // maybe subckt()->params() should move to common, so
-      // COMMON::precalc can take care of it. later
-      subckt()->params()->set_try_again(nullptr);
-      subckt()->params()->eval_copy(*hspl->params(), scope()->params());
-      subckt()->params()->set_try_again(pl);
-    }else{
-    }
-
-
     subckt()->expand();
   }
 }
@@ -519,7 +508,6 @@ void DEV_SUBCKT::precalc_first()
   }else{
     new_subckt();
   }
- // subckt()->params()->set("$mfactor_hier", "1.");
 
   assert(is_device());
   if(_parent == &pp){
@@ -554,15 +542,13 @@ void DEV_SUBCKT::precalc_first()
 #endif
     c->_params.set_try_again(pl);
 
-
-
 #if 0
-  // deletes parameters
-  subckt()->attach_params(&(c->_params), scope());
+    // deletes parameters
+    subckt()->attach_params(&(c->_params), scope());
 #else
-  subckt()->params()->set_try_again(nullptr);
-  subckt()->params()->eval_copy(c->_params, scope()->params());
-  subckt()->params()->set_try_again(&c->_params);
+    subckt()->params()->set_try_again(nullptr);
+    subckt()->params()->eval_copy(c->_params, scope()->params());
+    subckt()->params()->set_try_again(&c->_params);
 #endif
     subckt()->precalc_first();
   }else{
@@ -582,21 +568,17 @@ void DEV_SUBCKT::precalc_last()
   COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
   assert(c);
 
+  if(HS_PARAM const* h = hsparam()){
+    h->export_to(subckt()->params());
+  }else{
+  }
+
   subckt()->params()->set_try_again(nullptr);
   subckt()->params()->eval_copy(c->_params, scope()->params());
   subckt()->params()->set_try_again(&c->_params);
 
-  // TODO: handle in common??
-  double mfactor_hier = hsparam()->mfactor();
-  trace3("DEV_SUBCKT::precalc_last", long_label(), mfactor_hier, mfactor());
-  subckt()->params()->set("$mfactor_hier", "");
-  subckt()->params()->set("$mfactor_hier", to_string(mfactor_hier));
-  assert(mfactor() == float(mfactor_hier));
-
   subckt()->precalc_last();
   assert(!is_constant()); /* because I have more work to do */
-
-
 }
 /*--------------------------------------------------------------------------*/
 double DEV_SUBCKT::tr_probe_num(const std::string& x)const

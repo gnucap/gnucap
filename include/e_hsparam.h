@@ -51,9 +51,8 @@ private: // fixed values. combining hierarchical and specified.
     _hflip(p._hflip),
     _vflip(p._vflip),
     _zflip(p._zflip),
-    _angle(p._angle),
-    _mfactor_fixed(p._mfactor_fixed){
-      params()->set("$mfactor_hier", "1.");
+    _angle(p._angle)
+    {
     }
 public:
   explicit HS_PARAM() : COMMON_PARAMLIST() {
@@ -65,7 +64,6 @@ public:
     _vflip.set_default(1);
     _zflip.set_default(1);
     _angle.set_default(0.);
-    params()->set("$mfactor_hier", "1.");
   }
   ~HS_PARAM() {}
   bool operator==(const COMMON_COMPONENT& x)const override;
@@ -102,6 +100,9 @@ public: // hsp access
   void precalc_first(PARAM_LIST const*)override {}
   void expand(COMPONENT const* c) override;
   void precalc_last(PARAM_LIST const*)override;
+  void export_to(PARAM_LIST*)const;
+private:
+  void precalc_mfactor(PARAM_LIST const*);
 
   HS_PARAM* hsparam()override { return this; }
 };

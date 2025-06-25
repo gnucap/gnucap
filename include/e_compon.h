@@ -311,7 +311,20 @@ public: // parameters
 			      int node_count, const node_t nodes[]);
 public:
   HS_PARAM const* hsparam()const {
-    return has_common()?common()->hsparam():nullptr;
+    HS_PARAM const* h = nullptr;
+    if(has_common()){
+      h = common()->hsparam();
+    }else{
+    }
+
+   // return h; // breaks d_subckt.6.ckt.diff
+
+    if(h){
+    }else if(auto o = dynamic_cast<COMPONENT const*>(owner())){
+      h = o->hsparam();
+    }else{
+    }
+    return h;
   }
   bool has_hsparam()const {
     return hsparam();

@@ -231,7 +231,6 @@ void COMMON_COMPONENT::parse_common_obsolete_callback(CS& cmd) //used
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::set_param_by_index(int i, std::string& V, int Offset)
 {
-  unreachable();
   if(has_next()) { untested();
     COMMON_COMPONENT* m = next_common()->clone(); // shared?
     m->set_param_by_index(i, V, Offset);
@@ -254,7 +253,6 @@ std::string COMMON_COMPONENT::param_name(int i)const
 {
   if(next_common()) {
     return next_common()->param_name(i);
-    return to_string(i) + ":" + next_common()->param_name(i);
   }else{ untested();
     return "";
   }
@@ -280,13 +278,11 @@ std::string COMMON_COMPONENT::param_value(int i) const
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::precalc_first(const PARAM_LIST* Scope)
+void COMMON_COMPONENT::precalc_first(const PARAM_LIST*)
 {
   if(has_next()){
   }else{
-    attach_next(new HS_PARAM());
   }
-  next_common()->precalc_first(Scope);
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::expand(const COMPONENT* comp)
@@ -639,15 +635,6 @@ void COMPONENT::expand()
     }
   }else{
   }
-
-  if(HS_PARAM const* hsp = hsparam()){
-    _mfactor_fixed = float(hsp->mfactor());
-  }else if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
-    _mfactor_fixed = float(o->mfactor());
-  }else{
-    assert(_mfactor_fixed == 1.);
-  }
-  trace3("COMPONENT::expand", long_label(), _mfactor_fixed, param_count());
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::precalc_first()
@@ -700,7 +687,7 @@ void COMPONENT::precalc_last()
     }catch (Exception_Precalc& e) {
       error(bWARNING, long_label() + ": " + e.message());
     }catch (Exception& e) {
-      if(c != common()){ untested();
+      if(c != common()){
 	delete c;
       }else{
       }
@@ -711,22 +698,18 @@ void COMPONENT::precalc_last()
     assert(_mfactor_fixed == 1.);
   }
 
-  // needed?
+  float mfactor_new;
   if(HS_PARAM const* hsp = hsparam()){
-    _mfactor_fixed = float(hsp->mfactor());
+    mfactor_new = float(hsp->mfactor());
   }else{
-    _mfactor_fixed = 1.;
+    mfactor_new = 1.;
   }
-  if(_hsparam){
-    _hsparam->precalc_last(scope()->params());
+
+  if(_mfactor_fixed != mfactor_new){
+    _sim->mark_inc_mode_bad();
   }else{
   }
-  /// if (const COMPONENT* o = dynamic_cast<const COMPONENT*>(owner())) {
-  ///   _mfactor_fixed = float(o->mfactor() * mfactor());
-  /// }else{
-  ///   assert(!owner());
-  ///   _mfactor_fixed = float(mfactor());
-  /// }
+  _mfactor_fixed = mfactor_new;
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::map_nodes()
@@ -842,7 +825,8 @@ void COMPONENT::set_param_by_index(int I, std::string& Value, int offset)
     try{
       c->set_param_by_index(I, Value, offset);
     }catch(Exception_Too_Many const&){
-      incomplete();
+      delete c;
+      throw;
     }
     attach_common(c);
   }else{ untested();

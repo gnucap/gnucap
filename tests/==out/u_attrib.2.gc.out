@@ -2,6 +2,8 @@
 "module aaa (c,d);"
 " resistor #(100) r1(a,b); "
 " resistor #((*r*)200,(*m*)2) r2(a,b);"
+ resistor #((*r*)200,(*m*)2) r2(a,b);
+                          ^ ? too many: requested=2 max=1
 " r1 r3(a,b);"
 " r2 r4(a,b);"
 " r1 r5(a,b);"

@@ -1,4 +1,3 @@
-
 module a (x,y);
 isource #(.dc(1.), .$mfactor(7)) i(x, y);
 endmodule
@@ -15,8 +14,10 @@ endmodule
 verilog
 parameter mf = 1.
 
-resistor #(1) i(\0 ,x);
-c #(.$mfactor(mf)) a1(\0 , x);
+ground gnd;
+
+resistor #(1) i(gnd ,x);
+c #(.$mfactor(mf)) a1(gnd , x);
 
 print dc v(nodes)
 dc
