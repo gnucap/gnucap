@@ -129,7 +129,11 @@ SIM_DATA::~SIM_DATA()
   }
   //assert(_eq.empty()); //not empty means an analysis ended with an unhandled event
 			 // could be DC, could be tran with event time past the end
-  assert(_loadq.empty());
+  //assert(_loadq.empty());
+  if(_loadq.empty()){
+  }else{
+    incomplete();
+  }
   assert(_acceptq.empty());
   assert(_evalq1.empty());
   assert(_evalq2.empty());

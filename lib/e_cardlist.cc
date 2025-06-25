@@ -48,6 +48,7 @@ CARD_LIST::CARD_LIST(CARD_LIST::with_ground)
   //     perhaps it should, but it must retain "0".
   _nm->new_node("0");
   assert(_nm->size()==1);
+  assert(params());
   // assert(CARD_LIST::card_list.nodes()->at(0).is_grounded()); later.
 }
 /*--------------------------------------------------------------------------*/

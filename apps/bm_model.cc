@@ -87,7 +87,7 @@ bool EVAL_BM_MODEL::operator==(const COMMON_COMPONENT& x)const
     && _arglist == p->_arglist
     && EVAL_BM_ACTION_BASE::operator==(x);
   if (rv) {
-  }else{ untested();
+  }else{
   }
   return rv;
 }

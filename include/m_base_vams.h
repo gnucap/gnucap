@@ -146,6 +146,7 @@ public:
   explicit vString(CS& file) : String()	{parse(file);}
   explicit vString(Base::NOT_INPUT x = _NOT_INPUT) : String(x) {  assert(is_NA());}
   /* explicit */ vString(vString const& x) : String(x) {}
+  explicit vString(std::string const& s) : String(s) {}
 
   vString& operator=(vString const& x) {
     String::operator=(x);

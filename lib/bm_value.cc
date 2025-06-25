@@ -45,6 +45,7 @@ void EVAL_BM_VALUE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)c
 void EVAL_BM_VALUE::precalc_first(const PARAM_LIST* Scope)
 {
   if (modelname() != "") {
+    // incomplete();?
     (_value = "") = modelname();
   }else{
   }
@@ -110,5 +111,6 @@ COMMON_COMPONENT* EVAL_BM_VALUE::deflate()
     return new EVAL_BM_SIMPLE(*this);
   }
 }
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

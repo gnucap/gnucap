@@ -25,13 +25,14 @@
  * model:   .model mname LOGIC <args>
  */
 //testing=script,sparse 2023.11.22
-#include "e_logicmod.h"
 #include "globals.h"
-#include "e_subckt.h"
 #include "u_xprobe.h"
+#include "u_nodemap.h"
+#include "e_logicmod.h"
+#include "e_subckt.h"
 #include "e_logic.h"
 #include "e_elemnt.h"
-#include "u_nodemap.h"
+#include "e_hsparam.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -266,6 +267,12 @@ void DEV_LOGIC::precalc_last()
 {
   ELEMENT::precalc_last();
   if (subckt()) {
+    // TODO: handle in common??
+    double mfactor_hier = hsparam()->mfactor();
+    trace3("DEV_SUBCKT::precalc_last", long_label(), mfactor_hier, mfactor());
+    subckt()->params()->set("$mfactor_hier", to_string(mfactor_hier));
+    assert(mfactor() == mfactor_hier);
+
     subckt()->precalc_last();
   }else{
   }

@@ -40,7 +40,7 @@ bool COMMON_PARAMLIST::param_is_printable(int i)const
   if (i < int(_params.size())) {
     return _params.is_printable(i);
   }else{
-    return COMMON_COMPONENT::param_is_printable(i);
+    return COMMON_COMPONENT::param_is_printable(i-int(_params.size()));
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -50,7 +50,7 @@ std::string COMMON_PARAMLIST::param_name(int i)const
   if (i < int(_params.size())) {
     return _params.name(i);
   }else{itested();
-    return COMMON_COMPONENT::param_name(i);
+    return COMMON_COMPONENT::param_name(i-int(_params.size()));
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ std::string COMMON_PARAMLIST::param_value(int i)const
   if (i < int(_params.size())) {
     return _params.value(i);
   }else{itested();
-    return COMMON_COMPONENT::param_value(i);
+    return COMMON_COMPONENT::param_value(i-int(_params.size()));
   }
 }
 /*--------------------------------------------------------------------------*/

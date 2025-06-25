@@ -347,7 +347,7 @@ public:
   }
   PARAM_INSTANCE& operator=(double const& p) = delete;
 public:
-  Base const* value()const {untested(); return base()->value();}
+  Base const* value()const { return base()->value();}
   std::string const string() const{
     assert(base());
     return base()->string();
@@ -383,7 +383,7 @@ public:
   operator double() const{ untested();
     // still used in Gnucsator.
     Base const* v = base()->value();
-    if(auto f = dynamic_cast<Float const*>(v)){ untested();
+    if(auto f = dynamic_cast<Float const*>(v)){ itested();
       return *f;
     }else{ untested();
       return NOT_VALID;
@@ -400,7 +400,7 @@ public:
  //    }
  //  }
   PARA_BASE const* operator->()const {return base();}
-  PARA_BASE const* operator*()const { untested();return base();}
+  PARA_BASE const* operator*()const {return base();}
 }; // PARAM_INSTANCE
 /*--------------------------------------------------------------------------*/
 class INTERFACE PARAM_LIST {
@@ -579,7 +579,8 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const PARAM_LIST* scope)const
     if(b){
       ret = get<T>(b);
     }else{
-      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
+      int lvl = (_s[0] == '$')?bNOERROR:bWARNING;
+      error(lvl, "parameter " + _s +  " not specified, using default\n");
       ret = def;
     }
     trace3("los1", _s, v, ret);

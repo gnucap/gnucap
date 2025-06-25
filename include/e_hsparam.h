@@ -18,39 +18,89 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  *------------------------------------------------------------------
+ * hierarchical system parameters
  */
-#include "e_compon.h" // BUG
-#include "e_cardlist.h" // BUG
-class HS_PARAM {
-  std::array<PARAMETER<double>, sysparams_count> _p;
-  explicit HS_PARAM(HS_PARAM const& p) : _p(p._p) {}
-public:
-  explicit HS_PARAM(){}
-  HS_PARAM* clone() const{ return new HS_PARAM(*this); }
+/*--------------------------------------------------------------------------*/
+#ifndef HS_PARAM_H
+#define HS_PARAM_H
+/*--------------------------------------------------------------------------*/
+#include "u_parameter.h"
+#include "io_trace.h"
+#include "e_paramlist.h"
+/*--------------------------------------------------------------------------*/
+static const int sysparams_count = 8;
+/*--------------------------------------------------------------------------*/
+class HS_PARAM : public COMMON_PARAMLIST {
+  PARAMETER<double> _mfactor;
+  PARAMETER<double> _xposition;
+  PARAMETER<double> _yposition;
+  PARAMETER<double> _zposition;
+  PARAMETER<double> _hflip;
+  PARAMETER<double> _vflip;
+  PARAMETER<double> _zflip;
+  PARAMETER<double> _angle;
 
-  void set_by_index(int i, std::string const& v){
-    _p[i] = v;
+private: // fixed values. combining hierarchical and specified.
+  double _mfactor_fixed{1.};
+
+  explicit HS_PARAM(HS_PARAM const& p) : COMMON_PARAMLIST(p),
+    _mfactor(p._mfactor),
+    _xposition(p._xposition),
+    _yposition(p._yposition),
+    _zposition(p._zposition),
+    _hflip(p._hflip),
+    _vflip(p._vflip),
+    _zflip(p._zflip),
+    _angle(p._angle),
+    _mfactor_fixed(p._mfactor_fixed){
+      params()->set("$mfactor_hier", "1.");
+    }
+public:
+  explicit HS_PARAM() : COMMON_PARAMLIST() {
+    _mfactor.set_default(1.);
+    _xposition.set_default(0.);
+    _yposition.set_default(0.);
+    _zposition.set_default(0.);
+    _hflip.set_default(1);
+    _vflip.set_default(1);
+    _zflip.set_default(1);
+    _angle.set_default(0.);
+    params()->set("$mfactor_hier", "1.");
   }
-  bool is_printable(int i)const {
-    return _p[i].has_hard_value();
+  ~HS_PARAM() {}
+  bool operator==(const COMMON_COMPONENT& x)const override;
+  HS_PARAM* clone()const override { return new HS_PARAM(*this); }
+
+  bool param_is_printable(int i)const override;
+  void set_param_by_index(int i, std::string& v, int)override;
+  int set_param_by_name(std::string Name, std::string Value) override;
+  int param_count()const override {
+    return sysparams_count;
   }
-  std::string const param_value(int i) const {
-    return _p[i].string();
-  }
-  double mfactor() const{
-    return _p[0];
-  }
-  void set_mfactor(double x) {itested();
-    _p[0] = x;
-  }
-  void precalc(CARD_LIST const* scope){
-    _p[0].e_val(1., scope->params());
-    for(int i=1; i< sysparams_count; ++i){
-      _p[i].e_val(0, scope->params());
+  std::string param_name(int i, int j)const override { untested();
+    assert(i < HS_PARAM::param_count());
+    if (j == 0) { untested();
+      return param_name(i);
+    }else{ untested();
+      return "";
     }
   }
+  std::string param_name(int i)const override;
+  std::string param_value(int i)const override;
 
+public: // hsp access
+  double mfactor()const {
+    assert(_mfactor_fixed);
+    return _mfactor_fixed;
+  }
+
+  void precalc_first(PARAM_LIST const*)override {}
+  void expand(COMPONENT const* c) override;
+  void precalc_last(PARAM_LIST const*)override;
+
+  HS_PARAM* hsparam()override { return this; }
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+#endif
 // vim:ts=8:sw=2:noet:

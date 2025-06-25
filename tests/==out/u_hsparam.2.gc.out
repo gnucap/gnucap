@@ -1,0 +1,21 @@
+#           v(x)      
+ 0.         21.       
+#           v(x)      
+ 1.         21.       
+ 2.         21.       
+ 3.         21.       
+module a (.x(x),.y(y));
+isource #(.dc(1.),.$mfactor(7)) i (.p(x),.n(y));
+endmodule // a
+
+module b (.x(x),.y(y));
+//a r(x,y)
+a #(.$mfactor(1)) r (.x(x),.y(y));
+endmodule // b
+
+module c (.x(x),.y(y));
+b #(.$mfactor(3)) r (.x(x),.y(y));
+endmodule // c
+
+resistor #(.r(1)) i (.p(\0 ),.n(x));
+c #(.$mfactor(mf)) a1 (.x(\0 ),.y(x));

@@ -37,6 +37,7 @@
 #include "globals.h"
 #include "e_paramlist.h"
 #include "e_subckt.h"
+#include "e_hsparam.h"
 /*--------------------------------------------------------------------------*/
 namespace{
 /*--------------------------------------------------------------------------*/
@@ -105,7 +106,7 @@ private: // override virtual
 private:
   void		precalc_last()override;
   double	tr_probe_num(const std::string&)const override;
-  int param_count_dont_print()const override {return common()->COMMON_COMPONENT::param_count();}
+  int param_count_dont_print()const override {return 0; } // {common()->COMMON_COMPONENT::param_count();}
 
   node_t& n_(int i)const override {
     assert(_nodes); assert(i>=0);
@@ -417,13 +418,6 @@ int DEV_SUBCKT::set_param_by_name(std::string Name, std::string Value)
     // spice.
     trace2("spice spbn", Name, Value);
     int i = BASE_SUBCKT::set_param_by_name(Name,Value);
-#ifdef DO_TRACE
-    COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
-    assert(c);
-    for(auto p : c->_params){
-      trace2("spbn param spice", p.first, p.second.string());
-    }
-#endif
     return i;
   }else{
     PARAM_LIST::const_iterator p = _parent->subckt()->params()->find(Name);
@@ -501,6 +495,18 @@ void DEV_SUBCKT::expand()
 
     trace3("expand", short_label(), net_nodes(), max_nodes());
     renew_subckt(_parent, &(c->_params));
+
+    if(auto hspl = dynamic_cast<COMMON_PARAMLIST*>(mutable_common()->next_common())) {
+      // hspl have been evaluated in precalc_first. but subckt() didn't exist at the time
+      // maybe subckt()->params() should move to common, so
+      // COMMON::precalc can take care of it. later
+      subckt()->params()->set_try_again(nullptr);
+      subckt()->params()->eval_copy(*hspl->params(), scope()->params());
+      subckt()->params()->set_try_again(pl);
+    }else{
+    }
+
+
     subckt()->expand();
   }
 }
@@ -513,6 +519,7 @@ void DEV_SUBCKT::precalc_first()
   }else{
     new_subckt();
   }
+ // subckt()->params()->set("$mfactor_hier", "1.");
 
   assert(is_device());
   if(_parent == &pp){
@@ -547,10 +554,17 @@ void DEV_SUBCKT::precalc_first()
 #endif
     c->_params.set_try_again(pl);
 
-    subckt()->attach_params(&(c->_params), scope());
-    subckt()->precalc_first();
 
-    assert(c->_params.is_try_again(pl));
+
+#if 0
+  // deletes parameters
+  subckt()->attach_params(&(c->_params), scope());
+#else
+  subckt()->params()->set_try_again(nullptr);
+  subckt()->params()->eval_copy(c->_params, scope()->params());
+  subckt()->params()->set_try_again(&c->_params);
+#endif
+    subckt()->precalc_first();
   }else{
   }
 
@@ -567,9 +581,22 @@ void DEV_SUBCKT::precalc_last()
 
   COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
   assert(c);
-  subckt()->attach_params(&(c->_params), scope());
+
+  subckt()->params()->set_try_again(nullptr);
+  subckt()->params()->eval_copy(c->_params, scope()->params());
+  subckt()->params()->set_try_again(&c->_params);
+
+  // TODO: handle in common??
+  double mfactor_hier = hsparam()->mfactor();
+  trace3("DEV_SUBCKT::precalc_last", long_label(), mfactor_hier, mfactor());
+  subckt()->params()->set("$mfactor_hier", "");
+  subckt()->params()->set("$mfactor_hier", to_string(mfactor_hier));
+  assert(mfactor() == float(mfactor_hier));
+
   subckt()->precalc_last();
   assert(!is_constant()); /* because I have more work to do */
+
+
 }
 /*--------------------------------------------------------------------------*/
 double DEV_SUBCKT::tr_probe_num(const std::string& x)const

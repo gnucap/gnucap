@@ -1,0 +1,10 @@
+resistor #(.r(1)) r0 (.p(gnd),.n(v0));
+resistor #(.r(1)) r1 (.p(gnd),.n(v1));
+resistor #(.r(2.1),.$mfactor(2)) r2 (.p(gnd),.n(v2));
+resistor #(.r(2),.$mfactor(2.1)) r3 (.p(gnd),.n(v3));
+#           v(gnd)     v(v0)      v(v1)      v(v2)      v(v3)     
+ 0.         0.         1.         1.         1.05       0.95238   
+resistor #(.r(1)) r0 (.p(gnd),.n(v0));
+resistor #(.r(1)) r1 (.p(gnd),.n(v1));
+resistor #(.r(2.1),.$mfactor(2)) r2 (.p(gnd),.n(v2));
+resistor #(.r(2),.$mfactor(2.1)) r3 (.p(gnd),.n(v3));

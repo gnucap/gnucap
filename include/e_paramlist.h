@@ -31,6 +31,8 @@ class INTERFACE COMMON_PARAMLIST : public COMMON_COMPONENT {
 protected:
   explicit COMMON_PARAMLIST(const COMMON_PARAMLIST& p)
     :COMMON_COMPONENT(p), _params(p._params) {++_count;}
+  explicit COMMON_PARAMLIST(const COMMON_COMPONENT& p)
+    :COMMON_COMPONENT(p), _params() {++_count;}
 public:
   explicit COMMON_PARAMLIST(int c=0)	:COMMON_COMPONENT(c) {++_count;}
 	   ~COMMON_PARAMLIST()		{--_count;}
@@ -40,7 +42,12 @@ public:
   static int	count()			{untested();return _count;}
 
   int  set_param_by_name(std::string Name, std::string Value) override {
-    return _params.set(Name, Value);
+    if(Name[0] != '$'){
+      _params.set(Name, Value);
+      return 0;
+    }else{
+      return COMMON_COMPONENT::set_param_by_name(Name, Value);
+    }
   }
   bool		param_is_printable(int)const override;
   std::string	param_name(int)const override;
@@ -52,7 +59,7 @@ public:
   void		precalc_first(const PARAM_LIST*) override;
   void		precalc_last(const PARAM_LIST*) override;
 public:
-  PARAM_LIST const* params()const override { untested(); return &_params;}
+  PARAM_LIST* params()override { return &_params;}
 private:
   static int	_count;
 public:
