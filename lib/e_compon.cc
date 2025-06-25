@@ -1098,5 +1098,16 @@ HS_PARAM* COMMON_COMPONENT::hsparam()
   }
 }
 /*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::set_mfactor(double m)
+{
+  COMMON_COMPONENT* nn;
+  if(!has_next()) { untested();
+    nn = new HS_PARAM();
+  }else{ untested();
+    nn = next_common()->mutable_clone();
+  }
+  nn->set_mfactor(m);
+  attach_next(nn);
+}
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

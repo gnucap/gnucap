@@ -74,6 +74,7 @@ public:
   bool param_is_printable(int i)const override;
   void set_param_by_index(int i, std::string& v, int)override;
   int set_param_by_name(std::string Name, std::string Value) override;
+  void set_mfactor(double x)override { itested(); _mfactor = x; }
   int param_count()const override {
     return sysparams_count;
   }

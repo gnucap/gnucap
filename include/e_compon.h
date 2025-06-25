@@ -167,6 +167,7 @@ public:
   bool has_hsparam()const {
     return const_cast<COMMON_COMPONENT*>(this)->hsparam();
   }
+  virtual void set_mfactor(double);
 private:
   virtual HS_PARAM* hsparam();
 
