@@ -41,7 +41,7 @@ class HS_PARAM : public COMMON_PARAMLIST {
   PARAMETER<double> _angle;
 
 private: // fixed values. combining hierarchical and specified.
-  double _mfactor_fixed{1.};
+  double _mfactor_fixed{NOT_INPUT};
 
   explicit HS_PARAM(HS_PARAM const& p) : COMMON_PARAMLIST(p),
     _mfactor(p._mfactor),
@@ -91,8 +91,12 @@ public:
 
 public: // hsp access
   double mfactor()const {
-    assert(_mfactor_fixed);
-    return _mfactor_fixed;
+    if(_mfactor_fixed == NOT_INPUT) {
+      return 1.;
+    }else{
+      // assert(_mfactor_fixed);
+      return _mfactor_fixed;
+    }
   }
 
   void precalc_first(PARAM_LIST const*)override {}
