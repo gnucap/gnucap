@@ -513,23 +513,25 @@ public:
   ~PARAM_ANY() { delete _value; _value=nullptr;}
   PARA_BASE* clone()const override{ untested();return new PARAM_ANY(*this);}
   PARA_BASE* pclone(void*p)const override{return new(p) PARAM_ANY(*this);}
-  bool operator==(const PARA_BASE& v)const override { untested();
-    // PARAMETER const* p = dynamic_cast<PARAMETER const*>(&b);
-    // return (p && _v == p->_v  &&  _s == p->_s);
+  bool operator==(const PARA_BASE& v)const override {
+    auto p = dynamic_cast<PARAM_ANY const*>(&v);
     Base* eq = nullptr;
-   // if(_s != v._s){ untested();
-   //   return false;
-   // }else
-    if(auto f = dynamic_cast<Float const*>(v.value())){ untested();
+    if(!p){ untested();
+      return false;
+    }else if(_s != p->_s) { untested();
+      return false;
+    }else if(value()==nullptr && v.value()==nullptr) {
+      return true;
+    }else if(auto f = dynamic_cast<Float const*>(v.value())){
       eq = f->equal(_value);
-    }else if(auto i = dynamic_cast<Integer const*>(v.value())){ untested();
+    }else if(auto i = dynamic_cast<Integer const*>(v.value())){
       eq = i->equal(_value);
     }else{ untested();
       incomplete();
     }
 
     bool ret = false;
-    if(auto ii=dynamic_cast<Integer const*>(eq)){ untested();
+    if(auto ii=dynamic_cast<Integer const*>(eq)){
       ret = ii->value();
     }else{ untested();
     }
@@ -546,7 +548,7 @@ public:
     //}else{ untested();
     //  return !v._value || !has_hard_value();
     //}
-    if(ret){ untested();
+    if(ret){
     }else{ untested();
     }
     return ret;

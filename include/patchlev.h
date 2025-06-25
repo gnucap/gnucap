@@ -1,1 +1,1 @@
-#define PATCHLEVEL "kelvin 2025.06.21"
+#define PATCHLEVEL "opequal 2025.06.25"

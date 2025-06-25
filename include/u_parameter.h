@@ -289,6 +289,9 @@ public:
   }
   /*explicit*/ PARAM_INSTANCE(PARAM_INSTANCE const& p) {
     p.base()->pclone(&_mem);
+    assert(p.string() == string());
+    assert(operator==(p));
+    assert(p.operator==(*this));
   }
   ~PARAM_INSTANCE() {
     base()->~PARA_BASE();
@@ -491,6 +494,8 @@ private:
     _pi = p._pi;
     _pv = p._pv;
     _is_verilog = p._is_verilog;
+    assert(operator==(p));
+    assert(p.operator==(*this));
   }
 };
 /*--------------------------------------------------------------------------*/

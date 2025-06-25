@@ -119,7 +119,7 @@ public:
   Integer* leq(const Float* X)const override	{ untested();assert(X); return new Integer((_data <= X->_data)?1:0);}
   Integer* geq(const Float* X)const override	{itested();assert(X); return new Integer((_data >= X->_data)?1:0);}
   Integer* not_equal(const Float* X)const override { untested();assert(X); return new Integer((_data != X->_data)?1:0);}
-  Integer* equal(const Float* X)const override	{ untested();assert(X); return new Integer((_data == X->_data)?1:0);}
+  Integer* equal(const Float* X)const override	{assert(X); return new Integer((_data == X->_data)?1:0);}
   Float* add(const Float* X)const override	{itested();assert(X); return new Float(_data + X->_data);}
   Float* multiply(const Float* X)const override	{itested();assert(X); return new Float(_data * X->_data);}
   Float* subtract(const Float* X)const override	{untested();assert(X); return new Float(_data - X->_data);}
@@ -163,7 +163,7 @@ public:
   operator std::string()const {
     if(_data){
       return '"' + std::string(_data) + '"';
-    }else{ untested();
+    }else{
       // BUG //
       return "NA"; // uh. make sure to query is_NA;
     }
