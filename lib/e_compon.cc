@@ -35,6 +35,7 @@ COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
    _model(p._model),
    _attach_count(0)
 {
+  attach_common(p._next, &_next);
 }
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(int c)
@@ -59,6 +60,7 @@ COMMON_COMPONENT::~COMMON_COMPONENT()
   }else{
     assert(0 && "common still in use");
   }
+  detach_common(&_next);
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
@@ -251,6 +253,48 @@ std::string COMMON_COMPONENT::param_value(int)const
   untested(); return "";
 }
 /*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::precalc_first_chain(PARAM_LIST const* p)
+{
+  if(!_next){
+  }else if(_next->params()){
+    // depth first.
+    COMMON_COMPONENT* c = _next->mutable_clone();
+    assert(c);
+    try { untested();
+      c->precalc_first_chain(p);
+      attach_next(c);
+      p = _next->params();
+    }catch (Exception const& e) { untested();
+      attach_next(c);
+      throw e;
+    }
+  }else{
+  }
+
+  precalc_first(p);
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::precalc_last_chain(PARAM_LIST const* p)
+{
+  if(!_next){
+  }else if(_next->params()){
+    // depth first.
+    COMMON_COMPONENT* c = _next->mutable_clone();
+    assert(c);
+    try { untested();
+      c->precalc_last_chain(p);
+      attach_next(c);
+      p = c->params();
+    }catch (Exception const& e) { untested();
+      attach_next(c);
+      throw e;
+    }
+  }else{
+  }
+
+  precalc_last(p);
+}
+/*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
@@ -277,6 +321,7 @@ bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
   // return false; // test re-attach logic. BUG: breaks mos1.
   return (_modelname == x._modelname
+	  && _next == x._next
 	  && _model == x._model);
 }
 /*--------------------------------------------------------------------------*/
@@ -481,15 +526,12 @@ void COMPONENT::set_port_to_ground(int num)
 void COMPONENT::set_dev_type(const std::string& new_type)
 {
   if (common()) {
-    if (new_type == dev_type()) {
-    }else if(!common()->is_shared()) {itested();
-      // it's us!
-      mutable_common()->set_modelname(new_type);
-    }else{
-      COMMON_COMPONENT* c = common()->clone();
+    if (new_type != dev_type()) {
+      COMMON_COMPONENT* c = mutable_common()->mutable_clone();
       assert(c);
       c->set_modelname(new_type);
       attach_common(c);
+    }else{
     }
   }else{
     CARD::set_dev_type(new_type);
@@ -549,14 +591,17 @@ void COMPONENT::precalc_first()
   }
   CARD::precalc_first();
   if (has_common()) {
-    COMMON_COMPONENT* c = common()->clone();
+    COMMON_COMPONENT* c = mutable_common()->mutable_clone();
     assert(c);
     try {
-      c->precalc_first(scope()->params());
-    }catch (Exception_Precalc& e) {untested();
+      c->precalc_first_chain(scope()->params());
+    }catch (Exception_Precalc& e) { untested();
       error(bWARNING, long_label() + ": " + e.message());
-    }catch (Exception& e) {
-      delete c;
+    }catch (Exception& e) { untested();
+      if(c != common()){ untested();
+	delete c;
+      }else{ untested();
+      }
       throw e;
     }
     attach_common(c);
@@ -585,14 +630,17 @@ void COMPONENT::precalc_last()
 {
   CARD::precalc_last();
   if (has_common()) {
-    COMMON_COMPONENT* c = common()->clone();
+    COMMON_COMPONENT* c = mutable_common()->mutable_clone();
     assert(c);
     try {
-      c->precalc_last(scope()->params());
+      c->precalc_last_chain(scope()->params());
     }catch (Exception_Precalc& e) {
       error(bWARNING, long_label() + ": " + e.message());
     }catch (Exception& e) {
-      delete c;
+      if(c != common()){
+	delete c;
+      }else{
+      }
       throw e;
     }
     attach_common(c);

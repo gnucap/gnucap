@@ -51,6 +51,8 @@ public:
 
   void		precalc_first(const PARAM_LIST*) override;
   void		precalc_last(const PARAM_LIST*) override;
+public:
+  PARAM_LIST const* params()const override { untested(); return &_params;}
 private:
   static int	_count;
 public:

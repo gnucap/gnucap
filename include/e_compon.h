@@ -87,6 +87,7 @@ public:
   void parse_modelname(CS&);
 
   virtual COMMON_COMPONENT* clone()const = 0;
+  COMMON_COMPONENT* mutable_clone() { return is_shared()?clone():this; }
 
   virtual bool use_obsolete_callback_parse()const {return false;}
   virtual bool use_obsolete_callback_print()const {return false;}
@@ -137,6 +138,12 @@ public: // TODO: provide effective device temperature.
 
 private:
   bool parse_param_list(CS&);
+  virtual PARAM_LIST const* params()const { return nullptr; }
+
+private:
+  friend class COMPONENT;
+  void precalc_first_chain(PARAM_LIST const* p);
+  void precalc_last_chain(PARAM_LIST const* p);
 };
 /*--------------------------------------------------------------------------*/
 /* note on _attach_count ...
