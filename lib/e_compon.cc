@@ -664,15 +664,6 @@ void COMPONENT::precalc_first()
     attach_common(c);
   }else{
   }
-
-  // BUG: compute in precalc_last only
-  if(HS_PARAM const* hsp = hsparam()){
-    _mfactor_fixed = float(hsp->mfactor());
-  }else{
-    _mfactor_fixed = 1.;
-  }
-  trace2("COMPONENT::precalc_first", long_label(), _mfactor_fixed);
-
 }
 /*--------------------------------------------------------------------------*/
 // .. bypassed in mg_out_dev.
