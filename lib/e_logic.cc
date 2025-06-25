@@ -64,7 +64,7 @@ std::string COMMON_LOGIC::param_name(int I)const
   switch (I) {
   case 0: return "delay";
   case 1: return "model";
-  default:untested(); return COMMON_COMPONENT::param_name(I-2);
+  default: return COMMON_COMPONENT::param_name(I-2);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -84,7 +84,7 @@ std::string COMMON_LOGIC::param_value(int I)const
   switch (I) {
   case 0: return _delay.string();
   case 1: return _modelname;
-  default:untested(); return COMMON_COMPONENT::param_value(I-2);
+  default: return COMMON_COMPONENT::param_value(I-2);
   }
 }
 /*--------------------------------------------------------------------------*/

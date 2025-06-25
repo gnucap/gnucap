@@ -268,7 +268,7 @@ void DEV_LOGIC::precalc_last()
   ELEMENT::precalc_last();
   // duplicate in e_subckt.
   if (subckt()) {
-    if(HS_PARAM const* h = hsparam()){ untested();
+    if(HS_PARAM const* h = hsparam()){
       h->export_to(subckt()->params());
     }else{
     }
@@ -417,7 +417,7 @@ void DEV_LOGIC::tr_regress()
   switch (_gatemode) {
   case moUNKNOWN: unreachable(); break;
   case moMIXED:   unreachable(); break;
-  case moANALOG:  untested();
+  case moANALOG:
     assert(subckt());
     subckt()->tr_regress();
     break;
