@@ -25,13 +25,14 @@
  * model:   .model mname LOGIC <args>
  */
 //testing=script,sparse 2023.11.22
-#include "e_logicmod.h"
 #include "globals.h"
-#include "e_subckt.h"
 #include "u_xprobe.h"
+#include "u_nodemap.h"
+#include "e_logicmod.h"
+#include "e_subckt.h"
 #include "e_logic.h"
 #include "e_elemnt.h"
-#include "u_nodemap.h"
+#include "e_hsparam.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -265,7 +266,12 @@ DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
 void DEV_LOGIC::precalc_last()
 {
   ELEMENT::precalc_last();
+  // duplicate in e_subckt.
   if (subckt()) {
+    if(HS_PARAM const* h = hsparam()){
+      h->export_to(subckt()->params());
+    }else{
+    }
     subckt()->precalc_last();
   }else{
   }
@@ -411,7 +417,7 @@ void DEV_LOGIC::tr_regress()
   switch (_gatemode) {
   case moUNKNOWN: unreachable(); break;
   case moMIXED:   unreachable(); break;
-  case moANALOG:  untested();
+  case moANALOG:
     assert(subckt());
     subckt()->tr_regress();
     break;

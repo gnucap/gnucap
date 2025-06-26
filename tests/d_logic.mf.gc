@@ -1,0 +1,34 @@
+//'6 inverters as gates
+.model  mos logic ( delay= 1n  rise= 1n  fall= 1n  rs= 100.  rw= 1.G 
++ thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
+.model nmos  nmos ( level=2  vto= 0.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8 
++ cgso= 0.  cgdo= 0.  cgbo= 0.  rsh= 0.  cj= 0.  mj= 0.5  cjsw= 0.  mjsw= 0.33 
++ tox= 100.n  nfs= 0.  tpg=1  ld= 0.  uo= 600.  neff= 1.  fc= 0.5  delta= 0. 
++)
+*+(* vfb=-0.6 * kp= 20.71886u )
+.model pmos  pmos ( level=2  vto= 0.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8 
++ cgso= 0.  cgdo= 0.  cgbo= 0.  rsh= 0.  cj= 0.  mj= 0.5  cjsw= 0.  mjsw= 0.33 
++ tox= 100.n  nfs= 0.  tpg=1  ld= 0.  uo= 600.  neff= 1.  fc= 0.5  delta= 0. 
++)
+verilog
+inv #(.model(mos))  U1  (\2 ,\1 );
+inv #(.model(mos), .$mfactor(2))  U2  (\3 ,\1 );
+resistor #(1k) rload1(\2 , \0 );
+resistor #(1k) rload2(\3 , \0 );
+list
+.subckt mosinv1  2  3 
+Vdd  1  0  dc 5.
+M1   2  3  0  0  nmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1.
+M2   2  3  1  1  pmos  l= 100.u  w= 100.u  nrd= 1.  nrs= 1.
+.ends
+spice
+Vdd  8  0  dc 5.
+V1   1  0  generator( 1. ) 
+.gen freq=1 offset=2.5 init=2.5 ampl=2.5 
+*+ends mosinv1
+*+(* vfb=-0.6 * kp= 20.71886u )
+.option mode=analog vmax=5.1 vmin=-.1
+.print tran v(nodes) i(rload*)
+.tran .9
+.stat notime
+.end 

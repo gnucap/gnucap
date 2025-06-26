@@ -36,7 +36,7 @@ protected:
   ~ELEMENT() {}
   
   void	   store_values()		{assert(_y[0]==_y[0]); _y1=_y[0];}
-  //void   reject_values()		{ _y0 = _y1;}
+  //void   reject_values()		{ untested(); _y0 = _y1;}
 public:
   void	set_value(double v);
   void	set_value(const std::string& v);
@@ -44,8 +44,6 @@ public:
   double value()const;
 
   bool	   skip_dev_type(CS&);
-private:
-  std::string value_string() const;
 private: // obsolete -- do not use in new code
   void     obsolete_set_value(double v) final override{
     assert(!has_common() || !common()->has_value() );

@@ -182,6 +182,14 @@ public:
     return *this;
   }
 
+  std::string lookup(std::string const& Key)const {
+    if(_p){
+      return (*_p)[Key];
+    }else{
+      return "";
+    }
+  }
+
   ATTRIB_LIST_p& add_to(const std::string& String, tag_t Owner) {
     if (String != "") {
       if (_p) {

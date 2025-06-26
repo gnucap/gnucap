@@ -289,6 +289,9 @@ public:
   }
   /*explicit*/ PARAM_INSTANCE(PARAM_INSTANCE const& p) {
     p.base()->pclone(&_mem);
+    assert(p.string() == string());
+    assert(operator==(p));
+    assert(p.operator==(*this));
   }
   ~PARAM_INSTANCE() {
     base()->~PARA_BASE();
@@ -330,7 +333,7 @@ public:
       if(dynamic_cast<Float const*>(v)){itested();
 	*this = PARAMETER<Float>();
 	*base() = v;
-      }else if(dynamic_cast<Integer const*>(v)){ untested();
+      }else if(dynamic_cast<Integer const*>(v)){ itested();
 	*this = PARAMETER<Integer>();
 	*base() = v;
       }else{ untested();
@@ -344,7 +347,7 @@ public:
   }
   PARAM_INSTANCE& operator=(double const& p) = delete;
 public:
-  Base const* value()const {untested(); return base()->value();}
+  Base const* value()const { return base()->value();}
   std::string const string() const{
     assert(base());
     return base()->string();
@@ -380,7 +383,7 @@ public:
   operator double() const{ untested();
     // still used in Gnucsator.
     Base const* v = base()->value();
-    if(auto f = dynamic_cast<Float const*>(v)){ untested();
+    if(auto f = dynamic_cast<Float const*>(v)){ itested();
       return *f;
     }else{ untested();
       return NOT_VALID;
@@ -397,7 +400,7 @@ public:
  //    }
  //  }
   PARA_BASE const* operator->()const {return base();}
-  PARA_BASE const* operator*()const { untested();return base();}
+  PARA_BASE const* operator*()const {return base();}
 }; // PARAM_INSTANCE
 /*--------------------------------------------------------------------------*/
 class INTERFACE PARAM_LIST {
@@ -491,6 +494,8 @@ private:
     _pi = p._pi;
     _pv = p._pv;
     _is_verilog = p._is_verilog;
+    assert(operator==(p));
+    assert(p.operator==(*this));
   }
 };
 /*--------------------------------------------------------------------------*/
@@ -574,7 +579,8 @@ inline T PARAMETER<T>::lookup_solve(const T& Def, const PARAM_LIST* scope)const
     if(b){
       ret = get<T>(b);
     }else{
-      error(bWARNING, "parameter " + _s +  " not specified, using default\n");
+      int lvl = (_s[0] == '$')?bNOERROR:bWARNING;
+      error(lvl, "parameter " + _s +  " not specified, using default\n");
       ret = def;
     }
     trace3("los1", _s, v, ret);

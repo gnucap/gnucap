@@ -1,0 +1,27 @@
+module a (x,y);
+isource #(.dc(1.), .$mfactor(7)) i(x, y);
+endmodule
+
+module b (x,y);
+//a r(x,y)
+a #(.$mfactor(1)) r(x,y)
+endmodule
+
+module c (x,y);
+b #(.$mfactor(3)) r(x,y)
+endmodule
+
+verilog
+parameter mf = 1.
+
+ground gnd;
+
+resistor #(1) i(gnd ,x);
+c #(.$mfactor(mf)) a1(gnd , x);
+
+print dc v(nodes)
+dc
+
+dc mf 1 3 1
+
+list

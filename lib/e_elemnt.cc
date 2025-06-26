@@ -34,14 +34,19 @@ class COMMON_VALUE : public EVAL_BM_BASE {
 
   explicit COMMON_VALUE(COMMON_VALUE const& c) :
     EVAL_BM_BASE(c),
-    _name(c._name) {}
+    _name(c._name) {
+    trace1("COMMON_VALUE", this);
+  }
 public:
   explicit COMMON_VALUE(int c) : EVAL_BM_BASE(c) { }
-  // explicit COMMON_VALUE(COMMON_COMPONENT* next=nullptr) : EVAL_BM_BASE(next) { untested();
-  //   assert(!dynamic_cast<COMMON_VALUE*>(next));
-  // }
+  explicit COMMON_VALUE(COMMON_COMPONENT* next=nullptr) : EVAL_BM_BASE(next) { untested();
+    trace2("COMMON_VALUE", this, next);
+    assert(!dynamic_cast<COMMON_VALUE*>(next));
+  }
   COMMON_VALUE* clone()const override { return new COMMON_VALUE(*this); }
-  ~COMMON_VALUE() { }
+  ~COMMON_VALUE() {
+    trace1("~CV", _name);
+  }
 
   std::string name()const override { untested(); return _name; }
   void set_name(std::string const& n) { _name = n; }
@@ -55,6 +60,12 @@ public: // value handling
   bool use_obsolete_callback_print()const override	{ return false;}
 
 private: // param overrides, EVAL_BM_BASE?
+  std::string param_value(int I)const override {
+    switch (I) {
+    case 0:  return _value.string();
+    default: return EVAL_BM_BASE::param_value(I-1);
+    }
+  }
   std::string param_name(int I)const override {
     switch (I) {
     case 0:  return _name;
@@ -70,14 +81,14 @@ private: // param overrides, EVAL_BM_BASE?
   }
   bool param_is_printable(int I)const override {
     switch (I) {
-    case 0:  return (true);
+    case 0: return (true);
     default: return EVAL_BM_BASE::param_is_printable(I-1);
     }
   }
   void set_param_by_index(int I, std::string& Value, int offset)override {
     if(I==0){
       set_value(Value);
-    }else{ untested();
+    }else{
       EVAL_BM_BASE::set_param_by_index(I-1, Value, offset+1);
     }
   }
@@ -168,14 +179,17 @@ double ELEMENT::value()const
 /*--------------------------------------------------------------------------*/
 int ELEMENT::set_param_by_name(std::string Name, std::string Value)
 {
+  trace4("elt::spbn", value_name(), Name, Value, has_common());
   if(!has_common()){
     COMMON_VALUE* vv = cv.clone();
     vv->set_name(value_name());
     attach_common(vv);
   }else{
   }
-  return COMPONENT::set_param_by_name(Name, Value);
+  int idx = COMPONENT::set_param_by_name(Name, Value);
   trace4("elt::spbn done", value_name(), Name, Value, has_common());
+  // assert(param_name(idx) == Name);
+  return idx;
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
@@ -187,8 +201,10 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
     attach_common(vv);
   }else{
   }
+
   COMPONENT::set_param_by_index(i, Value, offset);
 }
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 bool ELEMENT::skip_dev_type(CS& cmd)
 {

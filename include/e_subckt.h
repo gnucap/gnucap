@@ -45,12 +45,9 @@ protected: // override virtual
   int     matrix_nodes()const override	{return 0;}
   int     net_nodes()const override	{return _net_nodes;}
   //CARD* clone()const			//CARD/null
-  void  precalc_first()override { COMPONENT::precalc_first();
-    if(subckt()){ subckt()->precalc_first();} else { } }
+  void  precalc_first()override;
   //void  expand()			//COMPONENT
-/*--------------------------------------------------------------------------*/
-  void  precalc_last()override { COMPONENT::precalc_last();
-    if(subckt()){ subckt()->precalc_last();} else { untested(); } }
+  void  precalc_last()override;
   //void  map_nodes();
   void	  tr_begin()override	{assert(subckt()); subckt()->tr_begin();}
   void	  tr_restore()override	{assert(subckt()); subckt()->tr_restore();}

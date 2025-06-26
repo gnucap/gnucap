@@ -174,9 +174,9 @@ void EVAL_BM_ACTION_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* 
 std::string EVAL_BM_ACTION_BASE::param_value(int i) const
 { untested();
   switch (i) {
-  case 0:itested();  return _tnom_c.string();
-  case 1:itested();  return _dtemp.string();
-  case 2:itested();  return _temp_c.string();
+  case 0:untested();  return _tnom_c.string();
+  case 1:untested();  return _dtemp.string();
+  case 2:untested();  return _temp_c.string();
   default:untested(); return "";
   }
 }
@@ -193,10 +193,10 @@ bool EVAL_BM_ACTION_BASE::param_is_printable(int i) const
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::precalc_last(const PARAM_LIST* Scope)
 {
-  assert(Scope);
+  // assert(Scope);
   EVAL_BM_BASE::precalc_last(Scope);
   _tnom_c.e_val(OPT::tnom_c, Scope);
-  _dtemp.e_val(0., Scope);
+  _dtemp.e_val(_default_dtemp, Scope);
   _temp_c.e_val(_sim->_temp_k - P_CELSIUS0 + _dtemp, Scope);
 
   _bandwidth.e_val(_default_bandwidth, Scope);

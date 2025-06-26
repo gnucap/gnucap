@@ -1,0 +1,22 @@
+#           v(gnd)     v(x)      
+ 0.         0.         21.       
+#           v(gnd)     v(x)      
+ 1.         0.         21.       
+ 2.         0.         42.       
+ 3.         0.         63.       
+module a (.x(x),.y(y));
+isource #(.dc(1.),.$mfactor(7)) i (.p(x),.n(y));
+endmodule // a
+
+module b (.x(x),.y(y));
+//a r(x,y)
+a #(.$mfactor(1)) r (.x(x),.y(y));
+endmodule // b
+
+module c (.x(x),.y(y));
+b #(.$mfactor(3)) r (.x(x),.y(y));
+endmodule // c
+
+ground gnd;
+resistor #(.r(1)) i (.p(gnd),.n(x));
+c #(.$mfactor(mf)) a1 (.x(gnd),.y(x));

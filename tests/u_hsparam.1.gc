@@ -17,5 +17,7 @@ a #(.$mfactor(5)) a1(x, \0 );
 isource #(1) i(\0 ,y);
 c #(.$mfactor(5)) a1(y, \0 );
 
-print op v(nodes)
+list
+print op v(nodes) iter(0)
 op
+status notime

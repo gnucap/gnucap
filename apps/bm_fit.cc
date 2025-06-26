@@ -162,6 +162,7 @@ void EVAL_BM_FIT::precalc_last(const PARAM_LIST* Scope)
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_FIT::tr_eval(ELEMENT* d)const
 {
+  assert(_spline);
   d->_y[0] = _spline->at(d->_y[0].x);
   tr_final_adjust(&(d->_y[0]), d->f_is_value());
 }

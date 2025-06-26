@@ -1,0 +1,19 @@
+verilog
+
+ground gnd;
+resistor #(1) r0(gnd, v0);
+resistor #(.r(1)) r1(gnd, v1);
+resistor #(.$mfactor(2), .r(2.1)) r2(gnd, v2);
+resistor #(.r(2), .$mfactor(2.1)) r3(gnd, v3);
+
+isource #(.dc(1)) i0 (gnd, v0);
+isource #(.dc(1)) i1 (gnd, v1);
+isource #(.dc(1)) i2 (gnd, v2);
+isource #(.dc(1)) i3 (gnd, v3);
+
+list r*
+
+print dc v(nodes)
+dc
+
+list r*

@@ -35,11 +35,11 @@ protected:
 protected:
   explicit	EVAL_BM_BASE(int c=0) 
     :COMMON_COMPONENT(c) {}
+  explicit	EVAL_BM_BASE(COMMON_COMPONENT* next)
+    :COMMON_COMPONENT(next) { untested();}
 public:
   explicit	EVAL_BM_BASE(const EVAL_BM_BASE& p)
-    :COMMON_COMPONENT(p), _value(p._value) {
-      trace2("EVAL_BM_BASE::EVAL_BM_BASE", _value, _value.string());
-    }
+    :COMMON_COMPONENT(p), _value(p._value) { }
 		~EVAL_BM_BASE() {}
 protected: // override virtual
   virtual COMMON_COMPONENT* clone()const override {return new EVAL_BM_BASE(*this); }

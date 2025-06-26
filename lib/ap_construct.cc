@@ -173,7 +173,6 @@ CS& CS::getline(const std::string& prompt /*, char delim*/)
       }else if(_cmd.size() == _length){
 	// throws std::length_error in case of overflow.
 	_cmd.resize(int(2 * _length) + 1);
-	trace4("getline", _cmd.size(), _length, c, _cmd);
 	chunk_size = int(_length + 2);
 	assert(chunk_size > 0);
       }else{
