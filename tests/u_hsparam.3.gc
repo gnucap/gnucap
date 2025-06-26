@@ -1,0 +1,8 @@
+
+module a (x,y);
+isource #((*dc*).dc(1.), (*mf*).$mfactor(7), (*foo*).$foo(3)) i(x, y);
+endmodule
+
+verilog
+list
+status notime

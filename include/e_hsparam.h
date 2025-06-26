@@ -74,7 +74,7 @@ public:
   int set_param_by_name(std::string Name, std::string Value) override;
   void set_mfactor(double x)override { itested(); _mfactor = x; }
   int param_count()const override {
-    return sysparams_count;
+    return sysparams_count + COMMON_PARAMLIST::param_count();
   }
   std::string param_name(int i, int j)const override { untested();
     assert(i < HS_PARAM::param_count());

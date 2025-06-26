@@ -60,14 +60,13 @@ bool HS_PARAM::param_is_printable(int I) const
   case 7:
     return _angle.has_hard_value();
   default:
-    unreachable();
-    return false;
+    return COMMON_PARAMLIST::param_is_printable(I-sysparams_count);
   }
 }
 /*--------------------------------------------------------------------------*/
-void HS_PARAM::set_param_by_index(int i, std::string& V, int)
+void HS_PARAM::set_param_by_index(int I, std::string& V, int Offset)
 {
-  switch(i) {
+  switch(I) {
   case 0:
     _mfactor = V;
     break;
@@ -93,7 +92,7 @@ void HS_PARAM::set_param_by_index(int i, std::string& V, int)
     _angle = V;
     break;
   default: untested();
-    throw Exception_Too_Many(i, HS_PARAM::param_count(), 0);
+    return COMMON_PARAMLIST::set_param_by_index(I-sysparams_count, V, Offset+sysparams_count);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -110,9 +109,12 @@ int HS_PARAM::set_param_by_name(std::string Name, std::string Value)
   if(which>=0){
     set_param_by_index(which, Value, 0);
     return which;
+  }else if(Name[0] == '$'){
+    return _params.set(Name, Value) + sysparams_count;
   }else{ untested();
     trace2("hsp::spbn base", Name, Value);
-    return COMMON_COMPONENT::set_param_by_name(Name, Value);
+    incomplete();
+    return COMMON_COMPONENT::set_param_by_name(Name, Value) + sysparams_count;
   }
 }
 /*--------------------------------------------------------------------------*/

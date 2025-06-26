@@ -408,7 +408,7 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
   if(Name[0] == '$'){
     if(!has_next()) {
       attach_next(new HS_PARAM());
-    }else{ untested();
+    }else{
     }
 
     // todo: figure out index.
