@@ -1,0 +1,43 @@
+
+verilog
+
+module test(.p(x), .q(y));
+electrical x, y;
+inout x, y;
+wire w;
+
+resistor r1(a, b);
+endmodule;
+
+module tempresistor(.p(p), .n(n));
+electrical p, n;
+inout p, n;
+parameter real r = 1. from [0.:inf);
+parameter real tc1 = 0., tc2 = 0.;
+parameter real tnom = 0.; // nonstandard ..
+parameter real dt = $temperature() - tnom;
+resistor #(.r(r * (1.+(tc1+tc2*dt)*dt)) r1(p, n);
+endmodule
+
+parameter dd=0;
+ground g;
+isource #(.dc(1)) i1 (g, a);
+
+module trb(a f);
+parameter tnom=0;
+tempresistor #(.tnom(tnom), .r(1.k), .tc1(1.m)) tr(a, b);
+tempresistor #(.tnom(tnom), .r(1.k), .tc1(1.m)) tr(b, c);
+tempresistor #(.tnom(tnom), .r(1.k), .tc1(1.m)) tr(c, d);
+tempresistor #(.tnom(tnom), .r(1.k), .tc1(1.m)) tr(d, e);
+tempresistor #(.tnom(tnom), .r(1.k), .tc1(1.m)) tr(e, f);
+endmodule
+
+module trs(a f);
+parameter tnom=0;
+trb #(.$dtemp(2), .tnom(tnom)) tt(a,f);
+endmodule
+
+trs #(.$dtemp(dd), .tnom($temperature())) tr(a, g);
+
+print dc v(nodes)
+dc dd -2 3 1

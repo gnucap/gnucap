@@ -1,0 +1,35 @@
+
+module rr (a, b, c, ref);
+parameter p=1;
+	resistor #(.r($temperature())) r(a, ref);
+	resistor #(.r($temperature())) r(b, ref);
+	resistor #(.r($vt())) r(c, ref);
+endmodule
+
+simulator lang=verilog
+ground gnd;
+
+isource #(1) v1(\0 , \1 );
+isource #(1) v2(\0 , \2 );
+isource #(1) v3(\0 , \3 );
+rr #() s(\1 , \2 , \3 , gnd);
+
+list
+
+print op v(nodes) i(v1)
+options temperature=27
+op
+options temperature=28
+op
+
+delete s
+ground gnd;
+rr #(.$dtemp(40)) s(\1 , \2 , \3 , gnd);
+print op v(nodes) i(v1)
+options temperature=27
+op
+options temperature=28
+op
+
+status notime
+end

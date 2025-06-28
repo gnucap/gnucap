@@ -106,9 +106,6 @@ inline bool EVAL_BM_BASE::operator==(COMMON_COMPONENT const& x) const
 /*--------------------------------------------------------------------------*/
 class INTERFACE EVAL_BM_ACTION_BASE : public EVAL_BM_BASE {
 protected:
-  PARAMETER<double> _tnom_c;  // specification temperature
-  PARAMETER<double> _dtemp;   // rise over enclosing temperature
-  PARAMETER<double> _temp_c;  // actual temperature of device
   PARAMETER<double> _bandwidth;
   PARAMETER<double> _delay;
   PARAMETER<double> _phase;
@@ -146,9 +143,6 @@ protected: // override virtual
 public:
   bool		has_ext_args()const;
   static COMMON_COMPONENT* parse_func_type(CS&);
-public:
-  double temp_c()const { return _temp_c; }
-  double temp_diff()const { return _temp_c - _tnom_c; }
 public:
   bool param_is_printable(int i)const override;
   std::string param_value(int i)const override;

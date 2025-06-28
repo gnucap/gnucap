@@ -1,0 +1,35 @@
+
+
+verilog
+
+module temptest(a,b)
+	resistor #(.r($temperature()+0.01)) r1(a,b);
+endmodule
+
+ground gnd;
+isource #(.dc(1)) i1(gnd, t1);
+temptest #(.$temperature(100.), .$mfactor(1.001)) t1(gnd, t1);
+
+print dc v(nodes) r(t1.r1)
+dc
+end
+
+delete t1
+ground gnd;
+
+options temp=0.; celsius
+temptest #(.$dtemp(-100.)) t1(gnd, t1);
+print dc v(nodes)
+dc
+
+print op v(nodes)
+op 0 10 5
+
+delete t1
+ground gnd;
+
+parameter ttt=0;
+options temp=0.; celsius
+temptest #(.$dtemp(ttt)) t1(gnd, t1);
+print dc v(nodes)
+dc ttt 0 10 5

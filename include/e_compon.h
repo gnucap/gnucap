@@ -94,7 +94,7 @@ public:
   virtual bool use_obsolete_callback_parse()const {return false;}
   virtual bool use_obsolete_callback_print()const {return false;}
   virtual void parse_common_obsolete_callback(CS&);
-  virtual void print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const { }
+  virtual void print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const;
   virtual bool has_parse_params_obsolete_callback()const {return false;}
   virtual bool is_trivial()const {untested(); return false;} // obsolete
 
@@ -164,8 +164,11 @@ public:
   HS_PARAM const* hsparam()const{
     return const_cast<COMMON_COMPONENT*>(this)->hsparam();
   }
+public:
+  double temp_c()const;
+  double temp_diff()const;
   bool has_hsparam()const {
-    return const_cast<COMMON_COMPONENT*>(this)->hsparam();
+    return hsparam();
   }
   virtual void set_mfactor(double);
 private:

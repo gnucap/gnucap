@@ -25,9 +25,10 @@
 //testing=script 2016.03.25
 #include "globals.h"
 #include "u_lang.h"
+#include "e_cardlist.h"
+#include "e_hsparam.h" // BUG
 #include "e_model.h"
 #include "bm.h"
-#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_SEMI_BASE : public EVAL_BM_ACTION_BASE {
 protected:
@@ -47,6 +48,7 @@ protected: // override virtual
   COMMON_COMPONENT* clone()const override = 0;
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
+  void		precalc_first(const PARAM_LIST*) override;
   void		precalc_last(const PARAM_LIST*) override;
   void  	expand(const COMPONENT*) override;
   void		tr_eval(ELEMENT*)const override;
@@ -222,6 +224,14 @@ void EVAL_BM_SEMI_BASE::expand(const COMPONENT* d)
   attach_model(d);
 }
 /*--------------------------------------------------------------------------*/
+void EVAL_BM_SEMI_BASE::precalc_first(const PARAM_LIST*)
+{
+  if(has_next()){
+  }else{
+    attach_next(&HS_PARAM::hs_param);
+  }
+}
+/*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::precalc_last(const PARAM_LIST* Scope)
 {
   assert(Scope);
@@ -232,6 +242,7 @@ void EVAL_BM_SEMI_BASE::precalc_last(const PARAM_LIST* Scope)
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::tr_eval(ELEMENT* d)const
 {
+  trace2("treval", d, _va_lue);
   tr_finish_tdv(d, _va_lue);
 }
 /*--------------------------------------------------------------------------*/
@@ -350,6 +361,7 @@ void EVAL_BM_SEMI_RESISTOR::precalc_last(const PARAM_LIST* Scope)
     _va_lue = BIGBIG;
   }
   double tempdiff = (temp_c() - m->_tnom_c);
+  trace2("tempdiff", temp_c(), m->_tnom_c);
   _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (has_hard_value(m->_rsh)) {

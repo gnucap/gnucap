@@ -31,14 +31,14 @@ void BASE_SUBCKT::precalc_first()
   if(has_common()) {
     if(dynamic_cast<HS_PARAM*>(mutable_common()->next_common())){
       // already there.
-    }else{
+    }else{ untested();
       // create one.
       HS_PARAM* hspl = new HS_PARAM();
       hspl->attach_next(mutable_common()->next_common());
       assert(!mutable_common()->has_next());
       mutable_common()->attach_next(hspl);
     }
-  }else{
+  }else{ untested();
     // device without common, but with hs params
     attach_common(new HS_PARAM());
   }

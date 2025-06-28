@@ -332,7 +332,6 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const PARAM_LIST*
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
       // throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
     }else if(!_v){ untested();
-      assert(_s != "\"one\"");
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
     }else{
     }

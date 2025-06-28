@@ -380,12 +380,12 @@ public:
     }
     return ret;
   }
-  operator double() const{ untested();
+  operator double() const{
     // still used in Gnucsator.
     Base const* v = base()->value();
     if(auto f = dynamic_cast<Float const*>(v)){ itested();
       return *f;
-    }else{ untested();
+    }else{
       return NOT_VALID;
     }
   }
@@ -642,7 +642,8 @@ Base const* PARAMETER<T>::e_val_(const Base* Def, const PARAM_LIST* scope, int r
     if (_v.is_NA()) {
       //BUG// needs to show scope
       //BUG// it is likely to have a numeric overflow resulting from the bad value
-      error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
+      int lvl = (_s[0] == '$')?bNOERROR:bDANGER;
+      error(lvl, "parameter " + _s + " value is \"NOT_INPUT\"\n");
       // throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
     }else{
     }

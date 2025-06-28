@@ -563,6 +563,7 @@ bool DEV_SUBCKT::makes_own_scope() const
 /*--------------------------------------------------------------------------*/
 void DEV_SUBCKT::precalc_last()
 {
+  // skip BASE_SUBCKT, need params before sckt->precalc
   COMPONENT::precalc_last();
 
   COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());

@@ -473,19 +473,32 @@ bool COMMON_COMPONENT::parse_numlist(CS&)
 bool COMMON_COMPONENT::parse_params_obsolete_callback(CS& cmd)
 {
   trace1("COMMON_COMPONENT::parse_params_obsolete_callback", cmd.tail());
+  std::string val;
   if(cmd.match1('$')){
     size_t here = cmd.cursor();
 
     std::string name;
     cmd >> name;
     if(cmd >> '='){
-      std::string value = cmd.ctos(",=;)", "\"'{(", "\"'})");
-      set_param_by_name(name, value);
+      val = cmd.ctos(",=;)", "\"'{(", "\"'})");
+      set_param_by_name(name, val);
       assert(cmd);
     }else{ untested();
       cmd.reset_fail(here);
     }
     return cmd;
+  }else if (cmd.umatch( "tnom {=}")){ untested();
+    cmd >> val;
+    set_param_by_name("$tnom_c", val);
+    return true;
+  }else if (cmd.umatch("dtemp {=}")){ untested();
+    cmd >> val;
+    set_param_by_name("$dtemp", val);
+    return true;
+  }else if (cmd.umatch("temp {=}")){
+    cmd >> val;
+    set_param_by_name("$temp_c", val);
+    return true;
   }else{
     return false;
   }
@@ -702,7 +715,6 @@ void COMPONENT::precalc_last()
     }
     attach_common(c);
   }else{
-    assert(_mfactor_fixed == 1.);
   }
 
   float mfactor_new;
@@ -789,18 +801,6 @@ void COMPONENT::set_slave()
   }
 }
 /*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-#if 0
-void COMPONENT::set_mfactor(double x)
-{untested();
-  if(has_hsparam() || x!=1.){ untested();
-    hsparam().set_mfactor(x);
-  }else{ untested();
-    // avoid hsparam allocation.
-    assert(my_mfactor()==1.);
-  }
-}
-#endif
 /*--------------------------------------------------------------------------*/
 int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
@@ -1099,6 +1099,32 @@ void COMMON_COMPONENT::set_mfactor(double m)
   }
   nn->set_mfactor(m);
   attach_next(nn);
+}
+/*--------------------------------------------------------------------------*/
+double COMMON_COMPONENT::temp_c()const
+{
+  if(has_hsparam()){
+    return hsparam()->temp_k() - P_CELSIUS0;
+  }else{
+    return CKT_BASE::_sim->_temp_k - P_CELSIUS0;
+  }
+}
+/*--------------------------------------------------------------------------*/
+double COMMON_COMPONENT::temp_diff()const
+{
+  if(has_hsparam()){
+    return hsparam()->temp_diff();
+  }else{
+    return 0.;
+  }
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang) const
+{
+  if(has_next()){
+    next_common()->print_common_obsolete_callback(o, lang);
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

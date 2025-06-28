@@ -287,7 +287,7 @@ void EVAL_BM_COND::precalc_last(const PARAM_LIST* Scope)
       cl->precalc_last(Scope);
       attach_common(cl, &_func[i]);
       did_this = _func[i];
-    }else{untested();
+    }else{
       // already did
     }
   }
