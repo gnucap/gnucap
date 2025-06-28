@@ -50,7 +50,7 @@ public:
   virtual ~PARA_BASE(){}
   virtual PARA_BASE* clone()const = 0;
   virtual PARA_BASE* pclone(void*)const = 0;
-  virtual bool operator==(const PARA_BASE&) const = 0;
+  virtual bool operator==(const PARA_BASE& p) const = 0;
 
 	  bool	has_hard_value()const {return (_s != "");}
   virtual bool	has_good_value()const = 0;
@@ -508,7 +508,7 @@ inline bool PARAMETER<bool>::lookup_solve(const bool&, const PARAM_LIST*)const
 /*--------------------------------------------------------------------------*/
 template <class T>
 T get(Base const* t)
-{ untested();
+{
   auto f = prechecked_cast<T const*>(t);
   assert(f);
   return *f;

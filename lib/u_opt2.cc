@@ -36,9 +36,10 @@ void OPT::command(CS& cmd, CARD_LIST* Scope)
   }
 }
 /*--------------------------------------------------------------------------*/
-static bool Get(CS& cmd, std::string const& key, method_t* method)
+bool Get(CS& cmd, std::string const& key, method_t* method)
 {
   return (cmd >> (key + " {=}")) && (ONE_OF
+   || Set(cmd, "unknown", 	method, meUNKNOWN)
    || Set(cmd, "euler", 	method, meEULER)
    || Set(cmd, "eulero{nly}",	method, meEULERONLY)
    || Set(cmd, "trap{ezoidal}",	method, meTRAP)

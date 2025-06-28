@@ -1,0 +1,22 @@
+verilog
+
+module m( a, b, c );
+  ground \0 ;
+  capacitor #(.$method("euler"), .$xposition(2),     .c(1)) ca(a, \0 ); // traponly wins.
+  capacitor #(.$method("euleronly"), .c(1)) cb(b, \0 ); // euler wins.
+  capacitor #(.c(1), .$method("trap")) cc(c, \0 ); // trap
+endmodule
+
+m #(.$method("traponly")) mm(a b c);
+
+list
+spice
+
+V1 p 0 pulse 0 1 .1 .1
+
+R1 p a 1
+R1 p b 1
+R1 p c 1
+
+.print tran v(a b c) method(mm.*)
+.tran 1

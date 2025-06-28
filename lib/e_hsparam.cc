@@ -27,7 +27,7 @@
 bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
 {
   auto* p = dynamic_cast<HS_PARAM const*>(&x);
-  return (p
+  bool ret = (p
       && _mfactor == p->_mfactor
       && _xposition == p->_xposition
       && _yposition == p->_yposition
@@ -36,8 +36,12 @@ bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
       && _vflip == p->_vflip
       && _zflip == p->_zflip
       && _angle == p->_angle
+      && _method == p->_method
       && _mfactor_fixed == p->_mfactor_fixed
+      && _method_fixed == p->_method_fixed
       && COMMON_PARAMLIST::operator==(x));
+  trace1("op==", ret);
+  return ret;
 }
 /*--------------------------------------------------------------------------*/
 bool HS_PARAM::param_is_printable(int I) const
@@ -59,6 +63,8 @@ bool HS_PARAM::param_is_printable(int I) const
     return _zflip.has_hard_value();
   case 7:
     return _angle.has_hard_value();
+  case 8:
+    return _method.has_hard_value();
   default:
     return COMMON_PARAMLIST::param_is_printable(I-sysparams_count);
   }
@@ -91,6 +97,14 @@ void HS_PARAM::set_param_by_index(int I, std::string& V, int Offset)
   case 7: untested();
     _angle = V;
     break;
+  case 8:
+    if(!V.size()){ untested();
+      _method = "";
+    }else{
+      _method = V;
+      trace3("hs::spbn", V, _method, _method.string());
+    }
+    break;
   default: untested();
     return COMMON_PARAMLIST::set_param_by_index(I-sysparams_count, V, Offset+sysparams_count);
   }
@@ -120,6 +134,7 @@ int HS_PARAM::set_param_by_name(std::string Name, std::string Value)
 /*--------------------------------------------------------------------------*/
 std::string HS_PARAM::param_name(int I) const
 {
+  assert(sysparams_count == 9);
   static std::string hspname[sysparams_count] { //
     "$mfactor",
     "$xposition",
@@ -128,7 +143,8 @@ std::string HS_PARAM::param_name(int I) const
     "$hflip",
     "$vflip",
     "$zflip",
-    "$angle"
+    "$angle",
+    "$method"
   };
   assert(I>=0);
   if(I<sysparams_count){
@@ -157,6 +173,8 @@ std::string HS_PARAM::param_value(int I) const
     return _zflip.string();
   case 7: untested();
     return _angle.string();
+  case 8:
+    return _method.string();
   default:
     return COMMON_PARAMLIST::param_value(I-sysparams_count);
   }
@@ -185,6 +203,7 @@ void HS_PARAM::expand(COMPONENT const* c)
 void HS_PARAM::precalc_last(PARAM_LIST const* Scope)
 {
   precalc_mfactor(Scope);
+  precalc_method(Scope);
 }
 /*--------------------------------------------------------------------------*/
 void HS_PARAM::precalc_mfactor(PARAM_LIST const* Scope)
@@ -204,6 +223,57 @@ void HS_PARAM::export_to(PARAM_LIST* Scope) const
     Scope->set("$mfactor", _mfactor_fixed);
   }else{ untested();
   }
+  if(_method_fixed!=meUNKNOWN){
+    Scope->set("$method", _method_fixed);
+  }else{ untested();
+  }
+}
+/*--------------------------------------------------------------------------*/
+void HS_PARAM::precalc_method(PARAM_LIST const* Scope)
+{
+  PARAMETER<int> method_hier{meUNKNOWN};
+  method_hier = "$method";
+  method_hier.e_val(OPT::method, Scope);
+
+  _method.e_val(vString(std::string("\"unknown\"")), Scope);
+  if(_method.has_hard_value()) {
+    CS cmd(CS::_STRING, std::string("= ") + std::string(String(_method)));
+    Get(cmd, "", &_method_fixed);
+  }else{
+    _method_fixed = meUNKNOWN;
+  }
+
+  _method_fixed = method_propagate(method_t(int(method_hier)), _method_fixed);
+  trace1("precalc_method3 set", _method_fixed);
+}
+/*--------------------------------------------------------------------------*/
+method_t HS_PARAM::method_propagate(method_t env, method_t here) const
+{
+  method_t prop[meNUM_METHODS][meNUM_METHODS] = { //
+    /*vv OPT vv*/
+    //local>>>EULER,      EULERONLY,  TRAP,     TRAPONLY, GEAR2,GEAR2ONLY,TRAPGEAR,TRAPEULER
+    /*meUNKNOWN*/
+    {meUNKNOWN,meEULER,   meEULERONLY,meTRAP,       meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meEULER*/
+    {meEULER,   meEULER,   meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meEULERONLY*/
+    {meEULER,   meEULER,   meEULERONLY,meEULERONLY, meTRAPONLY,meEULER,   meGEAR2ONLY,meEULERONLY,meEULER},
+    /*meTRAP*/
+    {meTRAP,    meEULER,   meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meTRAPONLY*/
+    {meTRAPONLY,meTRAPONLY,meEULERONLY,meTRAPONLY,  meTRAPONLY,meTRAPONLY,meGEAR2ONLY,meTRAPONLY, meTRAPONLY},
+    /*meGEAR*/
+    {meGEAR2,   meEULER,   meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meGEAR2ONLY*/
+    {meGEAR2,   meGEAR2,   meEULERONLY,meGEAR2ONLY, meTRAPONLY,meGEAR2,   meGEAR2ONLY,meGEAR2ONLY,meGEAR2},
+    /*meTRAPGEAR*/
+    {meTRAPGEAR,meEULER,   meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meTRAPEULER*/
+    {meTRAPEULER,meEULER,  meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER} //
+  };
+  assert(env<meNUM_METHODS);
+  assert(here<meNUM_METHODS);
+  return prop[env][here];
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

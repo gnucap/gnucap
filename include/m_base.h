@@ -415,7 +415,7 @@ protected:
 public:
   void parse(CS&) override { untested();unreachable(); incomplete();}
 private:
-  void dump(std::ostream& o)const override { if(_data){ untested(); o << _data; }else{untested();} }
+  void dump(std::ostream& o)const override { if(_data){ o << _data; }else{untested();} }
   explicit String(char* x) : _data(x) {}
 public:
   explicit String(CS& file) {untested();parse(file);}

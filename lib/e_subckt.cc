@@ -52,6 +52,7 @@ void BASE_SUBCKT::precalc_last()
   if(HS_PARAM const* h = hsparam()){
     h->export_to(subckt()->params());
   }else{
+    trace1("no export", long_label());
   }
 
   subckt()->precalc_last();

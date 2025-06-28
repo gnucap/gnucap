@@ -35,9 +35,9 @@ class INTERFACE STORAGE : public ELEMENT {
 private:
 protected:
   explicit STORAGE(COMMON_COMPONENT* c=nullptr)
-    :ELEMENT(c), _method_u(meUNKNOWN), _method_a(mTRAPGEAR)  {}
+    :ELEMENT(c), _method_a(mTRAPGEAR)  {}
   explicit STORAGE(const STORAGE& p)
-    :ELEMENT(p), _method_u(p._method_u), _method_a(p._method_a) {}
+    :ELEMENT(p), _method_a(p._method_a) {}
   ~STORAGE() {}
 public: // override virtual
   //void   precalc_first();	//ELEMENT
@@ -66,12 +66,13 @@ private:
     return f[_method_a];
   }
 public: // used by commons
-  method_t _method_u;	/* method to use for this part per user */
   METHOD   _method_a;	/* actual integration method (auto)	*/
 protected:
   FPOLY1   _i[OPT::_keep_time_steps]; /* deriv of _q */
 protected:
   static METHOD method_select[meNUM_METHODS][meNUM_METHODS];
+protected:
+  METHOD select_method()const;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

@@ -259,7 +259,7 @@ std::string COMMON_COMPONENT::param_name(int i)const
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i, int j) const
-{untested();
+{
   if(j==0){ untested();
     return param_name(i);
   }else if(next_common()) { untested();
@@ -1100,5 +1100,6 @@ void COMMON_COMPONENT::set_mfactor(double m)
   nn->set_mfactor(m);
   attach_next(nn);
 }
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

@@ -1,0 +1,23 @@
+verilog
+
+module m( a, b, c );
+  ground \0 ;
+  capacitor #(.$method("euleronly"), .c(1)) ca(a, \0 );
+  capacitor #(.$method("traponly"), .c(1)) cb(b, \0 );
+  capacitor #(.$method("euler"), .c(1)) cc(c, \0 );
+endmodule
+
+m #(.$method("traponly")) mm(a, b, c);
+
+list
+
+spice
+
+V1 p 0 pulse 0 1 .1 .1
+
+R1 p a 1
+R1 p b 1
+R1 p c 1
+
+.print tran v(a b c) method(mm.*)
+.tran 1

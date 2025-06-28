@@ -526,7 +526,7 @@ public:
       eq = f->equal(_value);
     }else if(auto i = dynamic_cast<Integer const*>(v.value())){
       eq = i->equal(_value);
-    }else{ untested();
+    }else{
       incomplete();
     }
 

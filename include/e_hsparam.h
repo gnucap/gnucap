@@ -28,7 +28,9 @@
 #include "io_trace.h"
 #include "e_paramlist.h"
 /*--------------------------------------------------------------------------*/
-static const int sysparams_count = 8;
+static const int sysparams_count = 9;
+/*--------------------------------------------------------------------------*/
+bool Get(CS& cmd, std::string const& key, method_t* method); // u_opt2.cc
 /*--------------------------------------------------------------------------*/
 class HS_PARAM : public COMMON_PARAMLIST {
   PARAMETER<double> _mfactor;
@@ -39,9 +41,11 @@ class HS_PARAM : public COMMON_PARAMLIST {
   PARAMETER<double> _vflip;
   PARAMETER<double> _zflip;
   PARAMETER<double> _angle;
+  PARAMETER<vString> _method{};
 
 private: // fixed values. combining hierarchical and specified.
   double _mfactor_fixed{NOT_INPUT};
+  method_t _method_fixed{meUNKNOWN};
 
   explicit HS_PARAM(HS_PARAM const& p) : COMMON_PARAMLIST(p),
     _mfactor(p._mfactor),
@@ -51,9 +55,11 @@ private: // fixed values. combining hierarchical and specified.
     _hflip(p._hflip),
     _vflip(p._vflip),
     _zflip(p._zflip),
-    _angle(p._angle)
-    {
-    }
+    _angle(p._angle),
+    _method(p._method),
+    _mfactor_fixed(p._mfactor_fixed),
+    _method_fixed(p._method_fixed){
+  }
 public:
   explicit HS_PARAM() : COMMON_PARAMLIST() {
     _mfactor.set_default(1.);
@@ -64,6 +70,18 @@ public:
     _vflip.set_default(1);
     _zflip.set_default(1);
     _angle.set_default(0.);
+    _method.set_default(vString(std::string("")));
+  }
+  explicit HS_PARAM(int i) : COMMON_PARAMLIST(i){ untested();
+    _mfactor.set_default(1.);
+    _xposition.set_default(0.);
+    _yposition.set_default(0.);
+    _zposition.set_default(0.);
+    _hflip.set_default(1);
+    _vflip.set_default(1);
+    _zflip.set_default(1);
+    _angle.set_default(0.);
+    _method.set_default(vString(std::string("")));
   }
   ~HS_PARAM() {}
   bool operator==(const COMMON_COMPONENT& x)const override;
@@ -96,6 +114,13 @@ public: // hsp access
       return _mfactor_fixed;
     }
   }
+  method_t method()const {
+    if(_method_fixed){
+      return _method_fixed;
+    }else{ untested();
+      return OPT::method;
+    }
+  }
 
   void precalc_first(PARAM_LIST const*)override {}
   void expand(COMPONENT const* c) override;
@@ -103,8 +128,12 @@ public: // hsp access
   void export_to(PARAM_LIST*)const;
 private:
   void precalc_mfactor(PARAM_LIST const*);
+  void precalc_method(PARAM_LIST const*);
 
   HS_PARAM* hsparam()override { return this; }
+
+private:
+  method_t method_propagate(method_t env, method_t here) const;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

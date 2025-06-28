@@ -23,6 +23,7 @@
  */
 //testing=obsolete,script 2006.06.14 
 #include "e_storag.h"
+#include "e_hsparam.h"
 /*--------------------------------------------------------------------------*/
 /* table for selecting local integraton method
  * Determines which one wins in a conflict.
@@ -56,7 +57,7 @@ void STORAGE::precalc_last()
 {
   ELEMENT::precalc_last();
   set_converged();
-  _method_a = method_select[OPT::method][_method_u];
+  _method_a = select_method();
 
   //assert(_loss0 == 0.);
   //assert(_loss1 == 0.);
@@ -70,7 +71,7 @@ void STORAGE::precalc_last()
 void STORAGE::tr_begin()
 {
   ELEMENT::tr_begin();
-  _method_a = method_select[OPT::method][_method_u];
+  assert(_method_a == select_method());
   for (int i = 0;  i < OPT::_keep_time_steps;  ++i) {
     _i[i] = FPOLY1(0., 0., 0.);
   }
@@ -80,7 +81,7 @@ void STORAGE::tr_begin()
 void STORAGE::tr_restore()
 {
   ELEMENT::tr_restore();
-  _method_a = method_select[OPT::method][_method_u];
+  assert(_method_a == select_method());
 }
 /*--------------------------------------------------------------------------*/
 void STORAGE::dc_advance()
@@ -217,12 +218,27 @@ TIME_PAIR STORAGE::tr_review()
 /*--------------------------------------------------------------------------*/
 double STORAGE::tr_probe_num(const std::string& x)const
 {
-  if (Umatch(x, "method ")) {untested();
+  if (Umatch(x, "method ")) {
     return static_cast<double>(_method_a);
   }else{
     return ELEMENT::tr_probe_num(x);
   }
 }
 /*--------------------------------------------------------------------------*/
+bool Get(CS& cmd, std::string const& key, method_t* method); // u_opt2.cc
+/*--------------------------------------------------------------------------*/
+METHOD STORAGE::select_method() const
+{
+  method_t m = OPT::method;
+  if(HS_PARAM const* h = hsparam()){
+    m = h->method();
+  }else{
+  }
+
+  // make final choice, in case m is "only" or "unknown"
+  METHOD final_choice = method_select[m][meUNKNOWN];
+  trace3("select_method", long_label(), m, final_choice);
+  return final_choice;
+}
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:
