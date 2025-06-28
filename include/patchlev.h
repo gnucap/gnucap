@@ -1,1 +1,1 @@
-#define PATCHLEVEL "hs_method 2025.06.28"
+#define PATCHLEVEL "hs_temp 2025.06.27"

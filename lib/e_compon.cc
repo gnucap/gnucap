@@ -1101,13 +1101,23 @@ void COMMON_COMPONENT::set_mfactor(double m)
   attach_next(nn);
 }
 /*--------------------------------------------------------------------------*/
-double COMMON_COMPONENT::temp_c()const
+double COMMON_COMPONENT::temp_k()const
 {
   if(has_hsparam()){
-    return hsparam()->temp_k() - P_CELSIUS0;
+    return hsparam()->temp_k();
   }else{
-    return CKT_BASE::_sim->_temp_k - P_CELSIUS0;
+    double t = CARD_LIST::card_list.params()->temperature();
+    if(t==NOT_INPUT){ untested();
+      return OPT::temp_k;
+    }else{
+      return t;
+    }
   }
+}
+/*--------------------------------------------------------------------------*/
+double COMMON_COMPONENT::temp_c()const
+{ untested();
+  return temp_k() - P_CELSIUS0;
 }
 /*--------------------------------------------------------------------------*/
 double COMMON_COMPONENT::temp_diff()const

@@ -497,6 +497,13 @@ private:
     assert(operator==(p));
     assert(p.operator==(*this));
   }
+public: // hsp access
+  void set_mfactor(double);
+  void set_scalefactor(double);
+  void set_temperature(double);
+  double mfactor()const;
+  double scalefactor()const;
+  double temperature()const;
 };
 /*--------------------------------------------------------------------------*/
 template <>

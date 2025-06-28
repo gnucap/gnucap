@@ -57,7 +57,6 @@ public:
 struct INTERFACE SIM_DATA {
   double _time0;	/* time now */
   double _freq;		/* AC frequency to analyze at (Hertz) */
-  double _temp_k;	/* ambient temperature, actual */
   double _damp;		/* Newton-Raphson damping coefficient actual */
   double _dtmin;	/* min internal step size */
   double _genout;	/* tr dc input to circuit (generator) */

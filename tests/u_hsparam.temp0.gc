@@ -8,28 +8,29 @@ endmodule
 
 ground gnd;
 isource #(.dc(1)) i1(gnd, t1);
-temptest #(.$temperature(100.), .$mfactor(1.001)) t1(gnd, t1);
+temptest #(.$temperature(100.), .$mfactor(1.001)) dut1(gnd, t1);
 
-print dc v(nodes) r(t1.r1)
+print dc v(t1) r(dut1.r1)
 dc
-end
 
-delete t1
+delete dut1
 ground gnd;
 
 options temp=0.; celsius
-temptest #(.$dtemp(-100.)) t1(gnd, t1);
-print dc v(nodes)
+temptest #(.$dtemp(-100.)) dut1(gnd, t1);
+print dc v(t1)
 dc
 
-print op v(nodes)
+print op v(t1)
 op 0 10 5
 
-delete t1
+delete dut1
 ground gnd;
 
 parameter ttt=0;
 options temp=0.; celsius
-temptest #(.$dtemp(ttt)) t1(gnd, t1);
-print dc v(nodes)
+temptest #(.$dtemp(ttt)) dut1(gnd, t1);
+print dc v(t1)
 dc ttt 0 10 5
+parameter ttt=10;
+op 0 10 5

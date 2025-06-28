@@ -13,7 +13,7 @@ R1 1 0 TESTR(w=2, l=4)
 .ac 1
 .tran 0 1 .5 temp=1342
 .ac 1
-.dc
+.dc ; A
 .ac 1
 .tran 2
 .ac 1

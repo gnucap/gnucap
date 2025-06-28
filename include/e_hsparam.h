@@ -148,7 +148,7 @@ public: // hsp access
   }
   double temp_k()const {
     if(_temperature_fixed == NOT_INPUT){
-      return CKT_BASE::_sim->_temp_k;
+      return OPT::temp_k;
     }else{
       return _temperature_fixed;
     }

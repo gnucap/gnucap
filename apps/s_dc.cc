@@ -28,6 +28,7 @@
 #include "e_elemnt.h"
 #include "e_cardlist.h"
 #include "s__.h"
+#include "constant.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -113,7 +114,9 @@ protected:
     }
     *_sweepval[i] = d;
     if(_sweepval[i] == &_temp_c){
-      _sim->_temp_k = _temp_c + P_CELSIUS0;
+      assert(_scope->params());
+      assert(_temp_c != NOT_INPUT);
+      _scope->params()->set_temperature(_temp_c + P_CELSIUS0);
     }else{
     }
     ::status.set_up.stop();
@@ -292,7 +295,9 @@ void OP::setup(CS& Cmd)
 /*--------------------------------------------------------------------------*/
 void DC::setup(CS& Cmd)
 {
-  _sim->_temp_k = OPT::temp_k;
+  assert(_scope);
+  assert(_scope->params());
+  _temp_c = OPT::temp_k - P_CELSIUS0;
   _cont = false;
   _trace = tNONE;
   _out = IO::mstdout;
@@ -369,6 +374,13 @@ void DC::setup(CS& Cmd)
     }
   }
   _sim->_freq = 0;
+
+  if(_temp_c == NOT_INPUT) {
+    _scope->params()->set_temperature(OPT::temp_k);
+  }else{
+  }
+
+  trace1("dcopt", _temp_c);
 }
 /*--------------------------------------------------------------------------*/
 void DCOP::fix_args(int Nest)
@@ -426,6 +438,9 @@ void DCOP::options(CS& Cmd, int Nest)
   _sim->_uic = _loop[Nest] = _reverse_in[Nest] = false;
   size_t here = Cmd.cursor();
 
+  double temp_k = OPT::temp_k;
+  bool temp_given = false;
+
   do{
     ONE_OF
       || (Cmd.match1("'\"({")	&& ((Cmd >> _step_in[Nest]), (_stepmode[Nest] = LIN_STEP)))
@@ -439,11 +454,11 @@ void DCOP::options(CS& Cmd, int Nest)
       || (Get(Cmd, "lin",	  &_step_in[Nest]) && (_stepmode[Nest] = LIN_PTS))
       || (Get(Cmd, "o{ctave}",	  &_step_in[Nest]) && (_stepmode[Nest] = OCTAVE))
       || Get(Cmd, "c{ontinue}",   &_cont)
-      || Get(Cmd, "dt{emp}",	  &_sim->_temp_k, mOFFSET, OPT::temp_k)
+      || (Get(Cmd, "dt{emp}",	  &temp_k, mOFFSET, OPT::temp_k) && (temp_given=true))
       || Get(Cmd, "lo{op}", 	  &_loop[Nest])
       || Get(Cmd, "re{verse}",	  &_reverse_in[Nest])
-      || Get(Cmd, "te{mperature}",&_sim->_temp_k, mOFFSET, P_CELSIUS0)
-      || Get(Cmd, "$temperature", &_sim->_temp_k)
+      || (Get(Cmd, "te{mperature}",&temp_k, mOFFSET, P_CELSIUS0) && (temp_given=true))
+      || (Get(Cmd, "$temperature", &temp_k) && (temp_given=true))
       || (Cmd.umatch("tr{ace} {=}") &&
 	  (ONE_OF
 	   || Set(Cmd, "n{one}",      &_trace, tNONE)
@@ -458,6 +473,13 @@ void DCOP::options(CS& Cmd, int Nest)
       || outset(Cmd,&_out)
       ;
   }while (Cmd.more() && !Cmd.stuck(&here));
+
+  if(temp_given) {
+    _temp_c = temp_k - P_CELSIUS0;
+  }else{
+    _temp_c = NOT_INPUT;
+  }
+  trace2("options", temp_given, _temp_c);
 }
 /*--------------------------------------------------------------------------*/
 void DCOP::sweep()
@@ -482,8 +504,15 @@ void DCOP::sweep()
 void DCOP::precalc()
 {
   ::status.set_up.start();
-  if(_have_param){
+  trace1("precalc", _temp_c);
+  if(_temp_c != NOT_INPUT) {
+    _scope->params()->set_temperature(_temp_c + P_CELSIUS0);
+  }else{
+  }
+
+  if(_have_param || _temp_c != NOT_INPUT){
     // do them all.
+    assert(_scope->params());
     _scope->precalc_last();
   }else{
     for (int ii = 0;  ii < _n_sweeps;  ++ii) {
@@ -547,7 +576,9 @@ void DCOP::first(int Nest)
   }
   _sim->_phase = p_INIT_DC;
   if(_sweepval[Nest] == &_temp_c){
-    _sim->_temp_k = _temp_c + P_CELSIUS0;
+    assert(_temp_c != NOT_INPUT);
+    _scope->params()->set_temperature(_temp_c + P_CELSIUS0);
+    // precalc?
   }else{
   }
 }

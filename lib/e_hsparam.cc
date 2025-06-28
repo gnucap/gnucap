@@ -342,9 +342,9 @@ void HS_PARAM::precalc_temperature(PARAM_LIST const* Scope)
     _temperature_fixed = NOT_INPUT;
   }
 
-  _temperature.e_val(CKT_BASE::_sim->_temp_k, Scope);
+  _temperature.e_val(OPT::temp_k, Scope);
   _dtemp.e_val(0., Scope);
-  _temp_c.e_val(CKT_BASE::_sim->_temp_k - P_CELSIUS0, Scope);
+  _temp_c.e_val(OPT::temp_k - P_CELSIUS0, Scope);
 
   if(_temperature.has_hard_value()) {
     trace1("hsp temp hard", _temperature);
@@ -368,8 +368,8 @@ void HS_PARAM::precalc_temperature(PARAM_LIST const* Scope)
   }else{
   }
 
-  _tnom.e_val(CKT_BASE::_sim->_temp_k, Scope);
-  _tnom_c.e_val(CKT_BASE::_sim->_temp_k - P_CELSIUS0, Scope);
+  _tnom.e_val(OPT::temp_k, Scope);
+  _tnom_c.e_val(OPT::temp_k - P_CELSIUS0, Scope);
 
 #if 0 // is this needed?
   if(_tnom.has_hard_value()) { untested();

@@ -1,0 +1,18 @@
+mos1 temp test
+Vgs   1  0  5.
+M1   2  1  0  0  nnn l=9.u w=9.u temp=50 $temperature=300.15
+Vds   2  0  5.
+.model nnn  nmos ( level=1  vto= 0.844345  kp= 41.5964u  gamma= 0.863074 
++ phi= 0.6  rd= 0.  rs= 0.  cbd= 0.  cbs= 0.  is= 0.  pb= 0.7  cgso= 218.971p 
++ cgdo= 218.971p  cgbo= 0.  cj= 384.4u  mj= 0.4884  cjsw= 527.2p 
++ mjsw= 0.3002  js= 0.  tox= 41.8n  nsub= 15.3142E+15  nss= 1.E+12 
++ tpg=1  xj= 400.n  ld= 265.073n  uo= 503.521 
++ kf= 0.  af= 1.  fc= 0.5 )
+
+.print dc i(Vds)
+.dc
+.options temp=50
+.dc
+.print op i(Vds)
+.op 0 75 25
+.end

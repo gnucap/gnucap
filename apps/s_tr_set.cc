@@ -186,7 +186,7 @@ void TRANSIENT::options(CS& Cmd)
 {
   _out = IO::mstdout;
   _out.reset(); //BUG// don't know why this is needed
-  _sim->_temp_k = OPT::temp_k;
+  double temp_k = OPT::temp_k; // get from scope?
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
   _sim->_uic = _cold = false;
   _trace = tNONE;
@@ -194,7 +194,7 @@ void TRANSIENT::options(CS& Cmd)
   do{
     ONE_OF
       || Get(Cmd, "c{old}",	   &_cold)
-      || Get(Cmd, "dte{mp}",	   &_sim->_temp_k,  mOFFSET, OPT::temp_k)
+      || Get(Cmd, "dte{mp}",	   &temp_k, mOFFSET, OPT::temp_k)
       || Get(Cmd, "dtma{x}",	   &_dtmax_in)
       || Get(Cmd, "dtmi{n}",	   &_dtmin_in)
       || Get(Cmd, "dtr{atio}",	   &_dtratio_in)
@@ -203,8 +203,8 @@ void TRANSIENT::options(CS& Cmd)
       || Get(Cmd, "sta{rt}",	   &_tstart)
       || Get(Cmd, "sto{p}",	   &_tstop)
       || Get(Cmd, "str{obeperiod}",&_tstrobe)
-      || Get(Cmd, "te{mperature}", &_sim->_temp_k, mOFFSET, P_CELSIUS0)
-      || Get(Cmd, "$temp{erature}",&_sim->_temp_k)
+      || Get(Cmd, "te{mperature}", &temp_k, mOFFSET, P_CELSIUS0)
+      || Get(Cmd, "$temp{erature}",&temp_k)
       || Get(Cmd, "uic",	   &_sim->_uic)
       || (Cmd.umatch("tr{ace} {=}") &&
 	  (ONE_OF
@@ -232,6 +232,9 @@ void TRANSIENT::options(CS& Cmd)
   _dtmin_in.e_val(OPT::dtmin, _scope->params());
   _dtratio_in.e_val(OPT::dtratio, _scope->params());
   _skip_in.e_val(1, _scope->params());
+
+  assert(_scope->params());
+  _scope->params()->set("$temperature", temp_k);
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

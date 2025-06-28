@@ -117,9 +117,15 @@ void AC::setup(CS& Cmd)
   _out = IO::mstdout;
   _out.reset(); //BUG// don't know why this is needed
   
-  //temp_c = OPT::temp_c;
-  // Don't set temperature.  Keep whatever was there before,
-  // from "op" or whatever.
+  double temp = _scope->params()->temperature();
+  double temp_k;
+  if(temp!=NOT_INPUT){
+    // Don't set temperature.  Keep whatever was there before,
+    // from "op" or whatever.
+    temp_k = temp;
+  }else{
+    temp_k = OPT::temp_k;
+  }
 
   bool ploton = IO::plotset  &&  plotlist().size() > 0;
 
@@ -158,13 +164,13 @@ void AC::setup(CS& Cmd)
       || (Get(Cmd, "ti{mes}",	  &_step_in) && (_stepmode = TIMES))
       || (Get(Cmd, "lin",	  &_step_in) && (_stepmode = LIN_PTS))
       || (Get(Cmd, "o{ctave}",	  &_step_in) && (_stepmode = OCTAVE))
-      || Get(Cmd, "dt{emp}",	  &_sim->_temp_k, mOFFSET, OPT::temp_k)
+      || Get(Cmd, "dt{emp}",	  &temp_k, mOFFSET, OPT::temp_k)
       || Get(Cmd, "pl{ot}",	  &ploton)
       || Get(Cmd, "pr{evoppoint}",&_prevopppoint)
       || Get(Cmd, "sta{rt}",	  &_start)
       || Get(Cmd, "sto{p}",	  &_stop)
-      || Get(Cmd, "te{mperature}",&_sim->_temp_k, mOFFSET, P_CELSIUS0)
-      || Get(Cmd, "$temperature", &_sim->_temp_k)
+      || Get(Cmd, "te{mperature}",&temp_k, mOFFSET, P_CELSIUS0)
+      || Get(Cmd, "$temperature", &temp_k)
       || outset(Cmd,&_out)
       ;
   }while (Cmd.more() && !Cmd.stuck(&here));
@@ -232,6 +238,7 @@ void AC::setup(CS& Cmd)
 
   IO::plotout = (ploton) ? IO::mstdout : OMSTREAM();
   initio(_out);
+  _scope->params()->set("$temperature", temp_k);
 }
 /*--------------------------------------------------------------------------*/
 void AC::solve()

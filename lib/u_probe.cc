@@ -24,8 +24,10 @@
 //testing=script 2009.06.21
 #include "u_sim_data.h"
 #include "u_status.h"
-#include "e_card.h"
 #include "u_probe.h"
+#include "e_card.h"
+#include "e_cardlist.h"
+#include "l_denoise.h"
 /*--------------------------------------------------------------------------*/
 PROBE::PROBE(const std::string& what,const CARD *brh)
   :CKT_BASE(),
@@ -127,8 +129,10 @@ double PROBE::probe_node(void)const
   }else if (Umatch(_what, "hidden ")) {
     return ::status.hidden_steps;
   }else if (Umatch(_what, "temp{erature} ")) {
-    // incomplete(); // scope?
-    return _sim->_temp_k - P_CELSIUS0;
+    assert(CARD_LIST::card_list.params());
+    double temp = CARD_LIST::card_list.params()->temperature() - P_CELSIUS0;
+    fixzero(&temp, 1.);
+    return temp;
   }else if (Umatch(_what, "time ")) {untested();
     return _sim->_time0;
   }else{

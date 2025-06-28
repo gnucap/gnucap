@@ -5,7 +5,7 @@
 ".print dc r(R1) temp(0) "
 ".ac 1 "
 #Freq       r(R1)      temp(0)   
- 1.         1.946      0.        
+ 1.         2.02       37.       
 ".ac 1 dtemp=0 "
 #Freq       r(R1)      temp(0)   
  1.         2.02       37.       
@@ -26,7 +26,7 @@
 ".ac 1 "
 #Freq       r(R1)      temp(0)   
  1.         4.63       1.342K    
-".dc "
+".dc ; A "
 #           r(R1)      temp(0)   
  0.         2.02       37.       
 ".ac 1 "

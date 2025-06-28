@@ -148,9 +148,6 @@ public:
   }
   virtual bool has_value()const { return false; }
 
-public: // TODO: provide effective device temperature.
-  double temp_k()const{ return _sim->_temp_k; }
-
 private:
   bool parse_param_list(CS&);
   virtual PARAM_LIST* params() { return nullptr; }
@@ -165,6 +162,7 @@ public:
     return const_cast<COMMON_COMPONENT*>(this)->hsparam();
   }
 public:
+  double temp_k()const;
   double temp_c()const;
   double temp_diff()const;
   bool has_hsparam()const {
