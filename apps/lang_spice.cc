@@ -1095,8 +1095,8 @@ DISPATCHER<CMD>::INSTALL d88(&command_dispatcher, ".endc", &p88);
 /*--------------------------------------------------------------------------*/
 class CMD_CONTROL : public CMD {
 public:
-  void do_it(CS&, CARD_LIST* Scope)override {untested();
-    if (OPT::language == &lang_spice) {untested();
+  void do_it(CS&, CARD_LIST* Scope)override {
+    if (OPT::language == &lang_spice) {
       command("options lang=acs", Scope);
     }else{untested();
     }

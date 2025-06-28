@@ -470,9 +470,25 @@ bool COMMON_COMPONENT::parse_numlist(CS&)
   return false;
 }
 /*--------------------------------------------------------------------------*/
-bool COMMON_COMPONENT::parse_params_obsolete_callback(CS&)
+bool COMMON_COMPONENT::parse_params_obsolete_callback(CS& cmd)
 {
-  return false;
+  trace1("COMMON_COMPONENT::parse_params_obsolete_callback", cmd.tail());
+  if(cmd.match1('$')){
+    size_t here = cmd.cursor();
+
+    std::string name;
+    cmd >> name;
+    if(cmd >> '='){
+      std::string value = cmd.ctos(",=;)", "\"'{(", "\"'})");
+      set_param_by_name(name, value);
+      assert(cmd);
+    }else{ untested();
+      cmd.reset_fail(here);
+    }
+    return cmd;
+  }else{
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -951,7 +967,7 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
     // found something, what is it?
     assert(c);
     const MODEL_CARD* model = dynamic_cast<const MODEL_CARD*>(c);
-    if (!model) {untested();
+    if (!model) {
       throw Exception_Type_Mismatch(long_label(), modelname, ".model");
     }else if (!model->is_valid(this)) {untested();
       error(bWARNING, long_label() + ", " + modelname

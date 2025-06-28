@@ -150,6 +150,7 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
 	  c = bm_dispatcher.clone("eval_bm_value");
 	}else{
 	}
+	c->attach_next(next_common());
       }else{ untested();
 	// no more
       }
@@ -171,6 +172,10 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
       c = &func_zero;
     }
     assert(c);
+    attach_next(c->next_common());
+    if(next_common() != c->next_common()) { untested();
+    }else{
+    }
     attach_common(c, &(_func[mode]));
     assert(_func[mode]);
     _set[mode] = true;
