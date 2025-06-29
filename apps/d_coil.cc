@@ -573,7 +573,7 @@ double DEV_INDUCTANCE::tr_probe_num(const std::string& x)const
 }
 /*--------------------------------------------------------------------------*/
 double DEV_MUTUAL_L::tr_probe_num(const std::string& x)const
-{untested();
+{
   if (Umatch(x, "fflux ")) {untested();
     return _yf[0].f0;
   }else if (Umatch(x, "rflux ")) {untested();
@@ -582,7 +582,7 @@ double DEV_MUTUAL_L::tr_probe_num(const std::string& x)const
     return _mf0_c0;
   }else if (Umatch(x, "riof{fset} ")) {untested();
     return _mr0_c0;
-  }else{untested();
+  }else{
     return DEV_INDUCTANCE::tr_probe_num(x);
   }
 }

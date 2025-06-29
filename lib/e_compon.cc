@@ -259,7 +259,7 @@ std::string COMMON_COMPONENT::param_name(int i)const
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_COMPONENT::param_name(int i, int j) const
-{untested();
+{
   if(j==0){ untested();
     return param_name(i);
   }else if(next_common()) { untested();
@@ -275,13 +275,6 @@ std::string COMMON_COMPONENT::param_value(int i) const
     return next_common()->param_value(i);
   }else{ untested();
     return "";
-  }
-}
-/*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::precalc_first(const PARAM_LIST*)
-{
-  if(has_next()){
-  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -351,30 +344,6 @@ void COMMON_COMPONENT::precalc_last_chain(PARAM_LIST const* p)
   }
 
   precalc_last(p);
-}
-/*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::precalc_last(const PARAM_LIST* Scope)
-{
-  if(Scope){
-  }else{ untested();
-  }
-
-#if 0
-  if(has_next()){ untested();
-    COMMON_COMPONENT* c = next_common()->clone();
-    assert(c);
-    try { untested();
-      c->precalc_last(Scope);
-      attach_next(c);
-    }catch (Exception const& e) { untested();
-      attach_next(c);
-      throw e;
-    }
-  }else{ untested();
-    attach_next(new HS_PARAM());
-    next_common()->precalc_last(Scope);
-  }
-#endif
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::tr_eval(ELEMENT*x)const
@@ -470,9 +439,38 @@ bool COMMON_COMPONENT::parse_numlist(CS&)
   return false;
 }
 /*--------------------------------------------------------------------------*/
-bool COMMON_COMPONENT::parse_params_obsolete_callback(CS&)
+bool COMMON_COMPONENT::parse_params_obsolete_callback(CS& cmd)
 {
-  return false;
+  trace1("COMMON_COMPONENT::parse_params_obsolete_callback", cmd.tail());
+  std::string val;
+  if(cmd.match1('$')){
+    size_t here = cmd.cursor();
+
+    std::string name;
+    cmd >> name;
+    if(cmd >> '='){
+      val = cmd.ctos(",=;)", "\"'{(", "\"'})");
+      set_param_by_name(name, val);
+      assert(cmd);
+    }else{ untested();
+      cmd.reset_fail(here);
+    }
+    return cmd;
+  }else if (cmd.umatch( "tnom {=}")){ untested();
+    cmd >> val;
+    set_param_by_name("$tnom_c", val);
+    return true;
+  }else if (cmd.umatch("dtemp {=}")){ untested();
+    cmd >> val;
+    set_param_by_name("$dtemp", val);
+    return true;
+  }else if (cmd.umatch("temp {=}")){
+    cmd >> val;
+    set_param_by_name("$temp_c", val);
+    return true;
+  }else{
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -686,7 +684,6 @@ void COMPONENT::precalc_last()
     }
     attach_common(c);
   }else{
-    assert(_mfactor_fixed == 1.);
   }
 
   float mfactor_new;
@@ -773,18 +770,6 @@ void COMPONENT::set_slave()
   }
 }
 /*--------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------*/
-#if 0
-void COMPONENT::set_mfactor(double x)
-{untested();
-  if(has_hsparam() || x!=1.){ untested();
-    hsparam().set_mfactor(x);
-  }else{ untested();
-    // avoid hsparam allocation.
-    assert(my_mfactor()==1.);
-  }
-}
-#endif
 /*--------------------------------------------------------------------------*/
 int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
@@ -951,7 +936,7 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
     // found something, what is it?
     assert(c);
     const MODEL_CARD* model = dynamic_cast<const MODEL_CARD*>(c);
-    if (!model) {untested();
+    if (!model) {
       throw Exception_Type_Mismatch(long_label(), modelname, ".model");
     }else if (!model->is_valid(this)) {untested();
       error(bWARNING, long_label() + ", " + modelname
@@ -1084,5 +1069,42 @@ void COMMON_COMPONENT::set_mfactor(double m)
   nn->set_mfactor(m);
   attach_next(nn);
 }
+/*--------------------------------------------------------------------------*/
+double COMMON_COMPONENT::temp_k()const
+{
+  if(has_hsparam()){
+    return hsparam()->temp_k();
+  }else{
+    double t = CARD_LIST::card_list.params()->temperature();
+    if(t==NOT_INPUT){ itested();
+      return OPT::temp_k;
+    }else{
+      return t;
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+double COMMON_COMPONENT::temp_c()const
+{
+  return temp_k() - P_CELSIUS0;
+}
+/*--------------------------------------------------------------------------*/
+double COMMON_COMPONENT::temp_diff()const
+{
+  if(has_hsparam()){
+    return hsparam()->temp_diff();
+  }else{
+    return 0.;
+  }
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang) const
+{
+  if(has_next()){
+    next_common()->print_common_obsolete_callback(o, lang);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

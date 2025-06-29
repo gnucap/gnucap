@@ -28,7 +28,9 @@
 #include "io_trace.h"
 #include "e_paramlist.h"
 /*--------------------------------------------------------------------------*/
-static const int sysparams_count = 8;
+static const int sysparams_count = 14;
+/*--------------------------------------------------------------------------*/
+bool Get(CS& cmd, std::string const& key, method_t* method); // u_opt2.cc
 /*--------------------------------------------------------------------------*/
 class HS_PARAM : public COMMON_PARAMLIST {
   PARAMETER<double> _mfactor;
@@ -39,9 +41,19 @@ class HS_PARAM : public COMMON_PARAMLIST {
   PARAMETER<double> _vflip;
   PARAMETER<double> _zflip;
   PARAMETER<double> _angle;
+  PARAMETER<vString> _method{};
+  PARAMETER<double> _temperature; // absolute temperature (K)
+  PARAMETER<double> _dtemp;       // difference to ambient
+  PARAMETER<double> _tnom;        // nominal (K)
+
+private: // hmm. use a flag instead?
+  PARAMETER<double> _temp_c;
+  PARAMETER<double> _tnom_c;
 
 private: // fixed values. combining hierarchical and specified.
   double _mfactor_fixed{NOT_INPUT};
+  method_t _method_fixed{meUNKNOWN};
+  double _temperature_fixed{NOT_INPUT};
 
   explicit HS_PARAM(HS_PARAM const& p) : COMMON_PARAMLIST(p),
     _mfactor(p._mfactor),
@@ -51,9 +63,17 @@ private: // fixed values. combining hierarchical and specified.
     _hflip(p._hflip),
     _vflip(p._vflip),
     _zflip(p._zflip),
-    _angle(p._angle)
-    {
-    }
+    _angle(p._angle),
+    _method(p._method),
+    _temperature(p._temperature),
+    _dtemp(p._dtemp),
+    _tnom(p._tnom),
+    _temp_c(p._temp_c),
+    _tnom_c(p._tnom_c),
+    _mfactor_fixed(p._mfactor_fixed),
+    _method_fixed(p._method_fixed),
+    _temperature_fixed(p._temperature_fixed) {
+  }
 public:
   explicit HS_PARAM() : COMMON_PARAMLIST() {
     _mfactor.set_default(1.);
@@ -64,6 +84,28 @@ public:
     _vflip.set_default(1);
     _zflip.set_default(1);
     _angle.set_default(0.);
+    _method.set_default(vString(std::string("")));
+    _temperature.set_default(OPT::temp_k);
+    _dtemp.set_default(0);
+    _tnom.set_default(OPT::temp_k);
+    _temp_c.set_default(OPT::temp_k - P_CELSIUS0);
+    _tnom_c.set_default(OPT::temp_k - P_CELSIUS0);
+  }
+  explicit HS_PARAM(int i) : COMMON_PARAMLIST(i){
+    _mfactor.set_default(1.);
+    _xposition.set_default(0.);
+    _yposition.set_default(0.);
+    _zposition.set_default(0.);
+    _hflip.set_default(1);
+    _vflip.set_default(1);
+    _zflip.set_default(1);
+    _angle.set_default(0.);
+    _method.set_default(vString(std::string("")));
+    _temperature.set_default(OPT::temp_k);
+    _dtemp.set_default(0);
+    _tnom.set_default(OPT::temp_k);
+    _temp_c.set_default(OPT::temp_k - P_CELSIUS0);
+    _tnom_c.set_default(OPT::temp_k - P_CELSIUS0);
   }
   ~HS_PARAM() {}
   bool operator==(const COMMON_COMPONENT& x)const override;
@@ -78,12 +120,20 @@ public:
   }
   std::string param_name(int i, int j)const override { untested();
     assert(i < HS_PARAM::param_count());
-    if (j == 0) { untested();
+    if (j == 0) {
       return param_name(i);
-    }else{ untested();
-      return "";
+    }else if (j == 1) { untested();
+      if(i==11){ untested();
+	return "temp"; // legacy, celsius. handle in lang_spice?
+      }else if(i==12){ untested();
+	return "tnom"; // legacy, celsius. handle in lang_spice?
+      }else{ untested();
+      }
+    }else{
     }
+    return "";
   }
+
   std::string param_name(int i)const override;
   std::string param_value(int i)const override;
 
@@ -96,6 +146,23 @@ public: // hsp access
       return _mfactor_fixed;
     }
   }
+  double temp_k()const {
+    if(_temperature_fixed == NOT_INPUT){
+      return OPT::temp_k;
+    }else{
+      return _temperature_fixed;
+    }
+  }
+  double temp_diff()const {
+    return _temperature_fixed - _tnom;
+  }
+  method_t method()const {
+    if(_method_fixed){
+      return _method_fixed;
+    }else{ untested();
+      return OPT::method;
+    }
+  }
 
   void precalc_first(PARAM_LIST const*)override {}
   void expand(COMPONENT const* c) override;
@@ -103,8 +170,18 @@ public: // hsp access
   void export_to(PARAM_LIST*)const;
 private:
   void precalc_mfactor(PARAM_LIST const*);
+  void precalc_temperature(PARAM_LIST const*);
+  void precalc_method(PARAM_LIST const*);
 
   HS_PARAM* hsparam()override { return this; }
+
+private:
+  method_t method_propagate(method_t env, method_t here) const;
+public:
+ // static Base const* new_default(std::string const& name);
+  void print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const override;
+public:
+  static HS_PARAM hs_param;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

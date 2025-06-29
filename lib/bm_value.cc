@@ -108,7 +108,9 @@ COMMON_COMPONENT* EVAL_BM_VALUE::deflate()
   }else{
     // return this; // itested: more numerical noise.
     // use a simpler version
-    return new EVAL_BM_SIMPLE(*this);
+    auto n = new EVAL_BM_SIMPLE(*this);
+    assert(n->next_common() == next_common());
+    return n;
   }
 }
 /*--------------------------------------------------------------------------*/

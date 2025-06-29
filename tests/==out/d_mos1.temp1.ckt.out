@@ -1,0 +1,13 @@
+mos1 temp test 
+M1   2  1  0  0  nnn l=9.u w=9.u temp=50 $temperature=300.15 
+                                 ^ ? M1: bad parameter temp ignored
+nnn: is - js conflict
+#           i(Vds)    
+ 0.        -381.66u   
+#           i(Vds)    
+ 0.        -381.66u   
+#           i(Vds)    
+ 0.        -381.66u   
+ 25.       -381.66u   
+ 50.       -381.66u   
+ 75.       -381.66u   

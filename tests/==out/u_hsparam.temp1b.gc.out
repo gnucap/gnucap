@@ -1,0 +1,24 @@
+module rr (.a(a),.b(b),.c(c),.ref(ref));
+resistor #(.r($temperature())) r (.p(a),.n(ref));
+resistor #(.r($temperature)) r (.p(b),.n(ref));
+resistor #(.r($vt())) r (.p(c),.n(ref));
+endmodule // rr
+
+ground gnd;
+isource #(.dc(1)) v1 (.p(\0 ),.n(\1 ));
+isource #(.dc(1)) v2 (.p(\0 ),.n(\2 ));
+isource #(.dc(1)) v3 (.p(\0 ),.n(\3 ));
+rr #(.$dtemp(0.)) s (.a(\1 ),.b(\2 ),.c(\3 ),.ref(gnd));
+#           v(1)       v(2)       v(3)       v(gnd)     i(v1)     
+ 27.        300.15     300.15     0.025864   0.         1.        
+#           v(1)       v(2)       v(3)       v(gnd)     i(v1)     
+ 28.        301.15     301.15     0.02595    0.         1.        
+#           v(1)       v(2)       v(3)       v(gnd)     i(v1)     
+ 27.        340.15     340.15     0.029311   0.         1.        
+#           v(1)       v(2)       v(3)       v(gnd)     i(v1)     
+ 28.        341.15     341.15     0.029397   0.         1.        
+Gnucap   System status
+iterations: op=2, dc=0, tran=0, fourier=0, total=8
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=33.3%, ac density=33.3%

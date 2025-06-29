@@ -32,7 +32,6 @@
 SIM_DATA::SIM_DATA()
   :_time0(0.),
    _freq(0.),
-   _temp_k(P_CELSIUS0),
    _damp(0.),
    _dtmin(0.),
    _genout(0.),

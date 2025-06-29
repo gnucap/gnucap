@@ -85,6 +85,7 @@ bool EVAL_BM_MODEL::operator==(const COMMON_COMPONENT& x)const
   const EVAL_BM_MODEL* p = dynamic_cast<const EVAL_BM_MODEL*>(&x);
   bool rv = p
     && _arglist == p->_arglist
+    && _func == p->_func
     && EVAL_BM_ACTION_BASE::operator==(x);
   if (rv) {
   }else{

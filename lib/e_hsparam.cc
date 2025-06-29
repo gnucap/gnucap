@@ -21,13 +21,19 @@
  * hierarchical system parameters
  */
 /*--------------------------------------------------------------------------*/
+#include "u_sim_data.h"
+#include "u_lang.h" // print_pair.
 #include "e_hsparam.h"
 #include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
 {
   auto* p = dynamic_cast<HS_PARAM const*>(&x);
-  return (p
+  bool ret = (p
+      // these depend on OPT
+      // need to take extra care
+         && _method_fixed == p->_method_fixed
+         && _temperature_fixed == p->_temperature_fixed
       && _mfactor == p->_mfactor
       && _xposition == p->_xposition
       && _yposition == p->_yposition
@@ -36,8 +42,14 @@ bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
       && _vflip == p->_vflip
       && _zflip == p->_zflip
       && _angle == p->_angle
-      && _mfactor_fixed == p->_mfactor_fixed
-      && COMMON_PARAMLIST::operator==(x));
+      && _method == p->_method
+      && _temperature == p->_temperature
+      && _dtemp == p->_dtemp
+      && _tnom == p->_tnom
+      && _temp_c == p->_temp_c
+      && _tnom_c == p->_tnom_c
+      && COMMON_COMPONENT::operator==(x));
+  return ret;
 }
 /*--------------------------------------------------------------------------*/
 bool HS_PARAM::param_is_printable(int I) const
@@ -59,10 +71,62 @@ bool HS_PARAM::param_is_printable(int I) const
     return _zflip.has_hard_value();
   case 7:
     return _angle.has_hard_value();
+  case 8:
+    return _method.has_hard_value();
+  case 9:
+    return _temperature.has_hard_value();
+  case 10:
+    return _dtemp.has_hard_value();
+  case 11:
+    return _tnom.has_hard_value();
+  case 12:
+    return _temp_c.has_hard_value();
+  case 13:
+    return _tnom_c.has_hard_value();
   default:
     return COMMON_PARAMLIST::param_is_printable(I-sysparams_count);
   }
 }
+
+#if 0
+  if(name[0] != '$') { untested();
+    return nullptr;
+  }else{ untested();
+    if(name == "$mfactor") { untested();
+      return new vReal(1.);
+    }else if(name == "$xposition") { untested();
+      return new vReal(0.);
+    }else if(name == "$yposition") { untested();
+      return new vReal(0.);
+    }else if(name == "$zposition") { untested();
+      return new vReal(0.);
+    }else if(name == "$angle") { untested();
+      return new vReal(0.);
+    }else if(name == "$hflip") { untested();
+      return new vInteger(1);
+    }else if(name == "$vflip") { untested();
+      return new vInteger(1);
+    }else if(name == "$zflip") { untested();
+      return new vInteger(1);
+    }else if(name == "$temperature") { untested();
+      return new vReal(P_CELSIUS0 + _sim->_temp_c);
+    }else if(name == "$vt") { untested();
+      double t = P_CELSIUS0 + _sim->_temp_c;
+      double vt = P_K * t / P_Q;
+      trace2("new_hs", t, vt);
+      return new vReal(vt);
+      //  }else if(name == "$dtemp") { untested();
+      //    return new vReal(0.);
+    }else if(name == "$tnom") { untested();
+      return new vReal(0.);
+    }else if(name == "$vt") { untested();
+      return new vReal(0.);
+    }else if(name == "$method") { untested();
+      return new vString("");
+    }else{ untested();
+      return nullptr;
+    }
+#endif
 /*--------------------------------------------------------------------------*/
 void HS_PARAM::set_param_by_index(int I, std::string& V, int Offset)
 {
@@ -90,6 +154,29 @@ void HS_PARAM::set_param_by_index(int I, std::string& V, int Offset)
     break;
   case 7: untested();
     _angle = V;
+    break;
+  case 8:
+    if(!V.size()){ untested();
+      _method = "";
+    }else{
+      _method = V;
+      trace3("hs::spbn", V, _method, _method.string());
+    }
+    break;
+  case 9:
+    _temperature = V;
+    break;
+  case 10:
+    _dtemp = V;
+    break;
+  case 11: untested();
+    _tnom = V;
+    break;
+  case 12:
+    _temp_c = V;
+    break;
+  case 13: untested();
+    _tnom_c = V;
     break;
   default: untested();
     return COMMON_PARAMLIST::set_param_by_index(I-sysparams_count, V, Offset+sysparams_count);
@@ -120,6 +207,7 @@ int HS_PARAM::set_param_by_name(std::string Name, std::string Value)
 /*--------------------------------------------------------------------------*/
 std::string HS_PARAM::param_name(int I) const
 {
+  static_assert(sysparams_count == 14);
   static std::string hspname[sysparams_count] { //
     "$mfactor",
     "$xposition",
@@ -128,7 +216,13 @@ std::string HS_PARAM::param_name(int I) const
     "$hflip",
     "$vflip",
     "$zflip",
-    "$angle"
+    "$angle",
+    "$method",
+    "$temperature",
+    "$dtemp",
+    "$tnom",
+    "$temp_c",
+    "$tnom_c"
   };
   assert(I>=0);
   if(I<sysparams_count){
@@ -157,6 +251,18 @@ std::string HS_PARAM::param_value(int I) const
     return _zflip.string();
   case 7: untested();
     return _angle.string();
+  case 8:
+    return _method.string();
+  case 9:
+    return _temperature.string();
+  case 10:
+    return _dtemp.string();
+  case 11:
+    return _tnom.string();
+  case 12:
+    return _temp_c.string();
+  case 13:
+    return _tnom_c.string();
   default:
     return COMMON_PARAMLIST::param_value(I-sysparams_count);
   }
@@ -182,9 +288,18 @@ void HS_PARAM::expand(COMPONENT const* c)
   _angle.e_val(0., scope->params());
 }
 /*--------------------------------------------------------------------------*/
+void HS_PARAM::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
+{
+  print_pair(o, lang, "tnom", _tnom_c,  _tnom_c.has_hard_value());
+  print_pair(o, lang, "dtemp",_dtemp,   _dtemp.has_hard_value());
+  print_pair(o, lang, "temp", _temp_c,  _temp_c.has_hard_value());
+}
+/*--------------------------------------------------------------------------*/
 void HS_PARAM::precalc_last(PARAM_LIST const* Scope)
 {
   precalc_mfactor(Scope);
+  precalc_method(Scope);
+  precalc_temperature(Scope);
 }
 /*--------------------------------------------------------------------------*/
 void HS_PARAM::precalc_mfactor(PARAM_LIST const* Scope)
@@ -204,6 +319,116 @@ void HS_PARAM::export_to(PARAM_LIST* Scope) const
     Scope->set("$mfactor", _mfactor_fixed);
   }else{ untested();
   }
+  if(_method_fixed!=meUNKNOWN){
+    Scope->set("$method", _method_fixed);
+  }else{ untested();
+  }
+  if(_temperature_fixed != NOT_INPUT){
+    Scope->set("$temperature", _temperature_fixed);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void HS_PARAM::precalc_temperature(PARAM_LIST const* Scope)
+{
+  PARAMETER<double> temperature_hier;
+  temperature_hier = "$temperature";
+  temperature_hier.e_val(NOT_INPUT, Scope);
+
+  if(temperature_hier.has_good_value()) {
+    _temperature_fixed = temperature_hier;
+  }else{
+    _temperature_fixed = NOT_INPUT;
+  }
+
+  _temperature.e_val(OPT::temp_k, Scope);
+  _dtemp.e_val(0., Scope);
+  _temp_c.e_val(OPT::temp_k - P_CELSIUS0, Scope);
+
+  if(_temperature.has_hard_value()) {
+    trace1("hsp temp hard", _temperature);
+    _temperature_fixed = _temperature;
+    if(_temp_c.has_hard_value()) { untested();
+      error(bWARNING, "temp conflict, using $temperature 1\n");
+    }else{
+    }
+    trace1("hsp temp0", _temperature_fixed);
+   //  _temp_c.set_default(_temperature - P_CELSIUS0);
+  }else if(_dtemp.has_hard_value()) {
+    _temperature_fixed = temp_k() + _dtemp;
+
+    trace1("hsp dtemp hard", _temperature_fixed);
+    if(_temp_c.has_hard_value()) { untested();
+      error(bWARNING, "temp conflict, using $dtemp\n");
+    }else{
+    }
+  }else if(_temp_c.has_hard_value()) {
+    _temperature_fixed = _temp_c + P_CELSIUS0;
+  }else{
+  }
+
+  _tnom.e_val(OPT::temp_k, Scope);
+  _tnom_c.e_val(OPT::temp_k - P_CELSIUS0, Scope);
+
+#if 0 // is this needed?
+  if(_tnom.has_hard_value()) { untested();
+    _params.set("$tnom", double(_tnom));
+    if(_tnom_c.has_hard_value()) { untested();
+      error(bWARNING, "tnom conflict, using $tnom\n");
+    }else{ untested();
+    }
+  }else if(_tnom_c.has_hard_value()) { untested();
+    _params.set("$tnom", double(_tnom_c - P_CELSIUS0));
+  }else{
+  }
+#endif
+}
+/*--------------------------------------------------------------------------*/
+void HS_PARAM::precalc_method(PARAM_LIST const* Scope)
+{
+  PARAMETER<int> method_hier{meUNKNOWN};
+  method_hier = "$method";
+  method_hier.e_val(OPT::method, Scope);
+
+  _method.e_val(vString(std::string("\"unknown\"")), Scope);
+  if(_method.has_hard_value()) {
+    CS cmd(CS::_STRING, std::string("= ") + std::string(String(_method)));
+    Get(cmd, "", &_method_fixed);
+  }else{
+    _method_fixed = meUNKNOWN;
+  }
+
+  _method_fixed = method_propagate(method_t(int(method_hier)), _method_fixed);
+  trace1("precalc_method3 set", _method_fixed);
+}
+/*--------------------------------------------------------------------------*/
+method_t HS_PARAM::method_propagate(method_t env, method_t here) const
+{
+  method_t prop[meNUM_METHODS][meNUM_METHODS] = { //
+    /*vv OPT vv*/
+    //local>>>EULER,      EULERONLY,  TRAP,     TRAPONLY, GEAR2,GEAR2ONLY,TRAPGEAR,TRAPEULER
+    /*meUNKNOWN*/
+    {meUNKNOWN,meEULER,   meEULERONLY,meTRAP,       meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meEULER*/
+    {meEULER,   meEULER,   meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meEULERONLY*/
+    {meEULER,   meEULER,   meEULERONLY,meEULERONLY, meTRAPONLY,meEULER,   meGEAR2ONLY,meEULERONLY,meEULER},
+    /*meTRAP*/
+    {meTRAP,    meEULER,   meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meTRAPONLY*/
+    {meTRAPONLY,meTRAPONLY,meEULERONLY,meTRAPONLY,  meTRAPONLY,meTRAPONLY,meGEAR2ONLY,meTRAPONLY, meTRAPONLY},
+    /*meGEAR*/
+    {meGEAR2,   meEULER,   meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meGEAR2ONLY*/
+    {meGEAR2,   meGEAR2,   meEULERONLY,meGEAR2ONLY, meTRAPONLY,meGEAR2,   meGEAR2ONLY,meGEAR2ONLY,meGEAR2},
+    /*meTRAPGEAR*/
+    {meTRAPGEAR,meEULER,   meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER},
+    /*meTRAPEULER*/
+    {meTRAPEULER,meEULER,  meEULERONLY,meTRAP,      meTRAPONLY,meGEAR2,   meGEAR2ONLY,meTRAPGEAR, meTRAPEULER} //
+  };
+  assert(env<meNUM_METHODS);
+  assert(here<meNUM_METHODS);
+  return prop[env][here];
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

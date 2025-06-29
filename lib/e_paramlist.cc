@@ -46,7 +46,6 @@ bool COMMON_PARAMLIST::param_is_printable(int i)const
 /*--------------------------------------------------------------------------*/
 std::string COMMON_PARAMLIST::param_name(int i)const
 {
-  assert(i < COMMON_PARAMLIST::param_count());
   if (i < int(_params.size())) {
     return _params.name(i);
   }else{itested();
@@ -55,13 +54,13 @@ std::string COMMON_PARAMLIST::param_name(int i)const
 }
 /*--------------------------------------------------------------------------*/
 std::string COMMON_PARAMLIST::param_name(int i, int j)const
-{untested();
+{
   assert(i < COMMON_PARAMLIST::param_count());
   if (j == 0) {untested();
     return param_name(i);
   }else if (i < int(_params.size())) {untested();
     return "";
-  }else{untested();
+  }else{
     return COMMON_COMPONENT::param_name(i, j);
   }
 }

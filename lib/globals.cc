@@ -27,6 +27,7 @@
 #include "u_status.h"
 #include "patchlev.h"
 #include "e_card.h"
+#include "e_hsparam.h"
 /*--------------------------------------------------------------------------*/
 // here to make sure they get constructed and destructed in proper order
 // first construct, last destruct
@@ -54,6 +55,7 @@ INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
 INDIRECT<CARD::owner_tag_t,CARD*> CARD::_owner_index;
 INDIRECT<CARD::owner_scope_t,CARD::owner_tag_t> CARD::_owners;
 CARD_LIST CARD_LIST::card_list(CARD_LIST::_with_ground); // root circuit 
+HS_PARAM HS_PARAM::hs_param(CC_STATIC);
 
 // the rest of this should not be here, is residue of old stuff
 STATUS status;

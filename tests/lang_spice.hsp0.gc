@@ -1,0 +1,41 @@
+
+simulator lang=spice
+
+.model zz npn bf=150
+
+.subckt myres (a b)
+.param r=10k
+.param m=2
+R1 (a b) 'r' $mfactor=m
+.ends
+
+R1 1 0 2 $mfactor=2
+I1 0 1 1
+
+X2 2 0 myres r=2
+I2 0 2 1
+
+X3 3 0 myres r=1 $mfactor=.5
+I3 0 3 1
+
+X4 4 0 myres r=1 $mfactor=4 m=.25
+I4 0 4 1 $mfactor=1
+
+R5 5 0 2
+I5 0 5 1 $mfactor=.5
+
+R6 6 0 2
+I6 0 6 dc 1 $mfactor=.5
+
+* bug? last mfactor wins in bm_cond (so what?)
+R7 7 0 2
+I7 0 7 sin ampl=5 $mfactor=5 dc 1 $mfactor=.5
+
+.print op v(nodes)
+.op
+
+.print tran v(7)
+.tran 1
+
+
+.end

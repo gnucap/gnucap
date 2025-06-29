@@ -283,7 +283,6 @@ void PARAM_INSTANCE::PARAM_ANY::lookup_solve(const PARAM_LIST* scope) const
     Base const* v = reduced.value();
 
     if(v && v->is_NA()) { untested();
-      assert(_s != "\"one\"");
     }else if(v){
       _v = v->clone();
       assert(_v);
@@ -332,7 +331,6 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const PARAM_LIST*
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
       // throw Exception(": " + _s + " value is \"NOT_INPUT\"\n");
     }else if(!_v){ untested();
-      assert(_s != "\"one\"");
       error(bDANGER, "parameter " + _s + " value is \"NOT_INPUT\"\n");
     }else{
     }
@@ -363,6 +361,46 @@ PARAM_INSTANCE& PARAM_LIST::at(std::string const& Name)
   }else{ untested();
     throw std::out_of_range("");
   }
+}
+/*--------------------------------------------------------------------------*/
+void PARAM_LIST::set_temperature(double x)
+{
+  set("$temperature", x);
+}
+/*--------------------------------------------------------------------------*/
+void PARAM_LIST::set_mfactor(double)
+{ untested();
+  incomplete();
+}
+/*--------------------------------------------------------------------------*/
+void PARAM_LIST::set_scalefactor(double)
+{ untested();
+  incomplete();
+}
+/*--------------------------------------------------------------------------*/
+double PARAM_LIST::temperature() const
+{
+  PARAMETER<double> temperature_hier;
+  temperature_hier = "$temperature";
+  temperature_hier.e_val(NOT_INPUT, this);
+
+  if(temperature_hier.has_good_value()) {
+    return temperature_hier;
+  }else{
+    return NOT_INPUT;
+  }
+}
+/*--------------------------------------------------------------------------*/
+double PARAM_LIST::mfactor() const
+{
+  incomplete();
+  return 0.;
+}
+/*--------------------------------------------------------------------------*/
+double PARAM_LIST::scalefactor() const
+{
+  incomplete();
+  return 0.;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

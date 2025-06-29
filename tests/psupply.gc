@@ -1,0 +1,60 @@
+
+*options method=gear
+options abstol=.1u
+* .options dtmin=.1
+* options trtol=1
+options predictor=10
+* options method=gear
+
+
+** include models
+.subckt transformer (p1 p2 s1 s2)
+L1 (p1 p2) 1
+L2 (s1 s2) .1
+K1 (L1 L2) .9
+.ends
+
+.subckt bridge (in1 in2 minus plus)
+.model 1n4004 d is=1n
+
+D1 (in1 plus) 1n4004
+D2 (in2 plus) 1n4004
+D3 (minus in1) 1n4004
+D4 (minus in2) 1n4004
+.ends
+** /models
+
+spice
+
+Rload (out 0) rload
+Cfilter (out 0) cfilter
+X1 (in 0 s1 s2) transformer
+X2 (s1 s2 0 out) bridge
+Vin (in 0) sin (freq=60 ampl=170) ac 120
+
+R1 s1 0 10k
+R2 s2 0 10k
+
+.control
+
+param cfilter 5000u
+param rload 100
+
+print tran v(nodes) P(Rload) control(0)
+* print dc v(nodes) P(Rload)
+print dc method(Cfilter) method(X1.*) method(X*.D*.C*)
+
+dc
+tr .3
+
+store tran v(out)
+tran .4 trace=a
+
+measure min=min("v(out)")
+measure max=max("v(out)")
+
+param range = max-min
+eval range
+measure mean=mean("v(out)")
+
+status notime
