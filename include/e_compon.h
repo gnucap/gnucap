@@ -113,10 +113,10 @@ public:
     }
   }
 public:
-  virtual void precalc_first(const PARAM_LIST*);
+  virtual void precalc_first(const PARAM_LIST*) {};
   virtual void expand(const COMPONENT*);
   virtual COMMON_COMPONENT* deflate()		{return this;}
-  virtual void precalc_last(const PARAM_LIST*);
+  virtual void precalc_last(const PARAM_LIST*) {};
 
   virtual void	tr_eval(ELEMENT*)const;
   virtual void	ac_eval(ELEMENT*)const;

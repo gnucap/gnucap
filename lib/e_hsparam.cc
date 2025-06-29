@@ -30,7 +30,6 @@ bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
 {
   auto* p = dynamic_cast<HS_PARAM const*>(&x);
   bool ret = (p
-      && _mfactor_fixed == p->_mfactor_fixed
       // these depend on OPT
       // need to take extra care
          && _method_fixed == p->_method_fixed

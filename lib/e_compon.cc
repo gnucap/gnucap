@@ -278,13 +278,6 @@ std::string COMMON_COMPONENT::param_value(int i) const
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::precalc_first(const PARAM_LIST*)
-{
-  if(has_next()){
-  }else{
-  }
-}
-/*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::expand(const COMPONENT* comp)
 {
   if(has_next()){
@@ -351,30 +344,6 @@ void COMMON_COMPONENT::precalc_last_chain(PARAM_LIST const* p)
   }
 
   precalc_last(p);
-}
-/*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::precalc_last(const PARAM_LIST* Scope)
-{
-  if(Scope){
-  }else{ untested();
-  }
-
-#if 0
-  if(has_next()){ untested();
-    COMMON_COMPONENT* c = next_common()->clone();
-    assert(c);
-    try { untested();
-      c->precalc_last(Scope);
-      attach_next(c);
-    }catch (Exception const& e) { untested();
-      attach_next(c);
-      throw e;
-    }
-  }else{ untested();
-    attach_next(new HS_PARAM());
-    next_common()->precalc_last(Scope);
-  }
-#endif
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::tr_eval(ELEMENT*x)const
@@ -1107,7 +1076,7 @@ double COMMON_COMPONENT::temp_k()const
     return hsparam()->temp_k();
   }else{
     double t = CARD_LIST::card_list.params()->temperature();
-    if(t==NOT_INPUT){ untested();
+    if(t==NOT_INPUT){ itested();
       return OPT::temp_k;
     }else{
       return t;
@@ -1116,7 +1085,7 @@ double COMMON_COMPONENT::temp_k()const
 }
 /*--------------------------------------------------------------------------*/
 double COMMON_COMPONENT::temp_c()const
-{ untested();
+{
   return temp_k() - P_CELSIUS0;
 }
 /*--------------------------------------------------------------------------*/

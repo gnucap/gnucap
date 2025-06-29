@@ -364,7 +364,7 @@ PARAM_INSTANCE& PARAM_LIST::at(std::string const& Name)
 }
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::set_temperature(double x)
-{ untested();
+{
   set("$temperature", x);
 }
 /*--------------------------------------------------------------------------*/
