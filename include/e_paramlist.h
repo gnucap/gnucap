@@ -41,6 +41,16 @@ public:
   std::string	name()const override	{untested();return "";}
   static int	count()			{untested();return _count;}
 
+#if 0
+  void set_param_by_index(int i, std::string& Value, int Offset)override {
+    int s = _params.size();
+    if(i < s){ untested();
+      _params[i] = Value;
+    }else{ untested();
+      COMMON_COMPONENT::set_param_by_index(i-s, Value, Offset+s);
+    }
+  }
+#endif
   int  set_param_by_name(std::string Name, std::string Value) override {
     if(Name[0] != '$'){
       return _params.set(Name, Value);

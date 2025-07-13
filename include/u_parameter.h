@@ -472,6 +472,7 @@ public:
   const PARAM_INSTANCE& deep_lookup(std::string)const;
   const PARAM_INSTANCE& operator[](std::string i)const {return deep_lookup(i);}
   const PARAM_INSTANCE& operator[](int i)const {return _pv[i].second;}
+  // PARAM_INSTANCE& operator[](int i) {untested(); return _pv[i].second;}
   void set(std::string, const double&);
   int  set(std::string, const std::string&);
   void set(std::string, const PARAM_INSTANCE&);
