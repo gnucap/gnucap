@@ -1,0 +1,18 @@
+
+module main(a, b);
+  parameter real x=1;
+  parameter real y=1;
+  parameter real z=1;
+  vsource #(.dc(x+z)) i1(a, b);
+endmodule
+
+verilog
+
+ground gnd;
+parameter x=2;
+main #(x, 0, -1) m(a, gnd);
+list
+
+print op v(nodes)
+op
+status notime

@@ -115,6 +115,7 @@ private: // override virtual
   int	   min_nodes()const override	{return 2;}
   int	   matrix_nodes()const override	{return 2;}
   int	   net_nodes()const override	{return 0;}
+  int	   int_nodes()const override	{return 0;}
   int	   num_current_ports()const override {return 2;}
   bool	   has_iv_probe()const override  {untested(); return false;}
   bool	   use_obsolete_callback_parse()const override {return false;}

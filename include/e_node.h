@@ -54,6 +54,7 @@ public:
 
 public: // raw data access (rvalues)
   virtual int user_number()const;
+  virtual int flat_number()const {return INVALID_NODE;}
 public: // simple calculated data access (rvalues)
   virtual int matrix_number()const;
   int	m_()const		{return matrix_number();}
@@ -202,7 +203,6 @@ public:
 
   node_t&     map() {
     if (_nnn) {
-      _m = _nnn->matrix_number();
     }else if (_link) {
       _own = false;
       _nnn = root()._nnn;

@@ -1,1 +1,1 @@
-#define PATCHLEVEL "hs_temp 2025.06.27"
+#define PATCHLEVEL "module_idx 2025.07.12"

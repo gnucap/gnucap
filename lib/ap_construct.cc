@@ -205,7 +205,7 @@ CS& CS::get_line(const std::string& prompt)
     _cnt = 0;
     _length = _cmd.length();
     _ok = true;
-  }else{untested();
+  }else{itested();
     assert(_file == stdin);
     char cmdbuf[BUFLEN];
     getcmd(prompt.c_str(), cmdbuf, BUFLEN);

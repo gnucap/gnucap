@@ -2520,5 +2520,5 @@ mean= 37.9306277503257
 Gnucap   System status
 iterations: op=0, dc=3, tran=3897, fourier=0, total=18359
 transient timesteps: accepted=2511, rejected=373, total=2884
-nodes: user=4, subckt=0, model=3, total=7
-dctran density=63.3%, ac density=63.3%
+nodes: user=4, subckt=0, model=2, total=6
+dctran density=83.3%, ac density=83.3%

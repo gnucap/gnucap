@@ -104,6 +104,7 @@ E3     37   0  35  36  10.K
 .print ac vm(2) vdb(2) vp(2)
 .dc Vin 1 10 1
 .ac oct 1 31.25 16000
-.print tran v(2)
+.print tran v(2) iter(0)
 .tran .00005 .001 0
+.status notime
 .end

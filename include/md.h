@@ -111,6 +111,13 @@ typedef std::pair<double,double> DPAIR;
 
 /*--------------------------------------------------------------------------*/
 /* portability hacks */
+#ifndef __GLIBC__
+inline void* mempcpy(void* dest, const void* src, size_t n)
+{ // itested();
+  return (char*)memcpy(dest, src, n) + n;
+}
+#else
+#endif
 
 #if !defined(MS_DLL)
   // The usual way for POSIX compliant systems
