@@ -42,7 +42,6 @@ public: // base types
   typedef std::list<CARD*> list;
   typedef list::iterator iterator;
   typedef list::const_iterator const_iterator;
-private: // internal types
   typedef list::reverse_iterator reverse_iterator;
 private: // data members
   const CARD_LIST* _parent;
@@ -94,7 +93,6 @@ public: // more types
   iterator find_(const std::string& short_name) 
 					{return find_again(short_name, begin());}
 
-private: // expand
   reverse_iterator rbegin()		{ return _cl.rbegin();}
   reverse_iterator rend()		{ return _cl.rend();}
 

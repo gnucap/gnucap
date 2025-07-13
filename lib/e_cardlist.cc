@@ -217,6 +217,7 @@ CARD_LIST& CARD_LIST::expand()
     int select_counter = this==&CARD_LIST::card_list;
     nodes()->at(--i).allocate(select_counter);
   }
+  // fill_in_nodes(this);
 
   return *this;
 }
