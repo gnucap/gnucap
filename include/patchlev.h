@@ -1,1 +1,1 @@
-#define PATCHLEVEL "hs_temp 2025.06.27"
+#define PATCHLEVEL "mempcpy 2025.07.13"
