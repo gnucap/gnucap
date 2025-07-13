@@ -102,7 +102,7 @@ public:
       // probably not needed.
     }
 
-    double result;
+    double result = NOT_VALID;
     Token* arg0;
 
     if(E->is_empty() || dynamic_cast<Token_STOP const*>(E->back())){
@@ -127,21 +127,22 @@ public:
       }else{ untested();
 	throw(Exception("$vt: no temperature"));
       }
-    }else if((arg0 = dynamic_cast<Token_CONSTANT*>(E->back()))) { untested();
+    }else if((arg0 = dynamic_cast<Token_CONSTANT*>(E->back()))) {
       E->pop_back();
-      double arg;
 
-      if(auto f = dynamic_cast<Float const*>(arg0->data())) { untested();
-	arg = f->value();
+      if(auto f = dynamic_cast<Float const*>(arg0->data())) {
+	double arg = f->value();
 	delete(arg0);
-      }else if(auto i = dynamic_cast<Integer const*>(arg0->data())) { untested();
-	arg = double(i->value());
+	result = P_K * arg / P_Q;
+      }else if(auto i = dynamic_cast<Integer const*>(arg0->data())) {
+	int arg = i->value();
 	delete(arg0);
+	result = P_K * arg / P_Q;
       }else{ untested();
 	incomplete();
 	E->push_back(arg0);
+	result = NOT_VALID;
       }
-      result = P_K * arg / P_Q;
     }else if(dynamic_cast<Token_STOP const*>(E->back())) { untested();
     }else if(par) { untested();
       // wrong number of args, forget about it.

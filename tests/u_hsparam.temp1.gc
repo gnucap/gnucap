@@ -1,9 +1,11 @@
 
-module rr (a, b, c, ref);
+module rr (a, b, c, d, e, ref);
 parameter p=1;
 	resistor #(.r($temperature())) r(a, ref);
 	resistor #(.r($temperature())) r(b, ref);
 	resistor #(.r($vt())) r(c, ref);
+	resistor #(.r($vt($temperature()))) r(d, ref);
+	resistor #(.r($vt(200))) r(e, ref);
 endmodule
 
 simulator lang=verilog
@@ -12,7 +14,9 @@ ground gnd;
 isource #(1) v1(\0 , \1 );
 isource #(1) v2(\0 , \2 );
 isource #(1) v3(\0 , \3 );
-rr #() s(\1 , \2 , \3 , gnd);
+isource #(1) v4(\0 , \4 );
+isource #(1) v5(\0 , \5 );
+rr #() s(\1 , \2 , \3 , \4 , \5 , gnd);
 
 list
 
@@ -24,7 +28,7 @@ op
 
 delete s
 ground gnd;
-rr #(.$dtemp(40)) s(\1 , \2 , \3 , gnd);
+rr #(.$dtemp(40)) s(\1 , \2 , \3 , \4 , \5 , gnd);
 print op v(nodes) i(v1)
 options temperature=27
 op
