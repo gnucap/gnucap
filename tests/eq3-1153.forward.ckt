@@ -105,4 +105,5 @@ E3     37   0  35  36  10.K
 .print ac vm(2) vdb(2) vp(2)
 .dc Vin 1 10 1
 .ac oct 1 31.25 16000
+.status notime
 .end
