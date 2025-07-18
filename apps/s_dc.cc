@@ -29,6 +29,7 @@
 #include "e_cardlist.h"
 #include "s__.h"
 #include "constant.h"
+#include "m_random.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -513,6 +514,7 @@ void DCOP::precalc()
   if(_have_param || _temp_c != NOT_INPUT){
     // do them all.
     assert(_scope->params());
+    random_seeds.clear();
     _scope->precalc_last();
   }else{
     for (int ii = 0;  ii < _n_sweeps;  ++ii) {
