@@ -112,41 +112,151 @@ int32_t get_int(Base const* b)
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
-class RDIST : public FUNCTION {
+class RDIST_UNIFORM : public FUNCTION {
 public:
-  explicit RDIST(std::string const& what) : FUNCTION() {}
+  explicit RDIST_UNIFORM() : FUNCTION() {}
 public:
   void stack_op(Expression* E)const override {
-    const int na = 2;
-    Base const* args[na+1];
+    Base const* args[3];
+    get_args(E, args, 3);
 
-    try{
-      get_args(E, args, na+1);
-    }catch(Exception const& e){
-      throw e;
-    }
+    // E >> init >> a1 >> a0;
+    double a0 = get_double(args[0]);
+    double a1 = get_double(args[1]);
+    int32_t init = get_int(args[2]);
 
-    double d[na];
-    for(int i=0; i<na; ++i){
-      assert(args[i]);
-      d[i] = get_double(args[i]);
-      trace2("RDIST", i, d[i]);
-    }
+    double u = rdist::uniform(random_seed(init), a1, a0);
 
-    int32_t initial_seed = get_int(args[na]);
-    int32_t& seed = random_seed(initial_seed);
-    double u = rdist::uniform(seed, d[1], d[0]);
-
-    delete_args(E, na+1);
+    delete_args(E, 3);
     Float* f = new Float(u);
     E->push_back(new Token_CONSTANT(f));
   }
-};
-RDIST p_stub("AA");
-DISPATCHER<FUNCTION>::INSTALL d_stub(&function_dispatcher, "$rdist_uniform", &p_stub);
+}p0;
+DISPATCHER<FUNCTION>::INSTALL d0(&function_dispatcher, "$rdist_uniform", &p0);
+/*--------------------------------------------------------------------------*/
+class RDIST_NORMAL : public FUNCTION {
+public:
+  explicit RDIST_NORMAL() : FUNCTION() {}
+public:
+  void stack_op(Expression* E)const override {
+    Base const* args[3];
+    get_args(E, args, 3);
+
+    double a0 = get_double(args[0]);
+    double a1 = get_double(args[1]);
+    int32_t init = get_int(args[2]);
+
+    double u = rdist::normal(random_seed(init), a1, a0);
+
+    delete_args(E, 3);
+    Float* f = new Float(u);
+    E->push_back(new Token_CONSTANT(f));
+  }
+}p1;
+DISPATCHER<FUNCTION>::INSTALL d1(&function_dispatcher, "$rdist_normal", &p1);
+/*--------------------------------------------------------------------------*/
+class RDIST_EXPONENTIAL : public FUNCTION {
+public:
+  explicit RDIST_EXPONENTIAL() : FUNCTION() {}
+public:
+  void stack_op(Expression* E)const override {
+    Base const* args[2];
+    get_args(E, args, 2);
+
+    double a0 = get_double(args[0]);
+    int32_t init = get_int(args[1]);
+
+    double u = rdist::exponential(random_seed(init), a0);
+
+    delete_args(E, 2);
+    Float* f = new Float(u);
+    E->push_back(new Token_CONSTANT(f));
+  }
+}p2;
+DISPATCHER<FUNCTION>::INSTALL d2(&function_dispatcher, "$rdist_exponential", &p2);
+/*--------------------------------------------------------------------------*/
+class RDIST_POISSON : public FUNCTION {
+public:
+  explicit RDIST_POISSON() : FUNCTION() {}
+public:
+  void stack_op(Expression* E)const override {
+    Base const* args[2];
+    get_args(E, args, 2);
+
+    double a0 = get_double(args[0]);
+    int32_t init = get_int(args[1]);
+
+    double u = rdist::poisson(random_seed(init), a0);
+
+    delete_args(E, 2);
+    Float* f = new Float(u);
+    E->push_back(new Token_CONSTANT(f));
+  }
+}p3;
+DISPATCHER<FUNCTION>::INSTALL d3(&function_dispatcher, "$rdist_poisson", &p3);
+/*--------------------------------------------------------------------------*/
+class RDIST_CHI_SQUARE : public FUNCTION {
+public:
+  explicit RDIST_CHI_SQUARE() : FUNCTION() {}
+public:
+  void stack_op(Expression* E)const override {
+    Base const* args[2];
+    get_args(E, args, 2);
+
+    int a0 = get_int(args[0]);
+    int32_t init = get_int(args[1]);
+
+    double u = rdist::chi_square(random_seed(init), a0);
+
+    delete_args(E, 2);
+    Float* f = new Float(u);
+    E->push_back(new Token_CONSTANT(f));
+  }
+}p4;
+DISPATCHER<FUNCTION>::INSTALL d4(&function_dispatcher, "$rdist_chi_square", &p4);
+/*--------------------------------------------------------------------------*/
+class RDIST_T : public FUNCTION {
+public:
+  explicit RDIST_T() : FUNCTION() {}
+public:
+  void stack_op(Expression* E)const override {
+    Base const* args[2];
+    get_args(E, args, 2);
+
+    int a0 = get_int(args[0]);
+    int32_t init = get_int(args[1]);
+
+    double u = rdist::t(random_seed(init), a0);
+
+    delete_args(E, 2);
+    Float* f = new Float(u);
+    E->push_back(new Token_CONSTANT(f));
+  }
+}p5;
+DISPATCHER<FUNCTION>::INSTALL d5(&function_dispatcher, "$rdist_t", &p5);
+/*--------------------------------------------------------------------------*/
+class RDIST_ERLANGIAN : public FUNCTION {
+public:
+  explicit RDIST_ERLANGIAN() : FUNCTION() {}
+public:
+  void stack_op(Expression* E)const override {
+    Base const* args[3];
+    get_args(E, args, 3);
+
+    double a0 = get_double(args[0]);
+    double a1 = get_double(args[1]);
+    int32_t init = get_int(args[2]);
+
+    double u = rdist::erlangian(random_seed(init), a1, a0);
+
+    delete_args(E, 3);
+    Float* f = new Float(u);
+    E->push_back(new Token_CONSTANT(f));
+  }
+}p6;
+DISPATCHER<FUNCTION>::INSTALL d6(&function_dispatcher, "$rdist_erlangian", &p6);
 /*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
-
 // vim:ts=8:sw=2:noet:

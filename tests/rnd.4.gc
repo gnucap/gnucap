@@ -1,0 +1,8 @@
+options list
+eval $rdist_uniform(0, 1., 2.)
+eval $rdist_normal(0, 1., 2.)
+eval $rdist_exponential(0, 1.)
+eval $rdist_poisson(0, 10.)
+eval $rdist_chi_square(0, 1)
+eval $rdist_t(0, 1)
+eval $rdist_erlangian(0, 1., 2.)

@@ -91,7 +91,7 @@ double poisson(int32_t& seed, double mean)
   int n = 0;
   double p = exp(-mean);
   double q = uniform(seed, 0., 1.);
-  while(p < q) { untested();
+  while(p < q) {
     n++;
     q = uniform(seed, 0., 1.) * q;
   }

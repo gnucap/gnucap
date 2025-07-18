@@ -1,0 +1,14 @@
+"eval $rdist_uniform(0, 1., 2.) "
+$rdist_uniform(0, 1., 2.)= 1.57063610203694
+"eval $rdist_normal(0, 1., 2.) "
+$rdist_normal(0, 1., 2.)=-1.79206018734281
+"eval $rdist_exponential(0, 1.) "
+$rdist_exponential(0, 1.)= 0.252508818098929
+"eval $rdist_poisson(0, 10.) "
+$rdist_poisson(0, 10.)= 11.
+"eval $rdist_chi_square(0, 1) "
+$rdist_chi_square(0, 1)= 0.132913777474078
+"eval $rdist_t(0, 1) "
+$rdist_t(0, 1)= 1.61990776746354
+"eval $rdist_erlangian(0, 1., 2.) "
+$rdist_erlangian(0, 1., 2.)= 4.84833046142411
