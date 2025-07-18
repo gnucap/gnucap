@@ -37,6 +37,7 @@ RAW_SRCS = \
 globals.cc \
 m_expression_dump.cc m_expression_in.cc m_expression_reduce.cc \
 m_base_in.cc m_base_math.cc m_fft.cc  m_spline.cc \
+m_random.cc \
 ap_construct.cc ap_convert.cc ap_error.cc ap_get.cc ap_match.cc ap_skip.cc \
 l_dispatcher.cc l_ftos.cc l_pmatch.cc l_timer.cc l_trim.cc l_wmatch.cc \
 io.cc io_contr.cc io_error.cc io_findf.cc io_out.cc io_xopen.cc \
