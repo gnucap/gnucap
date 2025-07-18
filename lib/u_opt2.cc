@@ -97,6 +97,11 @@ bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
       || Get(cmd, "floor",	   &floor,	mPOSITIVE)
       || Get(cmd, "vfloor",	   &vfloor,	mPOSITIVE)
       || Get(cmd, "roundofftol",   &roundofftol, mPOSITIVE)
+      || ((cmd.umatch("seed {=}") || cmd.umatch("rndseed {=}")) &&
+	  (ONE_OF
+	   || Set(cmd, "random",   &rndseed,	OS::tv_usec_32())
+	   || (cmd >> rndseed)
+	   || cmd.warn(bWARNING, "need an integer or random")))
       || Get(cmd, "$temperature",  &temp_k)
       || Get(cmd, "t{empamb}",	   &temp_k, mOFFSET, P_CELSIUS0)
       || Get(cmd, "t{emperature}", &temp_k, mOFFSET, P_CELSIUS0)

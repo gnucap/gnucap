@@ -120,6 +120,7 @@ public:
   static double dampmin;    // Newton-Raphson damping coefficient min
   static int dampstrategy;  // bit flags, damping strategy options
   static double roundofftol;// rel tolerance for zeroing after subtraction
+  static int32_t rndseed;   // random seed
   static double temp_k;     // ambient temperature
   static double shortckt;   // short resistance
   static int picky;	    // error picky-ness

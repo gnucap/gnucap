@@ -46,6 +46,7 @@
 #include <cstring>
 #include <iostream>
 #include <ctime>
+#include <sys/time.h>
 // types
 #include <complex>
 #include <string>

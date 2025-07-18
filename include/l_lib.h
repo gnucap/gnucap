@@ -111,6 +111,13 @@ namespace OS {
       }
     }
   }
+
+  inline int32_t tv_usec_32() {
+    struct timeval tv;
+    gettimeofday(&tv, nullptr);
+    /* current timestamp microseconds, truncated */
+    return static_cast<int32_t>(tv.tv_usec);
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

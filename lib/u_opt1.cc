@@ -64,6 +64,7 @@ int	OPT::dampstrategy = 0; //dsINIT|dsDEVREGION|dsREVERSE;
 double	OPT::floor = 1e-21;
 double	OPT::vfloor = 1e-15;
 double	OPT::roundofftol = 1e-13;
+int32_t	OPT::rndseed = 0;
 double	OPT::temp_k = P_CELSIUS0 + 27.0;
 double	OPT::shortckt = 10e-6;
 int	OPT::picky = bPICKY;
