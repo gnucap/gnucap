@@ -1,0 +1,19 @@
+"parameter x = $rdist_uniform(13, 1, 2) "
+"measure v = eval(x) "
+v= 1.00020909311878
+"eval v "
+v= 1.00020909311878
+"* sample another one "
+"eval x "
+x= 1.43943875306113
+"* reset random state. "
+"options rndseed=0 "
+"* BUG, numerical noise "
+"eval v - x "
+(v - x)=-2.8865798640254E-15
+"eval v "
+v= 1.00020909311878
+"eval x "
+x= 1.43943875306113
+"eval x "
+x= 1.59115071191198

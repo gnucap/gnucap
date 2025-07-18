@@ -65,7 +65,7 @@ double uniform( int32_t& seed, double start, double end )
 /*--------------------------------------------------------------------------*/
 double normal(int32_t& seed, double mean, double deviation)
 {
-  double v1,v2;
+  double v1, v2;
   double s = 1.;
   while((s >= 1.) || (s == 0.)) {
     v1 = uniform(seed, -1., 1.);
@@ -79,7 +79,7 @@ double normal(int32_t& seed, double mean, double deviation)
 double exponential(int32_t& seed, double mean)
 {
   double n = uniform(seed, 0., 1.);
-  if(n != 0) {
+  if(n != 0.) {
     n = -log(n) * mean;
   }else{ untested();
   }
@@ -109,7 +109,7 @@ double chi_square(int32_t& seed, int deg_of_free)
     x = 0.0;
   }
   for(k = 2; k <= deg_of_free; k = k + 2) { untested();
-    x = x + 2 * exponential(seed, 1.);
+    x = x + 2. * exponential(seed, 1.);
   }
   return(x);
 }

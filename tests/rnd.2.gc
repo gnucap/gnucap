@@ -1,0 +1,11 @@
+options list
+parameter v = $rdist_uniform(42, 1, 2)
+eval v
+eval v
+options rndseed=1
+eval v
+eval v
+options rndseed=0
+eval v
+eval v
+eval v

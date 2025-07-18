@@ -1,0 +1,15 @@
+options list
+parameter v = $rdist_uniform(13, 1, 2)
+eval v
+eval v
+parameter v = $rdist_uniform(14, 1, 2)
+eval v
+eval v
+eval v
+
+measure xs = eval(v)
+measure xs = eval(v)
+measure xs = eval(v)
+
+parameter v = $rdist_uniform(14, 1, 2, bogus)
+eval v
