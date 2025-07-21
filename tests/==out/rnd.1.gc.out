@@ -1,0 +1,21 @@
+"parameter v = $rdist_uniform(13, 1, 2) "
+"eval v "
+v= 1.00020909311878
+"eval v "
+v= 1.43943875306113
+"parameter v = $rdist_uniform(14, 1, 2) "
+"eval v "
+v= 1.00022518637479
+"eval v "
+v= 1.55016369225544
+"eval v "
+v= 1.24348989051458
+"measure xs = eval(v) "
+xs= 1.59965116973531
+"measure xs = eval(v) "
+xs= 1.30057946450464
+"measure xs = eval(v) "
+xs= 1.72035011295675
+"parameter v = $rdist_uniform(14, 1, 2, bogus) "
+"eval v "
+v=$rdist_uniform(14, 1, 2, bogus)

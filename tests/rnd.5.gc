@@ -1,0 +1,23 @@
+verilog
+
+ground g;
+vsource #(.dc($rdist_normal(1, 1, .1))) v1 (a, g);
+resistor #(.r($rdist_normal(1, 1, .1))) r1 (a, g);
+
+print op v(nodes)
+op
+op
+op
+options rndseed=1
+op
+op
+
+options rndseed=0
+op 0 10 1
+
+print ac ev(r1)
+ac 1 64 * 2
+
+print tran v(a)
+tran 1
+tran 2

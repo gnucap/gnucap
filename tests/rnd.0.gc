@@ -1,0 +1,18 @@
+
+option list
+
+`options seed = random
+`options seed random
+`options seed=random
+
+`options seed 42
+`options seed=42
+`options seed = 42
+
+`options rndseed 42
+`options rndseed=42
+`options rndseed = 42
+
+`options seed=foo
+`options rndseed=foo
+`options rndseed foo

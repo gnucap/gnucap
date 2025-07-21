@@ -23,6 +23,7 @@
  */
 //testing=script 2015.01.28
 #include "m_wave.h"
+#include "m_random.h"
 #include "e_logicnode.h"
 #include "u_nodemap.h"
 #include "e_cardlist.h"
@@ -350,6 +351,7 @@ void SIM_DATA::init(CARD_LIST* scope)
     scope->ac_iwant_matrix();
     _last_time = 0;
   }else{
+    random_seeds.clear();
     scope->precalc_first();
   }
 }

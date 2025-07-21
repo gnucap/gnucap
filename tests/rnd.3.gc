@@ -1,0 +1,18 @@
+options list
+parameter x = $rdist_uniform(13, 1, 2)
+
+measure v = eval(x)
+eval v
+
+* sample another one
+eval x
+
+* reset random state.
+options rndseed=0
+
+* BUG, numerical noise
+eval v - x
+
+eval v
+eval x
+eval x

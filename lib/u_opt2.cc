@@ -25,6 +25,7 @@
 #include "globals.h"
 #include "c_comand.h"
 #include "u_lang.h"
+#include "m_random.h"
 #include "l_compar.h"
 #include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
@@ -49,6 +50,12 @@ bool Get(CS& cmd, std::string const& key, method_t* method)
    || Set(cmd, "t{rap}g{ear}",	method, meTRAPGEAR)
    || Set(cmd, "t{rap}e{uler}",	method, meTRAPEULER)
    || cmd.warn(bWARNING, "illegal method"));
+}
+/*--------------------------------------------------------------------------*/
+static bool reset_seed()
+{
+  random_seeds.clear();
+  return true;
 }
 /*--------------------------------------------------------------------------*/
 /* set:  set options from a string
@@ -97,6 +104,12 @@ bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
       || Get(cmd, "floor",	   &floor,	mPOSITIVE)
       || Get(cmd, "vfloor",	   &vfloor,	mPOSITIVE)
       || Get(cmd, "roundofftol",   &roundofftol, mPOSITIVE)
+      || ((cmd.umatch("seed {=}") || cmd.umatch("rndseed {=}")) &&
+	  (((ONE_OF
+	   || Set(cmd, "random",   &rndseed,	OS::tv_usec_32())
+	   || (cmd >> rndseed)
+	  ) && reset_seed())
+	  || cmd.warn(bWARNING, "need an integer or random")))
       || Get(cmd, "$temperature",  &temp_k)
       || Get(cmd, "t{empamb}",	   &temp_k, mOFFSET, P_CELSIUS0)
       || Get(cmd, "t{emperature}", &temp_k, mOFFSET, P_CELSIUS0)

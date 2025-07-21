@@ -8,3 +8,8 @@
 #Freq       v(1)       v(2)       v(3)       v(4)       v(5)       v(6)       v(7)       f(f2)      f(f7)     
  1.K        110.       880.       110.       110.       880.       11.        88.        ??         ??        
  2.K        110.       880.       110.       110.       880.       11.        88.        ??         ??        
+Gnucap   System status
+iterations: op=5, dc=0, tran=17, fourier=0, total=29
+transient timesteps: accepted=5, rejected=0, total=5
+nodes: user=7, subckt=0, model=0, total=7
+dctran density=34.7%, ac density=34.7%

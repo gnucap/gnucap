@@ -1,0 +1,24 @@
+"`options seed = random "
+"`options seed random "
+"`options seed=random "
+"`options seed 42 "
+"`options seed=42 "
+"`options seed = 42 "
+"`options rndseed 42 "
+"`options rndseed=42 "
+"`options rndseed = 42 "
+"`options seed=foo "
+`options seed=foo 
+              ^ ? need an integer or random
+`options seed=foo 
+              ^ ? what's this?
+"`options rndseed=foo "
+`options rndseed=foo 
+                 ^ ? need an integer or random
+`options rndseed=foo 
+                 ^ ? what's this?
+"`options rndseed foo "
+`options rndseed foo 
+                 ^ ? need an integer or random
+`options rndseed foo 
+                 ^ ? what's this?

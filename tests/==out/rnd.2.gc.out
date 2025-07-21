@@ -1,0 +1,17 @@
+"parameter v = $rdist_uniform(42, 1, 2) "
+"eval v "
+v= 1.0006754399151
+"eval v "
+v= 1.65045853262643
+"options rndseed=1 "
+"eval v "
+v= 1.00069153317111
+"eval v "
+v= 1.76118335261144
+"options rndseed=0 "
+"eval v "
+v= 1.0006754399151
+"eval v "
+v= 1.65045853262643
+"eval v "
+v= 1.50898784506174
