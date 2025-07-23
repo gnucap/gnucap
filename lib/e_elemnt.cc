@@ -346,7 +346,7 @@ void ELEMENT::tr_iwant_matrix_passive()
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_iwant_matrix_active()
-{ untested();
+{
   assert(matrix_nodes() == 4);
   assert(is_device());
   assert(!subckt());

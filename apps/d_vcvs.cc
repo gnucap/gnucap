@@ -45,14 +45,14 @@ private: // override virtual
   CARD*	   clone()const override	{return new DEV_VCVS(*this);}
   void     precalc_last()override;
   void     dc_advance()override;
-  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_shunt(); tr_iwant_matrix_active();}
   void     tr_begin()override;
   bool	   do_tr()override;
   void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
   void	   tr_unload()override		{untested();tr_unload_active();}
   double   tr_involts()const override	{return dn_diff(n_(IN1).v0(), n_(IN2).v0());}
   double   tr_involts_limited()const override {return volts_limited(n_(IN1),n_(IN2));}
-  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_shunt(); ac_iwant_matrix_active();}
   void	   ac_begin()override;
   void	   do_ac()override;
   void	   ac_load()override		{ac_load_shunt(); ac_load_active();}

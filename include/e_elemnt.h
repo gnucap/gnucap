@@ -146,7 +146,10 @@ protected: // in .cc
   void	   tr_iwant_matrix_active();
   void	   tr_iwant_matrix_control();
   void	   tr_iwant_matrix_all();
-  void	   tr_iwant_matrix_extended(){ untested();
+  void	   tr_iwant_matrix_shunt(){
+    tr_iwant_matrix_passive();
+  }
+  void	   tr_iwant_matrix_extended(){
     tr_iwant_matrix_all();
   }
 
@@ -154,7 +157,10 @@ protected: // in .cc
   void	   ac_iwant_matrix_active();
   void	   ac_iwant_matrix_control();
   void	   ac_iwant_matrix_all();
-  void	   ac_iwant_matrix_extended(){ untested();
+  void	   ac_iwant_matrix_shunt(){
+    ac_iwant_matrix_passive();
+  }
+  void	   ac_iwant_matrix_extended(){
     ac_iwant_matrix_all();
   }
 
