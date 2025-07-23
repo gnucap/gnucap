@@ -202,22 +202,30 @@ void LU_COPY<T>::lu_decomp(bool do_partial)
   for (int mm = 1;   mm <= size();   ++mm) {
     assert(ulownode_(aa,mm) == ulownode(mm));
     assert(llownode_(aa,mm) == llownode(mm));
-    int bn = std::max(llownode(mm), ulownode(mm));
+    int bnu = ulownode(mm);
+    int bnl = llownode(mm);
+    int bn = std::min(bnu, bnl);
     if (!do_partial  ||  is_changed(mm)  ||  bn <= prop) {
       set_changed(mm, false);
       prop = mm;
-      if (bn < mm) {
+      if (bnu < mm) {
 	prop = mm;
-	u(bn,mm) = u_(aa,bn,mm) / d(bn);
-	for (int ii = bn+1;  ii<mm;  ii++) {
+	u(bnu,mm) = u_(aa,bnu,mm) / d(bnu);
+	for (int ii = bnu+1;  ii<mm;  ii++) {
 	  /* u(ii,mm) = (aa.u(ii,mm) - dot(ii,mm,ii)) / d(ii,ii); */
 	  subtract_dot_product(ii,mm,ii,u_(aa,ii,mm)) /= d(ii);
 	}
-	l(mm,bn) = l_(aa,mm,bn);
-	for (int jj = bn+1;  jj<mm;  jj++) {
+      }else{
+      }
+      if (bnl < mm) {
+	l(mm,bnl) = l_(aa,mm,bnl);
+	for (int jj = bnl+1;  jj<mm;  jj++) {
 	  /* l(mm,jj) = aa.l(mm,jj) - dot(mm,jj,jj); */
 	  subtract_dot_product(mm,jj,jj,l_(aa,mm,jj));
 	}
+      }else{
+      }
+      if (bn < mm) {
 	{ /* jj == mm */
 	  /* d(mm,mm) = aa.d(mm,mm) - dot(mm,mm,mm); then test */
 	  if (subtract_dot_product(mm,mm,mm,d_(aa,mm)) == 0.) {
@@ -303,17 +311,25 @@ void LU_INPLACE<T>::lu_decomp(bool /*ignore partial*/)
   BSMATRIX_DATA<T>& acx = _data;
 //  assert(_lownode);
   for (int mm = 1;   mm <= size();   ++mm) {
-    int bn = std::max(ulownode(mm), llownode(mm));
-    if (bn < mm) {
-      u_(acx,bn,mm) /= d(bn,bn);
-      for (int ii =bn+1;  ii<mm;  ii++) {
+    int bnu = ulownode(mm);
+    int bnl = llownode(mm);
+    int bn = std::min(bnu, bnl);
+    if (bnu < mm) {
+      u_(acx,bnu,mm) /= d(bnu,bnu);
+      for (int ii =bnu+1;  ii<mm;  ii++) {
 	/* (m(ii,mm) -= dot(ii,mm,ii)) /= d(ii,ii); */
 	subtract_dot_product(ii,mm,ii) /= d(ii,ii);
       }
-      for (int jj = bn+1;  jj<mm;  jj++) {
+    }else{
+    }
+    if (bnl < mm) {
+      for (int jj = bnl+1;  jj<mm;  jj++) {
 	/* m(mm,jj) -= dot(mm,jj,jj); */
 	subtract_dot_product(mm,jj,jj);
       }
+    }else{
+    }
+    if(bn < mm) {
       { /* jj == mm */
 	/* m(mm,mm) -= dot(mm,mm,mm); then test */
 	if (subtract_dot_product(mm,mm,mm) == 0.) {itested();

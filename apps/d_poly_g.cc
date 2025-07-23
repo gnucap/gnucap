@@ -56,14 +56,14 @@ protected: // override virtual
   int	   matrix_nodes()const override	{return _n_ports*2;}
   int	   net_nodes()const override	{return _n_ports*2;}
   CARD*	   clone()const override	{return new DEV_CPOLY_G(*this);}
-  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  void	   tr_iwant_matrix()override;
   bool	   do_tr()override;
   void	   tr_load()override;
   void	   tr_unload()override;
   double   tr_involts()const override	{unreachable(); return NOT_VALID;}
   double   tr_involts_limited()const override {unreachable(); return NOT_VALID;}
   double   tr_amps()const override;
-  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_iwant_matrix()override;
   void	   ac_load()override;
   COMPLEX  ac_involts()const override	{itested(); return NOT_VALID;}
   COMPLEX  ac_amps()const override	{itested(); return NOT_VALID;}
@@ -188,13 +188,19 @@ bool DEV_FPOLY_G::do_tr()
 }
 #endif
 /*--------------------------------------------------------------------------*/
+void DEV_CPOLY_G::tr_iwant_matrix()
+{
+  tr_iwant_matrix_passive();
+  tr_iwant_matrix_extended1();
+}
+/*--------------------------------------------------------------------------*/
 void DEV_CPOLY_G::tr_load()
 {
   tr_load_passive();
   _old_values[0] = _values[0];
   _old_values[1] = _values[1];
   for (int i=2; i<=_n_ports; ++i) {
-    tr_load_extended(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), &(_values[i]), &(_old_values[i]));
+    tr_load_asymmetric(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), &(_values[i]), &(_old_values[i]));
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -213,6 +219,12 @@ double DEV_CPOLY_G::tr_amps()const
     amps += dn_diff(n_(2*i-2).v0(),n_(2*i-1).v0()) * _values[i];
   }
   return amps;
+}
+/*--------------------------------------------------------------------------*/
+void DEV_CPOLY_G::ac_iwant_matrix()
+{
+  ac_iwant_matrix_passive();
+  ac_iwant_matrix_extended1();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CPOLY_G::ac_load()

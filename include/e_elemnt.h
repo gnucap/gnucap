@@ -104,8 +104,18 @@ protected: // inline, below
 
   void	   tr_load_extended(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
-			    double* value, double* old_value);
+			    double* value, double* old_value) {
+    return tr_load_asymmetric(no1, no2, ni1, ni2, value, old_value);
+  }
   void	   ac_load_extended(const node_t& no1, const node_t& no2,
+			    const node_t& ni1, const node_t& ni2,
+			    COMPLEX value) {
+    return ac_load_asymmetric(no1, no2, ni1, ni2, value);
+  }
+  void	   tr_load_asymmetric(const node_t& no1, const node_t& no2,
+			    const node_t& ni1, const node_t& ni2,
+			    double* value, double* old_value);
+  void	   ac_load_asymmetric(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
 			    COMPLEX value);
 
@@ -132,9 +142,11 @@ protected: // in .cc
   void	   tr_iwant_matrix_passive();
   void	   tr_iwant_matrix_active();
   void	   tr_iwant_matrix_extended();
+  void	   tr_iwant_matrix_extended1();
   void	   ac_iwant_matrix_passive();
   void	   ac_iwant_matrix_active();
   void	   ac_iwant_matrix_extended();
+  void	   ac_iwant_matrix_extended1();
 
 public:
   double   tr_review_trunc_error(const FPOLY1* q);
@@ -354,7 +366,7 @@ inline void ELEMENT::ac_load_active()
 		      n_(IN1).m_(), n_(IN2).m_(), mfactor() * _acg);
 }
 /*--------------------------------------------------------------------------*/
-inline void ELEMENT::tr_load_extended(const node_t& no1, const node_t& no2,
+inline void ELEMENT::tr_load_asymmetric(const node_t& no1, const node_t& no2,
 				      const node_t& ni1, const node_t& ni2,
 				      double* new_value, double* old_value)
 {
@@ -366,7 +378,7 @@ inline void ELEMENT::tr_load_extended(const node_t& no1, const node_t& no2,
   *old_value = *new_value;
 }
 /*--------------------------------------------------------------------------*/
-inline void ELEMENT::ac_load_extended(const node_t& no1, const node_t& no2,
+inline void ELEMENT::ac_load_asymmetric(const node_t& no1, const node_t& no2,
 				      const node_t& ni1, const node_t& ni2,
 				      COMPLEX new_value)
 {

@@ -550,9 +550,8 @@ void BSMATRIX_DATA<T>::allocate()
 
   _nzcount = 0;
   for (int ii = 0;   ii <= size();   ++ii) {
-    _nzcount += 2 * (ii - _ulownode[ii]);
-    _nzcount += 2 * (ii - _llownode[ii]);
-    ++_nzcount;
+    _nzcount += ii - _ulownode[ii];
+    _nzcount += ii - _llownode[ii] + 1;
   }
 
   _diaptr = new T*[size()+1];
@@ -565,8 +564,8 @@ void BSMATRIX_DATA<T>::allocate()
   {
     T* point = _space;
     for (int ii = 0;   ii <= size();   ++ii) {
-      _diaptr[ii] = point + ii - _llownode[ii];
-      point = _diaptr[ii] + ii - _ulownode[ii] + 1;
+      _diaptr[ii] = point + ii - _ulownode[ii];
+      point = _diaptr[ii] + ii - _llownode[ii] + 1;
     }
   }
 }
