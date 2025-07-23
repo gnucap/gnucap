@@ -123,7 +123,8 @@ template <class T>
 class BSMATRIX_DATA {
   friend class BSMATRIX_SOLVER<T>;
 protected:
-  int*	_lownode{nullptr};	// lowest node connecting to this one
+  int*	_ulownode{nullptr};	// lowest node connecting to this one
+  int*	_llownode{nullptr};	// lowest node connecting to this one
   T*	_space{nullptr};	// ptr to actual memory space used
   T**	_diaptr{nullptr};	// ptrs to diagonal
   int	_nzcount{0};	// count of non-zero elements
@@ -136,7 +137,9 @@ public:
   ~BSMATRIX_DATA() { uninit(); }
 public: // life cycle
   void init(int s);
-  void iwant(int, int);
+  void iwant1(int, int);
+  void iwant2(int i, int j){ iwant1(i, j); iwant1(j, i); }
+  void iwant(int i, int j){ iwant2(i, j); }
   void allocate();
   void unallocate();
   void uninit();
@@ -166,8 +169,8 @@ protected: // const xs
     auto& x = const_cast<BSMATRIX_DATA<T>&>(*this);
     return x.m(r, c);
   }
-  int lownode(int n) const{ assert(_lownode); return _lownode[n]; }
-  // int		lownode(int i)const	{ untested();return _lownode[i];}
+  int ulownode(int n) const{ assert(_ulownode); return _ulownode[n]; }
+  int llownode(int n) const{ assert(_llownode); return _llownode[n]; }
 public:
   void zero();
   void dezero(T const& o);
@@ -247,7 +250,9 @@ public:
   void allocate();
   void reallocate();
   //void	clone(const BSMATRIX<T>&);
-  void iwant(int, int);
+  void iwant1(int, int);
+  void iwant2(int i, int j){ iwant1(i, j); iwant1(j, i); }
+  void iwant(int i, int j){ iwant2(i, j); }
   void set_min_pivot(double x)	{assert(_solver); _solver->set_min_pivot(x);}
   T const& d(int r)const{
     BSMATRIX_SOLVER<T> const* s = _solver;
@@ -283,7 +288,9 @@ public:
 
   virtual void init(int ss) = 0;
   virtual void uninit() = 0;
-  virtual void iwant(int, int){} // LU_COPY
+  void iwant(int i, int j){iwant2(i, j);}
+  virtual void iwant1(int, int){} // LU_COPY
+  virtual void iwant2(int, int){} // LU_COPY
   virtual void allocate() = 0;
   virtual void unallocate() = 0;
   virtual void set_min_pivot(double x) = 0;
@@ -311,8 +318,11 @@ protected: // matrix data xs
   BSMATRIX_DATA<T>& rw_data_(BSMATRIX<T>& d)const {
     return d.rw_data();
   }
-  int lownode_(BSMATRIX_DATA<T> const& d, int r)const {
-    return d.lownode(r);
+  int ulownode_(BSMATRIX_DATA<T> const& d, int r)const {
+    return d.ulownode(r);
+  }
+  int llownode_(BSMATRIX_DATA<T> const& d, int r)const {
+    return d.llownode(r);
   }
   T const& u_(BSMATRIX_DATA<T> const& d, int r, int c)const {
     return d.u(r,c);
@@ -378,11 +388,12 @@ void BSMATRIX_DATA<T>::init(int s)
 
   _size = s;
 
-  assert(!_lownode);
-  _lownode = new int[size()+1];
-  assert(_lownode);
+  assert(!_ulownode);
+  assert(!_llownode);
+  _ulownode = new int[size()+1];
+  _llownode = new int[size()+1];
   for (int ii = 0;  ii <= size();  ++ii) {
-    _lownode[ii] = ii;
+    _ulownode[ii] = _llownode[ii] = ii;
   }
 
   assert(_zero == 0.);
@@ -394,8 +405,9 @@ template <class T>
 void BSMATRIX_DATA<T>::uninit()
 {
   unallocate();
-  delete [] _lownode;
-  _lownode = nullptr;
+  delete [] _llownode;
+  delete [] _ulownode;
+  _ulownode = _llownode = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -427,7 +439,8 @@ void BSMATRIX<T>::init(int ss)
 /*--------------------------------------------------------------------------*/
 template <class T>
 BSMATRIX_DATA<T>::BSMATRIX_DATA()
- :_lownode(nullptr),
+ :_ulownode(nullptr),
+  _llownode(nullptr),
   _space(nullptr),
   _diaptr(nullptr),
   _nzcount(0),
@@ -462,29 +475,30 @@ void BSMATRIX<T>::clone(const BSMATRIX<T> & aa)
 /* iwant: indicate that "iwant" to allocate this spot in the matrix
  */
 template <class T>
-void BSMATRIX_DATA<T>::iwant(int node1, int node2)
+void BSMATRIX_DATA<T>::iwant1(int node1, int node2)
 {
-  assert(_lownode);
+  assert(_ulownode);
+  assert(_llownode);
   assert(node1 <= size());
   assert(node2 <= size());
 
   if (node1 <= 0  ||  node2 <= 0) {
     // node 0 is ground, and doesn't count as a connection
     // negative is invalid, not used but still may be in a node list
-  }else if (node1 < _lownode[node2]) {
-    _lownode[node2]=node1;
-  }else if (node2 < _lownode[node1]) {
-    _lownode[node1]=node2;
+  }else if (node1 < _ulownode[node2]) {
+    _ulownode[node2]=node1;
+  }else if (node2 < _llownode[node1]) {
+    _llownode[node1]=node2;
   }else{
   }
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-void BSMATRIX<T>::iwant(int node1, int node2)
+void BSMATRIX<T>::iwant1(int node1, int node2)
 {
-  BSMATRIX_DATA<T>::iwant(node1, node2);
+  BSMATRIX_DATA<T>::iwant1(node1, node2);
   assert(_solver);
-  _solver->iwant(node1, node2); // could manage L and U copy
+  _solver->iwant1(node1, node2); // could manage L and U copy
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -529,13 +543,16 @@ void BSMATRIX<T>::allocate()
 template <class T>
 void BSMATRIX_DATA<T>::allocate()
 {
-  assert(_lownode);
+  assert(_ulownode);
+  assert(_llownode);
   assert(!_diaptr);
   assert(!_space);
 
   _nzcount = 0;
   for (int ii = 0;   ii <= size();   ++ii) {
-    _nzcount += 2 * (ii - _lownode[ii]) + 1;
+    _nzcount += 2 * (ii - _ulownode[ii]);
+    _nzcount += 2 * (ii - _llownode[ii]);
+    ++_nzcount;
   }
 
   _diaptr = new T*[size()+1];
@@ -548,8 +565,8 @@ void BSMATRIX_DATA<T>::allocate()
   {
     T* point = _space;
     for (int ii = 0;   ii <= size();   ++ii) {
-      _diaptr[ii] = point + ii - _lownode[ii];
-      point += 2 * (ii - _lownode[ii]) + 1;
+      _diaptr[ii] = point + ii - _llownode[ii];
+      point = _diaptr[ii] + ii - _ulownode[ii] + 1;
     }
   }
 }
@@ -579,10 +596,12 @@ template <class T>
 double BSMATRIX_DATA<T>::density()
 {
   if (size() > 0) {
-    assert(_lownode);
+    assert(_ulownode);
+    assert(_llownode);
     _nzcount = 0;
     for (int ii = 0;   ii <= size();   ++ii) {
-      _nzcount += 2 * (ii - _lownode[ii]) + 1;
+      _nzcount += ii - _ulownode[ii];
+      _nzcount += ii - _llownode[ii] + 1;
     }
     return static_cast<double>(_nzcount-1)/(static_cast<double>(size())*size());
   }else{
@@ -610,12 +629,14 @@ template <class T>
 T& BSMATRIX_DATA<T>::u(int r, int c)
 {
   assert(_diaptr);
-  assert(_lownode);
+  assert(_ulownode);
+  assert(_llownode);
   assert(0 <= r);
   assert(r <= c);
   assert(c <= _size);
-  assert(1 <= _lownode[c]);
-  assert(_lownode[c] <= r);
+  assert(1 <= _ulownode[c]);
+  assert(1 <= _llownode[c]);
+  assert(_ulownode[c] <= r);
 
   return _diaptr[c][r-c];
 }
@@ -627,12 +648,12 @@ template <class T>
 T& BSMATRIX_DATA<T>::l(int r, int c)
 {
   assert(_diaptr);
-  assert(_lownode);
+  assert(_llownode);
   assert(0 < c);
   assert(c < r);
   assert(r <= _size);
-  assert(1 <= _lownode[r]);
-  assert(_lownode[r] <= c);
+  assert(1 <= _llownode[r]);
+  assert(_llownode[r] <= c);
 
   return _diaptr[r][r-c];
 }
@@ -645,15 +666,18 @@ template <class T>
 T& BSMATRIX_DATA<T>::m(int r, int c)
 {
   assert(_diaptr);
-  assert(_lownode);
+
+  assert(_llownode);
   assert(0 < r);
   assert(r <= _size);
-  assert(1 <= _lownode[r]);
-  assert(_lownode[r] <= c);
+  assert(1 <= _llownode[r]);
+  assert(_llownode[r] <= c);
+
+  assert(_ulownode);
   assert(0 < c);
   assert(c <= _size);
-  assert(1 <= _lownode[c]);
-  assert(_lownode[c] <= r);
+  assert(1 <= _ulownode[c]);
+  assert(_ulownode[c] <= r);
 
   return _diaptr[(c>=r)?c:r][r-c];
 }
@@ -673,7 +697,8 @@ T& BSMATRIX_DATA<T>::m(int r, int c)
 template <class T>
 T const& BSMATRIX_DATA<T>::s(int row, int col)const
 {itested();
-  assert(_lownode);
+  assert(_ulownode);
+  assert(_llownode);
   assert(0 <= col);
   assert(col <= size());
   assert(0 <= row);
@@ -685,7 +710,7 @@ T const& BSMATRIX_DATA<T>::s(int row, int col)const
   }else if (col > row) {itested();    /* above the diagonal */
     if (row == 0) {itested();
       return _trash;
-    }else if (row < _lownode[col]) {itested();
+    }else if (row < _ulownode[col]) {itested();
       return _zero;
     }else{itested();
       return u(row, col);
@@ -694,7 +719,7 @@ T const& BSMATRIX_DATA<T>::s(int row, int col)const
     assert(col < row);
     if (col == 0) {itested();
       return _trash;
-    }else if (col < _lownode[row]) {itested();
+    }else if (col < _llownode[row]) {itested();
       return _zero;
     }else{itested();
       return l(row, col);
@@ -811,18 +836,19 @@ void BSMATRIX_SOLVER<T>::load_asymmetric(int r1,int r2,int c1,int c2,T value)
 template <class T>
 void BSMATRIX_DATA<T>::fbsub(T* v) const
 {
-  assert(_lownode);
+  assert(_ulownode);
+  assert(_llownode);
   assert(v);
 
   for (int ii = 1; ii <= size(); ++ii) {	/* forward substitution */
-    for (int jj = _lownode[ii]; jj < ii; ++jj) {
+    for (int jj = _llownode[ii]; jj < ii; ++jj) {
       v[ii] -= l(ii,jj) * v[jj];
     }
     v[ii] /= d(ii);
   }
 
   for (int jj = size(); jj > 1; --jj) {		/* back substitution    */
-    for (int ii = _lownode[jj]; ii < jj; ++ii) {
+    for (int ii = _ulownode[jj]; ii < jj; ++ii) {
       v[ii] -= u(ii,jj) * v[jj];
     }
   }
@@ -836,7 +862,8 @@ void BSMATRIX_DATA<T>::fbsub(T* v) const
 template <class T>
 void BSMATRIX_DATA<T>::fbsub(T* x, const T* b, T* c) const
 {
-  assert(_lownode);
+  assert(_ulownode);
+  assert(_llownode);
   assert(x);
   assert(b);
   assert(c);
@@ -853,7 +880,7 @@ void BSMATRIX_DATA<T>::fbsub(T* x, const T* b, T* c) const
 
     int first_nz = ii;
     for (   ; ii <= size(); ++ii) {		/* forward substitution */
-      int low_node = std::max(_lownode[ii], first_nz);
+      int low_node = std::max(_llownode[ii], first_nz);
       c[ii] = b[ii];
       for (int jj = low_node; jj < ii; ++jj) {
 	c[ii] -= l(ii,jj) * c[jj];
@@ -865,7 +892,7 @@ void BSMATRIX_DATA<T>::fbsub(T* x, const T* b, T* c) const
   notstd::copy_n(c, size()+1, x);
 
   for (int jj = size(); jj > 1; --jj) {		/* back substitution    */
-    for (int ii = _lownode[jj]; ii < jj; ++ii) {
+    for (int ii = _ulownode[jj]; ii < jj; ++ii) {
       x[ii] -= u(ii,jj) * x[jj];
     }
   }
@@ -885,12 +912,13 @@ void BSMATRIX_DATA<T>::fbsub(T* x, const T* b, T* c) const
 template <class T>
 void BSMATRIX_DATA<T>::fbsubt(T* v) const
 {itested();
-  assert(_lownode);
+  assert(_ulownode);
+  assert(_llownode);
   assert(v);
 
   // forward substitution
   for (int ii = 1; ii <= size(); ++ii) {itested();
-    for (int jj = _lownode[ii]; jj < ii; ++jj) {itested();
+    for (int jj = _ulownode[ii]; jj < ii; ++jj) {itested();
       v[ii] -= u(jj,ii) * v [jj];
     }
   }
@@ -898,7 +926,7 @@ void BSMATRIX_DATA<T>::fbsubt(T* v) const
   // back substitution
   for (int jj = size(); jj > 1; --jj) {itested();
     v[jj] /= d(jj);
-    for (int ii = _lownode[jj]; ii < jj; ++ii) {itested();
+    for (int ii = _llownode[jj]; ii < jj; ++ii) {itested();
       v[ii] -= l(jj,ii) * v[jj];
     }
   }
