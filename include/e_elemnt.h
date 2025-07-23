@@ -105,13 +105,13 @@ protected: // inline, below
   // don't use. misleading name
   void	   tr_load_extended(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
-			    double* value, double* old_value) { untested();
+			    double* value, double* old_value) { itested();
     return tr_load_asymmetric(no1, no2, ni1, ni2, value, old_value);
   }
   // don't use. misleading name
   void	   ac_load_extended(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
-			    COMPLEX value) { untested();
+			    COMPLEX value) { itested();
     return ac_load_asymmetric(no1, no2, ni1, ni2, value);
   }
 
