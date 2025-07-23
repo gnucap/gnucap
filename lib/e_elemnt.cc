@@ -346,7 +346,7 @@ void ELEMENT::tr_iwant_matrix_passive()
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_iwant_matrix_active()
-{
+{ untested();
   assert(matrix_nodes() == 4);
   assert(is_device());
   assert(!subckt());
@@ -358,10 +358,10 @@ void ELEMENT::tr_iwant_matrix_active()
   //BUG// assert can fail as a result of some parse errors
 
   //_sim->_aa.iwant(n_(OUT1).m_(),n_(OUT2).m_());
-  _sim->_aa.iwant(n_(OUT1).m_(),n_(IN1).m_());
-  _sim->_aa.iwant(n_(OUT1).m_(),n_(IN2).m_());
-  _sim->_aa.iwant(n_(OUT2).m_(),n_(IN1).m_());
-  _sim->_aa.iwant(n_(OUT2).m_(),n_(IN2).m_());
+  _sim->_aa.iwant1(n_(OUT1).m_(),n_(IN1).m_());
+  _sim->_aa.iwant1(n_(OUT1).m_(),n_(IN2).m_());
+  _sim->_aa.iwant1(n_(OUT2).m_(),n_(IN1).m_());
+  _sim->_aa.iwant1(n_(OUT2).m_(),n_(IN2).m_());
   //_sim->_aa.iwant(n_(IN1).m_(),n_(IN2).m_());
 }
 /*--------------------------------------------------------------------------*/
@@ -413,10 +413,10 @@ void ELEMENT::ac_iwant_matrix_passive()
 void ELEMENT::ac_iwant_matrix_active()
 {
   //_sim->_acx.iwant(n_(OUT1).m_(),n_(OUT2).m_());
-  _sim->_acx.iwant(n_(OUT1).m_(),n_(IN1).m_());
-  _sim->_acx.iwant(n_(OUT1).m_(),n_(IN2).m_());
-  _sim->_acx.iwant(n_(OUT2).m_(),n_(IN1).m_());
-  _sim->_acx.iwant(n_(OUT2).m_(),n_(IN2).m_());
+  _sim->_acx.iwant1(n_(OUT1).m_(),n_(IN1).m_());
+  _sim->_acx.iwant1(n_(OUT1).m_(),n_(IN2).m_());
+  _sim->_acx.iwant1(n_(OUT2).m_(),n_(IN1).m_());
+  _sim->_acx.iwant1(n_(OUT2).m_(),n_(IN2).m_());
   //_sim->_acx.iwant(n_(IN1).m_(),n_(IN2).m_());
 }
 /*--------------------------------------------------------------------------*/
