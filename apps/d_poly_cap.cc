@@ -211,7 +211,7 @@ bool DEV_FPOLY_CAP::do_tr()
 void DEV_CPOLY_CAP::tr_iwant_matrix()
 {
   tr_iwant_matrix_passive();
-  tr_iwant_matrix_extended1();
+  tr_iwant_matrix_control();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CPOLY_CAP::tr_load()
@@ -223,7 +223,7 @@ void DEV_CPOLY_CAP::tr_load()
   _vi1[0] = _vi0[0];
   _vi1[1] = _vi0[1];
   for (int i=2; i<=_n_ports; ++i) {
-    tr_load_extended(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), &(_vi0[i]), &(_vi1[i]));
+    tr_load_asymmetric(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), &(_vi0[i]), &(_vi1[i]));
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -247,7 +247,7 @@ double DEV_CPOLY_CAP::tr_amps()const
 void DEV_CPOLY_CAP::ac_iwant_matrix()
 {
   ac_iwant_matrix_passive();
-  ac_iwant_matrix_extended1();
+  ac_iwant_matrix_control();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CPOLY_CAP::ac_load()
@@ -255,7 +255,7 @@ void DEV_CPOLY_CAP::ac_load()
   _acg = _vy0[1] * _sim->_jomega;
   ac_load_passive();
   for (int i=2; i<=_n_ports; ++i) {
-    ac_load_extended(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), _vy0[i] * _sim->_jomega);
+    ac_load_asymmetric(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), _vy0[i] * _sim->_jomega);
   }
 }
 /*--------------------------------------------------------------------------*/

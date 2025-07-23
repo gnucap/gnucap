@@ -365,7 +365,7 @@ void ELEMENT::tr_iwant_matrix_active()
   //_sim->_aa.iwant(n_(IN1).m_(),n_(IN2).m_());
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::tr_iwant_matrix_extended()
+void ELEMENT::tr_iwant_matrix_all()
 {
   assert(is_device());
   assert(!subckt());
@@ -382,7 +382,7 @@ void ELEMENT::tr_iwant_matrix_extended()
   }
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::tr_iwant_matrix_extended1()
+void ELEMENT::tr_iwant_matrix_control()
 {
   assert(is_device());
   assert(!subckt());
@@ -396,10 +396,6 @@ void ELEMENT::tr_iwant_matrix_extended1()
       }
     }else{itested();
       // node 1 is grounded or invalid
-    }
-    for (int jj = 2;  jj < matrix_nodes() ;  ++jj) {
-      _sim->_aa.iwant(n_(jj).m_(),n_(jj+1).m_());
-      ++jj;
     }
   }
 }
@@ -420,7 +416,7 @@ void ELEMENT::ac_iwant_matrix_active()
   //_sim->_acx.iwant(n_(IN1).m_(),n_(IN2).m_());
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::ac_iwant_matrix_extended()
+void ELEMENT::ac_iwant_matrix_all()
 {
   assert(is_device());
   assert(!subckt());
@@ -437,7 +433,7 @@ void ELEMENT::ac_iwant_matrix_extended()
   }
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::ac_iwant_matrix_extended1()
+void ELEMENT::ac_iwant_matrix_control()
 {
   assert(is_device());
   assert(!subckt());
@@ -451,10 +447,6 @@ void ELEMENT::ac_iwant_matrix_extended1()
       }
     }else{itested();
       // node 1 is grounded or invalid
-    }
-    for (int jj = 2;  jj < matrix_nodes() ;  ++jj) {
-      _sim->_acx.iwant(n_(jj).m_(),n_(jj+1).m_());
-      ++jj;
     }
   }
 }

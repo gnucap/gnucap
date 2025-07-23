@@ -102,16 +102,19 @@ protected: // inline, below
   void	   tr_unload_active();
   void	   ac_load_active();
 
+  // don't use. misleading name
   void	   tr_load_extended(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
-			    double* value, double* old_value) {
+			    double* value, double* old_value) { untested();
     return tr_load_asymmetric(no1, no2, ni1, ni2, value, old_value);
   }
+  // don't use. misleading name
   void	   ac_load_extended(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
-			    COMPLEX value) {
+			    COMPLEX value) { untested();
     return ac_load_asymmetric(no1, no2, ni1, ni2, value);
   }
+
   void	   tr_load_asymmetric(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
 			    double* value, double* old_value);
@@ -141,12 +144,19 @@ protected: // inline, below
 protected: // in .cc
   void	   tr_iwant_matrix_passive();
   void	   tr_iwant_matrix_active();
-  void	   tr_iwant_matrix_extended();
-  void	   tr_iwant_matrix_extended1();
+  void	   tr_iwant_matrix_control();
+  void	   tr_iwant_matrix_all();
+  void	   tr_iwant_matrix_extended(){ untested();
+    tr_iwant_matrix_all();
+  }
+
   void	   ac_iwant_matrix_passive();
   void	   ac_iwant_matrix_active();
-  void	   ac_iwant_matrix_extended();
-  void	   ac_iwant_matrix_extended1();
+  void	   ac_iwant_matrix_control();
+  void	   ac_iwant_matrix_all();
+  void	   ac_iwant_matrix_extended(){ untested();
+    ac_iwant_matrix_all();
+  }
 
 public:
   double   tr_review_trunc_error(const FPOLY1* q);

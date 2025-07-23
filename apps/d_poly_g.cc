@@ -191,7 +191,7 @@ bool DEV_FPOLY_G::do_tr()
 void DEV_CPOLY_G::tr_iwant_matrix()
 {
   tr_iwant_matrix_passive();
-  tr_iwant_matrix_extended1();
+  tr_iwant_matrix_control();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CPOLY_G::tr_load()
@@ -224,7 +224,7 @@ double DEV_CPOLY_G::tr_amps()const
 void DEV_CPOLY_G::ac_iwant_matrix()
 {
   ac_iwant_matrix_passive();
-  ac_iwant_matrix_extended1();
+  ac_iwant_matrix_control();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CPOLY_G::ac_load()
@@ -232,7 +232,7 @@ void DEV_CPOLY_G::ac_load()
   _acg = _values[1];
   ac_load_passive();
   for (int i=2; i<=_n_ports; ++i) {
-    ac_load_extended(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), _values[i]);
+    ac_load_asymmetric(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), _values[i]);
   }
 }
 /*--------------------------------------------------------------------------*/
