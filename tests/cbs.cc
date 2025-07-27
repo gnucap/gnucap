@@ -191,10 +191,16 @@ public:
    ,_changed(nullptr) {
   }
 private: // SOLVER
-  void iwant(int i, int j)override {
+  void iwant1(int i, int j)override {
     if(i && j){
       _fp.want(i, j);
-      _fp.want(j, i); // TODO? asymmetric stamps not supported
+    }else{
+    }
+  }
+  void iwant2(int i, int j)override {
+    if(i && j){
+      _fp.want(i, j);
+      _fp.want(j, i);
     }else{
     }
   }
@@ -249,9 +255,9 @@ private:
 
 private: // aa data xs
 //  BSMATRIX<T>& aa() { untested();return data_();}
-  int aalownode(int i) const{ return lownode_(data(), i); }
-  int aalownode_u(int i) const{ return lownode_(data(), i); }
-  int aalownode_l(int i) const{ return lownode_(data(), i); }
+ // int aalownode(int i) const{ return lownode_(data(), i); }
+  int aalownode_u(int i) const{ return ulownode_(data(), i); }
+  int aalownode_l(int i) const{ return llownode_(data(), i); }
 
   T const & aau(int i, int j)const { untested(); return u_(data(), i, j); }
   T const & aal(int i, int j)const { untested(); return l_(data(), i, j); }
@@ -533,7 +539,7 @@ bool CBS<T>::nonzero_lu(int rr, int cc, int dd)
 {
   assert(!idx(aam(rr, cc)));
   assert(!nz(aam(rr, cc)));
-  int kk = std::max(aalownode(rr), aalownode(cc));
+  int kk = std::max(aalownode_u(rr), aalownode_l(cc));
   int len = dd - kk;
   if (len > 0) {
     T* row = &(aal(rr,kk));
@@ -1183,7 +1189,7 @@ void CBS<T>::compute_lu_fill()
   int lnzsum = 0;
   int gap = 0;
   for (int mm = 1;   mm <= size();   ++mm) {
-    int bn = aalownode(mm);
+    int bn = std::max(aalownode_u(mm), aalownode_l(mm));
 
     assert (bn <= mm);
 

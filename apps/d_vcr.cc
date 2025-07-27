@@ -46,7 +46,7 @@ private: // override virtual
   bool	   use_obsolete_callback_parse()const override {return true;}
   CARD*	   clone()const override	{return new DEV_VCR(*this);}
   void     precalc_last()override;
-  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_shunt(); tr_iwant_matrix_active();}
   void     tr_begin()override;
   bool	   do_tr()override;
   void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
@@ -54,7 +54,7 @@ private: // override virtual
   double   tr_involts()const override	{untested(); return dn_diff(n_(IN1).v0(), n_(IN2).v0());}
   double   tr_involts_limited()const override {return volts_limited(n_(IN1),n_(IN2));}
   double   tr_amps()const override	{untested(); return ELEMENT::tr_amps();}
-  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_shunt(); ac_iwant_matrix_active();}
   void	   ac_begin()override;
   void	   do_ac()override;
   void	   ac_load()override		{ac_load_shunt(); ac_load_active();}

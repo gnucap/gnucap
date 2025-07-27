@@ -48,11 +48,15 @@ private:
   using BSMATRIX_SOLVER<T>::l_;
   using BSMATRIX_SOLVER<T>::m_;
   using BSMATRIX_SOLVER<T>::d_;
-  using BSMATRIX_SOLVER<T>::lownode_;
+  using BSMATRIX_SOLVER<T>::ulownode_;
+  using BSMATRIX_SOLVER<T>::llownode_;
 
 private: // LU xs
-  int lownode(int i) const {
-    return lownode_(_lu, i);
+  int ulownode(int i) const {
+    return ulownode_(_lu, i);
+  }
+  int llownode(int i) const {
+    return llownode_(_lu, i);
   }
   T& u(int i, int j){ return u_(_lu,i,j); }
   T& l(int i, int j){ return l_(_lu,i,j); }
@@ -61,7 +65,8 @@ private: // LU xs
 
 private: // solver overrides
   void init(int ss=0)override;
-  void iwant(int i, int j)override { _lu.iwant(i, j); }
+  void iwant1(int i, int j)override { _lu.iwant1(i, j); }
+  void iwant2(int i, int j)override { _lu.iwant2(i, j); }
   void allocate()override { _lu.allocate(); }
   void unallocate()override { _lu.unallocate(); }
   void uninit()override;
@@ -113,11 +118,15 @@ private:
   using BSMATRIX_SOLVER<T>::l_;
   using BSMATRIX_SOLVER<T>::d_;
   using BSMATRIX_SOLVER<T>::m_;
-  using BSMATRIX_SOLVER<T>::lownode_;
+  using BSMATRIX_SOLVER<T>::ulownode_;
+  using BSMATRIX_SOLVER<T>::llownode_;
 
 private: // data xs
-  int lownode(int i) const {
-    return lownode_(_data, i);
+  int ulownode(int i) const {
+    return ulownode_(_data, i);
+  }
+  int llownode(int i) const {
+    return llownode_(_data, i);
   }
   int size() const {
     return _data.size();
@@ -191,23 +200,32 @@ void LU_COPY<T>::lu_decomp(bool do_partial)
   int prop = 0;   /* change propagation indicator */
   assert(aa.size() == size());
   for (int mm = 1;   mm <= size();   ++mm) {
-    assert(lownode_(aa,mm) == lownode(mm));
-    int bn = lownode(mm);
+    assert(ulownode_(aa,mm) == ulownode(mm));
+    assert(llownode_(aa,mm) == llownode(mm));
+    int bnu = ulownode(mm);
+    int bnl = llownode(mm);
+    int bn = std::min(bnu, bnl);
     if (!do_partial  ||  is_changed(mm)  ||  bn <= prop) {
       set_changed(mm, false);
       prop = mm;
-      if (bn < mm) {
+      if (bnu < mm) {
 	prop = mm;
-	u(bn,mm) = u_(aa,bn,mm) / d(bn);
-	for (int ii = bn+1;  ii<mm;  ii++) {
+	u(bnu,mm) = u_(aa,bnu,mm) / d(bnu);
+	for (int ii = bnu+1;  ii<mm;  ii++) {
 	  /* u(ii,mm) = (aa.u(ii,mm) - dot(ii,mm,ii)) / d(ii,ii); */
 	  subtract_dot_product(ii,mm,ii,u_(aa,ii,mm)) /= d(ii);
 	}
-	l(mm,bn) = l_(aa,mm,bn);
-	for (int jj = bn+1;  jj<mm;  jj++) {
+      }else{
+      }
+      if (bnl < mm) {
+	l(mm,bnl) = l_(aa,mm,bnl);
+	for (int jj = bnl+1;  jj<mm;  jj++) {
 	  /* l(mm,jj) = aa.l(mm,jj) - dot(mm,jj,jj); */
 	  subtract_dot_product(mm,jj,jj,l_(aa,mm,jj));
 	}
+      }else{
+      }
+      if (bn < mm) {
 	{ /* jj == mm */
 	  /* d(mm,mm) = aa.d(mm,mm) - dot(mm,mm,mm); then test */
 	  if (subtract_dot_product(mm,mm,mm,d_(aa,mm)) == 0.) {
@@ -247,7 +265,7 @@ struct longer<double> {
 template <class T>
 T& LU_INPLACE<T>::subtract_dot_product(int rr, int cc, int dd)
 {
-  int kk = std::max(lownode(rr), lownode(cc));
+  int kk = std::max(llownode(rr), ulownode(cc));
   int len = dd - kk;
   T& in = m(rr, cc);
   typedef typename longer<T>::type longertype;
@@ -269,7 +287,7 @@ T& LU_INPLACE<T>::subtract_dot_product(int rr, int cc, int dd)
 template <class T>
 T& LU_COPY<T>::subtract_dot_product(int rr, int cc, int dd, const T& in)
 {
-  int kk = std::max(lownode(rr), lownode(cc));
+  int kk = std::max(llownode(rr), ulownode(cc));
   int len = dd - kk;
   typedef typename longer<T>::type longertype;
   longertype dot = 0.;
@@ -293,17 +311,25 @@ void LU_INPLACE<T>::lu_decomp(bool /*ignore partial*/)
   BSMATRIX_DATA<T>& acx = _data;
 //  assert(_lownode);
   for (int mm = 1;   mm <= size();   ++mm) {
-    int bn = lownode(mm);
-    if (bn < mm) {
-      u_(acx,bn,mm) /= d(bn,bn);
-      for (int ii =bn+1;  ii<mm;  ii++) {
+    int bnu = ulownode(mm);
+    int bnl = llownode(mm);
+    int bn = std::min(bnu, bnl);
+    if (bnu < mm) {
+      u_(acx,bnu,mm) /= d(bnu,bnu);
+      for (int ii =bnu+1;  ii<mm;  ii++) {
 	/* (m(ii,mm) -= dot(ii,mm,ii)) /= d(ii,ii); */
 	subtract_dot_product(ii,mm,ii) /= d(ii,ii);
       }
-      for (int jj = bn+1;  jj<mm;  jj++) {
+    }else{
+    }
+    if (bnl < mm) {
+      for (int jj = bnl+1;  jj<mm;  jj++) {
 	/* m(mm,jj) -= dot(mm,jj,jj); */
 	subtract_dot_product(mm,jj,jj);
       }
+    }else{
+    }
+    if(bn < mm) {
       { /* jj == mm */
 	/* m(mm,mm) -= dot(mm,mm,mm); then test */
 	if (subtract_dot_product(mm,mm,mm) == 0.) {itested();

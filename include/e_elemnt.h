@@ -102,10 +102,23 @@ protected: // inline, below
   void	   tr_unload_active();
   void	   ac_load_active();
 
+  // don't use. misleading name
   void	   tr_load_extended(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
-			    double* value, double* old_value);
+			    double* value, double* old_value) { itested();
+    return tr_load_asymmetric(no1, no2, ni1, ni2, value, old_value);
+  }
+  // don't use. misleading name
   void	   ac_load_extended(const node_t& no1, const node_t& no2,
+			    const node_t& ni1, const node_t& ni2,
+			    COMPLEX value) { itested();
+    return ac_load_asymmetric(no1, no2, ni1, ni2, value);
+  }
+
+  void	   tr_load_asymmetric(const node_t& no1, const node_t& no2,
+			    const node_t& ni1, const node_t& ni2,
+			    double* value, double* old_value);
+  void	   ac_load_asymmetric(const node_t& no1, const node_t& no2,
 			    const node_t& ni1, const node_t& ni2,
 			    COMPLEX value);
 
@@ -131,10 +144,25 @@ protected: // inline, below
 protected: // in .cc
   void	   tr_iwant_matrix_passive();
   void	   tr_iwant_matrix_active();
-  void	   tr_iwant_matrix_extended();
+  void	   tr_iwant_matrix_control();
+  void	   tr_iwant_matrix_all();
+  void	   tr_iwant_matrix_shunt(){
+    tr_iwant_matrix_passive();
+  }
+  void	   tr_iwant_matrix_extended(){
+    tr_iwant_matrix_all();
+  }
+
   void	   ac_iwant_matrix_passive();
   void	   ac_iwant_matrix_active();
-  void	   ac_iwant_matrix_extended();
+  void	   ac_iwant_matrix_control();
+  void	   ac_iwant_matrix_all();
+  void	   ac_iwant_matrix_shunt(){
+    ac_iwant_matrix_passive();
+  }
+  void	   ac_iwant_matrix_extended(){
+    ac_iwant_matrix_all();
+  }
 
 public:
   double   tr_review_trunc_error(const FPOLY1* q);
@@ -354,7 +382,7 @@ inline void ELEMENT::ac_load_active()
 		      n_(IN1).m_(), n_(IN2).m_(), mfactor() * _acg);
 }
 /*--------------------------------------------------------------------------*/
-inline void ELEMENT::tr_load_extended(const node_t& no1, const node_t& no2,
+inline void ELEMENT::tr_load_asymmetric(const node_t& no1, const node_t& no2,
 				      const node_t& ni1, const node_t& ni2,
 				      double* new_value, double* old_value)
 {
@@ -366,7 +394,7 @@ inline void ELEMENT::tr_load_extended(const node_t& no1, const node_t& no2,
   *old_value = *new_value;
 }
 /*--------------------------------------------------------------------------*/
-inline void ELEMENT::ac_load_extended(const node_t& no1, const node_t& no2,
+inline void ELEMENT::ac_load_asymmetric(const node_t& no1, const node_t& no2,
 				      const node_t& ni1, const node_t& ni2,
 				      COMPLEX new_value)
 {

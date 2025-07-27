@@ -50,14 +50,14 @@ private: // override virtual
   int	   net_nodes()const override	{return 4;}
   bool	   use_obsolete_callback_parse()const override {return true;}
   CARD*	   clone()const override		{return new DEV_VCG(*this);}
-  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  void	   tr_iwant_matrix()override	{tr_iwant_matrix_shunt(); tr_iwant_matrix_active();}
   void     tr_begin()override;
   bool	   do_tr()override;
   void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
   void	   tr_unload() override		{untested(); tr_unload_shunt(); tr_unload_active();}
   double   tr_involts()const override	{return dn_diff(n_(IN1).v0(), n_(IN2).v0());}
   double   tr_involts_limited()const override {return volts_limited(n_(IN1),n_(IN2));}
-  void	    ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	    ac_iwant_matrix()override	{ac_iwant_matrix_shunt(); ac_iwant_matrix_active();}
   void	    ac_begin()override		{_ev = _y[0].f0;  _acg = _m0.c1;}
   void	    do_ac()override;
   void	    ac_load()override		{ac_load_shunt(); ac_load_active();}

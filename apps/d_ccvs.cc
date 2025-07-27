@@ -41,12 +41,12 @@ private: // override virtual
   bool	   use_obsolete_callback_parse()const override {return true;}
   CARD*	   clone()const	override {return new DEV_CCVS(*this);}
   void     precalc_last() override;
-  void	   tr_iwant_matrix() override	{tr_iwant_matrix_extended();}
+  void	   tr_iwant_matrix() override	{tr_iwant_matrix_shunt(); tr_iwant_matrix_active();}
   void     tr_begin()override;
   bool     do_tr()override		{_sim->_late_evalq.push_back(this); return true;}
   bool	   do_tr_last()override;
   void	   tr_load()override		{tr_load_shunt(); tr_load_active();}
-  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_iwant_matrix()override	{ac_iwant_matrix_shunt(); ac_iwant_matrix_active();}
   void	   ac_begin()override		{_loss1=_loss0=1./OPT::shortckt; _ev = _y[0].f1;}
   void	   do_ac()override		{_sim->_late_evalq.push_back(this);}
   void	   do_ac_last()override;

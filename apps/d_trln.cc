@@ -102,7 +102,7 @@ private: // override virtual
   void		tr_unload()override;
   double	tr_involts()const override;
   double	tr_involts_limited()const override;
-  void		ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void		ac_iwant_matrix()override	{ac_iwant_matrix_all();}
   void		do_ac()override;
   void		ac_load()override;
   COMPLEX	ac_involts()const override;

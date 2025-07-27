@@ -58,7 +58,7 @@ protected: // override virtual
   int	   matrix_nodes()const override	{return _n_ports*2;}
   int	   net_nodes()const override	{return _n_ports*2;}
   CARD*	   clone()const override        {unreachable();return new DEV_CPOLY_CAP(*this);}
-  void	   tr_iwant_matrix()override	{tr_iwant_matrix_extended();}
+  void	   tr_iwant_matrix()override;
   bool	   tr_needs_eval()const override	{/*assert(!is_q_for_eval());*/ return true;}
   bool	   do_tr()override;
   void	   tr_load()override;
@@ -67,7 +67,7 @@ protected: // override virtual
   double   tr_involts()const override	{unreachable(); return NOT_VALID;}
   double   tr_involts_limited()const override {unreachable(); return NOT_VALID;}
   double   tr_amps()const override;
-  void	   ac_iwant_matrix()override	{ac_iwant_matrix_extended();}
+  void	   ac_iwant_matrix()override;
   void	   ac_load()override;
   COMPLEX  ac_involts()const override	{itested(); return NOT_VALID;}
   COMPLEX  ac_amps()const override	{itested(); return NOT_VALID;}
@@ -208,6 +208,12 @@ bool DEV_FPOLY_CAP::do_tr()
   return do_tr_con_chk_and_q();
 }
 /*--------------------------------------------------------------------------*/
+void DEV_CPOLY_CAP::tr_iwant_matrix()
+{
+  tr_iwant_matrix_passive();
+  tr_iwant_matrix_control();
+}
+/*--------------------------------------------------------------------------*/
 void DEV_CPOLY_CAP::tr_load()
 {
   for (int i=0; i<=_n_ports; ++i) {
@@ -217,7 +223,7 @@ void DEV_CPOLY_CAP::tr_load()
   _vi1[0] = _vi0[0];
   _vi1[1] = _vi0[1];
   for (int i=2; i<=_n_ports; ++i) {
-    tr_load_extended(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), &(_vi0[i]), &(_vi1[i]));
+    tr_load_asymmetric(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), &(_vi0[i]), &(_vi1[i]));
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -238,12 +244,18 @@ double DEV_CPOLY_CAP::tr_amps()const
   return amps;
 }
 /*--------------------------------------------------------------------------*/
+void DEV_CPOLY_CAP::ac_iwant_matrix()
+{
+  ac_iwant_matrix_passive();
+  ac_iwant_matrix_control();
+}
+/*--------------------------------------------------------------------------*/
 void DEV_CPOLY_CAP::ac_load()
 {
   _acg = _vy0[1] * _sim->_jomega;
   ac_load_passive();
   for (int i=2; i<=_n_ports; ++i) {
-    ac_load_extended(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), _vy0[i] * _sim->_jomega);
+    ac_load_asymmetric(n_(OUT1), n_(OUT2), n_(2*i-2), n_(2*i-1), _vy0[i] * _sim->_jomega);
   }
 }
 /*--------------------------------------------------------------------------*/
