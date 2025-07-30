@@ -110,8 +110,9 @@ private:
   int param_count_dont_print()const override {return 0; } // {common()->COMMON_COMPONENT::param_count();}
 
   node_t& n_(int i)const override {
-    assert(_nodes); assert(i>=0);
+    assert(i>=0);
     if(i<_node_capacity) {
+      assert(_nodes);
       return _nodes[i];
     }else{
       // getting here in d_subckt.error3.ckt
