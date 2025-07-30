@@ -1,0 +1,6 @@
+verilog
+
+resistor r1(a,b);
+delete r1;
+list
+status notime
