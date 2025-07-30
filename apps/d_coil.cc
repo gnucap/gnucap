@@ -556,7 +556,7 @@ COMPLEX DEV_INDUCTANCE::ac_amps()const
 /*--------------------------------------------------------------------------*/
 double DEV_INDUCTANCE::tr_probe_num(const std::string& x)const
 {
-  if (Umatch(x, "flux ")) {untested();
+  if (Umatch(x, "flux ")) {
     return _y[0].f0;
   }else if (Umatch(x, "ind{uctance} |l ")) {untested();
     return _y[0].f1;

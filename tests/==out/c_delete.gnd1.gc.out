@@ -1,0 +1,30 @@
+0 0 0
+a 1 1
+b 2 0
+#           v(a)       v(b)      
+ 27.        2.         0.        
+Gnucap   System status
+iterations: op=2, dc=0, tran=0, fourier=0, total=2
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%
+0 0 0
+a 1 1
+b 2 0
+#           v(a)       v(b)      
+ 27.        2.         0.        
+Gnucap   System status
+iterations: op=2, dc=0, tran=0, fourier=0, total=4
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%
+0 0 0
+a 1 0
+b 2 1
+#           v(a)       v(b)      
+ 27.        0.        -2.        
+Gnucap   System status
+iterations: op=2, dc=0, tran=0, fourier=0, total=6
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%
