@@ -21,8 +21,12 @@
  */
 /*--------------------------------------------------------------------------*/
 #include "globals.h"
-#include "c_comand.h"
 #include "u_sim_data.h"
+#include "u_nodemap.h"
+#include "e_cardlist.h"
+#include "e_compon.h"
+#include "e_logicnode.h"
+#include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -31,13 +35,54 @@ namespace {
  *  subcircuits at beginning, results on border at the bottom
  */
 class INTERFACE CMD_ORDER_REVERSE : public CMD {
-  void do_it(CS&, CARD_LIST*)override {
+  void do_it(CS&, CARD_LIST* scope)override {
+    int seek = 0;
+    do_it_recursive(scope, seek);
+    for (int node = 1;  node <= _sim->_total_nodes;  ++node) {
+      trace3("ordered", _sim->_total_nodes, node, _sim->_nm[node]);
+      assert(node  == _sim->_nm[node]);
+    }
+  }
+private:
+  void do_it_recursive(CARD_LIST* scope, int& seek) {
     int* nm = _sim->_nm; // TODO: use scope
-    int total_nodes = _sim->_total_nodes;
-    nm[0] = 0;
-    //  (it is already reversed. leave it like that.
-    for (int node = 1;  node <= total_nodes;  ++node) {
-      nm[node] = node;
+    assert(nm[0] == 0);
+    assert(scope);
+    for (CARD_LIST::reverse_iterator ci=scope->rbegin(); ci!=scope->rend(); ++ci) {
+      if(CARD_LIST* s=(**ci).subckt()){
+	do_it_recursive(s, seek);
+      }else{
+      }
+      if(COMPONENT* c=dynamic_cast<COMPONENT*>(*ci)) {
+	for(int i=c->ext_nodes()+c->int_nodes(); i>c->net_nodes();){
+	  --i;
+	  // former allocate
+	  int flat = c->n_(i)->flat_number();
+	  if(!c->n_(i).n_()) {
+	    // link to another node. possibly further up. ignore
+	  }else if(flat == 0){ untested();
+	  }else if(flat == INVALID_NODE){ untested();
+	  }else if(nm[flat] == INVALID_NODE){
+	    nm[flat] = ++seek;
+	  }else{ untested();
+	  }
+	}
+      }else{
+      }
+    }
+    assert(scope->nodes());
+    NODE_MAP& n = *scope->nodes();
+    for(int i = n.size(); i;) {
+      --i;
+      int flat = n[i]->flat_number();
+      if(!n[i].n_()) {
+	// link to another node. possibly further up. ignore
+      }else if(flat == 0){
+      }else if(flat == INVALID_NODE){ untested();
+      }else if(nm[flat] == INVALID_NODE){
+	nm[flat] = ++seek;
+      }else{ untested();
+      }
     }
   }
 }p0;

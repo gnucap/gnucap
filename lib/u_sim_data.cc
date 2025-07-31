@@ -221,6 +221,10 @@ void SIM_DATA::map__nodes(CARD_LIST* scope)
   }
   assert(!_nm);
   _nm = new int[_total_nodes+1];
+  _nm[0] = 0;
+  for (int node = 1;  node <= _total_nodes;  ++node) {
+    _nm[node] = INVALID_NODE;
+  }
   ::status.order.reset().start();
   try{
     CMD::command("order_" + OPT::order, scope);

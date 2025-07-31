@@ -399,7 +399,7 @@ bool node_t::is_grounded() const
 
   if(&root()==this){
     return false;
-  }else if(root().is_grounded()){ untested();
+  }else if(root().is_grounded()){
     return true;
   }else{itested();
     return false;
