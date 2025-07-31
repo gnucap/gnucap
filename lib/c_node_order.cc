@@ -43,7 +43,7 @@ class INTERFACE CMD_ORDER_REVERSE : public CMD {
       assert(node  == _sim->_nm[node]);
     }
   }
-private:
+protected:
   void do_it_recursive(CARD_LIST* scope, int& seek) {
     int* nm = _sim->_nm; // TODO: use scope
     assert(nm[0] == 0);
@@ -63,7 +63,7 @@ private:
 	  }else if(flat == 0){ untested();
 	  }else if(flat == INVALID_NODE){ untested();
 	  }else if(nm[flat] == INVALID_NODE){
-	    nm[flat] = ++seek;
+	    nm[flat] = next(seek);
 	  }else{ untested();
 	  }
 	}
@@ -80,10 +80,13 @@ private:
       }else if(flat == 0){
       }else if(flat == INVALID_NODE){ untested();
       }else if(nm[flat] == INVALID_NODE){
-	nm[flat] = ++seek;
+	nm[flat] = next(seek);
       }else{ untested();
       }
     }
+  }
+  virtual int next(int& seek)const {
+    return ++seek;
   }
 }p0;
 DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "order_reverse|order_auto", &p0);
@@ -91,15 +94,20 @@ DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "order_reverse|order_auto", &p0
 /* order_forward: use user ordering, with subcircuits added to end
  * results in border at the top (worst possible if lots of subcircuits)
  */
-class INTERFACE CMD_ORDER_FORWARD : public CMD {
-  void do_it(CS&, CARD_LIST*)override {
+class INTERFACE CMD_ORDER_FORWARD : public CMD_ORDER_REVERSE {
+  void do_it(CS& cmd, CARD_LIST* scope)override {
     int* nm = _sim->_nm; // TODO: use scope
     int total_nodes = _sim->_total_nodes;
     nm[0] = 0;
-    // need to reverse to obtain forward ordering.
+    int seek = total_nodes+1;
+    do_it_recursive(scope, seek);
+
     for (int node = 1;  node <= total_nodes;  ++node) {
-      nm[node] = total_nodes - node + 1;
+      assert(   nm[node] == total_nodes - node + 1);
     }
+  }
+  int next(int& seek)const override {
+    return --seek;
   }
 }p1;
 DISPATCHER<CMD>::INSTALL d1(&command_dispatcher, "order_forward", &p1);
