@@ -47,11 +47,18 @@ inline OMSTREAM& operator<<(OMSTREAM& o, method_t t) {
   return (o << s[t]);
 }
 /*--------------------------------------------------------------------------*/
-enum order_t {oREVERSE=1, oFORWARD, oAUTO};
-inline OMSTREAM& operator<<(OMSTREAM& o, order_t t) {
-  const std::string s[] = {"", "reverse", "forward", "auto"};
-  return (o << s[t]);
-}
+struct order_t : public std::string {
+  order_t(const char*s) : std::string(s) {}
+  order_t& operator=(std::string& s) {
+    std::string::operator=(s);
+    return *this;
+  }
+  order_t& operator=(char const*s) { untested();
+    std::string::operator=(s);
+    return *this;
+  }
+  CS& parse(CS& cmd);
+};
 /*--------------------------------------------------------------------------*/
 enum phase_t {pDEGREES, pRADIANS, pP_DEGREES, pN_DEGREES};
 inline OMSTREAM& operator<<(OMSTREAM& o, phase_t t) {
@@ -127,7 +134,7 @@ public:
   static unsigned outwidth; // width of output devices
   static double ydivisions; // plot divisions, y axis
   static phase_t phase;	    // how to print phase (degrees or radians)
-  static order_t order;	    // ordering method
+  static order_t order;     // ordering method
   static smode_t mode;	    // mixed-mode mode preference
   static int transits;	    // number of good transitions for digital
   static bool dupcheck;	    // check for duplicates on read

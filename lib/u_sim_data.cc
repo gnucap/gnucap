@@ -24,11 +24,12 @@
 //testing=script 2015.01.28
 #include "m_wave.h"
 #include "m_random.h"
-#include "e_logicnode.h"
 #include "u_nodemap.h"
-#include "e_cardlist.h"
 #include "u_status.h"
 #include "u_node.h"
+#include "e_logicnode.h"
+#include "e_cardlist.h"
+#include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 SIM_DATA::SIM_DATA()
   :_time0(0.),
@@ -218,49 +219,15 @@ void SIM_DATA::map__nodes(CARD_LIST* scope)
   if (scope == &CARD_LIST::card_list) {
   }else{itested();
   }
+  assert(!_nm);
   _nm = new int[_total_nodes+1];
   ::status.order.reset().start();
-  switch (OPT::order) {
-  default:       unreachable();
-    error(bWARNING, "invalid order spec: %d\n", OPT::order);
-    // fall through
-  case oAUTO:    order_auto();    break;
-  case oREVERSE: order_reverse(); break;
-  case oFORWARD: order_forward(); break;
+  try{
+    CMD::command("order_" + OPT::order, scope);
+  }catch(Exception const&){ untested();
+    error(bDANGER, "invalid order spec: %d\n", OPT::order);
   }
   ::status.order.stop();
-}
-/*--------------------------------------------------------------------------*/
-/* order_reverse: force ordering to reverse of user ordering
- *  subcircuits at beginning, results on border at the bottom
- */
-void SIM_DATA::order_reverse()
-{
-  // it is already reversed. leave it like that.
-  _nm[0] = 0;
-  for (int node = 1;  node <= _total_nodes;  ++node) {
-    _nm[node] = node;
-  }
-}
-/*--------------------------------------------------------------------------*/
-/* order_forward: use user ordering, with subcircuits added to end
- * results in border at the top (worst possible if lots of subcircuits)
- */
-void SIM_DATA::order_forward()
-{
-  // need to reverse for forward ordering.
-  _nm[0] = 0;
-  for (int node = 1;  node <= _total_nodes;  ++node) {
-    _nm[node] = _total_nodes - node + 1;
-  }
-}
-/*--------------------------------------------------------------------------*/
-/* order_auto: full automatic ordering
- * reverse, for now
- */
-void SIM_DATA::order_auto()
-{
-  order_reverse();
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

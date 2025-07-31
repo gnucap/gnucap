@@ -135,12 +135,7 @@ bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
 	   || Set(cmd, "-d{egrees}", &phase,	pN_DEGREES)
 	   || Set(cmd, "r{adians}",  &phase,	pRADIANS)
 	   || cmd.warn(bWARNING, "need degrees or radians")))
-      || (cmd.umatch("order {=}") &&
-	  (ONE_OF
-	   || Set(cmd, "r{everse}", &order,	oREVERSE)
-	   || Set(cmd, "f{orward}", &order,	oFORWARD)
-	   || Set(cmd, "a{uto}",    &order,	oAUTO)
-	   || cmd.warn(bWARNING, "need reverse, forward, or auto")))
+      || Get(cmd, "order",    &order)
       || (cmd.umatch("mode {=}") &&
 	  (ONE_OF
 	   || Set(cmd, "a{nalog}",  &mode,	moANALOG)
@@ -355,6 +350,21 @@ namespace {
     }
   } p5;
   DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "options|set|width|`options|`set", &p5);
+}
+/*--------------------------------------------------------------------------*/
+CS& order_t::parse(CS& cmd)
+{
+  std::string o;
+  size_t here = cmd.cursor();
+  cmd >> o;
+  if(command_dispatcher["order_" + o]){
+    operator=(o);
+  }else{
+    // incomplete;
+    cmd.reset_fail(here);
+    cmd.warn(bWARNING, "need reverse, forward, or auto");
+  }
+  return cmd;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
