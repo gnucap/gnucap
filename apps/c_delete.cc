@@ -113,8 +113,11 @@ private:
     }else{
       while (cmd.more()) {
 	size_t mark = cmd.cursor();
-	bool didit = delete_one_name(cmd.ctos(), Scope);
-	if (!didit) {
+	if(cmd >> ';') {
+	  break;
+	}else if (delete_one_name(cmd.ctos(), Scope)) {
+	    // ok
+	}else{
 	  cmd.warn(bWARNING, mark, "no match");
 	}
       }

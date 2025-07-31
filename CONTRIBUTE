@@ -5,20 +5,30 @@ is considered stable. Most user functionality is implemented as plugins, and
 this includes all device models, (model) language support, simulation commands
 and more.
 
+The dissemination of open standards and correct implementations thereof is an
+important contribution to Gnucap. Fixing code elsewhere, and convincing people
+to move on does not technically require interaction with us. If you wish to
+discuss standards and build bridges between tools, be our guest.
+
 Consequently, you are not generally required to request our approval for your
 contribution. You may share and distribute your own creation following common
 practice. We are always happy to give feedback and help, provided your code is
 made available under a GPLv3-or-later compatible license.
 
-Sometimes changes to the core library are needed to achieve certain goals.
-Also, changes to plugins included with the main package can be worthwhile. In
-either case, please get in touch, or preferably through the developer mailing
-list [1].
+We welcome bug reports. If you are in the position to offer a patch or a test
+case, feel free to send it by email, or file it on codeberg [1].
+
+Sometimes changes to library code are required to achieve certain goals. If you
+need more than bugfixing, please contact us through the developer mailing list
+[0] or on matrix [m]. Feature requests will influence our future grant
+proposals.
 
 Various features are developped in separate repositories and/or distributed as
-separate packages. The most official ones can be found here [2].  For further
+separate packages. The most official ones can be found here [2]. For further
 resources, technical details and conventions, see [3].
 
-[1] https://savannah.gnu.org/mail/?group_id=562
+[0] https://savannah.gnu.org/mail/?group_id=562
+[1] https://codeberg.org/gnucap
 [2] https://savannah.gnu.org/git/?group=gnucap
 [3] http://gnucap.org/dokuwiki/doku.php/gnucap:manual:tech
+[m] #gnucap:matrix.org

@@ -127,6 +127,7 @@ NODE* NODE_MAP::new_node(std::string s)
     node->set_owner(nullptr); // here?
     _nodes.push_back(node_t());
     assert(node->user_number() == size()-1);
+  }else{
   }
   assert(node);
   assert(_map->size() == _nodes.size());

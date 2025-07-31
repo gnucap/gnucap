@@ -1,10 +1,20 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 20250***-dev
+== 20250731-dev
 - refactor ELEMENT commons
-- fix parameter ordering
+- indexed parameter assignments
+- drop extra node from coupled inductor
+- switch internal temperature to Kelvin
+- hierarchical $temperature, $dtemp etc.
+- per-device integration method selection
+- stash unknown system parameters
+- provide mempcpy for non-glibc systems
+- random seed
+- Verilog-AMS $rdist_* functions
+- asymmetric and smaller matrix footprint
 - bugfix net_decl parse
+- bugfix "delete" parse
 
 == 20250525-dev
 - predictor for node voltages

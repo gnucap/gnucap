@@ -1,0 +1,27 @@
+load ./c_debug.so
+verilog
+
+module gnd(g);
+	ground g;
+endmodule
+
+vsource #(2.) v1(a,b);
+gnd g1(b);
+
+nodedump
+print op v(nodes)
+op
+status notime
+
+resistor #(1.) r1(a,b);
+nodedump
+print op v(nodes)
+op
+status notime
+
+delete g1;
+gnd g2(a);
+nodedump
+print op v(nodes)
+op
+status notime

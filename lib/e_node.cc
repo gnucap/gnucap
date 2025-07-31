@@ -383,7 +383,7 @@ void node_t::set_to_ground(CARD* Owner)
     // kludge: "0" always exists at top level.
     _link = &nodes["0"]->n_(0);
     // must retain index. connection is in _link...
-    _index = idx;
+    assert(_index == idx);
   }
   _m = 0;
 }

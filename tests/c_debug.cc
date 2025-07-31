@@ -82,5 +82,27 @@ void CMD_NL::print( OMSTREAM o, const CARD_LIST* scope)
   }
 }
 /*--------------------------------------------------------------------------*/
+class CMD_NODEDUMP : public CMD {
+  int _indent{0};
+public:
+  void do_it(CS& cmd, CARD_LIST* scope)override {
+    CKT_BASE::_sim->init(scope);
+    assert(scope);
+    assert(scope->nodes());
+    const NODE_MAP& nodes = *scope->nodes();
+
+    OMSTREAM o = IO::mstdout;
+    o.setfloatwidth(3);
+    outset(cmd, &o);
+
+    for(auto n : nodes){
+      o << n.first << " " << n.second->user_number()
+                   << " " << n.second->matrix_number() << "\n";
+    }
+
+    o.reset();
+  }
+} p7;
+DISPATCHER<CMD>::INSTALL d7(&command_dispatcher, "nodedump", &p7);
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

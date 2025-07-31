@@ -1,0 +1,20 @@
+load ./c_debug.so
+verilog
+
+vsource #(1.) v1(a,b);
+print op v(nodes)
+op
+nodedump
+status notime
+
+ground b;
+print op v(nodes)
+op
+nodedump
+status notime
+
+ground a;
+print op v(nodes)
+op
+nodedump
+status notime

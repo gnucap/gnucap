@@ -1,0 +1,17 @@
+module bbb (.a(a),.f(f));
+vsource #(.dc(1.)) v1 (.p(a),.n(f));
+endmodule // bbb
+
+module aaa (.a(a),.f(f));
+bbb #() tt ();
+endmodule // aaa
+
+aaa #() bug (.a(a),.f(b));
+#          
+open circuit: internal node 2
+ 0.        
+Gnucap   System status
+iterations: op=0, dc=2, tran=0, fourier=0, total=2
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=2, subckt=2, model=0, total=4
+dctran density=37.5%, ac density=37.5%

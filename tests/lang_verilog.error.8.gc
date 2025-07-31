@@ -1,0 +1,15 @@
+verilog
+
+module bbb(a f);
+vsource #(.dc(1.)) v1(a, f);
+endmodule
+
+module aaa(a f);
+bbb tt();
+endmodule
+
+aaa #() bug(a, b);
+
+list
+dc
+status notime
