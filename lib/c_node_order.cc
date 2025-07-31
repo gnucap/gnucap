@@ -45,8 +45,6 @@ class INTERFACE CMD_ORDER_REVERSE : public CMD {
   }
 protected:
   void do_it_recursive(CARD_LIST* scope, int& seek) {
-    int* nm = _sim->_nm; // TODO: use scope
-    assert(nm[0] == 0);
     assert(scope);
     for (CARD_LIST::reverse_iterator ci=scope->rbegin(); ci!=scope->rend(); ++ci) {
       if(CARD_LIST* s=(**ci).subckt()){
@@ -55,17 +53,7 @@ protected:
       }
       if(COMPONENT* c=dynamic_cast<COMPONENT*>(*ci)) {
 	for(int i=c->ext_nodes()+c->int_nodes(); i>c->net_nodes();){
-	  --i;
-	  // former allocate
-	  int flat = c->n_(i)->flat_number();
-	  if(!c->n_(i).n_()) {
-	    // link to another node. possibly further up. ignore
-	  }else if(flat == 0){ untested();
-	  }else if(flat == INVALID_NODE){ untested();
-	  }else if(nm[flat] == INVALID_NODE){
-	    nm[flat] = next(seek);
-	  }else{ untested();
-	  }
+	  number(c->n_(--i), seek);
 	}
       }else{
       }
@@ -73,20 +61,24 @@ protected:
     assert(scope->nodes());
     NODE_MAP& n = *scope->nodes();
     for(int i = n.size(); i;) {
-      --i;
-      int flat = n[i]->flat_number();
-      if(!n[i].n_()) {
-	// link to another node. possibly further up. ignore
-      }else if(flat == 0){
-      }else if(flat == INVALID_NODE){ untested();
-      }else if(nm[flat] == INVALID_NODE){
-	nm[flat] = next(seek);
-      }else{ untested();
-      }
+      number(n[--i], seek);
     }
   }
   virtual int next(int& seek)const {
     return ++seek;
+  }
+private:
+  void number(node_t& n, int& seek)const {
+    int flat = n->flat_number();
+    int* nm = _sim->_nm; // TODO: use scope
+    if(!n.n_()) {
+      // link to another node. possibly further up. ignore
+    }else if(flat == 0){
+    }else if(flat == INVALID_NODE){ untested();
+    }else if(nm[flat] == INVALID_NODE){
+      nm[flat] = next(seek);
+    }else{ untested();
+    }
   }
 }p0;
 DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "order_reverse|order_auto", &p0);
