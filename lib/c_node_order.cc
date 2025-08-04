@@ -65,15 +65,17 @@ protected:
   }
 private:
   void number(node_t& n, int& seek)const {
-    int flat = n->flat_number();
     int* nm = _sim->_nm; // TODO: use scope
-    if(!n.n_()) {
+    if(n.n_()) {
+      int flat = n->flat_number();
+      assert(flat != INVALID_NODE);
+      if(flat == 0){
+      }else if(nm[flat] == INVALID_NODE){
+	nm[flat] = next(seek);
+      }else{ untested();
+      }
+    }else{
       // link to another node. possibly further up. ignore
-    }else if(flat == 0){
-    }else if(flat == INVALID_NODE){ untested();
-    }else if(nm[flat] == INVALID_NODE){
-      nm[flat] = next(seek);
-    }else{ untested();
     }
   }
 }p0;
