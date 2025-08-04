@@ -38,10 +38,6 @@ class INTERFACE CMD_ORDER_REVERSE : public CMD {
   void do_it(CS&, CARD_LIST* scope)override {
     int seek = 0;
     do_it_recursive(scope, seek);
-    for (int node = 1;  node <= _sim->_total_nodes;  ++node) {
-      trace3("ordered", _sim->_total_nodes, node, _sim->_nm[node]);
-      assert(node  == _sim->_nm[node]);
-    }
   }
 protected:
   void do_it_recursive(CARD_LIST* scope, int& seek) {
@@ -87,16 +83,12 @@ DISPATCHER<CMD>::INSTALL d0(&command_dispatcher, "order_reverse|order_auto", &p0
  * results in border at the top (worst possible if lots of subcircuits)
  */
 class INTERFACE CMD_ORDER_FORWARD : public CMD_ORDER_REVERSE {
-  void do_it(CS& cmd, CARD_LIST* scope)override {
+  void do_it(CS&, CARD_LIST* scope)override {
     int* nm = _sim->_nm; // TODO: use scope
     int total_nodes = _sim->_total_nodes;
     nm[0] = 0;
     int seek = total_nodes+1;
     do_it_recursive(scope, seek);
-
-    for (int node = 1;  node <= total_nodes;  ++node) {
-      assert(   nm[node] == total_nodes - node + 1);
-    }
   }
   int next(int& seek)const override {
     return --seek;
