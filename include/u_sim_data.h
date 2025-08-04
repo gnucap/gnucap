@@ -116,9 +116,6 @@ public:
   void restore_voltages();
   void zero_voltages();
   void map__nodes(CARD_LIST* scope);		/* s__map.cc */
-  void order_reverse();
-  void order_forward();
-  void order_auto();
   int init_node_count(int user, int sub, int mod) {
     _user_nodes=user; _subckt_nodes=sub; _model_nodes=mod; return (_total_nodes=user+sub+mod);
   }

@@ -49,7 +49,7 @@ e_base.cc e_card.cc e_node.cc e_model.cc e_compon.cc \
 e_logic.cc e_logicnode.cc e_logicval.cc \
 e_elemnt.cc e_ccsrc.cc e_storag.cc e_paramlist.cc e_cardlist.cc \
 bm_cond.cc bm_value.cc bm.cc \
-c__cmd.cc c_attach.cc c_file.cc \
+c__cmd.cc c_attach.cc c_file.cc c_node_order.cc \
 findbr.cc plot.cc
 #------------------------------------------------------------------------
 RAW_OTHER = MakeList test_readline.cc
