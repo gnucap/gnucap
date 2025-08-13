@@ -103,14 +103,7 @@ private: // param overrides, EVAL_BM_BASE?
 }cv(CC_STATIC);
 /*--------------------------------------------------------------------------*/
 ELEMENT::ELEMENT(COMMON_COMPONENT* c)
-  :COMPONENT(c),
-   _m0(),
-   _m1(),
-   _loss0(0.),
-   _loss1(0.),
-   _acg(0.),
-   _ev(0.),
-   _dt(0.)
+  :COMPONENT(c)
 {
   assert(_y[0].x == 0. && _y[0].f0 == 0. && _y[0].f1 == 0.);
   assert(_y1 == _y[0]);
@@ -120,13 +113,9 @@ ELEMENT::ELEMENT(COMMON_COMPONENT* c)
 /*--------------------------------------------------------------------------*/
 ELEMENT::ELEMENT(const ELEMENT& p)
   :COMPONENT(p),
-   _m0(),
-   _m1(),
    _loss0(p._loss0),
    _loss1(p._loss1),
-   _acg(0.),
-   _ev(0.),
-   _dt(0.)
+   _value(p._value)
 {
   trace1("ELEMENT::ELEMENT", short_label());
 
@@ -172,7 +161,7 @@ double ELEMENT::value()const
     trace3("ELEMENT::value", value_name(), common()->value(), has_common());
     return common()->value();
   }else{
-    // reachable from modelgen
+    // reachable from modelgen, and if parameter not specified
     return _value;
   }
 }
