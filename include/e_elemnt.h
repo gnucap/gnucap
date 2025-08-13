@@ -163,6 +163,7 @@ protected: // in .cc
   void	   tr_iwant_matrix_active();
   void	   tr_iwant_matrix_control();
   void	   tr_iwant_matrix_all();
+  void	   tr_iwant_matrix_inode();
   void	   tr_iwant_matrix_shunt(){
     tr_iwant_matrix_passive();
   }
@@ -174,6 +175,7 @@ protected: // in .cc
   void	   ac_iwant_matrix_active();
   void	   ac_iwant_matrix_control();
   void	   ac_iwant_matrix_all();
+  void	   ac_iwant_matrix_inode();
   void	   ac_iwant_matrix_shunt(){
     ac_iwant_matrix_passive();
   }
