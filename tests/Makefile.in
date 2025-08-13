@@ -3,7 +3,10 @@
 #srcdir = @SRCDIR@
 #top_srcdir = @TOP_SRCDIR@
 
+all: ${TEST_PLUGINS}
+
 MAKE_CPPFLAGS = -I${top_srcdir}/src -I${top_srcdir}/include
 LN_S = ln -sf
 DIFF = diff -rup
 
+.PHONY: all
