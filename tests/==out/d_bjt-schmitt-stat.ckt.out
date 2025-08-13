@@ -254,6 +254,7 @@ q4 4 4 3
 qstd
 fpnreq: 102
 fpsize: 16
+nnz: 60
 1 2
 1 9
 1 11

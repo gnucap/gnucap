@@ -181,6 +181,7 @@ class CBS : public BSMATRIX_SOLVER<double> {
   int*	_lownode_row;	// lowest node in this row
   int*	_lownode_col;	// lowest node in this col
 
+  int _nzcount{0};
 public:
   explicit CBS(BSMATRIX<double>& aa)
    :BSMATRIX_SOLVER(aa)
@@ -316,6 +317,7 @@ private:
 public:
   int fpsize()const { return _fp.size(); }
   int fpnreq()const { return _fp.nreq(); }
+  int nnz()const { return _nzcount; }
   FOOTPRINT const& fp()const {return _fp;}
 }; // CBS
 /*--------------------------------------------------------------------------*/
@@ -1134,6 +1136,7 @@ void CBS<T>::dump_lu()
 template <class T>
 void CBS<T>::want_lu_fill()
 {
+  _nzcount = 0;
   for (int mm = 1;   mm <= size();   ++mm) {
     int bn = aalownode_u(mm);
     bool zeros = false;
@@ -1175,6 +1178,7 @@ void CBS<T>::want_lu_fill()
       ++nzcount;
     }
     lu_iwant(mm, mm-nzcount);
+    _nzcount += nzcount;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -1556,7 +1560,7 @@ public:
     assert(m);
     o << "fpnreq: " << m->fpnreq() << "\n";
     o << "fpsize: " << m->fpsize() << "\n";
-   // o << "nnz" << m->nnz() << "\n";
+    o << "nnz: " << m->nnz() << "\n";
   }
 } p5;
 DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "cbsstat", &p5);
