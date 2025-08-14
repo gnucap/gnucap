@@ -1,0 +1,21 @@
+verilog
+load ./cbs.so
+
+ground gnd;
+resistor #(1) r1 (n1, gnd);
+resistor #(1) r1 (n2, gnd);
+resistor #(1) r1 (n3, gnd);
+resistor #(1) r1 (n4, gnd);
+resistor #(1) r1 (n5, gnd);
+
+resistor #(1) r1 (n1, vdd);
+resistor #(1) r1 (n2, vdd);
+resistor #(1) r1 (n3, vdd);
+resistor #(1) r1 (n4, vdd);
+resistor #(1) r1 (n5, vdd);
+
+vsource #(1) vs(gnd, vdd);
+op
+status notime
+cbsstat
+cbsdump

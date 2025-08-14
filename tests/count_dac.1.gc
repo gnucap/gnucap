@@ -186,4 +186,5 @@ Vdd 8 0 dc 5.
 *.tran {260*tclk} basic > b.out
 
 .status notime
+.cbsstat
 .end

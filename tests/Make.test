@@ -6,8 +6,6 @@ MAKE_CPPFLAGS = -I${top_srcdir}/src
 LN_S = ln -sf
 DIFF = diff -rup
 
-# include Make3?
-all: ${TEST_PLUGINS}
 TESTCASES =
 
 # untested;

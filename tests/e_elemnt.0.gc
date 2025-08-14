@@ -1,0 +1,8 @@
+verilog
+
+ground gnd;
+resistor #() r1 (vdd, gnd);
+vsource #() vs(gnd, vdd);
+print op v(nodes) ev(vs)
+op
+status notime

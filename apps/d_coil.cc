@@ -296,14 +296,7 @@ void DEV_INDUCTANCE::tr_iwant_matrix()
   if (!_c_model) {
     tr_iwant_matrix_passive();
   }else{
-    assert(matrix_nodes() == 3);
-    
-    assert(n_(OUT1).m_() != INVALID_NODE);
-    assert(n_(OUT2).m_() != INVALID_NODE);
-    assert(n_(IN1).m_() != INVALID_NODE);
-    
-    _sim->_aa.iwant(n_(OUT1).m_(),n_(IN1).m_());
-    _sim->_aa.iwant(n_(OUT2).m_(),n_(IN1).m_());
+    tr_iwant_matrix_inode();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -492,14 +485,7 @@ void DEV_INDUCTANCE::ac_iwant_matrix()
   if (!_c_model) {
     ac_iwant_matrix_passive();
   }else{
-    assert(matrix_nodes() == 3);
-    
-    assert(n_(OUT1).m_() != INVALID_NODE);
-    assert(n_(OUT2).m_() != INVALID_NODE);
-    assert(n_(IN1).m_() != INVALID_NODE);
-    
-    _sim->_acx.iwant(n_(OUT1).m_(),n_(IN1).m_());
-    _sim->_acx.iwant(n_(OUT2).m_(),n_(IN1).m_());
+    ac_iwant_matrix_inode();
   }
 }
 /*--------------------------------------------------------------------------*/

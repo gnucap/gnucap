@@ -31,6 +31,23 @@
 /*--------------------------------------------------------------------------*/
 class INTERFACE ELEMENT : public COMPONENT {
 protected:
+  mutable node_t _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
+public:
+  CPOLY1   _m0;		// matrix parameters, new
+  CPOLY1   _m1;		// matrix parameters, 1 fill ago
+  double   _loss0{0.};	// shunt conductance
+  double   _loss1{0.};
+  COMPLEX  _acg{0.};	// ac admittance matrix values
+public: // commons
+  COMPLEX  _ev{0.};	// ac effective value (usually real)
+  double   _dt{0.};
+
+  double   _time[OPT::_keep_time_steps];
+  FPOLY1   _y1;		// iteration parameters, 1 iter ago
+  FPOLY1   _y[OPT::_keep_time_steps]; /* charge or flux, and deriv.	*/
+private:
+  double _value{0.};    // value, still needed in modelgen commons.
+protected:
   explicit ELEMENT(COMMON_COMPONENT* c=nullptr);
   explicit ELEMENT(const ELEMENT& p);
   ~ELEMENT() {}
@@ -146,6 +163,7 @@ protected: // in .cc
   void	   tr_iwant_matrix_active();
   void	   tr_iwant_matrix_control();
   void	   tr_iwant_matrix_all();
+  void	   tr_iwant_matrix_inode();
   void	   tr_iwant_matrix_shunt(){
     tr_iwant_matrix_passive();
   }
@@ -157,6 +175,7 @@ protected: // in .cc
   void	   ac_iwant_matrix_active();
   void	   ac_iwant_matrix_control();
   void	   ac_iwant_matrix_all();
+  void	   ac_iwant_matrix_inode();
   void	   ac_iwant_matrix_shunt(){
     ac_iwant_matrix_passive();
   }
@@ -192,27 +211,10 @@ protected:
   }
   int  set_param_by_name(std::string, std::string)override;
   void set_param_by_index(int, std::string&, int)override;
-private:
-  double _value;    // value, still needed in modelgen commons.
 public:
   node_t& n_(int i)const override{
     assert(_nodes); assert(i>=0); assert(i<NODES_PER_BRANCH); return _nodes[i];
   }
-protected:
-  mutable node_t _nodes[NODES_PER_BRANCH]; // nodes (0,1:out, 2,3:in)
-public:
-  CPOLY1   _m0;		// matrix parameters, new
-  CPOLY1   _m1;		// matrix parameters, 1 fill ago
-  double   _loss0;	// shunt conductance
-  double   _loss1;
-  COMPLEX  _acg;	// ac admittance matrix values
-public: // commons
-  COMPLEX  _ev;		// ac effective value (usually real)
-  double   _dt;
-
-  double   _time[OPT::_keep_time_steps];
-  FPOLY1   _y1;		// iteration parameters, 1 iter ago
-  FPOLY1   _y[OPT::_keep_time_steps]; /* charge or flux, and deriv.	*/
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

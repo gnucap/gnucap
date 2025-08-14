@@ -1,0 +1,9 @@
+#           v(gnd)     v(vdd)     ev(vs)    
+r1: short circuit
+r1: short circuit
+ 27.        0.         0.         0.        
+Gnucap   System status
+iterations: op=2, dc=0, tran=0, fourier=0, total=2
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%
