@@ -176,10 +176,10 @@ class CBS : public BSMATRIX_SOLVER<double> {
   BSSMATRIX<T> _lu;
   FOOTPRINT _fp;
   T _min_pivot;
-  mutable unsigned* _changed;// flag: this node changed value
+  mutable unsigned* _changed{nullptr};// flag: this node changed value
 
-  int*	_lownode_row;	// lowest node in this row
-  int*	_lownode_col;	// lowest node in this col
+  int*	_lownode_row{nullptr};	// lowest node in this row
+  int*	_lownode_col{nullptr};	// lowest node in this col
 
   int _nzcount{0};
 public:
@@ -786,7 +786,7 @@ void BSSMATRIX<T>::allocate()
   assert(!_diaptr);
   assert(!_space);
 
-  _memsize = 0;
+  _memsize = 1;
   for (int ii = 0;   ii <= size();   ++ii) {
     _memsize += 1; // diag.
     _memsize += ii - _lownode_col[ii];
