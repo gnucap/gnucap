@@ -165,20 +165,25 @@ protected: // inline, below
 protected: // in .cc
   void	   tr_iwant_matrix_passive(node_t& no1, node_t& no2);
   void	   tr_iwant_matrix_passive()	{tr_iwant_matrix_passive(n_(OUT1), n_(OUT2));}
-  void	   tr_iwant_matrix_active();
   void	   tr_iwant_matrix_control();
   void	   tr_iwant_matrix_all();
   void	   tr_iwant_matrix_inode();
   void	   tr_iwant_matrix_shunt()	{tr_iwant_matrix_passive();}
   void	   tr_iwant_matrix_extended()	{tr_iwant_matrix_all();}
+  void	   tr_iwant_matrix_active(){
+    assert(matrix_nodes() == 4);
+    assert(is_device());
+    assert(!subckt());
+    tr_iwant_matrix_control();
+  }
 
   void	   ac_iwant_matrix_passive();
-  void	   ac_iwant_matrix_active();
   void	   ac_iwant_matrix_control();
   void	   ac_iwant_matrix_all();
   void	   ac_iwant_matrix_inode();
   void	   ac_iwant_matrix_shunt()	{ac_iwant_matrix_passive();}
   void	   ac_iwant_matrix_extended()	{ac_iwant_matrix_all();}
+  void	   ac_iwant_matrix_active()     {ac_iwant_matrix_control();}
 
 public:
   double   tr_review_trunc_error(const FPOLY1* q);
