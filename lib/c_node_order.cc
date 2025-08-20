@@ -48,8 +48,16 @@ protected:
       }else{
       }
       if(COMPONENT* c=dynamic_cast<COMPONENT*>(*ci)) {
-	for(int i=c->ext_nodes()+c->int_nodes(); i>c->net_nodes();){
-	  number(c->n_(--i), seek);
+	trace2("reverse", c->long_label(), c->net_nodes());
+	int i = c->ext_nodes()+c->int_nodes();
+	for(;i;){
+	  node_t& n = c->n_(--i);
+	  if(i>=c->net_nodes()){
+	  }else if(n.n_()){ itested();
+	    // happens in floating ports (modelgen-verilog)
+	  }else{
+	  }
+	  number(n, seek);
 	}
       }else{
       }
