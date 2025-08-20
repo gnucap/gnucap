@@ -601,14 +601,14 @@ model BUILT_IN_MOS8 {
 	if (s->vth0 == NA) {
 	  vfb = -1.0;
 	}else{
-	  vfb = m->polarity * s->vth0 - phi - k1 * sqrtPhi;
+	  vfb = int(m->polarity) * s->vth0 - phi - k1 * sqrtPhi;
 	}
       }else{
 	vfb = s->vfb;
 	trace1("", s->vfb);
       }
       if (s->vth0 == NA) {
-	vth0 = m->polarity * (vfb + phi + k1 * sqrtPhi);
+	vth0 = int(m->polarity) * (vfb + phi + k1 * sqrtPhi);
       }else{
 	vth0 = s->vth0;
       }
@@ -650,7 +650,7 @@ model BUILT_IN_MOS8 {
 	    + (s->kt1 + s->kt1l / s->leff) * (tempratio - 1.0);
 	}
 	{
-	  double tmp3 = m->polarity * vth0 - T2 - T3 + s->k3 * T4 + T5;
+	  double tmp3 = int(m->polarity) * vth0 - T2 - T3 + s->k3 * T4 + T5;
 	  vfbzb = tmp3 - phi - k1 * sqrtPhi;
 	}
       }
@@ -819,7 +819,7 @@ model BUILT_IN_MOS8 {
       trace4("", t->k2, Vbseff, Delt_vth, T2);
       trace4("", s->k3, s->k3b, Vbseff, tmp2);
       trace2("", T1, DIBL_Sft);
-      double Vth = m->polarity * t->vth0 + t->k1ox * sqrtPhis 
+      double Vth = int(m->polarity) * t->vth0 + t->k1ox * sqrtPhis
 	- t->k1 *  t->sqrtPhi - t->k2ox * Vbseff - Delt_vth - T2
 	+ (s->k3 + s->k3b * Vbseff) * tmp2 + T1 - DIBL_Sft;
       d->von = Vth;

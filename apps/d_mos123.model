@@ -73,7 +73,7 @@ model BUILT_IN_MOS123 {
       double nss "" calculate="nss_cm*ICM2M2";
       double uo "" calculate="uo_cm*CM2M2";
       double vto "" name=VTO
-	calculate="((vto_raw.has_hard_value()) ? vto_raw * polarity : NA)"
+	calculate="((vto_raw.has_hard_value()) ? vto_raw * int(polarity) : NA)"
 	calc_print_test="calc_vto";
       double cox "oxide capacitance (E_OX / tox)"
 	name=COX calc_print_test=true default=NA;

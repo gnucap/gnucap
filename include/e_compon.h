@@ -199,7 +199,6 @@ private:
   bool	    _converged{false};
 private:
   COMMON_COMPONENT* _common{nullptr};
-  HS_PARAM* _hsparam{nullptr};		// possibly indirect. later.
   float	    _mfactor_fixed{1.0};	// composite, including subckt mfactor
   int	    _q_for_eval{-1};
 public:

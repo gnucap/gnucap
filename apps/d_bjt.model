@@ -686,7 +686,7 @@ bool DEV_BUILT_IN_BJT::tr_needs_eval()const
     assert(c);
     const MODEL_BUILT_IN_BJT* m=prechecked_cast<const MODEL_BUILT_IN_BJT*>(c->model());
     assert(m);
-    polarity_t polarity = m->polarity;
+    int polarity = int(m->polarity);
     return !(conchk(vbc, polarity*(n_(n_ib).v0()-n_(n_ic).v0()),
 		    OPT::vntol)
 	     && conchk(vbe, polarity*(n_(n_ib).v0()-n_(n_ie).v0()),
@@ -716,12 +716,13 @@ bool DEV_BUILT_IN_BJT::do_tr()
     /* ERROR:  need to initialize VCS, VBX here */
     vcs = vbx = 0.;
   }else{				// normal gather
-    vbe = pnj_limit((m->polarity * volts_limited(n_(n_ib), n_(n_ie))),
+    int polarity = int(m->polarity);
+    vbe = pnj_limit((polarity * volts_limited(n_(n_ib), n_(n_ie))),
 		    vbe, t->vt, t->Vcrit);
-    vbc = pnj_limit((m->polarity * volts_limited(n_(n_ib), n_(n_ic))),
+    vbc = pnj_limit((polarity * volts_limited(n_(n_ib), n_(n_ic))),
 		    vbc, t->vt, t->Vcrit);
-    vbx = m->polarity * volts_limited(n_(n_b), n_(n_ic));
-    vcs = m->polarity * volts_limited(n_(n_s), n_(n_ic));
+    vbx = polarity * volts_limited(n_(n_b), n_(n_ic));
+    vcs = polarity * volts_limited(n_(n_s), n_(n_ic));
   }
  
   if (_sim->uic_now()) {untested();//736

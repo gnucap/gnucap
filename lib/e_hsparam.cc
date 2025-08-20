@@ -207,7 +207,6 @@ int HS_PARAM::set_param_by_name(std::string Name, std::string Value)
 /*--------------------------------------------------------------------------*/
 std::string HS_PARAM::param_name(int I) const
 {
-  static_assert(sysparams_count == 14);
   static std::string hspname[sysparams_count] { //
     "$mfactor",
     "$xposition",

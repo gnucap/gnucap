@@ -26,7 +26,6 @@
 void get_args(Expression* E, Base const** a, int howmany)
 {
   assert(E);
-  std::pair<Base const*, Base const*> ret;
   auto it = E->end();
   --it;
 
