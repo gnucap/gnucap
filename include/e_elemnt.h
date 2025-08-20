@@ -275,7 +275,7 @@ inline void ELEMENT::tr_unload_shunt()
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::ac_load_shunt(node_t& no1, node_t& no2, COMPLEX new_value)
 {
-  _sim->_acx.load_symmetric(no1.m_(), no2.m_(), new_value);
+  _sim->_acx.load_symmetric(no1.m_(), no2.m_(), mfactor() * new_value);
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_load_source(node_t& no1, node_t& no2,
