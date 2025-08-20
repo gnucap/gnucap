@@ -320,18 +320,18 @@ TIME_PAIR ELEMENT::tr_review()
   return _time_by;
 }
 /*--------------------------------------------------------------------------*/
-void ELEMENT::tr_iwant_matrix_passive()
+void ELEMENT::tr_iwant_matrix_passive(node_t& no1, node_t& no2)
 {
   assert(matrix_nodes() >= 2);
   assert(is_device());
   //assert(!subckt()); ok for subckt to exist for logic
-  trace2(long_label().c_str(), n_(OUT1).m_(), n_(OUT2).m_());
+  trace2(long_label().c_str(), no1.m_(), no2.m_());
 
   assert(n_(OUT1).m_() != INVALID_NODE);
   assert(n_(OUT2).m_() != INVALID_NODE);
   //BUG// assert can fail as a result of some parse errors
 
-  _sim->_aa.iwant(n_(OUT1).m_(),n_(OUT2).m_());
+  _sim->_aa.iwant(no1.m_(),no2.m_());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_iwant_matrix_active()

@@ -74,6 +74,8 @@ private:
   double _ir1; // val of cs rep reflected wave, one load ago
   COMPLEX _y11;// AC equiv ckt
   COMPLEX _y12;// AC equiv ckt
+  // using base class _loss0 and _loss1 to stash 1/z0 so it can be passed by pointer
+  // to tr_load.  It is not "loss".  This model is for a lossless t-line,
 private:
   explicit	DEV_TRANSLINE(const DEV_TRANSLINE& p)
     :ELEMENT(p), _forward(), _reflect(), _if0(0), _ir0(0), _if1(0), _ir1(0) {}
@@ -377,6 +379,7 @@ void DEV_TRANSLINE::precalc_last()
   ELEMENT::precalc_last();
   const COMMON_TRANSLINE* c=prechecked_cast<const COMMON_TRANSLINE*>(common());
   assert(c);
+  _loss0 = 1./c->real_z0;
   _forward.set_delay(c->real_td);
   _reflect.set_delay(c->real_td);
   set_converged();
@@ -384,8 +387,8 @@ void DEV_TRANSLINE::precalc_last()
 /*--------------------------------------------------------------------------*/
 void DEV_TRANSLINE::tr_iwant_matrix()
 {
-  _sim->_aa.iwant(n_(OUT1).m_(),n_(OUT2).m_());
-  _sim->_aa.iwant(n_(IN1).m_(), n_(IN2).m_());
+  tr_iwant_matrix_passive(n_(OUT1),n_(OUT2));
+  tr_iwant_matrix_passive(n_(IN1), n_(IN2));
 }
 /*--------------------------------------------------------------------------*/
 /* first setup, initial dc, empty the lines
@@ -449,44 +452,16 @@ bool DEV_TRANSLINE::do_tr()
 /*--------------------------------------------------------------------------*/
 void DEV_TRANSLINE::tr_load()
 {
-  //BUG// explicit mfactor
-  double lvf = NOT_VALID; // load value, forward
-  double lvr = NOT_VALID; // load value, reflected
   if (!_sim->is_inc_mode()) {
     const COMMON_TRANSLINE* c = prechecked_cast<const COMMON_TRANSLINE*>(common());
     assert(c);
-    _sim->_aa.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), mfactor()/c->real_z0);
-    _sim->_aa.load_symmetric(n_(IN1).m_(),  n_(IN2).m_(),  mfactor()/c->real_z0);
-    lvf = _if0;
-    lvr = _ir0;
-  }else{
-    lvf = dn_diff(_if0, _if1);
-    lvr = dn_diff(_ir0, _ir1);
-  }
-  if (lvf != 0.) {
-    if (n_(OUT1).m_() != 0) {
-      n_(OUT1).i() += mfactor() * lvf;
-    }else{untested();
-    }
-    if (n_(OUT2).m_() != 0) {untested();
-      n_(OUT2).i() -= mfactor() * lvf;
-    }else{
-    }
+    _loss0 = 1./c->real_z0;
+    tr_load_shunt(n_(OUT1), n_(OUT2),  &_loss0, &_loss1);
+    tr_load_shunt(n_(IN1),  n_(IN2),   &_loss0, &_loss1);
   }else{
   }
-  if (lvr != 0.) {
-    if (n_(IN1).m_() != 0) {
-      n_(IN1).i() += mfactor() * lvr;
-    }else{untested();
-    }
-    if (n_(IN2).m_() != 0) {untested();
-      n_(IN2).i() -= mfactor() * lvr;
-    }else{
-    }
-  }else{
-  }
-  _if1 = _if0;
-  _ir1 = _ir0;
+  tr_load_source(n_(OUT2), n_(OUT1), &_if0, &_if1);
+  tr_load_source(n_(IN2),  n_(IN1),  &_ir0, &_ir1);
 }
 /*--------------------------------------------------------------------------*/
 /* limit the time step to no larger than a line length.
@@ -532,13 +507,10 @@ void DEV_TRANSLINE::do_ac()
 /*--------------------------------------------------------------------------*/
 void DEV_TRANSLINE::ac_load()
 {
-  //BUG// explicit mfactor
-  _sim->_acx.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), mfactor()*_y11);
-  _sim->_acx.load_symmetric(n_(IN1).m_(),  n_(IN2).m_(),  mfactor()*_y11);
-  _sim->_acx.load_asymmetric(n_(OUT1).m_(),n_(OUT2).m_(), n_(IN2).m_(),  n_(IN1).m_(),
-			     mfactor()*_y12);
-  _sim->_acx.load_asymmetric(n_(IN1).m_(), n_(IN2).m_(), n_(OUT2).m_(), n_(OUT1).m_(),
-			     mfactor()*_y12);
+  ac_load_shunt(n_(OUT1), n_(OUT2), _y11);
+  ac_load_shunt(n_(IN1),  n_(IN2),  _y11); // really _y22
+  ac_load_asymmetric(n_(OUT1), n_(OUT2), n_(IN2),  n_(IN1),  _y12);
+  ac_load_asymmetric(n_(IN1),  n_(IN2),  n_(OUT2), n_(OUT1), _y12); // really _y21
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
