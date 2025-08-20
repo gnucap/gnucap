@@ -65,8 +65,10 @@ private: // LU xs
 
 private: // solver overrides
   void init(int ss=0)override;
-  void iwant1(int i, int j)override { _lu.iwant1(i, j); }
-  void iwant2(int i, int j)override { _lu.iwant2(i, j); }
+  void iwant_point(int i, int j)override { _lu.iwant_point(i, j); }
+ // void iwant_pair(int i, int j)override { _lu.iwant_pair(i, j); }
+  void iwant_quad(int i, int j)override { _lu.iwant_quad(i, j); }
+  void iwant_inode(int i, int j)override { _lu.iwant_inode(i, j); }
   void allocate()override { _lu.allocate(); }
   void unallocate()override { _lu.unallocate(); }
   void uninit()override;

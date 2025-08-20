@@ -361,7 +361,7 @@ void ELEMENT::tr_iwant_matrix_control()
   for (int ii = 0;  ii < 2;  ++ii) {
     if (n_(ii).m_() >= 0) {
       for (int jj = 2;  jj < matrix_nodes() ;  ++jj) {
-	_sim->_aa.iwant1(n_(ii).m_(),n_(jj).m_());
+	_sim->_aa.iwant_point(n_(ii).m_(),n_(jj).m_());
       }
     }else{itested();
       // node 1 is grounded or invalid
@@ -377,8 +377,8 @@ void ELEMENT::tr_iwant_matrix_inode()
   assert(n_(OUT2).m_() != INVALID_NODE);
   assert(n_(IN1).m_() != INVALID_NODE);
 
-  _sim->_aa.iwant2(n_(OUT1).m_(),n_(IN1).m_());
-  _sim->_aa.iwant2(n_(OUT2).m_(),n_(IN1).m_());
+  _sim->_aa.iwant_inode(n_(OUT1).m_(),n_(IN1).m_());
+  _sim->_aa.iwant_inode(n_(OUT2).m_(),n_(IN1).m_());
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::ac_iwant_matrix_passive()
@@ -414,7 +414,7 @@ void ELEMENT::ac_iwant_matrix_control()
   for (int ii = 0;  ii < 2;  ++ii) {
     if (n_(ii).m_() >= 0) {
       for (int jj = 2;  jj < matrix_nodes() ;  ++jj) {
-	_sim->_acx.iwant1(n_(ii).m_(),n_(jj).m_());
+	_sim->_acx.iwant_point(n_(ii).m_(),n_(jj).m_());
       }
     }else{itested();
       // node 1 is grounded or invalid
@@ -430,8 +430,8 @@ void ELEMENT::ac_iwant_matrix_inode()
   assert(n_(OUT2).m_() != INVALID_NODE);
   assert(n_(IN1).m_() != INVALID_NODE);
 
-  _sim->_acx.iwant2(n_(OUT1).m_(),n_(IN1).m_());
-  _sim->_acx.iwant2(n_(OUT2).m_(),n_(IN1).m_());
+  _sim->_acx.iwant_inode(n_(OUT1).m_(),n_(IN1).m_());
+  _sim->_acx.iwant_inode(n_(OUT2).m_(),n_(IN1).m_());
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

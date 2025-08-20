@@ -137,9 +137,10 @@ public:
   ~BSMATRIX_DATA() { uninit(); }
 public: // life cycle
   void init(int s);
-  void iwant1(int, int);
-  void iwant2(int i, int j){ iwant1(i, j); iwant1(j, i); }
-  void iwant(int i, int j){ iwant2(i, j); }
+  void iwant_point(int, int);
+  void iwant_pair(int i, int j){ iwant_point(i, j); iwant_point(j, i); }
+  void iwant_quad(int i, int j){ iwant_pair(i, j); iwant_point(i, i); iwant_point(j, j); }
+  void iwant_inode(int i, int j){ iwant_pair(i, j); /*incomplete*/ }
   void allocate();
   void unallocate();
   void uninit();
@@ -255,9 +256,10 @@ public:
   void allocate();
   void reallocate();
   //void	clone(const BSMATRIX<T>&);
-  void iwant1(int, int);
-  void iwant2(int i, int j){ iwant1(i, j); iwant1(j, i); }
-  void iwant(int i, int j){ iwant2(i, j); }
+  void iwant(int i, int j){ iwant_quad(i, j); } // legacy. get them all.
+  void iwant_point(int, int);
+  void iwant_quad(int i, int j);
+  void iwant_inode(int i, int j);
   void set_min_pivot(double x)	{assert(_solver); _solver->set_min_pivot(x);}
   T const& d(int r)const{
     BSMATRIX_SOLVER<T> const* s = _solver;
@@ -292,9 +294,9 @@ public:
 
   virtual void init(int ss) = 0;
   virtual void uninit() = 0;
-  void iwant(int i, int j){iwant2(i, j);}
-  virtual void iwant1(int, int){} // LU_COPY
-  virtual void iwant2(int, int){} // LU_COPY
+  virtual void iwant_point(int, int) {}
+  virtual void iwant_quad(int i, int j) { iwant_point(i, j); iwant_point(j, i);}
+  virtual void iwant_inode(int i, int j) { iwant_quad(i, j);}
   virtual void allocate() = 0;
   virtual void unallocate() = 0;
   virtual void set_min_pivot(double x) = 0;
@@ -478,7 +480,7 @@ void BSMATRIX<T>::clone(const BSMATRIX<T> & aa)
 /* iwant: indicate that "iwant" to allocate this spot in the matrix
  */
 template <class T>
-void BSMATRIX_DATA<T>::iwant1(int node1, int node2)
+void BSMATRIX_DATA<T>::iwant_point(int node1, int node2)
 {
   assert(_ulownode);
   assert(_llownode);
@@ -497,11 +499,32 @@ void BSMATRIX_DATA<T>::iwant1(int node1, int node2)
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-void BSMATRIX<T>::iwant1(int node1, int node2)
+void BSMATRIX<T>::iwant_point(int node1, int node2)
 {
-  _data.iwant1(node1, node2);
+  if(node1 != node2) {
+    _data.iwant_point(node1, node2);
+    assert(_solver);
+    _solver->iwant_point(node1, node2); // could manage L and U copy
+  }else{
+    // not needed.
+    // diagonals are covered with iwant_quad.
+  }
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void BSMATRIX<T>::iwant_quad(int node1, int node2)
+{
+  _data.iwant_quad(node1, node2);
   assert(_solver);
-  _solver->iwant1(node1, node2); // could manage L and U copy
+  _solver->iwant_quad(node1, node2);
+}
+/*--------------------------------------------------------------------------*/
+template <class T>
+void BSMATRIX<T>::iwant_inode(int node1, int node2)
+{
+  _data.iwant_inode(node1, node2);
+  assert(_solver);
+  _solver->iwant_inode(node1, node2);
 }
 /*--------------------------------------------------------------------------*/
 template <class T>

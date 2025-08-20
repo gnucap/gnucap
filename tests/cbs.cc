@@ -49,7 +49,9 @@ public:
     init(s);
   }
 
-  void want(int, int);
+  void iwant_point(int, int);
+  void iwant_quad(int i, int j){iwant_point(i,j), iwant_point(j,i);}
+  void iwant_inode(int i, int j){iwant_quad(i,j);}
   int size()const {return int(_data.size());}
   int nreq()const {return _nreq;}
   void init(int s) {
@@ -90,7 +92,7 @@ public:
   const_iterator end()const {return _data.end();}
 };
 /*--------------------------------------------------------------------------*/
-inline void FOOTPRINT::want(int i, int j)
+inline void FOOTPRINT::iwant_point(int i, int j)
 {
   assert(i);
   assert(j);
@@ -192,18 +194,21 @@ public:
    ,_changed(nullptr) {
   }
 private: // SOLVER
-  void iwant1(int i, int j)override {
+  void iwant_point(int i, int j)override {
     if(i && j){
-      _fp.want(i, j);
+      _fp.iwant_point(i, j);
     }else{
     }
   }
-  void iwant2(int i, int j)override {
+  void iwant_quad(int i, int j)override {
     if(i && j){
-      _fp.want(i, j);
-      _fp.want(j, i);
+      _fp.iwant_point(i, j);
+      _fp.iwant_point(j, i);
     }else{
     }
+  }
+  void iwant_inode(int i, int j)override {
+    iwant_quad(i, j);
   }
   void allocate()override;
   void check_consistency(int m);
