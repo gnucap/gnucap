@@ -179,14 +179,17 @@ public:
   void fbsubt(T* v) const;
 public:
   int		size()const		{return _size;}
-  double 	density();
+  double 	density()const;
 }; // BSMATRIX_DATA
+/*--------------------------------------------------------------------------*/
+class BSMATRIX_BASE {
+};
 /*--------------------------------------------------------------------------*/
 // BUMP/SPIKE MATRIX interface class
 template <class T>
-class BSMATRIX : private BSMATRIX_DATA<T> {
+class BSMATRIX : private BSMATRIX_BASE {
   friend class BSMATRIX_SOLVER<T>;
-  T _min_pivot; // here?
+  BSMATRIX_DATA<T> _data;
   BSMATRIX_SOLVER<T>* _solver;
 public:
   BSMATRIX(const BSMATRIX<T>&) = delete;
@@ -194,16 +197,18 @@ public:
   ~BSMATRIX(){}
 
 public:
-  using BSMATRIX_DATA<T>::size;
-  using BSMATRIX_DATA<T>::zero;
-  using BSMATRIX_DATA<T>::dezero;
-  using BSMATRIX_DATA<T>::density;
-
-private: // access.
-  using BSMATRIX_DATA<T>::u;
-  using BSMATRIX_DATA<T>::l;
-  using BSMATRIX_DATA<T>::d;
-  using BSMATRIX_DATA<T>::m;
+  int size()const {
+    return _data.size();
+  }
+  void zero() {
+    return _data.zero();
+  }
+  void dezero(double gmin) {
+    return _data.dezero(gmin);
+  }
+  double density()const {
+    return _data.density();
+  }
 
 public:
   void set_solver(BSMATRIX_SOLVER<T>* S) {
@@ -242,7 +247,7 @@ public: // loading.
 public:
   BSMATRIX_DATA<T> const& data() const{ untested(); return *this; }
 private:
-  BSMATRIX_DATA<T>& rw_data(){ return *this; }
+  BSMATRIX_DATA<T>& rw_data(){ return _data; }
 public:
   void reinit(int ss=0) { uninit(); init(ss); }
 public:
@@ -259,7 +264,6 @@ public:
     assert(s);
     return s->d(r);
   }
-  void zero() { assert(_solver); _solver->zero(); }
 
 public: // "solve?"
   void lu_decomp(bool do_partial) {
@@ -280,7 +284,7 @@ class BSMATRIX_SOLVER {
 protected: // private?
   BSMATRIX_DATA<T>& _data; // _aa, _acx and the like
 public:
-  explicit BSMATRIX_SOLVER(BSMATRIX<T>& m) : _data(m) {}
+  explicit BSMATRIX_SOLVER(BSMATRIX<T>& m) : _data(m._data) {}
   explicit BSMATRIX_SOLVER(BSMATRIX_SOLVER const&) = delete;
   virtual ~BSMATRIX_SOLVER() { }
 public:
@@ -413,7 +417,7 @@ void BSMATRIX_DATA<T>::uninit()
 template <class T>
 void BSMATRIX<T>::uninit()
 {
-  BSMATRIX_DATA<T>::uninit();
+  _data.uninit();
 
   if(_solver) {
     _solver->uninit();
@@ -424,7 +428,7 @@ void BSMATRIX<T>::uninit()
 template <class T>
 void BSMATRIX<T>::init(int ss)
 {
-  BSMATRIX_DATA<T>::init(ss);
+  _data.init(ss);
   if(ss){
     assert(_solver);
   }else{
@@ -452,8 +456,7 @@ BSMATRIX_DATA<T>::BSMATRIX_DATA()
 /*--------------------------------------------------------------------------*/
 template <class T>
 BSMATRIX<T>::BSMATRIX(int ss)
- :BSMATRIX_DATA<T>()
- ,_solver(nullptr)
+  : _data(), _solver(nullptr)
 {
   init(ss);
 }
@@ -496,7 +499,7 @@ void BSMATRIX_DATA<T>::iwant1(int node1, int node2)
 template <class T>
 void BSMATRIX<T>::iwant1(int node1, int node2)
 {
-  BSMATRIX_DATA<T>::iwant1(node1, node2);
+  _data.iwant1(node1, node2);
   assert(_solver);
   _solver->iwant1(node1, node2); // could manage L and U copy
 }
@@ -514,7 +517,7 @@ void BSMATRIX<T>::reallocate()
 template <class T>
 void BSMATRIX<T>::unallocate()
 {
-  BSMATRIX_DATA<T>::unallocate();
+  _data.unallocate();
   assert(_solver);
   return _solver->unallocate();
 }
@@ -533,7 +536,7 @@ void BSMATRIX_DATA<T>::unallocate()
 template <class T>
 void BSMATRIX<T>::allocate()
 {
-  BSMATRIX_DATA<T>::allocate();
+  _data.allocate();
   assert(_solver);
   return _solver->allocate();
 }
@@ -592,17 +595,17 @@ void BSMATRIX_DATA<T>::dezero(T const& offset)
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
-double BSMATRIX_DATA<T>::density()
+double BSMATRIX_DATA<T>::density() const
 {
   if (size() > 0) {
+    int nzcount = 0;
     assert(_ulownode);
     assert(_llownode);
-    _nzcount = 0;
     for (int ii = 0;   ii <= size();   ++ii) {
-      _nzcount += ii - _ulownode[ii];
-      _nzcount += ii - _llownode[ii] + 1;
+      nzcount += ii - _ulownode[ii];
+      nzcount += ii - _llownode[ii] + 1;
     }
-    return static_cast<double>(_nzcount-1)/(static_cast<double>(size())*size());
+    return static_cast<double>(nzcount-1)/(static_cast<double>(size())*size());
   }else{
     return 0;
   }
