@@ -31,6 +31,52 @@
 #include "c_comand.h"
 #include "globals.h"
 /*--------------------------------------------------------------------------*/
+template<class T>
+int count_nz(T const& t)
+{
+  size_t nz = 0;
+  for(auto const& i : t){
+    nz += i.size();
+  }
+  return int(nz);
+}
+/*--------------------------------------------------------------------------*/
+// serialize BS adjacency list. row oriented:
+// row idx are at diag[i]   .. diag[i]+rowsize-1
+// col idx are at diag[i]-1 .. diag[i]-colsize
+// ordered ascending from the diagonal
+//
+// swap args for col orientation
+template<class container_t>
+void serialize_bs_adj(container_t const& rows_, container_t const& cols_,
+    int*& _idx, int*& _didx)
+{
+  int unz = count_nz(cols_)
+          + count_nz(rows_);
+
+  _idx = new int[unz + cols_.size() + 1];
+  _didx = new int[cols_.size()];
+  int sep = 0;
+  _idx[sep] = 0;
+
+  for(int i = 0; i < int(cols_.size()); ++i ){
+    _didx[i] = sep + 1 + cols_[i].size();
+    int s = 0;
+    for(int x : cols_[i]){
+      _idx[_didx[i] - s - 1] = x;
+      ++s;
+    }
+    s = 0;
+    for(int x : rows_[i]){
+      _idx[_didx[i] + s] = x;
+      ++s;
+    }
+    sep = _didx[i] + s;
+    _idx[sep] = 0;
+  }
+
+  assert(sep == unz + int(cols_.size()));
+}
 namespace {
 /*--------------------------------------------------------------------------*/
 class FOOTPRINT {
@@ -189,6 +235,8 @@ class CBS : public BSMATRIX_SOLVER<double> {
 
   int*	_lownode_row{nullptr};	// lowest node in this row
   int*	_lownode_col{nullptr};	// lowest node in this col
+  int* _idx{nullptr};
+  int* _didx{nullptr};
 
   int _nzcount{0};
 public:
@@ -370,6 +418,8 @@ void CBS<T>::allocate()
     lu_set_tags(m);
     check_consistency(m);
   }
+
+  serialize_bs_adj(fp().cols(), fp().rows(), _idx, _didx);
 
   _aa.zero();
 }
@@ -877,15 +927,15 @@ void BSSMATRIX<T>::zero()
 template <class T>
 void CBS<T>::propagate(int m)
 {
-  for( auto node : fp().rows()[m-1]) {
-    // upper
-    assert(node>m);
-    set_changed(m, node);
+  int diag = _didx[m-1];
+  int const* it = &_idx[diag];
+  while(*(--it)){
+    set_changed(m, *it);
   }
-  for( auto node : fp().cols()[m-1]) {
-    // lower
-    assert(node>m);
-    set_changed(node, m);
+  it = &_idx[diag];
+  while(*it){
+    set_changed(*it, m);
+    ++it;
   }
 }
 /*--------------------------------------------------------------------------*/
