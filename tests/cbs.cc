@@ -41,6 +41,20 @@ int count_nz(T const& t)
   return int(nz);
 }
 /*--------------------------------------------------------------------------*/
+bool is_in(int const* idx, int what, int dir)
+{
+  while(*idx){
+    if(*idx == what){
+      trace2("isin", *idx, what);
+      return true;
+    }else{
+      trace2("notin", *idx, what);
+    }
+    idx += dir;
+  }
+  return false;
+
+}
 // serialize BS adjacency list. row oriented:
 // row idx are at diag[i]   .. diag[i]+rowsize-1
 // col idx are at diag[i]-1 .. diag[i]-colsize
@@ -87,17 +101,27 @@ class FOOTPRINT {
 
 private:
   int _nreq{0};
+  int* _raw_idx{nullptr};
+  int* _raw_didx{nullptr};
 public: // BUG
   container_t _rows;
   container_t _cols;
+  set_t _inodes;
 public:
   explicit FOOTPRINT(int s){
     init(s);
   }
 
   void iwant_point(int, int);
-  void iwant_quad(int i, int j){ untested(); iwant_point(i,j), iwant_point(j,i);}
-  void iwant_inode(int i, int j){ untested(); iwant_quad(i,j);}
+  void iwant_quad(int i, int j){ iwant_point(i,j), iwant_point(j,i);}
+  void iwant_inode(int i, int j){
+    if(i){
+      iwant_quad(i,j);
+    }else{
+    }
+    assert(j);
+    _inodes.insert(j);
+  }
 
   int size()const {
     int i = 0;
@@ -110,13 +134,28 @@ public:
     return i;
   }
   int nreq()const {return _nreq;}
+  bool is_inode(int i)const { return _inodes.count(i); }
+
   void init(int s) {
     assert(_cols.empty());
     assert(_rows.empty());
     _cols.resize(s);
     _rows.resize(s);
   }
+  void allocate() {
+    delete _raw_idx;
+    delete _raw_didx;
+    _raw_idx = _raw_didx = nullptr;
+
+    serialize_bs_adj(cols(), rows(), _raw_idx, _raw_didx);
+  }
+  void unallocate() {
+  }
   void uninit(){
+    delete _raw_idx;
+    delete _raw_didx;
+    _raw_idx = _raw_didx = nullptr;
+
     _cols.clear();
     _rows.clear();
   }
@@ -143,6 +182,19 @@ public:
 public: // used in compute_lu_fill
   set_t& cols(int i) {return _cols[i];}
   set_t& rows(int i) {return _rows[i];}
+
+  bool is_req(int r, int c)const {
+    assert(r<int(_cols.size()));
+    assert(c<int(_cols.size()));
+    assert(_raw_idx);
+    if(r<c){
+      // upper
+      return is_in(&_raw_idx[_raw_didx[r]-1], c+1, -1);
+    }else{
+      // lower
+      return is_in(&_raw_idx[_raw_didx[c]], r+1, 1);
+    }
+  }
 };
 /*--------------------------------------------------------------------------*/
 inline void FOOTPRINT::iwant_point(int i, int j)
@@ -263,7 +315,12 @@ private: // SOLVER
     }
   }
   void iwant_inode(int i, int j)override {
-    iwant_quad(i, j);
+    if(i && j){
+      _fp.iwant_inode(i, j);
+    }else if(j){
+      _fp.iwant_inode(i, j);
+    }else{
+    }
   }
   void allocate()override;
   void check_consistency(int m);
@@ -375,11 +432,14 @@ private:
   void propagate(int m);
 
 public:
-  bool is_inode(int )const { return false; /* _inode.count(i);*/ }
-  int fpsize()const { return _fp.size(); }
-  int fpnreq()const { return _fp.nreq(); }
+  bool is_inode(int i)const { return fp().is_inode(i); }
+  int fpsize()const { return fp().size(); }
+  int fpnreq()const { return fp().nreq(); }
   int nnz()const { return _nzcount; }
   FOOTPRINT const& fp()const {return _fp;}
+  bool is_req(int r, int c)const {
+    return fp().is_req(r, c);
+  }
 private:
   FOOTPRINT& fp() {return _fp;}
 }; // CBS
@@ -410,6 +470,7 @@ void CBS<T>::init(int ss)
 template <class T>
 void CBS<T>::allocate()
 {
+  fp().allocate();
   tag_wanted();
   compute_lu_fill();
   want_lu_fill();
@@ -429,6 +490,7 @@ template <class T>
 void CBS<T>::unallocate()
 {
   _lu.unallocate();
+  fp().unallocate();
 }
 /*--------------------------------------------------------------------------*/
 /* u: as above, but lvalue */
@@ -1661,10 +1723,12 @@ public:
     for(auto p : cm->fp().rows()) {
       int k=0;
       while(k<i){
-	if(cm->fp().cols()[k].count(i+1)){
+	if(!cm->fp().cols()[k].count(i+1)){
+	  o << ".";
+	}else if(cm->is_req(i, k)) {
 	  o << "*";
 	}else{
-	  o << ".";
+	  o << "o";
 	}
 	++k;
       }
@@ -1681,7 +1745,12 @@ public:
 	  o << ".";
 	  ++k;
 	}
-	o << '*';
+
+	if(cm->is_req(i-1, k-1)) {
+	  o << '*';
+	}else{
+	  o << 'o';
+	}
 	++k;
       }
 
