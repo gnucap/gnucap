@@ -340,9 +340,11 @@ VSS 2 2 0
 1 0
 
 
-fpnreq: 163
-fpsize: 52
-nnz: 30
+iwant points: 201.2% (163)
+load size   :  61.7% (50)
+footprint   :  75.3% (61)
+nnz         :  74.1% (60)
+fill size   :  13.6% (11)
 \****....
 *\oo**...
 *o\*oo*..

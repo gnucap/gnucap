@@ -62,7 +62,7 @@ bool is_in(int const* idx, int what, int dir)
 //
 // swap args for col orientation
 template<class container_t>
-void serialize_bs_adj(container_t const& rows_, container_t const& cols_,
+int serialize_bs_adj(container_t const& rows_, container_t const& cols_,
     int*& _idx, int*& _didx)
 {
   int unz = count_nz(cols_)
@@ -90,6 +90,7 @@ void serialize_bs_adj(container_t const& rows_, container_t const& cols_,
   }
 
   assert(sep == unz + int(cols_.size()));
+  return unz;
 }
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -101,6 +102,7 @@ class FOOTPRINT {
 
 private:
   int _nreq{0};
+  int _nstamp{0};
   int* _raw_idx{nullptr};
   int* _raw_didx{nullptr};
 public: // BUG
@@ -134,7 +136,9 @@ public:
     return i;
   }
   int nreq()const {return _nreq;}
+  int nstamp()const {return _nstamp;}
   bool is_inode(int i)const { return _inodes.count(i); }
+  int ninode()const { return _inodes.size(); }
 
   void init(int s) {
     assert(_cols.empty());
@@ -147,7 +151,7 @@ public:
     if(_raw_idx){
       // keep it
     }else{
-      serialize_bs_adj(cols(), rows(), _raw_idx, _raw_didx);
+      _nstamp = serialize_bs_adj(cols(), rows(), _raw_idx, _raw_didx);
     }
   }
   void unallocate() {
@@ -434,9 +438,11 @@ private:
 
 public:
   bool is_inode(int i)const { return fp().is_inode(i); }
-  int fpsize()const { return fp().size(); }
+  int fpsize()const { return fp().size() + size() - ninode(); }
   int fpnreq()const { return fp().nreq(); }
+  int nload()const { return fp().nstamp() + size() - ninode(); }
   int nnz()const { return _nzcount; }
+  int ninode()const { return fp().ninode(); }
   FOOTPRINT const& fp()const {return _fp;}
   bool is_req(int r, int c)const {
     return fp().is_req(r, c);
@@ -1292,6 +1298,7 @@ void CBS<T>::want_lu_fill()
 
     bn = aalownode_l(mm);
     zeros = false;
+    _nzcount += nzcount;
     nzcount = 0;
     for (int jj=mm-1; jj>=bn; --jj) {
       if(idx(aal(mm,jj))){
@@ -1700,9 +1707,23 @@ public:
   void do_it(CS&, CARD_LIST* )override {
     OMSTREAM o = IO::mstdout;
     assert(m);
-    o << "fpnreq: " << m->fpnreq() << "\n";
-    o << "fpsize: " << m->fpsize() << "\n";
-    o << "nnz: " << m->nnz() << "\n";
+    int iwant_points = m->fpnreq();
+    int load_size    = m->nload();
+    int footprint    = m->fpsize();
+    int nnz          = m->nnz();
+    int fill_size    = m->fpsize() - m->nload();
+    double denom = m->size() * m->size();
+
+    oo(o, "iwant points", iwant_points, denom);
+    oo(o, "load size   ", load_size,    denom);
+    oo(o, "footprint   ", footprint,    denom);
+    oo(o, "nnz         ", nnz,          denom);
+    oo(o, "fill size   ", fill_size,    denom);
+  }
+private:
+  void oo(OMSTREAM& o, char const* label, int n, double denom)const
+  {
+    o.form("%s: %5.1f%% (%d)\n", label, 100.*n/denom, n);
   }
 } p5;
 DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "cbsstat", &p5);

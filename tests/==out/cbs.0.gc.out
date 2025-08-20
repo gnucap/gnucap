@@ -5,9 +5,11 @@ iterations: op=2, dc=0, tran=0, fourier=0, total=2
 transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=6, subckt=0, model=0, total=6
 dctran density=100.0%, ac density=100.0%
-fpnreq: 10
-fpsize: 30
-nnz: 15
+iwant points:  27.8% (10)
+load size   :  44.4% (16)
+footprint   : 100.0% (36)
+nnz         :  83.3% (30)
+fill size   :  55.6% (20)
 \*****
 *\oooo
 *o\ooo
