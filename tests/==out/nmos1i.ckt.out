@@ -111,7 +111,7 @@ vin 2 2 0
 MODELD
 MODELL
 fpnreq: 14
-fpsize: 3
+fpsize: 4
 nnz: 3
 1 3
 2 3

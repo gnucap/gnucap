@@ -6,7 +6,7 @@ transient timesteps: accepted=0, rejected=0, total=0
 nodes: user=6, subckt=0, model=0, total=6
 dctran density=100.0%, ac density=100.0%
 fpnreq: 10
-fpsize: 6
+fpsize: 30
 nnz: 15
 1 2
 1 3
