@@ -99,11 +99,14 @@ protected: // inline, below
   void	   tr_unload_inode();
   void	   ac_load_inode();
 
-  void	   tr_load_shunt();
+  void	   tr_load_shunt(node_t& no1, node_t& no2, double* new_value, double* old_value);
+  void	   tr_load_shunt()	{tr_load_shunt(n_(OUT1), n_(OUT2), &_loss0, &_loss1);}
   void	   tr_unload_shunt();
-  void	   ac_load_shunt();
+  void	   ac_load_shunt(node_t& no1, node_t& no2, COMPLEX new_value);
+  void	   ac_load_shunt()	{ac_load_shunt(n_(OUT1), n_(OUT2), _loss0);}
 
-  void	   tr_load_source();
+  void	   tr_load_source(node_t& no1, node_t& no2, double* value, double* old_value);
+  void	   tr_load_source()	{tr_load_source(n_(OUT1), n_(OUT2), &_m0.c0, &_m1.c0);}
   void	   tr_unload_source();
   void	   ac_load_source();
 
@@ -111,7 +114,8 @@ protected: // inline, below
   void	   tr_unload_couple();
   void	   ac_load_couple();
 
-  void	   tr_load_passive();
+  void	   tr_load_passive()	{tr_load_shunt(n_(OUT1), n_(OUT2), &_m0.c1, &_m1.c1);
+				 tr_load_source(n_(OUT1), n_(OUT2),&_m0.c0, &_m1.c0);}
   void	   tr_unload_passive();
   void	   ac_load_passive();
 
@@ -159,29 +163,27 @@ protected: // inline, below
   void	   ac_eval();
 
 protected: // in .cc
-  void	   tr_iwant_matrix_passive();
-  void	   tr_iwant_matrix_active();
+  void	   tr_iwant_matrix_passive(node_t& no1, node_t& no2);
+  void	   tr_iwant_matrix_passive()	{tr_iwant_matrix_passive(n_(OUT1), n_(OUT2));}
   void	   tr_iwant_matrix_control();
   void	   tr_iwant_matrix_all();
   void	   tr_iwant_matrix_inode();
-  void	   tr_iwant_matrix_shunt(){
-    tr_iwant_matrix_passive();
-  }
-  void	   tr_iwant_matrix_extended(){
-    tr_iwant_matrix_all();
+  void	   tr_iwant_matrix_shunt()	{tr_iwant_matrix_passive();}
+  void	   tr_iwant_matrix_extended()	{tr_iwant_matrix_all();}
+  void	   tr_iwant_matrix_active(){
+    assert(matrix_nodes() == 4);
+    assert(is_device());
+    assert(!subckt());
+    tr_iwant_matrix_control();
   }
 
   void	   ac_iwant_matrix_passive();
-  void	   ac_iwant_matrix_active();
   void	   ac_iwant_matrix_control();
   void	   ac_iwant_matrix_all();
   void	   ac_iwant_matrix_inode();
-  void	   ac_iwant_matrix_shunt(){
-    ac_iwant_matrix_passive();
-  }
-  void	   ac_iwant_matrix_extended(){
-    ac_iwant_matrix_all();
-  }
+  void	   ac_iwant_matrix_shunt()	{ac_iwant_matrix_passive();}
+  void	   ac_iwant_matrix_extended()	{ac_iwant_matrix_all();}
+  void	   ac_iwant_matrix_active()     {ac_iwant_matrix_control();}
 
 public:
   double   tr_review_trunc_error(const FPOLY1* q);
@@ -258,14 +260,15 @@ inline void ELEMENT::ac_load_inode()
   _sim->_acx.load_couple(n_(OUT2).m_(), n_(IN1).m_(),  mfactor() * _loss0);
 }
 /*--------------------------------------------------------------------------*/
-inline void ELEMENT::tr_load_shunt()
+inline void ELEMENT::tr_load_shunt(node_t& no1, node_t& no2,
+				     double* new_value, double* old_value)
 {
-  double d = dampdiff(&_loss0, _loss1);
+  double d = dampdiff(new_value, *old_value);
   if (d != 0.) {
-    _sim->_aa.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), d);
+    _sim->_aa.load_symmetric(no1.m_(), no2.m_(), d);
   }else{
   }
-  _loss1 = _loss0;
+  *old_value = *new_value;
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_unload_shunt()
@@ -275,26 +278,27 @@ inline void ELEMENT::tr_unload_shunt()
   tr_load_shunt();
 }
 /*--------------------------------------------------------------------------*/
-inline void ELEMENT::ac_load_shunt()
+inline void ELEMENT::ac_load_shunt(node_t& no1, node_t& no2, COMPLEX new_value)
 {
-  _sim->_acx.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), mfactor() * _loss0);
+  _sim->_acx.load_symmetric(no1.m_(), no2.m_(), mfactor() * new_value);
 }
 /*--------------------------------------------------------------------------*/
-inline void ELEMENT::tr_load_source()
+inline void ELEMENT::tr_load_source(node_t& no1, node_t& no2,
+				    double* new_value, double* old_value)
 {
-  double d = dampdiff(&_m0.c0, _m1.c0);
+  double d = dampdiff(new_value, *old_value);
   if (d != 0.) {
-    if (n_(OUT2).m_() != 0) {
-      n_(OUT2).i() += d;
+    if (no2.m_() != 0) {
+      no2.i() += d;
     }else{
     }
-    if (n_(OUT1).m_() != 0) {
-      n_(OUT1).i() -= d;
+    if (no1.m_() != 0) {
+      no1.i() -= d;
     }else{
     }
   }else{
   }
-  _m1 = _m0;
+  *old_value = *new_value;
 }
 /*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_unload_source()
@@ -338,16 +342,6 @@ inline void ELEMENT::ac_load_couple()
   _sim->_acx.load_couple(n_(OUT1).m_(), n_(OUT2).m_(), mfactor() * _acg);
 }
 /*--------------------------------------------------------------------------*/
-inline void ELEMENT::tr_load_passive()
-{
-  double d = dampdiff(&_m0.c1, _m1.c1);
-  if (d != 0.) {
-    _sim->_aa.load_symmetric(n_(OUT1).m_(), n_(OUT2).m_(), d);
-  }else{
-  }
-  tr_load_source(); // includes _m1 = _m0
-}
-/*--------------------------------------------------------------------------*/
 inline void ELEMENT::tr_unload_passive()
 {
   _m0.c0 = _m0.c1 = 0.;
@@ -368,6 +362,7 @@ inline void ELEMENT::tr_load_active()
 		       n_(IN1).m_(), n_(IN2).m_(), d);
   }else{
   }
+  _m1.c1 = _m0.c1;
   tr_load_source(); // includes _m1 = _m0
 }
 /*--------------------------------------------------------------------------*/
