@@ -1,4 +1,5 @@
 A 1153 node circuit
+.load ./cbs.so
 Vin 1 0 dc 1 ac 1
 x1 1 2 eq32
 .subckt eq32 1 3
@@ -106,4 +107,6 @@ E3     37   0  35  36  10.K
 .dc Vin 1 10 1
 .ac oct 1 31.25 16000
 .status notime
+.cbsstat
+*.cbsdump
 .end

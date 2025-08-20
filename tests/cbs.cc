@@ -541,7 +541,7 @@ bool CBS<T>::nonzero_lu(int rr, int cc, int dd)
 {
   assert(!idx(aam(rr, cc)));
   assert(!nz(aam(rr, cc)));
-  int kk = std::max(aalownode_u(rr), aalownode_l(cc));
+  int kk = std::max(aalownode_l(rr), aalownode_u(cc));
   int len = dd - kk;
   if (len > 0) {
     T* row = &(aal(rr,kk));
@@ -552,7 +552,7 @@ bool CBS<T>::nonzero_lu(int rr, int cc, int dd)
 	ii -= m;
       }else if(nz(col[ii]) && nz(row[-ii])){
 	return true;
-      }else{ untested();
+      }else{
 	--ii;
       }
     }
@@ -889,7 +889,6 @@ void CBS<T>::lu_decomp(bool do_partial)
    }
   for (int mm=1; mm<=size(); ++mm) {
     int ln = aalownode_u(mm);
-    assert(ln == aalownode_l(mm));
     T* ui = _lu.colptr(mm);
     int ii = 1;
     skip(ui, ii);
@@ -1031,7 +1030,7 @@ void CBS<T>::lu_set_tags(int mm)
 	}
 	--seek;
 	zcnt = 0;
-      }else{ untested();
+      }else{
 	++zcnt;
       }
     }
@@ -1147,7 +1146,7 @@ void CBS<T>::want_lu_fill()
       }else if(nz(aau(ii,mm))){
 	nzcount += 1 + zeros;
 	zeros = false;
-      }else{ untested();
+      }else{
 	zeros = true;
       }
     }
@@ -1194,14 +1193,17 @@ void CBS<T>::compute_lu_fill()
   int gap = 0;
   for (int mm = 1;   mm <= size();   ++mm) {
     int bn = std::max(aalownode_u(mm), aalownode_l(mm));
-
     assert (bn <= mm);
-
     if (bn < mm) {
       if(nz(aad(bn))){
 	++f;
       }else{ untested();
       }
+    }else{
+    }
+
+    bn = aalownode_u(mm);
+    if (bn < mm) {
       /// ============= U ================
       gap = 0;
       assert(!idx(aau(bn,mm)));
@@ -1233,6 +1235,11 @@ void CBS<T>::compute_lu_fill()
 	  ++z;
 	}
       }
+    }else{
+    }
+    
+    bn = aalownode_l(mm);
+    if (bn < mm) {
       /// ============= L ================
       gap=0;
       if(nz(aal(mm, bn))){
@@ -1381,24 +1388,26 @@ void BSSMATRIX<T>::fbsubt(T*) const
 template <class T>
 void CBS<T>::check_consistency(int m)
 {
+  trace3("consistency", m, aalownode_u(m), aalownode_l(m));
   (void) m;
 #ifndef NDEBUG
   {
     T* u = _lu.colptr(m);
     T* l = _lu.rowptr(m);
 
-    assert(aalownode_u(m) == aalownode_l(m)); // for now?
     assert(aalownode_u(m));
     if(aalownode_u(m)!=1){
       assert(idx(u));
       trace3("dbg", idx(u), aalownode_u(m), m);
       assert(idx(u)+1 == aalownode_u(m));
     }else{
+      trace3("dbg", idx(u), aalownode_u(m), m);
       assert(!idx(u));
     }
 
     int i = 1;
     skip(u, i);
+    trace2("skip?", idx(u), i);
 
     for(; u!=_lu.diaptr(m);){
       assert(!idx(u));
@@ -1407,8 +1416,10 @@ void CBS<T>::check_consistency(int m)
       ++u;
       int ii = i;
       skip(u, i);
+      trace2("skip2", idx(u), i);
 
       for(;ii<i; ++ii){
+	trace2("idx?", ii, m);
 	assert(idx(aam(ii, m)));
       }
 
@@ -1568,8 +1579,13 @@ DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "cbsstat", &p5);
 class CMD_DUMP : public CMD {
 public:
   void print(OMSTREAM, const CARD_LIST*);
-  void do_it(CS&, CARD_LIST* )override {
+  void do_it(CS& cmd, CARD_LIST* )override {
     OMSTREAM o = IO::mstdout;
+    int max;
+    if(cmd.more()){
+      cmd >> max;
+    }else{
+    }
     assert(m);
     int i = 0;
     for(auto p : m->fp()) {
