@@ -1519,7 +1519,6 @@ void BSSMATRIX<T>::fbsubt(T*) const
 template <class T>
 void CBS<T>::check_consistency(int m)
 {
-  trace3("consistency", m, aalownode_u(m), aalownode_l(m));
   (void) m;
 #ifndef NDEBUG
   {
@@ -1712,7 +1711,7 @@ public:
   void print(OMSTREAM, const CARD_LIST*);
   void do_it(CS& cmd, CARD_LIST* )override {
     OMSTREAM o = IO::mstdout;
-    int max;
+    int max = INT_MAX;
     if(cmd.more()){
       cmd >> max;
     }else{
@@ -1721,6 +1720,10 @@ public:
     CBS<double> const* cm = m;
     int i=0;
     for(auto p : cm->fp().rows()) {
+      if(i>=max){
+	break;
+      }else{
+      }
       int k=0;
       while(k<i){
 	if(!cm->fp().cols()[k].count(i+1)){
@@ -1738,15 +1741,21 @@ public:
 	o << "\\";
       }
       ++k;
+      if(k>max){
+	k = INT_MAX;
+      }else{
+      }
       ++k;
       ++i;
       for(auto q : p) {
-	while(k<q){
+	while(k<q && k<=max){
 	  o << ".";
 	  ++k;
 	}
 
-	if(cm->is_req(i-1, k-1)) {
+	if(k>max){
+	  break;
+	}else if(cm->is_req(i-1, k-1)) {
 	  o << '*';
 	}else{
 	  o << 'o';
@@ -1754,7 +1763,7 @@ public:
 	++k;
       }
 
-      while(k<=int(cm->fp().rows().size())){
+      while(k<=int(cm->fp().rows().size()) && k <= max){
 	o<<".";
 	++k;
       }
