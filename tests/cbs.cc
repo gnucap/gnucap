@@ -141,13 +141,14 @@ public:
     assert(_rows.empty());
     _cols.resize(s);
     _rows.resize(s);
+    assert(!size());
   }
   void allocate() {
-    delete _raw_idx;
-    delete _raw_didx;
-    _raw_idx = _raw_didx = nullptr;
-
-    serialize_bs_adj(cols(), rows(), _raw_idx, _raw_didx);
+    if(_raw_idx){
+      // keep it
+    }else{
+      serialize_bs_adj(cols(), rows(), _raw_idx, _raw_didx);
+    }
   }
   void unallocate() {
   }
