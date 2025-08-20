@@ -48,7 +48,6 @@ private: // data members
   mutable NODE_MAP* _nm;
   mutable PARAM_LIST* _params;
   list _cl;
-  bool _verilog_math{false};
 public: // more types
   class fat_iterator {
   private:

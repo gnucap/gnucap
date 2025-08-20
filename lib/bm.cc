@@ -27,9 +27,6 @@
 #include "e_elemnt.h"
 #include "bm.h"
 /*--------------------------------------------------------------------------*/
-const double _default_tnom_c	(NOT_INPUT);
-const double _default_dtemp	(0.);
-const double _default_temp_c	(NOT_INPUT);
 const double _default_bandwidth	(NOT_INPUT);
 const double _default_delay	(0.);
 const double _default_phase	(0.);

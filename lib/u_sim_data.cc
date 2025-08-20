@@ -229,7 +229,7 @@ void SIM_DATA::map__nodes(CARD_LIST* scope)
   try{
     CMD::command("order_" + OPT::order, scope);
   }catch(Exception const&){ untested();
-    error(bDANGER, "invalid order spec: %d\n", OPT::order);
+    error(bDANGER, "invalid order spec " + OPT::order);
   }
   ::status.order.stop();
 }

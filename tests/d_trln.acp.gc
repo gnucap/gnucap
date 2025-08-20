@@ -1,0 +1,57 @@
+verilog
+// Transmission lines
+width out=160
+
+// matched 
+resistor #(.r( rs )) R1s (.p(\1 ),.n(\11 ));
+tline #(.z0(50),.f(10e6),.nl(.25)) T1 (.t1(\11 ),.b1(\0 ),.t2(\12 ),.b2(\0 ));
+resistor #(.r(50.)) R1l (.p(\12 ),.n(\0 ));
+
+// open stub 
+resistor #(.r( rs )) R2s (.p(\1 ),.n(\21 ));
+tline #(.z0(50),.f(10e6),.nl(.25)) T2 (.t1(\21 ),.b1(\0 ),.t2(\22 ),.b2(\0 ));
+resistor #(.r(1.e+99)) R2l (.p(\22 ),.n(\0 ));
+// shorted stub 
+resistor #(.r( rs )) R3s (.p(\1 ),.n(\31 ));
+tline #(.z0(50),.f(10e6),.nl(.25)) T3 (.t1(\31 ),.b1(\0 ),.t2(\32 ),.b2(\0 ));
+resistor #( 0.001) R3l (.p(\32 ),.n(\0 ));
+// lo-z load 
+resistor #(.r( rs )) R4s (.p(\1 ),.n(\41 ));
+tline #(.z0(50),.f(10e6),.nl(.25)) T4 (.t1(\41 ),.b1(\0 ),.t2(\42 ),.b2(\0 ));
+resistor #( 25.) R4l (.p(\42 ),.n(\0 ));
+// hi-z load 
+resistor #(.r( rs )) R5s (.p(\1 ),.n(\51 ));
+tline #(.z0(50),.f(10e6),.nl(.25)) T5 (.t1(\51 ),.b1(\0 ),.t2(\52 ),.b2(\0 ));
+resistor #( 100.) R5l (.p(\52 ),.n(\0 ));
+
+// TODO vsine .mag(1) ..
+spice
+V1 1 0 ac 1
+.list
+.verilog
+
+// nominal-z drive
+parameter rs=50.
+print ac vp nodes
+ac 0 40e6 2e6
+
+// very lo-z drive
+parameter rs=.1
+op
+print ac vp nodes
+ac
+
+// slightly lo-z drive
+parameter rs=25.
+op
+print ac vp nodes
+ac
+
+// hi-z drive
+parameter rs=100.
+op
+print ac vp nodes
+ac
+
+stat notime
+end
