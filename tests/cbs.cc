@@ -23,7 +23,7 @@
  * -------------------------------------------------
  */
 #include "l_stlextra.h"
-#include <set>
+#include "l_smallset.h"
 #include <stack>
 #include "m_matrix.h"
 #include "e_base.h"
@@ -35,8 +35,8 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class FOOTPRINT {
   typedef int value_type;
-  typedef std::set<value_type> list_t;
-  typedef std::vector<list_t> container_t;
+  typedef SMALL_SET<value_type> set_t;
+  typedef std::vector<set_t> container_t;
   typedef container_t::const_iterator const_iterator;
 
 private:
@@ -95,8 +95,8 @@ public:
   container_t const& cols()const {return _cols;}
   container_t const& rows()const {return _rows;}
 public: // used in compute_lu_fill
-  list_t& cols(int i) {return _cols[i];}
-  list_t& rows(int i) {return _rows[i];}
+  set_t& cols(int i) {return _cols[i];}
+  set_t& rows(int i) {return _rows[i];}
 };
 /*--------------------------------------------------------------------------*/
 inline void FOOTPRINT::iwant_point(int i, int j)
