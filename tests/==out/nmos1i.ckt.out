@@ -113,5 +113,6 @@ MODELL
 fpnreq: 14
 fpsize: 4
 nnz: 3
-1 3
-2 3
+\.*
+.\*
+**\

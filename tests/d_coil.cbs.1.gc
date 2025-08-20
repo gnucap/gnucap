@@ -44,4 +44,5 @@ tran .001 .01 0 .0001
 list
 status notime
 cbsstat
+cbsdump
 end

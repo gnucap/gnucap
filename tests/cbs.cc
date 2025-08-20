@@ -375,6 +375,7 @@ private:
   void propagate(int m);
 
 public:
+  bool is_inode(int )const { return false; /* _inode.count(i);*/ }
   int fpsize()const { return _fp.size(); }
   int fpnreq()const { return _fp.nreq(); }
   int nnz()const { return _nzcount; }
@@ -1655,13 +1656,40 @@ public:
     }else{
     }
     assert(m);
-    int i = 0;
     CBS<double> const* cm = m;
-    for(auto p : cm->fp().cols()) {
+    int i=0;
+    for(auto p : cm->fp().rows()) {
+      int k=0;
+      while(k<i){
+	if(cm->fp().cols()[k].count(i+1)){
+	  o << "*";
+	}else{
+	  o << ".";
+	}
+	++k;
+      }
+      if(m->is_inode(i)){
+	o << " ";
+      }else{
+	o << "\\";
+      }
+      ++k;
+      ++k;
       ++i;
       for(auto q : p) {
-	o << i << " " << q << "\n";
+	while(k<q){
+	  o << ".";
+	  ++k;
+	}
+	o << '*';
+	++k;
       }
+
+      while(k<=int(cm->fp().rows().size())){
+	o<<".";
+	++k;
+      }
+      o<<"\n";
     }
   }
 } p6;
