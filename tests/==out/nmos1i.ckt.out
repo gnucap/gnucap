@@ -110,8 +110,11 @@ vin 2 2 0
 1 0
 MODELD
 MODELL
-fpnreq: 22
-fpsize: 3
-nnz: 3
-1 3
-2 3
+iwant points: 155.6% (14)
+load size   :  77.8% (7)
+footprint   :  77.8% (7)
+nnz         :  66.7% (6)
+fill size   :   0.0% (0)
+\.*
+.\*
+**\

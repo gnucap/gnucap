@@ -7,35 +7,24 @@ parameter tclk=200u
 parameter tt=5u
 parameter delay=2u
 
+* TODO: use discipline
 .model  mos logic ( delay=delay rise=tt fall=tt  rs= 100.  rw= 1.G
 + thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
 
 **************
 
-***  TODO: use paramset  ***
-
 parameter cgdo=10.n
 parameter cgso=10.n
 parameter cgbo=0.
-.model mypmos pmos ( level=2  vto= -1.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8
+.model my_pmos pmos ( level=2  vto= -1.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8
 + cgso= cgso  cgdo= cgdo  cgbo= cgbo  rsh= 0.  cj= 0.  mj= 0.5  cjsw= 0.  mjsw= 0.33 
 + tox= 100.n  nfs= 0.  tpg=1  ld= 0.  uo= 600.  neff= 1.  fc= 0.5  delta= 0.
 +)
-.subckt my_pmos a b c d
-.parameter l=100.u
-.parameter w=100.u
-M2 a b c d mypmos  l=l  w=w nrd= 1.  nrs= 1.
-.ends
 
-.model mynmos nmos ( level=2  vto= 1.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8
+.model my_nmos nmos ( level=2  vto= 1.  gamma= 0.  phi= 0.6  is= 10.E-15 pb= 0.8
 + cgso= cgso  cgdo= cgdo  cgbo= cgbo  rsh= 0.  cj= 0.  mj= 0.5  cjsw= 0.  mjsw= 0.33
 + tox= 100.n  nfs= 0.  tpg=1  ld= 0.  uo= 600.  neff= 1.  fc= 0.5  delta= 0.
 +)
-.subckt my_nmos a b c d
-.parameter l=100.u
-.parameter w=100.u
-M1 a b c d mynmos  l=l w=w  nrd= 1.  nrs= 1.
-.ends
 
 **************
 
@@ -187,4 +176,5 @@ Vdd 8 0 dc 5.
 
 .status notime
 .cbsstat
+.cbsdump 60
 .end

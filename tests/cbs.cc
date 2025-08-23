@@ -23,7 +23,7 @@
  * -------------------------------------------------
  */
 #include "l_stlextra.h"
-#include <set>
+#include "l_smallset.h"
 #include <stack>
 #include "m_matrix.h"
 #include "e_base.h"
@@ -31,75 +31,187 @@
 #include "c_comand.h"
 #include "globals.h"
 /*--------------------------------------------------------------------------*/
+template<class T>
+int count_nz(T const& t)
+{
+  size_t nz = 0;
+  for(auto const& i : t){
+    nz += i.size();
+  }
+  return int(nz);
+}
+/*--------------------------------------------------------------------------*/
+bool is_in(int const* idx, int what, int dir)
+{
+  while(*idx){
+    if(*idx == what){
+      trace2("isin", *idx, what);
+      return true;
+    }else{
+      trace2("notin", *idx, what);
+    }
+    idx += dir;
+  }
+  return false;
+
+}
+// serialize BS adjacency list. row oriented:
+// row idx are at diag[i]   .. diag[i]+rowsize-1
+// col idx are at diag[i]-1 .. diag[i]-colsize
+// ordered ascending from the diagonal
+//
+// swap args for col orientation
+template<class container_t>
+int serialize_bs_adj(container_t const& rows_, container_t const& cols_,
+    int*& _idx, int*& _didx)
+{
+  int unz = count_nz(cols_)
+          + count_nz(rows_);
+
+  _idx = new int[unz + cols_.size() + 1];
+  _didx = new int[cols_.size()];
+  int sep = 0;
+  _idx[sep] = 0;
+
+  for(int i = 0; i < int(cols_.size()); ++i ){
+    _didx[i] = sep + 1 + cols_[i].size();
+    int s = 0;
+    for(int x : cols_[i]){
+      _idx[_didx[i] - s - 1] = x;
+      ++s;
+    }
+    s = 0;
+    for(int x : rows_[i]){
+      _idx[_didx[i] + s] = x;
+      ++s;
+    }
+    sep = _didx[i] + s;
+    _idx[sep] = 0;
+  }
+
+  assert(sep == unz + int(cols_.size()));
+  return unz;
+}
 namespace {
 /*--------------------------------------------------------------------------*/
 class FOOTPRINT {
   typedef int value_type;
-  typedef std::deque<value_type> list_t;
-  typedef std::pair<list_t, list_t> lists_t;
-  typedef std::deque<lists_t> container_t;
+  typedef SMALL_SET<value_type> set_t;
+  typedef std::vector<set_t> container_t;
   typedef container_t::const_iterator const_iterator;
 
 private:
   int _nreq{0};
+  int _nstamp{0};
+  int* _raw_idx{nullptr};
+  int* _raw_didx{nullptr};
 public: // BUG
-  container_t _data;
+  container_t _rows;
+  container_t _cols;
+  set_t _inodes;
 public:
   explicit FOOTPRINT(int s){
     init(s);
   }
 
-  void want(int, int);
-  int size()const {return int(_data.size());}
+  void iwant_point(int, int);
+  void iwant_quad(int i, int j){ iwant_point(i,j), iwant_point(j,i);}
+  void iwant_inode(int i, int j){
+    if(i){
+      iwant_quad(i,j);
+    }else{
+    }
+    assert(j);
+    _inodes.insert(j);
+  }
+
+  int size()const {
+    int i = 0;
+    for(auto d : _rows){
+      i += int(d.size());
+    }
+    for(auto d : _cols){
+      i += int(d.size());
+    }
+    return i;
+  }
   int nreq()const {return _nreq;}
+  int nstamp()const {return _nstamp;}
+  bool is_inode(int i)const { return _inodes.count(i); }
+  int ninode()const { return _inodes.size(); }
+
   void init(int s) {
-    _data.resize(s);
+    assert(_cols.empty());
+    assert(_rows.empty());
+    _cols.resize(s);
+    _rows.resize(s);
+    assert(!size());
+  }
+  void allocate() {
+    if(_raw_idx){
+      // keep it
+    }else{
+      _nstamp = serialize_bs_adj(cols(), rows(), _raw_idx, _raw_didx);
+    }
+  }
+  void unallocate() {
   }
   void uninit(){
-    _data.clear();
+    delete _raw_idx;
+    delete _raw_didx;
+    _raw_idx = _raw_didx = nullptr;
+
+    _cols.clear();
+    _rows.clear();
   }
 
   void dumpgr(){ untested();
     int s = 0;
-    for(auto& i : _data){ untested();
-      s += int(i.first.size());
+    for(auto& i : _rows){ untested();
+      s += int(i.size());
     }
-    std::cout << "p tw " << to_string(int(_data.size())) << " " << to_string(s) << "\n";
+    std::cout << "p tw " << to_string(size()) << " " << to_string(s) << "\n";
     auto ii = 0;
-    for(auto& i : _data){ untested();
+    for(auto& i : _rows){ untested();
       ++ii;
-      for(auto& j : i.first){ untested();
+      for(auto const& j : i){ untested();
 	std::cout << ii << " " << j << "\n";
       }
     }
   }
 
-  void sort(){
-    for(auto& i : _data){
-      std::sort(i.first.begin(), i.first.end());
-      auto e = std::unique(i.first.begin(), i.first.end());
-      i.first.erase(e, i.first.end());
+  void sort(){ }
 
-      std::sort(i.second.begin(), i.second.end());
-      e = std::unique(i.second.begin(), i.second.end());
-      i.second.erase(e, i.second.end());
+  container_t const& cols()const {return _cols;}
+  container_t const& rows()const {return _rows;}
+public: // used in compute_lu_fill
+  set_t& cols(int i) {return _cols[i];}
+  set_t& rows(int i) {return _rows[i];}
+
+  bool is_req(int r, int c)const {
+    assert(r<int(_cols.size()));
+    assert(c<int(_cols.size()));
+    assert(_raw_idx);
+    if(r<c){
+      // upper
+      return is_in(&_raw_idx[_raw_didx[r]-1], c+1, -1);
+    }else{
+      // lower
+      return is_in(&_raw_idx[_raw_didx[c]], r+1, 1);
     }
   }
-
-  const_iterator begin()const {return _data.begin();}
-  const_iterator end()const {return _data.end();}
 };
 /*--------------------------------------------------------------------------*/
-inline void FOOTPRINT::want(int i, int j)
+inline void FOOTPRINT::iwant_point(int i, int j)
 {
   assert(i);
   assert(j);
   if(i<j){
     // upper
-    _data[i-1].first.push_back(j);
+    _rows[i-1].insert(j);
   }else if(j<i){
     // lower
-    _data[j-1].second.push_back(i);
+    _cols[j-1].insert(i);
   }else{
   }
   ++_nreq;
@@ -180,6 +292,8 @@ class CBS : public BSMATRIX_SOLVER<double> {
 
   int*	_lownode_row{nullptr};	// lowest node in this row
   int*	_lownode_col{nullptr};	// lowest node in this col
+  int* _idx{nullptr};
+  int* _didx{nullptr};
 
   int _nzcount{0};
 public:
@@ -192,16 +306,24 @@ public:
    ,_changed(nullptr) {
   }
 private: // SOLVER
-  void iwant1(int i, int j)override {
+  void iwant_point(int i, int j)override {
     if(i && j){
-      _fp.want(i, j);
+      _fp.iwant_point(i, j);
     }else{
     }
   }
-  void iwant2(int i, int j)override {
+  void iwant_quad(int i, int j)override {
     if(i && j){
-      _fp.want(i, j);
-      _fp.want(j, i);
+      _fp.iwant_point(i, j);
+      _fp.iwant_point(j, i);
+    }else{
+    }
+  }
+  void iwant_inode(int i, int j)override {
+    if(i && j){
+      _fp.iwant_inode(i, j);
+    }else if(j){
+      _fp.iwant_inode(i, j);
     }else{
     }
   }
@@ -315,10 +437,18 @@ private:
   void propagate(int m);
 
 public:
-  int fpsize()const { return _fp.size(); }
-  int fpnreq()const { return _fp.nreq(); }
+  bool is_inode(int i)const { return fp().is_inode(i); }
+  int fpsize()const { return fp().size() + size() - ninode(); }
+  int fpnreq()const { return fp().nreq(); }
+  int nload()const { return fp().nstamp() + size() - ninode(); }
   int nnz()const { return _nzcount; }
+  int ninode()const { return fp().ninode(); }
   FOOTPRINT const& fp()const {return _fp;}
+  bool is_req(int r, int c)const {
+    return fp().is_req(r, c);
+  }
+private:
+  FOOTPRINT& fp() {return _fp;}
 }; // CBS
 /*--------------------------------------------------------------------------*/
 template<class T>
@@ -347,6 +477,7 @@ void CBS<T>::init(int ss)
 template <class T>
 void CBS<T>::allocate()
 {
+  fp().allocate();
   tag_wanted();
   compute_lu_fill();
   want_lu_fill();
@@ -357,6 +488,8 @@ void CBS<T>::allocate()
     check_consistency(m);
   }
 
+  serialize_bs_adj(fp().cols(), fp().rows(), _idx, _didx);
+
   _aa.zero();
 }
 /*--------------------------------------------------------------------------*/
@@ -364,6 +497,7 @@ template <class T>
 void CBS<T>::unallocate()
 {
   _lu.unallocate();
+  fp().unallocate();
 }
 /*--------------------------------------------------------------------------*/
 /* u: as above, but lvalue */
@@ -823,19 +957,23 @@ void CBS<T>::tag_wanted()
 
   _fp.sort();
   int mm = 1;
-  for(auto const& d : _fp._data) {
+  for(auto const& d : _fp.rows()) {
     T* prev = &aad(mm);
-    nz += int(d.first.size());
-    for(auto i : d.first){
+    nz += int(d.size());
+    for(auto i : d){
       assert(mm<i);
       col(*prev) = i;
       prev = &aau(mm, i);
     }
     col(*prev) = -1;
+    ++mm;
+  }
 
-    prev = &aad(mm);
-    nz += int(d.second.size());
-    for(auto j : d.second){
+  mm = 1;
+  for(auto const& d : fp().cols()) {
+    T* prev = &aad(mm);
+    nz += int(d.size());
+    for(auto j : d){
       // lower(i, mm)
       assert(mm<j);
       row(*prev) = j;
@@ -859,15 +997,15 @@ void BSSMATRIX<T>::zero()
 template <class T>
 void CBS<T>::propagate(int m)
 {
-  for( auto node : _fp._data[m-1].first ) {
-    // upper
-    assert(node>m);
-    set_changed(m, node);
+  int diag = _didx[m-1];
+  int const* it = &_idx[diag];
+  while(*(--it)){
+    set_changed(m, *it);
   }
-  for( auto node : _fp._data[m-1].second ) {
-    // lower
-    assert(node>m);
-    set_changed(node, m);
+  it = &_idx[diag];
+  while(*it){
+    set_changed(*it, m);
+    ++it;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -1160,6 +1298,7 @@ void CBS<T>::want_lu_fill()
 
     bn = aalownode_l(mm);
     zeros = false;
+    _nzcount += nzcount;
     nzcount = 0;
     for (int jj=mm-1; jj>=bn; --jj) {
       if(idx(aal(mm,jj))){
@@ -1227,7 +1366,7 @@ void CBS<T>::compute_lu_fill()
 	  ++lnz;
 	  dot = lu_tag();
 	  assert(ii<mm);
-	  _fp._data[ii-1].first.push_back(mm);
+	  fp().rows(ii-1).insert(mm);
 	  ++f;
 	  gap = 0;
 	}else{
@@ -1259,7 +1398,7 @@ void CBS<T>::compute_lu_fill()
 	}else if(nonzero_lu(mm,jj,jj)){
 	  dot = lu_tag();
 	  ++lnz;
-	  _fp._data[jj-1].second.push_back(mm);
+	  fp().cols(jj-1).insert(mm);
 	  ++f;
 	  gap = 0;
 	}else{
@@ -1388,7 +1527,6 @@ void BSSMATRIX<T>::fbsubt(T*) const
 template <class T>
 void CBS<T>::check_consistency(int m)
 {
-  trace3("consistency", m, aalownode_u(m), aalownode_l(m));
   (void) m;
 #ifndef NDEBUG
   {
@@ -1569,9 +1707,23 @@ public:
   void do_it(CS&, CARD_LIST* )override {
     OMSTREAM o = IO::mstdout;
     assert(m);
-    o << "fpnreq: " << m->fpnreq() << "\n";
-    o << "fpsize: " << m->fpsize() << "\n";
-    o << "nnz: " << m->nnz() << "\n";
+    int iwant_points = m->fpnreq();
+    int load_size    = m->nload();
+    int footprint    = m->fpsize();
+    int nnz          = m->nnz();
+    int fill_size    = m->fpsize() - m->nload();
+    double denom = m->size() * m->size();
+
+    oo(o, "iwant points", iwant_points, denom);
+    oo(o, "load size   ", load_size,    denom);
+    oo(o, "footprint   ", footprint,    denom);
+    oo(o, "nnz         ", nnz,          denom);
+    oo(o, "fill size   ", fill_size,    denom);
+  }
+private:
+  void oo(OMSTREAM& o, char const* label, int n, double denom)const
+  {
+    o.form("%s: %5.1f%% (%d)\n", label, 100.*n/denom, n);
   }
 } p5;
 DISPATCHER<CMD>::INSTALL d5(&command_dispatcher, "cbsstat", &p5);
@@ -1581,18 +1733,63 @@ public:
   void print(OMSTREAM, const CARD_LIST*);
   void do_it(CS& cmd, CARD_LIST* )override {
     OMSTREAM o = IO::mstdout;
-    int max;
+    int max = INT_MAX;
     if(cmd.more()){
       cmd >> max;
     }else{
     }
     assert(m);
-    int i = 0;
-    for(auto p : m->fp()) {
-      ++i;
-      for(auto q : p.first) {
-	o << i << " " << q << "\n";
+    CBS<double> const* cm = m;
+    int i=0;
+    for(auto p : cm->fp().rows()) {
+      if(i>=max){
+	break;
+      }else{
       }
+      int k=0;
+      while(k<i){
+	if(!cm->fp().cols()[k].count(i+1)){
+	  o << ".";
+	}else if(cm->is_req(i, k)) {
+	  o << "*";
+	}else{
+	  o << "o";
+	}
+	++k;
+      }
+      if(m->is_inode(i)){
+	o << " ";
+      }else{
+	o << "\\";
+      }
+      ++k;
+      if(k>max){
+	k = INT_MAX;
+      }else{
+      }
+      ++k;
+      ++i;
+      for(auto q : p) {
+	while(k<q && k<=max){
+	  o << ".";
+	  ++k;
+	}
+
+	if(k>max){
+	  break;
+	}else if(cm->is_req(i-1, k-1)) {
+	  o << '*';
+	}else{
+	  o << 'o';
+	}
+	++k;
+      }
+
+      while(k<=int(cm->fp().rows().size()) && k <= max){
+	o<<".";
+	++k;
+      }
+      o<<"\n";
     }
   }
 } p6;

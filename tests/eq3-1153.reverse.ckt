@@ -108,5 +108,5 @@ E3     37   0  35  36  10.K
 .ac oct 1 31.25 16000
 .status notime
 .cbsstat
-*.cbsdump
+.cbsdump 60
 .end
