@@ -25,7 +25,7 @@
 #include "l_stlextra.h"
 #include "l_smallset.h"
 #include <stack>
-#include "m_matrix.h"
+#include "m_matrix_solver.h"
 #include "e_base.h"
 #include "u_sim_data.h"
 #include "c_comand.h"
@@ -92,9 +92,160 @@ int serialize_bs_adj(container_t const& rows_, container_t const& cols_,
   assert(sep == unz + int(cols_.size()));
   return unz;
 }
+/*--------------------------------------------------------------------------*/
+class BUCKETS{
+  std::vector<int> _values;
+  std::vector<int> _next;
+  std::vector<int> _prev;
+  int* _head;
+  enum invalid_{invalid = 0};
+public:
+  class bucket{
+    int _id;
+    int* _next;
+    int* _prev;
+    int* _head;
+  public:
+    bucket(int id, int* next, int* prev, int* h)
+      : _id(id), _next(next), _prev(prev), _head(h) { }
+    bool empty()const {return _head[_id] == invalid;}
+    int top()const {
+      assert(_head[_id] != invalid);
+      return _head[_id];
+    }
+    void push(int x) {
+      assert(x != invalid);
+      _prev[x] = _id + int(_head - _next);
+      _next[x] = _head[_id];
+      _head[_id] = x;
+    }
+    void pop() {
+      int current = _head[_id];
+      assert(current != invalid);
+      int next = _next[current];
+      _head[_id] = next;
+      _prev[next] = _id + int(_head - _next);
+    }
+  };
+public:
+  explicit BUCKETS(int n) :
+    _values(n, invalid),
+    _next(2*n, invalid),
+    _prev(n, invalid),
+    _head(&_next[0] + n) {
+  }
+ // const_bucket operator[](const int& i) const ...
+  bucket operator[](const int& i) {
+    assert(i < int(_next.size()));
+    return bucket(i, _head, &_next[0], &_prev[0]);
+  }
+
+  void set(int a, int b) {
+    _values[a] = b;
+  }
+  void push(int a, int b) {
+    _values[a] = b;
+    (*this)[b].push(a);
+  }
+  void update(int a) { untested();
+    int val = _values[a];
+    _prev[a] = val + int(_head - _next.data());
+    _next[a] = _head[val];
+    _head[val] = a;
+  }
+};
+/*--------------------------------------------------------------------------*/
+template<class container_t, class set_t>
+static void build_ccidx(container_t const& rows, container_t const& cols,
+    set_t const& inodes,
+    int const* raw_idx, int const* raw_didx, int*& _ap, int*& _ai)
+{
+  assert(!_ap);
+  assert(!_ai);
+
+  int n = int(cols.size()+1);
+  int nz = count_nz(cols)
+         + count_nz(rows)
+	 + n - int(inodes.size());
+  _ap = new int32_t[n+1];
+  _ai = new int32_t[nz];
+  _ap[0] = 0;
+  _ai[0] = 0;
+  _ap[1] = 1;
+
+  int* rf = new int32_t[n+1];
+  BUCKETS cb(n+1);
+
+  for(int r=1; r<n; ++r){
+    rf[r-1] = raw_didx[r-1] - 1;
+    if(int c = raw_idx[rf[r-1]]) {
+      // insert r into bucket c;
+      cb.push(r, c);
+      assert(!cb[c].empty());
+    }else{
+    }
+  }
+
+  int seek = 1;
+  auto inodeit = inodes.begin();
+  int32_t* sp = _ap + 1;
+  for(int c=1; c<n; ++c) {
+    int colstart = seek;
+    // upper
+    while(!cb[c].empty()){
+      int r = cb[c].top();
+      assert(c>r);
+      _ai[seek++] = r;
+      cb[c].pop();
+
+      --rf[r-1];
+      if(int cc = raw_idx[rf[r-1]]) {
+	cb.push(r, cc);
+      }
+    }
+
+    // not strictly needed. just keep order for now.
+    std::sort(_ai+colstart, _ai+seek);
+
+    if(inodeit == inodes.end()){
+      _ai[seek++] = c;
+    }else if(*inodeit != c){ untested();
+      assert(*inodeit > c);
+      _ai[seek++] = *inodeit;
+    }else{
+      ++inodeit;
+    }
+
+    // paste lower. already ordered.
+    for(int cs=raw_didx[c-1]; raw_idx[cs]; ++cs) {
+      _ai[seek++] = raw_idx[cs];
+    }
+    ++sp;
+    *sp = seek;
+  }
+
+  assert(nz == _ap[n]);
+
+  for(int col=0; col<n; ++col) {
+    for(int id=_ap[col]; id<_ap[col+1]; ++id){
+      int row = _ai[id];
+      if(col==row){
+	assert(!inodes.count(col));
+      }else if(col<row){
+	assert(cols[col-1].count(row));
+	assert(!rows[row-1].count(col));
+      }else{
+	assert(rows[row-1].count(col));
+	assert(!cols[col-1].count(row));
+      }
+    }
+  }
+
+}
+/*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
-class FOOTPRINT {
+class FOOTPRINT : public MATRIX_STAMP {
   typedef int value_type;
   typedef SMALL_SET<value_type> set_t;
   typedef std::vector<set_t> container_t;
@@ -105,18 +256,20 @@ private:
   int _nstamp{0};
   int* _raw_idx{nullptr};
   int* _raw_didx{nullptr};
+  int* _ap{nullptr};
+  int* _ai{nullptr};
+  std::vector<int> _ulow;
+  std::vector<int> _llow;
 public: // BUG
   container_t _rows;
   container_t _cols;
   set_t _inodes;
 public:
-  explicit FOOTPRINT(int s){
-    init(s);
-  }
+  explicit FOOTPRINT() {}
 
-  void iwant_point(int, int);
-  void iwant_quad(int i, int j){ iwant_point(i,j), iwant_point(j,i);}
-  void iwant_inode(int i, int j){
+  void iwant_point(int, int)override;
+  void iwant_quad(int i, int j)override { iwant_point(i,j), iwant_point(j,i);}
+  void iwant_inode(int i, int j)override {
     if(i){
       iwant_quad(i,j);
     }else{
@@ -140,23 +293,38 @@ public:
   bool is_inode(int i)const { return _inodes.count(i); }
   int ninode()const { return _inodes.size(); }
 
-  void init(int s) {
+  void init(int s)override {
     assert(_cols.empty());
     assert(_rows.empty());
     _cols.resize(s);
     _rows.resize(s);
     assert(!size());
+
+    if(_ulow.size()){
+    }else{
+    }
+
+    _ulow.resize(s+1);
+    _llow.resize(s+1);
+    for (int ii = 0;  ii <= s;  ++ii) {
+      _ulow[ii] = _llow[ii] = ii;
+    }
+    _nreq = 0;
   }
   void allocate() {
     if(_raw_idx){
       // keep it
     }else{
       _nstamp = serialize_bs_adj(cols(), rows(), _raw_idx, _raw_didx);
+      build_ccidx_co();
     }
+  }
+  void build_ccidx_co() {
+    build_ccidx(rows(), cols(), _inodes, _raw_idx, _raw_didx, _ap, _ai);
   }
   void unallocate() {
   }
-  void uninit(){
+  void uninit()override {
     delete _raw_idx;
     delete _raw_didx;
     _raw_idx = _raw_didx = nullptr;
@@ -200,6 +368,9 @@ public: // used in compute_lu_fill
       return is_in(&_raw_idx[_raw_didx[c]], r+1, 1);
     }
   }
+private: // BSMATRIX_DATA
+  int const* ulownode()const override {return _ulow.data();}
+  int const* llownode()const override {return _llow.data();}
 };
 /*--------------------------------------------------------------------------*/
 inline void FOOTPRINT::iwant_point(int i, int j)
@@ -208,13 +379,30 @@ inline void FOOTPRINT::iwant_point(int i, int j)
   assert(j);
   if(i<j){
     // upper
+    assert(i-1 < int(_rows.size()));
     _rows[i-1].insert(j);
   }else if(j<i){
     // lower
+    assert(j-1 < int(_cols.size()));
     _cols[j-1].insert(i);
   }else{
   }
-  ++_nreq;
+  if(i!=j){
+    ++_nreq;
+  }else{
+  }
+
+// needed in BSMATRIX_DATA
+  if (i <= 0  ||  j <= 0) {
+    // node 0 is ground, and doesn't count as a connection
+    // negative is invalid, not used but still may be in a node list
+  }else if (i < _ulow[j]) {
+    _ulow[j] = i;
+  }else if (j < _llow[i]) {
+    _llow[i] = j;
+  }else{
+  }
+
 }
 /*--------------------------------------------------------------------------*/
 template<class T>
@@ -224,17 +412,17 @@ class CBS;
 template<class T>
 class BSSMATRIX {
   friend class CBS<T>;
-  int*	_lownode_row;	// lowest node in this row
-  int*	_lownode_col;	// lowest node in this col
-  T*	_space;		// ptr to actual memory space used
-  T**	_colptr;	// ptrs to col 0 of every row
-  T**	_diaptr;	// ptrs to diagonal
-  int	_memsize;	// count of allocated Ts
-  int	_size;		// # of rows and columns
-  T	_zero;		// always 0 but not const
-  T	_trash;		// depository for row and col 0, write only
+  int*	_lownode_row{nullptr};	// lowest node in this row
+  int*	_lownode_col{nullptr};	// lowest node in this col
+  T*	_space{nullptr};	// ptr to actual memory space used
+  T**	_colptr{nullptr};	// ptrs to col 0 of every row
+  T**	_diaptr{nullptr};	// ptrs to diagonal
+  int	_memsize{0};		// count of allocated Ts
+  int	_size{0};		// # of rows and columns
+  T	_zero{0.};		// always 0 but not const
+  T	_trash{0.};		// depository for row and col 0, write only
 public:
-  explicit BSSMATRIX(int s=0);
+  explicit BSSMATRIX() {}
   ~BSSMATRIX(){ untested();
     uninit();
   }
@@ -253,10 +441,6 @@ public: // lifecycle
   void allocate();
   void unallocate();
   void uninit();
-
-public: // internals for CBS
-  int lownode_col(int i){ untested(); return _lownode_col[i];}
-  int lownode_row(int i){ return _lownode_row[i];}
 
 public:
   void zero();
@@ -287,53 +471,32 @@ class CBS : public BSMATRIX_SOLVER<double> {
   BSMATRIX_DATA<T>& _aa;
   BSSMATRIX<T> _lu;
   FOOTPRINT _fp;
-  T _min_pivot;
+  T _min_pivot{0.};
   mutable unsigned* _changed{nullptr};// flag: this node changed value
 
-  int*	_lownode_row{nullptr};	// lowest node in this row
-  int*	_lownode_col{nullptr};	// lowest node in this col
   int* _idx{nullptr};
   int* _didx{nullptr};
 
   int _nzcount{0};
 public:
   explicit CBS(BSMATRIX<double>& aa)
-   :BSMATRIX_SOLVER(aa)
-   ,_aa(BSMATRIX_SOLVER<T>::rw_data_(aa))
-   ,_lu(aa.size())
-   ,_fp(aa.size())
-   ,_min_pivot(0.)
-   ,_changed(nullptr) {
+   : BSMATRIX_SOLVER(aa) , _aa(BSMATRIX_SOLVER<T>::rw_data_(aa)) {
+     BSMATRIX_SOLVER<T>::_data.set_stamp(&_fp);
+     aa.set_stamp(&_fp); // receive iwant calls
   }
-private: // SOLVER
-  void iwant_point(int i, int j)override {
-    if(i && j){
-      _fp.iwant_point(i, j);
-    }else{
-    }
-  }
-  void iwant_quad(int i, int j)override {
-    if(i && j){
-      _fp.iwant_point(i, j);
-      _fp.iwant_point(j, i);
-    }else{
-    }
-  }
-  void iwant_inode(int i, int j)override {
-    if(i && j){
-      _fp.iwant_inode(i, j);
-    }else if(j){
-      _fp.iwant_inode(i, j);
-    }else{
-    }
-  }
-  void allocate()override;
-  void check_consistency(int m);
-  void unallocate()override;
 
 private: // CBS
+  void set_stamp(MATRIX_STAMP* s)override { untested();
+    assert(s);
+    BSMATRIX_SOLVER<T>::set_stamp(s);
+    // _lu.set_stamp(s);
+  }
   void init(int ss) override;
+  void allocate()override;
+  void unallocate()override;
   void uninit()override;
+  void check_consistency(int m);
+
   void set_min_pivot(double x)override {_min_pivot = x;}
 //  void zero() override;
   void lu_decomp(bool do_partial) override;
@@ -348,7 +511,7 @@ private: // CBS
     unreachable(); // obsolete
   }
   void set_changed(int i, int j)const {
-
+    assert(_changed);
     assert(i>=0);
     assert(j>=0);
     if(i==0 || j==0){
@@ -377,8 +540,6 @@ private:
   void lu_iwant(int i, int j);
 
 private: // aa data xs
-//  BSMATRIX<T>& aa() { untested();return data_();}
- // int aalownode(int i) const{ return lownode_(data(), i); }
   int aalownode_u(int i) const{ return ulownode_(data(), i); }
   int aalownode_l(int i) const{ return llownode_(data(), i); }
 
@@ -455,23 +616,10 @@ template<class T>
 void CBS<T>::init(int ss)
 {
   _lu.init(ss);
-  _fp.init(ss);
-  _changed = new unsigned[size()+1];
+  _changed = new unsigned[ss+1];
   assert(_changed);
-  std::fill_n(_changed, size()+1, 0);
+  std::fill_n(_changed, ss+1, 0);
 //  assert(_zero == 0.);
-
-  assert(!_lownode_col);
-  assert(!_lownode_row);
-
-  _lownode_row = new int[size()+1];
-  _lownode_col = new int[size()+1];
-  assert(_lownode_row);
-  assert(_lownode_col);
-  for (int ii = 0;  ii <= size();  ++ii) {
-    _lownode_row[ii] = ii;
-    _lownode_col[ii] = ii;
-  }
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -539,10 +687,6 @@ void CBS<T>::uninit()
 
   delete [] _changed;
   _changed = nullptr;
-  delete [] _lownode_row;
-  _lownode_row = nullptr;
-  delete [] _lownode_col;
-  _lownode_col = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -570,6 +714,7 @@ void BSSMATRIX<T>::init(int ss)
   _trash = 0.;
   _memsize = 0;
   _size = ss;
+
   _lownode_row = new int[size()+1];
   _lownode_col = new int[size()+1];
   assert(_lownode_row);
@@ -686,7 +831,7 @@ bool CBS<T>::nonzero_lu(int rr, int cc, int dd)
 	ii -= m;
       }else if(nz(col[ii]) && nz(row[-ii])){
 	return true;
-      }else{
+      }else{ untested();
 	--ii;
       }
     }
@@ -839,21 +984,6 @@ T BSSMATRIX<T>::subdot(int i, int j, int dd, T const& in) const
 /*--------------------------------------------------------------------------*/
 // public implementations
 /*--------------------------------------------------------------------------*/
-template <class T>
-BSSMATRIX<T>::BSSMATRIX(int s)
-  :_lownode_row(nullptr),
-   _lownode_col(nullptr),
-   _space(nullptr),
-   _colptr(nullptr),
-   _diaptr(nullptr),
-   _memsize(0),
-   _size(0),
-   _zero(0.),
-   _trash(0.)
-{
-  init(s);
-}
-/*--------------------------------------------------------------------------*/
 /* iwant: indicate that "iwant" to allocate this spot in the matrix
  */
 template <class T>
@@ -880,21 +1010,6 @@ template <class T>
 void CBS<T>::lu_iwant(int i, int j)
 {
   _lu.iwant(i, j);
-  assert(_lownode_row);
-  assert(_lownode_col);
-  assert(i <= size());
-  assert(j <= size());
-  assert(i);
-  assert(j);
-
-  if (i <= 0  ||  j <= 0) { untested();
-    // start tags?
-  }else if (i < _lownode_col[j]) {
-    _lownode_col[j] = i;
-  }else if (j < _lownode_row[i]) {
-    _lownode_row[i] = j;
-  }else{
-  }
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -1154,8 +1269,6 @@ void CBS<T>::lu_set_tags(int mm)
   {
     int bn = aalownode_u(mm);
     int zcnt = 0;
-    assert(_lownode_col[mm] >= _lu._lownode_col[mm]);
-    assert(_lownode_col[mm] <= _lu._lownode_col[mm]); // for now.
     T* seek = _lu.diaptr(mm)-1; // - _lownode_col[mm] + _lu.lownode_col(mm);
     for (int ii=mm-1; ii>=bn; --ii) {
       if(idx(aau(ii,mm))){
@@ -1168,7 +1281,7 @@ void CBS<T>::lu_set_tags(int mm)
 	}
 	--seek;
 	zcnt = 0;
-      }else{
+      }else{ untested();
 	++zcnt;
       }
     }
@@ -1188,8 +1301,6 @@ void CBS<T>::lu_set_tags(int mm)
     //trace2("lu_set_tags scan === L ", mm, bn);
     bn = aalownode_l(mm);
     zcnt = 0;
-    assert(_lownode_row[mm] >= _lu.lownode_row(mm));
-    assert(_lownode_row[mm] <= _lu.lownode_row(mm)); // for now.
     seek = _lu.diaptr(mm) + 1;
     for (int jj=mm-1; jj>=bn; --jj) {
       if(idx(aal(mm,jj))){
@@ -1284,7 +1395,7 @@ void CBS<T>::want_lu_fill()
       }else if(nz(aau(ii,mm))){
 	nzcount += 1 + zeros;
 	zeros = false;
-      }else{
+      }else{ untested();
 	zeros = true;
       }
     }
@@ -1349,7 +1460,7 @@ void CBS<T>::compute_lu_fill()
 
       if(nz(aau(bn,mm))){
 	++f;
-      }else{ untested();
+      }else{
 	aau(bn,mm) = index(++gap);
 	assert(!nz(aau(bn,mm)));
 	++z;
@@ -1651,7 +1762,7 @@ void CBS<T>::load_symmetric(int i, int j, T value)
   }else if (i > 0) {
     set_changed(i,i);
     aad(i) += value;
-  }else{
+  }else{ untested();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -1763,7 +1874,7 @@ public:
 	o << "\\";
       }
       ++k;
-      if(k>max){
+      if(k>max){ untested();
 	k = INT_MAX;
       }else{
       }
