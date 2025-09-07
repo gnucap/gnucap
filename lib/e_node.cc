@@ -190,7 +190,7 @@ double NODE::tr_probe_num(const std::string& x)const
   }else if (Umatch(x, "mdy ")) {
     // matrix diagonal admittance
     const BSMATRIX<double>&  aaa = _sim->_aa;
-    return aaa.d(m_());
+    return aaa.solver()->d(m_());
   }else if (Umatch(x, "mdz ")) {
     // matrix diagonal impedance
     const BSMATRIX<double>&  aaa = _sim->_aa;

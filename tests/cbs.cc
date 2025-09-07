@@ -25,7 +25,7 @@
 #include "l_stlextra.h"
 #include "l_smallset.h"
 #include <stack>
-#include "m_matrix.h"
+#include "m_matrix_solver.h"
 #include "e_base.h"
 #include "u_sim_data.h"
 #include "c_comand.h"

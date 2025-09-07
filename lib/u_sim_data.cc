@@ -80,11 +80,6 @@ SIM_DATA::SIM_DATA()
   _evalq = &_evalq1;
   _evalq_uc = &_evalq2;
   std::fill_n(_iter, iCOUNT, 0);
-
-  _aa_solver = new LU_COPY<double>(_aa);
-  _aa.set_solver(_aa_solver);
-  _acx_solver = new LU_INPLACE<COMPLEX>(_acx);
-  _acx.set_solver(_acx_solver);
 }
 /*--------------------------------------------------------------------------*/
 SIM_DATA::~SIM_DATA()
@@ -149,11 +144,6 @@ SIM_DATA::~SIM_DATA()
     _waves = nullptr;
   }else{
   }
-
-  _aa.set_solver(nullptr);
-  delete _aa_solver;
-  _acx.set_solver(nullptr);
-  delete _acx_solver;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

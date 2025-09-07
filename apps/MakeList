@@ -56,7 +56,7 @@ c_status.cc c_sweep.cc c_sim.cc c_system.cc
 
 # simulation commands, usually multiple files for one command
 S_SRCS = \
-s__init.cc s__out.cc s__solve.cc \
+s__init.cc s__out.cc s__solve.cc s__matrix.cc \
 s_ac.cc s_dc.cc s_fo.cc \
 s_tr.cc s_tr_set.cc s_tr_swp.cc
 

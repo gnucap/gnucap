@@ -268,6 +268,7 @@ public:
     }else{
     }
   }
+  BSMATRIX_SOLVER<T> const* solver()const {return _solver;}
 private:
   void init(int s=0);
   void uninit();
