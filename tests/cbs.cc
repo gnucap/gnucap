@@ -92,6 +92,97 @@ int serialize_bs_adj(container_t const& rows_, container_t const& cols_,
   assert(sep == unz + int(cols_.size()));
   return unz;
 }
+/*--------------------------------------------------------------------------*/
+template<class container_t, class set_t>
+static void build_ccidx(container_t const& rows, container_t const& cols,
+    set_t const& inodes,
+    int const* raw_idx, int const* raw_didx, int*& _ap, int*& _ai)
+{
+  assert(!_ap);
+  assert(!_ai);
+
+  int n = int(cols.size()+1);
+  int nz = count_nz(cols)
+         + count_nz(rows)
+	 + n - int(inodes.size());
+ // ++nz; // ground loop
+  _ap = new int32_t[n+1];
+  _ai = new int32_t[nz];
+  _ap[0] = 0;
+  _ai[0] = 0;
+  _ap[1] = 1;
+
+  int* ri = new int32_t[n+1];
+  for(int r=0; r<n; ++r){
+    ri[r] = 0;
+  }
+
+  int seek = 1;
+  auto inodeit = inodes.begin();
+  trace1("=== ccidx", inodes.size());
+  int32_t* sp = _ap + 1;
+  for(int c=1; c<n; ++c){
+    // upper
+    for(int rseek=0; rseek<n; ++rseek){
+      if(!ri[rseek]){
+	trace2("=== u notyet", rseek, ri[rseek]);
+      }else if(raw_idx[ri[rseek]] == c){
+	trace2("=== u found", rseek, ri[rseek]);
+	_ai[seek++] = rseek+1;
+	--ri[rseek];
+      }else if(raw_idx[ri[rseek]] == 0){ untested();
+	// end of row. compress, somehow
+      }else{ untested();
+	trace3("=== u notyet", rseek, ri[rseek], raw_idx[ri[rseek]]);
+      }
+    }
+    if(c<n){
+      trace3("=== q", c, ri[c], raw_didx[c]);
+      ri[c-1] = raw_didx[c-1] - 1;
+    }else{
+    }
+
+    if(inodeit == inodes.end()){
+      trace1("== no inode in", c);
+      _ai[seek++] = c;
+    }else if(*inodeit != c){ untested();
+      trace2("== inode but not", *inodeit, c);
+      assert(*inodeit > c);
+      _ai[seek++] = *inodeit;
+    }else{
+      trace1("== got inode in", c);
+      ++inodeit;
+    }
+
+    // lower
+    for(int cs=raw_didx[c-1]; raw_idx[cs]; ++cs) { untested();
+      trace2("== low", c, raw_idx[cs]);
+      _ai[seek++] = raw_idx[cs];
+    }
+    ++sp;
+    trace2("== sp", *sp, seek);
+    *sp = seek;
+  }
+
+  assert(nz == _ap[n]);
+
+  for(int col=0; col<n; ++col) {
+    for(int id=_ap[col]; id<_ap[col+1]; ++id){
+      int row = _ai[id];
+      if(col==row){ untested();
+	assert(!inodes.count(col));
+      }else if(col<row){
+	assert(cols[col-1].count(row));
+	assert(!rows[row-1].count(col));
+      }else{
+	assert(rows[row-1].count(col));
+	assert(!cols[col-1].count(row));
+      }
+    }
+  }
+
+}
+/*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
 class FOOTPRINT : public MATRIX_STAMP {
@@ -105,6 +196,8 @@ private:
   int _nstamp{0};
   int* _raw_idx{nullptr};
   int* _raw_didx{nullptr};
+  int* _ap{nullptr};
+  int* _ai{nullptr};
   std::vector<int> _ulow;
   std::vector<int> _llow;
 public: // BUG
@@ -163,7 +256,11 @@ public:
       // keep it
     }else{
       _nstamp = serialize_bs_adj(cols(), rows(), _raw_idx, _raw_didx);
+      build_ccidx_co();
     }
+  }
+  void build_ccidx_co() {
+    build_ccidx(rows(), cols(), _inodes, _raw_idx, _raw_didx, _ap, _ai);
   }
   void unallocate() {
   }
