@@ -105,33 +105,5 @@ void BSMATRIX_DATA<T>::uninit()
 template void BSMATRIX_DATA<double>::uninit();
 template void BSMATRIX_DATA<COMPLEX>::uninit();
 /*--------------------------------------------------------------------------*/
-template <class T>
-LU_INPLACE<T>::LU_INPLACE(BSMATRIX<T>& m)
-   : BSMATRIX_SOLVER<T>(m)
-   , _min_pivot(0.)
-{
-  auto stamp = new BSMATRIX_STAMP();
-  BSMATRIX_SOLVER<T>::_data.set_stamp(stamp);
-
-  m.set_stamp(stamp);
-}
-template LU_INPLACE<COMPLEX>::LU_INPLACE(BSMATRIX<COMPLEX>&);
-// template LU_INPLACE<double>::LU_INPLACE(BSMATRIX<double>&);
-/*--------------------------------------------------------------------------*/
-template <class T>
-LU_COPY<T>::LU_COPY(BSMATRIX<T>& aa)
-  : BSMATRIX_SOLVER<T>(aa),
-  _lu(), // <= store L and U here.
-  _changed(nullptr)
-{
-  auto stamp = new BSMATRIX_STAMP();
-  BSMATRIX_SOLVER<T>::_data.set_stamp(stamp);
-  _lu.set_stamp(stamp); // here.
-
-  aa.set_stamp(stamp);
-}
-template LU_COPY<double>::LU_COPY(BSMATRIX<double>&);
-// template LU_COPY<COMPLEX>::LU_COPY(BSMATRIX<COMPLEX>&);
-/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:
