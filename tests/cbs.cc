@@ -290,8 +290,6 @@ class CBS : public BSMATRIX_SOLVER<double> {
   T _min_pivot;
   mutable unsigned* _changed{nullptr};// flag: this node changed value
 
-  int*	_lownode_row{nullptr};	// lowest node in this row
-  int*	_lownode_col{nullptr};	// lowest node in this col
   int* _idx{nullptr};
   int* _didx{nullptr};
 
@@ -460,18 +458,6 @@ void CBS<T>::init(int ss)
   assert(_changed);
   std::fill_n(_changed, size()+1, 0);
 //  assert(_zero == 0.);
-
-  assert(!_lownode_col);
-  assert(!_lownode_row);
-
-  _lownode_row = new int[size()+1];
-  _lownode_col = new int[size()+1];
-  assert(_lownode_row);
-  assert(_lownode_col);
-  for (int ii = 0;  ii <= size();  ++ii) {
-    _lownode_row[ii] = ii;
-    _lownode_col[ii] = ii;
-  }
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -539,10 +525,6 @@ void CBS<T>::uninit()
 
   delete [] _changed;
   _changed = nullptr;
-  delete [] _lownode_row;
-  _lownode_row = nullptr;
-  delete [] _lownode_col;
-  _lownode_col = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
@@ -570,6 +552,7 @@ void BSSMATRIX<T>::init(int ss)
   _trash = 0.;
   _memsize = 0;
   _size = ss;
+
   _lownode_row = new int[size()+1];
   _lownode_col = new int[size()+1];
   assert(_lownode_row);
@@ -880,21 +863,6 @@ template <class T>
 void CBS<T>::lu_iwant(int i, int j)
 {
   _lu.iwant(i, j);
-  assert(_lownode_row);
-  assert(_lownode_col);
-  assert(i <= size());
-  assert(j <= size());
-  assert(i);
-  assert(j);
-
-  if (i <= 0  ||  j <= 0) { untested();
-    // start tags?
-  }else if (i < _lownode_col[j]) {
-    _lownode_col[j] = i;
-  }else if (j < _lownode_row[i]) {
-    _lownode_row[i] = j;
-  }else{
-  }
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -1154,8 +1122,6 @@ void CBS<T>::lu_set_tags(int mm)
   {
     int bn = aalownode_u(mm);
     int zcnt = 0;
-    assert(_lownode_col[mm] >= _lu._lownode_col[mm]);
-    assert(_lownode_col[mm] <= _lu._lownode_col[mm]); // for now.
     T* seek = _lu.diaptr(mm)-1; // - _lownode_col[mm] + _lu.lownode_col(mm);
     for (int ii=mm-1; ii>=bn; --ii) {
       if(idx(aau(ii,mm))){
@@ -1188,8 +1154,6 @@ void CBS<T>::lu_set_tags(int mm)
     //trace2("lu_set_tags scan === L ", mm, bn);
     bn = aalownode_l(mm);
     zcnt = 0;
-    assert(_lownode_row[mm] >= _lu.lownode_row(mm));
-    assert(_lownode_row[mm] <= _lu.lownode_row(mm)); // for now.
     seek = _lu.diaptr(mm) + 1;
     for (int jj=mm-1; jj>=bn; --jj) {
       if(idx(aal(mm,jj))){
