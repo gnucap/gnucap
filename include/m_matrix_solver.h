@@ -30,17 +30,16 @@ class BSMATRIX_SOLVER {
 protected: // private?
   BSMATRIX_DATA<T>& _data; // _aa, _acx and the like
 public:
-  explicit BSMATRIX_SOLVER(BSMATRIX<T>& m) : _data(m._data) {}
+  explicit BSMATRIX_SOLVER(BSMATRIX<T>& m) : _data(m._data) {
+  }
   explicit BSMATRIX_SOLVER(BSMATRIX_SOLVER const&) = delete;
   virtual ~BSMATRIX_SOLVER() { }
 public:
   int  size()const { return _data.size(); }
 
-  virtual void init(int ss) = 0;
-  virtual void uninit() = 0;
-  virtual void iwant_point(int, int) {}
-  virtual void iwant_quad(int i, int j) { iwant_point(i, j); iwant_point(j, i);}
-  virtual void iwant_inode(int i, int j) { iwant_quad(i, j);}
+  virtual void set_stamp(MATRIX_STAMP*) {}
+  virtual void init(int) {}
+  virtual void uninit() {}
   virtual void allocate() = 0;
   virtual void unallocate() = 0;
   virtual void set_min_pivot(double x) = 0;
@@ -239,12 +238,8 @@ private:
   T	_min_pivot;	// minimum pivot value
 public:
   explicit LU_COPY(LU_COPY const& aa) = delete;
-  explicit LU_COPY(BSMATRIX<T>& aa) :
-    BSMATRIX_SOLVER<T>(aa),
-    _lu(), // <= store L and U here.
-    _changed(NULL) {
-    }
-  ~LU_COPY(){ uninit(); }
+  explicit LU_COPY(BSMATRIX<T>& aa);
+  ~LU_COPY() {}
 private:
   using BSMATRIX_SOLVER <T>::size;
 
@@ -269,12 +264,13 @@ private: // LU xs
   T& d(int i       ){ return d_(_lu,i); }
 
 private: // solver overrides
+  void set_stamp(MATRIX_STAMP* s)override { untested();
+    assert(s);
+    BSMATRIX_SOLVER<T>::set_stamp(s);
+    _lu.set_stamp(s);
+  }
   void init(int ss=0)override;
-  void iwant_point(int i, int j)override { _lu.iwant_point(i, j); }
- // void iwant_pair(int i, int j)override { _lu.iwant_pair(i, j); }
-  void iwant_quad(int i, int j)override { _lu.iwant_quad(i, j); }
-  void iwant_inode(int i, int j)override { _lu.iwant_inode(i, j); }
-  void allocate()override { _lu.allocate(); }
+  void allocate()override { assert(_lu.has_stamp()); _lu.allocate(); }
   void unallocate()override { _lu.unallocate(); }
   void uninit()override;
   void set_min_pivot(double x)override { _min_pivot = x; }
@@ -315,9 +311,7 @@ class LU_INPLACE : public BSMATRIX_SOLVER<T> {
 private:
   T	_min_pivot;	// minimum pivot value
 public:
-  LU_INPLACE(BSMATRIX<T>& m)
-   : BSMATRIX_SOLVER<T>(m)
-   , _min_pivot(0.) {}
+  LU_INPLACE(BSMATRIX<T>& m);
   ~LU_INPLACE() { uninit();}
 private:
   using BSMATRIX_SOLVER<T>::_data;
@@ -378,12 +372,14 @@ private: // impl
 template <class T>
 void LU_COPY<T>::uninit()
 {
-  unallocate();
+  BSMATRIX_SOLVER<T>::uninit();
 
   _lu.uninit();
+  unallocate();
+
   if(_changed){
     delete [] _changed;
-    _changed = NULL;
+    _changed = nullptr;
   }else{
   }
 }
@@ -391,11 +387,14 @@ void LU_COPY<T>::uninit()
 template <class T>
 void LU_COPY<T>::init(int ss)
 {
+  BSMATRIX_SOLVER<T>::init(ss);
+  assert(data().has_stamp());
   _lu.init(ss);
+
   assert(!_changed);
-  _changed = new bool[size()+1];
+  _changed = new bool[ss+1];
   assert(_changed);
-  for (int ii = 0;  ii <= size();  ++ii) {
+  for (int ii = 0;  ii <= ss;  ++ii) {
     set_changed(ii, false);
   }
 }

@@ -304,27 +304,6 @@ public:
    ,_changed(nullptr) {
   }
 private: // SOLVER
-  void iwant_point(int i, int j)override {
-    if(i && j){
-      _fp.iwant_point(i, j);
-    }else{
-    }
-  }
-  void iwant_quad(int i, int j)override {
-    if(i && j){
-      _fp.iwant_point(i, j);
-      _fp.iwant_point(j, i);
-    }else{
-    }
-  }
-  void iwant_inode(int i, int j)override {
-    if(i && j){
-      _fp.iwant_inode(i, j);
-    }else if(j){
-      _fp.iwant_inode(i, j);
-    }else{
-    }
-  }
   void allocate()override;
   void check_consistency(int m);
   void unallocate()override;

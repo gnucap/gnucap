@@ -117,30 +117,30 @@ template <class T>
 class BSMATRIX_SOLVER;
 template <class T>
 class BSMATRIX;
+class MATRIX_STAMP;
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 template <class T>
 class BSMATRIX_DATA {
   friend class BSMATRIX_SOLVER<T>;
 protected:
-  int*	_ulownode{nullptr};	// lowest node connecting to this one
-  int*	_llownode{nullptr};	// lowest node connecting to this one
+  int const* _ulownode{nullptr};// lowest node connecting to this one
+  int const* _llownode{nullptr};// lowest node connecting to this one
   T*	_space{nullptr};	// ptr to actual memory space used
   T**	_diaptr{nullptr};	// ptrs to diagonal
   int	_nzcount{0};	// count of non-zero elements
   int	_size{0};	// # of rows and columns
   T	_zero{0};	// always 0 but not const
   T	_trash{0};	// depository for row and col 0, write only
+  MATRIX_STAMP* _stamp{nullptr};
 public:
   BSMATRIX_DATA(BSMATRIX_DATA const&) = delete;
   explicit	BSMATRIX_DATA();
   ~BSMATRIX_DATA() { uninit(); }
 public: // life cycle
+  void set_stamp(MATRIX_STAMP* s) { assert(s); _stamp = s;}
+  bool has_stamp()const {return _stamp;}
   void init(int s);
-  void iwant_point(int, int);
-  void iwant_pair(int i, int j){ iwant_point(i, j); iwant_point(j, i); }
-  void iwant_quad(int i, int j){ iwant_pair(i, j); iwant_point(i, i); iwant_point(j, j); }
-  void iwant_inode(int i, int j){ iwant_pair(i, j); /*incomplete*/ }
   void allocate();
   void unallocate();
   void uninit();
@@ -183,12 +183,57 @@ public:
   double 	density()const;
 }; // BSMATRIX_DATA
 /*--------------------------------------------------------------------------*/
-class BSMATRIX_BASE {
+class MATRIX_STAMP {
+public:
+  virtual void init(int s) = 0;
+  virtual void uninit() = 0;
+  virtual void iwant_point(int i, int j) = 0;
+  virtual void iwant_quad(int i, int j) = 0;
+  virtual void iwant_inode(int i, int j) = 0;
+private:
+  template<class T> friend class BSMATRIX_DATA;
+  virtual int const* ulownode()const {unreachable(); return nullptr;}
+  virtual int const* llownode()const {unreachable(); return nullptr;}
+};
+/*--------------------------------------------------------------------------*/
+class MATRIX_BASE {
+protected:
+  MATRIX_STAMP* _stamp{nullptr};
+protected:
+  explicit MATRIX_BASE() {}
+  ~MATRIX_BASE() {}
+public:
+  void set_stamp(MATRIX_STAMP* s) { assert(s); _stamp = s;}
+  void init(int ) {assert(_stamp);}
+public:
+  void iwant(int i, int j){ iwant_quad(i, j); } // legacy. get them all.
+  void iwant_point(int i, int j){
+    assert(_stamp);
+    if(i&&j){
+      _stamp->iwant_point(i, j);
+    }else{
+    }
+  }
+  void iwant_quad(int i, int j) {
+    assert(_stamp);
+    if(i&&j){
+      _stamp->iwant_quad(i, j);
+    }else{
+    }
+  }
+  void iwant_inode(int i, int j){
+    assert(_stamp);
+    assert(j);
+    if(i){
+      _stamp->iwant_inode(i, j);
+    }else{
+    }
+  }
 };
 /*--------------------------------------------------------------------------*/
 // BUMP/SPIKE MATRIX interface class
 template <class T>
-class BSMATRIX : private BSMATRIX_BASE {
+class BSMATRIX : public MATRIX_BASE {
   friend class BSMATRIX_SOLVER<T>;
   BSMATRIX_DATA<T> _data;
   BSMATRIX_SOLVER<T>* _solver;
@@ -213,7 +258,6 @@ public:
 
 public:
   void set_solver(BSMATRIX_SOLVER<T>* S) {
-    uninit();
     if(_solver) {
       _solver = nullptr;
     }else{
@@ -223,7 +267,6 @@ public:
       _solver = S;
     }else{
     }
-    init();
   }
 private:
   void init(int s=0);
@@ -256,10 +299,9 @@ public:
   void allocate();
   void reallocate();
   //void	clone(const BSMATRIX<T>&);
-  void iwant(int i, int j){ iwant_quad(i, j); } // legacy. get them all.
-  void iwant_point(int, int);
-  void iwant_quad(int i, int j);
-  void iwant_inode(int i, int j);
+  using MATRIX_BASE::iwant_point;
+  using MATRIX_BASE::iwant_quad;
+  using MATRIX_BASE::iwant_inode;
   void set_min_pivot(double x)	{assert(_solver); _solver->set_min_pivot(x);}
   T const& d(int r)const{
     BSMATRIX_SOLVER<T> const* s = _solver;
@@ -282,44 +324,16 @@ public: // "solve?"
 }; // BSMATRIX
 /*--------------------------------------------------------------------------*/
 // private implementations
-/*--------------------------------------------------------------------------*/
-template <class T>
-void BSMATRIX_DATA<T>::init(int s)
-{
-  assert(!_diaptr);
-  assert(!_space);
-
-  _size = s;
-
-  assert(!_ulownode);
-  assert(!_llownode);
-  _ulownode = new int[size()+1];
-  _llownode = new int[size()+1];
-  for (int ii = 0;  ii <= size();  ++ii) {
-    _ulownode[ii] = _llownode[ii] = ii;
-  }
-
-  assert(_zero == 0.);
-  _trash = 0.;
-  _nzcount = 0;
-}
-/*--------------------------------------------------------------------------*/
-template <class T>
-void BSMATRIX_DATA<T>::uninit()
-{
-  unallocate();
-  delete [] _llownode;
-  delete [] _ulownode;
-  _ulownode = _llownode = nullptr;
-}
-/*--------------------------------------------------------------------------*/
 template <class T>
 void BSMATRIX<T>::uninit()
 {
   _data.uninit();
-
   if(_solver) {
     _solver->uninit();
+  }else{
+  }
+  if(_stamp){
+    _stamp->uninit();
   }else{
   }
 }
@@ -327,15 +341,17 @@ void BSMATRIX<T>::uninit()
 template <class T>
 void BSMATRIX<T>::init(int ss)
 {
-  _data.init(ss);
-  if(ss){
-    assert(_solver);
-  }else{
-  }
   if(_solver){
     _solver->init(ss);
   }else{
   }
+  if(_stamp){
+    // _stamp->init(ss);
+    _data.set_stamp(_stamp);
+  }else if(_solver){ untested();
+  }else{
+  }
+  _data.init(ss);
 }
 /*--------------------------------------------------------------------------*/
 // public implementations
@@ -374,64 +390,11 @@ void BSMATRIX<T>::clone(const BSMATRIX<T> & aa)
 }
 #endif
 /*--------------------------------------------------------------------------*/
-/* iwant: indicate that "iwant" to allocate this spot in the matrix
- */
-template <class T>
-void BSMATRIX_DATA<T>::iwant_point(int node1, int node2)
-{
-  assert(_ulownode);
-  assert(_llownode);
-  assert(node1 <= size());
-  assert(node2 <= size());
-
-  if (node1 <= 0  ||  node2 <= 0) {
-    // node 0 is ground, and doesn't count as a connection
-    // negative is invalid, not used but still may be in a node list
-  }else if (node1 < _ulownode[node2]) {
-    _ulownode[node2]=node1;
-  }else if (node2 < _llownode[node1]) {
-    _llownode[node1]=node2;
-  }else{
-  }
-}
-/*--------------------------------------------------------------------------*/
-template <class T>
-void BSMATRIX<T>::iwant_point(int node1, int node2)
-{
-  if(node1 != node2) {
-    _data.iwant_point(node1, node2);
-    assert(_solver);
-    _solver->iwant_point(node1, node2); // could manage L and U copy
-  }else{
-    // not needed.
-    // diagonals are covered with iwant_quad.
-  }
-}
-/*--------------------------------------------------------------------------*/
-template <class T>
-void BSMATRIX<T>::iwant_quad(int node1, int node2)
-{
-  _data.iwant_quad(node1, node2);
-  assert(_solver);
-  _solver->iwant_quad(node1, node2);
-}
-/*--------------------------------------------------------------------------*/
-template <class T>
-void BSMATRIX<T>::iwant_inode(int node1, int node2)
-{
-  _data.iwant_inode(node1, node2);
-  assert(_solver);
-  _solver->iwant_inode(node1, node2);
-}
-/*--------------------------------------------------------------------------*/
 template <class T>
 void BSMATRIX<T>::reallocate()
 {
-//  assert(_solver);
-//  _solver->unallocate();
   unallocate();
   allocate();
-//  _solver->allocate();
 }
 /*--------------------------------------------------------------------------*/
 template <class T>
@@ -456,7 +419,16 @@ void BSMATRIX_DATA<T>::unallocate()
 template <class T>
 void BSMATRIX<T>::allocate()
 {
+  if(_stamp){
+  }else{ untested();
+  }
+  if(_data.has_stamp()){
+  }else{untested();
+  }
   _data.allocate();
+  if(_data.has_stamp()){
+  }else{untested();
+  }
   assert(_solver);
   return _solver->allocate();
 }
