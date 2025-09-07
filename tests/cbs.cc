@@ -93,6 +93,68 @@ int serialize_bs_adj(container_t const& rows_, container_t const& cols_,
   return unz;
 }
 /*--------------------------------------------------------------------------*/
+class BUCKETS{
+  std::vector<int> _values;
+  std::vector<int> _next;
+  std::vector<int> _prev;
+  int* _head;
+  enum invalid_{invalid = 0};
+public:
+  class bucket{
+    int _id;
+    int* _next;
+    int* _prev;
+    int* _head;
+  public:
+    bucket(int id, int* next, int* prev, int* h)
+      : _id(id), _next(next), _prev(prev), _head(h) { }
+    bool empty()const {return _head[_id] == invalid;}
+    int top()const {
+      assert(_head[_id] != invalid);
+      return _head[_id];
+    }
+    void push(int x) {
+      assert(x != invalid);
+      _prev[x] = _id + int(_head - _next);
+      _next[x] = _head[_id];
+      _head[_id] = x;
+    }
+    void pop() {
+      int current = _head[_id];
+      assert(current != invalid);
+      int next = _next[current];
+      _head[_id] = next;
+      _prev[next] = _id + int(_head - _next);
+    }
+  };
+public:
+  explicit BUCKETS(int n) :
+    _values(n, invalid),
+    _next(2*n, invalid),
+    _prev(n, invalid),
+    _head(&_next[0] + n) {
+  }
+ // const_bucket operator[](const int& i) const ...
+  bucket operator[](const int& i) {
+    assert(i < int(_next.size()));
+    return bucket(i, _head, &_next[0], &_prev[0]);
+  }
+
+  void set(int a, int b) {
+    _values[a] = b;
+  }
+  void push(int a, int b) {
+    _values[a] = b;
+    (*this)[b].push(a);
+  }
+  void update(int a) { untested();
+    int val = _values[a];
+    _prev[a] = val + int(_head - _next.data());
+    _next[a] = _head[val];
+    _head[val] = a;
+  }
+};
+/*--------------------------------------------------------------------------*/
 template<class container_t, class set_t>
 static void build_ccidx(container_t const& rows, container_t const& cols,
     set_t const& inodes,
@@ -105,62 +167,60 @@ static void build_ccidx(container_t const& rows, container_t const& cols,
   int nz = count_nz(cols)
          + count_nz(rows)
 	 + n - int(inodes.size());
- // ++nz; // ground loop
   _ap = new int32_t[n+1];
   _ai = new int32_t[nz];
   _ap[0] = 0;
   _ai[0] = 0;
   _ap[1] = 1;
 
-  int* ri = new int32_t[n+1];
-  for(int r=0; r<n; ++r){
-    ri[r] = 0;
+  int* rf = new int32_t[n+1];
+  BUCKETS cb(n+1);
+
+  for(int r=1; r<n; ++r){
+    rf[r-1] = raw_didx[r-1] - 1;
+    if(int c = raw_idx[rf[r-1]]) {
+      // insert r into bucket c;
+      cb.push(r, c);
+      assert(!cb[c].empty());
+    }else{
+    }
   }
 
   int seek = 1;
   auto inodeit = inodes.begin();
-  trace1("=== ccidx", inodes.size());
   int32_t* sp = _ap + 1;
-  for(int c=1; c<n; ++c){
+  for(int c=1; c<n; ++c) {
+    int colstart = seek;
     // upper
-    for(int rseek=0; rseek<n; ++rseek){
-      if(!ri[rseek]){
-	trace2("=== u notyet", rseek, ri[rseek]);
-      }else if(raw_idx[ri[rseek]] == c){
-	trace2("=== u found", rseek, ri[rseek]);
-	_ai[seek++] = rseek+1;
-	--ri[rseek];
-      }else if(raw_idx[ri[rseek]] == 0){ untested();
-	// end of row. compress, somehow
-      }else{ untested();
-	trace3("=== u notyet", rseek, ri[rseek], raw_idx[ri[rseek]]);
+    while(!cb[c].empty()){
+      int r = cb[c].top();
+      assert(c>r);
+      _ai[seek++] = r;
+      cb[c].pop();
+
+      --rf[r-1];
+      if(int cc = raw_idx[rf[r-1]]) {
+	cb.push(r, cc);
       }
     }
-    if(c<n){
-      trace3("=== q", c, ri[c], raw_didx[c]);
-      ri[c-1] = raw_didx[c-1] - 1;
-    }else{
-    }
+
+    // not strictly needed. just keep order for now.
+    std::sort(_ai+colstart, _ai+seek);
 
     if(inodeit == inodes.end()){
-      trace1("== no inode in", c);
       _ai[seek++] = c;
     }else if(*inodeit != c){ untested();
-      trace2("== inode but not", *inodeit, c);
       assert(*inodeit > c);
       _ai[seek++] = *inodeit;
     }else{
-      trace1("== got inode in", c);
       ++inodeit;
     }
 
-    // lower
-    for(int cs=raw_didx[c-1]; raw_idx[cs]; ++cs) { untested();
-      trace2("== low", c, raw_idx[cs]);
+    // paste lower. already ordered.
+    for(int cs=raw_didx[c-1]; raw_idx[cs]; ++cs) {
       _ai[seek++] = raw_idx[cs];
     }
     ++sp;
-    trace2("== sp", *sp, seek);
     *sp = seek;
   }
 
@@ -169,7 +229,7 @@ static void build_ccidx(container_t const& rows, container_t const& cols,
   for(int col=0; col<n; ++col) {
     for(int id=_ap[col]; id<_ap[col+1]; ++id){
       int row = _ai[id];
-      if(col==row){ untested();
+      if(col==row){
 	assert(!inodes.count(col));
       }else if(col<row){
 	assert(cols[col-1].count(row));

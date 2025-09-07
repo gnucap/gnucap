@@ -419,7 +419,7 @@ struct set_solver{
   }
   ~set_solver(){
     SIM_DATA* sim = CKT_BASE::_sim;
-    if(sim){ untested();
+    if(sim){
       sim->_aa.set_solver(nullptr);
       sim->_acx.set_solver(nullptr);
     }else{
