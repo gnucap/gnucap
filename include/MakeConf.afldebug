@@ -9,7 +9,7 @@ CXX = afl-clang-fast++
 
 CCFLAGS = \
 -fPIC \
--std=c++11 -g -O0 \
+-g -O0 \
 -Wall -Wextra \
 -Wsuggest-override \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
@@ -20,7 +20,7 @@ CCFLAGS = \
 #last line not in 4.1
 
 MAKE_CPPFLAGS = -DUNIX ${INCLUDE} -DTRACE_UNTESTED ${CPPFLAGS} ${LIST_CPPFLAGS}
-MAKE_CXXFLAGS = ${CCFLAGS} ${CXXFLAGS} ${LIST_CXXFLAGS} -fPIC -std=c++11 -fsanitize=address,undefined ${CCFLAGS}
+MAKE_CXXFLAGS = ${CCFLAGS} ${CXXFLAGS} ${LIST_CXXFLAGS} -fPIC -std=c++14 -fsanitize=address,undefined ${CCFLAGS}
 
 .SUFFIXES:
 .SUFFIXES: .so .o .cc

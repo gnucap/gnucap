@@ -33,7 +33,7 @@ CXX = g++ -fno-diagnostics-color
 
 CCFLAGS = \
 -fPIC \
--std=c++11 -g -O0 \
+-std=c++14 -g -O0 \
 -Wall -Wextra \
 -Wsuggest-override \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \
