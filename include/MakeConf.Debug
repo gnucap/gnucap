@@ -22,7 +22,6 @@
 # Standard base for g++, debugging, no optimization
 # Running the program will give a spew of line markers for debugging.
 #------------------------------------------------------------------------
-# BUG: VPATH = .:..
 PREFIX =  /usr/local
 #------------------------------------------------------------------------
 # comment out to build witout readline support
