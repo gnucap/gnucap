@@ -92,7 +92,7 @@ static void read_startup_files(void)
     OPT::language = language_dispatcher[DEFAULT_LANGUAGE];
     
     for(DISPATCHER<LANGUAGE>::const_iterator
-	  i=language_dispatcher.begin(); !OPT::language && i!=language_dispatcher.end(); ++i) {untested();
+	  i=language_dispatcher.begin(); !OPT::language && i!=language_dispatcher.end(); ++i) {itested();
       OPT::language = prechecked_cast<LANGUAGE*>(i->second);
     }
   }else{untested();

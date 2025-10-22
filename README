@@ -29,6 +29,17 @@ See README.afl
 
 See NEWS
 
+== Case sensisivity, Oct 2025
+
+Traditionally, Gnucap default input language was set to "acs", which is case
+insensitive. The default language is now "command", it is case sensitive.
+
+The default language is defined in config.h. At startup, another language may
+be selected regardless of this definition, if the old behaviour is desired.
+For example, a "spice batch mode" run would be invoked as follows.
+
+$ gnucap --spice -b my_file.ckt
+
 == Structure, since 2013-04-23
 
 The code is split into sections "include", "lib", "apps", "main", "modelgen"

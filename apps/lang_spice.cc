@@ -112,6 +112,17 @@ public:
 DISPATCHER<LANGUAGE>::INSTALL
 	da(&language_dispatcher, lang_acs.name(), &lang_acs);
 /*--------------------------------------------------------------------------*/
+class LANG_COMMAND : public LANG_SPICE_BASE {
+public:
+  LANG_COMMAND() {}
+  ~LANG_COMMAND() {}
+  std::string name()const override {return "command";}
+  bool case_insensitive()const override {return false;}
+  UNITS units()const override {return uSI;}
+} lang_command;
+DISPATCHER<LANGUAGE>::INSTALL
+	dsa(&language_dispatcher, lang_command.name(), &lang_command);
+/*--------------------------------------------------------------------------*/
 DEV_COMMENT p0;
 DISPATCHER<CARD>::INSTALL
 	d0(&device_dispatcher, ";|#|*|'|\"|dev_comment", &p0);
@@ -1069,7 +1080,6 @@ class CMD_SPICE : public CMD {
 public:
   void do_it(CS&, CARD_LIST* Scope)override {
     command("options lang=spice", Scope);
-   // lang_spice.set_ground(Scope);
   }
 } p8;
 DISPATCHER<CMD>::INSTALL d8(&command_dispatcher, "spice|`spice", &p8);

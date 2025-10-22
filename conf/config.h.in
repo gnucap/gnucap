@@ -5,7 +5,7 @@
 #define GNUCAP_PLUGPATH "@pkglibdir_expanded@"
 /*--------------------------------------------------------------------------*/
 /* user interface preferences */
-#define DEFAULT_LANGUAGE "acs"
+#define DEFAULT_LANGUAGE "command"
 /*--------------------------------------------------------------------------*/
 /* installation setup */
 #if defined(__WIN32__)
