@@ -110,7 +110,7 @@ public:
 	cmd.skiparg();
 	if (cmd >> "=") {itested();
 	  cmd.ctos();
-	}else{untested();
+	}else{itested();
 	}
       }
     }

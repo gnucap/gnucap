@@ -174,8 +174,8 @@ static void process_cmd_line(int argc, const char *argv[])
 {
   for (int ii = 1;  ii < argc;  /*inside*/) {
     try {
-      if (strncmp(argv[ii], "--", 2) == 0) { untested();
-	if (ii < argc) { untested();
+      if (strncmp(argv[ii], "--", 2) == 0) {itested();
+	if (ii < argc) {itested();
 	  CS cmd(CS::_STRING, argv[ii++]+2); // command line
 	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
 	}else{untested();
