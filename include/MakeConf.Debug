@@ -22,7 +22,6 @@
 # Standard base for g++, debugging, no optimization
 # Running the program will give a spew of line markers for debugging.
 #------------------------------------------------------------------------
-# BUG: VPATH = .:..
 PREFIX =  /usr/local
 #------------------------------------------------------------------------
 # comment out to build witout readline support
@@ -33,7 +32,7 @@ CXX = g++ -fno-diagnostics-color
 
 CCFLAGS = \
 -fPIC \
--std=c++11 -g -O0 \
+-std=c++14 -g -O0 \
 -Wall -Wextra \
 -Wsuggest-override \
 -Wswitch-enum -Wundef -Wpointer-arith -Woverloaded-virtual \

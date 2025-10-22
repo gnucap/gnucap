@@ -19,8 +19,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-VPATH = .:..
 PREFIX =  /usr/local
+#------------------------------------------------------------------------
+# comment out to build witout readline support
+HAVE_LIBREADLINE = -DHAVE_LIBREADLINE
+LIBREADLINE = -lreadline
 
 # Standard base for g++.
 
@@ -28,17 +31,18 @@ CXX = g++
 
 CCFLAGS = \
 -fPIC \
--DHAVE_LIBREADLINE \
--std=c++11 -DUNIX -O3 -DNDEBUG $(INCLUDE) -W
+-std=c++14 -DUNIX -O3 -W ${LIST_CXXFLAGS} ${CXXFLAGS}
+
+MAKE_CPPFLAGS = -DNDEBUG $(INCLUDE) -W ${LIST_CPPFLAGS} ${CPPFLAGS}
 
 
 .SUFFIXES:
 .SUFFIXES: .so .o .cc
-.cc.o:; $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CCFLAGS) -c $<
+.cc.o:; $(CXX) $(MAKE_CPPFLAGS) $(CCFLAGS) -c $< # MakeConf.g++
 .cc.so:; $(MAKE_LIB) $<
 #------------------------------------------------------------------------
-MAKE_EXE = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
-MAKE_LIB = $(CXX) $(CCFLAGS) $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
+MAKE_EXE = $(CXX) $(CCFLAGS) ${MAKE_CPPFLAGS} $(OBJS) $(LIBS) $(LDFLAGS) -o $@ 
+MAKE_LIB = $(CXX) $(CCFLAGS) ${MAKE_CPPFLAGS} $(OBJS) $(LIBS) $(LDFLAGS) -shared -o $@ 
 #------------------------------------------------------------
 # If you are porting and using g++, you should use this file as a start,
 #	for a "release" version, optimized with run-time tracing removed.

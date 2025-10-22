@@ -318,7 +318,7 @@ public:
   Float* assign(const String*)  const override {untested(); return nullptr;}
 
   Base* minus()const override		{return new Float(-_data);}
-  Base* plus()const override		{ untested();return new Float(_data);}
+  Base* plus()const override		{itested();return new Float(_data);}
 
   Integer* less(const Float* X)const override	{ untested();assert(X); return new Integer((_data < X->_data)?1:0);}
   Integer* greater(const Float* X)const override	{itested();assert(X); return new Integer((_data > X->_data)?1:0);}

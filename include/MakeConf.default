@@ -4,7 +4,7 @@
 HAVE_LIBREADLINE = -DHAVE_LIBREADLINE
 LIBREADLINE = -lreadline
 #------------------------------------------------------------------------
-MAKE_CXXFLAGS = -fPIC -std=c++11 -O2 -W ${LIST_CXXFLAGS} ${CXXFLAGS}
+MAKE_CXXFLAGS = -fPIC -std=c++14 -O2 -W ${LIST_CXXFLAGS} ${CXXFLAGS}
 MAKE_CPPFLAGS = -DUNIX $(INCLUDE) -DNDEBUG ${LIST_CPPFLAGS} ${CPPFLAGS}
 #------------------------------------------------------------------------
 .SUFFIXES : .so .o .cc

@@ -92,7 +92,7 @@ static void read_startup_files(void)
     OPT::language = language_dispatcher[DEFAULT_LANGUAGE];
     
     for(DISPATCHER<LANGUAGE>::const_iterator
-	  i=language_dispatcher.begin(); !OPT::language && i!=language_dispatcher.end(); ++i) {untested();
+	  i=language_dispatcher.begin(); !OPT::language && i!=language_dispatcher.end(); ++i) {itested();
       OPT::language = prechecked_cast<LANGUAGE*>(i->second);
     }
   }else{untested();
@@ -174,8 +174,8 @@ static void process_cmd_line(int argc, const char *argv[])
 {
   for (int ii = 1;  ii < argc;  /*inside*/) {
     try {
-      if (strncmp(argv[ii], "--", 2) == 0) { untested();
-	if (ii < argc) { untested();
+      if (strncmp(argv[ii], "--", 2) == 0) {itested();
+	if (ii < argc) {itested();
 	  CS cmd(CS::_STRING, argv[ii++]+2); // command line
 	  CMD::cmdproc(cmd, &CARD_LIST::card_list); 
 	}else{untested();

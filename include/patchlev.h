@@ -1,1 +1,1 @@
-#define PATCHLEVEL "matrix_stamp 2025.08.28"
+#define PATCHLEVEL "noinsensitive 2025.10.15"

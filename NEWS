@@ -2,6 +2,13 @@ NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
 == 20250***-dev
+- refactor matrix and interface
+  - request inodes explicitly
+  - store footprint, not just spike size
+  - cbs improvements
+- make node order pluggable
+- move to c++14 (due to modelgen-verilog)
+- default to case sensitive, c.f. README
 - ..
 
 == 20250731-dev
