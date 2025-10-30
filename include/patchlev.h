@@ -1,1 +1,1 @@
-#define PATCHLEVEL "noinsensitive 2025.10.15"
+#define PATCHLEVEL "spfix 2025.10.28"

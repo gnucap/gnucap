@@ -756,7 +756,10 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
   obsolete_set_value(Value);
 
   assert(node_count <= net_nodes());
-  std::copy_n(Nodes, node_count, &n_(0));
+  if(node_count){
+    std::copy_n(Nodes, node_count, &n_(0));
+  }else{itested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* set_slave: force evaluation whenever the owner is evaluated.
