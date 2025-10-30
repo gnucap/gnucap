@@ -22,6 +22,7 @@
  * Base class for "cards" in the circuit description file
  */
 //testing=script 2014.07.04
+#include "e_logicnode.h"
 #include "e_card.h"
 #include "u_xprobe.h"
 #include "u_prblst.h"
@@ -86,6 +87,29 @@ const std::string CARD::long_label()const
   }
   return buffer;
 }
+/*--------------------------------------------------------------------------*/
+//#include "trace_on.h"
+void CARD:: make_fanout()
+{
+  if (is_device()) {
+    for (int ii = 0;  ii < net_nodes();  ++ii) {
+      if (!n_(ii).is_grounded()) {
+	if (!n_(ii)->subckt()) {
+	  n_(ii)->new_subckt();
+	  assert(n_(ii)->subckt());
+	}else{
+	}
+	assert(n_(ii)->subckt());
+	n_(ii)->subckt()->push_back(this);
+	trace3(long_label(),ii, n_(ii).m_(), n_(ii)->subckt()->size());
+      }else{
+	trace2(long_label(),ii, n_(ii).m_());
+      }
+    }
+  }else{
+  }
+}
+//#include "trace_off.h"
 /*--------------------------------------------------------------------------*/
 /* connects_to: does this part connect to this node?
  * input: a node

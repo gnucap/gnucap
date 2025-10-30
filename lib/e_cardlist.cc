@@ -222,6 +222,15 @@ CARD_LIST& CARD_LIST::expand()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+CARD_LIST& CARD_LIST::make_fanout()
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    trace_func_comp();
+    (**ci).make_fanout();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::precalc_first()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
