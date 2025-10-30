@@ -6,7 +6,7 @@ associated tarball. This file summarizes the important changes.
   - request inodes explicitly
   - store footprint, not just spike size
   - cbs improvements
-- make node order pluggable
+- make node order pluggable, trace order plugin
 - move to c++14 (due to modelgen-verilog)
 - default to case sensitive, c.f. README
 - ..

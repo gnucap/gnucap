@@ -74,6 +74,7 @@ public:	// "elaborate"
   virtual void	 expand_first()		{}
   virtual void	 expand()		{}
   virtual void	 expand_last()		{}
+  virtual void	 make_fanout();
   virtual void	 precalc_last()		{}
   virtual void	 map_nodes()		{}
   virtual CARD*  deflate()		{itested(); return this;}
