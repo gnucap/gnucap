@@ -74,7 +74,7 @@ vcvs #(.gain( 0.631454018)) e3a (.p(\9 ),.n(\10 ),.ps(\11 ),.ns(\0 ));
 vcvs #(.gain( 0.890801204)) e3b (.p(\12 ),.n(\11 ),.ps(\10 ),.ns(\0 ));
 resistor #(.r( 75.)) r3b (.p(\12 ),.n(\0 ));
 Gnucap   System status
-iterations: op=0, dc=0, tran=350, fourier=0, total=478
-transient timesteps: accepted=116, rejected=3, total=119
+iterations: op=0, dc=0, tran=346, fourier=0, total=473
+transient timesteps: accepted=115, rejected=3, total=118
 nodes: user=12, subckt=0, model=2, total=14
 dctran density=39.8%, ac density=39.8%

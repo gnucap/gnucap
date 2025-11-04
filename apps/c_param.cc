@@ -54,7 +54,7 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
   }
 
   switch(type){
-  case 1: untested();
+  case 1:
 	  par = PARAMETER<Float>();
 	  break;
   case 11:

@@ -22,6 +22,7 @@
 //testing=script 2006.07.17
 #include "u_opt.h"
 #include "ap.h"
+#include <fenv.h>
 /*--------------------------------------------------------------------------*/
 //	char	 CS::ctoc();
 //	void	 CS::ctostr(char* d, int l, const string& t);
@@ -260,7 +261,7 @@ int CS::ctox()
 double CS::ctof()
 {
   double val = 0.0;
-  double power = 1.0;
+  int    expon = 0;
   int    sign = 1;
 
   skipbl();
@@ -284,7 +285,7 @@ double CS::ctof()
 
   while (is_digit()) {			// after dec pt
     val = 10.0 * val + (ctoc()-'0');
-    power *= .1;
+    --expon;
   }
 
   if (skip1("eE")) {			// exponent: E form
@@ -295,44 +296,44 @@ double CS::ctof()
     }else{
       skip1("+");
     }
-    while (is_digit())
+    while (is_digit()) {
       expo = 10 * expo + (ctoc()-'0');
-    expo *= es;
-    power *= pow(10., expo);
+    }
+    expon += expo * es;
   }else if ((OPT::units == uSPICE) && skip1("mM")) {		// M is special
     if (skip1("eE")) {			// meg
-      power *= 1e6;
+      expon += 6;
     }else if (skip1("iI")) {		// mil
-      power *= 25.4e-6;
+      val *= 25.4e-6;
     }else{				// plain m (milli)
-      power *= 1e-3;
+      expon -= 3;
     }
   }else if (skip1("M")) {itested();
     assert(OPT::units == uSI);
-    power *= 1e6;
+    expon += 6;
   }else if (skip1("m")) {
     assert(OPT::units == uSI);
-    power *= 1e-3;
+    expon -= 3;
   }else if (skip1("uU")) {		// other letters
-    power *= 1e-6;
+    expon -= 6;
   }else if (skip1("nN")) {
-    power *= 1e-9;
+    expon -= 9;
   }else if (skip1("p")) {
-    power *= 1e-12;
+    expon -= 12;
   }else if (skip1("P")) {
-    power *= ((OPT::units == uSI) ? (1e15) : 1e-12);
+    expon += ((OPT::units == uSI) ? (15) : -12);
   }else if (skip1("fF")) {
-    power *= 1e-15;
+    expon -= 15;
   }else if (skip1("aA")) { untested();
-    power *= 1e-18;
+    expon -= 18;
   }else if (skip1("kK")) {
-    power *= 1e3;
+    expon += 3;
   }else if (skip1("gG")) {
-    power *= 1e9;
+    expon += 9;
   }else if (skip1("tT")) {
-    power *= 1e12;
+    expon += 12;
   }else if (skip1("%")) {untested();
-    power *= 1e-2;
+    expon -= 2;
   }else{
   }
   while (is_alpha()) {			// skip letters
@@ -340,7 +341,51 @@ double CS::ctof()
   }
   skipcom();
   _ok = true;
-  return (sign*val*power);
+
+  // powers of 10 representable as double
+  static double pos_pwr[22] = {
+    std::pow(10, 1), std::pow(10, 2), std::pow(10, 3), std::pow(10, 4),
+    std::pow(10, 5), std::pow(10, 6), std::pow(10, 7), std::pow(10, 8),
+    std::pow(10, 9), std::pow(10,10), std::pow(10,11), std::pow(10,12),
+    std::pow(10,13), std::pow(10,14), std::pow(10,15), std::pow(10,16),
+    std::pow(10,17), std::pow(10,18), std::pow(10,19), std::pow(10,20),
+    std::pow(10,21), std::pow(10,22) };
+  // negative powers, long double multiplication is faster than double division
+  static long double neg_pwr[22] = {
+    std::powl(10, -1), std::powl(10, -2), std::powl(10, -3), std::powl(10, -4),
+    std::powl(10, -5), std::powl(10, -6), std::powl(10, -7), std::powl(10, -8),
+    std::powl(10, -9), std::powl(10,-10), std::powl(10,-11), std::powl(10,-12),
+    std::powl(10,-13), std::powl(10,-14), std::powl(10,-15), std::powl(10,-16),
+    std::powl(10,-17), std::powl(10,-18), std::powl(10,-19), std::powl(10,-20),
+    std::powl(10,-21), std::powl(10,-22)
+  };
+
+  // compute sign * val * 10^{expon}.
+  double ret = sign * val;
+  if(expon > 22){ // 38
+    ret = double(ret * std::powl(10., expon));
+  }else if(expon > 0){
+    ret *= pos_pwr[expon-1];
+  }else if(expon == 0){
+    //
+  }else if(expon > -23){
+    ret = double(ret * neg_pwr[-expon-1]);
+  }else{ // 20
+    // fallback to simple long double (slow)
+    ret = double(ret * std::powl(10., expon));
+  }
+
+#ifdef DEBUG
+  // check against plain but slow long double arithmetics
+  assert(ret == sign * double(val * std::powl(10., expon)));
+  if(expon<0 && expon>-23){ itested();
+    // division is also exact, but slower.
+    assert(ret == sign * double(val / std::pow(10., -expon)));
+  }else{ itested();
+  }
+#endif
+
+  return ret;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
