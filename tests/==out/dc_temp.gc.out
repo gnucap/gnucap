@@ -31,11 +31,11 @@ rtemp3 ( 2 0 ) t2  0.5
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         4.         8.         15.5       3.        
 ".measure rt1 at(probe="r(rtemp1)") "
-rt1= 4.00000000000006
+rt1= 4.
 ".measure rt2 at(probe="r(rtemp2)") "
-rt2= 8.00000000000011
+rt2= 8.
 ".measure rt3 at(probe="r(rtemp3)") "
-rt3= 15.5000000000003
+rt3= 15.5
 ".dc "
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         2.         4.         5.5        1.        
@@ -47,9 +47,9 @@ rt3= 15.5000000000003
 #           r(rtemp1)  r(rtemp2)  r(rtemp3)  temp(0)   
  0.         21.        42.        100.5      20.       
 ".measure rt1 at(probe="r(rtemp1)") "
-rt1= 21.0000000000001
+rt1= 21.
 ".measure rt2 at(probe="r(rtemp2)") "
-rt2= 42.0000000000001
+rt2= 42.
 ".measure rt3 at(probe="r(rtemp3)") "
 rt3= 100.5
 ".status notime "

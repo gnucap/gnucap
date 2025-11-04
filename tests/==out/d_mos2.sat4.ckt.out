@@ -3,7 +3,7 @@ cmosn: rsh - rs - rd conflict: using rsh
 #           v(2)       v(3)       v(4)       iter(0)   
  27.        2.4867     5.        -1.2349     8.        
 #           i(Vds)     i(Vbs)     ps(Vds)    ps(Vbs)   
- 27.       -25.133u    155.2n     125.67u    191.65n   
+ 27.       -25.133u    155.21n    125.67u    191.67n   
 #           id(M1)     vgs(M1)    vds(M1)    vbs(M1)    vth(M1)    vdsat(M1) 
  27.        25.133u    2.4867     2.4867    -1.2349     1.5185     0.92457   
 #           gm(M1)     gds(M1)    gmb(M1)    cbd(M1)    cbs(M1)   

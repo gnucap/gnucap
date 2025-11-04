@@ -10,7 +10,7 @@ x= 1.43943875306113
 "options rndseed=0 "
 "* BUG, numerical noise "
 "eval v - x "
-(v - x)=-2.8865798640254E-15
+(v - x)=-3.7747582837255E-15
 "eval v "
 v= 1.00020909311878
 "eval x "
