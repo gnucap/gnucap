@@ -37,6 +37,8 @@ public:
     assert(Scope);
     assert(Scope->nodes());
     std::string name;
+    std::string full;
+    full = "ground " + cmd.tail();
     cmd >> name >> ";";
     DEV_DOT* dd = new DEV_DOT;
     dd->set_owner(nullptr);
@@ -46,7 +48,7 @@ public:
     if(name == "0" && cmd.fullstring()[0]=='.'){ untested();
       // spice
     }else{
-      dd->set(cmd.fullstring());
+      dd->set(full);
 
       // TODO: lang_verilog get_identifier
       if(name[0] == '\\'){

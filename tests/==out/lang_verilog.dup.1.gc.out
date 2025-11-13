@@ -1,14 +1,14 @@
-duplicate match bbb in aaa parent scope
+duplicate match bbb in aaa
 module aaa (.a(a),.b(b));
-module bbb (.a(a),.b(b));
-resistor #(.r(1)) r1 (.p(a),.n(b));
-endmodule // bbb
+  module bbb (.a(a),.b(b));
+    resistor #(.r(1)) r1 (.p(a),.n(b));
+  endmodule // bbb
 
-module bbb (.a(a),.b(b));
-resistor #(.r(2)) r1 (.p(a),.n(b));
-endmodule // bbb
+  module bbb (.a(a),.b(b));
+    resistor #(.r(2)) r1 (.p(a),.n(b));
+  endmodule // bbb
 
-bbb #() r2 (.a(a),.b(b));
+  bbb #() r2 (.a(a),.b(b));
 endmodule // aaa
 
 #           v(a)      

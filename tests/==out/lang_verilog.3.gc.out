@@ -3,20 +3,20 @@ paramset zz npn;
 endparamset
 
 module dumb_resistor (.a(a),.b(b));
-resistor #(.r(r)) R1 (.p(a),.n(b));
+  resistor #(.r(r)) R1 (.p(a),.n(b));
 endmodule // dumb_resistor
 
 module foo (.vcc(vcc),.in(in),.out(out));
-ground \0 ;
-resistor #(.r(z)) Rc (.p(c),.n(vcc));
-zz #(.area(NA( 1.))) q1 (.c(c),.b(b),.e(e));
-dumb_resistor #(.r(abs(-z)/10)) Re (.a(e),.b(\0 ));
-resistor #(.r(100k)) Rb1 (.p(b),.n(vcc));
-dumb_resistor #(.r(r)) Rb2 (.a(b),.b(\0 ));
-capacitor #(.c(1u)) Cin (.p(b),.n(in));
-capacitor #(.c(1u)) Cout (.p(c),.n(out));
-resistor #(.r(100k)) Rin (.p(in),.n(\0 ));
-resistor #(.r(100k)) Rout (.p(out),.n(\0 ));
+  ground \0 ;
+  resistor #(.r(z)) Rc (.p(c),.n(vcc));
+  zz #(.area(NA( 1.))) q1 (.c(c),.b(b),.e(e));
+  dumb_resistor #(.r(abs(-z)/10)) Re (.a(e),.b(\0 ));
+  resistor #(.r(100k)) Rb1 (.p(b),.n(vcc));
+  dumb_resistor #(.r(r)) Rb2 (.a(b),.b(\0 ));
+  capacitor #(.c(1u)) Cin (.p(b),.n(in));
+  capacitor #(.c(1u)) Cout (.p(c),.n(out));
+  resistor #(.r(100k)) Rin (.p(in),.n(\0 ));
+  resistor #(.r(100k)) Rout (.p(out),.n(\0 ));
 endmodule // foo
 
 foo #(.r(10k)) X1 (.vcc(V_cc),.in(amp_in),.out(out));

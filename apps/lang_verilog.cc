@@ -31,6 +31,8 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
+static int nest;
+/*--------------------------------------------------------------------------*/
 class LANG_VERILOG : public LANGUAGE {
   enum MODE {mDEFAULT, mPARAMSET} _mode;
   mutable int arg_count;
@@ -912,10 +914,14 @@ void LANG_VERILOG::print_module(OMSTREAM& o, const BASE_SUBCKT* x)
   print_ports_long(o, x);
   o << ";\n";
   
+  ++nest;
   for (CARD_LIST::const_iterator ci = x->subckt()->begin(); ci != x->subckt()->end(); ++ci) {
+    o << std::string(nest*2, ' ');
     print_item(o, *ci);
   }
+  --nest;
   
+  o << std::string(nest*2, ' ');
   o << "endmodule // " << x->short_label() << "\n\n";
 }
 /*--------------------------------------------------------------------------*/

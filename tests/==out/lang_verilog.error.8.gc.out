@@ -1,9 +1,9 @@
 module bbb (.a(a),.f(f));
-vsource #(.dc(1.)) v1 (.p(a),.n(f));
+  vsource #(.dc(1.)) v1 (.p(a),.n(f));
 endmodule // bbb
 
 module aaa (.a(a),.f(f));
-bbb #() tt ();
+  bbb #() tt ();
 endmodule // aaa
 
 aaa #() bug (.a(a),.f(b));

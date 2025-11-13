@@ -1,5 +1,5 @@
 module a (.x(x),.y(y));
-isource #((* dc *) .dc(1.),(* mf *) .$mfactor(7),(* foo *) .$foo(3)) i (.p(x),.n(y));
+  isource #((* dc *) .dc(1.),(* mf *) .$mfactor(7),(* foo *) .$foo(3)) i (.p(x),.n(y));
 endmodule // a
 
 Gnucap   System status

@@ -1,13 +1,13 @@
 module a (.x(x),.y(y));
-resistor #(.r(1),.$mfactor(2)) r (.p(x),.n(y));
+  resistor #(.r(1),.$mfactor(2)) r (.p(x),.n(y));
 endmodule // a
 
 module b (.x(x),.y(y));
-a #() r (.x(x),.y(y));
+  a #() r (.x(x),.y(y));
 endmodule // b
 
 module c (.x(x),.y(y));
-b #(.$mfactor(.33333)) r (.x(x),.y(y));
+  b #(.$mfactor(.33333)) r (.x(x),.y(y));
 endmodule // c
 
 isource #(.dc(1)) i (.p(\0 ),.n(x));

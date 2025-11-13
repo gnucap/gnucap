@@ -8,9 +8,9 @@ endmodule // net
 
 module main ();
   ground \0 ;
-resistor #(.r(1)) r (.p(n),.n(\0 ));
-isource #(.dc(1)) i (.p(\0 ),.n(m));
-net #() n1 (.a(n),.b(m));
+  resistor #(.r(1)) r (.p(n),.n(\0 ));
+  isource #(.dc(1)) i (.p(\0 ),.n(m));
+  net #() n1 (.a(n),.b(m));
 endmodule // main
 
 main #() m ();
