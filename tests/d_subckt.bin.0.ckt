@@ -1,0 +1,15 @@
+* subckt, param, bin test
+.options trace
+
+.subckt foo (a k)
+.model mydio d is=1e-9
+.model mydio d is=1e-10
+d1 (a k) mydio area=1
+.ends
+
+i9 (0 9) 1
+x9 (9 0) foo
+
+.print op v(nodes)
+.op
+.end
