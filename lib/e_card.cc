@@ -188,31 +188,22 @@ CARD* CARD::find_in_my_scope(const std::string& name)
   assert(scope());
 
   CARD_LIST::iterator i = scope()->find_(name);
+  CARD_LIST::iterator j = i;
   if (i == scope()->end()) {
     throw Exception_Cant_Find(long_label(), name,
 			      ((owner()) ? owner()->long_label() : "(root)"));
+  }else if(scope()->find_again(name, ++j) != scope()->end()){
+    error(bWARNING, "duplicate match " + name + " in " + long_label() + "\n");
   }else{
   }
   return *i;
 }
 /*--------------------------------------------------------------------------*/
-/* find_in_my_scope: find in same scope as myself
- * whatever is found will have the same owner as me.
- * capable of finding me.
- * throws exception if can't find.
+/* find_in_my_scope const. same as above, but const
  */
-const CARD* CARD::find_in_my_scope(const std::string& name)const
+const CARD* CARD::find_in_my_scope(const std::string& name) const
 {
-  assert(name != "");
-  assert(scope());
-
-  CARD_LIST::const_iterator i = scope()->find_(name);
-  if (i == scope()->end()) {
-    throw Exception_Cant_Find(long_label(), name,
-			      ((owner()) ? owner()->long_label() : "(root)"));
-  }else{
-  }
-  return *i;
+  return const_cast<CARD*>(this)->find_in_my_scope(name);
 }
 /*--------------------------------------------------------------------------*/
 /* find_in_parent_scope: find in parent's scope
@@ -227,8 +218,11 @@ const CARD* CARD::find_in_parent_scope(const std::string& name)const
   const CARD_LIST* p_scope = (scope()->parent()) ? scope()->parent() : scope();
 
   CARD_LIST::const_iterator i = p_scope->find_(name);
+  CARD_LIST::const_iterator j = i;
   if (i == p_scope->end()) {
     throw Exception_Cant_Find(long_label(), name);
+  }else if(p_scope->find_again(name, ++j) != p_scope->end()){
+    error(bWARNING, "duplicate match " + name + " in " + long_label() + "\n");
   }else{
   }
   return *i;

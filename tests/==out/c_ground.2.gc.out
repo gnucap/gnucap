@@ -3,7 +3,7 @@ endmodule // net
 
 module sink (.a(a));
   ground gnd;
-net #() n (.a(gnd),.b(a));
+  net #() n (.a(gnd),.b(a));
 endmodule // sink
 
 ground gg

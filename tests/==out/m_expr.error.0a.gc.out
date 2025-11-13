@@ -15,7 +15,7 @@ capacitor #(" <test> + 4 ") r1(\1 , \0 );
 "list"
 capacitor #(.c(a3)) r1 (.p(\1 ),.n(\0 ));
 capacitor #(.c(<aaa>)) r1 (.p(\1 ),.n(\0 ));
-capacitor #()  <test> + 4  (.p(?????),.n(?????));
+capacitor #() \ <test> + 4   (.p(\????? ),.n(\????? ));
 "dc"
 parameter <test> not specified, using default
 parameter <test> value is "NOT_INPUT"

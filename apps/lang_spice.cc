@@ -774,6 +774,10 @@ void LANG_SPICE_BASE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 void LANG_SPICE_BASE::print_command(OMSTREAM& o, const DEV_DOT* x)
 {itested();
   assert(x);
+  if(x->s()[0] != '.'){
+    o << '.';
+  }else{
+  }
   o << x->s() << '\n';
 }
 /*--------------------------------------------------------------------------*/

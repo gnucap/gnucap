@@ -1,5 +1,5 @@
 module foo (.a(a),.b(b));
-resistor #(.r(1.)) R (.p(a),.n(b));
+  resistor #(.r(1.)) R (.p(a),.n(b));
 endmodule // foo
 
 foo #() X1 (.b(b));

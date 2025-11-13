@@ -1,0 +1,10 @@
+  r2 #(.r(300)) r2(a,b);
+       ^ ? aaa.r2: already set r, ignored
+module aaa (.a(a),.b(b));
+  resistor #(.r(100)) r1 (.p(a),.n(b));
+  resistor #(.r(100)) r2 (.p(a),.n(b));
+  resistor #(.r(100)) r2 (.p(a),.n(b));
+endmodule // aaa
+
+#           v(a)      
+ 0.         33.333    

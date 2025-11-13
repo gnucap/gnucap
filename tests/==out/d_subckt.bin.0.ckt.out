@@ -1,0 +1,9 @@
+* subckt, param, bin test 
+>>>>>.subckt foo (a k) 
+>>>>>.model mydio d is=1e-9 
+>>>>>.model mydio d is=1e-10 
+>>>>>.print op v(nodes) 
+duplicate match mydio in x9.d1
+>>>>>.op 
+#           v(9)      
+ 27.        0.53599   

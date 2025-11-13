@@ -15,8 +15,8 @@ vccs #(.gm({alpha*adap}))) iF(0 f cd 0);
 crash(x, y);
      ^ ? label required
 module crash (.iout(iout),.nC(nC));
-// extra paren in vccs 
-vccs #(.gm({alpha*adap})) G_unnamed (.sink(?????),.src(?????),.ps(?????),.ns(?????));
+  // extra paren in vccs 
+  vccs #(.gm({alpha*adap})) G_unnamed (.sink(\????? ),.src(\????? ),.ps(\????? ),.ns(\????? ));
 endmodule // crash
 
 // syntax error, no label

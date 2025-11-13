@@ -5,16 +5,16 @@
  2.         0.         42.       
  3.         0.         63.       
 module a (.x(x),.y(y));
-isource #(.dc(1.),.$mfactor(7)) i (.p(x),.n(y));
+  isource #(.dc(1.),.$mfactor(7)) i (.p(x),.n(y));
 endmodule // a
 
 module b (.x(x),.y(y));
-//a r(x,y)
-a #(.$mfactor(1)) r (.x(x),.y(y));
+  //a r(x,y)
+  a #(.$mfactor(1)) r (.x(x),.y(y));
 endmodule // b
 
 module c (.x(x),.y(y));
-b #(.$mfactor(3)) r (.x(x),.y(y));
+  b #(.$mfactor(3)) r (.x(x),.y(y));
 endmodule // c
 
 ground gnd;

@@ -1,5 +1,5 @@
 module main (.a(a),.b(b));
-vsource #(.dc(x+z)) i1 (.p(a),.n(b));
+  vsource #(.dc(x+z)) i1 (.p(a),.n(b));
 endmodule // main
 
 ground gnd;
