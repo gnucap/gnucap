@@ -19,7 +19,7 @@ resistor #(X+Y) R1 (.p(\1 ),.n(\2 ));
 endmodule // r
 
 module rr (.\1 (\1 ),.\2 (\2 ));
-r #(.X(X/3)) X0 (.(\1 ),.(\2 ));
+r #(.X(X/3)) X0 (\1 , \2 );
 endmodule // rr
 
 rr #() s0 (.\1 (\1 ),.\2 (\0 ));
