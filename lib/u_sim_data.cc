@@ -73,9 +73,7 @@ SIM_DATA::SIM_DATA()
    _evalq(nullptr),
    _evalq_uc(nullptr),
    _waves(nullptr),
-   _has_op(s_NONE),
-   _aa_solver(nullptr),
-   _acx_solver(nullptr)
+   _has_op(s_NONE)
 {
   _evalq = &_evalq1;
   _evalq_uc = &_evalq2;

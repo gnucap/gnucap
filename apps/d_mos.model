@@ -140,10 +140,10 @@ device BUILT_IN_MOS {
     vg = "@n_g[V]";
     vb = "@n_b[V]";
     vs = "@n_s[V]";
-    "i{d}" = "(_Rd) ? @Rd[I] : (@Ids[I] - @Cgd[I] - @Ddb[I] * m->polarity)";
-    is = "(_Rs) ? @Rs[I] : (-@Ids[I] - @Cgs[I] - @Dsb[I] * m->polarity)";
+    "i{d}" = "(_Rd) ? @Rd[I] : (@Ids[I] - @Cgd[I] - @Ddb[I] * double(m->polarity))";
+    is = "(_Rs) ? @Rs[I] : (-@Ids[I] - @Cgs[I] - @Dsb[I] * double(m->polarity))";
     ig = "@Cgs[I] + @Cgd[I] + @Cgb[I]";
-    ib = "- @Ddb[I] * m->polarity - @Dsb[I] * m->polarity - @Cgb[I]";
+    ib = "- @Ddb[I] * double(m->polarity) - @Dsb[I] * double(m->polarity) - @Cgb[I]";
     ibd = "@Ddb[I]";
     ibs = "@Dsb[I]";
     "cgso{vl}" = "@Cgs[NV]";
@@ -162,9 +162,9 @@ device BUILT_IN_MOS {
     "gmb{s}" = "(reversed) ? gmbr : gmbf";
     gbd = "@Ddb[G]";
     gbs = "@Dsb[G]";
-    vth = "von * m->polarity";
-    ids = "m->polarity * ((reversed) ? -ids : ids)";
-    "idst{ray}" = "- @Cgd[I] + @Ddb[I] * m->polarity";
+    vth = "von * double(m->polarity)";
+    ids = "double(m->polarity) * ((reversed) ? -ids : ids)";
+    "idst{ray}" = "- @Cgd[I] + @Ddb[I] * double(m->polarity)";
     p ="@Rs[P] +@Rd[P] +@Ddb[P] +@Dsb[P] +@Cgs[P] +@Cgd[P] +@Cgb[P] +@Ids[P]";
     pd="@Rs[PD]+@Rd[PD]+@Ddb[PD]+@Dsb[PD]+@Cgs[PD]+@Cgd[PD]+@Cgb[PD]+@Ids[PD]";
     ps="@Rs[PS]+@Rd[PS]+@Ddb[PS]+@Dsb[PS]+@Cgs[PS]+@Cgd[PS]+@Cgb[PS]+@Ids[PS]";
@@ -469,7 +469,8 @@ bool DEV_BUILT_IN_MOS::tr_needs_eval()const
     assert(c);
     const MODEL_BUILT_IN_MOS_BASE* m=prechecked_cast<const MODEL_BUILT_IN_MOS_BASE*>(c->model());
     assert(m);
-    polarity_t polarity = m->polarity;
+	 polarity_t polarity_ = m->polarity;
+    double polarity = double(polarity_);
     node_t& eff_s((reversed) ? n_(n_id) : n_(n_is));
     node_t& eff_d((reversed) ? n_(n_is) : n_(n_id));
     return !(conchk(vds,polarity*(eff_d.v0()-eff_s.v0()),OPT::vntol)
@@ -492,7 +493,8 @@ bool DEV_BUILT_IN_MOS::do_tr()
   bool was_saturated = saturated;
   bool was_reversed = reversed;
   bool was_sbfwd = sbfwd;
-  polarity_t polarity = m->polarity;
+  polarity_t polarity_ = m->polarity;
+  double polarity = double(polarity_);
 
   if (_sim->is_initial_step()) {
     reversed = false;
