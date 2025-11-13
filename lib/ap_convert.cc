@@ -344,26 +344,25 @@ double CS::ctof()
 
   // powers of 10 representable as double
   static double pos_pwr[22] = {
-    std::pow(10, 1), std::pow(10, 2), std::pow(10, 3), std::pow(10, 4),
-    std::pow(10, 5), std::pow(10, 6), std::pow(10, 7), std::pow(10, 8),
-    std::pow(10, 9), std::pow(10,10), std::pow(10,11), std::pow(10,12),
-    std::pow(10,13), std::pow(10,14), std::pow(10,15), std::pow(10,16),
-    std::pow(10,17), std::pow(10,18), std::pow(10,19), std::pow(10,20),
-    std::pow(10,21), std::pow(10,22) };
+    10., 100., 1000., 10000., 100000., 1000000., 10000000., 100000000.,
+    1000000000., 10000000000., 100000000000., 1000000000000., 10000000000000.,
+    100000000000000., 1000000000000000., 10000000000000000.,
+    100000000000000000., 1000000000000000000., 10000000000000000000.,
+    100000000000000000000., 1000000000000000000000., 10000000000000000000000.
+  };
   // negative powers, long double multiplication is faster than double division
   static long double neg_pwr[22] = {
-    std::powl(10, -1), std::powl(10, -2), std::powl(10, -3), std::powl(10, -4),
-    std::powl(10, -5), std::powl(10, -6), std::powl(10, -7), std::powl(10, -8),
-    std::powl(10, -9), std::powl(10,-10), std::powl(10,-11), std::powl(10,-12),
-    std::powl(10,-13), std::powl(10,-14), std::powl(10,-15), std::powl(10,-16),
-    std::powl(10,-17), std::powl(10,-18), std::powl(10,-19), std::powl(10,-20),
-    std::powl(10,-21), std::powl(10,-22)
+    .1L, .01L, .001L, .0001L, .00001L, .000001L, .0000001L, .00000001L,
+    .000000001L, .0000000001L, .00000000001L, .000000000001L, .0000000000001L,
+    .00000000000001L, .000000000000001L, .0000000000000001L,
+    .00000000000000001L, .000000000000000001L, .0000000000000000001L,
+    .00000000000000000001L, .000000000000000000001L, .0000000000000000000001L
   };
 
   // compute sign * val * 10^{expon}.
   double ret = sign * val;
   if(expon > 22){ // 38
-    ret = double(ret * std::powl(10., expon));
+    ret = double(ret * std::pow(10.L, (long double)expon));
   }else if(expon > 0){
     ret *= pos_pwr[expon-1];
   }else if(expon == 0){
@@ -372,7 +371,7 @@ double CS::ctof()
     ret = double(ret * neg_pwr[-expon-1]);
   }else{ // 20
     // fallback to simple long double (slow)
-    ret = double(ret * std::powl(10., expon));
+    ret = double(ret * std::pow(10.L, (long double)expon));
   }
 
 #ifdef DEBUG

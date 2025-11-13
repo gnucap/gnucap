@@ -183,9 +183,6 @@ public:
   bool exceeds_iteration_limit(OPT::ITL itlnum)const {return(_iter[iSTEP] > OPT::itl[itlnum]);}
   bool uic_now() {return _uic && analysis_is_static() && _time0==0.;}
   SIM_MODE has_op()const {return _has_op;}
-private: // stash here for now. Try plugins performance later.
-  BSMATRIX_SOLVER<double>* _aa_solver;
-  BSMATRIX_SOLVER<COMPLEX>* _acx_solver;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

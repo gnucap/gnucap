@@ -726,12 +726,13 @@ bool DEV_BUILT_IN_BJT::do_tr()
   }
  
   if (_sim->uic_now()) {untested();//736
+    int polarity = int(m->polarity);
     if (has_good_value(c->icvbe)) {untested();//737
-      vbe = m->polarity * c->icvbe;
+      vbe = polarity * c->icvbe;
     }else{untested();//739
     }
     if (has_good_value(c->icvce)) {untested();//741
-      vbc = vbe - m->polarity * c->icvce;
+      vbc = vbe - polarity * c->icvce;
       vbx = vbc;
     }else{untested();//744
     }

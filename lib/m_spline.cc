@@ -290,7 +290,7 @@ FPOLY1 SPLINE::at(double x)const
     case 0: untested();
       return FPOLY1(x, _f0[i], 0.);
     default: untested();
-      assert(!"spline problem");
+      unreachable();
       return FPOLY1();
     }
     { untested();
