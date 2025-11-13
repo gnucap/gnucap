@@ -221,7 +221,7 @@ const CARD* CARD::find_in_parent_scope(const std::string& name)const
   CARD_LIST::const_iterator j = i;
   if (i == p_scope->end()) {
     throw Exception_Cant_Find(long_label(), name);
-  }else if(p_scope->find_again(name, ++j) != p_scope->end()){ untested();
+  }else if(p_scope->find_again(name, ++j) != p_scope->end()){
     error(bWARNING, "duplicate match " + name + " in " + long_label() + "\n");
   }else{
   }

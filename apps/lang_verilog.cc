@@ -824,8 +824,14 @@ void LANG_VERILOG::print_args(OMSTREAM& o, const COMPONENT* x)
       if (x->param_is_printable(ii)) {
 	o << sep;
 	print_attributes(o, x->param_id_tag(ii));
-	o << '.' << x->param_name(ii) << '(' << x->param_value(ii) << ')';
-	sep = ',';
+	std::string pn = x->param_name(ii);
+	if(pn==""){ untested();
+	  o << x->param_value(ii);
+	  sep = ", ";
+	}else{
+	  o << '.' << x->param_name(ii) << '(' << x->param_value(ii) << ')';
+	  sep = ',';
+	}
       }else{
       }
     }
