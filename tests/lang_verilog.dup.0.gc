@@ -1,0 +1,17 @@
+verilog
+
+module aaa (a,b);
+  resistor #(100) r1(a,b);
+  r1 #() r2(a,b);
+  r2 #(.r(300)) r2(a,b);
+endmodule;
+	
+list
+
+aaa a1(\0 , a);
+isource #(.dc(1)) i1(\0 , a);
+
+print dc v(a)
+dc
+
+end
