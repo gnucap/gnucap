@@ -99,6 +99,7 @@ public:
   // return a const_iterator
   const_iterator begin()const		{return _cl.begin();}
   const_iterator end()const		{return _cl.end();}
+  const CARD*	 back()const		{return _cl.back();}
   const_iterator find_again(const std::string& short_name, const_iterator)const;
   const_iterator find_(const std::string& short_name)const
 					{return find_again(short_name, begin());}

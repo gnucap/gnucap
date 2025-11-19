@@ -32,6 +32,7 @@
 namespace {
 /*--------------------------------------------------------------------------*/
 static int nest;
+static const CARD* extended;
 /*--------------------------------------------------------------------------*/
 class LANG_VERILOG : public LANGUAGE {
   enum MODE {mDEFAULT, mPARAMSET} _mode;
@@ -705,6 +706,7 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
   }
   cmd.check(bDANGER, "syntax error");
 }
+/*--------------------------------------------------------------------------*/
 /* "module" <name> "(" <ports> ")" ";"
  *    <declarations>
  *    <netlist>
@@ -747,29 +749,47 @@ COMPONENT* LANG_VERILOG::parse_instance(CS& cmd, COMPONENT* x)
 {
   assert(x);
   cmd.reset();
-  parse_attributes(cmd, x->id_tag());
-  parse_type(cmd, x);
-  parse_args_instance(cmd, x);
+
+  if (extended) {
+    // hook to previous
+  }else{
+    parse_attributes(cmd, x->id_tag());
+    parse_type(cmd, x);
+    parse_args_instance(cmd, x);
+  }
+
   parse_label(cmd, x);
   parse_ports(cmd, x, false/*allow dups*/);
-  cmd >> ';';
-  cmd.check(bWARNING, "what's this?");
+
+  if (cmd >> ',') {
+    // there will be another just like this one
+    extended = x;
+  }else{
+    cmd >> ';';
+    cmd.check(bWARNING, "what's this?");
+    extended = nullptr;
+  }
   return x;
 }
 /*--------------------------------------------------------------------------*/
 std::string LANG_VERILOG::find_type_in_string(CS& cmd)
 {
-  skip_attributes(cmd);
-  size_t here = cmd.cursor();
-  std::string type;
-  if ((cmd >> "//")) {
-    //assert(here == 0);
-    type = "dev_comment";
+  if (extended) {
+    // another just like this one
+    return ",";
   }else{
-    cmd >> type;
+    skip_attributes(cmd);
+    size_t here = cmd.cursor();
+    std::string type;
+    if ((cmd >> "//")) {
+      //assert(here == 0);
+      type = "dev_comment";
+    }else{
+      cmd >> type;
+    }
+    cmd.reset(here); // where the type is.
+    return type;
   }
-  cmd.reset(here); // where the type is.
-  return type;
 }
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::parse_top_item(CS& cmd, CARD_LIST* Scope)
