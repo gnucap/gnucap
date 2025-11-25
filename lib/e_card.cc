@@ -241,7 +241,8 @@ const CARD* CARD::find_looking_out(const std::string& name)const
       return owner()->find_looking_out(name);
     }else if (makes_own_scope()) {
       // probably a subckt or "module"
-      CARD_LIST::const_iterator i = CARD_LIST::card_list.find_(name);
+      // BUG? why not "find_again?"
+      auto i = CARD_LIST::card_list.find_(name);
       if (i != CARD_LIST::card_list.end()) {
 	return *i;
       }else{
