@@ -32,7 +32,7 @@
 namespace {
 /*--------------------------------------------------------------------------*/
 static int nest;
-static const CARD* extended;
+static bool extended;
 /*--------------------------------------------------------------------------*/
 class LANG_VERILOG : public LANGUAGE {
   enum MODE {mDEFAULT, mPARAMSET} _mode;
@@ -763,11 +763,11 @@ COMPONENT* LANG_VERILOG::parse_instance(CS& cmd, COMPONENT* x)
 
   if (cmd >> ',') {
     // there will be another just like this one
-    extended = x;
+    extended = true;
   }else{
     cmd >> ';';
     cmd.check(bWARNING, "what's this?");
-    extended = nullptr;
+    extended = false;
   }
   return x;
 }
@@ -776,7 +776,7 @@ std::string LANG_VERILOG::find_type_in_string(CS& cmd)
 {
   if (extended) {
     // another just like this one
-    return ",";
+    return "";
   }else{
     skip_attributes(cmd);
     size_t here = cmd.cursor();

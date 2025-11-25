@@ -34,9 +34,9 @@ class CARD_LIST;
 /*--------------------------------------------------------------------------*/
 class INTERFACE LANGUAGE : public CKT_BASE {
 public:
-  const CARD* find_proto(const std::string&, const CARD*);
+  virtual const CARD* find_proto(const std::string&, const CARD*);
 public:
-  void new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope);
+  virtual void new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope);
 
 public:
   //BUG//need constructors

@@ -47,7 +47,7 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
   const CARD* p = nullptr;
   if (Scope) { // got here by new__instance
     try {
-      if (Name == ",") {
+      if (Name == "") {
 	p = Scope->subckt()->back();
       }else{
 	p = Scope->find_looking_out(Name);
