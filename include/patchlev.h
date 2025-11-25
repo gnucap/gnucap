@@ -1,1 +1,1 @@
-#define PATCHLEVEL "c-share-1 2025.11.19"
+#define PATCHLEVEL "parse_comp 2025.11.25"

@@ -59,7 +59,7 @@ public: // called by commands and parse_item
   virtual DEV_DOT*	parse_command(CS&, DEV_DOT*) = 0;
   virtual MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*) = 0;
   virtual BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*) = 0;
-  virtual COMPONENT*	parse_instance(CS&, COMPONENT*) = 0;
+  virtual CARD*		parse_instance(CS&, COMPONENT*) = 0;
   virtual std::string	find_type_in_string(CS&) = 0;
 
   // out
