@@ -9,6 +9,9 @@ associated tarball. This file summarizes the important changes.
 - make node order pluggable, trace order plugin
 - move to c++14 (due to modelgen-verilog)
 - default to case sensitive, c.f. README
+- fix floating point parse accuracy
+- support multiple instances per declaration
+- fix large circuit parse performance
 - ..
 
 == 20250731-dev

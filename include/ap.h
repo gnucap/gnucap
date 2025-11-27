@@ -118,7 +118,7 @@ public:
   bool	      is_argsym()const	{return (match1("*?$%_&@"));}
   bool	      is_alpha()const	{return !!isalpha(toascii(peek()));}
   bool	      is_alnum()const   {return !!isalnum(toascii(peek()));}
-  bool	      is_term(const std::string& t = ",=(){};")
+  bool	      is_term(const std::string& t = ",=(){};:")
 	{char c=peek(); return (c=='\0' || isspace(c) || match1(t));}
 
   // conversions (ap_convert.cc) always consuming

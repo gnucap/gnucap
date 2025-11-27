@@ -1,0 +1,12 @@
+module a (.b(b),.c(c),.d(d),.e(e),.f(f),.g(g));
+  resistor #(.r(1k)) r1 (.p(b),.n(c));
+  resistor #(.r(1k)) r2 (.p(c),.n(d));
+  resistor #(.r(1k)) r3 (.p(e),.n(f));
+  resistor #(.r(1k)) r4 (.p(f),.n(g));
+endmodule // a
+
+ground gnd;
+vsource #(.dc(4)) v1 (.p(b),.n(gnd));
+a #() x1 (.b(b),.c(c),.d(d),.e(d),.f(f),.g(gnd));
+#           v(b)       v(c)       v(d)       v(f)       v(gnd)    
+ 27.        4.         3.         2.         1.         0.        

@@ -32,6 +32,9 @@
 /*--------------------------------------------------------------------------*/
 #define trace_func_comp() trace1(__func__, (**ci).short_label())
 /*--------------------------------------------------------------------------*/
+// dont bother with caching in small circuits
+static size_t miss_min_size = 10;
+/*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST()
   :_parent(nullptr),
    _nm(new NODE_MAP),
@@ -74,6 +77,7 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
 /*--------------------------------------------------------------------------*/
 CARD_LIST::~CARD_LIST()
 {
+  clear_find_cache();
   erase_all();
   delete _nm;
   if (!_parent) {
@@ -85,7 +89,7 @@ CARD_LIST::~CARD_LIST()
 PARAM_LIST* CARD_LIST::params()
 {
   if (_params) {
-  }else if(_parent){
+  }else if(_parent){ untested();
     assert(_params);
   }else{
     _params = new PARAM_LIST;
@@ -114,6 +118,47 @@ CARD_LIST::const_iterator CARD_LIST::find_again(const std::string& short_name,
 						CARD_LIST::const_iterator Begin)const
 {
   return notstd::find_ptr(Begin, end(), short_name);
+}
+/*--------------------------------------------------------------------------*/
+CARD_LIST::iterator CARD_LIST::find_(const std::string& name)
+{
+  bool miss = false;
+
+  if(!_misses) {
+  }else if(_misses->count(name)) {
+    miss = true;
+  }else if(OPT::case_insensitive) {
+    std::string low = name;
+    notstd::to_lower(&low);
+    if(_misses->count(low)) { untested();
+      miss = true;
+    }else{
+    }
+  }else{
+  }
+
+  if(miss){
+    return end();
+  }else{
+    CARD_LIST::iterator r = find_again(name, begin());
+    if(r == end()) {
+      record_miss(name);
+    }else{
+    }
+    return r;
+  }
+}
+/*--------------------------------------------------------------------------*/
+void CARD_LIST::record_miss(std::string const& name)
+{
+  if(size() < miss_min_size){
+  }else{
+    if(_misses){
+    }else{
+      _misses = new std::set<std::string>;
+    }
+    _misses->insert(name);
+  }
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST& CARD_LIST::erase(iterator ci)
@@ -545,7 +590,7 @@ void CARD_LIST::attach_params(PARAM_LIST const* p, const CARD_LIST* scope)
     if (_params) {
       delete _params;
       _params = nullptr;
-    }else{
+    }else{ untested();
     }
     _params = new PARAM_LIST;
     _params->eval_copy(*p, scope->params());
@@ -557,6 +602,7 @@ void CARD_LIST::shallow_copy(const CARD_LIST* p)
 {
   assert(p);
   _parent = p;
+  clear_find_cache();
   for (const_iterator ci = p->begin(); ci != p->end(); ++ci) {
     trace_func_comp();
     if ((**ci).is_device() || dynamic_cast<MODEL_CARD*>(*ci)) {
@@ -598,11 +644,11 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   NODE_MAP& node_map = *nodes();
   for (int i=model->net_nodes(); i < num_nodes_in_subckt; ++i) {
 #if 0
-    if(node_map[i].link()){
+    if(node_map[i].link()){ untested();
       assert(node_map[i].root());
       assert(node_map[i].root().n_() == &ground_node
 	  || node_map[i].root().n_()->short_label()=="0");
-    }else{
+    }else{ untested();
     }
 #endif
   }
@@ -651,6 +697,26 @@ void CARD_LIST::set_verilog_math(bool m)
   params();
   assert(_params);
   _params->set_verilog(m);
+}
+/*--------------------------------------------------------------------------*/
+void CARD_LIST::add_to_find_cache(CARD* c)
+{
+  assert(c);
+  if(_misses){ itested();
+    // this is really needed in repeat finds during sckt parse.
+    // (most calls are no-ops)
+    std::string name = c->short_label();
+    _misses->erase(name);
+    notstd::to_lower(&name);
+    _misses->erase(name);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void CARD_LIST::clear_find_cache()
+{
+  delete _misses;
+  _misses = nullptr;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

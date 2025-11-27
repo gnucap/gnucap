@@ -34,9 +34,9 @@ class CARD_LIST;
 /*--------------------------------------------------------------------------*/
 class INTERFACE LANGUAGE : public CKT_BASE {
 public:
-  const CARD* find_proto(const std::string&, const CARD*);
+  virtual const CARD* find_proto(const std::string&, const CARD*);
 public:
-  void new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope);
+  virtual void new__instance(CS& cmd, BASE_SUBCKT* owner, CARD_LIST* Scope);
 
 public:
   //BUG//need constructors
@@ -59,7 +59,7 @@ public: // called by commands and parse_item
   virtual DEV_DOT*	parse_command(CS&, DEV_DOT*) = 0;
   virtual MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*) = 0;
   virtual BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*) = 0;
-  virtual COMPONENT*	parse_instance(CS&, COMPONENT*) = 0;
+  virtual CARD*		parse_instance(CS&, COMPONENT*) = 0;
   virtual std::string	find_type_in_string(CS&) = 0;
 
   // out

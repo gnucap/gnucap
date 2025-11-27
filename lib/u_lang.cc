@@ -45,13 +45,17 @@ void LANGUAGE::parse_top_item(CS& cmd, CARD_LIST* Scope)
 const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
 {
   const CARD* p = nullptr;
-  if (Scope) {
+  if (Scope) { // got here by new__instance
     try {
-      p = Scope->find_looking_out(Name);
+      if (Name == "") {
+	p = Scope->subckt()->back();
+      }else{
+	p = Scope->find_looking_out(Name);
+      }
     }catch (Exception_Cant_Find& e) {
       assert(!p);
     }
-  }else{
+  }else{ // got here by paramset or model
     CARD_LIST::const_iterator i = CARD_LIST::card_list.find_(Name);
     if (i != CARD_LIST::card_list.end()) {
       p = *i;

@@ -26,6 +26,7 @@
 #define E_CARDLIST_H
 #include "md.h"
 #include "u_parameter.h"
+#include <set>
 /*--------------------------------------------------------------------------*/
 // defined here
 class CARD_LIST;
@@ -39,14 +40,18 @@ struct TIME_PAIR;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CARD_LIST {
 public: // base types
-  typedef std::list<CARD*> list;
+  typedef CARD value_type;
+  typedef std::list<value_type*> list;
   typedef list::iterator iterator;
   typedef list::const_iterator const_iterator;
   typedef list::reverse_iterator reverse_iterator;
+  typedef list::const_reverse_iterator const_reverse_iterator;
+  typedef std::set<std::string> miss_cache_t;
 private: // data members
   const CARD_LIST* _parent;
   mutable NODE_MAP* _nm;
   mutable PARAM_LIST* _params;
+  mutable miss_cache_t* _misses{nullptr};
   list _cl;
 public: // more types
   class fat_iterator {
@@ -89,8 +94,7 @@ public: // more types
   iterator begin()			{return _cl.begin();}
   iterator end()			{return _cl.end();}
   iterator find_again(const std::string& short_name, iterator);
-  iterator find_(const std::string& short_name) 
-					{return find_again(short_name, begin());}
+  iterator find_(const std::string& short_name);
 
   reverse_iterator rbegin()		{ return _cl.rbegin();}
   reverse_iterator rend()		{ return _cl.rend();}
@@ -99,15 +103,20 @@ public:
   // return a const_iterator
   const_iterator begin()const		{return _cl.begin();}
   const_iterator end()const		{return _cl.end();}
+  const CARD*	 back()const		{return _cl.back();}
   const_iterator find_again(const std::string& short_name, const_iterator)const;
-  const_iterator find_(const std::string& short_name)const
-					{return find_again(short_name, begin());}
+  const_iterator find_(const std::string& short_name) const
+					{return const_cast<CARD_LIST*>(this)->find_(short_name);}
+private: // cache implementation
+  void clear_find_cache();
+  void add_to_find_cache(CARD*);
+  void record_miss(std::string const&);
 
-  // add to it
-  CARD_LIST& push_front(CARD* c)	{_cl.push_front(c); return *this;}
-  CARD_LIST& push_back(CARD* c)		{_cl.push_back(c);  return *this;}
+public: // add to it
+  CARD_LIST& push_front(CARD* c)	{clear_find_cache(); _cl.push_front(c); return *this;}
+  CARD_LIST& push_back(CARD* c)		{add_to_find_cache(c); _cl.push_back(c);  return *this;}
   CARD_LIST& insert(CARD_LIST::iterator i, CARD* c)
-					{_cl.insert(i, c);  return *this;}
+					{clear_find_cache(); _cl.insert(i, c);  return *this;}
 
   // take things out
   CARD_LIST& erase(iterator i);

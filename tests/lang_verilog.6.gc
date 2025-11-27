@@ -1,0 +1,19 @@
+
+verilog
+
+module a (b,c,d,e,f,g);
+resistor #(1k)  r1 (b,c);
+resistor #(1k)  r2 (c,d);
+resistor #(1k)  r3 (e,f),
+		r4 (f,g);
+endmodule
+
+ground gnd;
+vsource #(.dc(4)) v1 (b, gnd); 
+a x1 (b,c,d,d,f,gnd);
+
+list
+print op v(nodes)
+op
+end
+	
