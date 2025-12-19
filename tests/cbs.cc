@@ -325,8 +325,8 @@ public:
   void unallocate() {
   }
   void uninit()override {
-    delete _raw_idx;
-    delete _raw_didx;
+    delete[] _raw_idx;
+    delete[] _raw_didx;
     _raw_idx = _raw_didx = nullptr;
 
     _cols.clear();
