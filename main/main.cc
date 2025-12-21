@@ -42,16 +42,15 @@ struct JMP_BUF{
 static void sign_on(void)
 {
   IO::mstdout <<
-    "Gnucap : The Gnu Circuit Analysis Package\n"
-    "Never trust any version less than 1.0\n"
-    "Copyright 1982-2013, Albert Davis\n"
-    "Gnucap comes with ABSOLUTELY NO WARRANTY\n"
-    "This is free software, and you are welcome\n"
-    "to redistribute it under the terms of \n"
-    "the GNU General Public License, version 3 or later.\n"
-    "See the file \"COPYING\" for details.\n"
+    "Gnucap : The Gnu Circuit Analysis Package.\n"
+    "Copyright 1982-2025, Albert Davis\n"
+    "          2020-2025, Felix Salfelder\n"
+    "The development of Gnucap is funded by NLnet with support from the EC.\n"
+    "Gnucap comes with ABSOLUTELY NO WARRANTY. This is free software,\n"
+    "and you are welcome to redistribute it under the terms of the GNU\n"
+    "General Public License version 3 or later. See \"COPYING\" for details.\n"
     "main version: " PATCHLEVEL "\n"
-    "core-lib version: " << lib_version() << "\n";  
+    "core-lib version: " << lib_version() << "\n";
 }
 /*--------------------------------------------------------------------------*/
 static void prepare_env()
