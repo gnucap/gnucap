@@ -97,6 +97,7 @@ bool OPT::set_values(CS& cmd, CARD_LIST* Scope)
       || Get(cmd, "defw",	   &defw,	mPOSITIVE)
       || Get(cmd, "defad",	   &defad,	mPOSITIVE)
       || Get(cmd, "defas",	   &defas,	mPOSITIVE)
+      || Get(cmd, "scale",	   &scale,	mPOSITIVE)
       || Get(cmd, "clobber",	   &clobber)
       || Get(cmd, "dampmax",	   &dampmax,	mPOSITIVE)
       || Get(cmd, "dampmin",	   &dampmin,	mPOSITIVE)
@@ -314,6 +315,7 @@ void OPT::print(OMSTREAM& o)
   o << "  defw="   << defw;
   o << "  defad="  << defad;
   o << "  defas="  << defas;
+  o << "  scale="  << scale;
   if (diodeflags) { untested();
     o << "  diodeflags="  << octal(diodeflags);
   }

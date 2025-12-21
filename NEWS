@@ -12,6 +12,7 @@ associated tarball. This file summarizes the important changes.
 - fix floating point parse accuracy
 - support multiple instances per declaration
 - fix large circuit parse performance
+- "scale" option (inspired by ngspice)
 - ..
 
 == 20250731-dev
