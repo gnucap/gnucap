@@ -118,6 +118,7 @@ public:
   static double defw;	    // MOS default channel width
   static double defad;	    // MOS default drain diffusion area
   static double defas;	    // MOS default source diffusion area
+  static double scale;	    // Scale factor, ngspice 11.1.5
   
   static bool clobber;	    // allow to overwrite files without question
   static bool keys_between_nodes; // allow keywords between nodes
