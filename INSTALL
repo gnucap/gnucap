@@ -26,6 +26,7 @@ Additional options are
 --preset=...   select preset for flags.
                "default": normal build (default).
                "Debug": extra warnings and debugging.
+               "afldebug": build for American Fuzzy Lop
                "g++": don't know.
 --enable-debug shorthand for --preset=Debug
 

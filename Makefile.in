@@ -15,7 +15,9 @@ ${RECURSIVE_TARGETS:%=%-recursive}: %-recursive:
 ${RECURSIVE_TARGETS}: %: %-recursive
 #-----------------------------------------------------------------------------
 check: all
-	${MAKE} -C tests check
+	for i in tests ${SUBMODULES}; do \
+	  $(MAKE) -C $${i} check; \
+	done
 #-----------------------------------------------------------------------------
 checkin: check-git
 	$(MAKE) date
