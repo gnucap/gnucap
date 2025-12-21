@@ -87,6 +87,10 @@ Here, \fI$sysconfdir\fP is typically \fI${prefix}/etc\fP, and defaults to \fI/us
 It is expected to be set to \fI/etc\fP in packages obtained from the usual
 operating system distributors.
 
+Gnucap changes the working directory to that containing a file when reading
+from it. With this, nested relative `include will work as expected. This does
+not apply to Spice batch mode, and can change when loading plugins.
+
 .SH AUTHOR
 Gnucap is being written by Albert Davis <ad211@freeelectron.net>
 .PP
