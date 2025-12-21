@@ -5,6 +5,7 @@ GNUCAP_CXXFLAGS = $(shell $(GNUCAP_CONF) --cxxflags) -std=c++11
 MAKE_CPPFLAGS = -I${top_srcdir}/src
 LN_S = ln -sf
 DIFF = diff -rup
+NUM_HDR_LINES=11
 
 TESTCASES =
 
@@ -66,11 +67,11 @@ prep: symlinks ${TEST_PLUGINS}
 	-mkdir -p ${TARGETDIR}
 
 ${gc_out}: ${TARGETDIR}/%.gc.out: prep
-	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${srcdir}/$*.gc |tail -n +12 | \
+	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${srcdir}/$*.gc |tail -n +${NUM_HDR_LINES} | \
 		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
 
 ${ckt_out}: ${TARGETDIR}/%.ckt.out: prep
-	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} --acs -b ${srcdir}/$*.ckt |tail -n +12 | \
+	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} --acs -b ${srcdir}/$*.ckt |tail -n +${NUM_HDR_LINES} | \
 		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
 
 ${PWD}/disciplines.vams:

@@ -29,7 +29,7 @@
 
 * circuit environment
 .options  tnom= 27.  temperature= 27.  rstray  cstray  defl= 100.u
-+  defw= 100.u  defad= 0.  defas= 0.
++  defw= 100.u  defad= 0.  defas= 0.  scale= 1.
 
 #           iter(0)    v(1)       v(3)       v(4)       v(5)       v(6)      
 + v(7)       v(8)       v(9)      
