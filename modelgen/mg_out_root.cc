@@ -96,8 +96,10 @@ void make_cc_file(const File& in)
        ++m) {
     out << "int DEV_" << (**m).name() << "::_count = -1;\n"
       "int COMMON_" << (**m).name() << "::_count = -1;\n"
-      "static COMMON_" << (**m).name() << " Default_" << (**m).name() 
-	<< "(CC_STATIC);\n"
+      "COMMON_" << (**m).name() << "& Default_" << (**m).name() << "() {\n"
+      "  static COMMON_" << (**m).name() << " d(CC_STATIC);\n"
+      "  return d;\n"
+      "}\n"
       "/*--------------------------------------"
       "------------------------------------*/\n";
     make_cc_common(out, **m);

@@ -99,7 +99,7 @@ void make_dev_default_constructor(std::ofstream& out,const Device& d)
   }
 
   out << "\n{\n"
-    "  attach_common(&Default_" << d.name() << ");\n"
+    "  attach_common(&Default_" << d.name() << "());\n"
     "  ++_count;\n";
 
   out << "  // overrides\n";
