@@ -38,14 +38,16 @@ model BUILT_IN_MOS_BASE {
   }
   validate {
     assert(d->scope());
-    c->l_in.e_val(OPT::defl, d->scope()->params());
-    c->w_in.e_val(OPT::defw, d->scope()->params());
+    PARAMETER<double> l_in = c->l_in;
+    PARAMETER<double> w_in = c->w_in;
+    l_in.e_val(OPT::defl, d->scope()->params());
+    w_in.e_val(OPT::defw, d->scope()->params());
     m->lmin.e_val(0, m->scope()->params());
     m->lmax.e_val(INF, m->scope()->params());
     m->wmin.e_val(0, m->scope()->params());
     m->wmax.e_val(INF, m->scope()->params());
-    return c->l_in >= m->lmin && c->l_in <= m->lmax
-      && c->w_in >= m->wmin && c->w_in <= m->wmax;
+    return l_in >= m->lmin && l_in <= m->lmax
+      && w_in >= m->wmin && w_in <= m->wmax;
   }
   independent {
     override {
