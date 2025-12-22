@@ -1,7 +1,7 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 20250***-dev
+== 20251222-dev
 - refactor matrix and interface
   - request inodes explicitly
   - store footprint, not just spike size
@@ -13,7 +13,8 @@ associated tarball. This file summarizes the important changes.
 - support multiple instances per declaration
 - fix large circuit parse performance
 - "scale" option (inspired by ngspice)
-- ..
+- fix a bug in ctof (colon separator)
+- prepare modelgen & models for shared commons
 
 == 20250731-dev
 - refactor ELEMENT commons

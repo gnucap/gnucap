@@ -37,8 +37,10 @@ private:
   explicit SDP_CARD(const SDP_CARD&) {unreachable();}  
 public:
   explicit SDP_CARD(const COMMON_COMPONENT*) {}
-  virtual ~SDP_CARD() {}
+  virtual ~SDP_CARD() {assert(!_refcount);}
   virtual void init(const COMMON_COMPONENT*) {}
+public:
+  int _refcount{0};
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE MODEL_CARD : public CARD{

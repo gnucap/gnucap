@@ -99,7 +99,7 @@ void make_dev_default_constructor(std::ofstream& out,const Device& d)
   }
 
   out << "\n{\n"
-    "  attach_common(&Default_" << d.name() << ");\n"
+    "  attach_common(&Default_" << d.name() << "());\n"
     "  ++_count;\n";
 
   out << "  // overrides\n";
@@ -315,8 +315,23 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "    }\n"
     "    precalc_first();\n"
     "    assert(scope());\n"
-    "    mutable_common()->precalc_last(scope()->params());\n"
-    "    assert(c->sdp());\n"
+    "    COMMON_COMPONENT* cc = common()->clone();\n"
+    "    cc->precalc_last(scope()->params());\n" // again?
+    "    auto sc = prechecked_cast<COMMON_" << d.name() << "*>(cc);\n"
+    "    assert(sc);\n"
+    "    SDP_CARD* sdphack = sc->_sdp;\n"
+    "    assert(sdphack);\n"
+    "    ++(sdphack->_refcount);\n"
+    "    attach_common(cc);\n"
+    "    c = prechecked_cast<const COMMON_" << d.name() << "*>(common());\n"
+    "    auto mc = prechecked_cast<COMMON_" << d.name() << "*>(mutable_common());\n"
+    "    assert(c);\n"
+    "    if(!c->sdp()){ untested();\n"
+    "      mc->_sdp = sdphack;\n"
+    "    }else if(--(sdphack->_refcount)){\n"
+    "    }else{ untested();\n"
+    "      delete sdphack;\n"
+    "    }\n"
     "    const SDP_" << d.model_type() << "* s = prechecked_cast<const SDP_"
         << d.model_type() << "*>(c->sdp());\n"
     "    assert(s);\n"

@@ -195,6 +195,11 @@ device BUILT_IN_BJT {
     calculated_parameters {
       double oik  "" calculate="m->invrollofff / c->area";
       double oikr "" calculate="m->invrolloffr / c->area";
+      double _vt "vt";
+    }
+    code_pre {
+      double temp_k = c->temp_k();
+      _vt = P_K_Q * temp_k;
     }
   }
   tr_eval {
@@ -709,8 +714,7 @@ bool DEV_BUILT_IN_BJT::do_tr()
     if (c->off) {
       vbe = 0.;
     }else{
-      double vt = c->temp_k() * P_K_Q;
-      vbe = vt * log(vt / (M_SQRT2 * m->ibe));
+      vbe = c->_vt * log(c->_vt / (M_SQRT2 * m->ibe));
     }
     vbc = 0.;
     /* ERROR:  need to initialize VCS, VBX here */
