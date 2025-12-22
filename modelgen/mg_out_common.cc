@@ -78,7 +78,7 @@ static void make_common_copy_constructor(std::ofstream& out, const Device& d)
     "\n"
     "{\n"
     "  if(_sdp) {\n"
-	 "    ++_sdp->_refcount;\n"
+    "    ++_sdp->_refcount;\n"
     "  }else{\n"
     "  }\n"
     "  ++_count;\n";
@@ -139,7 +139,7 @@ static void make_common_operator_equal(std::ofstream& out, const Device& d)
     out << "    && " << c->code_name() << " == p->" << c->code_name() << '\n';
   }
   out <<
-    "    && _sdp == p->_sdp\n"
+    " //   && _sdp == p->_sdp\n"
     "    && COMMON_COMPONENT::operator==(x));\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
