@@ -1,1 +1,1 @@
-#define PATCHLEVEL "scale 2025.12.21"
+#define PATCHLEVEL "modelgen 2025.11.03"
