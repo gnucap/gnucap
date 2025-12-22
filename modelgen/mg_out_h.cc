@@ -196,7 +196,7 @@ static void make_common(std::ofstream& out, const Device& d)
   }
   out <<
     "public: // calculated parameters\n"
-    "  SDP_CARD* _sdp;\n";
+    "  SDP_CARD* _sdp{nullptr};\n";
   for (Parameter_List::const_iterator
        p = d.common().calculated().begin();
        p != d.common().calculated().end();

@@ -66,7 +66,7 @@ static void make_common_copy_constructor(std::ofstream& out, const Device& d)
     "COMMON_" << d.name() << "::COMMON_" << d.name() << "(const COMMON_" << d.name() << "& p)\n"
     "  :COMMON_COMPONENT(p)";
   make_copy_construct_parameter_list(out, d.common().raw());
-  out << ",\n   _sdp(0)";
+  out << ",\n   _sdp(p._sdp)";
   make_copy_construct_parameter_list(out, d.common().calculated());
   for (Args_List::const_iterator
        p = d.circuit().args_list().begin();
@@ -77,6 +77,10 @@ static void make_common_copy_constructor(std::ofstream& out, const Device& d)
   out << 
     "\n"
     "{\n"
+    "  if(_sdp) {\n"
+	 "    ++_sdp->_refcount;\n"
+    "  }else{\n"
+    "  }\n"
     "  ++_count;\n";
   for (Parameter_List::const_iterator
        p = d.common().override().begin();
@@ -103,7 +107,15 @@ static void make_common_destructor(std::ofstream& out, const Device& d)
   }
   out <<
     "  --_count;\n"
-    "  delete _sdp;\n"
+    "  if(_sdp){\n"
+    "    assert(_sdp->_refcount);\n"
+    "    --(_sdp->_refcount);\n"
+    "    if(!_sdp->_refcount){\n"
+	 "      delete _sdp;\n"
+	 "      _sdp = nullptr;\n"
+	 "    }\n"
+	 "  }else{\n"
+	 "  }\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
 }
@@ -127,6 +139,7 @@ static void make_common_operator_equal(std::ofstream& out, const Device& d)
     out << "    && " << c->code_name() << " == p->" << c->code_name() << '\n';
   }
   out <<
+    "    && _sdp == p->_sdp\n"
     "    && COMMON_COMPONENT::operator==(x));\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
