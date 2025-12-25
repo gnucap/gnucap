@@ -269,7 +269,7 @@ void DEV_LOGIC::precalc_last()
   // duplicate in e_subckt.
   if (subckt()) {
     if(HS_PARAM const* h = hsparam()){
-      h->export_to(subckt()->params());
+      h->precalc_hierarchy(scope()->params(), subckt()->params());
     }else{
     }
     subckt()->precalc_last();

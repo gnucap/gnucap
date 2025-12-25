@@ -72,7 +72,7 @@ protected:
 protected:
   static METHOD method_select[meNUM_METHODS][meNUM_METHODS];
 protected:
-  METHOD select_method()const;
+  METHOD select_method(PARAM_LIST const*)const;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

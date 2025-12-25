@@ -137,7 +137,7 @@ device BUILT_IN_DIODE {
 	print_test="gparallel_adjusted != c->gparallel_raw";
     }
     code_pre {
-      double temp_k = c->temp_k();
+      double temp_k = c->temp_k(par_scope);
       tempratio = temp_k / (m->_tnom_c+P_CELSIUS0);
       vt = P_K_Q * temp_k * m->n_factor;
     }

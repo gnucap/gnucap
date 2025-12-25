@@ -28,12 +28,16 @@
 /*--------------------------------------------------------------------------*/
 bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
 {
+#ifndef NDEBUG
+  if(this == &x){ untested();
+    incomplete();
+    unreachable();
+  }else{
+  }
+#endif
+
   auto* p = dynamic_cast<HS_PARAM const*>(&x);
   bool ret = (p
-      // these depend on OPT
-      // need to take extra care
-         && _method_fixed == p->_method_fixed
-         && _temperature_fixed == p->_temperature_fixed
       && _mfactor == p->_mfactor
       && _xposition == p->_xposition
       && _yposition == p->_yposition
@@ -296,78 +300,102 @@ void HS_PARAM::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 /*--------------------------------------------------------------------------*/
 void HS_PARAM::precalc_last(PARAM_LIST const* Scope)
 {
-  precalc_mfactor(Scope);
-  precalc_method(Scope);
-  precalc_temperature(Scope);
-}
-/*--------------------------------------------------------------------------*/
-void HS_PARAM::precalc_mfactor(PARAM_LIST const* Scope)
-{
-  PARAMETER<double> mfactor_hier;
-  mfactor_hier = "$mfactor";
-  mfactor_hier.e_val(1., Scope); // incoming, from parent scope
+  // BUG: e_val is not really const.
+  //      this code looks misleading...
+  _tnom.e_val(OPT::temp_k, Scope);
+  _tnom_c.e_val(OPT::temp_k - P_CELSIUS0, Scope);
+
   _mfactor.e_val(1., Scope);     // incoming from arg
-
-  _mfactor_fixed = _mfactor * mfactor_hier;
-}
-/*--------------------------------------------------------------------------*/
-void HS_PARAM::export_to(PARAM_LIST* Scope) const
-{
-  assert(Scope);
-  if(_mfactor_fixed!=NOT_INPUT){
-    Scope->set("$mfactor", _mfactor_fixed);
-  }else{ untested();
-  }
-  if(_method_fixed!=meUNKNOWN){
-    Scope->set("$method", _method_fixed);
-  }else{ untested();
-  }
-  if(_temperature_fixed != NOT_INPUT){
-    Scope->set("$temperature", _temperature_fixed);
-  }else{
-  }
-}
-/*--------------------------------------------------------------------------*/
-void HS_PARAM::precalc_temperature(PARAM_LIST const* Scope)
-{
-  PARAMETER<double> temperature_hier;
-  temperature_hier = "$temperature";
-  temperature_hier.e_val(NOT_INPUT, Scope);
-
-  if(temperature_hier.has_good_value()) {
-    _temperature_fixed = temperature_hier;
-  }else{
-    _temperature_fixed = NOT_INPUT;
-  }
-
   _temperature.e_val(OPT::temp_k, Scope);
   _dtemp.e_val(0., Scope);
   _temp_c.e_val(OPT::temp_k - P_CELSIUS0, Scope);
 
+  _method.e_val(vString(std::string("\"unknown\"")), Scope);
+}
+/*--------------------------------------------------------------------------*/
+void HS_PARAM::precalc_hierarchy(PARAM_LIST const* Src, PARAM_LIST* Tgt) const
+{
+  assert(Src);
+  assert(Tgt);
+  assert(Src!=Tgt);
+
+  double mfactor_fixed = precalc_mfactor(Src);
+  trace1("precalc_hierarchy", mfactor_fixed);
+  if(mfactor_fixed!=NOT_INPUT){
+    Tgt->set("$mfactor", mfactor_fixed);
+  }else{ untested();
+  }
+
+  method_t method_fixed = precalc_method(Src);
+  if(method_fixed != meUNKNOWN){
+    Tgt->set("$method", method_fixed);
+  }else{ untested();
+  }
+
+  double temperature_fixed = precalc_temperature(Src);
+  if(temperature_fixed != NOT_INPUT){
+    Tgt->set("$temperature", temperature_fixed);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+double HS_PARAM::precalc_mfactor(PARAM_LIST const* Scope) const
+{
+  trace1("precalc_mfactor0", _mfactor.string());
+  PARAMETER<double> mfactor_hier;
+  mfactor_hier = "$mfactor";
+  mfactor_hier.e_val(1., Scope); // incoming, from parent scope
+
+  trace2("precalc_mfactor", _mfactor, mfactor_hier);
+  return _mfactor * mfactor_hier;
+}
+/*--------------------------------------------------------------------------*/
+double HS_PARAM::mfactor(PARAM_LIST const* Scope) const
+{
+  double mfactor_fixed = precalc_mfactor(Scope);
+  trace1("mfactor(Scope)", mfactor_fixed);
+  if(mfactor_fixed == NOT_INPUT) {
+    return 1.;
+  }else{
+    // assert(_mfactor_fixed);
+    return mfactor_fixed;
+  }
+}
+/*--------------------------------------------------------------------------*/
+double HS_PARAM::precalc_temperature(PARAM_LIST const* Scope) const
+{
+  PARAMETER<double> temperature_hier;
+  temperature_hier = "$temperature";
+  temperature_hier.e_val(NOT_INPUT, Scope);
+  double temperature_fixed = NOT_INPUT;
+
+  if(temperature_hier.has_good_value()) {
+    temperature_fixed = temperature_hier;
+  }else{
+    temperature_fixed = NOT_INPUT;
+  }
+
   if(_temperature.has_hard_value()) {
     trace1("hsp temp hard", _temperature);
-    _temperature_fixed = _temperature;
+    temperature_fixed = _temperature;
     if(_temp_c.has_hard_value()) { untested();
       error(bWARNING, "temp conflict, using $temperature 1\n");
     }else{
     }
-    trace1("hsp temp0", _temperature_fixed);
+    trace1("hsp temp0", temperature_fixed);
    //  _temp_c.set_default(_temperature - P_CELSIUS0);
   }else if(_dtemp.has_hard_value()) {
-    _temperature_fixed = temp_k() + _dtemp;
+    temperature_fixed = temperature_hier + _dtemp;
 
-    trace1("hsp dtemp hard", _temperature_fixed);
+    trace1("hsp dtemp hard", temperature_fixed);
     if(_temp_c.has_hard_value()) { untested();
       error(bWARNING, "temp conflict, using $dtemp\n");
     }else{
     }
   }else if(_temp_c.has_hard_value()) {
-    _temperature_fixed = _temp_c + P_CELSIUS0;
+    temperature_fixed = _temp_c + P_CELSIUS0;
   }else{
   }
-
-  _tnom.e_val(OPT::temp_k, Scope);
-  _tnom_c.e_val(OPT::temp_k - P_CELSIUS0, Scope);
 
 #if 0 // is this needed?
   if(_tnom.has_hard_value()) { untested();
@@ -381,24 +409,54 @@ void HS_PARAM::precalc_temperature(PARAM_LIST const* Scope)
   }else{
   }
 #endif
+
+  return temperature_fixed;
 }
 /*--------------------------------------------------------------------------*/
-void HS_PARAM::precalc_method(PARAM_LIST const* Scope)
+double HS_PARAM::temp_k(PARAM_LIST const* Scope) const
+{
+  double temperature_fixed = precalc_temperature(Scope);
+  if(temperature_fixed == NOT_INPUT){
+    return OPT::temp_k;
+  }else{
+    return temperature_fixed;
+  }
+}
+/*--------------------------------------------------------------------------*/
+double HS_PARAM::temp_diff(PARAM_LIST const* Scope) const
+{
+  // bug? duplicate precalc_temperature call.
+  double temperature_fixed = precalc_temperature(Scope);
+  return temperature_fixed - _tnom;
+}
+/*--------------------------------------------------------------------------*/
+method_t HS_PARAM::precalc_method(PARAM_LIST const* Scope) const
 {
   PARAMETER<int> method_hier{meUNKNOWN};
   method_hier = "$method";
   method_hier.e_val(OPT::method, Scope);
 
-  _method.e_val(vString(std::string("\"unknown\"")), Scope);
+  method_t method_fixed;
   if(_method.has_hard_value()) {
     CS cmd(CS::_STRING, std::string("= ") + std::string(String(_method)));
-    Get(cmd, "", &_method_fixed);
+    Get(cmd, "", &method_fixed);
   }else{
-    _method_fixed = meUNKNOWN;
+    method_fixed = meUNKNOWN;
   }
 
-  _method_fixed = method_propagate(method_t(int(method_hier)), _method_fixed);
-  trace1("precalc_method3 set", _method_fixed);
+  method_fixed = method_propagate(method_t(int(method_hier)), method_fixed);
+  trace1("precalc_method3 set", method_fixed);
+  return method_fixed;
+}
+/*--------------------------------------------------------------------------*/
+method_t HS_PARAM::method(PARAM_LIST const* Scope) const
+{
+  method_t method_fixed = precalc_method(Scope);
+  if(method_fixed){
+    return method_fixed;
+  }else{ untested();
+    return OPT::method;
+  }
 }
 /*--------------------------------------------------------------------------*/
 method_t HS_PARAM::method_propagate(method_t env, method_t here) const

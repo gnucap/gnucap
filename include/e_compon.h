@@ -162,9 +162,9 @@ public:
     return const_cast<COMMON_COMPONENT*>(this)->hsparam();
   }
 public:
-  double temp_k()const;
-  double temp_c()const;
-  double temp_diff()const;
+  double temp_k(PARAM_LIST const* scope)const;
+  double temp_c(PARAM_LIST const* scope)const;
+  double temp_diff(PARAM_LIST const* scope)const;
   bool has_hsparam()const {
     return hsparam();
   }
@@ -310,22 +310,7 @@ public: // parameters
 			      int state_count, double state[],
 			      int node_count, const node_t nodes[]);
 public:
-  HS_PARAM const* hsparam()const {
-    HS_PARAM const* h = nullptr;
-    if(has_common()){
-      h = common()->hsparam();
-    }else{
-    }
-
-   // return h; // breaks d_subckt.6.ckt.diff
-
-    if(h){
-    }else if(auto o = dynamic_cast<COMPONENT const*>(owner())){
-      h = o->hsparam();
-    }else{
-    }
-    return h;
-  }
+  HS_PARAM const* hsparam()const;
   bool has_hsparam()const {
     return hsparam();
   }

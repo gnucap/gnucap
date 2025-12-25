@@ -115,6 +115,8 @@ protected:
   PARAMETER<double> _tc1;
   PARAMETER<double> _tc2;
   PARAMETER<double> _ic;
+private:
+  double _tempdiff;
 protected:
   explicit	EVAL_BM_ACTION_BASE(int c=0);
   explicit	EVAL_BM_ACTION_BASE(const EVAL_BM_ACTION_BASE& p);
@@ -146,6 +148,8 @@ public:
 public:
   bool param_is_printable(int i)const override;
   std::string param_value(int i)const override;
+public:
+  double temp_diff()const { return _tempdiff;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

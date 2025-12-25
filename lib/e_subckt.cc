@@ -49,10 +49,12 @@ void BASE_SUBCKT::precalc_last()
   COMPONENT::precalc_last();
   assert(subckt());
 
+  assert(scope());
+  // move to COMPONENT::precalc_last?
   if(HS_PARAM const* h = hsparam()){
-    h->export_to(subckt()->params());
+    h->precalc_hierarchy(scope()->params(), subckt()->params());
   }else{
-    trace1("no export", long_label());
+    HS_PARAM::hs_param.precalc_hierarchy(scope()->params(), subckt()->params());
   }
 
   subckt()->precalc_last();

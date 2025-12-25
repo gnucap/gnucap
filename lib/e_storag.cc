@@ -24,6 +24,7 @@
 //testing=obsolete,script 2006.06.14 
 #include "e_storag.h"
 #include "e_hsparam.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 /* table for selecting local integraton method
  * Determines which one wins in a conflict.
@@ -57,7 +58,7 @@ void STORAGE::precalc_last()
 {
   ELEMENT::precalc_last();
   set_converged();
-  _method_a = select_method();
+  _method_a = select_method(scope()->params());
 
   //assert(_loss0 == 0.);
   //assert(_loss1 == 0.);
@@ -71,7 +72,7 @@ void STORAGE::precalc_last()
 void STORAGE::tr_begin()
 {
   ELEMENT::tr_begin();
-  assert(_method_a == select_method());
+ // assert(_method_a == select_method());
   for (int i = 0;  i < OPT::_keep_time_steps;  ++i) {
     _i[i] = FPOLY1(0., 0., 0.);
   }
@@ -81,7 +82,7 @@ void STORAGE::tr_begin()
 void STORAGE::tr_restore()
 {
   ELEMENT::tr_restore();
-  assert(_method_a == select_method());
+ // assert(_method_a == select_method());
 }
 /*--------------------------------------------------------------------------*/
 void STORAGE::dc_advance()
@@ -227,11 +228,11 @@ double STORAGE::tr_probe_num(const std::string& x)const
 /*--------------------------------------------------------------------------*/
 bool Get(CS& cmd, std::string const& key, method_t* method); // u_opt2.cc
 /*--------------------------------------------------------------------------*/
-METHOD STORAGE::select_method() const
+METHOD STORAGE::select_method(PARAM_LIST const* Scope) const
 {
   method_t m = OPT::method;
   if(HS_PARAM const* h = hsparam()){
-    m = h->method();
+    m = h->method(Scope);
   }else{
   }
 
