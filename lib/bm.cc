@@ -145,6 +145,12 @@ bool EVAL_BM_ACTION_BASE::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
+bool EVAL_BM_ACTION_BASE::operator<(const COMMON_COMPONENT& x) const
+{ untested();
+  incomplete();
+  return false;
+}
+/*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
   EVAL_BM_BASE::print_common_obsolete_callback(o, lang);
