@@ -342,6 +342,33 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const PARAM_LIST*
   return _v;
 }
 /*--------------------------------------------------------------------------*/
+int PARAM_LIST::compare(PARAM_LIST const& o) const
+{
+  int c = int(_pv.size()) - int(o._pv.size());
+
+  if(c){
+    return c;
+  }else{
+  }
+
+  auto b = o._pv.begin();
+  for(auto i : _pv){
+    c = i.first.compare(b->first);
+    if(c){ untested();
+      return c;
+    }else{
+    }
+    c = i.second.compare(b->second);
+    if(c){ untested();
+      return c;
+    }else{
+    }
+
+    ++b;
+  }
+  return 0;
+}
+/*--------------------------------------------------------------------------*/
 PARAM_INSTANCE& PARAM_LIST::ref(std::string const& Name)
 {
   if(int& idx = _pi[Name]){

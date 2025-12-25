@@ -208,6 +208,15 @@ public:
   Integer& operator=(Integer const& o) { _data = o._data, _input = o._input; return *this; }
   std::string val_string()const override{return std::to_string(_data);}
   bool to_bool()const override		{return (_input && _data != 0);}
+  int compare(Integer const& i)const {
+    if(_data < i._data){ untested();
+      return -1;
+    }else if(_data > i._data){ untested();
+      return 1;
+    }else{ untested();
+      return 0;
+    }
+  }
 
   Integer* assign(const Base*X)const override;
   Integer* assign(const Integer*X)const override;
@@ -311,6 +320,15 @@ public:
   Float& operator=(Float const& o) { _data = o._data; return *this; }
   std::string val_string()const override{return ftos(_data, 0, 15, ftos_EXP);}
   bool to_bool()const override		{return (_data != 0.);}
+  int compare(Float const& i)const {
+    if(_data < i._data){ untested();
+      return -1;
+    }else if(_data > i._data){ untested();
+      return 1;
+    }else{ untested();
+      return 0;
+    }
+  }
 
   Float* assign(const Base*X)   const override { return X ? new Float(X->to_Float()) : nullptr;}
   Float* assign(const Integer*X)const override {untested(); return X ? new Float(X->to_Float()) : nullptr;}
@@ -427,6 +445,9 @@ public:
   ~String() {
     free(const_cast<char*>(_data));
     _data = nullptr;
+  }
+  int compare(String const& s)const { untested();
+    return strcmp(_data, s._data);
   }
   String& operator=(String const& s) {
     if(_data) {
