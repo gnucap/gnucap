@@ -41,6 +41,7 @@ public:
     assert(_brh);
     _brh->set_value(_value, _c);
     _brh->set_value(_value);
+    COMMON_COMPONENT::detach_common(&_c);
   }
 #if 0
   bool operator==(const CARDSTASH&)const

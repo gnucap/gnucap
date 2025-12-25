@@ -50,11 +50,7 @@ private: // hmm. use a flag instead?
   PARAMETER<double> _temp_c;
   PARAMETER<double> _tnom_c;
 
-private: // fixed values. combining hierarchical and specified.
-  double _mfactor_fixed{NOT_INPUT};
-  method_t _method_fixed{meUNKNOWN};
-  double _temperature_fixed{NOT_INPUT};
-
+private:
   explicit HS_PARAM(HS_PARAM const& p) : COMMON_PARAMLIST(p),
     _mfactor(p._mfactor),
     _xposition(p._xposition),
@@ -69,10 +65,8 @@ private: // fixed values. combining hierarchical and specified.
     _dtemp(p._dtemp),
     _tnom(p._tnom),
     _temp_c(p._temp_c),
-    _tnom_c(p._tnom_c),
-    _mfactor_fixed(p._mfactor_fixed),
-    _method_fixed(p._method_fixed),
-    _temperature_fixed(p._temperature_fixed) {
+    _tnom_c(p._tnom_c)
+  {
   }
 public:
   explicit HS_PARAM() : COMMON_PARAMLIST() {
@@ -108,8 +102,14 @@ public:
     _tnom_c.set_default(OPT::temp_k - P_CELSIUS0);
   }
   ~HS_PARAM() {}
+  HS_PARAM* clone()const override {return new HS_PARAM(*this);}
+
   bool operator==(const COMMON_COMPONENT& x)const override;
-  HS_PARAM* clone()const override { return new HS_PARAM(*this); }
+  bool operator<(const COMMON_COMPONENT& x)const override {
+    return HS_PARAM::compare(x) < 0;
+  }
+  int compare(const COMMON_COMPONENT& x)const override;
+  bool has_less()const override { untested(); return false;}
 
   bool param_is_printable(int i)const override;
   void set_param_by_index(int i, std::string& v, int)override;
@@ -138,40 +138,19 @@ public:
   std::string param_value(int i)const override;
 
 public: // hsp access
-  double mfactor()const {
-    if(_mfactor_fixed == NOT_INPUT) {
-      return 1.;
-    }else{
-      // assert(_mfactor_fixed);
-      return _mfactor_fixed;
-    }
-  }
-  double temp_k()const {
-    if(_temperature_fixed == NOT_INPUT){
-      return OPT::temp_k;
-    }else{
-      return _temperature_fixed;
-    }
-  }
-  double temp_diff()const {
-    return _temperature_fixed - _tnom;
-  }
-  method_t method()const {
-    if(_method_fixed){
-      return _method_fixed;
-    }else{ untested();
-      return OPT::method;
-    }
-  }
+  double mfactor(PARAM_LIST const* Scope)const;
+  double temp_k(PARAM_LIST const* Scope)const;
+  double temp_diff(PARAM_LIST const* Scope)const;
+  method_t method(PARAM_LIST const* Scope)const;
 
   void precalc_first(PARAM_LIST const*)override {}
   void expand(COMPONENT const* c) override;
   void precalc_last(PARAM_LIST const*)override;
-  void export_to(PARAM_LIST*)const;
+  void precalc_hierarchy(PARAM_LIST const*, PARAM_LIST*)const;
 private:
-  void precalc_mfactor(PARAM_LIST const*);
-  void precalc_temperature(PARAM_LIST const*);
-  void precalc_method(PARAM_LIST const*);
+  double precalc_mfactor(PARAM_LIST const*)const;
+  double precalc_temperature(PARAM_LIST const*)const;
+  method_t precalc_method(PARAM_LIST const*)const;
 
   HS_PARAM* hsparam()override { return this; }
 

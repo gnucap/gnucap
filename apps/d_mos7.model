@@ -469,7 +469,7 @@ model BUILT_IN_MOS7 {
       double thetaRout;
     }
     code_pre {
-      temp = c->temp_k();
+      temp = c->temp_k(par_scope->params());
       double egap = 1.16 - 7.02e-4 * temp * temp / (temp + 1108.0);
     }
     code_post {

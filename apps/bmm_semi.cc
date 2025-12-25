@@ -304,7 +304,7 @@ void EVAL_BM_SEMI_CAPACITOR::precalc_last(const PARAM_LIST* Scope)
   double eff_width = width - m->_narrow;
   double eff_length = _length - m->_narrow;
   _va_lue = m->_cj * eff_length * eff_width + 2. * m->_cjsw * (eff_length + eff_width);
-  double tempdiff = (temp_c() - m->_tnom_c);
+  double tempdiff = (temp_c(Scope) - m->_tnom_c);
   _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (eff_width <= 0.) {untested();
@@ -360,8 +360,7 @@ void EVAL_BM_SEMI_RESISTOR::precalc_last(const PARAM_LIST* Scope)
   }else{untested();
     _va_lue = BIGBIG;
   }
-  double tempdiff = (temp_c() - m->_tnom_c);
-  trace2("tempdiff", temp_c(), m->_tnom_c);
+  double tempdiff = (temp_c(Scope) - m->_tnom_c);
   _va_lue *= 1 + m->_tc1*tempdiff + m->_tc2*tempdiff*tempdiff;
 
   if (has_hard_value(m->_rsh)) {

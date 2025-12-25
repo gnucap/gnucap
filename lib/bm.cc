@@ -48,7 +48,8 @@ EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(int c)
    _scale(_default_scale),
    _tc1(_default_tc1),
    _tc2(_default_tc2),
-   _ic(_default_ic)
+   _ic(_default_ic),
+   _tempdiff(0.)
 {
 }
 /*--------------------------------------------------------------------------*/
@@ -62,14 +63,14 @@ EVAL_BM_ACTION_BASE::EVAL_BM_ACTION_BASE(const EVAL_BM_ACTION_BASE& p)
    _scale(p._scale),
    _tc1(p._tc1),
    _tc2(p._tc2),
-   _ic(p._ic)
+   _ic(p._ic),
+   _tempdiff(p._tempdiff)
 {
 }
 /*--------------------------------------------------------------------------*/
 double EVAL_BM_ACTION_BASE::temp_adjust()const
 {
   double tempdiff = temp_diff();
-  trace1("tempdiff", temp_diff());
   return (_scale * (1 + _tc1*tempdiff + _tc2*tempdiff*tempdiff));
 }
 /*--------------------------------------------------------------------------*/
@@ -127,6 +128,7 @@ bool EVAL_BM_ACTION_BASE::operator==(const COMMON_COMPONENT& x)const
 {
   const EVAL_BM_ACTION_BASE* p = dynamic_cast<const EVAL_BM_ACTION_BASE*>(&x);
   bool rv = p
+    && _tempdiff == p->_tempdiff
     && _bandwidth == p->_bandwidth
     && _delay == p->_delay
     && _phase == p->_phase
@@ -139,8 +141,57 @@ bool EVAL_BM_ACTION_BASE::operator==(const COMMON_COMPONENT& x)const
     && EVAL_BM_BASE::operator==(x);
   if (rv) {
   }else{
+    trace1("EVAL_BM_BASE::operator==", p);
+    trace1("EVAL_BM_BASE::operator==", _tempdiff == p->_tempdiff);
   }
   return rv;
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_ACTION_BASE::operator<(const COMMON_COMPONENT& x) const
+{ untested();
+  return EVAL_BM_ACTION_BASE::compare(x) < 0;
+}
+/*--------------------------------------------------------------------------*/
+int EVAL_BM_ACTION_BASE::compare(const COMMON_COMPONENT& x) const
+{ untested();
+  if(this == &x){ untested();
+    return 0;
+  }else{ untested();
+  }
+
+  auto* p = prechecked_cast<EVAL_BM_ACTION_BASE const*>(&x);
+
+  int c = EVAL_BM_BASE::compare(x);
+  if(c) { untested();
+    return c;
+  }else{ untested();
+  }
+
+  assert(p);
+
+  if(double d = _tempdiff - p->_tempdiff) { untested();
+    return (0. < d)?1:-1;
+  }else if((c = _bandwidth.compare(p->_bandwidth))){ untested();
+    return c;
+  }else if((c = _delay.compare(p->_delay))){ untested();
+    return c;
+  }else if((c = _phase.compare(p->_phase))){ untested();
+    return c;
+  }else if((c = _ooffset.compare(p->_ooffset))){ untested();
+    return c;
+  }else if((c = _ioffset.compare(p->_ioffset))){ untested();
+    return c;
+  }else if((c = _scale.compare(p->_scale))){ untested();
+    return c;
+  }else if((c = _tc1.compare(p->_tc1))){ untested();
+    return c;
+  }else if((c = _tc2.compare(p->_tc2))){ untested();
+    return c;
+  }else if((c = _ic.compare(p->_ic))){ untested();
+    return c;
+  }else{ untested();
+    return 0;
+  }
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
@@ -185,6 +236,8 @@ void EVAL_BM_ACTION_BASE::precalc_last(const PARAM_LIST* Scope)
   _tc1.e_val(_default_tc1, Scope);
   _tc2.e_val(_default_tc2, Scope);
   _ic.e_val(_default_ic, Scope);
+
+  _tempdiff = COMMON_COMPONENT::temp_diff(Scope);
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_ACTION_BASE::ac_eval(ELEMENT* d)const 

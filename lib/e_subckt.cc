@@ -33,14 +33,14 @@ void BASE_SUBCKT::precalc_first()
       // already there.
     }else{ itested();
       // create one.
-      HS_PARAM* hspl = new HS_PARAM();
+      HS_PARAM* hspl = HS_PARAM::hs_param.clone();
       hspl->attach_next(mutable_common()->next_common());
       assert(!mutable_common()->has_next());
       mutable_common()->attach_next(hspl);
     }
   }else{ untested();
     // device without common, but with hs params
-    attach_common(new HS_PARAM());
+    attach_common(&HS_PARAM::hs_param);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -49,10 +49,12 @@ void BASE_SUBCKT::precalc_last()
   COMPONENT::precalc_last();
   assert(subckt());
 
+  assert(scope());
+  // move to COMPONENT::precalc_last?
   if(HS_PARAM const* h = hsparam()){
-    h->export_to(subckt()->params());
+    h->precalc_hierarchy(scope()->params(), subckt()->params());
   }else{
-    trace1("no export", long_label());
+    HS_PARAM::hs_param.precalc_hierarchy(scope()->params(), subckt()->params());
   }
 
   subckt()->precalc_last();

@@ -595,14 +595,18 @@ void DEV_SUBCKT::precalc_last()
   COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
   assert(c);
 
+  // move to COMPONENT or BASE_SUBCKT?
   if(HS_PARAM const* h = hsparam()){
-    h->export_to(subckt()->params());
-  }else{
+    PARAM_LIST const* s = scope()->params();
+    h->precalc_hierarchy(s, subckt()->params());
+  }else{ untested();
+    unreachable();
   }
 
   subckt()->params()->set_try_again(nullptr);
   subckt()->params()->eval_copy(c->_params, scope()->params());
   subckt()->params()->set_try_again(&c->_params);
+  trace1("DEV_SUBCKT::precalc_last2", mfactor());
 
   subckt()->precalc_last();
   assert(!is_constant()); /* because I have more work to do */

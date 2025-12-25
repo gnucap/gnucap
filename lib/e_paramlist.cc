@@ -34,6 +34,19 @@ bool COMMON_PARAMLIST::operator==(const COMMON_COMPONENT& x)const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
+int COMMON_PARAMLIST::compare(const COMMON_COMPONENT& x) const
+{
+  int c = COMMON_COMPONENT::compare(x);
+  if(c){ untested();
+    return c;
+  }else{
+  }
+
+  const COMMON_PARAMLIST* p = prechecked_cast<const COMMON_PARAMLIST*>(&x);
+  assert(p);
+  return _params.compare(p->_params);
+}
+/*--------------------------------------------------------------------------*/
 bool COMMON_PARAMLIST::param_is_printable(int i)const
 {
   assert(i < COMMON_PARAMLIST::param_count());

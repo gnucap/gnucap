@@ -376,7 +376,10 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
   trace2("spbn", Name, Value);
   if(Name[0] == '$'){
     if(!has_next()) {
-      attach_next(new HS_PARAM());
+      auto n = &HS_PARAM::hs_param;
+      attach_next(n);
+      trace1("CC::spbn new hsparam", _next);
+      assert(_next == n);
     }else{
     }
 
@@ -517,6 +520,20 @@ COMPONENT::~COMPONENT()
   }
 }
 /*--------------------------------------------------------------------------*/
+HS_PARAM const* COMPONENT::hsparam() const
+{
+  HS_PARAM const* h = nullptr;
+  if(has_common()){
+    h = common()->hsparam();
+  }else{
+  }
+  if(h){
+  }else{
+    h = &HS_PARAM::hs_param;
+  }
+  return h;
+}
+/*--------------------------------------------------------------------------*/
 bool COMPONENT::node_is_grounded(int i)const 
 {
   assert(i >= 0);
@@ -627,10 +644,15 @@ void COMPONENT::expand()
     COMMON_COMPONENT* new_common = common()->clone();
     new_common->expand(this);
     COMMON_COMPONENT* deflated_common = new_common->deflate();
+    if(new_common == deflated_common) {
+      new_common = nullptr;
+    }else{
+    }
     if (deflated_common != common()) {
       attach_common(deflated_common);
     }else{untested();
     }
+    delete new_common;
   }else{
   }
 }
@@ -667,12 +689,14 @@ void COMPONENT::precalc_first()
 // .. bypassed in mg_out_dev.
 void COMPONENT::precalc_last()
 {
+  trace3("COMPONENT::pl0", long_label(), mfactor(), hsparam());
+  PARAM_LIST const* params = scope()->params();
   CARD::precalc_last();
   if (has_common()) {
     COMMON_COMPONENT* c = mutable_common()->mutable_clone();
     assert(c);
     try {
-      c->precalc_last_chain(scope()->params());
+      c->precalc_last_chain(params);
     }catch (Exception_Precalc& e) {
       error(bWARNING, long_label() + ": " + e.message());
     }catch (Exception& e) {
@@ -688,9 +712,9 @@ void COMPONENT::precalc_last()
 
   float mfactor_new;
   if(HS_PARAM const* hsp = hsparam()){
-    mfactor_new = float(hsp->mfactor());
+    mfactor_new = float(hsp->mfactor(params));
   }else{
-    mfactor_new = 1.;
+    mfactor_new = float(HS_PARAM::hs_param.mfactor(params));
   }
 
   if(_mfactor_fixed != mfactor_new){
@@ -698,6 +722,8 @@ void COMPONENT::precalc_last()
   }else{
   }
   _mfactor_fixed = mfactor_new;
+  assert(mfactor() == _mfactor_fixed);
+  trace2("COMPONENT::pl", long_label(), mfactor());
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::map_nodes()
@@ -778,7 +804,7 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(Name[0] == '$'){
     if(!has_common()) { untested();
-      attach_common(new HS_PARAM());
+      attach_common(&HS_PARAM::hs_param);
     }else{
     }
   }else{
@@ -951,6 +977,14 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
   }
 }
 /*--------------------------------------------------------------------------*/
+// obsolete. use COMMON_COMPONENT::expand..
+void COMPONENT::attach_model()
+{
+  COMMON_COMPONENT* c = common()->clone();
+  c->attach_model(this);
+  attach_common(c);
+}
+/*--------------------------------------------------------------------------*/
 /* q_eval: queue this device for evaluation on the next pass,
  * with a check against doing it twice.
  */
@@ -1064,8 +1098,8 @@ HS_PARAM* COMMON_COMPONENT::hsparam()
 void COMMON_COMPONENT::set_mfactor(double m)
 {
   COMMON_COMPONENT* nn;
-  if(!has_next()) {itested();
-    nn = new HS_PARAM();
+  if(!has_next()) {untested();
+    nn = HS_PARAM::hs_param.clone();
   }else{itested();
     nn = next_common()->mutable_clone();
   }
@@ -1073,10 +1107,10 @@ void COMMON_COMPONENT::set_mfactor(double m)
   attach_next(nn);
 }
 /*--------------------------------------------------------------------------*/
-double COMMON_COMPONENT::temp_k()const
+double COMMON_COMPONENT::temp_k(PARAM_LIST const* Scope) const
 {
   if(has_hsparam()){
-    return hsparam()->temp_k();
+    return hsparam()->temp_k(Scope);
   }else{
     double t = CARD_LIST::card_list.params()->temperature();
     if(t==NOT_INPUT){ itested();
@@ -1087,18 +1121,18 @@ double COMMON_COMPONENT::temp_k()const
   }
 }
 /*--------------------------------------------------------------------------*/
-double COMMON_COMPONENT::temp_c()const
+double COMMON_COMPONENT::temp_diff(PARAM_LIST const* Scope) const
 {
-  return temp_k() - P_CELSIUS0;
+  if(auto h = hsparam()){
+    return h->temp_diff(Scope);
+  }else{
+    return 0;
+  }
 }
 /*--------------------------------------------------------------------------*/
-double COMMON_COMPONENT::temp_diff()const
+double COMMON_COMPONENT::temp_c(PARAM_LIST const* Scope) const
 {
-  if(has_hsparam()){
-    return hsparam()->temp_diff();
-  }else{
-    return 0.;
-  }
+  return temp_k(Scope) - P_CELSIUS0;
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang) const

@@ -115,7 +115,7 @@ model BUILT_IN_MOS6 {
 	 +.5*(m->egap-egap) + double(m->polarity)* .5 * (phi-m->phi)), m->phi))";
     }
     code_pre {
-      double temp = c->temp_k();
+      double temp = c->temp_k(par_scope->params());
       double tempratio  = temp / m->tnom_k;
       double tempratio4 = tempratio * sqrt(tempratio);
       double kt = temp * P_K;

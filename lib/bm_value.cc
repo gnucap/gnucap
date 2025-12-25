@@ -36,6 +36,17 @@ bool EVAL_BM_VALUE::operator==(const COMMON_COMPONENT& x)const
   return  p && EVAL_BM_ACTION_BASE::operator==(x);
 }
 /*--------------------------------------------------------------------------*/
+bool EVAL_BM_VALUE::operator<(const COMMON_COMPONENT& x)const
+{
+  if(this == &x){ untested();
+    return false;
+  }else if(EVAL_BM_ACTION_BASE::operator<(x)){ untested();
+    return true;
+  }else{ untested();
+    return false;
+  }
+}
+/*--------------------------------------------------------------------------*/
 void EVAL_BM_VALUE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
  // o << _value;
@@ -83,6 +94,10 @@ class EVAL_BM_SIMPLE : public EVAL_BM_BASE {
 public:
   explicit EVAL_BM_SIMPLE (EVAL_BM_VALUE const& b)
     : EVAL_BM_BASE(b) {
+  }
+  bool operator==(const COMMON_COMPONENT& x)const override {
+    const EVAL_BM_SIMPLE* p = dynamic_cast<const EVAL_BM_SIMPLE*>(&x);
+    return p && EVAL_BM_BASE::operator==(x);
   }
 private:
   EVAL_BM_SIMPLE* clone()const override {

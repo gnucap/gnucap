@@ -103,7 +103,8 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)
 
   // BUG: wrong order.
   for (auto i = p._pv.begin(); i != p._pv.end(); ++i) {
-    if (i->second.has_hard_value()) {
+    if (i->first[0] == '$'){ untested();
+    }else if (i->second.has_hard_value()) {
       auto j = _pi.find(i->first);
       if(j == _pi.end()){
 	PARAM_INSTANCE& pi = ref(i->first); // create one.
@@ -339,6 +340,33 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const PARAM_LIST*
   }
 
   return _v;
+}
+/*--------------------------------------------------------------------------*/
+int PARAM_LIST::compare(PARAM_LIST const& o) const
+{
+  int c = int(_pv.size()) - int(o._pv.size());
+
+  if(c){
+    return c;
+  }else{
+  }
+
+  auto b = o._pv.begin();
+  for(auto i : _pv){
+    c = i.first.compare(b->first);
+    if(c){ untested();
+      return c;
+    }else{
+    }
+    c = i.second.compare(b->second);
+    if(c){ untested();
+      return c;
+    }else{
+    }
+
+    ++b;
+  }
+  return 0;
 }
 /*--------------------------------------------------------------------------*/
 PARAM_INSTANCE& PARAM_LIST::ref(std::string const& Name)
