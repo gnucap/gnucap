@@ -280,10 +280,11 @@ void DEV_LOGIC::precalc_last()
 void DEV_LOGIC::expand()
 {
   ELEMENT::expand();
+  attach_model();
+
   const COMMON_LOGIC* c = prechecked_cast<const COMMON_LOGIC*>(common());
   assert(c);
 
-  attach_model();
   const MODEL_LOGIC* m = dynamic_cast<const MODEL_LOGIC*>(c->model());
   if (!m) {
     throw Exception_Model_Type_Mismatch(long_label(), c->modelname(), "logic family (LOGIC)");

@@ -251,7 +251,7 @@ public:	// state, aux data
   //--------------------------------------------------------------------
   // model
   const MODEL_CARD* find_model(const std::string& name)const;
-  void attach_model()const	{assert(has_common()); _common->attach_model(this);}
+  void attach_model() /*const*/;
   //--------------------------------------------------------------------
   // common
   COMMON_COMPONENT* mutable_common()	  {return _common;}

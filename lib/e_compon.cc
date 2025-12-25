@@ -951,6 +951,14 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
   }
 }
 /*--------------------------------------------------------------------------*/
+// obsolete. use COMMON_COMPONENT::expand..
+void COMPONENT::attach_model()
+{
+  COMMON_COMPONENT* c = common()->clone();
+  c->attach_model(this);
+  attach_common(c);
+}
+/*--------------------------------------------------------------------------*/
 /* q_eval: queue this device for evaluation on the next pass,
  * with a check against doing it twice.
  */
