@@ -84,6 +84,10 @@ public:
   explicit EVAL_BM_SIMPLE (EVAL_BM_VALUE const& b)
     : EVAL_BM_BASE(b) {
   }
+  bool operator==(const COMMON_COMPONENT& x)const override {
+    const EVAL_BM_SIMPLE* p = dynamic_cast<const EVAL_BM_SIMPLE*>(&x);
+    return p && EVAL_BM_BASE::operator==(x);
+  }
 private:
   EVAL_BM_SIMPLE* clone()const override {
     return new EVAL_BM_SIMPLE(*this);

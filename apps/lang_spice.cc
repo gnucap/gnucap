@@ -403,11 +403,11 @@ void LANG_SPICE_BASE::parse_element_using_obsolete_callback(CS& cmd, COMPONENT* 
   // dc == deflated_common
   // It might be just "c".
   // It might be something else that is simpler but equivalent.
+  x->attach_common(dc);
   if (dc != c) {
     delete c;
   }else{
   }
-  x->attach_common(dc);
   cmd.check(bDANGER, "what's this?");
 }
 /*--------------------------------------------------------------------------*/

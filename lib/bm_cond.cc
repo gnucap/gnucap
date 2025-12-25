@@ -223,10 +223,15 @@ void EVAL_BM_COND::expand(const COMPONENT* d)
     COMMON_COMPONENT* new_common = _func[i]->clone();
     new_common->expand(d);
     COMMON_COMPONENT* deflated_common = new_common->deflate();
+    if(new_common == deflated_common) {
+      new_common = nullptr;
+    }else{
+    }
     if (deflated_common != _func[i]) {
       attach_common(deflated_common, &(_func[i]));
     }else{untested();
     }
+    delete new_common;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -246,8 +251,6 @@ COMMON_COMPONENT* EVAL_BM_COND::deflate()
   trace0("all the same");
   COMMON_COMPONENT* c = _func[s_NONE]->deflate();
   if(c == _func[s_NONE]){
-    // transfer ownership to caller.
-    _func[s_NONE] = nullptr;
   }else{
   }
   return c;

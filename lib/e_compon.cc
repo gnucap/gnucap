@@ -627,10 +627,15 @@ void COMPONENT::expand()
     COMMON_COMPONENT* new_common = common()->clone();
     new_common->expand(this);
     COMMON_COMPONENT* deflated_common = new_common->deflate();
+    if(new_common == deflated_common) {
+      new_common = nullptr;
+    }else{
+    }
     if (deflated_common != common()) {
       attach_common(deflated_common);
     }else{untested();
     }
+    delete new_common;
   }else{
   }
 }
