@@ -102,8 +102,14 @@ public:
     _tnom_c.set_default(OPT::temp_k - P_CELSIUS0);
   }
   ~HS_PARAM() {}
-  bool operator==(const COMMON_COMPONENT& x)const override;
   HS_PARAM* clone()const override {return new HS_PARAM(*this);}
+
+  bool operator==(const COMMON_COMPONENT& x)const override;
+  bool operator<(const COMMON_COMPONENT& x)const override {
+    return HS_PARAM::compare(x) < 0;
+  }
+  int compare(const COMMON_COMPONENT& x)const override;
+  bool has_less()const override { untested(); return false;}
 
   bool param_is_printable(int i)const override;
   void set_param_by_index(int i, std::string& v, int)override;

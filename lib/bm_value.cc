@@ -36,6 +36,17 @@ bool EVAL_BM_VALUE::operator==(const COMMON_COMPONENT& x)const
   return  p && EVAL_BM_ACTION_BASE::operator==(x);
 }
 /*--------------------------------------------------------------------------*/
+bool EVAL_BM_VALUE::operator<(const COMMON_COMPONENT& x)const
+{
+  if(this == &x){ untested();
+    return false;
+  }else if(EVAL_BM_ACTION_BASE::operator<(x)){ untested();
+    return true;
+  }else{ untested();
+    return false;
+  }
+}
+/*--------------------------------------------------------------------------*/
 void EVAL_BM_VALUE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
 {
  // o << _value;

@@ -44,6 +44,9 @@ public:
 protected: // override virtual
   virtual COMMON_COMPONENT* clone()const override {return new EVAL_BM_BASE(*this); }
   bool operator==(const COMMON_COMPONENT&)const override;
+  // bool operator<(const COMMON_COMPONENT&)const override;
+  int compare(const COMMON_COMPONENT&)const override;
+  // bool has_less()const override;
   bool use_obsolete_callback_parse()const override	{return true;}
   bool use_obsolete_callback_print()const override	{ return true;}
   bool has_parse_params_obsolete_callback()const override { return true;}
@@ -104,6 +107,18 @@ inline bool EVAL_BM_BASE::operator==(COMMON_COMPONENT const& x) const
   return rv;
 }
 /*--------------------------------------------------------------------------*/
+inline int EVAL_BM_BASE::compare(COMMON_COMPONENT const& x) const
+{
+  if(int c = COMMON_COMPONENT::compare(x)) {
+    return c;
+  }else{
+  }
+  auto p = prechecked_cast<const EVAL_BM_BASE*>(&x);
+  assert(p);
+  trace3("BASEcomp", _value, p->_value,  _value.compare(p->_value));
+  return _value.compare(p->_value);
+}
+/*--------------------------------------------------------------------------*/
 class INTERFACE EVAL_BM_ACTION_BASE : public EVAL_BM_BASE {
 protected:
   PARAMETER<double> _bandwidth;
@@ -130,6 +145,9 @@ protected:
   double	ioffset(double x)const	{return uic(x) + _ioffset;}	
 public: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
+  bool		operator<(const COMMON_COMPONENT&)const override;
+  int		compare(const COMMON_COMPONENT&)const override;
+  //bool	has_less()const override;
   //COMPONENT_COMMON* clone()const;	//COMPONENT_COMMON=0
   bool		has_tr_eval()const override	{ return true;}
   bool		has_ac_eval()const override	{ return true;}
@@ -161,6 +179,8 @@ public:
 		~EVAL_BM_VALUE()	{}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
+  bool		operator<(const COMMON_COMPONENT&)const override;
+  // bool		has_less()const override { return false;}
   COMMON_COMPONENT* clone()const override {return new EVAL_BM_VALUE(*this);}
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
   bool		has_tr_eval()const override	{ return true;}
