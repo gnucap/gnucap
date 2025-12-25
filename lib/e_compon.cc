@@ -376,7 +376,7 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
   trace2("spbn", Name, Value);
   if(Name[0] == '$'){
     if(!has_next()) {
-      auto n = new HS_PARAM();
+      auto n = &HS_PARAM::hs_param;
       attach_next(n);
       trace1("CC::spbn new hsparam", _next);
       assert(_next == n);
@@ -804,7 +804,7 @@ int COMPONENT::set_param_by_name(std::string Name, std::string Value)
 {
   if(Name[0] == '$'){
     if(!has_common()) { untested();
-      attach_common(new HS_PARAM());
+      attach_common(&HS_PARAM::hs_param);
     }else{
     }
   }else{
@@ -1099,7 +1099,7 @@ void COMMON_COMPONENT::set_mfactor(double m)
 {
   COMMON_COMPONENT* nn;
   if(!has_next()) {untested();
-    nn = new HS_PARAM();
+    nn = HS_PARAM::hs_param.clone();
   }else{itested();
     nn = next_common()->mutable_clone();
   }

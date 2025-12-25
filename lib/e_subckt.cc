@@ -33,14 +33,14 @@ void BASE_SUBCKT::precalc_first()
       // already there.
     }else{ itested();
       // create one.
-      HS_PARAM* hspl = new HS_PARAM();
+      HS_PARAM* hspl = HS_PARAM::hs_param.clone();
       hspl->attach_next(mutable_common()->next_common());
       assert(!mutable_common()->has_next());
       mutable_common()->attach_next(hspl);
     }
   }else{ untested();
     // device without common, but with hs params
-    attach_common(new HS_PARAM());
+    attach_common(&HS_PARAM::hs_param);
   }
 }
 /*--------------------------------------------------------------------------*/
