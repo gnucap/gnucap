@@ -48,7 +48,7 @@ bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
       && _tnom == p->_tnom
       && _temp_c == p->_temp_c
       && _tnom_c == p->_tnom_c
-      && COMMON_COMPONENT::operator==(x));
+      && COMMON_PARAMLIST::operator==(x));
   return ret;
 }
 /*--------------------------------------------------------------------------*/
