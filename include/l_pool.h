@@ -38,7 +38,7 @@ private:
   POOL(const POOL&) = delete;
 public:
   POOL() : _cache() {}
-  ~POOL() {assert(_cache.size() <= 1);}
+  ~POOL() {assert(_cache.size() <= 4);}
   T* first(){return *_cache.begin();}
   T* second(){return *(++_cache.begin());}
 

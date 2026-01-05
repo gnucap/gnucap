@@ -36,7 +36,13 @@ protected:
 public:
   explicit COMMON_PARAMLIST(int c=0)	:COMMON_COMPONENT(c) {++_count;}
 	   ~COMMON_PARAMLIST()		{--_count;}
-  bool operator==(const COMMON_COMPONENT&)const override;
+  bool operator==(const COMMON_COMPONENT& x)const override {
+    return COMMON_PARAMLIST::compare(x) == 0;
+  }
+  bool operator<(const COMMON_COMPONENT& x)const override { untested();
+    return COMMON_PARAMLIST::compare(x) < 0;
+  }
+  // bool has_less()const override {return true;} not yet
   int compare(const COMMON_COMPONENT&)const override;
   COMMON_COMPONENT* clone()const override{return new COMMON_PARAMLIST(*this);}
   std::string	name()const override	{untested();return "";}

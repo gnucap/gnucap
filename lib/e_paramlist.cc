@@ -26,21 +26,11 @@
 /*--------------------------------------------------------------------------*/
 int COMMON_PARAMLIST::_count = -1;
 /*--------------------------------------------------------------------------*/
-bool COMMON_PARAMLIST::operator==(const COMMON_COMPONENT& x)const
-{
-  const COMMON_PARAMLIST* p = dynamic_cast<const COMMON_PARAMLIST*>(&x);
-    bool A = dynamic_cast<HS_PARAM const*>(&x);
-    bool B = dynamic_cast<HS_PARAM const*>(this);
-  bool rv = p && (A==B)
-    && _params == p->_params
-    && COMMON_COMPONENT::operator==(x);
-  trace1("CP", rv);
-  return rv;
-}
-/*--------------------------------------------------------------------------*/
 int COMMON_PARAMLIST::compare(const COMMON_COMPONENT& x) const
 {
-  if(int c = COMMON_COMPONENT::compare(x)) {
+  if(this == &x){
+    return 0;
+  }else if(int c = COMMON_COMPONENT::compare(x)) {
     return c;
   }else{
     const COMMON_PARAMLIST* p = prechecked_cast<const COMMON_PARAMLIST*>(&x);

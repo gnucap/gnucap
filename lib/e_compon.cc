@@ -444,6 +444,7 @@ int COMMON_COMPONENT::compare(const COMMON_COMPONENT& x) const
   if(this == &x){ itested();
 #ifndef DEBUG_POOL
     unreachable();
+    assert(0);
 #endif
     return 0;
   }else{
@@ -500,6 +501,12 @@ bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
   if(this == &x){
     // redundant call, should not get here.
     unreachable();
+    // return true;
+  }else if(&typeid(*this) != &typeid(x)){ untested();
+    // impossible call, should not get here.
+    assert(0);
+    unreachable();
+    // return false;
   }else{
   }
 #endif
@@ -867,7 +874,7 @@ void COMPONENT::precalc_last()
 
     int n = std::fetestexcept(FE_ALL_EXCEPT);
     if (n & FE_INVALID) {
-      if(c != common()){ untested();
+      if(c != common()){
 	delete c;
       }else{
       }
