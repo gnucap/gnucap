@@ -186,7 +186,9 @@ private:
 
 public:
   static void check_pool_consistency() {
+#ifdef DEBUG_POOL
     _commons.consistency_check();
+#endif
   }
 };
 /*--------------------------------------------------------------------------*/

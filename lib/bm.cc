@@ -148,7 +148,7 @@ bool EVAL_BM_ACTION_BASE::operator==(const COMMON_COMPONENT& x)const
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_ACTION_BASE::operator<(const COMMON_COMPONENT& x) const
-{ untested();
+{
   return EVAL_BM_ACTION_BASE::compare(x) < 0;
 }
 /*--------------------------------------------------------------------------*/
@@ -187,7 +187,7 @@ int EVAL_BM_ACTION_BASE::compare(const COMMON_COMPONENT& x) const
     return c;
   }else if((c = _tc2.compare(p->_tc2))){ untested();
     return c;
-  }else if((c = _ic.compare(p->_ic))){ untested();
+  }else if((c = _ic.compare(p->_ic))){
     return c;
   }else{
     return 0;

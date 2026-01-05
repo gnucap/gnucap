@@ -38,11 +38,11 @@ bool EVAL_BM_VALUE::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_VALUE::operator<(const COMMON_COMPONENT& x)const
 {
-  if(this == &x){ untested();
+  if(this == &x){
     return false;
-  }else if(EVAL_BM_ACTION_BASE::operator<(x)){ untested();
+  }else if(EVAL_BM_ACTION_BASE::operator<(x)){
     return true;
-  }else{ untested();
+  }else{
     return false;
   }
 }

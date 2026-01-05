@@ -56,26 +56,6 @@ public:
     }
 #endif
     T* ret = *_cache.insert(_cache.end(), x);
-#ifndef NDEBUG
-    prev = nullptr;
-    for(auto o : _cache){
-      if(prev){
-	assert(*prev < *o);
-	assert(*prev != *o);
-      }else{
-	prev = o;
-      }
-    }
-    for(auto i : _cache){
-      if(i == x){
-	assert(ret == x);
-      }else if(*i == *x){
-	assert(ret == i || *ret == *i);
-      }else{
-	assert(!(*ret == *i));
-      }
-    }
-#endif
     if(size() <= 1){
     }else if(size() <=   2){
     }else if(size() <=   4){
@@ -83,8 +63,10 @@ public:
     }else if(size() <=  16){
     }else if(size() <=  32){
     }else if(size() <=  64){
+      // d_coil.ports1.ckt
     }else if(size() <= 128){ untested();
     }else if(size() <= 256){ untested();
+    }else if(size() <= 512){ untested();
     }else{ untested();
     }
     return ret;
@@ -99,7 +81,8 @@ public:
 #endif
     return howmany;
   }
-#ifndef NDEBUG
+#ifdef DEBUG_POOL
+  // this is expensive..
   void consistency_check()const {
     for(auto r : _cache){
       trace1("pool check", typeid(*r).name());

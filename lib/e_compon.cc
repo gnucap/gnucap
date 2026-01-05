@@ -65,7 +65,7 @@ COMMON_COMPONENT::~COMMON_COMPONENT()
   }else if(_attach_count == CC_STATIC) {
     // static, not attached to anything.
     unlink_common(this);
-  }else if(_attach_count > CC_STATIC) { untested();
+  }else if(_attach_count > CC_STATIC) {
     // static, still attached to another common
     // the other is static (presumably), but
     // there seems no way to influence destruction order
@@ -497,20 +497,18 @@ int COMMON_COMPONENT::compare(const COMMON_COMPONENT& x) const
 /*--------------------------------------------------------------------------*/
 bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
-#ifdef NDEBUG
-  if(this == &x){
+#ifndef NDEBUG
+  if(this == &x){ untested();
     // redundant call, should not get here.
     unreachable();
     // return true;
   }else if(&typeid(*this) != &typeid(x)){ untested();
     // impossible call, should not get here.
-    assert(0);
     unreachable();
     // return false;
   }else{
   }
 #endif
-  // return false; // test re-attach logic. BUG: breaks mos1.
   return (_modelname == x._modelname
 	  && _next == x._next
 	  && _model == x._model);
@@ -847,7 +845,7 @@ void COMPONENT::precalc_first()
   }else{
   }
 
-  trace2("COMPONENT::precalc_first2", long_label(), common());
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 // .. bypassed in mg_out_dev.
@@ -901,6 +899,8 @@ void COMPONENT::precalc_last()
   assert(mfactor() == _mfactor_fixed);
   trace2("COMPONENT::pl", long_label(), mfactor());
   trace2("COMPONENT::precalc_last2", long_label(), common());
+
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::map_nodes()
