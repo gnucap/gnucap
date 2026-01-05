@@ -35,7 +35,7 @@ e_logicmod.h e_logicnode.h e_logicval.h \
 e_elemnt.h e_model.h e_node.h e_paramlist.h e_storag.h e_subckt.h \
 globals.h io_.h io_error.h io_dir.h io_trace.h l_compar.h l_denoise.h \
 l_dispatcher.h l_indirect.h l_lib.h l_stlextra.h l_timer.h m_base.h \
-l_smallset.h \
+l_smallset.h l_pool.h \
 m_base_vams.h m_cpoly.h m_random.h \
 m_divdiff.h m_expression.h m_interp.h m_matrix.h m_phase.h m_spline.h \
 m_matrix_solver.h m_union.h \

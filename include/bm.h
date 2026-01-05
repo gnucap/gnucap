@@ -109,7 +109,9 @@ inline bool EVAL_BM_BASE::operator==(COMMON_COMPONENT const& x) const
 /*--------------------------------------------------------------------------*/
 inline int EVAL_BM_BASE::compare(COMMON_COMPONENT const& x) const
 {
-  if(int c = COMMON_COMPONENT::compare(x)) {
+  if(this == &x){
+    return 0;
+  }else if(int c = COMMON_COMPONENT::compare(x)) {
     return c;
   }else{
   }

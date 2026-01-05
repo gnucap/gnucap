@@ -33,6 +33,13 @@
 #include <cfenv>
 #include <typeindex>
 /*--------------------------------------------------------------------------*/
+static void check_pool_consistency()
+{
+#ifdef DEBUG_POOL
+  COMMON_COMPONENT::check_pool_consistency();
+#endif
+}
+/*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),
    _modelname(p._modelname),
@@ -52,25 +59,27 @@ COMMON_COMPONENT::COMMON_COMPONENT(int c)
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::~COMMON_COMPONENT()
 {
-  detach_next();
   trace1("common,destruct", _attach_count);
   if(_attach_count == 0){
     // not attached to anything.
   }else if(_attach_count == CC_STATIC) {
     // static, not attached to anything.
-  }else if(_attach_count > CC_STATIC) {itested();
+    unlink_common(this);
+  }else if(_attach_count > CC_STATIC) { untested();
     // static, still attached to another common
     // the other is static (presumably), but
     // there seems no way to influence destruction order
   }else{ untested();
     assert(0 && "common still in use");
   }
-  detach_common(&_next);
+  detach_next();
+  assert(!_next);
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
 {
   trace1("attach", c);
+
   assert(to);
   if (c == *to) {
     // The new and old are the same object.  Do nothing.
@@ -79,11 +88,15 @@ void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
     detach_common(to);
   }else if (!*to) {
     // No old one, but have a new one.
+    unique_common(&c);
     ++(c->_attach_count);
     trace1("++1", c->_attach_count);
     *to = c;
   }else if (*c != **to) {
     // They are different, usually by edit.
+    unique_common(&c);
+    assert(c != *to);
+    assert(*c != **to);
     detach_common(to);
     ++(c->_attach_count);
     trace1("++2", c->_attach_count);
@@ -98,6 +111,8 @@ void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
     // need to cleanup anyway.
     c->detach_next();
   }else{untested();
+    trace2("identical", c->_attach_count, *to);
+    assert(!c->has_less());
     // The new and old are identical.
     // Use the old one.
     // The new one is also used somewhere else, so keep it.
@@ -114,6 +129,7 @@ void COMMON_COMPONENT::detach_common(COMMON_COMPONENT** from)
     trace1("--", (**from)._attach_count);
     if ((**from)._attach_count == 0) {
       trace1("delete", (**from)._attach_count);
+      unlink_common(*from);
       delete *from;
     }else if ((**from)._attach_count == CC_STATIC) {
       trace1("cleanup", (**from)._attach_count);
@@ -122,6 +138,63 @@ void COMMON_COMPONENT::detach_common(COMMON_COMPONENT** from)
       trace1("nodelete", (**from)._attach_count);
     }
     *from = nullptr;
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::unique_common(COMMON_COMPONENT**c)
+{
+  assert(c);
+  assert(*c);
+
+  COMMON_COMPONENT* d = *c;
+
+  int ac = (*c)->_attach_count;
+  trace1("unique_common", (*c)->_attach_count);
+
+  if(!(*c)->has_less()){
+  }else if(ac == 0){
+    d = COMMON_COMPONENT::_commons[*c];
+    if(d == *c){
+      // assert(d->_attach_count);
+    }else{
+      // using d which is attached to sth else.
+      // c is no longer needed.
+      assert(d->_attach_count);
+      delete *c;
+      *c = d;
+    }
+  }else if(ac == CC_STATIC){
+    d = COMMON_COMPONENT::_commons[*c];
+    assert(d == *c);
+  }else if(ac > CC_STATIC){
+  }else{
+    assert(*c == COMMON_COMPONENT::_commons[*c]);
+    assert(d->_attach_count);
+  }
+
+#if 0
+  if(d != *c){
+    assert(!(*d < **c) || !(*d == **c));
+    assert(!(**c < *d) || !(*d == **c));
+    assert(!(**c < *d && *d < **c) || (*d == **c));
+    assert(*d == **c);
+  }else{
+    assert(*d == **c);
+  }
+#endif
+
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::unlink_common(COMMON_COMPONENT*c)
+{
+  trace1("unlink", c->_attach_count);
+  assert(c->_attach_count == 0
+       ||c->_attach_count == CC_STATIC);
+  if(c->has_less()){
+    assert(COMMON_COMPONENT::_commons.size());
+    size_t howmany = COMMON_COMPONENT::_commons.unlink(c);
+    assert(howmany);
   }else{
   }
 }
@@ -420,8 +493,16 @@ int COMMON_COMPONENT::compare(const COMMON_COMPONENT& x) const
 
   return 0;
 }
+/*--------------------------------------------------------------------------*/
 bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
+#ifdef NDEBUG
+  if(this == &x){
+    // redundant call, should not get here.
+    unreachable();
+  }else{
+  }
+#endif
   // return false; // test re-attach logic. BUG: breaks mos1.
   return (_modelname == x._modelname
 	  && _next == x._next
@@ -442,7 +523,6 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 
     // todo: figure out index.
     COMMON_COMPONENT* c = next_common()->clone();
-    detach_next();
     int idx = c->set_param_by_name(Name, Value); //  + param_count();
     attach_next(c);
     return idx;
@@ -680,9 +760,9 @@ void COMPONENT::deflate_common()
   if (has_common()) {untested();
     COMMON_COMPONENT* deflated_common = mutable_common()->deflate();
     if (deflated_common != common()) {untested();
-      attach_common(deflated_common);
-    }else{untested();
+    }else{
     }
+    attach_common(deflated_common);
   }else{untested();
     unreachable();
   }
@@ -699,6 +779,8 @@ void COMPONENT::expand()
   }
   if (has_common()) {
     COMMON_COMPONENT* new_common = common()->clone();
+    assert(*new_common == *common());
+    assert(*common() == *new_common);
     new_common->expand(this);
     COMMON_COMPONENT* deflated_common = new_common->deflate();
     if(new_common == deflated_common) {
@@ -712,6 +794,7 @@ void COMPONENT::expand()
     delete new_common;
   }else{
   }
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::precalc_first()
