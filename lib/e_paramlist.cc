@@ -22,29 +22,31 @@
  */
 //testing=script 2016.09.16
 #include "e_paramlist.h"
+#include "e_hsparam.h" // BUG
 /*--------------------------------------------------------------------------*/
 int COMMON_PARAMLIST::_count = -1;
 /*--------------------------------------------------------------------------*/
 bool COMMON_PARAMLIST::operator==(const COMMON_COMPONENT& x)const
 {
   const COMMON_PARAMLIST* p = dynamic_cast<const COMMON_PARAMLIST*>(&x);
-  bool rv = p 
+    bool A = dynamic_cast<HS_PARAM const*>(&x);
+    bool B = dynamic_cast<HS_PARAM const*>(this);
+  bool rv = p && (A==B)
     && _params == p->_params
     && COMMON_COMPONENT::operator==(x);
+  trace1("CP", rv);
   return rv;
 }
 /*--------------------------------------------------------------------------*/
 int COMMON_PARAMLIST::compare(const COMMON_COMPONENT& x) const
 {
-  int c = COMMON_COMPONENT::compare(x);
-  if(c){ untested();
+  if(int c = COMMON_COMPONENT::compare(x)) {
     return c;
   }else{
+    const COMMON_PARAMLIST* p = prechecked_cast<const COMMON_PARAMLIST*>(&x);
+    assert(p);
+    return _params.compare(p->_params);
   }
-
-  const COMMON_PARAMLIST* p = prechecked_cast<const COMMON_PARAMLIST*>(&x);
-  assert(p);
-  return _params.compare(p->_params);
 }
 /*--------------------------------------------------------------------------*/
 bool COMMON_PARAMLIST::param_is_printable(int i)const

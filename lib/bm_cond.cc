@@ -30,7 +30,10 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
-static EVAL_BM_VALUE func_zero(CC_STATIC);
+EVAL_BM_VALUE& func_zero() {
+  static EVAL_BM_VALUE f(CC_STATIC);
+  return f;
+}
 /*--------------------------------------------------------------------------*/
 class EVAL_BM_COND : public EVAL_BM_BASE {
 private:
@@ -42,6 +45,8 @@ public:
 		~EVAL_BM_COND();
 private: // override virtual
   bool  operator==(const COMMON_COMPONENT&)const override;
+  bool  operator<(const COMMON_COMPONENT&)const override;
+  bool  has_less()const override {return true;}
   COMMON_COMPONENT* clone()const override {return new EVAL_BM_COND(*this);}
   void  parse_common_obsolete_callback(CS&) override;
   void  print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
@@ -98,8 +103,8 @@ bool EVAL_BM_COND::operator==(const COMMON_COMPONENT& x)const
 
   for (int i=0; rv && i<sCOUNT; ++i) {
     if(_func[i] && p->_func[i]){
-      rv = *_func[i] == *p->_func[i];
-    }else if(_func[i] || p->_func[i]){ untested();
+      rv = _func[i] == p->_func[i];
+    }else if(_func[i] || p->_func[i]){
       rv = false;
     }else{
       // go on..
@@ -108,6 +113,29 @@ bool EVAL_BM_COND::operator==(const COMMON_COMPONENT& x)const
   trace1("COND==", rv);
 
   return rv;
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_COND::operator<(const COMMON_COMPONENT& x)const
+{
+  int c = EVAL_BM_BASE::compare(x);
+  if(c){
+    return c < 0;
+  }else{
+  }
+
+  auto p = prechecked_cast<EVAL_BM_COND const*>(&x);
+  assert(p);
+
+  for (int i=0; i<sCOUNT; ++i) {
+    if(intptr_t c0 = intptr_t(_func[i]) - intptr_t(p->_func[i])) {
+      assert(!(*this==x));
+      return c0 < 0;
+    }else{
+    }
+  }
+  {
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
@@ -169,7 +197,7 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
     if (c) {
       c->parse_common_obsolete_callback(cmd); //BUG//callback
     }else{ untested();
-      c = &func_zero;
+      c = &func_zero();
     }
     assert(c);
     attach_next(c->next_common());
@@ -188,17 +216,17 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
   if (!_func[s_OP] && _set[s_DC])    {attach_common(_func[s_DC],  &(_func[s_OP]));}
   if (!_func[s_OP] && _set[s_NONE])  {attach_common(_func[s_NONE],&(_func[s_OP]));}
   if (!_func[s_OP] && _set[s_TRAN])  {untested();attach_common(_func[s_TRAN],&(_func[s_OP]));}
-  if (!_func[s_OP])		     {attach_common(&func_zero,  &(_func[s_OP]));}
+  if (!_func[s_OP])		     {attach_common(&func_zero(),  &(_func[s_OP]));}
   
   if (!_func[s_DC] && _set[s_NONE])  {attach_common(_func[s_NONE],&(_func[s_DC]));}
   if (!_func[s_DC] && _set[s_OP])    {untested();attach_common(_func[s_OP],  &(_func[s_DC]));}
   if (!_func[s_DC] && _set[s_TRAN])  {untested();attach_common(_func[s_TRAN],&(_func[s_DC]));}
-  if (!_func[s_DC])		     {attach_common(&func_zero,  &(_func[s_DC]));}
+  if (!_func[s_DC])		     {attach_common(&func_zero(),  &(_func[s_DC]));}
 
   if (!_func[s_TRAN]&&_set[s_NONE])  {attach_common(_func[s_NONE],&(_func[s_TRAN]));}
   if (!_func[s_TRAN] && _set[s_DC])  {attach_common(_func[s_DC],&(_func[s_TRAN]));}
   if (!_func[s_TRAN] && _set[s_OP])  {untested();attach_common(_func[s_OP],&(_func[s_TRAN]));}
-  if (!_func[s_TRAN])		     {attach_common(&func_zero,&(_func[s_TRAN]));}
+  if (!_func[s_TRAN])		     {attach_common(&func_zero(),&(_func[s_TRAN]));}
 
   if (!_func[s_FOURIER])	     {attach_common(_func[s_TRAN],&(_func[s_FOURIER]));}
 
@@ -206,7 +234,7 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
 
   if (!_func[s_AC] && _set[s_NONE] && (!is_source || c->ac_too()))
 				   {attach_common(_func[s_NONE],&(_func[s_AC]));}
-  if (!_func[s_AC])		   {attach_common(&func_zero,  &(_func[s_AC]));}
+  if (!_func[s_AC])		   {attach_common(&func_zero(),  &(_func[s_AC]));}
   
   for (int i = 0; i < sCOUNT; ++i) {
     trace3("parsed", cmd.fullstring(), i, _func[i]);
@@ -240,11 +268,12 @@ void EVAL_BM_COND::expand(const COMPONENT* d)
 COMMON_COMPONENT* EVAL_BM_COND::deflate()
 {
   for (int i = 1; i < sCOUNT; ++i) {
-    if (_func[i] != _func[s_NONE]) {
+    if (_func[i] == _func[s_NONE]) {
+    }else if (*_func[i] == *_func[s_NONE]) { untested();
+    }else{
       trace1("not the same", i);
       // they are not all the same, don't deflate
       return this;
-    }else{
     }
   }
   // they are all the same.  Take one of them.
@@ -253,6 +282,12 @@ COMMON_COMPONENT* EVAL_BM_COND::deflate()
   if(c == _func[s_NONE]){
   }else{
   }
+//  if(c->has_next()){
+//    incomplete();
+//  }else if(has_next()){
+//    c->attach_next(next_common());
+//  }else{
+//  }
   return c;
 }
 /*--------------------------------------------------------------------------*/
