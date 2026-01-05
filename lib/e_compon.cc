@@ -62,7 +62,7 @@ COMMON_COMPONENT::~COMMON_COMPONENT()
   trace1("common,destruct", _attach_count);
   if(_attach_count == 0){
     // not attached to anything.
-  }else if(_attach_count == CC_STATIC) {
+  }else if(_attach_count == CC_STATIC) { itested();
     // static, not attached to anything.
     unlink_common(this);
   }else if(_attach_count > CC_STATIC) {
@@ -78,9 +78,9 @@ COMMON_COMPONENT::~COMMON_COMPONENT()
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
 {
-  trace1("attach", c);
-
   assert(to);
+  trace2("attach", c, *to);
+
   if (c == *to) {
     // The new and old are the same object.  Do nothing.
   }else if (!c) {
@@ -157,7 +157,7 @@ void COMMON_COMPONENT::unique_common(COMMON_COMPONENT**c)
     d = COMMON_COMPONENT::_commons[*c];
     if(d == *c){
       // assert(d->_attach_count);
-    }else{
+    }else{ // 70566
       // using d which is attached to sth else.
       // c is no longer needed.
       assert(d->_attach_count);
@@ -355,6 +355,7 @@ std::string COMMON_COMPONENT::param_value(int i) const
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::expand(const COMPONENT* comp)
 {
+  check_pool_consistency();
   if(has_next()){
     COMMON_COMPONENT* c = next_common()->clone();
     assert(c);
@@ -775,6 +776,7 @@ void COMPONENT::deflate_common()
 /*--------------------------------------------------------------------------*/
 void COMPONENT::expand()
 {
+  check_pool_consistency();
   trace2("COMPONENT::expand", long_label(), common());
   CARD::expand();
   if (_sim->is_first_expand()) {
@@ -784,6 +786,7 @@ void COMPONENT::expand()
   }else{ untested();
   }
   if (has_common()) {
+    check_pool_consistency();
     COMMON_COMPONENT* new_common = common()->clone();
     assert(*new_common == *common());
     assert(*common() == *new_common);
@@ -794,7 +797,9 @@ void COMPONENT::expand()
     }else{
     }
     if (deflated_common != common()) {
+      check_pool_consistency();
       attach_common(deflated_common);
+      check_pool_consistency();
     }else{untested();
     }
     delete new_common;
@@ -874,7 +879,7 @@ void COMPONENT::precalc_last()
     if (n & FE_INVALID) {
       if(c != common()){
 	delete c;
-      }else{
+      }else{ untested();
       }
       throw(Exception("floating point error in " + long_label()));
     }else{

@@ -67,6 +67,7 @@ public:
     }else if(size() <= 128){ untested();
     }else if(size() <= 256){ untested();
     }else if(size() <= 512){ untested();
+    }else if(size() <=1024){ untested();
     }else{ untested();
     }
     return ret;

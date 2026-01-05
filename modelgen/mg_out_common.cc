@@ -134,13 +134,69 @@ static void make_common_operator_equal(std::ofstream& out, const Device& d)
        ++p) {
     out << "    && " << (**p).code_name() << " == p->" << (**p).code_name() << '\n';
   }
-  // TODO: this is wrong. need check model equality eventually
+  // TODO: this seems wrong. rely on _model equality?
   for(auto c : d.common().calculated()){
-    out << "    && " << c->code_name() << " == p->" << c->code_name() << '\n';
+    out << "/*calc*/    && " << c->code_name() << " == p->" << c->code_name() << '\n';
   }
   out <<
     " //   && _sdp == p->_sdp\n"
     "    && COMMON_COMPONENT::operator==(x));\n"
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
+static void make_common_operator_less(std::ofstream& out, const Device& d)
+{
+  make_tag();
+  out <<
+    "bool COMMON_" << d.name() << "::operator<(const COMMON_COMPONENT& x) const\n"
+    "{\n"
+    "  if(this == &x){\n"
+    "    return false;\n"
+    "  }else{\n"
+    "  }\n"
+    "  int c = COMMON_COMPONENT::compare(x);\n"
+    "  if(c){\n"
+    "    return c < 0;\n"
+    "  }else{\n"
+    "  }\n";
+  out <<
+    "  auto p = prechecked_cast<COMMON_" << d.name() << " const*>(&x);\n"
+    "  assert(p);\n";
+
+  out <<
+	 "  // if(intptr_t s = intptr_t(_sdp) - intptr_t(p->_sdp)){\n"
+    "  //   return s < 0;\n"
+    "  // }else{\n"
+    "  // }\n";
+
+  for (Parameter_List::const_iterator
+       p = d.common().raw().begin();
+       p != d.common().raw().end();
+       ++p) {
+    out <<
+		"  if((c=" << (**p).code_name() << ".compare( p->" << (**p).code_name() << "))) {\n"
+		"    return c < 0;\n"
+		"  }else{\n"
+		"  }\n";
+
+  }
+  // TODO: this seems wrong. rely on _model equality?
+  out << "#if 1 /// calculated ///\n";
+  if(d.common().calculated().size()){
+    out << "  double c0;\n";
+  }else{
+  }
+  for(auto c : d.common().calculated()){
+    out <<
+		"  if((c0 = " << c->code_name() << " - p->" << c->code_name() << ") != 0) {\n"
+		"    return c0 < 0;\n"
+		"  }else{\n"
+		"  }\n";
+  }
+  out << "#endif /// calculated ///\n";
+  out <<
+	 "  return false;\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
 }
@@ -433,6 +489,7 @@ void make_cc_common(std::ofstream& out, const Device& d)
   make_common_copy_constructor(out, d);
   make_common_destructor(out, d);
   make_common_operator_equal(out, d);
+  make_common_operator_less(out, d);
   make_common_set_param_by_index(out, d);
   make_common_param_is_printable(out, d);
   make_common_param_name(out, d);

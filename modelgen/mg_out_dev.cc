@@ -329,7 +329,7 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "    if(!c->sdp()){ untested();\n"
     "      mc->_sdp = sdphack;\n"
     "    }else if(--(sdphack->_refcount)){\n"
-    "    }else{ untested();\n"
+    "    }else{\n"
     "      delete sdphack;\n"
     "    }\n"
     "    const SDP_" << d.model_type() << "* s = prechecked_cast<const SDP_"
