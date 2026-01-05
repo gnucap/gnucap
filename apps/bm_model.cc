@@ -32,13 +32,15 @@ namespace {
 class EVAL_BM_MODEL : public EVAL_BM_ACTION_BASE {
 private:
   std::string	_arglist;
-  COMMON_COMPONENT* _func;
+  COMMON_COMPONENT* _func{nullptr};
   explicit	EVAL_BM_MODEL(const EVAL_BM_MODEL& p);
 public:
   explicit      EVAL_BM_MODEL(int c=0);
 		~EVAL_BM_MODEL()	{detach_common(&_func);}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
+  bool		operator<(const COMMON_COMPONENT&)const override;
+  bool		has_less()const override	{return true;}
   COMMON_COMPONENT* clone()const override	{return new EVAL_BM_MODEL(*this);}
   void		parse_common_obsolete_callback(CS&)override;
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
@@ -91,6 +93,32 @@ bool EVAL_BM_MODEL::operator==(const COMMON_COMPONENT& x)const
   }else{
   }
   return rv;
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_MODEL::operator<(const COMMON_COMPONENT& x)const
+{
+  int c = EVAL_BM_ACTION_BASE::compare(x);
+  if(c) {
+    return c < 0;
+  }else {
+  }
+
+  const EVAL_BM_MODEL* p = prechecked_cast<const EVAL_BM_MODEL*>(&x);
+  assert(p);
+
+  c = _arglist.compare(p->_arglist);
+  if(c) {
+    return c < 0;
+  }else{
+  }
+
+  intptr_t c0 = intptr_t(_func) - intptr_t(p->_func);
+  if(c0) {
+    return c0 < 0;
+  }else{
+  }
+
+  return false;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_MODEL::parse_common_obsolete_callback(CS& cmd) //used

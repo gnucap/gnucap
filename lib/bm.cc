@@ -153,23 +153,23 @@ bool EVAL_BM_ACTION_BASE::operator<(const COMMON_COMPONENT& x) const
 }
 /*--------------------------------------------------------------------------*/
 int EVAL_BM_ACTION_BASE::compare(const COMMON_COMPONENT& x) const
-{ untested();
-  if(this == &x){ untested();
+{
+  if(this == &x){
     return 0;
-  }else{ untested();
+  }else{
   }
 
   auto* p = prechecked_cast<EVAL_BM_ACTION_BASE const*>(&x);
 
   int c = EVAL_BM_BASE::compare(x);
-  if(c) { untested();
+  if(c) {
     return c;
-  }else{ untested();
+  }else{
   }
 
   assert(p);
 
-  if(double d = _tempdiff - p->_tempdiff) { untested();
+  if(double d = _tempdiff - p->_tempdiff) {
     return (0. < d)?1:-1;
   }else if((c = _bandwidth.compare(p->_bandwidth))){ untested();
     return c;
@@ -189,7 +189,7 @@ int EVAL_BM_ACTION_BASE::compare(const COMMON_COMPONENT& x) const
     return c;
   }else if((c = _ic.compare(p->_ic))){ untested();
     return c;
-  }else{ untested();
+  }else{
     return 0;
   }
 }
