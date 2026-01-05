@@ -132,7 +132,7 @@ public:
   virtual std::string name()const	= 0;
   virtual bool  operator==(const COMMON_COMPONENT&x)const;
   virtual bool  operator<(const COMMON_COMPONENT&x)const {untested(); unreachable(); return compare(x)<0; }
-  virtual int   compare(const COMMON_COMPONENT&)const {incomplete(); return 0;}
+  virtual int   compare(const COMMON_COMPONENT&)const;
   virtual bool  has_less()const {untested(); return false;}
 
   bool operator!=(const COMMON_COMPONENT& x)const {return !(*this == x);}

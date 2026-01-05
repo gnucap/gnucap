@@ -31,6 +31,7 @@
 #include "e_model.h"
 #include "e_cardlist.h"
 #include <cfenv>
+#include <typeindex>
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),
@@ -364,6 +365,61 @@ void COMMON_COMPONENT::ac_eval(ELEMENT*x)const
   }
 }
 /*--------------------------------------------------------------------------*/
+int COMMON_COMPONENT::compare(const COMMON_COMPONENT& x) const
+{
+#ifndef NDEBUG
+  if(this == &x){ itested();
+#ifndef DEBUG_POOL
+    unreachable();
+#endif
+    return 0;
+  }else{
+  }
+#endif
+  intptr_t c0;
+#if 0
+  c0 = intptr_t(&typeid(*this)) - intptr_t(&typeid(x));
+  if(c0 < 0) {
+    return -1;
+  }else if(c0 > 0) {
+    return 1;
+  }else{
+    assert(b == a);
+  }
+#else
+  std::type_index a(typeid(*this));
+  std::type_index b(typeid(x));
+  if(a < b){
+    return -1;
+  }else if(a > b){
+    return 1;
+  }else{
+  }
+#endif
+
+  c0 =  intptr_t(next_common()) - intptr_t(x.next_common());
+  if(c0 < 0) {
+    return -1;
+  }else if(c0 > 0) {
+    return 1;
+  }else{
+  }
+
+  c0 = intptr_t(_model) - intptr_t(x._model);
+  if(c0 < 0) {
+    return -1;
+  }else if(c0 > 0) {
+    return 1;
+  }else{
+  }
+
+  if(int c1 = _modelname.compare(x._modelname)) {
+    return c1;
+  }else{
+  }
+
+  return 0;
+}
 bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
   // return false; // test re-attach logic. BUG: breaks mos1.
