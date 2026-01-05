@@ -1,0 +1,15 @@
+verilog
+
+module div(a,b);
+ parameter real n = 1.;
+ parameter real p = 1.;
+ resistor #(n/p) r1(a,b);
+endmodule
+
+parameter n = 1;
+
+isource #(1) i(a, \0 );
+div #(.n(n), .p(0.)) d1(a, \0 );
+
+print dc v(nodes)
+dc n -1 1 .5

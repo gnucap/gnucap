@@ -497,7 +497,7 @@ void DCOP::sweep()
   }
   try {
     sweep_recursive(_n_sweeps);
-  }catch (Exception& e) {untested();
+  }catch (Exception& e) {
     error(bDANGER, e.message() + '\n');
   }
 }

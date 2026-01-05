@@ -30,6 +30,7 @@
 #include "e_elemnt.h"
 #include "e_model.h"
 #include "e_cardlist.h"
+#include <cfenv>
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),
@@ -670,6 +671,7 @@ void COMPONENT::precalc_first()
   if (has_common()) {
     COMMON_COMPONENT* c = mutable_common()->mutable_clone();
     assert(c);
+    std::feclearexcept(FE_ALL_EXCEPT);
     try {
       c->precalc_first_chain(scope()->params());
     }catch (Exception_Precalc& e) { untested();
@@ -681,6 +683,18 @@ void COMPONENT::precalc_first()
       }
       throw e;
     }
+
+    int n = std::fetestexcept(FE_ALL_EXCEPT);
+    if (n & FE_INVALID) {
+      if(c != common()){ untested();
+	assert(0);
+	delete c;
+      }else{ untested();
+      }
+      throw(Exception("floating point error in " + long_label()));
+    }else{
+    }
+
     attach_common(c);
   }else{
   }
@@ -695,6 +709,7 @@ void COMPONENT::precalc_last()
   if (has_common()) {
     COMMON_COMPONENT* c = mutable_common()->mutable_clone();
     assert(c);
+    std::feclearexcept(FE_ALL_EXCEPT);
     try {
       c->precalc_last_chain(params);
     }catch (Exception_Precalc& e) {
@@ -706,6 +721,17 @@ void COMPONENT::precalc_last()
       }
       throw e;
     }
+
+    int n = std::fetestexcept(FE_ALL_EXCEPT);
+    if (n & FE_INVALID) {
+      if(c != common()){ untested();
+	delete c;
+      }else{
+      }
+      throw(Exception("floating point error in " + long_label()));
+    }else{
+    }
+
     attach_common(c);
   }else{
   }
