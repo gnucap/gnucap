@@ -109,7 +109,7 @@ public:
     return HS_PARAM::compare(x) < 0;
   }
   int compare(const COMMON_COMPONENT& x)const override;
-  bool has_less()const override { return false;}
+  bool has_less()const override { untested(); return true;}
 
   bool param_is_printable(int i)const override;
   void set_param_by_index(int i, std::string& v, int)override;
