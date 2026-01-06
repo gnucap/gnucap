@@ -447,7 +447,7 @@ public:
     _data = nullptr;
   }
   int compare(String const& s)const {
-    return strcmp(_data, s._data);
+    return strcmp(_data?_data:"", s._data?s._data:"");
   }
   String& operator=(String const& s) {
     if(_data) {
