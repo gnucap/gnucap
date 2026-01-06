@@ -312,9 +312,7 @@ public:
   bool operator==(PARAM_INSTANCE const& p)const {
     return (*base()) == (*p.base());
   }
-  int compare(PARAM_INSTANCE const& p)const {
-    return base()->compare(*p.base());
-  }
+  int compare(PARAM_INSTANCE const& p)const;
   PARAM_INSTANCE& operator=(PARAM_INSTANCE const&p) {
     base()->~PARA_BASE();
     p.base()->pclone(&_mem);

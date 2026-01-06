@@ -27,6 +27,7 @@
 #include "l_stlextra.h"
 #include "u_parameter.h"
 #include "u_lang.h"
+#include <typeindex>
 /*--------------------------------------------------------------------------*/
 void PARAM_LIST::parse(CS& cmd)
 {
@@ -340,6 +341,19 @@ Base const* PARAM_INSTANCE::PARAM_ANY::e_val_(const Base* Def, const PARAM_LIST*
   }
 
   return _v;
+}
+/*--------------------------------------------------------------------------*/
+int PARAM_INSTANCE::compare(PARAM_INSTANCE const& p)const
+{
+  std::type_index a(typeid(*base()));
+  std::type_index b(typeid(*p.base()));
+  if(a < b){ untested();
+    return -1;
+  }else if(a > b){ untested();
+    return 1;
+  }else{
+    return base()->compare(*p.base());
+  }
 }
 /*--------------------------------------------------------------------------*/
 int PARAM_LIST::compare(PARAM_LIST const& o) const
