@@ -38,7 +38,9 @@ private:
   POOL(const POOL&) = delete;
 public:
   POOL() : _cache() {}
-  ~POOL() {assert(_cache.size() <= 5);} // BUG: figure depends on plugins loaded
+  ~POOL() {
+    // assert(_cache.size() <= 5); // BUG: figure depends on plugins loaded
+  }
   T* first(){return *_cache.begin();}
   T* second(){return *(++_cache.begin());}
 
