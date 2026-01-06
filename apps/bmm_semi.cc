@@ -45,6 +45,9 @@ protected:
   ~EVAL_BM_SEMI_BASE() {}
 protected: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
+  // int	compare(const COMMON_COMPONENT&)const override;
+  bool		operator<(const COMMON_COMPONENT&)const override;
+  bool		has_less()const override { return true;}
   COMMON_COMPONENT* clone()const override = 0;
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
@@ -68,6 +71,8 @@ public:
   ~EVAL_BM_SEMI_CAPACITOR() {}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
+  // bool	operator<(const COMMON_COMPONENT&)const override;
+  // bool	has_less()const override
   COMMON_COMPONENT* clone()const override{return new EVAL_BM_SEMI_CAPACITOR(*this);}
   void  	expand(const COMPONENT*)override;
   void		precalc_last(const PARAM_LIST*)override;
@@ -83,6 +88,8 @@ public:
   ~EVAL_BM_SEMI_RESISTOR() {}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
+  // bool 	operator<(const COMMON_COMPONENT&)const override;
+  // bool	has_less()const override
   COMMON_COMPONENT* clone()const override {return new EVAL_BM_SEMI_RESISTOR(*this);}
   void  	expand(const COMPONENT*)override;
   void		precalc_last(const PARAM_LIST*)override;
@@ -195,11 +202,44 @@ bool EVAL_BM_SEMI_BASE::operator==(const COMMON_COMPONENT& x)const
   bool rv = p
     && _length == p->_length
     && _width == p->_width
+    && _va_lue == p->_va_lue
     && EVAL_BM_ACTION_BASE::operator==(x);
   if (rv) {
   }else{
   }
   return rv;
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_SEMI_BASE::operator<(const COMMON_COMPONENT& x)const
+{
+  if(this == &x){
+  }else{
+  }
+  int c = EVAL_BM_ACTION_BASE::compare(x);
+  if(c){
+    return c < 0;
+  }else{
+  }
+  auto p = prechecked_cast<const EVAL_BM_SEMI_BASE*>(&x);
+  trace2("op<", _length.string(), p->_length.string());
+  assert(p);
+  c = _length.compare(p->_length);
+  if(c){
+    return c < 0;
+  }else{
+  }
+  c = _width.compare(p->_width);
+  if(c){ untested();
+    return c < 0;
+  }else{
+  }
+  double d = _va_lue - p->_va_lue;
+  trace1("va_lue <", d);
+  if(d){ untested();
+    return d < 0;
+  }else{
+  }
+  return false;
 }
 /*--------------------------------------------------------------------------*/
 void EVAL_BM_SEMI_BASE::print_common_obsolete_callback(OMSTREAM& o, LANGUAGE* lang)const
@@ -261,6 +301,7 @@ bool EVAL_BM_SEMI_BASE::parse_numlist(CS& cmd)
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_SEMI_BASE::parse_params_obsolete_callback(CS& cmd)
 {
+  trace1("PP", cmd.tail());
   return ONE_OF
     || Get(cmd, "l",	&_length)
     || Get(cmd, "w",	&_width)

@@ -45,6 +45,8 @@ public:
 		~EVAL_BM_PWL()		{}
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
+  bool		operator<(const COMMON_COMPONENT&)const override;
+  bool has_less()const override {return false;}
   COMMON_COMPONENT* clone()const override	{return new EVAL_BM_PWL(*this);}
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
 
@@ -75,6 +77,13 @@ EVAL_BM_PWL::EVAL_BM_PWL(const EVAL_BM_PWL& p)
    _raw_table(p._raw_table),
    _num_table(p._num_table)
 {
+}
+/*--------------------------------------------------------------------------*/
+bool EVAL_BM_PWL::operator<(const COMMON_COMPONENT& x) const
+{
+  incomplete();
+  unreachable();
+  return EVAL_BM_ACTION_BASE::operator<(x);
 }
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_PWL::operator==(const COMMON_COMPONENT& x)const

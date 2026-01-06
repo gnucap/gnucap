@@ -109,7 +109,9 @@ inline bool EVAL_BM_BASE::operator==(COMMON_COMPONENT const& x) const
 /*--------------------------------------------------------------------------*/
 inline int EVAL_BM_BASE::compare(COMMON_COMPONENT const& x) const
 {
-  if(int c = COMMON_COMPONENT::compare(x)) {
+  if(this == &x){
+    return 0;
+  }else if(int c = COMMON_COMPONENT::compare(x)) {
     return c;
   }else{
   }
@@ -180,7 +182,7 @@ public:
 private: // override virtual
   bool		operator==(const COMMON_COMPONENT&)const override;
   bool		operator<(const COMMON_COMPONENT&)const override;
-  // bool		has_less()const override { return false;}
+  bool		has_less()const override { return true;}
   COMMON_COMPONENT* clone()const override {return new EVAL_BM_VALUE(*this);}
   void		print_common_obsolete_callback(OMSTREAM&, LANGUAGE*)const override;
   bool		has_tr_eval()const override	{ return true;}

@@ -420,8 +420,9 @@ int DEV_SUBCKT::set_param_by_name(std::string Name, std::string Value)
     return BASE_SUBCKT::set_param_by_name(Name, Value);
   }else if(_parent==&pp || !_parent) {
     // spice.
-    trace2("spice spbn", Name, Value);
+    trace3("spice spbn", Name, Value, c);
     int i = BASE_SUBCKT::set_param_by_name(Name,Value);
+    trace1("spbn done", common());
     return i;
   }else{
     PARAM_LIST::const_iterator p = _parent->subckt()->params()->find(Name);
@@ -482,7 +483,7 @@ std::string DEV_SUBCKT::port_name(int i)const
 void DEV_SUBCKT::expand()
 {
   BASE_SUBCKT::expand();
-  trace3("DEV_SUBCKT::expand", long_label(), max_nodes(), is_device());
+  trace4("DEV_SUBCKT::expand", long_label(), max_nodes(), is_device(), common());
 
   assert(is_device());
   if(_parent == &pp){
@@ -604,6 +605,7 @@ void DEV_SUBCKT::precalc_last()
   }
 
   subckt()->params()->set_try_again(nullptr);
+  trace1("DEV_SUBCKT::precalc_last5", &c->_params);
   subckt()->params()->eval_copy(c->_params, scope()->params());
   subckt()->params()->set_try_again(&c->_params);
   trace1("DEV_SUBCKT::precalc_last2", mfactor());

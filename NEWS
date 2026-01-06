@@ -1,6 +1,10 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 2026****-dev
+- common pool: prune duplicate commons
+- ..
+
 == 20251222-dev
 - refactor matrix and interface
   - request inodes explicitly

@@ -209,11 +209,11 @@ public:
   std::string val_string()const override{return std::to_string(_data);}
   bool to_bool()const override		{return (_input && _data != 0);}
   int compare(Integer const& i)const {
-    if(_data < i._data){ untested();
+    if(_data < i._data){
       return -1;
-    }else if(_data > i._data){ untested();
+    }else if(_data > i._data){
       return 1;
-    }else{ untested();
+    }else{
       return 0;
     }
   }
@@ -321,11 +321,11 @@ public:
   std::string val_string()const override{return ftos(_data, 0, 15, ftos_EXP);}
   bool to_bool()const override		{return (_data != 0.);}
   int compare(Float const& i)const {
-    if(_data < i._data){ untested();
+    if(_data < i._data){
       return -1;
-    }else if(_data > i._data){ untested();
+    }else if(_data > i._data){
       return 1;
-    }else{ untested();
+    }else{
       return 0;
     }
   }
@@ -446,8 +446,8 @@ public:
     free(const_cast<char*>(_data));
     _data = nullptr;
   }
-  int compare(String const& s)const { untested();
-    return strcmp(_data, s._data);
+  int compare(String const& s)const {
+    return strcmp(_data?_data:"", s._data?s._data:"");
   }
   String& operator=(String const& s) {
     if(_data) {

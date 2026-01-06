@@ -55,6 +55,22 @@ public:
     return cv && cv->_name == _name
       && EVAL_BM_BASE::operator==(p);
   }
+  bool operator<(const COMMON_COMPONENT&x)const override {
+    int c = EVAL_BM_BASE::compare(x);
+    if(c){
+      return c < 0;
+    }else{
+    }
+    auto p = prechecked_cast<COMMON_VALUE const*>(&x);
+    assert(p);
+    c = _name.compare(p->_name);
+    if(c){
+      return c < 0;
+    }else{
+    }
+    return false;
+  }
+  bool has_less()const override {return true;}
 
 public: // value handling
   bool use_obsolete_callback_print()const override	{ return false;}

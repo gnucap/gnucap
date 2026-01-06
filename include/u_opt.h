@@ -41,6 +41,18 @@ enum method_t {meUNKNOWN=0,	// no method set
 	       meTRAPGEAR,	// alt trap & gear2
 	       meTRAPEULER,	// alt trap & euler
 	       meNUM_METHODS};	// number of methods (array dimension)
+/*--------------------------------------------------------------------------*/
+inline int compare(method_t a, method_t b)
+{
+  if(a<b){
+    return -1;
+  }else if(a>b){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+/*--------------------------------------------------------------------------*/
 inline OMSTREAM& operator<<(OMSTREAM& o, method_t t) {
   const std::string s[] = {"unknown", "euler", "euleronly", "trap", "traponly",
 		     "gear2", "gear2only", "trapgear", "trapeuler"};

@@ -30,6 +30,15 @@
 #include "e_elemnt.h"
 #include "e_model.h"
 #include "e_cardlist.h"
+#include <cfenv>
+#include <typeindex>
+/*--------------------------------------------------------------------------*/
+static void check_pool_consistency()
+{
+#ifdef DEBUG_POOL
+  COMMON_COMPONENT::check_pool_consistency();
+#endif
+}
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
   :CKT_BASE(p),
@@ -50,26 +59,28 @@ COMMON_COMPONENT::COMMON_COMPONENT(int c)
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::~COMMON_COMPONENT()
 {
-  detach_next();
   trace1("common,destruct", _attach_count);
   if(_attach_count == 0){
     // not attached to anything.
-  }else if(_attach_count == CC_STATIC) {
+  }else if(_attach_count == CC_STATIC) { itested();
     // static, not attached to anything.
-  }else if(_attach_count > CC_STATIC) {itested();
+    unlink_common(this);
+  }else if(_attach_count > CC_STATIC) {
     // static, still attached to another common
     // the other is static (presumably), but
     // there seems no way to influence destruction order
   }else{ untested();
     assert(0 && "common still in use");
   }
-  detach_common(&_next);
+  detach_next();
+  assert(!_next);
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
 {
-  trace1("attach", c);
   assert(to);
+  trace2("attach", c, *to);
+
   if (c == *to) {
     // The new and old are the same object.  Do nothing.
   }else if (!c) {
@@ -77,11 +88,15 @@ void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
     detach_common(to);
   }else if (!*to) {
     // No old one, but have a new one.
+    unique_common(&c);
     ++(c->_attach_count);
     trace1("++1", c->_attach_count);
     *to = c;
   }else if (*c != **to) {
     // They are different, usually by edit.
+    unique_common(&c);
+    assert(c != *to);
+    assert(*c != **to);
     detach_common(to);
     ++(c->_attach_count);
     trace1("++2", c->_attach_count);
@@ -96,6 +111,8 @@ void COMMON_COMPONENT::attach_common(COMMON_COMPONENT*c, COMMON_COMPONENT**to)
     // need to cleanup anyway.
     c->detach_next();
   }else{untested();
+    trace2("identical", c->_attach_count, *to);
+    assert(!c->has_less());
     // The new and old are identical.
     // Use the old one.
     // The new one is also used somewhere else, so keep it.
@@ -112,6 +129,7 @@ void COMMON_COMPONENT::detach_common(COMMON_COMPONENT** from)
     trace1("--", (**from)._attach_count);
     if ((**from)._attach_count == 0) {
       trace1("delete", (**from)._attach_count);
+      unlink_common(*from);
       delete *from;
     }else if ((**from)._attach_count == CC_STATIC) {
       trace1("cleanup", (**from)._attach_count);
@@ -120,6 +138,63 @@ void COMMON_COMPONENT::detach_common(COMMON_COMPONENT** from)
       trace1("nodelete", (**from)._attach_count);
     }
     *from = nullptr;
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::unique_common(COMMON_COMPONENT**c)
+{
+  assert(c);
+  assert(*c);
+
+  COMMON_COMPONENT* d = *c;
+
+  int ac = (*c)->_attach_count;
+  trace1("unique_common", (*c)->_attach_count);
+
+  if(!(*c)->has_less()){
+  }else if(ac == 0){
+    d = COMMON_COMPONENT::_commons[*c];
+    if(d == *c){
+      // assert(d->_attach_count);
+    }else{ // 70566
+      // using d which is attached to sth else.
+      // c is no longer needed.
+      assert(d->_attach_count);
+      delete *c;
+      *c = d;
+    }
+  }else if(ac == CC_STATIC){
+    d = COMMON_COMPONENT::_commons[*c];
+    // assert(d == *c); //no. multiple static COMMON_PARAMLIST..
+  }else if(ac > CC_STATIC){
+  }else{
+    assert(*c == COMMON_COMPONENT::_commons[*c]);
+    assert(d->_attach_count);
+  }
+
+#if 0
+  if(d != *c){
+    assert(!(*d < **c) || !(*d == **c));
+    assert(!(**c < *d) || !(*d == **c));
+    assert(!(**c < *d && *d < **c) || (*d == **c));
+    assert(*d == **c);
+  }else{
+    assert(*d == **c);
+  }
+#endif
+
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::unlink_common(COMMON_COMPONENT*c)
+{
+  trace1("unlink", c->_attach_count);
+  assert(c->_attach_count == 0
+       ||c->_attach_count == CC_STATIC);
+  if(c->has_less()){
+    assert(COMMON_COMPONENT::_commons.size());
+    size_t howmany = COMMON_COMPONENT::_commons.unlink(c);
+    assert(howmany);
   }else{
   }
 }
@@ -280,6 +355,7 @@ std::string COMMON_COMPONENT::param_value(int i) const
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::expand(const COMPONENT* comp)
 {
+  check_pool_consistency();
   if(has_next()){
     COMMON_COMPONENT* c = next_common()->clone();
     assert(c);
@@ -292,6 +368,7 @@ void COMMON_COMPONENT::expand(const COMPONENT* comp)
     }
   }else{
   }
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::precalc_first_chain(PARAM_LIST const* p)
@@ -363,9 +440,79 @@ void COMMON_COMPONENT::ac_eval(ELEMENT*x)const
   }
 }
 /*--------------------------------------------------------------------------*/
+int COMMON_COMPONENT::compare(const COMMON_COMPONENT& x) const
+{
+#ifndef NDEBUG
+  if(this == &x){ itested();
+#ifndef DEBUG_POOL
+    unreachable();
+    assert(0);
+#endif
+    return 0;
+  }else{
+  }
+#endif
+  intptr_t c0;
+#if 0
+  c0 = intptr_t(&typeid(*this)) - intptr_t(&typeid(x));
+  if(c0 < 0) {
+    return -1;
+  }else if(c0 > 0) {
+    return 1;
+  }else{
+    assert(b == a);
+  }
+#else
+  std::type_index a(typeid(*this));
+  std::type_index b(typeid(x));
+  if(a < b){
+    return -1;
+  }else if(a > b){
+    return 1;
+  }else{
+  }
+#endif
+
+  c0 =  intptr_t(next_common()) - intptr_t(x.next_common());
+  if(c0 < 0) {
+    return -1;
+  }else if(c0 > 0) {
+    return 1;
+  }else{
+  }
+
+  c0 = intptr_t(_model) - intptr_t(x._model);
+  if(c0 < 0) {
+    return -1;
+  }else if(c0 > 0) {
+    return 1;
+  }else{
+  }
+
+  if(int c1 = _modelname.compare(x._modelname)) {
+    return c1;
+  }else{
+  }
+
+  return 0;
+}
+/*--------------------------------------------------------------------------*/
 bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
-  // return false; // test re-attach logic. BUG: breaks mos1.
+#ifndef NDEBUG
+  if(this == &x){ itested();
+    // redundant call, should not get here.
+#ifndef DEBUG_POOL
+    unreachable();
+#endif
+    // return true;
+  }else if(&typeid(*this) != &typeid(x)){ untested();
+    // impossible call, should not get here.
+    unreachable();
+    // return false;
+  }else{
+  }
+#endif
   return (_modelname == x._modelname
 	  && _next == x._next
 	  && _model == x._model);
@@ -385,7 +532,6 @@ int COMMON_COMPONENT::set_param_by_name(std::string Name, std::string Value)
 
     // todo: figure out index.
     COMMON_COMPONENT* c = next_common()->clone();
-    detach_next();
     int idx = c->set_param_by_name(Name, Value); //  + param_count();
     attach_next(c);
     return idx;
@@ -623,9 +769,9 @@ void COMPONENT::deflate_common()
   if (has_common()) {untested();
     COMMON_COMPONENT* deflated_common = mutable_common()->deflate();
     if (deflated_common != common()) {untested();
-      attach_common(deflated_common);
-    }else{untested();
+    }else{
     }
+    attach_common(deflated_common);
   }else{untested();
     unreachable();
   }
@@ -633,6 +779,8 @@ void COMPONENT::deflate_common()
 /*--------------------------------------------------------------------------*/
 void COMPONENT::expand()
 {
+  check_pool_consistency();
+  trace2("COMPONENT::expand", long_label(), common());
   CARD::expand();
   if (_sim->is_first_expand()) {
     for(int i=net_nodes(); i<ext_nodes()+int_nodes(); ++i){
@@ -641,7 +789,10 @@ void COMPONENT::expand()
   }else{ untested();
   }
   if (has_common()) {
+    check_pool_consistency();
     COMMON_COMPONENT* new_common = common()->clone();
+    assert(*new_common == *common());
+    assert(*common() == *new_common);
     new_common->expand(this);
     COMMON_COMPONENT* deflated_common = new_common->deflate();
     if(new_common == deflated_common) {
@@ -649,16 +800,22 @@ void COMPONENT::expand()
     }else{
     }
     if (deflated_common != common()) {
+      check_pool_consistency();
       attach_common(deflated_common);
+      check_pool_consistency();
     }else{untested();
     }
     delete new_common;
   }else{
   }
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::precalc_first()
 {
+  check_pool_consistency();
+
+  trace2("COMPONENT::precalc_first1", long_label(), common());
   for(int i = 0; i < min_nodes(); ++i){
     if(!node_is_connected(i)) {
       throw Exception(long_label() + ": invalid nodes");
@@ -670,6 +827,7 @@ void COMPONENT::precalc_first()
   if (has_common()) {
     COMMON_COMPONENT* c = mutable_common()->mutable_clone();
     assert(c);
+    std::feclearexcept(FE_ALL_EXCEPT);
     try {
       c->precalc_first_chain(scope()->params());
     }catch (Exception_Precalc& e) { untested();
@@ -681,20 +839,35 @@ void COMPONENT::precalc_first()
       }
       throw e;
     }
+
+    int n = std::fetestexcept(FE_ALL_EXCEPT);
+    if (n & FE_INVALID) {
+      if(c != common()){ untested();
+	assert(0);
+	delete c;
+      }else{ untested();
+      }
+      throw(Exception("floating point error in " + long_label()));
+    }else{
+    }
+
     attach_common(c);
   }else{
   }
+
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 // .. bypassed in mg_out_dev.
 void COMPONENT::precalc_last()
 {
-  trace3("COMPONENT::pl0", long_label(), mfactor(), hsparam());
+  trace2("COMPONENT::precalc_last1", long_label(), common());
   PARAM_LIST const* params = scope()->params();
   CARD::precalc_last();
   if (has_common()) {
     COMMON_COMPONENT* c = mutable_common()->mutable_clone();
     assert(c);
+    std::feclearexcept(FE_ALL_EXCEPT);
     try {
       c->precalc_last_chain(params);
     }catch (Exception_Precalc& e) {
@@ -706,6 +879,17 @@ void COMPONENT::precalc_last()
       }
       throw e;
     }
+
+    int n = std::fetestexcept(FE_ALL_EXCEPT);
+    if (n & FE_INVALID) {
+      if(c != common()){
+	delete c;
+      }else{ untested();
+      }
+      throw(Exception("floating point error in " + long_label()));
+    }else{
+    }
+
     attach_common(c);
   }else{
   }
@@ -724,6 +908,9 @@ void COMPONENT::precalc_last()
   _mfactor_fixed = mfactor_new;
   assert(mfactor() == _mfactor_fixed);
   trace2("COMPONENT::pl", long_label(), mfactor());
+  trace2("COMPONENT::precalc_last2", long_label(), common());
+
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::map_nodes()
@@ -776,6 +963,7 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
 			       int , double [],
 			       int node_count, const node_t Nodes[])
 {
+  check_pool_consistency();
   set_label(Label);
   set_owner(Owner);
   attach_common(Common);
@@ -786,6 +974,7 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
     std::copy_n(Nodes, node_count, &n_(0));
   }else{itested();
   }
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 /* set_slave: force evaluation whenever the owner is evaluated.
@@ -980,9 +1169,11 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
 // obsolete. use COMMON_COMPONENT::expand..
 void COMPONENT::attach_model()
 {
+  check_pool_consistency();
   COMMON_COMPONENT* c = common()->clone();
   c->attach_model(this);
   attach_common(c);
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 /* q_eval: queue this device for evaluation on the next pass,

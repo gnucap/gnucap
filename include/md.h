@@ -56,6 +56,7 @@
 #include <array>
 #include <queue>
 #include <map>
+#include <set>
 #include <valarray>
 // algorithms
 #include <typeinfo>

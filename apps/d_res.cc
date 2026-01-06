@@ -104,6 +104,7 @@ void DEV_RESISTANCE::dc_advance()
 /*--------------------------------------------------------------------------*/
 void DEV_RESISTANCE::tr_begin()
 {
+  trace3("DEVR::begin", long_label(), common(), typeid(*common()).name());
   ELEMENT::tr_begin();
   if(value() == 0.){
     _y[0].f1 = OPT::shortckt;

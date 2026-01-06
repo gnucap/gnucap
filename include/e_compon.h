@@ -27,6 +27,7 @@
 #include "u_sim_data.h"
 #include "u_time_pair.h"
 #include "u_parameter.h"
+#include "l_pool.h"
 #include "e_card.h"
 /*--------------------------------------------------------------------------*/
 // this file
@@ -63,9 +64,12 @@ protected: // probably obsolete
 private:
   mutable const MODEL_CARD* _model;
   int		_attach_count;
+  static POOL<COMMON_COMPONENT> _commons;
 public:
   static void attach_common(COMMON_COMPONENT* c, COMMON_COMPONENT** to);
   static void detach_common(COMMON_COMPONENT** from);
+  static void unique_common(COMMON_COMPONENT**c);
+  static void unlink_common(COMMON_COMPONENT*c);
   bool is_shared()const {return _attach_count > 1;}
   void attach_next(COMMON_COMPONENT* c) { attach_common(c, &_next); }
   void detach_next() { detach_common(&_next); }
@@ -89,7 +93,7 @@ public:
   void parse_modelname(CS&);
 
   virtual COMMON_COMPONENT* clone()const = 0;
-  COMMON_COMPONENT* mutable_clone() { return is_shared()?clone():this; }
+  COMMON_COMPONENT* mutable_clone() {return clone();}// {is_shared()?clone():this; }
 
   virtual bool use_obsolete_callback_parse()const {return false;}
   virtual bool use_obsolete_callback_print()const {return false;}
@@ -132,8 +136,8 @@ public:
   virtual std::string name()const	= 0;
   virtual bool  operator==(const COMMON_COMPONENT&x)const;
   virtual bool  operator<(const COMMON_COMPONENT&x)const {untested(); unreachable(); return compare(x)<0; }
-  virtual int   compare(const COMMON_COMPONENT&)const {incomplete(); return 0;}
-  virtual bool  has_less()const {untested(); return false;}
+  virtual int   compare(const COMMON_COMPONENT&)const;
+  virtual bool  has_less()const {return false;}
 
   bool operator!=(const COMMON_COMPONENT& x)const {return !(*this == x);}
   std::string	      modelname()const	{return _modelname;}
@@ -179,6 +183,13 @@ private:
   friend class COMPONENT;
   void precalc_first_chain(PARAM_LIST const* p);
   void precalc_last_chain(PARAM_LIST const* p);
+
+public:
+  static void check_pool_consistency() {
+#ifdef DEBUG_POOL
+    _commons.consistency_check();
+#endif
+  }
 };
 /*--------------------------------------------------------------------------*/
 /* note on _attach_count ...

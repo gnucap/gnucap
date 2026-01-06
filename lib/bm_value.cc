@@ -38,11 +38,11 @@ bool EVAL_BM_VALUE::operator==(const COMMON_COMPONENT& x)const
 /*--------------------------------------------------------------------------*/
 bool EVAL_BM_VALUE::operator<(const COMMON_COMPONENT& x)const
 {
-  if(this == &x){ untested();
+  if(this == &x){
     return false;
-  }else if(EVAL_BM_ACTION_BASE::operator<(x)){ untested();
+  }else if(EVAL_BM_ACTION_BASE::operator<(x)){
     return true;
-  }else{ untested();
+  }else{
     return false;
   }
 }
@@ -99,6 +99,8 @@ public:
     const EVAL_BM_SIMPLE* p = dynamic_cast<const EVAL_BM_SIMPLE*>(&x);
     return p && EVAL_BM_BASE::operator==(x);
   }
+  bool operator<(const COMMON_COMPONENT&x)const override { return compare(x)<0; }
+  bool has_less()const override {return true;}
 private:
   EVAL_BM_SIMPLE* clone()const override {
     return new EVAL_BM_SIMPLE(*this);
@@ -110,6 +112,10 @@ private:
     tr_eval(d);
     d->_ev = d->_y[0].f1;
   }
+#ifndef NDEBUG
+  double vdbg()const{return _value;}
+  std::string sdbg()const{return _value.string();}
+#endif
 };
 } // namespace
 /*--------------------------------------------------------------------------*/
@@ -120,6 +126,7 @@ COMMON_COMPONENT* EVAL_BM_VALUE::deflate()
   }else if(modelname() != ""){
     return this; // not sure what this is.
 		 // but need to get rid of model anyway
+		 // .. d_trln.ac.ckt
   }else{
     // return this; // itested: more numerical noise.
     // use a simpler version

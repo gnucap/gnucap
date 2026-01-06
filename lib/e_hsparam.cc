@@ -29,9 +29,10 @@
 bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
 {
 #ifndef NDEBUG
-  if(this == &x){ untested();
-    incomplete();
+  if(this == &x){ itested();
+#ifndef DEBUG_POOL
     unreachable();
+#endif
   }else{
   }
 #endif
@@ -72,9 +73,9 @@ int HS_PARAM::compare(const COMMON_COMPONENT& x) const
   auto* p = prechecked_cast<HS_PARAM const*>(&x);
   assert(p);
 
-  if((c = _mfactor.compare(p->_mfactor))) { untested();
+  if((c = _mfactor.compare(p->_mfactor))) {
     return c;
-  }else if((c = _xposition.compare(p->_xposition))) { untested();
+  }else if((c = _xposition.compare(p->_xposition))) {
     return c;
   }else if((c = _yposition.compare(p->_yposition))) { untested();
     return c;
@@ -90,17 +91,17 @@ int HS_PARAM::compare(const COMMON_COMPONENT& x) const
     return c;
   }else if((c = _method.compare(p->_method))) {
     return c;
-  }else if((c = _temperature.compare(p->_temperature))) { untested();
+  }else if((c = _temperature.compare(p->_temperature))) {
     return c;
-  }else if((c = _dtemp.compare(p->_dtemp))) { untested();
+  }else if((c = _dtemp.compare(p->_dtemp))) {
     return c;
-  }else if((c = _tnom.compare(p->_tnom))) { untested();
+  }else if((c = _tnom.compare(p->_tnom))) {
     return c;
   }else if((c = _temp_c.compare(p->_temp_c))) {
     return c;
   }else if((c = _tnom_c.compare(p->_tnom_c))) { untested();
     return c;
-  }else{ untested();
+  }else{
     return false;
   }
 }

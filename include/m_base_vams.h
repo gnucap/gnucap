@@ -157,7 +157,7 @@ public:
     if(_data){
       // BUG: missing escape
       return '"' + std::string(_data) + '"';
-    }else{ untested();
+    }else{
       return "nul"; // uh. make sure to query is_NA;
     }
   }
