@@ -45,7 +45,7 @@ protected: // override virtual
   int     matrix_nodes()const override	{return 0;}
   int     net_nodes()const override	{return _net_nodes;}
   //CARD* clone()const			//CARD/null
-  void  precalc_first()override;
+  // void  precalc_first()override;     //COMPONENT
   //void  expand()			//COMPONENT
   void  precalc_last()override;
   //void  map_nodes();

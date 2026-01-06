@@ -29,9 +29,10 @@
 bool HS_PARAM::operator==(const COMMON_COMPONENT& x) const
 {
 #ifndef NDEBUG
-  if(this == &x){ untested();
-    incomplete();
+  if(this == &x){ itested();
+#ifndef DEBUG_POOL
     unreachable();
+#endif
   }else{
   }
 #endif

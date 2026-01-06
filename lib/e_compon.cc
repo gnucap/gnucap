@@ -368,6 +368,7 @@ void COMMON_COMPONENT::expand(const COMPONENT* comp)
     }
   }else{
   }
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::precalc_first_chain(PARAM_LIST const* p)
@@ -499,9 +500,11 @@ int COMMON_COMPONENT::compare(const COMMON_COMPONENT& x) const
 bool COMMON_COMPONENT::operator==(const COMMON_COMPONENT& x)const
 {
 #ifndef NDEBUG
-  if(this == &x){ untested();
+  if(this == &x){ itested();
     // redundant call, should not get here.
+#ifndef DEBUG_POOL
     unreachable();
+#endif
     // return true;
   }else if(&typeid(*this) != &typeid(x)){ untested();
     // impossible call, should not get here.
@@ -810,6 +813,8 @@ void COMPONENT::expand()
 /*--------------------------------------------------------------------------*/
 void COMPONENT::precalc_first()
 {
+  check_pool_consistency();
+
   trace2("COMPONENT::precalc_first1", long_label(), common());
   for(int i = 0; i < min_nodes(); ++i){
     if(!node_is_connected(i)) {
@@ -958,6 +963,7 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
 			       int , double [],
 			       int node_count, const node_t Nodes[])
 {
+  check_pool_consistency();
   set_label(Label);
   set_owner(Owner);
   attach_common(Common);
@@ -968,6 +974,7 @@ void COMPONENT::set_parameters(const std::string& Label, CARD *Owner,
     std::copy_n(Nodes, node_count, &n_(0));
   }else{itested();
   }
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 /* set_slave: force evaluation whenever the owner is evaluated.
@@ -1162,9 +1169,11 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
 // obsolete. use COMMON_COMPONENT::expand..
 void COMPONENT::attach_model()
 {
+  check_pool_consistency();
   COMMON_COMPONENT* c = common()->clone();
   c->attach_model(this);
   attach_common(c);
+  check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
 /* q_eval: queue this device for evaluation on the next pass,
