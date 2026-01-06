@@ -166,7 +166,7 @@ void COMMON_COMPONENT::unique_common(COMMON_COMPONENT**c)
     }
   }else if(ac == CC_STATIC){
     d = COMMON_COMPONENT::_commons[*c];
-    assert(d == *c);
+    // assert(d == *c); //no. multiple static COMMON_PARAMLIST..
   }else if(ac > CC_STATIC){
   }else{
     assert(*c == COMMON_COMPONENT::_commons[*c]);
