@@ -1,1 +1,1 @@
-#define PATCHLEVEL "common_pool 2025.12.18"
+#define PATCHLEVEL "stdfix 2026.01.05"

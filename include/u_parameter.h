@@ -155,6 +155,10 @@ public:
     }
     return *this;
   }
+  bool  operator==(const PARAMETER& b)const {
+    PARAMETER const* p = &b;
+    return (p && _v == p->_v  &&  _s == p->_s);
+  }
   bool  operator==(const PARA_BASE& b)const override {
     PARAMETER const* p = dynamic_cast<PARAMETER const*>(&b);
     return (p && _v == p->_v  &&  _s == p->_s);
@@ -223,8 +227,17 @@ bool has_soft_value(const PARA_BASE& p)
 
 template <class T>
 bool has_nz_value(const T& p)
+{ untested();
+  assert (!has_good_value(p) || p.value());
+  return (has_good_value(p) && !(p == 0));
+}
+
+template <class T>
+bool has_nz_value(const PARAMETER<T>& p)
 {
-  return (has_good_value(p) && p != 0);
+  assert (!has_good_value(p) || p.value());
+  typedef typename data_type<T>::value_type value_type;
+  return (has_good_value(p) && !(p == value_type(0)));
 }
 
 template <class T>
