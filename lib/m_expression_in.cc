@@ -71,7 +71,7 @@ void Expression::arglisttail(CS& File)
 void Expression::arglist(CS& File)
 {
   if (File.skip1b("(")) {
-    push_back(new Token_STOP("("));
+    push_back(new Token_STOP('('));
     if (!File.skip1b(")")) {
       expression(File);
       arglisttail(File);
@@ -81,7 +81,7 @@ void Expression::arglist(CS& File)
       }
     }else{
     }
-    push_back(new Token_PARLIST(")"));
+    push_back(new Token_PARLIST(')'));
   }else{
   }
 }
@@ -189,8 +189,9 @@ void Expression::termtail(CS& File)
 {
   if (File >> "*|/|%") {
     std::string name(File.last_match());
+    assert(name.size()==1);
     factor(File);
-    push_back(new Token_BINOP(name));
+    push_back(new Token_BINOP(name[0]));
     termtail(File);
   }else{
   }
@@ -208,8 +209,9 @@ void Expression::addexptail(CS& File)
 {
   if (File >> "+|-") {
     std::string name(File.last_match());
+    assert(name.size()==1);
     term(File);
-    push_back(new Token_BINOP(name));
+    push_back(new Token_BINOP(name[0]));
     addexptail(File);
   }else{
   }

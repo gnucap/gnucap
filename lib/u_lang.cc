@@ -170,6 +170,9 @@ void LANGUAGE::print_item(OMSTREAM& o, const CARD* c)
     print_comment(o, com);
   }else if (const DEV_DOT* d = dynamic_cast<const DEV_DOT*>(c)) {itested();
     print_command(o, d);
+  }else if (dynamic_cast<const CMD*>(c)) {itested();
+    incomplete();
+    // print_command(o, d);
   }else{itested();
     incomplete();
     unreachable();

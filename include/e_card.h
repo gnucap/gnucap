@@ -106,7 +106,7 @@ public:	// ac
   virtual void	 ac_final()		{}
   //--------------------------------------------------------------------
 public:	// state, aux data
-  virtual char id_letter()const	{unreachable(); return '\0';}
+  virtual char id_letter()const	{itested(); return '\0';}
   virtual int  net_nodes()const	{return 0;}
   virtual bool is_device()const	{return false;}
   virtual void set_slave()	{untested(); assert(!subckt());}

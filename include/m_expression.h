@@ -34,10 +34,17 @@ class Token : public Base {
 protected:
   struct shortstr{
     char _s[8];
-    shortstr(std::string s){
-      assert(s.size()<8);
-      strncpy(_s, s.c_str(), s.size()+1);
-      assert(!_s[s.size()]);
+    shortstr(char n) { // 3367
+      _s[0] = n; _s[1] = '\0';
+    }
+    shortstr(std::string s){ // 60
+      if(s.size()<8){
+	strncpy(_s, s.c_str(), s.size()+1);
+	assert(!_s[s.size()]);
+      }else{ untested();
+	unreachable();
+	_s[0] = '\0';
+      }
     }
     shortstr(const shortstr&) = default;
     operator std::string() const {
@@ -86,9 +93,11 @@ public:
 class Token_BINOP : public Token {
   shortstr _name;
 protected:
-  explicit Token_BINOP(std::string Name, Base const* Data)
-    : Token(Data), _name(Name) {}
+  explicit Token_BINOP(shortstr Name, Base const* Data)
+    : Token(Data), _name(Name) {itested();}
 public:
+  explicit Token_BINOP(char Name)
+    : Token(nullptr), _name(Name) {}
   explicit Token_BINOP(std::string Name)
     : Token(nullptr), _name(Name) {}
   explicit Token_BINOP(const Token_BINOP& P) : Token(P), _name(P._name) {}
@@ -126,10 +135,12 @@ public:
 class Token_STOP : public Token {
   shortstr _name;
 protected:
-  explicit Token_STOP(std::string Name, Base const* Data)
+  explicit Token_STOP(shortstr Name, Base const* Data)
     : Token(Data), _name(Name) {untested();}
 public:
   explicit Token_STOP(std::string Name)
+    : Token(nullptr), _name(Name) {}
+  explicit Token_STOP(char Name)
     : Token(nullptr), _name(Name) {}
   explicit Token_STOP(const Token_STOP& P) : Token(P), _name(P._name) {}
   Token* clone()const override{return new Token_STOP(*this);}
@@ -142,7 +153,7 @@ public:
 class Token_ARRAY : public Token {
   shortstr _name;
 protected:
-  explicit Token_ARRAY(std::string Name, Base const* Data)
+  explicit Token_ARRAY(shortstr Name, Base const* Data)
     : Token(Data), _name(Name) {untested();}
 public:
   explicit Token_ARRAY(std::string Name, Base* L=nullptr)
@@ -163,6 +174,8 @@ protected:
 public:
   explicit Token_PARLIST(std::string Name, Base* L=nullptr)
     : Token(L), _name(Name) {}
+  explicit Token_PARLIST(char Name, Base* L=nullptr)
+    : Token(L), _name(1, Name) {}
   explicit Token_PARLIST(const Token_PARLIST& P) : Token(P), _name(P._name) {}
   Token* clone()const override{return new Token_PARLIST(*this);}
   void stack_op(Expression*)const override;
