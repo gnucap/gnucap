@@ -5,5 +5,9 @@ cmosn: is - js conflict
 >>>>>.op 
 cmosn: rsh - rs - rd conflict: using rsh
 cmosn: is - js conflict
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
 #           v(2)       v(3)       v(4)       iter(0)   
+cmosn: rsh - rs - rd conflict: using rsh
+cmosn: is - js conflict
  27.        2.2        2.2        0.         5.        

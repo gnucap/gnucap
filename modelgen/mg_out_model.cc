@@ -309,7 +309,8 @@ static void make_model_precalc(std::ofstream& out, const Model& m)
     "/*--------------------------------------------------------------------------*/\n";
   out <<
     "void MODEL_" << m.name() << "::precalc_last()\n"
-    "{\n";
+    "{\n"
+    "  return MODEL_" << m.name() << "::precalc_first();\n"; // for now.
   if (!m.hide_base()) {
     out << "    MODEL_" << m.inherit() << "::precalc_last();\n";
   }else{

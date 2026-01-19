@@ -163,6 +163,7 @@ void make_dev_copy_constructor(std::ofstream& out, const Device& d)
 static void make_set_parameters(std::ofstream& out, const Element& e)
 {
   make_tag();
+  out << "  ";
   out << "      _" << e.name() << "->set_parameters(\"" << e.name() << "\", this, ";
   if (e.eval() != "") {
     out << "&Eval_" << e.eval();
@@ -401,7 +402,8 @@ static void make_dev_precalc_last(std::ofstream& out, const Device& d)
     }else if ((*e)->args() != "") {
       out <<
 	"  if(_" << (*e)->name() << "){\n"
-        "//    _" << (*e)->name() << "->attach_common(c->_" << (*e)->args() << ");\n"
+        "    _" << (*e)->name() << "->attach_common(c->_" << (*e)->args() << ");\n"
+        "    _" << (*e)->name() << "->precalc_last(); // sdp kludge\n"
 	"  }else{\n"
         "  }\n";
     }else{

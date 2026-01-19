@@ -172,6 +172,16 @@ static void make_common_operator_compare(std::ofstream& out, const Device& d)
     // "    return (s < 0)?-1:1;\n"
     "  }else{\n"
     "  }\n";
+  for (Args_List::const_iterator
+       p = d.circuit().args_list().begin();
+       p != d.circuit().args_list().end();
+       ++p) {
+    out<<
+      "  if((s = intptr_t(_" << (**p).name() << ") - intptr_t(p->_" << (**p).name() << "))) {\n"
+      "    return (s < 0)?-1:1;\n"
+      "  }else{\n"
+      "  }\n";
+  }
 
   std::string sep;
   if(d.common().calculated().size()){
