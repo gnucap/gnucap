@@ -378,6 +378,50 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "------------------------------------*/\n";
 }
 /*--------------------------------------------------------------------------*/
+static void make_dev_precalc_last(std::ofstream& out, const Device& d)
+{
+  make_tag();
+  out <<
+    "void DEV_" << d.name() << "::precalc_last()\n"
+    "{\n"
+    "  BASE_SUBCKT::precalc_last();\n"
+    "  const COMMON_" << d.name() << "* c = prechecked_cast<const COMMON_"
+      << d.name() << "*>(common());\n"
+    "  assert(c);\n"
+    "  const SDP_" << d.model_type() << "* s = prechecked_cast<const SDP_"
+      << d.model_type() << "*>(c->sdp());\n"
+    "  assert(s);\n"
+    "  // subcircuit commons, recursive\n";
+  for (Element_List::const_iterator
+       e = d.circuit().elements().begin();
+       e != d.circuit().elements().end();
+       ++e) {
+    assert(*e);
+    if ((*e)->eval() != "") {
+    }else if ((*e)->args() != "") {
+      out <<
+	"  if(_" << (*e)->name() << "){\n"
+        "//    _" << (*e)->name() << "->attach_common(c->_" << (*e)->args() << ");\n"
+	"  }else{\n"
+        "  }\n";
+    }else{
+    }
+
+    if((*e)->value()!=""){
+      out <<
+	"  if(_" << (*e)->name() << "){\n"
+        "    auto ee = prechecked_cast<ELEMENT*>(_" << (*e)->name() << ");\n"
+        "    ee->set_value(" << (*e)->value() << ");\n"
+	"  }else{\n"
+        "  }\n";
+    }else{
+    }
+  }
+  out <<
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
 static std::string fix_expression(const std::string& in)
 {
   std::string out;
@@ -491,6 +535,10 @@ void make_cc_dev(std::ofstream& out, const Device& d)
   make_dev_default_constructor(out, d);
   make_dev_copy_constructor(out, d);
   make_dev_expand(out, d);
+  if(has_precalc_last(d)) { untested();
+    make_dev_precalc_last(out, d);
+  }else{ untested();
+  }
   make_dev_probe(out, d);
   make_dev_aux(out, d);
   out << "/*--------------------------------------"
@@ -498,3 +546,4 @@ void make_cc_dev(std::ofstream& out, const Device& d)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+// vim:ts=8:sw=2:noet:

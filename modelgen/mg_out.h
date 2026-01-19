@@ -47,4 +47,10 @@ void make_cc_dev(std::ofstream&, const Device&);
 /* mg_out_common.cc */
 void make_cc_common(std::ofstream&, const Device&);
 /*--------------------------------------------------------------------------*/
+inline bool has_precalc_last(Device const& d)
+{
+  return d.circuit().args_list().size();
+}
 /*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+// vim:ts=8:sw=2:noet:

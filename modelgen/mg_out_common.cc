@@ -66,7 +66,7 @@ static void make_common_copy_constructor(std::ofstream& out, const Device& d)
     "COMMON_" << d.name() << "::COMMON_" << d.name() << "(const COMMON_" << d.name() << "& p)\n"
     "  :COMMON_COMPONENT(p)";
   make_copy_construct_parameter_list(out, d.common().raw());
-  out << ",\n   _sdp(p._sdp)";
+  // out << ",\n   _sdp(p._sdp)";
   make_copy_construct_parameter_list(out, d.common().calculated());
   for (Args_List::const_iterator
        p = d.circuit().args_list().begin();
@@ -167,10 +167,11 @@ static void make_common_operator_compare(std::ofstream& out, const Device& d)
     "  assert(p);\n";
 
   out <<
-	 "  // if(intptr_t s = intptr_t(_sdp) - intptr_t(p->_sdp)){\n"
-    "  //   return s < 0;\n"
-    "  // }else{\n"
-    "  // }\n";
+    "  intptr_t s;\n"
+    "  if((s = intptr_t(_sdp) - intptr_t(p->_sdp))){\n"
+    // "    return (s < 0)?-1:1;\n"
+    "  }else{\n"
+    "  }\n";
 
   std::string sep;
   if(d.common().calculated().size()){
