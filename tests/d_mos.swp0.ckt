@@ -1,0 +1,18 @@
+modelgen sweep test
+M1   1  1  0  0  nmos l=9.u w=w
+.model nmos nmos ( level=8 rd=0. rs=0. cbd=1 cbs=0. is=10.E-15)
+.parameter w=1u
+
+.list
+.print dc c(M1.Cgs)
+.dc
+.dc w 1u 10 5
+
+.parameter w=10
+.delete M1
+M1   1  1  0  0  nmos l=9.u w=w
+.print dc c(M1.Cgs)
+.dc w 10 10 1
+.dc w 1u 10 5
+
+.end

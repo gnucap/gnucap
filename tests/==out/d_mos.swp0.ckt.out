@@ -1,0 +1,27 @@
+nmos al gate 
+.model nmos nmos ( level=8 lambda=0. rd=0. rs=0. cbd=1 cbs=0. is=10.E-
+                           ^ ? nmos: bad parameter lambda ignored
+M1 ( 1 1 0 0 )  nmos  l=9.u w=w
+.model nmos nmos8 ( level=8 cdsc=NA( 240.u) cdscb=NA( 0.) cdscd=NA( 0.) cit=NA( 0.) nfactor=NA( 1.) xj=NA( 150.n) vsat=NA( 80.K) at=NA( 33.K) a0=NA( 1.) ags=NA( 0.) a1=NA( 0.) a2=NA( 1.) keta=NA(-0.047) nsub=NA( 60.E+15) ngate=NA( 0.) vbm=NA(-3.) xt=NA( 155.n) kt1=NA(-0.11) kt1l=NA( 0.) kt2=NA( 0.022) k3=NA( 80.) k3b=NA( 0.) w0=NA( 2.5u) nlx=NA( 174.n) dvt0=NA( 2.2) dvt1=NA( 0.53) dvt2=NA(-0.032) dvt0w=NA( 0.) dvt1w=NA( 5.3Meg) dvt2w=NA(-0.032) drout=NA( 0.56) ua1=NA( 4.31n) ua=NA( 2.25n) ub1=NA(-7.61E-18) ub=NA( 587.E-21) ute=NA(-1.5) voff=NA(-0.08) delta=NA( 0.01) rdsw=NA( 0.) prwg=NA( 0.) prwb=NA( 0.) prt=NA( 0.) eta0=NA( 0.08) etab=NA(-0.07) pclm=NA( 1.3) pdiblc1=NA( 0.39) pdiblc2=NA( 0.0086) pdiblcb=NA( 0.) pscbe1=NA( 424.Meg) pscbe2=NA( 10.u) pvag=NA( 0.) wr=NA( 1.) dwg=NA( 0.) dwb=NA( 0.) b0=NA( 0.) b1=NA( 0.) alpha0=NA( 0.) beta0=NA( 30.) elm=NA( 5.) vfbcv=NA(-1.) cgsl=NA( 0.) cgdl=NA( 0.) ckappa=NA( 0.6) clc=NA( 100.n) cle=NA( 0.6) acde=NA( 1.) moin=NA( 15.) noff=NA( 1.) voffcv=NA( 0.) alpha1=NA( 0.) capmod=NA(3) nqsmod=NA(0) mobmod=NA(1) noimod=NA(1) paramchk=NA(0) binunit=NA(1) version=NA( 3.3) tox=NA( 15.n) xpart=NA( 0.) jsw=NA( 0.) nj=NA( 1.) xti=NA( 3.) lint=NA( 0.) ll=NA( 0.) lln=NA( 1.) lw=NA( 0.) lwn=NA( 1.) lwl=NA( 0.) wint=NA( 0.) wl=NA( 0.) wln=NA( 1.) ww=NA( 0.) wwn=NA( 1.) wwl=NA( 0.) em=NA( 41.Meg) ef=NA( 1.) acnqsmod=NA(0) toxm=NA( 15.n) lintnoi=NA( 0.) ijth=NA( 0.1) tpb=NA( 0.) tcj=NA( 0.) tpbsw=NA( 0.) tcjsw=NA( 0.) tpbswg=NA( 0.) tcjswg=NA( 0.) llc=NA( 0.) lwc=NA( 0.) lwlc=NA( 0.) wlc=NA( 0.) wwc=NA( 0.) wwlc=NA( 0.) acm=NA(10) tnom=NA( 27.) fc=NA( 0.5) pb= 1. cj=NA( 500.u) mj=NA( 0.5) cjsw=NA( 0.) mjsw= 0.33 is=10.E-15 rd=0. rs=0. cbd=1 cbs=0. cgso= 207.18798p cgdo= 207.18798p cgbo= 0. ld=NA( 0.))
+#           c(M1.Ids)  c(M1.Cqbd) c(M1.Cqds) c(M1.Cqgs) c(M1.Cgb)  c(M1.Cgs)  c(M1.Ddb) 
+ 1.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 2.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 3.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 4.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 5.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 6.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 7.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 8.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 9.u        ??         ??         ??         ??         0.         280.2E-18  1.        
+ 10.u       ??         ??         ??         ??         0.         280.2E-18  1.        
+#           c(M1.Ids)  c(M1.Cqbd) c(M1.Cqds) c(M1.Cqgs) c(M1.Cgb)  c(M1.Cgs)  c(M1.Ddb) 
+ 1.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 2.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 3.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 4.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 5.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 6.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 7.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 8.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 9.u        ??         ??         ??         ??         0.         2.8018f    1.        
+ 10.u       ??         ??         ??         ??         0.         2.8018f    1.        
