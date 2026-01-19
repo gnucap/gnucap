@@ -87,8 +87,8 @@ protected:
 public:
   virtual ~COMMON_COMPONENT();
 
-  void attach_model(const COMPONENT*)const;
-  COMMON_COMPONENT& attach(const MODEL_CARD* m) {_model = m; return *this;}
+  void attach_model(const COMPONENT*);
+  COMMON_COMPONENT& attach(const MODEL_CARD* m);
   void set_modelname(const std::string& n) {_modelname = n;}
   void parse_modelname(CS&);
 

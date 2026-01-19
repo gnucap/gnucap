@@ -54,6 +54,7 @@ MODEL_CARD::~MODEL_CARD()
     _sim->uninit();
   }else{
   }
+  // assert(!has_refs()); not true. CARD_LIST::erase_all order.
 }
 /*--------------------------------------------------------------------------*/
 void MODEL_CARD::set_param_by_index(int i, std::string& value, int offset)
