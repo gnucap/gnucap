@@ -170,6 +170,7 @@ static void make_common(std::ofstream& out, const Device& d)
     "           ~" << class_name << "();\n"
     "  bool     operator==(const COMMON_COMPONENT&)const override;\n"
     "  bool     operator<(const COMMON_COMPONENT&)const override;\n"
+    "  int compare(const COMMON_COMPONENT&)const override;\n"
     "  bool     has_less()const override {return true;}\n"
     "  COMMON_COMPONENT* clone()const override {return new "<<class_name<<"(*this);}\n"
     "  void     set_param_by_index(int, std::string&, int) override;\n"
