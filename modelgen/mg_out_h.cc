@@ -170,6 +170,7 @@ static void make_common(std::ofstream& out, const Device& d)
     "           ~" << class_name << "();\n"
     "  bool     operator==(const COMMON_COMPONENT&)const override;\n"
     "  bool     operator<(const COMMON_COMPONENT&)const override;\n"
+    "  int compare(const COMMON_COMPONENT&)const override;\n"
     "  bool     has_less()const override {return true;}\n"
     "  COMMON_COMPONENT* clone()const override {return new "<<class_name<<"(*this);}\n"
     "  void     set_param_by_index(int, std::string&, int) override;\n"
@@ -250,8 +251,15 @@ static void make_device(std::ofstream& out, const Device& d)
     "  CARD*     clone()const override         {return new "
       << class_name << "(*this);}\n"
     "  void      precalc_first()override {COMPONENT::precalc_first(); if(subckt()) subckt()->precalc_first();}\n"
-    "  void      expand()override;\n"
-    "  //void    precalc_last()override;//BASE_SUBCKT\n"
+    "  void      expand()override;\n";
+  if(has_precalc_last(d)){ untested();
+  out <<
+    "  void    precalc_last()override;\n";
+  }else{ untested();
+  out <<
+    "  //void    precalc_last()override;//BASE_SUBCKT\n";
+  }
+  out <<
     "  //void    map_nodes();         //BASE_SUBCKT\n"
     "  //void    tr_begin();          //BASE_SUBCKT\n"
     "  //void    tr_restore();        //BASE_SUBCKT\n";
@@ -470,3 +478,4 @@ void make_h_file(const File& in)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+// vim:ts=8:sw=2:noet:

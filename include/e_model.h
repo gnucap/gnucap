@@ -44,6 +44,12 @@ public:
 };
 /*--------------------------------------------------------------------------*/
 class INTERFACE MODEL_CARD : public CARD{
+protected:
+  const CARD* _component_proto;
+public:
+  PARAMETER<double> _tnom_c;
+private:
+  mutable int _refs{0};
 private:
   explicit	MODEL_CARD() {unreachable();}
 protected:
@@ -52,6 +58,10 @@ public:
   explicit	MODEL_CARD(const COMPONENT* p);
 		~MODEL_CARD();
 
+public: // refcount.
+  void	inc_refs()const	{++_refs;}
+  void	dec_refs()const	{assert(_refs>0); --_refs;}
+  bool	has_refs()const	{return _refs > 0;}
 public: // override virtuals
   char	id_letter()const override	{untested();return '\0';}
   CARD*	clone_instance()const override	{return (_component_proto) ? _component_proto->clone() : nullptr;}
@@ -71,10 +81,6 @@ public:
   virtual bool parse_params_obsolete_callback(CS&) {unreachable(); return false;}
   virtual bool is_valid(const COMPONENT*)const {return true;}
   const CARD* component_proto()const {itested(); return _component_proto;}
-protected:
-  const CARD* _component_proto;
-public:
-  PARAMETER<double> _tnom_c;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

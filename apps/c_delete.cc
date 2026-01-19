@@ -30,8 +30,22 @@
 #include "globals.h"
 #include "e_cardlist.h"
 #include "c_comand.h"
+#include "e_model.h"
 /*--------------------------------------------------------------------------*/
 namespace {
+/*--------------------------------------------------------------------------*/
+static void erase_safely(CARD_LIST* Scope, CARD_LIST::iterator i)
+{
+  if(auto m = dynamic_cast<MODEL_CARD const*>(*i)){
+    if(m->has_refs()){
+      error(bDANGER, "can't delete " + m->long_label() + ": it is in use.\n");
+    }else{
+      Scope->erase(i);
+    }
+  }else{
+    Scope->erase(i);
+  }
+}
 /*--------------------------------------------------------------------------*/
 class CMD_DELETE : public CMD {
 private:
@@ -81,7 +95,7 @@ private:
 	    CARD_LIST::iterator old_i = i++;
 	    // ^^^^^^^^^^^^ move i past the item being deleted
 	    if (wmatch((**old_i).short_label(), name)) {
-	      Scope->erase(old_i);
+	      erase_safely(Scope, old_i);
 	      didit = true;
 	    }
 	  }
@@ -91,7 +105,7 @@ private:
 	// no wild card.  fast search for one exact match
 	CARD_LIST::iterator i = Scope->find_(name);
 	if (i != Scope->end()) {
-	  Scope->erase(i);
+	  erase_safely(Scope, i);
 	  return true;
 	}else{
 	  return false;

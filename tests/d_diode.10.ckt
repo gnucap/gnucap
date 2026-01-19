@@ -5,7 +5,10 @@ d1 (1 0) my_diode
 .probe op v(1)
 .op
 .delete my_diode
+.delete d1
+.delete my_diode
 .model my_diode d
+d1 (1 0) my_diode
 .probe op v(1)
 .op
 .end

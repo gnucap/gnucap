@@ -66,13 +66,16 @@ prep: symlinks ${TEST_PLUGINS}
 	# @[ ! -s "${TARGETDIR}" ]
 	-mkdir -p ${TARGETDIR}
 
+SHELL=/bin/bash
 ${gc_out}: ${TARGETDIR}/%.gc.out: prep
 	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${srcdir}/$*.gc |tail -n +${NUM_HDR_LINES} | \
-		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
+		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@; \
+   err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
 
 ${ckt_out}: ${TARGETDIR}/%.ckt.out: prep
 	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} --acs -b ${srcdir}/$*.ckt |tail -n +${NUM_HDR_LINES} | \
-		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@
+		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@; \
+   err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
 
 ${PWD}/disciplines.vams:
 	-${LN_S} ${top_srcdir}/vams/disciplines.vams

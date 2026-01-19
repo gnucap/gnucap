@@ -4,6 +4,7 @@ associated tarball. This file summarizes the important changes.
 == 2026****-dev
 - common pool: prune duplicate commons
 - fix compiance with C++ <= 23
+- bugfix parameter sweeps for modelgen models
 - ..
 
 == 20251222-dev

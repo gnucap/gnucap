@@ -66,7 +66,7 @@ static void make_common_copy_constructor(std::ofstream& out, const Device& d)
     "COMMON_" << d.name() << "::COMMON_" << d.name() << "(const COMMON_" << d.name() << "& p)\n"
     "  :COMMON_COMPONENT(p)";
   make_copy_construct_parameter_list(out, d.common().raw());
-  out << ",\n   _sdp(p._sdp)";
+  // out << ",\n   _sdp(p._sdp)";
   make_copy_construct_parameter_list(out, d.common().calculated());
   for (Args_List::const_iterator
        p = d.circuit().args_list().begin();
@@ -126,21 +126,11 @@ static void make_common_operator_equal(std::ofstream& out, const Device& d)
   out <<
     "bool COMMON_" << d.name() << "::operator==(const COMMON_COMPONENT& x)const\n"
     "{\n"
-    "  const COMMON_" << d.name() << "* p = dynamic_cast<const COMMON_" << d.name() << "*>(&x);\n"
-    "  return (p\n";
-  for (Parameter_List::const_iterator
-       p = d.common().raw().begin();
-       p != d.common().raw().end();
-       ++p) {
-    out << "    && " << (**p).code_name() << " == p->" << (**p).code_name() << '\n';
-  }
-  // TODO: this seems wrong. rely on _model equality?
-  for(auto c : d.common().calculated()){
-    out << "/*calc*/    && " << c->code_name() << " == p->" << c->code_name() << '\n';
-  }
-  out <<
-    " //   && _sdp == p->_sdp\n"
-    "    && COMMON_COMPONENT::operator==(x));\n"
+    "  if(this == &x){\n"
+    "    return true;\n"
+    "  }else{\n"
+    "    return COMMON_" << d.name() << "::compare(x) == 0;\n"
+    "  }\n"
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
 }
@@ -154,10 +144,22 @@ static void make_common_operator_less(std::ofstream& out, const Device& d)
     "  if(this == &x){\n"
     "    return false;\n"
     "  }else{\n"
+	 "    return COMMON_" << d.name() << "::compare(x) < 0;\n"
     "  }\n"
+    "}\n"
+    "/*--------------------------------------------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
+static void make_common_operator_compare(std::ofstream& out, const Device& d)
+{
+  make_tag();
+	out <<
+    "int COMMON_" << d.name() << "::compare(const COMMON_COMPONENT& x) const\n"
+    "{\n"
+    "  assert(this != &x);\n"
     "  int c = COMMON_COMPONENT::compare(x);\n"
     "  if(c){\n"
-    "    return c < 0;\n"
+    "    return c;\n"
     "  }else{\n"
     "  }\n";
   out <<
@@ -165,38 +167,51 @@ static void make_common_operator_less(std::ofstream& out, const Device& d)
     "  assert(p);\n";
 
   out <<
-	 "  // if(intptr_t s = intptr_t(_sdp) - intptr_t(p->_sdp)){\n"
-    "  //   return s < 0;\n"
-    "  // }else{\n"
-    "  // }\n";
-
-  for (Parameter_List::const_iterator
-       p = d.common().raw().begin();
-       p != d.common().raw().end();
+    "  intptr_t s;\n"
+    "  if((s = intptr_t(_sdp) - intptr_t(p->_sdp))){\n"
+    // "    return (s < 0)?-1:1;\n"
+    "  }else{\n"
+    "  }\n";
+  for (Args_List::const_iterator
+       p = d.circuit().args_list().begin();
+       p != d.circuit().args_list().end();
        ++p) {
-    out <<
-		"  if((c=" << (**p).code_name() << ".compare( p->" << (**p).code_name() << "))) {\n"
-		"    return c < 0;\n"
-		"  }else{\n"
-		"  }\n";
-
+    out<<
+      "  if((s = intptr_t(_" << (**p).name() << ") - intptr_t(p->_" << (**p).name() << "))) {\n"
+      "    return (s < 0)?-1:1;\n"
+      "  }else{\n"
+      "  }\n";
   }
-  // TODO: this seems wrong. rely on _model equality?
-  out << "#if 1 /// calculated ///\n";
+
+  std::string sep;
   if(d.common().calculated().size()){
     out << "  double c0;\n";
   }else{
   }
-  for(auto c : d.common().calculated()){
-    out <<
-		"  if((c0 = " << c->code_name() << " - p->" << c->code_name() << ") != 0) {\n"
-		"    return c0 < 0;\n"
-		"  }else{\n"
-		"  }\n";
-  }
-  out << "#endif /// calculated ///\n";
   out <<
-	 "  return false;\n"
+	 "  ";
+  for (Parameter_List::const_iterator
+       p = d.common().raw().begin();
+       p != d.common().raw().end();
+       ++p) {
+    out << sep << "if((c=" << (**p).code_name() << ".compare( p->" << (**p).code_name() << "))) {\n"
+		"    return c;\n"
+		"  }";
+		sep = "else ";
+  }
+
+#if 1
+  for(auto c : d.common().calculated()){
+    out << sep << "if((c0 = " << c->code_name() << " - p->" << c->code_name() << ")) {\n"
+		"    return (c0 < 0.)?-1:1;\n"
+		"  }";
+		sep = "else ";
+  }
+#endif
+  out << sep << "{\n"
+      "    return 0;\n"
+      "  }\n";
+  out <<
     "}\n"
     "/*--------------------------------------------------------------------------*/\n";
 }
@@ -490,6 +505,7 @@ void make_cc_common(std::ofstream& out, const Device& d)
   make_common_destructor(out, d);
   make_common_operator_equal(out, d);
   make_common_operator_less(out, d);
+  make_common_operator_compare(out, d);
   make_common_set_param_by_index(out, d);
   make_common_param_is_printable(out, d);
   make_common_param_name(out, d);
@@ -500,3 +516,4 @@ void make_cc_common(std::ofstream& out, const Device& d)
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+// vim:ts=8:sw=2:noet:

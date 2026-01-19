@@ -47,6 +47,10 @@ COMMON_COMPONENT::COMMON_COMPONENT(const COMMON_COMPONENT& p)
    _attach_count(0)
 {
   attach_next(p._next);
+  if(_model){
+    _model->inc_refs();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 COMMON_COMPONENT::COMMON_COMPONENT(int c)
@@ -73,6 +77,7 @@ COMMON_COMPONENT::~COMMON_COMPONENT()
     assert(0 && "common still in use");
   }
   detach_next();
+  attach((MODEL_CARD*)nullptr);
   assert(!_next);
 }
 /*--------------------------------------------------------------------------*/
@@ -199,11 +204,30 @@ void COMMON_COMPONENT::unlink_common(COMMON_COMPONENT*c)
   }
 }
 /*--------------------------------------------------------------------------*/
-void COMMON_COMPONENT::attach_model(const COMPONENT* d)const
+COMMON_COMPONENT& COMMON_COMPONENT::attach(const MODEL_CARD* m)
 {
+  if(_model) {
+    _model->dec_refs();
+  }else{
+  }
+  _model = m;
+  if(_model) {
+    _model->inc_refs();
+  }else{
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+void COMMON_COMPONENT::attach_model(const COMPONENT* d)
+{
+  trace3("COMMON_COMPONENT::attach_model", d->long_label(), modelname(), _model);
+
   assert(d);
-  _model = d->find_model(modelname());
-  assert(_model);
+  if(_model){
+  }else{
+    attach(d->find_model(modelname()));
+    assert(_model);
+  }
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::parse_modelname(CS& cmd)
@@ -1111,6 +1135,7 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
     unreachable();
     return nullptr;
   }else{
+    trace2("COMPONENT::find_model", long_label(), modelname);
     const CARD* c = nullptr;
     {
       int bin_count = 0;
@@ -1169,6 +1194,7 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
 // obsolete. use COMMON_COMPONENT::expand..
 void COMPONENT::attach_model()
 {
+  trace2("COMPONENT::attach_model", long_label(), dev_type());
   check_pool_consistency();
   COMMON_COMPONENT* c = common()->clone();
   c->attach_model(this);
