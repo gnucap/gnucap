@@ -524,6 +524,7 @@ void DEV_SUBCKT::expand()
     renew_subckt(_parent, &(c->_params));
 
     subckt()->expand();
+    trace3("expand", long_label(), this, subckt()->size());
   }
 }
 /*--------------------------------------------------------------------------*/

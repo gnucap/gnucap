@@ -58,11 +58,57 @@ void Float::parse(CS& File)
   }
 }
 /*--------------------------------------------------------------------------*/
+// get identifier and turn into internal representation
+// "\1 " -> "1"         -- so it also works with spice
+// "\a " -> "a"         -- identical, use simple form
+// "\$ " -> "$"         -- not sure.
+// "\a* " -> "a*"       -- store unprotected
+// "\\\xyz " -> "\xyz"  -- remove additional escapes
+static std::string get_identifier(CS& cmd, std::string const& term)
+{
+  cmd.skipbl();
+  std::string id;
+
+  if(cmd.is_digit()) {
+    cmd.warn(bDANGER, "invalid identifier");
+  }else{
+  }
+
+  bool esc = cmd.skip1('\\');
+
+  while(esc && cmd.more()) {
+    if(cmd.skip1('\\')){
+      if(cmd.skip1('\\')){
+	id += "\\";
+      }else{ untested();
+	cmd.warn(bDANGER, "invalid escaped char");
+      }
+    }else{
+    }
+    id += cmd.get_to(" \t\f\\");
+
+    if(cmd.skip1(" \t\f")){
+      break;
+    }else{ untested();
+    }
+  }
+
+  if(!esc) {
+    id = cmd.ctos(term, "", "");
+  }else{
+  }
+
+  trace1("identifier", id);
+  return id;
+}
+/*--------------------------------------------------------------------------*/
 void Name_String::parse(CS& File)
 {
   File.skipbl();
   std::string data;
-  if (File.is_pfloat()) {
+  if (File.peek() == '\\'){
+    data = get_identifier(File, "");
+  }else if (File.is_pfloat()) {
     while (File.is_pfloat()) {
       data += File.ctoc();
     }

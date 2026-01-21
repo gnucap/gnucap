@@ -1,0 +1,8 @@
+module test (.a(a));
+  ground b;
+  vsource #(.dc(b)) v1 (.p(a),.n(b));
+endmodule // test
+
+test #() t (.a(a));
+#           v(a)      
+ 27.        2.7183    

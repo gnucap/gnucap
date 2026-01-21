@@ -6,6 +6,11 @@ resistor #(.r(1))     Rin2 (\a , \b	); // tab
 resistor #(.r(1))     Rin2 (\a*a , \-- );
 resistor #(.r(1))     Rin2 (\$aa , \\\ );
 
+module test();
+  resistor #(.r(\x )) r1(a, b);
+  resistor #(.r(\y:1 + 2.)) r1(a, b);
+endmodule
+
 list
 
 spice
