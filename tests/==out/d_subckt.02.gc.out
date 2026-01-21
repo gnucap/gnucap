@@ -1,8 +1,11 @@
 module r (.a(a),.b(b));
+  parameter real x=0;
+  parameter integer y=1;
   resistor #(.r(x+y)) r1 (.p(a),.n(b));
 endmodule // r
 
 module rr (.a(a),.b(b));
+  parameter integer x=4;
   r #(.x(x/3)) r0 (.a(a),.b(b));
 endmodule // rr
 

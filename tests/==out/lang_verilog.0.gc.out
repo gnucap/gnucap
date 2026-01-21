@@ -3,6 +3,8 @@ resistor #(.r(1)) Rin2 (.p(a),.n(b));
 resistor #(.r(1)) Rin2 (.p(\a*a ),.n(\-- ));
 resistor #(.r(1)) Rin2 (.p($aa),.n(\\\ ));
 module test ();
+  parameter real x = 1;
+  parameter real y = \x + 1.;
   resistor #(.r(\x )) r1 (.p(a),.n(b));
   resistor #(.r(\y:1 + 2.)) r1 (.p(a),.n(b));
 endmodule // test
@@ -12,6 +14,8 @@ Rin2 ( a b ) 1
 Rin2 ( a*a -- ) 1
 Rin2 ( $aa \ ) 1
 .subckt test (  )
+.parameter real x = 1;
+.parameter real y = \x + 1.;
 r1 ( a b ) \x 
 r1 ( a b ) \y:1 + 2.
 .ends test

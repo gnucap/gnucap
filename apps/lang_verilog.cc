@@ -473,7 +473,15 @@ public:
       pl->print(IO::mstdout, OPT::language);
       IO::mstdout << '\n';
     }else{
+      std::string tail = cmd.tail();
       parse(cmd, pl);
+      DEV_DOT* dd = new DEV_DOT();
+      assert(dd);
+      // lang_verilog.move_attributes(tag_t(&cmd), dd->id_tag());
+      dd->set_owner(nullptr);
+      dd->set("parameter " + tail);
+      dd->set_owner(nullptr); // ?
+      Scope->push_back(dd);
     }
   }
 private:

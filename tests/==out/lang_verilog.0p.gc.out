@@ -1,5 +1,7 @@
 module test (.a(a));
   ground b;
+  parameter real a = 1.;
+  parameter real b = exp(\a );
   vsource #(.dc(b)) v1 (.p(a),.n(b));
 endmodule // test
 

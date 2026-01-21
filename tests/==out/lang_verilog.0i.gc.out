@@ -1,6 +1,9 @@
 #           v(1)      
  27.        21.       
 module foo (.a(a),.b(b));
+  parameter a=1.;
+  parameter integer i=1.;
+  parameter integer j=a+i;
   vsource #(.dc(j)) v (.p(a),.n(b));
 endmodule // foo
 
