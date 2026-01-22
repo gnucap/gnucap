@@ -8,13 +8,16 @@ resistor #(.r(1))     Rin2 (\$aa , \\\ );
 
 module test();
   parameter real x = 1;
-  parameter real y = \x + 1.;
+  parameter real \y:1 = \x + 1.;
   resistor #(.r(\x )) r1(a, b);
   resistor #(.r(\y:1 + 2.)) r1(a, b);
 endmodule
 
 list
 
+test #() t();
+
 spice
 
 .list
+.op

@@ -688,12 +688,18 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
   }
   size_t here = cmd.cursor();
   for (;;) {
-    if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
+    if (!cmd.more()){ untested();
       break;
-    }else{
+    }else if(cmd.is_alpha()){ untested();
+    }else if(cmd.match1('_')){ untested();
+    }else if(cmd.match1('\\')){ untested();
+      // escaped identifier
+    }else{ untested();
+      break;
     }
-    std::string Name;
-    cmd >> Name;
+    Name_String Name_;
+    cmd >> Name_;
+    std::string Name = Name_;
     par = "";
     if(cmd.skip1('=')) {
       parse_def(cmd, par);

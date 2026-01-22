@@ -108,6 +108,7 @@ void Name_String::parse(CS& File)
   std::string data;
   if (File.peek() == '\\'){
     data = get_identifier(File, "");
+    trace1("Name_String::parse", data);
   }else if (File.is_pfloat()) {
     while (File.is_pfloat()) {
       data += File.ctoc();

@@ -24,6 +24,42 @@
 //testing=script,sparse 2009.08.12
 #include "m_expression.h"
 /*--------------------------------------------------------------------------*/
+std::string mangle_identifier(std::string const& name)
+{ untested();
+  bool plain = true;
+
+  if(isalpha(name[0])){ untested();
+  }else if(name[0] == '$'){ untested();
+  }else if(name[0] == '_'){ untested();
+  }else{ untested();
+    plain = false;
+  }
+
+  for(size_t i=1; plain && i<name.size(); ++i){ untested();
+    if(isalnum(name[i])){ untested();
+    }else if(name[i] == '_'){ untested();
+    }else{ untested();
+      plain = false;
+    }
+  }
+
+  if(plain){ untested();
+    return name;
+  }else{ untested();
+    std::string ret("\\");
+    for(size_t i=0; i<name.size(); ++i){ untested();
+      if(name[i] == '\\'){ untested();
+	ret += "\\";
+      }else{ untested();
+      }
+      ret += name[i];
+    }
+    ret += " ";
+    return ret;
+  }
+}
+/*--------------------------------------------------------------------------*/
+
 void Token::dump(std::ostream& out)const
 {itested();
   out << val_string() << ' ';
@@ -88,7 +124,7 @@ void Expression::dump(std::ostream& out)const
 	// pop op push
 	const Token* t1 = stack.back();
 	stack.pop_back();
-	Token* t = new Token_SYMBOL((**i).name() + t1->full_name());
+	Token* t = new Token_SYMBOL(mangle_identifier((**i).name()) + t1->full_name());
 	locals.push_back(t);
 	stack.push_back(t);
       }else{
