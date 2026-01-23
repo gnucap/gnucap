@@ -590,7 +590,7 @@ void CARD_LIST::attach_params(PARAM_LIST const* p, const CARD_LIST* scope)
     if (_params) {
       delete _params;
       _params = nullptr;
-    }else{ untested();
+    }else{itested();
     }
     _params = new PARAM_LIST;
     _params->eval_copy(*p, scope->params());

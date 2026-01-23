@@ -115,7 +115,29 @@ void Expression::leaf(CS& File)
 {
   trace1("leaf?", File.tail().substr(0,20));
   size_t here = File.cursor();
-  if (File.peek() == '"') {
+  char pk = File.peek();
+  if (pk == '.'){
+    Name_String name(File);
+    if (!File.stuck(&here)) {
+      arglist(File);
+      if (strchr("0123456789", std::string(name)[1])) {
+        push_back(new Token_LITERAL(name));
+      }else{itested();
+	// hack: paramset output variable reference
+        push_back(new Token_SYMBOL(name));
+      }
+    }else{
+      throw Exception_CS("what's this?", File);
+    }
+  }else if (strchr("0123456789", pk)) {
+    Name_String name(File);
+    if (!File.stuck(&here)) {
+      arglist(File);
+      push_back(new Token_LITERAL(name));
+    }else{
+      throw Exception_CS("what's this?", File);
+    }
+  }else if (File.peek() == '"') {
     vString* s = new vString(File);
     if (File.stuck(&here)) {
       delete s;

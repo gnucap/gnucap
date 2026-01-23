@@ -157,7 +157,7 @@ bool DEV_RESISTANCE::do_tr()
     tr_eval();
     assert(_y[0].f0 != LINEAR);
     if (_y[0].f1 >= OPT::shortckt) {
-    }else if (_y[0].f1 <= - OPT::shortckt) { untested();
+    }else if (_y[0].f1 <= - OPT::shortckt) {itested();
     }else if (_y[0].f1 >= 0) {
       error(bPICKY, long_label() + ": short circuit\n");
       _y[0].f1 = OPT::shortckt;

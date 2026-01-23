@@ -688,13 +688,13 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
   }
   size_t here = cmd.cursor();
   for (;;) {
-    if (!cmd.more()){ untested();
+    if (!cmd.more()){
       break;
-    }else if(cmd.is_alpha()){ untested();
+    }else if(cmd.is_alpha()){
     }else if(cmd.match1('_')){ untested();
-    }else if(cmd.match1('\\')){ untested();
+    }else if(cmd.match1('\\')){
       // escaped identifier
-    }else{ untested();
+    }else{
       break;
     }
     Name_String Name_;

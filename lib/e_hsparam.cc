@@ -77,7 +77,7 @@ int HS_PARAM::compare(const COMMON_COMPONENT& x) const
     return c;
   }else if((c = _xposition.compare(p->_xposition))) {
     return c;
-  }else if((c = _yposition.compare(p->_yposition))) { untested();
+  }else if((c = _yposition.compare(p->_yposition))) {itested();
     return c;
   }else if((c = _zposition.compare(p->_zposition))) { untested();
     return c;

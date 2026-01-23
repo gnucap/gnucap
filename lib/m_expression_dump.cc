@@ -24,38 +24,47 @@
 //testing=script,sparse 2009.08.12
 #include "m_expression.h"
 /*--------------------------------------------------------------------------*/
-std::string mangle_identifier(std::string const& name)
-{ untested();
+bool mangle_identifier(std::string& name)
+{
   bool plain = true;
 
-  if(isalpha(name[0])){ untested();
-  }else if(name[0] == '$'){ untested();
-  }else if(name[0] == '_'){ untested();
-  }else{ untested();
+  if(isalpha(name[0])){
+  }else if(name[0] == '$'){
+  }else if(name[0] == '_'){
+  }else if(name[0] == '.'){ untested();
+    // paramset hack. references to output variables in parent
+  }else if(name[0] == '<'){
+    // HACK: treat port branches.
+    // problem in the standard:
+    // <p> could as well be expressed as $port(p), without this mess.
+    return false;
+  }else{
     plain = false;
   }
 
-  for(size_t i=1; plain && i<name.size(); ++i){ untested();
-    if(isalnum(name[i])){ untested();
-    }else if(name[i] == '_'){ untested();
-    }else{ untested();
+  for(size_t i=1; plain && i<name.size(); ++i){
+    if(isalnum(name[i])){
+    }else if(name[i] == '_'){
+    }else if(name[i] == '$'){
+    }else{
       plain = false;
     }
   }
 
-  if(plain){ untested();
-    return name;
-  }else{ untested();
+  if(plain){
+    return false;
+  }else{
     std::string ret("\\");
-    for(size_t i=0; i<name.size(); ++i){ untested();
+    for(size_t i=0; i<name.size(); ++i){
       if(name[i] == '\\'){ untested();
 	ret += "\\";
-      }else{ untested();
+      }else{
       }
       ret += name[i];
     }
     ret += " ";
-    return ret;
+    name = ret;
+    return true;
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -72,6 +81,14 @@ void Token_CONSTANT::dump(std::ostream& out)const
 /*--------------------------------------------------------------------------*/
 void Expression::dump(std::ostream& out)const
 {
+  class stt : public Token{
+    std::string _name;
+  public:
+    explicit stt(std::string Name) : Token(nullptr), _name(Name) {}
+  private:
+    Token* clone()const override {unreachable(); return nullptr;}
+    std::string val_string()const override { return _name; }
+  };
   std::vector<const Token*> locals; // a way of faking garbage collection.
   std::vector<const Token*> stack;  // actually use this
   // The _list is the expression in RPN.
@@ -99,14 +116,15 @@ void Expression::dump(std::ostream& out)const
 	  break;
 	}else if (dynamic_cast<const Token_SYMBOL*>(t)
 	      ||  dynamic_cast<const Token_CONSTANT*>(t)
-	      ||  dynamic_cast<const Token_ARRAY*>(t)) {
+	      ||  dynamic_cast<const Token_ARRAY*>(t)
+	      ||  dynamic_cast<const stt*>(t)) {
 	  if (been_here) {
 	    tmp = ", " + tmp;
 	  }else{
 	    been_here = true;
 	  }
 	  tmp = t->full_name() + tmp;
-	}else{ untested();
+	}else{
 	  unreachable();
 	}
       }
@@ -114,22 +132,38 @@ void Expression::dump(std::ostream& out)const
       if (dynamic_cast<const Token_PARLIST*>(*i)){
 	t = new Token_PARLIST(tmp);
       }else{
-	t = new Token_SYMBOL(tmp);
+	t = new stt(tmp);
       }
       locals.push_back(t);
       stack.push_back(t);
+    }else if (dynamic_cast<const Token_CONSTANT*>(*i)) {
+      stack.push_back(*i);
     }else if (dynamic_cast<const Token_CONSTANT*>(*i)|| dynamic_cast<const Token_SYMBOL*>(*i)) {
       if (!stack.empty() && (dynamic_cast<const Token_PARLIST*>(stack.back()))) {
 	// has parameters (table or function)
 	// pop op push
 	const Token* t1 = stack.back();
 	stack.pop_back();
-	Token* t = new Token_SYMBOL(mangle_identifier((**i).name()) + t1->full_name());
+	std::string mangled = (*i)->name();
+	mangle_identifier(mangled);
+	Token* t = new stt(mangled + t1->full_name());
 	locals.push_back(t);
 	stack.push_back(t);
       }else{
 	// has no parameters (scalar)
-	stack.push_back(*i);
+	if (dynamic_cast<const Token_SYMBOL*>(*i)) {
+	  // mangle if needed.
+	  std::string name_ = (*i)->name();
+	  if(mangle_identifier(name_)){
+	    Token* t = new stt(name_);
+	    stack.push_back(t);
+	    locals.push_back(t);
+	  }else{
+	    stack.push_back(*i);
+	  }
+	}else{
+	  stack.push_back(*i);
+	}
       }
     }else if (dynamic_cast<const Token_BINOP*>(*i)) {
       // pop pop op push
@@ -140,7 +174,7 @@ void Expression::dump(std::ostream& out)const
       const Token* t1 = stack.back();
       stack.pop_back();
       std::string tmp('(' + t1->full_name() + ' ' + (**i).name() + ' ' + t2->full_name() + ')');
-      Token* t = new Token_SYMBOL(tmp);
+      Token* t = new stt(tmp);
       locals.push_back(t);
       stack.push_back(t);
     }else if (dynamic_cast<const Token_UNARY*>(*i)) {
@@ -149,7 +183,7 @@ void Expression::dump(std::ostream& out)const
       const Token* t1 = stack.back();
       stack.pop_back();
       std::string tmp('(' + (**i).name() + ' ' + t1->full_name() + ')');
-      Token* t = new Token_SYMBOL(tmp);
+      Token* t = new stt(tmp);
       locals.push_back(t);
       stack.push_back(t);
     }else if (auto t = dynamic_cast<const Token_TERNARY*>(*i)) {
@@ -164,7 +198,7 @@ void Expression::dump(std::ostream& out)const
       t->false_part()->dump(tmp);
       tmp << ')';
 
-      Token* n = new Token_SYMBOL(tmp.str());
+      Token* n = new stt(tmp.str());
       locals.push_back(n);
       stack.push_back(n);
     }else{ untested();

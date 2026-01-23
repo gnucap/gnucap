@@ -583,7 +583,7 @@ public:
   void parse(CS&) override;
 public:
   explicit Name_String(CS& file)	{parse(file);}
-  explicit Name_String()		{untested();}
+  explicit Name_String()		{}
 };
 /*--------------------------------------------------------------------------*/
 // <alphanumeric> string
