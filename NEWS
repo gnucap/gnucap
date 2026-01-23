@@ -5,6 +5,7 @@ associated tarball. This file summarizes the important changes.
 - common pool: prune duplicate commons
 - fix compiance with C++ <= 23
 - bugfix parameter sweeps for modelgen models
+- escaped identifiers in expression parse/dump
 - ..
 
 == 20251222-dev

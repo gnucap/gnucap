@@ -473,7 +473,15 @@ public:
       pl->print(IO::mstdout, OPT::language);
       IO::mstdout << '\n';
     }else{
+      std::string tail = cmd.tail();
       parse(cmd, pl);
+      DEV_DOT* dd = new DEV_DOT();
+      assert(dd);
+      // lang_verilog.move_attributes(tag_t(&cmd), dd->id_tag());
+      dd->set_owner(nullptr);
+      dd->set("parameter " + tail);
+      dd->set_owner(nullptr); // ?
+      Scope->push_back(dd);
     }
   }
 private:
@@ -680,12 +688,18 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
   }
   size_t here = cmd.cursor();
   for (;;) {
-    if (!(cmd.more() && (cmd.is_alpha() || cmd.match1('_')))) {
+    if (!cmd.more()){
       break;
+    }else if(cmd.is_alpha()){
+    }else if(cmd.match1('_')){ untested();
+    }else if(cmd.match1('\\')){
+      // escaped identifier
     }else{
+      break;
     }
-    std::string Name;
-    cmd >> Name;
+    Name_String Name_;
+    cmd >> Name_;
+    std::string Name = Name_;
     par = "";
     if(cmd.skip1('=')) {
       parse_def(cmd, par);

@@ -226,6 +226,19 @@ public:
   void stack_op(Expression*)const override;
 };
 /*--------------------------------------------------------------------------*/
+class Token_LITERAL : public Token_CONSTANT {
+  std::string _name;
+  explicit Token_LITERAL(Token_LITERAL const& p)
+    : Token_CONSTANT(p), _name(p._name) {}
+public:
+  explicit Token_LITERAL(std::string const& Name)
+    : Token_CONSTANT(nullptr), _name(Name) {}
+  Token* clone()const override { untested();
+    return new Token_LITERAL(*this);
+  }
+  std::string val_string()const override { return _name; }
+};
+/*--------------------------------------------------------------------------*/
 class INTERFACE Expression : public List_Base<Token> {
 public:
   const PARAM_LIST* _scope;

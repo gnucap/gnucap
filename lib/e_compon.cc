@@ -1315,7 +1315,7 @@ HS_PARAM* COMMON_COMPONENT::hsparam()
 void COMMON_COMPONENT::set_mfactor(double m)
 {
   COMMON_COMPONENT* nn;
-  if(!has_next()) {untested();
+  if(!has_next()) {itested();
     nn = HS_PARAM::hs_param.clone();
   }else{itested();
     nn = next_common()->mutable_clone();

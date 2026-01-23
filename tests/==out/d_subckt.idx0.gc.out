@@ -1,4 +1,7 @@
 module main (.a(a),.b(b));
+  parameter real x=1;
+  parameter real y=1;
+  parameter real z=1;
   vsource #(.dc(x+z)) i1 (.p(a),.n(b));
 endmodule // main
 

@@ -9,6 +9,7 @@
 " "
 "list"
 module aaa (.c(c),.d(d));
+  parameter y,x,a,b;
 endmodule // aaa
 
 module bbb (.e(e),.f(f));

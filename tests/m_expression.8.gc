@@ -1,0 +1,4 @@
+verilog
+
+parameter x = {\a! + \b! }
+eval x

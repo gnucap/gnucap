@@ -169,7 +169,8 @@ void Token_SYMBOL::stack_op(Expression* E)const
    //    incomplete();
    //    assert(0);
    //  }else
-    if (strchr("0123456789.", name()[0])) {
+    if (strchr("0123456789.", name()[0])) { untested();
+      unreachable();
       assert(E->_scope);
       // a number
       bool is_int = true;
@@ -197,6 +198,7 @@ void Token_SYMBOL::stack_op(Expression* E)const
 	}
 	trace2("found Float", name(), typeid(*n).name());
       }
+      trace1("it's a CONSTANT", name());
       E->push_back(new Token_CONSTANT(n));
     }else if(name()[0] == '"') { untested();
 	  CS cmd(CS::_STRING, name());
@@ -467,22 +469,58 @@ void Token_UNARY::stack_op(Expression* E)const
 /*--------------------------------------------------------------------------*/
 void Token_CONSTANT::stack_op(Expression* E)const
 {
-  // unreachable(); no. restoring arg expression??
+  assert(E);
+  bool verilog_mode;
+  if(E->_scope){
+    verilog_mode = E->_scope->is_verilog();
+  }else{ itested();
+    // reachable from modelgen
+    verilog_mode = true;
+  }
+
   trace2("stackop constant", name(), dynamic_cast<Float const*>(data()));
   trace2("stackop constant", name(), dynamic_cast<vString const*>(data()));
   trace2("stackop constant", name(), dynamic_cast<String const*>(data()));
 
-  if(data()){
+  if(data()) {
     Base* cl = data()->clone();
     trace4("stackop constant", name(), dynamic_cast<vString const*>(cl), cl->val_string(), cl->is_NA());
     assert(cl->val_string() == data()->val_string());
     assert(cl);
     assert(E);
     E->push_back(new Token_CONSTANT(cl));
+  }else if (strchr("0123456789.", name()[0])) {
+      // a number
+      bool is_int = true;
+      trace2("type", name(), name().size());
+      std::string sn = name();
+      for(std::string::const_iterator c = sn.begin();
+	  is_int && c != sn.end(); ++c){
+	trace3("type", name(), *c, isdigit(*c));
+	is_int = isdigit(*c);
+      }
+
+      Base* n;
+      if(is_int) {
+	if(verilog_mode) {
+	  n = new vInteger(name());
+	}else{
+	  n = new Integer(name());
+	}
+	trace1("found Integer", name());
+      }else{
+	if(verilog_mode) {
+	  n = new vReal(name());
+	}else{
+	  n = new Float(name());
+	}
+	trace2("found Float", name(), typeid(*n).name());
+      }
+      trace1("it's a CONSTANT", name());
+      E->push_back(new Token_CONSTANT(n));
   }else{ untested();
   }
 }
-/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 void Expression::reduce_copy(const Expression& Proto)
 {

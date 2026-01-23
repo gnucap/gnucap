@@ -1,0 +1,15 @@
+
+verilog
+
+module test(a);
+	ground b;
+	parameter real a = 1.;
+	parameter real b = exp(\a );
+
+	vsource #(.dc(b)) v1(a,b);
+endmodule
+
+test #() t(a);
+print op v(nodes)
+list
+op

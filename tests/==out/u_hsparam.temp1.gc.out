@@ -1,4 +1,5 @@
 module rr (.a(a),.b(b),.c(c),.d(d),.e(e),.ref(ref));
+  parameter p=1;
   resistor #(.r($temperature())) r (.p(a),.n(ref));
   resistor #(.r($temperature())) r (.p(b),.n(ref));
   resistor #(.r($vt())) r (.p(c),.n(ref));

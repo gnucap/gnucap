@@ -347,7 +347,7 @@ int PARAM_INSTANCE::compare(PARAM_INSTANCE const& p)const
 {
   std::type_index a(typeid(*base()));
   std::type_index b(typeid(*p.base()));
-  if(a < b){ untested();
+  if(a < b){itested();
     return -1;
   }else if(a > b){ untested();
     return 1;
@@ -368,12 +368,12 @@ int PARAM_LIST::compare(PARAM_LIST const& o) const
   auto b = o._pv.begin();
   for(auto i : _pv){
     c = i.first.compare(b->first);
-    if(c){ untested();
+    if(c){itested();
       return c;
     }else{
     }
     c = i.second.compare(b->second);
-    if(c){ untested();
+    if(c){itested();
       return c;
     }else{
     }
