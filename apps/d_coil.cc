@@ -239,6 +239,8 @@ void DEV_MUTUAL_L::expand()
 {
   // skip DEV_INDUCTANCE (new_model_node)
   STORAGE::expand();
+  // but need hooking into the others, later.
+  q_expand_last();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_MUTUAL_L::expand_first()
