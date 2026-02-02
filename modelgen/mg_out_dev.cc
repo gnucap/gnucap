@@ -364,11 +364,6 @@ static void make_dev_expand(std::ofstream& out, const Device& d)
     "  }\n"
     "  //precalc();\n"
     "  subckt()->expand();\n"
-       // modelgen does not populate nodemap in instances
-       // CARD_LIST::expand misses internal nodes here
-    "  for(int i=ext_nodes()+int_nodes(); i>net_nodes();){\n"
-    "    n_(--i).allocate(2);\n"
-    "  }\n"
     "  //subckt()->precalc();\n";
   if (d.circuit().sync()) {
     out << "  subckt()->set_slave();\n";

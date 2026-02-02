@@ -233,10 +233,6 @@ void DEV_INDUCTANCE::expand()
     }
   }else{untested();
   }
-  for(int i=ext_nodes()+int_nodes(); i>net_nodes();){
-    n_(--i).allocate(2);
-    trace2("ELEMENT::expand_last done", long_label(), i);
-  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_MUTUAL_L::expand()
@@ -259,10 +255,6 @@ void DEV_MUTUAL_L::expand_first()
     throw Exception_Type_Mismatch(long_label(), _input_label, "inductor");
   }else{
     _input->_c_model = true;
-  }
-  for(int i=ext_nodes()+int_nodes(); i>net_nodes();){
-    n_(--i).allocate(2);
-    trace2("ELEMENT::expand_last done", long_label(), i);
   }
 }
 /*--------------------------------------------------------------------------*/

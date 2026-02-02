@@ -223,9 +223,6 @@ void ELEMENT::expand_last()
 
   // deal with internal nodes requested with new_model_node
   // can't use CARD_LIST::expand, because there is no sckt
-  for(int i=ext_nodes()+int_nodes(); i>net_nodes();){
-    n_(--i).allocate(2);
-  }
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_begin()
