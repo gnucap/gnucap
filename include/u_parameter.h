@@ -71,12 +71,12 @@ public:
 /*--------------------------------------------------------------------------*/
 // essentially map PARAMETER<double> PARAMETER<int>     PARAMETER<bool>
 //              to PARAMETER<Float>  PARAMETER<Integer> PARAMETER<Integer>
-// handle comparison with NOT_INPUT. only works with doubles.
+// handle comparison with NOT_INPUT. only meant to work with doubles.
 // for backwards compatibility only
 template<class T>
 struct data_type {
   typedef T value_type;
-  bool is_input(T)const {unreachable(); untested(); return true; }
+  bool is_input(T)const { itested(); return true; }
 };
 template<>
 struct data_type<double> {
@@ -86,7 +86,7 @@ struct data_type<double> {
 template<>
 struct data_type<int> {
   typedef Integer value_type;
-  bool is_input(int)const { /* unreachable(); incomplete(); */ return true; }
+  bool is_input(int)const { return true; }
 };
 template<>
 struct data_type<bool> {
