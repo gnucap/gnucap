@@ -1,4 +1,5 @@
 Mutual inductance test circuit
+.load ./c_debug.so
 v1 1 0  pulse(0 1 .002 .002 .002 .002 .01) ac 1
 r1a 1 2 22
 l1a 2 0 .56
@@ -30,4 +31,5 @@ r3b 12 0 75
 .tran .001 .01 0 .0001
 .list
 .status notime
+.portdump
 .end

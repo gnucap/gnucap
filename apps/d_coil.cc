@@ -121,6 +121,7 @@ private: // override virtual
   bool	   use_obsolete_callback_parse()const override {return false;}
   CARD*	   clone()const override		{return new DEV_MUTUAL_L(*this);}
   void     expand_first()override;
+  void     expand()override;
   void	   expand_last()override;
   void	   precalc_last()override;
   void     tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
@@ -236,6 +237,12 @@ void DEV_INDUCTANCE::expand()
     n_(--i).allocate(2);
     trace2("ELEMENT::expand_last done", long_label(), i);
   }
+}
+/*--------------------------------------------------------------------------*/
+void DEV_MUTUAL_L::expand()
+{
+  // skip DEV_INDUCTANCE (new_model_node)
+  STORAGE::expand();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_MUTUAL_L::expand_first()
