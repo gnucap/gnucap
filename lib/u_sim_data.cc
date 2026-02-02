@@ -301,6 +301,7 @@ void SIM_DATA::init(CARD_LIST* scope)
     init_node_count(0, 0, 0);
     map_toplevel_nodes(scope);
     scope->expand();
+    expand_last();
     alloc_hold_vectors(scope);
     scope->make_fanout();
     map__nodes(scope);
@@ -313,6 +314,14 @@ void SIM_DATA::init(CARD_LIST* scope)
   }else{
     random_seeds.clear();
     scope->precalc_first();
+  }
+}
+/*--------------------------------------------------------------------------*/
+void SIM_DATA::expand_last()
+{
+  while (!_explast_q.empty()) {itested();
+    _explast_q.front()->expand_last();
+    _explast_q.pop_front();
   }
 }
 /*--------------------------------------------------------------------------*/

@@ -6,6 +6,7 @@ associated tarball. This file summarizes the important changes.
 - fix compiance with C++ <= 23
 - bugfix parameter sweeps for modelgen models
 - escaped identifiers in expression parse/dump
+- expand_last queue, no more unrequested calls.
 - ..
 
 == 20251222-dev

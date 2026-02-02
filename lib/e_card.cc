@@ -383,5 +383,9 @@ double CARD::ac_probe_num(const std::string& what)const
   }					/* don't have all parts */
 }
 /*--------------------------------------------------------------------------*/
+void CARD::q_expand_last()
+{
+  _sim->_explast_q.push_back(this);
+}
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

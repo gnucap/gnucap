@@ -45,7 +45,7 @@ node_t::node_t(node_t& p)
    _index(p._index),
    _m(p._m)
 {
-  if(_nnn){ untested();
+  if(_nnn){
     _nnn = nullptr;
     _link = &p;
   }else{
@@ -296,6 +296,7 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
   (void) Owner;
   assert(!_nnn);
   find_subset(this);
+  allocate(3);
 }
 /*--------------------------------------------------------------------------*/
 /* (re)connect a port to an external node making use of index.
@@ -329,6 +330,13 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
 // 2: misc device internal nodes "model_node"
 void node_t::allocate(int u /*, CARD* owner*/)
 {
+  if(u==2){ untested();
+    // obsolete new_model_node supplementary call.
+    unreachable();
+    return;
+  }else{
+  }
+
   if(_nnn == &ground_node){
   }else if(is_node() && CKT_BASE::_sim->is_first_expand()) {
     // repeat call.
@@ -346,7 +354,7 @@ void node_t::allocate(int u /*, CARD* owner*/)
     case 1:
       flat_number = CKT_BASE::_sim->newnode_user();
       break;
-    case 2:
+    case 3:
       flat_number = CKT_BASE::_sim->newnode_model();
       break;
     default:
@@ -363,7 +371,7 @@ void node_t::allocate(int u /*, CARD* owner*/)
 /*--------------------------------------------------------------------------*/
 void node_t::set_to_ground(CARD* Owner)
 {
-  assert(!_link || _link == this);
+  assert(!_link || _link == this || is_grounded());
   int idx = _index;
   clear();
   assert(!_nnn);

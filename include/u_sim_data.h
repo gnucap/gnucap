@@ -92,6 +92,7 @@ public:
   BSMATRIX<double>& _lu;/* alias used in modelgen models */
   BSMATRIX<COMPLEX> _acx;/* raw & decomposed matrix for AC */
   std::priority_queue<EVENT, std::deque<EVENT>, std::greater<double> > _eq; /*event queue*/
+  std::deque<CARD*> _explast_q;
   std::deque<CARD*> _loadq;
   std::deque<CARD*> _acceptq;
   std::deque<CARD*>  _evalq1; /* evaluate queues -- alternate between */
@@ -103,6 +104,9 @@ public:
   SIM_MODE _has_op;
   SIM_DATA();
   ~SIM_DATA();
+private:
+  void expand_last();
+public:
   bool is_first_expand() {return !_nstat;}
   void alloc_hold_vectors(CARD_LIST* scope); /* s__init.cc */
   void alloc_vectors();

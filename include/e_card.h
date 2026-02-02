@@ -166,6 +166,9 @@ public: // probes
   virtual double      noise_num(const std::string&)const {itested(); return 0.;}
   static  double      probe(const CARD*,const std::string&);
   //--------------------------------------------------------------------
+protected:
+  void	q_expand_last();
+  //--------------------------------------------------------------------
 public:	// obsolete -- do not use in new code
   virtual bool use_obsolete_callback_parse()const {return false;}
   virtual bool use_obsolete_callback_print()const {return false;}

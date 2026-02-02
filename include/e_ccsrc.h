@@ -42,6 +42,7 @@ protected: // override virtual
   int	   net_nodes()const override	{return 2;}
   int	   num_current_ports()const override {return 1;}
   //void   precalc_first();	//ELEMENT
+  void	   expand() override{ ELEMENT::expand(); q_expand_last(); }
   void	   expand_last() override;
   //void   precalc_last();	//ELEMENT
   bool	   tr_needs_eval()const override{assert(!is_q_for_eval()); return true;}

@@ -69,7 +69,6 @@ private: // obsolete -- do not use in new code
   }
 public: // override virtual
   bool	   print_type_in_spice()const override {return false;}
-  void	   expand_last()override;
   void	   ac_begin() override;
   void	   tr_begin() override;
   void	   tr_restore() override;

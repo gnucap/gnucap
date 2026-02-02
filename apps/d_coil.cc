@@ -121,6 +121,7 @@ private: // override virtual
   bool	   use_obsolete_callback_parse()const override {return false;}
   CARD*	   clone()const override		{return new DEV_MUTUAL_L(*this);}
   void     expand_first()override;
+  void     expand()override;
   void	   expand_last()override;
   void	   precalc_last()override;
   void     tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
@@ -232,10 +233,14 @@ void DEV_INDUCTANCE::expand()
     }
   }else{untested();
   }
-  for(int i=ext_nodes()+int_nodes(); i>net_nodes();){
-    n_(--i).allocate(2);
-    trace2("ELEMENT::expand_last done", long_label(), i);
-  }
+}
+/*--------------------------------------------------------------------------*/
+void DEV_MUTUAL_L::expand()
+{
+  // skip DEV_INDUCTANCE (new_model_node)
+  STORAGE::expand();
+  // but need hooking into the others, later.
+  q_expand_last();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_MUTUAL_L::expand_first()
@@ -252,10 +257,6 @@ void DEV_MUTUAL_L::expand_first()
     throw Exception_Type_Mismatch(long_label(), _input_label, "inductor");
   }else{
     _input->_c_model = true;
-  }
-  for(int i=ext_nodes()+int_nodes(); i>net_nodes();){
-    n_(--i).allocate(2);
-    trace2("ELEMENT::expand_last done", long_label(), i);
   }
 }
 /*--------------------------------------------------------------------------*/
