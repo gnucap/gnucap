@@ -371,7 +371,7 @@ void node_t::allocate(int u /*, CARD* owner*/)
 /*--------------------------------------------------------------------------*/
 void node_t::set_to_ground(CARD* Owner)
 {
-  assert(!_link || _link == this);
+  assert(!_link || _link == this || is_grounded());
   int idx = _index;
   clear();
   assert(!_nnn);
