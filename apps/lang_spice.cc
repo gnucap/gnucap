@@ -1,6 +1,6 @@
-/*$Id: lang_spice.cc $ -*- C++ -*-
+/*                     -*- C++ -*-
  * Copyright (C) 2006 Albert Davis
- * Author: Albert Davis <aldavis@gnu.org>
+ *               2024-2026 Felix Salfelder
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
@@ -503,11 +503,31 @@ void LANG_SPICE_BASE::parse_args(CS& cmd, CARD* x)
   }
 }
 /*--------------------------------------------------------------------------*/
+// canonicalise name for internal storage
+// return name in spice if it differs, empty string otherwise
+static std::string spice_cname(std::string& Name)
+{
+  std::string spice_name = "";
+  std::string::size_type dotplace = Name.find_first_of(".");
+  if (dotplace != std::string::npos) {
+    spice_name = Name;
+    Name = Name.substr(0, dotplace);
+  }else{
+  }
+  return spice_name;
+}
+/*--------------------------------------------------------------------------*/
 void LANG_SPICE_BASE::parse_label(CS& cmd, CARD* x)
 {
   assert(x);
   std::string my_name;
   if (cmd >> my_name) {
+    std::string spice_name = spice_cname(my_name);
+    if(spice_name != ""){
+      tag_t t = x->id_tag();
+      set_attributes(t).add_to("spice_name=\"" + spice_name + "\"", t);
+    }else{
+    }
     x->set_label(my_name);
   }else{untested();
     x->set_label(x->id_letter() + std::string("_unnamed")); //BUG// not unique
@@ -725,7 +745,17 @@ static char fix_case(char c)
 void LANG_SPICE_BASE::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
 {
   assert(x);
-  o << ".model " << x->short_label() << ' ' << x->dev_type() << " (";
+  std::string name = x->short_label();
+  tag_t t = x->id_tag();
+  if(!has_attributes(t)) {
+  }else{
+    std::string n = attributes(t)->operator[]("spice_name");
+    if(n!="0"){
+      name = n;
+    }else{ untested();
+    }
+  }
+  o << ".model " << name << ' ' << x->dev_type() << " (";
   print_args(o, x);
   o << ")\n";
 }

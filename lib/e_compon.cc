@@ -1159,25 +1159,42 @@ const MODEL_CARD* COMPONENT::find_model(const std::string& modelname)const
       for (const CARD* Scope = this; Scope && !c; Scope = Scope->owner()) {
 	// start here, looking out
 	try {
-	  c = Scope->find_in_my_scope(modelname);
-	}catch (Exception_Cant_Find& e1) {
+	  CARD_LIST const* scope = Scope->scope();
+	  assert(scope);
+	  auto it = scope->find_(modelname);
+	  while(it!=scope->end()){
+	    auto m = dynamic_cast<const MODEL_CARD*>(*it);
+	    if (m && m->is_valid(this)) {
+	      //matching name and correct bin
+	      if(c){
+		error(bWARNING, "duplicate match " + modelname + " in " + Scope->long_label() + "\n");
+	      }else{
+		c = *it;
+	      }
+	    }else{
+	      ++bin_count;
+	    }
+	    // keep looking
+	    it = scope->find_again(modelname, ++it);
+	  }
+	}catch (Exception_Cant_Find& e1) { untested();
 	  // didn't find plain model.  try binned models
 	  bin_count = 0;
-	  for (;;) {
+	  for (;;) { untested();
 	    // loop over binned models
 	    std::string extended_name = modelname + '.' + to_string(++bin_count);
-	    try {
+	    try { untested();
 	      c = Scope->find_in_my_scope(extended_name);
-	    }catch (Exception_Cant_Find& e2) {
+	    }catch (Exception_Cant_Find& e2) { untested();
 	      // that's all .. looked at all of them
 	      c = nullptr;
 	      break;
 	    }
 	    const MODEL_CARD* m = dynamic_cast<const MODEL_CARD*>(c);
-	    if (m && m->is_valid(this)) {
+	    if (m && m->is_valid(this)) { untested();
 	      //matching name and correct bin
 	      break;
-	    }else{
+	    }else{ untested();
 	      // keep looking
 	    }
 	  }
