@@ -1,0 +1,20 @@
+paramset nmos nmos2;
+ .level=2; .nfs=NA( 0.); .neff=NA( 1.); .delta=NA( 0.); .vto=0.7; .gamma= 0.; .phi= 0.6; .tox= 100.n; .uo=NA( 600.); .tpg=1; .tnom=NA( 27.); .fc=NA( 0.5); .pb=NA( 0.8); .cj=NA( 0.); .mj=NA( 0.5); .cjsw=NA( 0.); .mjsw=NA( 0.33); .lmax=2e-6; .lmin=1e-6; .is=NA( 10.f); .cgso=NA( 0.); .cgdo=NA( 0.); .cgbo=NA( 0.); .ld=NA( 0.);
+endparamset
+
+(* spice_name="nmos.1" *) paramset nmos nmos1;
+ .level=1; .kp=NA( 20.u); .vto=0.7; .gamma= 0.; .phi= 0.6; .uo=NA( 600.); .tpg=1; .tnom=NA( 27.); .fc=NA( 0.5); .pb=NA( 0.8); .cj=NA( 0.); .mj=NA( 0.5); .cjsw=NA( 0.); .mjsw=NA( 0.5); .lmax=2e-6; .lmin=1e-6; .is=NA( 10.f); .cgso=NA( 0.); .cgdo=NA( 0.); .cgbo=NA( 0.); .ld=NA( 0.);
+endparamset
+
+(* spice_name="pmos.1" *) paramset pmos pmos1;
+ .level=1; .kp=NA( 20.u); .vto=-0.7; .gamma= 0.; .phi= 0.6; .uo=NA( 600.); .tpg=1; .tnom=NA( 27.); .fc=NA( 0.5); .pb=NA( 0.8); .cj=NA( 0.); .mj=NA( 0.5); .cjsw=NA( 0.); .mjsw=NA( 0.5); .lmax=2e-6; .lmin=1e-6; .is=NA( 10.f); .cgso=NA( 0.); .cgdo=NA( 0.); .cgbo=NA( 0.); .ld=NA( 0.);
+endparamset
+
+(* spice_name="nmos.2" *) paramset nmos nmos1;
+ .level=1; .kp=NA( 20.u); .vto=0.7; .gamma= 0.; .phi= 0.6; .uo=NA( 600.); .tpg=1; .tnom=NA( 27.); .fc=NA( 0.5); .pb=NA( 0.8); .cj=NA( 0.); .mj=NA( 0.5); .cjsw=NA( 0.); .mjsw=NA( 0.5); .lmax=4e-6; .lmin=2e-6; .is=NA( 10.f); .cgso=NA( 0.); .cgdo=NA( 0.); .cgbo=NA( 0.); .ld=NA( 0.);
+endparamset
+
+(* spice_name="pmos.2" *) paramset pmos pmos1;
+ .level=1; .kp=NA( 20.u); .vto=-0.7; .gamma= 0.; .phi= 0.6; .uo=NA( 600.); .tpg=1; .tnom=NA( 27.); .fc=NA( 0.5); .pb=NA( 0.8); .cj=NA( 0.); .mj=NA( 0.5); .cjsw=NA( 0.); .mjsw=NA( 0.5); .lmax=4e-6; .lmin=2e-6; .is=NA( 10.f); .cgso=NA( 0.); .cgdo=NA( 0.); .cgbo=NA( 0.); .ld=NA( 0.);
+endparamset
+
