@@ -121,6 +121,7 @@ public:
   virtual void expand(const COMPONENT*);
   virtual COMMON_COMPONENT* deflate()		{return this;}
   virtual void precalc_last(const PARAM_LIST*) {};
+  virtual int is_valid(COMPONENT const*)const;
 
   virtual void	tr_eval(ELEMENT*)const;
   virtual void	ac_eval(ELEMENT*)const;
@@ -228,7 +229,7 @@ public:	// "elaborate"
   void	precalc_first() override;
   void	expand() override;
   void	precalc_last() override;
-  virtual int is_valid()const	{return 1;}
+  virtual int is_valid()const;
   //--------------------------------------------------------------------
 public:	// dc-tran
   void      tr_iwant_matrix() override;

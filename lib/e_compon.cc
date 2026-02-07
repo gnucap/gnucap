@@ -395,6 +395,15 @@ void COMMON_COMPONENT::expand(const COMPONENT* comp)
   check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
+int COMMON_COMPONENT::is_valid(COMPONENT const* c) const
+{
+  if(has_model()){
+    return model()->is_valid(c);
+  }else{
+    return 1;
+  }
+}
+/*--------------------------------------------------------------------------*/
 void COMMON_COMPONENT::precalc_first_chain(PARAM_LIST const* p)
 {
   assert(p);
@@ -882,7 +891,6 @@ void COMPONENT::precalc_first()
   check_pool_consistency();
 }
 /*--------------------------------------------------------------------------*/
-// .. bypassed in mg_out_dev.
 void COMPONENT::precalc_last()
 {
   trace2("COMPONENT::precalc_last1", long_label(), common());
@@ -935,6 +943,15 @@ void COMPONENT::precalc_last()
   trace2("COMPONENT::precalc_last2", long_label(), common());
 
   check_pool_consistency();
+}
+/*--------------------------------------------------------------------------*/
+int COMPONENT::is_valid() const
+{
+  if(has_common()) {
+    return _common->is_valid(this);
+  }else{
+    return 1;
+  }
 }
 /*--------------------------------------------------------------------------*/
 void COMPONENT::map_nodes()
