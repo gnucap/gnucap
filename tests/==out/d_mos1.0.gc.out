@@ -1,0 +1,15 @@
+>>>>>.model nnn nmos ( level=1 wmin=1 wmax=10 )
+>>>>>module main()
+>>>>>list
+paramset nnn nmos1;
+ .level=1; .kp=NA( 20.u); .vto=NA( NA); .gamma= 0.; .phi= 0.6; .uo=NA( 600.); .tpg=1; .tnom=NA( 27.); .fc=NA( 0.5); .pb=NA( 0.8); .cj=NA( 0.); .mj=NA( 0.5); .cjsw=NA( 0.); .mjsw=NA( 0.5); .wmax=10; .wmin=1; .is=NA( 10.f); .cgso=NA( 0.); .cgdo=NA( 0.); .cgbo=NA( 0.); .ld=NA( 0.);
+endparamset
+
+module main ();
+  nnn #(.l(NA( 100.u)),.w(1)) n1 (.d(a),.g(b),.s(c),.b(d));
+endmodule // main
+
+main #() m ();
+>>>>>op
+#          
+ 27.       

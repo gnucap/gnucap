@@ -1,0 +1,13 @@
+verilog
+options trace
+
+.model nnn nmos ( level=1 wmin=1 wmax=10 )
+
+module main()
+	nnn #(.w(1)) n1(a,b,c,d);
+endmodule
+
+main m()
+
+list
+op

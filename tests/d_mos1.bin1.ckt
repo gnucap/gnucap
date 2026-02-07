@@ -8,6 +8,8 @@
 .model nmos.2 nmos level=1 vto=0.7 lmin=2e-6 lmax=4e-6
 .model pmos.2 pmos level=1 vto=-0.7 lmin=2e-6 lmax=4e-6
 
+.list
+
 Mp1 3 2 1 1 PMOS W=8e-6 L=600e-9 
 Mn1 3 2 0 0 NMOS W=8e-6 L=600e-9 
 
