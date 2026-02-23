@@ -1,1 +1,1 @@
-#define PATCHLEVEL "spice_bin 2026.02.06"
+#define PATCHLEVEL "install 2026.02.23"
