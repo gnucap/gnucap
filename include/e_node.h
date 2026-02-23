@@ -184,8 +184,8 @@ public:
   NODE const* n_()const {return _nnn;}
   NODE*       n_()      {return _nnn;}
 
-  const std::string  short_label()const { untested();
-    if (n_()){ untested();
+  const std::string  short_label()const { itested();
+    if (n_()){ itested();
       return n_()->short_label();
     }else if(link()) { untested();
       return link()->short_label();
