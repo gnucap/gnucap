@@ -36,16 +36,16 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class DEV_CPOLY_G : public ELEMENT {
 protected:
-  double*  _values;
-  double*  _old_values;
-  int	   _n_ports;
-  double   _time;
-  const double** _inputs;
-  node_t*  _nN;
+  double*  _values{nullptr};
+  double*  _old_values{nullptr};
+  int	   _n_ports{0};
+  double   _time{NOT_VALID};
+  // const double** _inputs{nullptr};
+  node_t*  _nN{nullptr};
 protected:
   explicit DEV_CPOLY_G(const DEV_CPOLY_G& p);
 public:
-  explicit DEV_CPOLY_G();
+  explicit DEV_CPOLY_G() : ELEMENT(), _nN(_nodes) {}
   ~DEV_CPOLY_G();
 protected: // override virtual
   char	   id_letter()const override	{unreachable(); return '\0';}
@@ -104,11 +104,7 @@ private: // override virtual
 /*--------------------------------------------------------------------------*/
 DEV_CPOLY_G::DEV_CPOLY_G(const DEV_CPOLY_G& p)
   :ELEMENT(p),
-   _values(nullptr),
-   _old_values(nullptr),
    _n_ports(p._n_ports),
-   _time(NOT_VALID),
-   _inputs(nullptr),
    _nN(_nodes)
 {
   // not really a copy .. only valid to copy a default
@@ -118,18 +114,6 @@ DEV_CPOLY_G::DEV_CPOLY_G(const DEV_CPOLY_G& p)
   assert(!p._values);
   assert(!p._old_values);
   assert(p._n_ports == 0);
-  assert(!p._inputs);
-}
-/*--------------------------------------------------------------------------*/
-DEV_CPOLY_G::DEV_CPOLY_G()
-  :ELEMENT(),
-   _values(nullptr),
-   _old_values(nullptr),
-   _n_ports(0),
-   _time(NOT_VALID),
-   _inputs(nullptr),
-   _nN(_nodes)
-{
 }
 /*--------------------------------------------------------------------------*/
 DEV_CPOLY_G::~DEV_CPOLY_G()
@@ -273,7 +257,6 @@ void DEV_CPOLY_G::set_parameters(const std::string& Label, CARD *Owner,
   }
 
   //_inputs = inputs;
-  _inputs = 0;
   _values = states;
   std::fill_n(_values, n_states, 0.);
   std::fill_n(_old_values, n_states, 0.);
