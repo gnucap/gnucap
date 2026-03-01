@@ -246,6 +246,7 @@ CARD_LIST& CARD_LIST::expand()
     if(d == (*ci)){
     }else{itested();
       assert(d->owner() == (*ci)->owner());
+      (*ci)->purge();
       delete *ci;
       *ci = d;
     }

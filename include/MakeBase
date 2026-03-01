@@ -23,7 +23,8 @@
 #------------------------------------------------------------------------
 MKDIR_P = mkdir -p
 am__base_list = cat # for now
-INSTALL = install -m 644
+INSTALL = install
+INSTALL_FLAGS = -m 644
 #------------------------------------------------------------------------
 all: $(TARGET) ${TARGET_LIB:%=%${TARGET_LIB_EXT}} ${TARGET_EXE:%=%${TARGET_EXE_EXT}}
 #------------------------------------------------------------------------
@@ -46,20 +47,28 @@ install-files: $(INSTALL_FILES)
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL) $$files '$(DESTDIR)$(INSTALL_DIR)'"; \
-	  $(INSTALL) $$files "$(DESTDIR)$(INSTALL_DIR)" || exit $$?; \
+	  echo " $(INSTALL) ${INSTALL_FLAGS} $$files '$(DESTDIR)$(INSTALL_DIR)'"; \
+	  $(INSTALL) ${INSTALL_FLAGS} $$files "$(DESTDIR)$(INSTALL_DIR)" || exit $$?; \
 	done
 #------------------------------------------------------------------------
-install : install-files  $(INSTALL_FILES_1)  $(INSTALL_FILES_2)
-	[ -z "$(INSTALL_DIR_1)" ] || ${MKDIR_P} $(DESTDIR)$(INSTALL_DIR_1)
-	[ -z "$(INSTALL_DIR_2)" ] || ${MKDIR_P} $(DESTDIR)$(INSTALL_DIR_2)
-	[ -z "$(INSTALL_FILES_1)" ] || cp $(INSTALL_FILES_1) $(DESTDIR)$(INSTALL_DIR_1)
-	[ -z "$(INSTALL_FILES_2)" ] || cp $(INSTALL_FILES_2) $(DESTDIR)$(INSTALL_DIR_2)
+bindir = ${PREFIX}/bin
+install : install-files  $(INSTALL_FILES_1)  $(INSTALL_FILES_2) ${bin_PROGRAMS}
+	@ [ -z "${INSTALL_FILES_1}" ] || \
+	${MAKE} $@-files "INSTALL_DIR=${INSTALL_DIR_1}" \
+	                 "INSTALL_FILES=${INSTALL_FILES_1}"
+	@ [ -z "${INSTALL_FILES_2}" ] || \
+	${MAKE} $@-files "INSTALL_DIR=${INSTALL_DIR_2}" \
+	                 "INSTALL_FILES=${INSTALL_FILES_2}"
+	@ [ -z "${bin_PROGRAMS}" ] || \
+	${MAKE} $@-files "INSTALL_DIR=${bindir}" \
+	                 "INSTALL_FILES=${bin_PROGRAMS}" \
+	                 "INSTALL_FLAGS=-m 755"
 #------------------------------------------------------------------------
 uninstall :
 	(cd $(DESTDIR)$(INSTALL_DIR) ; rm -f $(INSTALL_FILES))
 	(cd $(DESTDIR)$(INSTALL_DIR_1) ; rm -f $(INSTALL_FILES_1))
 	(cd $(DESTDIR)$(INSTALL_DIR_2) ; rm -f $(INSTALL_FILES_2))
+	(cd $(DESTDIR)$(bindir) ; rm -f $(bin_PROGRAMS))
 #------------------------------------------------------------------------
 #unclean:
 #	rm $(ALL)

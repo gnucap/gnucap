@@ -21,8 +21,7 @@
 #------------------------------------------------------------------------
 TARGET_EXE = gnucap-modelgen
 #------------------------------------------------------------------------
-INSTALL_FILES_1 = $(TARGET_EXE)$(TARGET_EXE_EXT)
-INSTALL_DIR_1 = $(PREFIX)/bin
+bin_PROGRAMS = $(TARGET_EXE)$(TARGET_EXE_EXT)
 #------------------------------------------------------------------------
 LIBS = -lgnucap
 #{MAKE1_FIX}LIBS = -lgnucap -L../../lib/O -L../../lib/O-DEBUG
