@@ -1,6 +1,6 @@
 /*$Id: m_expression_in.cc,v 26.115 2009/08/17 22:49:30 al Exp $ -*- C++ -*-
  * Copyright (C) 2003 Albert Davis
- * Author: Albert Davis <aldavis@gnu.org>
+ *               2024-2026 Felix Salfelder
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
@@ -36,27 +36,58 @@
  *		| "/" factor termtail
  *		| nothing
  * term		: factor termtail
+ *
  * addexptail	: "+" term addexptail
  *		| "-" term addexptail
  *		| nothing
  * addexp	: term addexptail
- * logicaltail	: "<" addexp logicaltail
- *		| ">" addexp logicaltail
- *		| "<=" addexp logicaltail
- *		| ">=" addexp logicaltail
- *		| "==" addexp logicaltail
- *		| "!=" addexp logicaltail
+ *
+ * shifttail	: "<<<" addexp shifttail
+ *		| ">>>" addexp shifttail
+ *		| "<<" addexp shifttail
+ *		| ">>" addexp shifttail
  *		| nothing
- * logical	: addexp logicaltail
- * andtail	: "&&" logical andtail
+ * shift	: addexp shifttail
+ *
+ * ordertail	: "<" shift ordertail
+ *		| ">" shift ordertail
+ *		| "<=" shift ordertail
+ *		| ">=" shift ordertail
  *		| nothing
- * andarg	: logical andtail
- * exptail	: "||" andarg exptail
- *		| "?" expression ":" expression
+ * order	: shift ordertail
+ *
+ * comparetail	: "==" order comparetail
+ *		| "!=" order comparetail
  *		| nothing
- * expression	: andarg exptail
+ * compare	: order comparetail
+ *
+ * bitandtail	: "&" compare bitandtail
+ *		| nothing
+ * bitandarg	: compare bitandtail
+ *
+ * bitxortail	: "^" bitandarg bitxortail
+ *		| "^~" bitandarg bitxortail
+ *		| nothing
+ * bitxorarg	: bitandarg bitxortail
+ *
+ * bitortail	: "|" bitxorarg bitortail
+ *		| nothing
+ * bitorarg	: bitxorarg bitortail
+ *
+ * andtail	: "&&" bitorarg andtail
+ *		| nothing
+ * andarg	: bitorarg andtail
+ *
+ * ortail	: "||" andarg ortail
+ *		| nothing
+ * orarg	: andarg ortail
+ *
+ * exptail	| "?" expression ":" expression
+ *		| nothing
+ * ... {} {{}}...
+ * expression	: orarg exptail
  */
-//testing=script 2009.08.12
+//testing=
 #include "m_expression.h"
 /*--------------------------------------------------------------------------*/
 void Expression::arglisttail(CS& File)
