@@ -195,7 +195,7 @@ void Expression::leaf(CS& File)
 void Expression::factor(CS& File)
 {
   Token* t = nullptr;
-  if (File >> "-|+|!") {
+  if (File >> "-|+|!|~") {
     std::string name(File.last_match());
     t = new Token_UNARY(name);
   }else{
@@ -276,28 +276,113 @@ void Expression::addexp(CS& File)
   addexptail(File);
 }
 /*--------------------------------------------------------------------------*/
-void Expression::logicaltail(CS& File)
+void Expression::shifttail(CS& File)
 {
-  if (File >> "<=|<|>=|>|==|!=") {
+  if (File >> "<<<|<<|>>>|>>") {
     std::string name(File.last_match());
     addexp(File);
     push_back(new Token_BINOP(name));
-    logicaltail(File);
+    shifttail(File);
   }else{
   }
 }
 /*--------------------------------------------------------------------------*/
-void Expression::logical(CS& File)
+void Expression::shift(CS& File)
 {
   addexp(File);
-  logicaltail(File);
+  shifttail(File);
+}
+/*--------------------------------------------------------------------------*/
+void Expression::ordertail(CS& File)
+{
+  if (File >> "<=|>=|<|>") {
+    std::string name(File.last_match());
+    shift(File);
+    push_back(new Token_BINOP(name));
+    ordertail(File);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Expression::order(CS& File)
+{
+  shift(File);
+  ordertail(File);
+}
+/*--------------------------------------------------------------------------*/
+void Expression::comparetail(CS& File)
+{
+  if (File >> "==|!=") {
+    std::string name(File.last_match());
+    order(File);
+    push_back(new Token_BINOP(name));
+    comparetail(File);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Expression::compare(CS& File)
+{
+  order(File);
+  comparetail(File);
+}
+/*--------------------------------------------------------------------------*/
+void Expression::bitandtail(CS& File)
+{
+  if (File >> "& ") {
+    std::string name(File.last_match());
+    compare(File);
+    push_back(new Token_BINOP("&"));
+    bitandtail(File);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Expression::bitandarg(CS& File)
+{
+  compare(File);
+  bitandtail(File);
+}
+/*--------------------------------------------------------------------------*/
+void Expression::bitxortail(CS& File)
+{
+  if (File >> "^|~^") {
+    std::string name(File.last_match());
+    bitandarg(File);
+    push_back(new Token_BINOP(name));
+    bitxortail(File);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Expression::bitxorarg(CS& File)
+{
+  bitandarg(File);
+  bitxortail(File);
+}
+/*--------------------------------------------------------------------------*/
+void Expression::bitortail(CS& File)
+{
+  if (File >> "\\| ") {
+    std::string name(File.last_match());
+    bitxorarg(File);
+    push_back(new Token_BINOP('|'));
+    bitortail(File);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Expression::bitorarg(CS& File)
+{
+  bitxorarg(File);
+  bitortail(File);
 }
 /*--------------------------------------------------------------------------*/
 void Expression::andtail(CS& File)
 {
   if (File >> "&&") {
     std::string name(File.last_match());
-    logical(File);
+    bitorarg(File);
     push_back(new Token_BINOP(name));
     andtail(File);
   }else{
@@ -306,27 +391,40 @@ void Expression::andtail(CS& File)
 /*--------------------------------------------------------------------------*/
 void Expression::andarg(CS& File)
 {
-  logical(File);
+  bitorarg(File);
   andtail(File);
 }
 /*--------------------------------------------------------------------------*/
-void Expression::exptail(CS& File)
+void Expression::ortail(CS& File)
 {
   if (File >> "\\|\\|") { // "||"
     std::string name(File.last_match());
     andarg(File);
     push_back(new Token_BINOP(name));
-    exptail(File);
-  }else if (File >> "?") {
+    ortail(File);
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+void Expression::orarg(CS& File)
+{
+  andarg(File);
+  ortail(File);
+}
+/*--------------------------------------------------------------------------*/
+void Expression::exptail(CS& File)
+{
+  if (File >> "?") { untested();
     assert(size());
     ternary(File);
-  }else{
+    exptail(File);
+  }else{ untested();
   }
 }
 /*--------------------------------------------------------------------------*/
 void Expression::expression(CS& File)
 {
-  andarg(File);
+  orarg(File);
   exptail(File);
 }
 /*--------------------------------------------------------------------------*/

@@ -31,3 +31,6 @@ param o={ (QEpercent != 0) ? QEpercent*Lambda/1.2398e5:Responsivity }
 eval o
 param p={0?1:1+0?2}
 eval p
+eval xa>xb == xc
+eval xa == xb < xc
+
