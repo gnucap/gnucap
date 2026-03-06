@@ -50,6 +50,7 @@ public:
 
   virtual Base* minus()const			{untested(); return nullptr;}
   virtual Base* plus()const			{untested(); return nullptr;}
+  virtual Base* bit_inv()const			{untested(); return nullptr;}
 
   Base* clone()const {return assign(this);}
   virtual Base* assign(const Base*)const        { return nullptr;}
@@ -117,6 +118,28 @@ public:
   virtual Base* r_modulo(const Integer*)const	{untested(); return nullptr;}
   virtual Base* r_modulo(const Float*)const	{untested(); return nullptr;}
   virtual Base* r_modulo(const String*)const	{untested(); return nullptr;}
+
+  virtual Base* bit_or(const Base*)const	{untested(); return nullptr;}
+  virtual Base* bit_or(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* bit_and(const Base*)const	{untested(); return nullptr;}
+  virtual Base* bit_and(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* bit_xor(const Base*)const	{untested(); return nullptr;}
+  virtual Base* bit_xor(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* bit_xnor(const Base*)const	{untested(); return nullptr;}
+  virtual Base* bit_xnor(const Integer*)const	{untested(); return nullptr;}
+
+  virtual Base* lshift(const Base*)const	{untested(); return nullptr;}
+  virtual Base* lshift(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* r_lshift(const Base*)const	{untested(); return nullptr;}
+  virtual Base* r_lshift(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* rshift(const Base*)const	{untested(); return nullptr;}
+  virtual Base* rshift(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* r_rshift(const Base*)const	{untested(); return nullptr;}
+  virtual Base* r_rshift(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* arshift(const Base*)const	{untested(); return nullptr;}
+  virtual Base* arshift(const Integer*)const	{untested(); return nullptr;}
+  virtual Base* r_arshift(const Base*)const	{untested(); return nullptr;}
+  virtual Base* r_arshift(const Integer*)const	{untested(); return nullptr;}
 
   Base* logic_not()const;
   Base* logic_or(const Base* X)const;
@@ -225,6 +248,7 @@ public:
 
   Base* minus()const override		{return new Integer(-_data);}
   Base* plus()const override		{return new Integer(_data);}
+  Base* bit_inv()const override		{return new Integer(~_data);}
 
   Integer* less(const Integer* X)const override	 { assert(X); return new Integer((_data < X->_data)?1:0);}
   Integer* greater(const Integer* X)const override	 { assert(X); return new Integer((_data > X->_data)?1:0);}
@@ -240,6 +264,16 @@ public:
   Base* r_divide(const Integer* X)const override;
   Integer* modulo(const Integer* X)const override	 {untested(); assert(X); return new Integer(_data % X->_data);}
   Integer* r_modulo(const Integer* X)const override { assert(X); return new Integer(X->_data % _data);}
+  Integer* bit_or(const Integer* X)  const override {untested(); assert(X); return new Integer(_data % X->_data);}
+  Integer* bit_and(const Integer* X) const override { assert(X); return new Integer(_data & X->_data);}
+  Integer* bit_xor(const Integer* X) const override { assert(X); return new Integer(_data ^ X->_data);}
+  Integer* bit_xnor(const Integer* X) const override { assert(X); return new Integer(_data ^ ~X->_data);}
+  Integer* lshift(const Integer* X)const override   {untested(); assert(X); return new Integer(_data << X->_data);}
+  Integer* r_lshift(const Integer* X)const override { assert(X); return new Integer(X->_data << _data);}
+  Integer* rshift(const Integer* X)const override   {untested(); assert(X); return new Integer(unsigned(_data) >> X->_data);}
+  Integer* r_rshift(const Integer* X)const override {untested(); assert(X); return new Integer(unsigned(X->_data) >> _data);}
+  Integer* arshift(const Integer* X)const override  {untested(); assert(X); return new Integer(_data >> X->_data);}
+  Integer* r_arshift(const Integer* X)const override{untested(); assert(X); return new Integer(_data >> X->_data);}
 
   Base* less(const Float* X)const override;
   Base* greater(const Float* X)const override;
@@ -270,6 +304,16 @@ public:
   Base* r_divide(const Base* X)const override	{untested();return ((X) ? (X->divide(this))    : (nullptr));}
   Base* modulo(const Base* X)const override	{return ((X) ? (X->r_modulo(this))  : (nullptr));}
   Base* r_modulo(const Base* X)const override	{untested();return ((X) ? (X->modulo(this))    : (nullptr));}
+  Base* bit_or(const Base* X)  const override	{untested();return ((X) ? (X->bit_or(this))   : (nullptr));}
+  Base* bit_and(const Base* X) const override	{return ((X) ? (X->bit_and(this))  : (nullptr));}
+  Base* bit_xor(const Base* X) const override	{return ((X) ? (X->bit_xor(this))  : (nullptr));}
+  Base* bit_xnor(const Base* X) const override	{return ((X) ? (X->bit_xnor(this))  : (nullptr));}
+  Base* lshift(const Base* X)const override	{return ((X) ? (X->r_lshift(this)) : (nullptr));}
+  Base* r_lshift(const Base* X)const override	{untested();return ((X) ? (X->lshift(this))   : (nullptr));}
+  Base* rshift(const Base* X)const override	{untested();return ((X) ? (X->r_rshift(this)) : (nullptr));}
+  Base* r_rshift(const Base* X)const override	{untested();return ((X) ? (X->rshift(this))   : (nullptr));}
+  Base* arshift(const Base* X)const override	{untested();return ((X) ? (X->r_arshift(this)): (nullptr));}
+  Base* r_arshift(const Base* X)const override	{untested();return ((X) ? (X->arshift(this))  : (nullptr));}
 
   Base* less(const String*)const override	{untested();return nullptr;}
   Base* greater(const String*)const override	{untested();return nullptr;}
