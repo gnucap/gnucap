@@ -414,11 +414,11 @@ void Expression::orarg(CS& File)
 /*--------------------------------------------------------------------------*/
 void Expression::exptail(CS& File)
 {
-  if (File >> "?") { untested();
+  if (File >> "?") {
     assert(size());
     ternary(File);
     exptail(File);
-  }else{ untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/

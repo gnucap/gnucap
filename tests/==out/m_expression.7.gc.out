@@ -54,8 +54,24 @@ a3=0
 "parameter integer one = 1;"
 "parameter integer two = 2;"
 ""
+"eval one + two"
+(one + two)=3
 "eval one/two"
 (one / two)=0
+"eval one << two"
+(one << two)=4
+"eval one & (two + one)"
+(one & (two + one))=1
+"eval -1 & 1"
+((- 1) & 1)=1
+"eval ~1"
+(~ 1)=-2
+"eval ~(-1)"
+(~ (- 1))=0
+"eval 1 ^~ 2"
+(1 ^ (~ 2))=-4
+"eval 1 ~^ 2"
+(1 ~^ 2)=-4
 ""
 "options log nolist"
 Top level parameter. Not within spec, use with care

@@ -8,6 +8,7 @@ associated tarball. This file summarizes the important changes.
 - escaped identifiers in expression parse/dump
 - expand_last queue, no more unrequested calls.
 - canonicalise spice .model names
+- extend expression syntax, bit operators etc.
 - ..
 
 == 20251222-dev
