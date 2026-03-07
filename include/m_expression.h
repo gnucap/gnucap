@@ -256,10 +256,22 @@ private: // expression-in.cc
   void term(CS& File);
   void addexptail(CS& File);
   void addexp(CS& File);
-  void logicaltail(CS& File);
-  void logical(CS& File);
+  void shifttail(CS& File);
+  void shift(CS& File);
+  void ordertail(CS& File);
+  void order(CS& File);
+  void comparetail(CS& File);
+  void compare(CS& File);
+  void bitandtail(CS& File);
+  void bitandarg(CS& File);
+  void bitxortail(CS& File);
+  void bitxorarg(CS& File);
+  void bitortail(CS& File);
+  void bitorarg(CS& File);
   void andtail(CS& File);
   void andarg(CS& File);
+  void ortail(CS& File);
+  void orarg(CS& File);
   void exptail(CS& File);
   void expression(CS& File);
 public:

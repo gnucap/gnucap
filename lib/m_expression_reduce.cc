@@ -67,8 +67,22 @@ Token* Token_BINOP::op(const Token* T1, const Token* T2)const
     b = (T1->data())->logic_or(T2->data());
   }else if (name() == "&&") {
     b = (T1->data())->logic_and(T2->data());
+  }else if (name() == "<<") {
+    b = (T1->data())->lshift(T2->data());
+  }else if (name() == ">>>") { untested();
+    b = (T1->data())->arshift(T2->data());
+  }else if (name() == ">>") { untested();
+    b = (T1->data())->rshift(T2->data());
+  }else if (name() == "&") {
+    b = (T1->data())->bit_and(T2->data());
+  }else if (name() == "|") { untested();
+    b = (T1->data())->bit_or(T2->data());
+  }else if (name() == "^") {
+    b = (T1->data())->bit_xor(T2->data());
+  }else if (name() == "~^") {
+    b = (T1->data())->bit_xnor(T2->data());
   }else{ untested();
-    // op (name()) not one of those listed
+    trace1("not one of those listed", name());
     unreachable();
     return nullptr;
   }
@@ -93,6 +107,8 @@ Token* Token_UNARY::op(const Token* T1)const
     b = (T1->data())->plus();
   }else if (name() == "!") {
     b = (T1->data())->logic_not();
+  }else if (name() == "~") {
+    b = (T1->data())->bit_inv();
   }else{ untested();
     // op (name()) not one of those listed
     unreachable();

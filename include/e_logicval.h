@@ -55,6 +55,7 @@ public:
   LOGICVAL  operator^=(LOGICVAL p)
 	{untested(); _lv = xor_truth[_lv][p._lv]; return *this;}
   LOGICVAL  operator~()const	{return not_truth[_lv];}
+  LOGICVAL  operator!()const	{return not_truth[_lv];}
   
   bool is_unknown()const	{return _lv == lvUNKNOWN;}
   bool lv_future()const		{assert(_lv!=lvUNKNOWN); return _lv & 1;}
