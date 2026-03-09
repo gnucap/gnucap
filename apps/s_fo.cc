@@ -47,7 +47,14 @@ public:
   {}
   ~FOURIER() {}
 private:
-  explicit FOURIER(const FOURIER&): TRANSIENT() {unreachable(); incomplete();}
+  explicit FOURIER(const FOURIER&f) : TRANSIENT(f),
+    _fstart(f._fstart),
+    _fstop(f._fstop),
+    _fstep(f._fstep),
+    _timesteps(f._timesteps),
+    _fdata(NULL) {
+  }
+  // CMD* clone()const override {return new FOURIER(*this);}
   std::string status()const override {untested();return "";}
   void	setup(CS&)override;
   void	fftallocate();

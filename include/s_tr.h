@@ -63,6 +63,7 @@ public:
   {
   }
   ~TRANSIENT() {}
+  //CMD* clone()const override {return new TRANSIENT(*this);}
 public:
   void	do_it(CS&, CARD_LIST* scope)override;
   std::string status()const override;
@@ -90,7 +91,22 @@ public:
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
   bool	is_step_rejected()const override {return (step_cause() > scREJECT);}
-  explicit TRANSIENT(const TRANSIENT&): SIM(),_skip_in(1) {unreachable(); incomplete();}
+protected: // fourier...
+  explicit TRANSIENT(const TRANSIENT&t): SIM(t),
+    _tstart(t._tstart),
+    _tstop(t._tstop),
+    _tstrobe(t._tstrobe),
+    _dtratio_in(t._dtratio_in),
+    _dtmin_in(t._dtmin_in),
+    _dtmax_in(t._dtmax_in),
+    //_skip_in(t._skip_in),
+    _skip_in(1), // ?
+    _time1(t._time1),
+    _dtmax(t._dtmax),
+    _cold(t._cold),
+    _cont(t._cont),
+    _stepno(t._stepno) {
+  }
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:
   PARAMETER<double> _tstart;	// sweep start time

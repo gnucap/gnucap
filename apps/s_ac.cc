@@ -33,9 +33,14 @@
 namespace {
 /*--------------------------------------------------------------------------*/
 class AC : public SIM {
+  PARAMETER<double> _start;	// sweep start frequency
+  PARAMETER<double> _stop;	// sweep stop frequency
+  PARAMETER<double> _step_in;	// step size, as input
+  double _step;			// printed step size
+  bool	_linswp;		// flag: use linear sweep (vs log sweep)
+  bool	_prevopppoint;  	// flag: use previous op point
+  enum {ONE_PT, LIN_STEP, LIN_PTS, TIMES, OCTAVE, DECADE} _stepmode;
 public:
-  void	do_it(CS&, CARD_LIST*)override;
-
   explicit AC():
     SIM(),
     _start(),
@@ -46,10 +51,22 @@ public:
     _prevopppoint(false),
     _stepmode(ONE_PT)
   {}
-
-  ~AC() {}
 private:
-  explicit AC(const AC&):SIM() {unreachable(); incomplete();}
+  explicit AC(const AC&a) :
+    SIM(a),
+    _start(a._start),
+    _stop(a._stop),
+    _step_in(a._step_in),
+    _step(a._step),
+    _linswp(a._linswp),
+    _prevopppoint(a._prevopppoint),
+    _stepmode(a._stepmode)
+  {untested();}
+  // CARD* clone()const override {return new AC(*this);}
+public:
+  ~AC() {}
+public:
+  void	do_it(CS&, CARD_LIST*)override;
   void	setup(CS&)override;
   void	sweep()override;
   void	first();
@@ -57,14 +74,6 @@ private:
   void	solve();
   void	final()override		{_scope->ac_final();}
   void	finish()override	{}
-private:
-  PARAMETER<double> _start;	// sweep start frequency
-  PARAMETER<double> _stop;	// sweep stop frequency
-  PARAMETER<double> _step_in;	// step size, as input
-  double _step;			// printed step size
-  bool	_linswp;		// flag: use linear sweep (vs log sweep)
-  bool	_prevopppoint;  	// flag: use previous op point
-  enum {ONE_PT, LIN_STEP, LIN_PTS, TIMES, OCTAVE, DECADE} _stepmode;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
