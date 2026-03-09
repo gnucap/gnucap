@@ -429,9 +429,13 @@ DEV_DOT* LANG_VERILOG::parse_command(CS& cmd, DEV_DOT* x)
   }
   parse_attributes(cmd, x->id_tag());
   CMD::cmdproc(cmd, scope);
-  x->purge();
-  delete x;
-  return nullptr;
+  if(dynamic_cast<CMD const*>(x)){ untested();
+    return x;
+  }else{
+    x->purge();
+    delete x;
+    return nullptr;
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* "paramset" <my_name> <base_name> ";"
