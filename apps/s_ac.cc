@@ -68,6 +68,7 @@ public:
 public:
   void	do_it(CS&, CARD_LIST*)override;
   void	setup(CS&)override;
+  void	allocate()override;
   void	sweep()override;
   void	first();
   bool	next();
@@ -77,6 +78,14 @@ public:
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+void AC::allocate()
+{
+  assert(_sim);
+  _sim->alloc_vectors();
+  _sim->_acx.reallocate();
+  _sim->_acx.set_min_pivot(OPT::pivtol);
+}
+/*--------------------------------------------------------------------------*/
 void AC::do_it(CS& Cmd, CARD_LIST* Scope)
 {
   assert(Scope);
@@ -85,35 +94,8 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
   }
   _scope = Scope;
   _sim->set_command_ac();
-  reset_timers();
-  ::status.ac.reset().start();
-
-  try {
-    setup(Cmd);
-    _sim->init(Scope);
-    _scope->precalc_last();
-
-    _sim->alloc_vectors();
-    _sim->_acx.reallocate();
-    _sim->_acx.set_min_pivot(OPT::pivtol);
-    ::status.set_up.stop();
-
-    switch (ENV::run_mode) {
-    case rPRE_MAIN:	unreachable();	break;
-    case rBATCH:	sweep(); final(); break;
-    case rINTERACTIVE:	itested();sweep(); final(); break;
-    case rSCRIPT:	sweep(); final(); break;
-    case rPRESET:	/*nothing*/	break;
-    }
-  }catch (Exception& e) {
-    error(bDANGER, e.message() + '\n');
-  }
-  finish();
-  _sim->_acx.unallocate();
-  _sim->unalloc_vectors();
-
+  command_base(Cmd);
   _scope = nullptr;
-  
   ::status.ac.stop();
   ::status.total.stop();
 }

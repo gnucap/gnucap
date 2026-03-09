@@ -114,6 +114,7 @@ protected:
   void	fix_args(int);
   void	options(CS&, int);
 private:
+  void	allocate()override;
   void	sweep()override;
   void	precalc();
   void	sweep_recursive(int);
@@ -175,6 +176,16 @@ private:
   void	setup(CS&)override;
 };
 /*--------------------------------------------------------------------------*/
+void DCOP::allocate()
+{
+  _sim->alloc_vectors();
+  _sim->_aa.reallocate();
+  _sim->_aa.dezero(OPT::gmin);
+  _sim->_aa.set_min_pivot(OPT::pivtol);
+  _sim->_lu.reallocate();
+  _sim->_lu.dezero(OPT::gmin);
+  _sim->_lu.set_min_pivot(OPT::pivtol);
+}
 /*--------------------------------------------------------------------------*/
 void DC::do_it(CS& Cmd, CARD_LIST* Scope)
 {

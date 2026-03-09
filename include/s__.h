@@ -58,6 +58,7 @@ public:
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
   virtual void	setup(CS&)	= 0;
+  virtual void	allocate(){untested(); unreachable();} // = 0;
   virtual void	sweep()		= 0;
   virtual void	final()		= 0;
   virtual void	finish()	= 0;

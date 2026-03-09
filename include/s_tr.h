@@ -76,6 +76,7 @@ private:		// s_tr_rev.cc
 private:		// s_tr_set.cc
   void	setup(CS&)override;
 protected:
+  void	allocate()override;
   void	options(CS&);
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:		// s_tr_swp.cc

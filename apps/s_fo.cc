@@ -57,6 +57,7 @@ private:
   // CMD* clone()const override {return new FOURIER(*this);}
   std::string status()const override {untested();return "";}
   void	setup(CS&)override;
+  void  allocate()override;
   void	fftallocate();
   void	fftunallocate();
   void	final()override;
@@ -77,6 +78,12 @@ static  int	stepnum(double,double,double);
 static	COMPLEX	find_max(COMPLEX*,int,int);
 static	double  db(COMPLEX);
 /*--------------------------------------------------------------------------*/
+void FOURIER::allocate()
+{
+  TRANSIENT::allocate();
+  fftallocate();
+}
+/*--------------------------------------------------------------------------*/
 void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
 {
   assert(Scope);
@@ -87,29 +94,7 @@ void FOURIER::do_it(CS& Cmd, CARD_LIST* Scope)
   _sim->set_command_fourier();
   reset_timers();
   ::status.four.reset().start();
-  
-  try {
-    setup(Cmd);
-    _sim->init(Scope);
-    _scope->precalc_last();
-
-    _sim->alloc_vectors();    
-    _sim->_aa.reallocate();
-    _sim->_aa.dezero(OPT::gmin);
-    _sim->_aa.set_min_pivot(OPT::pivtol);    
-    fftallocate();
-    ::status.set_up.stop();
-
-    switch (ENV::run_mode) {
-    case rPRE_MAIN:	unreachable();		break;
-    case rBATCH:	untested();sweep(); final(); break;
-    case rINTERACTIVE:  itested();sweep(); final(); break;
-    case rSCRIPT:	sweep(); final(); break;
-    case rPRESET:	untested();/*nothing*/	break;
-    }
-  }catch (Exception& e) {untested();
-    error(bDANGER, e.message() + '\n');
-  }
+  command_base(Cmd);
   fftunallocate();
   _sim->unalloc_vectors();
   _sim->_aa.unallocate();
