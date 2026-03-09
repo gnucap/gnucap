@@ -9,6 +9,7 @@ associated tarball. This file summarizes the important changes.
 - expand_last queue, no more unrequested calls.
 - canonicalise spice .model names
 - extend expression syntax, bit operators etc.
+- persistent commands
 - ..
 
 == 20251222-dev

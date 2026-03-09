@@ -33,9 +33,14 @@
 namespace {
 /*--------------------------------------------------------------------------*/
 class AC : public SIM {
+  PARAMETER<double> _start;	// sweep start frequency
+  PARAMETER<double> _stop;	// sweep stop frequency
+  PARAMETER<double> _step_in;	// step size, as input
+  double _step;			// printed step size
+  bool	_linswp;		// flag: use linear sweep (vs log sweep)
+  bool	_prevopppoint;  	// flag: use previous op point
+  enum {ONE_PT, LIN_STEP, LIN_PTS, TIMES, OCTAVE, DECADE} _stepmode;
 public:
-  void	do_it(CS&, CARD_LIST*)override;
-
   explicit AC():
     SIM(),
     _start(),
@@ -46,27 +51,40 @@ public:
     _prevopppoint(false),
     _stepmode(ONE_PT)
   {}
-
-  ~AC() {}
 private:
-  explicit AC(const AC&):SIM() {unreachable(); incomplete();}
+  explicit AC(const AC&a) :
+    SIM(a),
+    _start(a._start),
+    _stop(a._stop),
+    _step_in(a._step_in),
+    _step(a._step),
+    _linswp(a._linswp),
+    _prevopppoint(a._prevopppoint),
+    _stepmode(a._stepmode)
+  {untested();}
+  // CARD* clone()const override {return new AC(*this);}
+public:
+  ~AC() {}
+public:
+  void	do_it(CS&, CARD_LIST*)override;
   void	setup(CS&)override;
+  void	allocate()override;
   void	sweep()override;
   void	first();
   bool	next();
   void	solve();
   void	final()override		{_scope->ac_final();}
   void	finish()override	{}
-private:
-  PARAMETER<double> _start;	// sweep start frequency
-  PARAMETER<double> _stop;	// sweep stop frequency
-  PARAMETER<double> _step_in;	// step size, as input
-  double _step;			// printed step size
-  bool	_linswp;		// flag: use linear sweep (vs log sweep)
-  bool	_prevopppoint;  	// flag: use previous op point
-  enum {ONE_PT, LIN_STEP, LIN_PTS, TIMES, OCTAVE, DECADE} _stepmode;
 };
 /*--------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------*/
+void AC::allocate()
+{
+  assert(_sim);
+  _sim->alloc_vectors();
+  _sim->_acx.reallocate();
+  _sim->_acx.set_min_pivot(OPT::pivtol);
+}
 /*--------------------------------------------------------------------------*/
 void AC::do_it(CS& Cmd, CARD_LIST* Scope)
 {
@@ -76,35 +94,8 @@ void AC::do_it(CS& Cmd, CARD_LIST* Scope)
   }
   _scope = Scope;
   _sim->set_command_ac();
-  reset_timers();
-  ::status.ac.reset().start();
-
-  try {
-    setup(Cmd);
-    _sim->init(Scope);
-    _scope->precalc_last();
-
-    _sim->alloc_vectors();
-    _sim->_acx.reallocate();
-    _sim->_acx.set_min_pivot(OPT::pivtol);
-    ::status.set_up.stop();
-
-    switch (ENV::run_mode) {
-    case rPRE_MAIN:	unreachable();	break;
-    case rBATCH:	sweep(); final(); break;
-    case rINTERACTIVE:	itested();sweep(); final(); break;
-    case rSCRIPT:	sweep(); final(); break;
-    case rPRESET:	/*nothing*/	break;
-    }
-  }catch (Exception& e) {
-    error(bDANGER, e.message() + '\n');
-  }
-  finish();
-  _sim->_acx.unallocate();
-  _sim->unalloc_vectors();
-
+  command_base(Cmd);
   _scope = nullptr;
-  
   ::status.ac.stop();
   ::status.total.stop();
 }

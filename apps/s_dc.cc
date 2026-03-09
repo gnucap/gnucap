@@ -82,12 +82,39 @@ static DISPATCHER<COMMON_COMPONENT>::INSTALL d1(&bm_dispatcher,
 namespace {
 /*--------------------------------------------------------------------------*/
 class DCOP : public SIM {
+protected:
+  enum {DCNEST = 4};
+  int _n_sweeps;
+  PARAMETER<double> _start[DCNEST];
+  PARAMETER<double> _stop[DCNEST];
+  PARAMETER<double> _step_in[DCNEST];
+  double _step[DCNEST];
+  bool _linswp[DCNEST];
+  double* _sweepval[DCNEST];	/* pointer to thing to sweep, dc command */
+  ELEMENT* _zap[DCNEST];	/* to branch to zap, for re-expand */
+  COMMON_COMPONENT* _ctrl[DCNEST]; /* take control */
+  std::string _param_name[DCNEST];
+  double _param[DCNEST];        // sweep this value:
+  PARAM_INSTANCE _param_zap[DCNEST]; // keep a backup
+  CARDSTASH _stash[DCNEST];	/* store std values of elements being swept */
+  bool _loop[DCNEST];		/* flag: do it again backwards */
+  bool _reverse_in[DCNEST];	/* flag: sweep backwards, input */
+  bool _reverse[DCNEST];	/* flag: sweep backwards, working */
+  bool _cont;			/* flag: continue from previous run */
+  TRACE _trace;			/* enum: show extended diagnostics */
+  enum {ONE_PT, LIN_STEP, LIN_PTS, TIMES, OCTAVE, DECADE} _stepmode[DCNEST];
+  bool _have_param;             /* sweep a param */
 protected: // tmp hack
   double _temp_c;
+protected:
+  explicit DCOP();
+  explicit DCOP(const DCOP& d);
+  ~DCOP() {}
 protected:
   void	fix_args(int);
   void	options(CS&, int);
 private:
+  void	allocate()override;
   void	sweep()override;
   void	precalc();
   void	sweep_recursive(int);
@@ -96,7 +123,6 @@ private:
   void	final()override		{_scope->dc_final();}
   void	finish()override;
 
-  explicit DCOP(const DCOP&): SIM() { untested();unreachable(); incomplete();}
 protected:
   void set_sweepval(int i, double d){
     ::status.set_up.start();
@@ -126,54 +152,40 @@ protected:
     assert(_sweepval[i]);
     return *_sweepval[i];
   }
-protected:
-  explicit DCOP();
-  ~DCOP() {}
-  
-protected:
-  enum {DCNEST = 4};
-  int _n_sweeps;
-  PARAMETER<double> _start[DCNEST];
-  PARAMETER<double> _stop[DCNEST];
-  PARAMETER<double> _step_in[DCNEST];
-  double _step[DCNEST];
-  bool _linswp[DCNEST];
-  double* _sweepval[DCNEST];	/* pointer to thing to sweep, dc command */
-  ELEMENT* _zap[DCNEST];	/* to branch to zap, for re-expand */
-  COMMON_COMPONENT* _ctrl[DCNEST]; /* take control */
-  std::string _param_name[DCNEST];
-  double _param[DCNEST];        // sweep this value:
-  PARAM_INSTANCE _param_zap[DCNEST]; // keep a backup
-  CARDSTASH _stash[DCNEST];	/* store std values of elements being swept */
-  bool _loop[DCNEST];		/* flag: do it again backwards */
-  bool _reverse_in[DCNEST];	/* flag: sweep backwards, input */
-  bool _reverse[DCNEST];	/* flag: sweep backwards, working */
-  bool _cont;			/* flag: continue from previous run */
-  TRACE _trace;			/* enum: show extended diagnostics */
-  enum {ONE_PT, LIN_STEP, LIN_PTS, TIMES, OCTAVE, DECADE} _stepmode[DCNEST];
-  bool _have_param;             /* sweep a param */
 };
 /*--------------------------------------------------------------------------*/
 class DC : public DCOP {
 public:
   explicit DC(): DCOP() {}
+  explicit DC(const DC& x): DCOP(x) {untested();}
   ~DC() {}
+  //CARD* clone()const override {return new DC(*this);}
   void	do_it(CS&, CARD_LIST*)override;
 private:
   void	setup(CS&)override;
-  explicit DC(const DC&): DCOP() { untested();unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
 class OP : public DCOP {
 public:
   explicit OP(): DCOP() {}
+  explicit OP(const OP& x): DCOP(x) {untested();}
   ~OP() {}
+  //CARD* clone()const override {return new OP(*this);}
   void	do_it(CS&, CARD_LIST*)override;
 private:
   void	setup(CS&)override;
-  explicit OP(const OP&): DCOP() { untested();unreachable(); incomplete();}
 };
 /*--------------------------------------------------------------------------*/
+void DCOP::allocate()
+{
+  _sim->alloc_vectors();
+  _sim->_aa.reallocate();
+  _sim->_aa.dezero(OPT::gmin);
+  _sim->_aa.set_min_pivot(OPT::pivtol);
+  _sim->_lu.reallocate();
+  _sim->_lu.dezero(OPT::gmin);
+  _sim->_lu.set_min_pivot(OPT::pivtol);
+}
 /*--------------------------------------------------------------------------*/
 void DC::do_it(CS& Cmd, CARD_LIST* Scope)
 {
@@ -231,6 +243,41 @@ DCOP::DCOP()
   //_sim->_genout=0.;
   _out=IO::mstdout;
   //_sim->_uic=false;
+}
+/*--------------------------------------------------------------------------*/
+DCOP::DCOP(const DCOP& d)
+  :SIM(d),
+   _n_sweeps(d._n_sweeps),
+   _cont(d._cont),
+   _trace(d._trace),
+   _have_param(d._have_param)
+{
+  for (int ii = 0; ii < DCNEST; ++ii) { untested();
+    _start[ii] =      d._start[ii];
+    _stop[ii] =       d._stop[ii];
+    _step_in[ii] =    d._step_in[ii];
+    _step[ii] =       d._step[ii];
+    _linswp[ii] =     d._linswp[ii];
+    _loop[ii] =       d._loop[ii];
+    _reverse_in[ii] = d._reverse_in[ii];
+    _reverse[ii] =    false; // d._reverse[ii];
+
+    _param[ii] = d._param[ii];
+    _sweepval[ii] = d._sweepval[ii];
+
+    if(_sweepval[ii] == &d._param[ii]) {
+      // rebase
+      _sweepval[ii] = &_param[ii];
+    }else{
+    }
+
+    _zap[ii] = d._zap[ii];;
+    assert(!_zap[ii]);
+    _ctrl[ii] = d._ctrl[ii];
+    assert(!_ctrl[ii]);
+
+    _stepmode[ii] = d._stepmode[ii];
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DCOP::finish(void)
@@ -589,6 +636,7 @@ bool DCOP::next(int Nest)
 {
   double sweepval = NOT_VALID;
   bool ok = false;
+  trace2("DCOP::next", Nest, _step[Nest]);
 
   if (_linswp[Nest]) {
     double fudge = _step[Nest] / 10.;

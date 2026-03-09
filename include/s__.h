@@ -57,16 +57,16 @@ protected:
 public:
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
-  const std::string long_label()const override {unreachable(); return "";}
-protected:
   virtual void	setup(CS&)	= 0;
+  virtual void	allocate(){untested(); unreachable();} // = 0;
   virtual void	sweep()		= 0;
   virtual void	final()		= 0;
   virtual void	finish()	= 0;
 
   virtual bool	is_step_rejected()const {return false;}
 
-  explicit SIM(const SIM&):CMD(),_scope(nullptr) {unreachable(); incomplete();}
+protected:
+  explicit SIM(const SIM&):CMD(),_scope(nullptr) {untested(); incomplete();}
 protected:
   explicit SIM(): CMD(),_scope(nullptr) {}
 public:

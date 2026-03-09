@@ -30,6 +30,17 @@
 //	void	TRANSIENT::setup(CS&);
 //	void	TRANSIENT::options(CS&);
 /*--------------------------------------------------------------------------*/
+void TRANSIENT::allocate()
+{
+  _sim->alloc_vectors();
+  _sim->_aa.reallocate();
+  _sim->_aa.dezero(OPT::gmin);
+  _sim->_aa.set_min_pivot(OPT::pivtol);
+  _sim->_lu.reallocate();
+  _sim->_lu.dezero(OPT::gmin);
+  _sim->_lu.set_min_pivot(OPT::pivtol);
+}
+/*--------------------------------------------------------------------------*/
 /* tr_setup: transient analysis: parse command string and set options
  * 	(options set by call to tr_options)
  */

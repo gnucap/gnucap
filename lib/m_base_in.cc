@@ -69,7 +69,7 @@ static std::string get_identifier(CS& cmd, std::string const& term)
   cmd.skipbl();
   std::string id;
 
-  if(cmd.is_digit()) {
+  if(cmd.is_digit()) { untested();
     cmd.warn(bDANGER, "invalid identifier");
   }else{
   }
@@ -77,8 +77,8 @@ static std::string get_identifier(CS& cmd, std::string const& term)
   bool esc = cmd.skip1('\\');
 
   while(esc && cmd.more()) {
-    if(cmd.skip1('\\')){
-      if(cmd.skip1('\\')){
+    if(cmd.skip1('\\')){ untested();
+      if(cmd.skip1('\\')){ untested();
 	id += "\\";
       }else{ untested();
 	cmd.warn(bDANGER, "invalid escaped char");
@@ -93,7 +93,7 @@ static std::string get_identifier(CS& cmd, std::string const& term)
     }
   }
 
-  if(!esc) {
+  if(!esc) { untested();
     id = cmd.ctos(term, "", "");
   }else{
   }
