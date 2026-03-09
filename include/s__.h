@@ -57,8 +57,6 @@ protected:
 public:
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
-  const std::string long_label()const override {unreachable(); return "";}
-protected:
   virtual void	setup(CS&)	= 0;
   virtual void	sweep()		= 0;
   virtual void	final()		= 0;

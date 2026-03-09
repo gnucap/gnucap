@@ -66,8 +66,8 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
   
   if (p) {
     return p;
-  }else if ((command_dispatcher[Name])) {
-    return new DEV_DOT;	//BUG// memory leak
+  }else if ((p = command_dispatcher[Name])) {
+    return p;
   }else if ((p = device_dispatcher[Name])) {
     return p;
   }else if ((p = model_dispatcher[Name])) {
@@ -95,8 +95,8 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
     else{ /* no shortcut available */
       s = Name;
     }
-    if ((command_dispatcher[s])) {
-      return new DEV_DOT; //BUG// we will look it up twice, //BUG// memory leak
+    if ((p = command_dispatcher[s])) {
+      return p;
     }else{
       return nullptr;
     }

@@ -25,16 +25,18 @@
 #ifndef C_COMAND_H
 #define C_COMAND_H
 #include "e_card.h"
+#include "d_dot.h"
 /*--------------------------------------------------------------------------*/
 class CS;
 /*--------------------------------------------------------------------------*/
-class INTERFACE CMD : public CKT_BASE {
+class INTERFACE CMD : public CARD {
 public:
   std::string value_name()const {return "";}
   virtual void do_it(CS&, CARD_LIST*) = 0;
   virtual ~CMD() {}
   static  void  cmdproc(CS&, CARD_LIST*);
   static  void	command(const std::string&, CARD_LIST*);
+  CARD*   clone()const override {untested(); return new DEV_DOT;} // //BUG// memory leak ?
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
