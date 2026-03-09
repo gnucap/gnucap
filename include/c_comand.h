@@ -30,10 +30,13 @@
 class CS;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CMD : public DEV_DOT {
+protected:
+  explicit CMD() : DEV_DOT() {untested();}
+  explicit CMD(CMD const& c) : DEV_DOT(c) {}
+  virtual ~CMD() {}
 public:
   std::string value_name()const override {return "";}
   virtual void do_it(CS&, CARD_LIST*) = 0;
-  virtual ~CMD() {}
   static  void  cmdproc(CS&, CARD_LIST*);
   static  void	command(const std::string&, CARD_LIST*);
 //  CARD*   clone()const override {untested(); return new DEV_DOT;}

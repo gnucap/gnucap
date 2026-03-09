@@ -26,8 +26,8 @@
 #include "e_card.h"
 /*--------------------------------------------------------------------------*/
 class DEV_DOT : public CARD {
-private:
   std::string	_s;
+protected:
   explicit DEV_DOT(const DEV_DOT& p) :CARD(p), _s(p._s) {set_constant(true);}
 public:
   explicit	DEV_DOT()		:CARD() {set_constant(true);}
