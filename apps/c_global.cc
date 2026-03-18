@@ -27,7 +27,7 @@
 #include "u_nodemap.h"
 #include "e_cardlist.h"
 #include "m_union.h"
-#include "u_node.h"
+#include "e_usernode.h"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/

@@ -1,0 +1,19 @@
+verilog
+options nowarn
+module main(out0, en);
+	ground g;
+	or #(1) b0(out0, en, g);
+endmodule
+
+list
+
+.model logic logic ( delay=1n rise=1n fall=1n  rs= 100.  rw= 1.G thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
+
+main m(a, en)
+
+spice
+
+Ven en 0 pulse iv=0 pv=5 rise=1n
+
+.print tran v(nodes)
+.tran .5u basic

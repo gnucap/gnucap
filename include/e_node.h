@@ -104,9 +104,11 @@ inline int NODE::matrix_number() const
 }
 /*--------------------------------------------------------------------------*/
 class INTERFACE node_t {
-private: // this should eventually fit into 64 bits.
+private: // this should eventually fit into 128 bits.
   NODE* _nnn{nullptr};
   mutable node_t* _link{nullptr};
+  int _index{INVALID_NODE}; // index in node map
+  int _m{INVALID_NODE};	// mapped, after reordering
   bool _own{false}; // indicate that _nnn is ours.
   enum dir_t {
     dir_none = 0,
@@ -143,10 +145,6 @@ public:
   bool is_output()const {return _dir & dir_out; }
   bool is_inout()const {return _dir == dir_none || _dir == dir_io; }
   void allocate(int u=0);
-private:
-  int _index{INVALID_NODE}; // index in node map
-  int _m{INVALID_NODE};	// mapped, after reordering
-
 public: // BUG
   void clear();
 private:
@@ -199,7 +197,7 @@ public:
   void	map_subckt_node(node_t* map_array, const CARD* d);
   bool	is_grounded()const;
   bool	is_connected()const { return _nnn || _link || e_()!=INVALID_NODE; }
-  bool	is_short_to(node_t const& n)const {return root() == n.root();}
+  bool	is_short_to(node_t const& n)const {return &root() == &n.root();}
 
   node_t&     map() {
     if (_nnn) {
@@ -226,12 +224,12 @@ public:
 	      ~node_t();
 
 private: // raw data access (lvalues)
-  LOGIC_NODE&	data()const;
+  NODE&	data()const;
 
 public:
   //LOGIC_NODE&	    operator*()const	{untested();return data();}
-  const LOGIC_NODE* operator->()const	{return &data();}
-  LOGIC_NODE*	    operator->()	{return &data();}
+  const NODE* operator->()const	{return &data();}
+  NODE*       operator->()	{return &data();}
   operator bool()const {return _nnn;}
 
   node_t& operator=(node_t& p);
@@ -306,13 +304,13 @@ public:
 inline bool node_t::is_node() const
 {
   assert(!_nnn || !_link);
-  return _nnn;
+  return _nnn; //  || _link == this;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_link() const
 {
   assert(!_nnn || !_link);
-  return !_nnn && _link;
+  return !_nnn && _link && _link != this;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_root() const

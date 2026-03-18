@@ -10,6 +10,7 @@ associated tarball. This file summarizes the important changes.
 - canonicalise spice .model names
 - extend expression syntax, bit operators etc.
 - persistent commands
+- decouple logic nodes from topology
 - ..
 
 == 20251222-dev

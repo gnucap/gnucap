@@ -190,4 +190,5 @@ Vdd 8 0 dc 5.
 
 .status notime
 .cbsstat
+.cbsdump 60
 .end

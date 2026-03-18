@@ -1,0 +1,10 @@
+module main (.out0(out0),.en(en));
+  ground g;
+  or #(.delay(1)) b0 (.out(out0),.in1(en),.in2(g));
+endmodule // main
+
+#Time       v(a)       v(en)     
+ 0.         0.         0.        
+ 1.E-9      0.         5.        
+ 2.E-9      5.         5.        
+ 500.E-9    5.         5.        

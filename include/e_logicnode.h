@@ -135,6 +135,26 @@ public: // used by matrix
   LOGIC_NODE&	set_a_iter()	{_a_iter = _sim->iteration_tag(); return *this;}
 };
 /*--------------------------------------------------------------------------*/
+extern NODE ground_node;
+struct node_l : node_t {
+  LOGIC_NODE*       operator->()      { return &data(); }
+  LOGIC_NODE const* operator->()const { return &data(); }
+private:
+  LOGIC_NODE& data() const {
+    if(n_() == &ground_node){
+      // tmp hack.
+      // think of it as an autoinserted connect module
+      // mimics traditional behaviour but probably wrong.
+      static LOGIC_NODE lg(0);
+      return lg;
+    }else{
+      auto n = prechecked_cast<LOGIC_NODE const*>(n_());
+      assert(n);
+      return *const_cast<LOGIC_NODE*>(n);
+    }
+  }
+};
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif
 // vim:ts=8:sw=2:noet:

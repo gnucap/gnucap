@@ -25,7 +25,6 @@
 #include "u_nodemap.h"
 #include "e_cardlist.h"
 #include "e_compon.h"
-#include "e_logicnode.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 namespace {
@@ -76,8 +75,9 @@ private:
     int* nm = _sim->_nm; // TODO: use scope
     if(n.n_()) {
       int flat = n->flat_number();
-      assert(flat != INVALID_NODE);
-      if(flat == 0){
+      if(flat == INVALID_NODE){
+	// unused node.
+      }else if(flat == 0){
       }else if(nm[flat] == INVALID_NODE){
 	nm[flat] = next(seek);
       }else{ untested();

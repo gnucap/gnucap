@@ -1,0 +1,12 @@
+simulator lang=verilog
+
+module rr (a, b);
+endmodule
+
+rr s(\1 ,\2 );
+
+list
+op
+
+status notime
+end

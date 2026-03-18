@@ -20,26 +20,44 @@
  *------------------------------------------------------------------
  * user nodes
  */
-#include "e_usernode.h"
-#include "u_xprobe.h"
+#ifndef U_NODE_H
+#define U_NODE_H
+#include "e_node.h"
+#include "e_logicnode.h"
 /*--------------------------------------------------------------------------*/
-double USER_NODE::tr_probe_num(const std::string& s) const
-{
-  if(_n) {
-    return _n->tr_probe_num(s);
-  }else{
-    return NOT_VALID;
+// USER_NODE is permanent, and acts as a proxy for probes.
+// .. n_(0) refers to the NODE used in simulation,
+// has an index aka. user_number formerly node_t::_t, before mapping
+// mapping to a node as a 1-net_node device does.
+class USER_NODE : public NODE {
+  mutable node_t _n;
+  bool _global{false};
+public:
+  explicit USER_NODE(std::string const& s, int i=INVALID_NODE)
+    : NODE(s), _n(i) {
+    assert(_n.e_() == i);
   }
-}
-/*--------------------------------------------------------------------------*/
-XPROBE USER_NODE::ac_probe_ext(const std::string& s) const
-{
-  if(_n) {
-    return _n->ac_probe_ext(s);
-  }else{ untested();
-    return XPROBE(NOT_VALID);
+public:
+  int user_number()const override {return _n.e_();}
+  int matrix_number()const override {itested(); return _n.m_();}
+  void set_to_ground() { _global=true; _n.set_to_ground(nullptr); }
+  void set_global() { _global=true; }
+  bool is_global()const {return _global;}
+private: // probe proxy
+  double	tr_probe_num(const std::string&)const override;
+  XPROBE	ac_probe_ext(const std::string&)const override;
+public: // connection
+  int net_nodes()const override {return 1;}
+  node_t& n_(int i)const override {
+    (void)i;
+    assert(i==0);
+    return _n;
   }
-}
+  void map_nodes()override {
+    _n.map();
+  }
+};
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
+#endif // guard
 // vim:ts=8:sw=2:noet:
