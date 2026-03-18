@@ -265,8 +265,9 @@ static void map_toplevel_nodes(CARD_LIST* scope)
 
   // also map USER_NODEs
   for (NODE_MAP::iterator p = top_nodes.begin(); p != top_nodes.end(); ++p ){
-    USER_NODE* un = dynamic_cast<USER_NODE*>((*p).second);
     NODE* n = (*p).second;
+    USER_NODE* un = prechecked_cast<USER_NODE*>(n);
+    assert(un);
     assert(n->net_nodes()==1);
 
     if(un->user_number()==0){
