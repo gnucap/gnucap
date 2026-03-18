@@ -21,14 +21,14 @@
  */
 //testing=script 2015.01.27
 #include "u_nodemap.h"
+#include "u_lang.h"
 #include "globals.h"
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
 #include "e_subckt.h"
 #include "e_model.h"
-#include "u_lang.h"
-#include "u_node.h"
+#include "e_usernode.h"
 /*--------------------------------------------------------------------------*/
 static const bool want_ground_zero = true; // "ground 0;"
 /*--------------------------------------------------------------------------*/

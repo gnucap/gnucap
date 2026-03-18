@@ -26,10 +26,8 @@
 #include "m_random.h"
 #include "u_nodemap.h"
 #include "u_status.h"
-#include "u_node.h"
 #include "e_cardlist.h"
-#include "e_logicnode.h"
-#include "e_cardlist.h"
+#include "e_usernode.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 SIM_DATA::SIM_DATA()

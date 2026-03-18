@@ -22,9 +22,8 @@
  * node name to number mapping -- for named nodes
  */
 //testing=script,complete 2006.07.14
-#include "e_node.h"
 #include "u_nodemap.h"
-#include "u_node.h"
+#include "e_usernode.h"
 /*--------------------------------------------------------------------------*/
 NODE ground_node("0", 0);
 /*--------------------------------------------------------------------------*/

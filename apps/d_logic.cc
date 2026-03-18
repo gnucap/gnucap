@@ -43,7 +43,7 @@ struct node_l : node_t
   LOGIC_NODE const* operator->()const { return &data(); }
 private:
   LOGIC_NODE& data() const {
-    if(n_() == &ground_node){ untested();
+    if(n_() == &ground_node){
       // tmp hack.
       // think of it as an autoinserted connect module
       // mimics traditional behaviour but probably wrong.
@@ -178,9 +178,9 @@ private:
   COMMON_COMPONENT* clone()const override {itested(); return new LOGIC_OR(*this);}
 public:
   explicit LOGIC_OR(int c=0)		  :COMMON_LOGIC(c) {}
-  LOGICVAL logic_eval(const node_l* n, int incount)const override{untested();
+  LOGICVAL logic_eval(const node_l* n, int incount)const override{
     LOGICVAL out(n[0]->lv());
-    for (int ii=1; ii<incount; ++ii) {untested();
+    for (int ii=1; ii<incount; ++ii) {
       out |= n[ii]->lv();
     }
     return out;
