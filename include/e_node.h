@@ -304,13 +304,13 @@ public:
 inline bool node_t::is_node() const
 {
   assert(!_nnn || !_link);
-  return _nnn;
+  return _nnn; //  || _link == this;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_link() const
 {
   assert(!_nnn || !_link);
-  return !_nnn && _link;
+  return !_nnn && _link && _link != this;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_root() const
