@@ -25,7 +25,6 @@
 #include "u_nodemap.h"
 #include "e_cardlist.h"
 #include "e_compon.h"
-#include "e_logicnode.h"
 #include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 namespace {

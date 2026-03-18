@@ -22,11 +22,10 @@
  * Base class for "cards" in the circuit description file
  */
 //testing=script 2014.07.04
-#include "e_logicnode.h"
-#include "e_card.h"
 #include "u_xprobe.h"
 #include "u_prblst.h"
 #include "u_time_pair.h"
+#include "e_card.h"
 #include "e_cardlist.h"
 #include "e_node.h"
 /*--------------------------------------------------------------------------*/
