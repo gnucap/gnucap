@@ -104,9 +104,11 @@ inline int NODE::matrix_number() const
 }
 /*--------------------------------------------------------------------------*/
 class INTERFACE node_t {
-private: // this should eventually fit into 64 bits.
+private: // this should eventually fit into 128 bits.
   NODE* _nnn{nullptr};
   mutable node_t* _link{nullptr};
+  int _index{INVALID_NODE}; // index in node map
+  int _m{INVALID_NODE};	// mapped, after reordering
   bool _own{false}; // indicate that _nnn is ours.
   enum dir_t {
     dir_none = 0,
@@ -143,10 +145,6 @@ public:
   bool is_output()const {return _dir & dir_out; }
   bool is_inout()const {return _dir == dir_none || _dir == dir_io; }
   void allocate(int u=0);
-private:
-  int _index{INVALID_NODE}; // index in node map
-  int _m{INVALID_NODE};	// mapped, after reordering
-
 public: // BUG
   void clear();
 private:
