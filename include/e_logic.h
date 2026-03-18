@@ -26,6 +26,8 @@
 #include "e_logicval.h"
 #include "e_compon.h"
 /*--------------------------------------------------------------------------*/
+struct node_l;
+/*--------------------------------------------------------------------------*/
 class INTERFACE COMMON_LOGIC : public COMMON_COMPONENT {
   PARAMETER<int> _delay;
 public:
@@ -44,7 +46,7 @@ public:
 		~COMMON_LOGIC()			{--_count;}
   bool operator==(const COMMON_COMPONENT&)const override;
   static  int	count()				{untested();return _count;}
-  virtual LOGICVAL logic_eval(const node_t*, int)const	= 0;
+  virtual LOGICVAL logic_eval(const node_l*, int)const	= 0;
 
   void		set_param_by_index(int, std::string&, int)override;
   bool		param_is_printable(int)const override;
