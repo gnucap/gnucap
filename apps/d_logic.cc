@@ -34,17 +34,25 @@
 #include "e_elemnt.h"
 #include "e_hsparam.h"
 /*--------------------------------------------------------------------------*/
+extern NODE ground_node;
+/*--------------------------------------------------------------------------*/
 struct node_l : node_t
 {
-  LOGIC_NODE* operator->() {
-    auto n = prechecked_cast<LOGIC_NODE*>(n_());
-    assert(n);
-    return n;
-  }
-  LOGIC_NODE const* operator->()const {
-    auto n = prechecked_cast<LOGIC_NODE const*>(n_());
-    assert(n);
-    return n;
+  LOGIC_NODE*       operator->()      { return &data(); }
+  LOGIC_NODE const* operator->()const { return &data(); }
+private:
+  LOGIC_NODE& data() const {
+    if(n_() == &ground_node){ untested();
+      // tmp hack.
+      // think of it as an autoinserted connect module
+      // mimics traditional behaviour but probably wrong.
+      static LOGIC_NODE lg(0);
+      return lg;
+    }else{
+      auto n = prechecked_cast<LOGIC_NODE const*>(n_());
+      assert(n);
+      return *const_cast<LOGIC_NODE*>(n);
+    }
   }
 };
 /*--------------------------------------------------------------------------*/
