@@ -76,8 +76,9 @@ private:
     int* nm = _sim->_nm; // TODO: use scope
     if(n.n_()) {
       int flat = n->flat_number();
-      assert(flat != INVALID_NODE);
-      if(flat == 0){
+      if(flat == INVALID_NODE){ untested();
+	// unused node.
+      }else if(flat == 0){
       }else if(nm[flat] == INVALID_NODE){
 	nm[flat] = next(seek);
       }else{ untested();

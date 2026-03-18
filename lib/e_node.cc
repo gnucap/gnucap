@@ -173,6 +173,7 @@ LOGIC_NODE& node_t::data()const
   if(auto d = dynamic_cast<LOGIC_NODE*>(_nnn)){
     return *d;
   }else if(auto e = dynamic_cast<LOGIC_NODE*>(root()._nnn)){
+    assert(!_nnn);
     return *e;
   }else if(_index==0 || _nnn == &ground_node){
     // BUG. ground is not a logic node, but asking for one.
