@@ -224,12 +224,12 @@ public:
 	      ~node_t();
 
 private: // raw data access (lvalues)
-  LOGIC_NODE&	data()const;
+  NODE&	data()const;
 
 public:
   //LOGIC_NODE&	    operator*()const	{untested();return data();}
-  const LOGIC_NODE* operator->()const	{return &data();}
-  LOGIC_NODE*	    operator->()	{return &data();}
+  const NODE* operator->()const	{return &data();}
+  NODE*       operator->()	{return &data();}
   operator bool()const {return _nnn;}
 
   node_t& operator=(node_t& p);

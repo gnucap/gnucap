@@ -168,22 +168,15 @@ node_t& node_t::set_own(NODE* n)
 }
 /*--------------------------------------------------------------------------*/
 extern NODE ground_node;
-LOGIC_NODE& node_t::data()const
+NODE& node_t::data()const
 {
-  if(auto d = dynamic_cast<LOGIC_NODE*>(_nnn)){
-    return *d;
-  }else if(auto e = dynamic_cast<LOGIC_NODE*>(root()._nnn)){
-    assert(!_nnn);
+  if(_nnn) {
+    return *_nnn;
+  }else if(auto e = root()._nnn){
     return *e;
-  }else if(_index==0 || _nnn == &ground_node){
-    // BUG. ground is not a logic node, but asking for one.
-    //  d_cccs.2.ckt
-    static LOGIC_NODE logic_ground(0);
-    return logic_ground;
-  }else{// untested();
-    //unreachable();
-    static LOGIC_NODE logic_ground(0);
-    return logic_ground;
+  }else{
+    // why ground?
+    return ground_node;
   }
   unreachable();
 }

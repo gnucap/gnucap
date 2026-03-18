@@ -72,7 +72,7 @@ private:
    //    // link to another node. possibly further up. ignore
    //  }else
     if(flat == 0){
-    }else if(flat == INVALID_NODE){ untested();
+    }else if(flat == INVALID_NODE){
     }else if(nm[flat] == INVALID_NODE){
       nm[flat] = next(seek);
       if(n->subckt()){
