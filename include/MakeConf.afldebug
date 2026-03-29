@@ -1,6 +1,5 @@
 #------------------------------------------------------------------------
 # BUG: VPATH = .:..
-PREFIX =  /usr/local
 
 # Standard base for g++, debugging, no optimization
 # Running the program will give a spew of line markers for debugging.

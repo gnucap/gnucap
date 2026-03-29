@@ -22,8 +22,6 @@
 # Standard base for g++, debugging, no optimization
 # Running the program will give a spew of line markers for debugging.
 #------------------------------------------------------------------------
-PREFIX =  /usr/local
-#------------------------------------------------------------------------
 # comment out to build witout readline support
 HAVE_LIBREADLINE = -DHAVE_LIBREADLINE
 LIBREADLINE = -lreadline
