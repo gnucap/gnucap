@@ -1,7 +1,7 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 2026****-dev
+== 20260329-dev
 - common pool: prune duplicate commons
 - fix compiance with C++ <= 23
 - bugfix parameter sweeps for modelgen models
@@ -11,7 +11,6 @@ associated tarball. This file summarizes the important changes.
 - extend expression syntax, bit operators etc.
 - persistent commands
 - decouple logic nodes from topology
-- ..
 
 == 20251222-dev
 - refactor matrix and interface
