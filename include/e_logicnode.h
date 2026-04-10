@@ -123,6 +123,9 @@ public: // action, used by logic
   void	      unpropagate();
   double      to_analog(const MODEL_LOGIC*f) const;
   void	      to_logic(const MODEL_LOGIC*f, double input);
+  void	      to_logic(const MODEL_LOGIC*f){itested();
+    to_logic(f, v0());
+  }
 
 private: // inhibited
   explicit LOGIC_NODE(const LOGIC_NODE&):NODE(){incomplete();unreachable();}

@@ -233,7 +233,7 @@ double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)const
 	  + " logic process mismatch\nis it " + process()->long_label() 
 	  + " or " + f->long_label() + "?\n");
   }
-  set_process(f);
+  // set_process(f);
 
   double start = NOT_VALID;
   double end = NOT_VALID;
