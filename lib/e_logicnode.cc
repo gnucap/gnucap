@@ -86,10 +86,10 @@ inline bool LOGIC_NODE::just_reached_stable()const
 /*--------------------------------------------------------------------------*/
 /* to_logic: set up logic data for a node, if needed
  * If the logic data is already up to date, do nothing.
- * else set up: logic value (_lv) and quality.
+ * else set up: logic value (_lv, using set_lv()) and quality.
  * Use and update _d_iter, _lastchange to keep track of what was done.
  */
-void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
+void LOGIC_NODE::to_logic(const MODEL_LOGIC*f, double input)
 {
   if (is_analog()){
     set_a_iter();
@@ -131,7 +131,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
       store_old_lv();			/* save to see if it changes */
     }
     
-    double sv = v0() / process()->range;	/* new scaled voltage */
+    double sv = input / process()->range;	/* new scaled voltage */
     if (sv >= process()->th1) {		/* logic 1 */
       switch (lv()) {
       case lvSTABLE0: dont_set_quality("stable 0 to stable 1");	break;
@@ -225,7 +225,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f)
   }
 }
 /*--------------------------------------------------------------------------*/
-double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)
+double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)const
 {
   assert(f);
   if (process() && process() != f) {untested();

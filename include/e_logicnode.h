@@ -121,8 +121,8 @@ public: // action, used by logic
   void	      force_initial_value(LOGICVAL v);
   void	      propagate();
   void	      unpropagate();
-  double      to_analog(const MODEL_LOGIC*f);
-  void	      to_logic(const MODEL_LOGIC*f);
+  double      to_analog(const MODEL_LOGIC*f) const;
+  void	      to_logic(const MODEL_LOGIC*f, double input);
 
 private: // inhibited
   explicit LOGIC_NODE(const LOGIC_NODE&):NODE(){incomplete();unreachable();}

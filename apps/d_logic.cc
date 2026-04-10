@@ -582,7 +582,7 @@ void DEV_LOGIC::tr_accept()
   /* side effect --- generate digital values for analog nodes */
   assert(PORTS_PER_GATE == max_nodes());
   {
-    n_(OUTNODE)->to_logic(m);
+    n_(OUTNODE)->to_logic(m, n_(OUTNODE)->v0());
     _quality = n_(OUTNODE)->quality();  /* the worst quality on this device */
     _failuremode = n_(OUTNODE)->failure_mode();    /* what is wrong with it? */
     _lastchangenode = OUTNODE;		/* which node changed most recently */
@@ -591,7 +591,7 @@ void DEV_LOGIC::tr_accept()
     trace2(n_(OUTNODE)->failure_mode().c_str(), OUTNODE, n_(OUTNODE)->quality());
     
     for (int ii = BEGIN_IN;  ii < net_nodes();  ++ii) {
-      n_(ii)->to_logic(m);
+      n_(ii)->to_logic(m, n_(ii)->v0());
       if (n_(ii)->quality() < _quality) {
 	_quality = n_(ii)->quality();
 	_failuremode = n_(ii)->failure_mode();
