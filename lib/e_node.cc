@@ -140,8 +140,7 @@ node_t& node_t::operator=(node_t&& p)
 // ordinary pointer assignment
 node_t& node_t::operator=(NODE* n)
 {
-  assert(n);
-  assert(!_link || _link == this);
+  assert(!_link || _link == this || !n);
   // clear();
   if(!_nnn){
     _own = false;
@@ -154,7 +153,11 @@ node_t& node_t::operator=(NODE* n)
   _link = nullptr;
   _nnn = n;
 
-  _index = n->user_number();
+  if(n){
+    _index = n->user_number();
+  }else{ untested();
+    _index = NOT_VALID;
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
