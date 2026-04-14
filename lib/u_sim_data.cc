@@ -250,31 +250,6 @@ static void clear_top_nodes(CARD_LIST* scope)
 #endif
 }
 /*--------------------------------------------------------------------------*/
-/* CARD_LIST::card_list.map_subckt_nodes(top_nodes); <= similar
- */
-static void map_toplevel_nodes(CARD_LIST* scope)
-{
-  assert(scope);
-  if (scope == &CARD_LIST::card_list) {
-  }else{itested();
-  }
-  assert(scope->nodes());
-  NODE_MAP& top_nodes = *scope->nodes();
-  // assert(top_nodes[0].n_() == &ground_node);
-
-  for (CARD_LIST::iterator ci = scope->begin(); ci != scope->end(); ++ci) {
-    // for each card in card_list
-    if ((**ci).is_device()) {
-      for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
-	// for each connection node in card
-	(**ci).n_(ii).map_subckt_node(&top_nodes[0], *ci);
-      }
-    }else{
-      //	assert(dynamic_cast<MODEL_CARD*>(*ci));
-    }
-  }
-}
-/*--------------------------------------------------------------------------*/
 /* map USER_NODEs (top level only)
  */
 static void map_user_nodes(CARD_LIST* scope)
@@ -322,7 +297,7 @@ void SIM_DATA::init(CARD_LIST* scope)
     uninit();
     init_node_count(0, 0, 0);
     clear_top_nodes(scope);
-    map_toplevel_nodes(scope);
+    scope->map_subckt_nodes(nullptr, nullptr);
     map_user_nodes(scope);
     scope->expand();
     expand_last();

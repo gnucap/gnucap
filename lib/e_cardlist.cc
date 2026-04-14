@@ -29,6 +29,9 @@
 #include "e_node.h"
 #include "e_model.h"
 #include "m_union.h"
+#ifndef NDEBUG
+#include "d_coment.h"
+#endif
 /*--------------------------------------------------------------------------*/
 #define trace_func_comp() trace1(__func__, (**ci).short_label())
 /*--------------------------------------------------------------------------*/
@@ -609,62 +612,53 @@ void CARD_LIST::shallow_copy(const CARD_LIST* p)
   }
 }
 /*--------------------------------------------------------------------------*/
+static void connect_ports(NODE_MAP& nodes, CARD const* owner, CARD const* model)
+{
+  int nn = model->net_nodes();
+  int num_nodes_in_subckt = nodes.size();
+  for (int port = 0; port < nn; ++port) {
+    assert(model->n_(port).e_() <= num_nodes_in_subckt);
+    //assert(model->n_(port).e_() == port+1);
+    int idx = model->n_(port).e_();
+    if(owner->n_(port).is_connected()){
+      build_union(&nodes[idx], &owner->n_(port));
+      // assert(&node_map[idx].root()==&owner->n_(port).root());
+    }else{
+      // floating?
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
 // set up the map of external to expanded node numbers
 #ifndef NDEBUG
 extern NODE ground_node;
 #endif
 void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 {
-  assert(model);
-  assert(model->subckt());
-  assert(model->subckt()->nodes());
-  assert(owner);
+  if(owner){
+    assert(model);
+    assert(model->subckt());
+    assert(model->subckt()->nodes());
+  }else{
+    // top level
+  }
   //assert(owner->subckt());
   //assert(owner->subckt() == this);
-  if(owner->subckt()) { untested();
+  if(&CARD_LIST::card_list == this){
+  }else if(!owner){ untested();
+    incomplete(); // probably
+  }else if(owner->subckt()) { untested();
     assert(owner->subckt() == this);
   }else{
     // coming from e_card.cc:253, presumably
   }
-  trace0(model->long_label().c_str());
-  trace0(owner->long_label().c_str());
   assert(nodes());
 
-  int num_nodes_in_subckt = model->subckt()->nodes()->size();
-  trace2("map_sckt_nodes",  model->net_nodes(),  num_nodes_in_subckt);
-  if(model->net_nodes() <= num_nodes_in_subckt){
-  }else{
-  }
-  assert(owner->net_nodes() <= model->net_nodes());
-
   NODE_MAP& node_map = *nodes();
-  for (int i=model->net_nodes(); i < num_nodes_in_subckt; ++i) {
-#if 0
-    if(node_map[i].link()){ untested();
-      assert(node_map[i].root());
-      assert(node_map[i].root().n_() == &ground_node
-	  || node_map[i].root().n_()->short_label()=="0");
-    }else{ untested();
-    }
-#endif
-  }
-  // The node list (_nm) in an instance of a subckt does not exist.
-  // Device nodes (type node_t) points to the NODE in the parent.
-  // Mapping is done in node_t.
-  //
-  // node_map supposedy contains the actual connections
-  { // connect ports. this is probably obsolete.
-    for (int port = 0; port < model->net_nodes(); ++port) {
-      assert(model->n_(port).e_() <= num_nodes_in_subckt);
-      //assert(model->n_(port).e_() == port+1);
-      int idx = model->n_(port).e_();
-      if(owner->n_(port).is_connected()){
-	build_union(&node_map[idx], &owner->n_(port));
-	// assert(&node_map[idx].root()==&owner->n_(port).root());
-      }else{
-	// floating?
-      }
-    }
+
+  if(owner){
+    connect_ports(node_map, owner, model);
+  }else{
   }
 
   // scan the list, map the nodes
@@ -677,10 +671,13 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 	// assert(&node_map[(**ci).n_(ii).e_()].root() == &(**ci).n_(ii).root());
       }
     }else{
-      assert(dynamic_cast<MODEL_CARD*>(*ci));
+#if 0 // revisit later. need to wrap into MODEL_CARD and such things.
+      assert(dynamic_cast<MODEL_CARD*>(*ci)
+	   ||dynamic_cast<DEV_COMMENT*>(*ci));
+            ..      DEV_SUBCKT_PROTO etc.
+#endif
     }
   }
-
 }
 /*--------------------------------------------------------------------------*/
 bool CARD_LIST::is_verilog_math() const
