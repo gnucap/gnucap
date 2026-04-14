@@ -213,6 +213,7 @@ public:
       _link = nullptr;
     }else{
     }
+    assert(!_nnn | !_link);
     return *this;
   } // e_compon.cc:COMPONENT::map_nodes:522
 
@@ -260,6 +261,7 @@ public: // top level kludge. u_sim_data.cc line 457
       _link = this;
     }else{
     }
+    assert(!_nnn | !_link);
     return *this;
   }
 private:

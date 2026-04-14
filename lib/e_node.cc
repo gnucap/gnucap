@@ -110,6 +110,7 @@ node_t& node_t::operator=(node_t& p)
   _index = p._index;// wrong scope ??
   _m   = p._m;
   _own = false;
+  assert(!_link || !_nnn);
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -134,6 +135,7 @@ node_t& node_t::operator=(node_t&& p)
     _link = this;
   }else{
   }
+  assert(!_link || !_nnn);
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -401,10 +403,12 @@ void node_t::set_to_ground(CARD* Owner)
     assert(_index == idx);
   }
   _m = 0;
+  assert(!_nnn | !_link);
 }
 /*--------------------------------------------------------------------------*/
 bool node_t::is_grounded() const
 {
+  assert(!_nnn | !_link);
   if(_m==0){
     //assert(_nnn == &ground_node);
     return true;
