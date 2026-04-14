@@ -1,0 +1,16 @@
+verilog
+options nopicky
+
+resistor #() r0(a,a);
+module t(a,b,c);
+  ground g
+  r0 #(1) r1(a,g);
+  r0 #(1) r2(a,b);
+  r0 #(.r(1)) r2(c,b);
+  isource #(.dc(1)) i1(g,c);
+endmodule
+
+t t1(a,b,c)
+
+print dc v(nodes) r(t1.r1)
+dc

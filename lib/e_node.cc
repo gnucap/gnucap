@@ -110,16 +110,22 @@ node_t& node_t::operator=(node_t& p)
   _index = p._index;// wrong scope ??
   _m   = p._m;
   _own = false;
+  assert(!_link || !_nnn);
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 node_t& node_t::operator=(const node_t& p)
 {
   if(!p.n_()){
+    return operator=(const_cast<node_t&>(p));
   }else{ untested();
-    // not sure if this is UB, note the const_cast...
+    // assert(dynamic_cast<USER_NODE const*>(p.n_()));
+    clear();
+    _dir = dir_none;
+    _nnn = p._nnn;
+    assert(!p._link);
+    return *this;
   }
-  return operator=(const_cast<node_t&>(p));
 }
 /*--------------------------------------------------------------------------*/
 node_t& node_t::operator=(node_t&& p)
@@ -134,14 +140,15 @@ node_t& node_t::operator=(node_t&& p)
     _link = this;
   }else{
   }
+  assert(!_link || !_nnn);
   return *this;
 }
 /*--------------------------------------------------------------------------*/
 // ordinary pointer assignment
 node_t& node_t::operator=(NODE* n)
 {
-  assert(n);
-  assert(!_link || _link == this);
+  assert(!_link || _link == this || !n);
+  _dir = dir_none;
   // clear();
   if(!_nnn){
     _own = false;
@@ -154,7 +161,11 @@ node_t& node_t::operator=(NODE* n)
   _link = nullptr;
   _nnn = n;
 
-  _index = n->user_number();
+  if(n){
+    _index = n->user_number();
+  }else{ untested();
+    _index = NOT_VALID;
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
@@ -398,10 +409,12 @@ void node_t::set_to_ground(CARD* Owner)
     assert(_index == idx);
   }
   _m = 0;
+  assert(!_nnn | !_link);
 }
 /*--------------------------------------------------------------------------*/
 bool node_t::is_grounded() const
 {
+  assert(!_nnn | !_link);
   if(_m==0){
     //assert(_nnn == &ground_node);
     return true;
@@ -439,9 +452,17 @@ void node_t::clear()
 // - map to resulting structure
 void node_t::connect(node_t& target)
 {
-  build_union(&target, this);
+  bool used = is_used() || target.is_used();
+
+  node_t* r = build_union(&target, this);
+  assert(r);
   assert(_nnn || _link);
   assert(!_nnn || !_link);
+
+  if(used){
+    r->set_used();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

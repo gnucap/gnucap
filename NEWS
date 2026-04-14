@@ -1,6 +1,9 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 20260***-dev
+- ..
+
 == 20260329-dev
 - common pool: prune duplicate commons
 - fix compiance with C++ <= 23

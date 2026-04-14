@@ -1,0 +1,44 @@
+verilog // mos1 inverter
+
+`options out=150
+`options itl4=40
+
+.model NMOS nmos level=1 vto=0.6 lmin=1e-6 lmax=2e-6
+.model PMOS pmos level=1 vto=-0.6 lmin=1e-6 lmax=2e-6
+.model NMOS nmos level=1 vto=0.7 lmin=.5e-6 lmax=1e-6
+.model PMOS pmos level=1 vto=-0.7 lmin=.5e-6 lmax=1e-6
+
+
+module bin(\1 , \2 , \3 , \4 , \5 , \6 , \7 );
+ground \0 ;
+PMOS #(.l(600e-9),.w(8e-6)) Mp1 (.d(\3 ),.g(\2 ),.s(\1 ),.b(\1 ));
+NMOS #(.l(600e-9),.w(8e-6)) Mn1 (.d(\3 ),.g(\2 ),.s(\0 ),.b(\0 ));
+PMOS #(.l(600e-9),.w(8e-6)) Mp2 (.d(\4 ),.g(\2 ),.s(\1 ),.b(\1 ));
+NMOS #(.l(600e-9),.w(8e-6)) Mn2 (.d(\4 ),.g(\2 ),.s(\0 ),.b(\0 ));
+resistor #( 10.K) R2 (.p(\4 ),.n(\0 ));
+PMOS #(.l(600e-9),.w(8e-6)) Mp3 (.d(\5 ),.g(\2 ),.s(\1 ),.b(\1 ));
+NMOS #(.l(600e-9),.w(8e-6)) Mn3 (.d(\5 ),.g(\2 ),.s(\0 ),.b(\0 ));
+capacitor #( 1.p) C3 (.p(\5 ),.n(\0 ));
+PMOS #(.l(600e-9),.w(8e-6)) Mp4 (.d(\6 ),.g(\2 ),.s(\1 ),.b(\1 ));
+resistor #( 5.8K) R4 (.p(\6 ),.n(\0 ));
+NMOS #(.l(600e-9),.w(8e-6)) Mn5 (.d(\7 ),.g(\2 ),.s(\0 ),.b(\0 ));
+resistor #( 5.8K) R5 (.p(\7 ),.n(\1 ));
+endmodule
+
+bin b(\1 , \2 , \3 , \4 , \5 , \6 , \7 );
+
+`spice
+
+vdd 1 0 5
+vin 2 0 PWL (0 0, 1n 0, 3n 5, 10n 5, 12n 0, 20n 0)
+
+.op
+
+.print dc v(1) v(2) v(3) v(4) v(5) v(6) v(7)
+.dc vin 0 5 .25
+
+.print tran v(1) v(2) v(3) v(4) v(5) v(6) v(7)
+.tran 0.1n 5n
+
+*>.status notime
+.end

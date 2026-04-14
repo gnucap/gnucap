@@ -1,0 +1,17 @@
+verilog
+
+module vsource(a,b);
+	// incomplete.
+  parameter real dc=0 from [2:2];
+endmodule
+
+module main(\1 ,\2 );
+  vsource #(.dc(1)) v(\1 , \2 );
+endmodule
+
+main m(\1 ,\2 );
+
+list
+print dc v(nodes)
+dc
+status notime

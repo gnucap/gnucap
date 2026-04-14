@@ -1,0 +1,15 @@
+verilog
+
+resistor #(.r(1)) r0(a,a);
+module t(a,b,c);
+  ground g
+  r0 #() r1(a,g);
+  r0 #() r2(a,b);
+  r0 #() r2(c,b);
+  isource #(.dc(1)) i1(g,c);
+endmodule
+
+t t1(a,b,c)
+
+print dc v(nodes) r(t1.r1)
+dc

@@ -137,10 +137,12 @@ private: // union find
   friend bool    has_parent(node_t*n) {return parent(n);}
   friend node_t* parent(node_t*);
   friend node_t* set_parent(node_t* n, node_t* p);
-public:
+public: // topology
   void set_input(){ _dir = dir_t(_dir | dir_in); }
   void set_output(){ _dir = dir_t(_dir | dir_out); }
+  void set_used(){ if(!is_used()){ set_input();}else{} }
   bool is_port()const {untested(); return _dir == dir_none; }
+  bool is_used()const { return _dir != dir_none; }
   bool is_input()const {return _dir & dir_in; }
   bool is_output()const {return _dir & dir_out; }
   bool is_inout()const {return _dir == dir_none || _dir == dir_io; }
@@ -213,6 +215,7 @@ public:
       _link = nullptr;
     }else{
     }
+    assert(!_nnn | !_link);
     return *this;
   } // e_compon.cc:COMPONENT::map_nodes:522
 
@@ -260,6 +263,7 @@ public: // top level kludge. u_sim_data.cc line 457
       _link = this;
     }else{
     }
+    assert(!_nnn | !_link);
     return *this;
   }
 private:
