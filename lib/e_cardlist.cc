@@ -667,6 +667,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
+	(**ci).n_(ii).set_used(); // kludge
 	(**ci).n_(ii).map_subckt_node(&node_map[0], owner);
 	// assert(&node_map[(**ci).n_(ii).e_()].root() == &(**ci).n_(ii).root());
       }

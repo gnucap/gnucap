@@ -143,6 +143,7 @@ node_t& node_t::operator=(node_t&& p)
 node_t& node_t::operator=(NODE* n)
 {
   assert(!_link || _link == this || !n);
+  _dir = dir_none;
   // clear();
   if(!_nnn){
     _own = false;
