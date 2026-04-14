@@ -140,7 +140,7 @@ private: // union find
 public: // topology
   void set_input(){ _dir = dir_t(_dir | dir_in); }
   void set_output(){ _dir = dir_t(_dir | dir_out); }
-  void set_used(){ if(!is_used()){ set_input();}else{untested();} }
+  void set_used(){ if(!is_used()){ set_input();}else{} }
   bool is_port()const {untested(); return _dir == dir_none; }
   bool is_used()const { return _dir != dir_none; }
   bool is_input()const {return _dir & dir_in; }

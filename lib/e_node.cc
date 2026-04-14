@@ -117,10 +117,15 @@ node_t& node_t::operator=(node_t& p)
 node_t& node_t::operator=(const node_t& p)
 {
   if(!p.n_()){
+    return operator=(const_cast<node_t&>(p));
   }else{ untested();
-    // not sure if this is UB, note the const_cast...
+    // assert(dynamic_cast<USER_NODE const*>(p.n_()));
+    clear();
+    _dir = dir_none;
+    _nnn = p._nnn;
+    assert(!p._link);
+    return *this;
   }
-  return operator=(const_cast<node_t&>(p));
 }
 /*--------------------------------------------------------------------------*/
 node_t& node_t::operator=(node_t&& p)
