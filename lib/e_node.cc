@@ -447,9 +447,17 @@ void node_t::clear()
 // - map to resulting structure
 void node_t::connect(node_t& target)
 {
-  build_union(&target, this);
+  bool used = is_used() || target.is_used();
+
+  node_t* r = build_union(&target, this);
+  assert(r);
   assert(_nnn || _link);
   assert(!_nnn || !_link);
+
+  if(used){
+    r->set_used();
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
