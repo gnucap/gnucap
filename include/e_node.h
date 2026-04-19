@@ -129,7 +129,7 @@ private:
   node_t*       link() { assert(!_nnn || !_link); return _link; }
   node_t const* link()const { untested();return _link;}
 private: // union find
-  int rank()const {return !!_nnn;} // TODO: hierarchy.
+  int rank()const {if(_m == 0 && _nnn){return 2;} else{ return !!_nnn;}} // TODO: hierarchy.
   int inc_rank()const {return 0;} // TODO
   friend node_t* root(node_t const*);
   friend int     rank(node_t const*);
