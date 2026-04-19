@@ -75,6 +75,13 @@ void CMD_NL::print( OMSTREAM o, const CARD_LIST* scope)
 	_indent += 2;
 	print(o, c->subckt());
 	_indent -= 2;
+      }else if (c->is_device()){
+      }else if (!c->makes_own_scope()){ untested();
+      }else if (c->scope()){ untested();
+	_indent += 2;
+	print(o, c->scope());
+	_indent -= 2;
+      }else{ untested();
       }
     }else{
       o << "\n";
