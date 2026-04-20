@@ -38,6 +38,7 @@
 #include "e_paramlist.h"
 #include "e_subckt.h"
 #include "e_hsparam.h"
+#include "e_model.h"
 /*--------------------------------------------------------------------------*/
 namespace{
 /*--------------------------------------------------------------------------*/
@@ -552,6 +553,10 @@ void DEV_SUBCKT::precalc_first()
       // good
     }else if ((_parent = dynamic_cast<const DEV_MODULE_PROTO*>(model))) {
       // good
+    }else if (auto ms = dynamic_cast<const MODEL_SUBCKT*>(model)) {
+      // good
+      _parent = prechecked_cast<BASE_SUBCKT const*>(ms->component_proto());
+      assert(_parent);
     }else if (dynamic_cast<const BASE_SUBCKT*>(model)) {
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt proto");
     }else{

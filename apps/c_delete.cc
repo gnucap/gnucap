@@ -79,9 +79,14 @@ private:
       }else if ((**i).is_device()) {
 	// found a match, but it isn't a container (subckt)
 	return false;
-      }else{
+      }else if(!(**i).makes_own_scope()) { untested();
+	// what is it?
+	return false;
+      }else if((**i).scope()) {
 	// found the container, look inside
-	return delete_one_name(dev_name, (**i).subckt());
+	return delete_one_name(dev_name, (**i).scope());
+      }else{ untested();
+	return false;
       }
       unreachable();
     }else{
