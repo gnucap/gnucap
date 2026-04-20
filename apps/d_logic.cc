@@ -296,13 +296,20 @@ void DEV_LOGIC::expand()
   try {
     const CARD* model = find_looking_out(subckt_name);
     
-    if(!dynamic_cast<const BASE_SUBCKT*>(model)) {untested();
+    if(auto ms = dynamic_cast<const MODEL_SUBCKT*>(model)) {
+      auto s = prechecked_cast<const BASE_SUBCKT*>(ms->component_proto());
+      assert(s);
+      _gatemode = OPT::mode;
+      renew_subckt(s, nullptr/*&(c->_params)*/);
+      subckt()->expand();
+    }else if(auto sss = dynamic_cast<const BASE_SUBCKT*>(model)) {
+      // reachable from spice
+      _gatemode = OPT::mode;
+      renew_subckt(sss, nullptr/*&(c->_params)*/);
+      subckt()->expand();
+    }else{
       error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
 	    long_label() + ": " + subckt_name + " is not a subckt, forcing digital\n");
-    }else{
-      _gatemode = OPT::mode;    
-      renew_subckt(model, nullptr/*&(c->_params)*/);    
-      subckt()->expand();
     }
   }catch (Exception_Cant_Find&) {
     error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)), 

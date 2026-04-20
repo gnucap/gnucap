@@ -163,8 +163,10 @@ node_t& node_t::operator=(NODE* n)
 
   if(n){
     _index = n->user_number();
-  }else{ untested();
-    _index = NOT_VALID;
+  }else{ itested();
+    _index = INVALID_NODE;
+    _m = INVALID_NODE;
+    assert(!is_connected());
   }
   return *this;
 }

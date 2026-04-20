@@ -74,6 +74,7 @@ private: // override virtual, called by print_item
   void print_comment(OMSTREAM&, const DEV_COMMENT*)override;
   void print_command(OMSTREAM&, const DEV_DOT*)override;
 private: // local
+  void print_paramset_(OMSTREAM&, const MODEL_CARD*);
   void print_args(OMSTREAM&, const MODEL_CARD*);
   void print_type(OMSTREAM&, const COMPONENT*);
   void print_args(OMSTREAM&, const COMPONENT*);
@@ -744,6 +745,17 @@ static char fix_case(char c)
 /*--------------------------------------------------------------------------*/
 void LANG_SPICE_BASE::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
 {
+  if(auto m = dynamic_cast<MODEL_SUBCKT const*>(x)){
+    auto s = prechecked_cast<BASE_SUBCKT const*>(m->component_proto());
+    assert(s);
+    print_module(o, s);
+  }else{
+    print_paramset_(o, x);
+  }
+}
+/*--------------------------------------------------------------------------*/
+void LANG_SPICE_BASE::print_paramset_(OMSTREAM& o, const MODEL_CARD* x)
+{
   assert(x);
   std::string name = x->short_label();
   tag_t t = x->id_tag();
@@ -939,9 +951,12 @@ class CMD_SUBCKT : public CMD {
     new_module->set_owner(nullptr);
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
-    assert(!new_module->is_device());
     lang_spice.parse_module(cmd, new_module);
-    Scope->push_back(new_module);
+    auto p = new MODEL_SUBCKT(new_module);
+    assert(p->makes_own_scope());
+    p->set_label(new_module->short_label());
+    p->set_owner(owner());
+    Scope->push_back(p);
   }
 } p2;
 DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, ".subckt|.macro", &p2);

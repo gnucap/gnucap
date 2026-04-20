@@ -71,13 +71,22 @@ void CMD_NL::print( OMSTREAM o, const CARD_LIST* scope)
       for (int ii = 0; ii < c->ext_nodes()+c->int_nodes(); ++ii) {
 	o << std::string(" ", _indent) << ii << " " << c->n_(ii).m_() << "\n";
       }
+    }else{
+      o << "\n";
+    }
+    {
+      CARD const* c = d;
       if (c->subckt()){
 	_indent += 2;
 	print(o, c->subckt());
 	_indent -= 2;
+      }else if (!c->makes_own_scope()){
+      }else if (c->scope()){
+	_indent += 2;
+	print(o, c->scope());
+	_indent -= 2;
+      }else{ untested();
       }
-    }else{
-      o << "\n";
     }
   }
 }

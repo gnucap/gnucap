@@ -22,10 +22,8 @@ dctran density=100.0%, ac density=100.0%
 name   ...
 have 1 nodes. model: 0 sckt: 1
 
-net 2 2 0
-0 -1
-1 -1
-main 0 0 0
+net
+main
  
  main.r 2 2 0
  0 -1

@@ -98,6 +98,7 @@ private: // override virtual, called by print_item
   void print_comment(OMSTREAM&, const DEV_COMMENT*)override;
   void print_command(OMSTREAM& o, const DEV_DOT*)override;
 private: // local
+  void print_paramset_(OMSTREAM&, const MODEL_CARD*);
   void print_attributes(OMSTREAM&, tag_t);
   void print_args(OMSTREAM&, const MODEL_CARD*);
   void print_args(OMSTREAM&, const COMPONENT*);
@@ -938,6 +939,17 @@ void LANG_VERILOG::print_ports_short(OMSTREAM& o, const COMPONENT* x)
 /*--------------------------------------------------------------------------*/
 void LANG_VERILOG::print_paramset(OMSTREAM& o, const MODEL_CARD* x)
 {
+  if(auto m = dynamic_cast<MODEL_SUBCKT const*>(x)){
+    auto s = prechecked_cast<BASE_SUBCKT const*>(m->component_proto());
+    assert(s);
+    print_module(o, s);
+  }else{
+    print_paramset_(o, x);
+  }
+}
+/*--------------------------------------------------------------------------*/
+void LANG_VERILOG::print_paramset_(OMSTREAM& o, const MODEL_CARD* x)
+{
   assert(x);
   _mode = mPARAMSET;
   print_attributes(o, x->id_tag());
@@ -1031,13 +1043,15 @@ class CMD_MODULE : public CMD {
     BASE_SUBCKT* new_module = dynamic_cast<BASE_SUBCKT*>(device_dispatcher.clone("module"));
     assert(new_module);
     //assert(!new_module->owner());
-    new_module->set_owner(nullptr);
+    new_module->set_owner(owner());
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
-    assert(!new_module->is_device());
     try {
       lang_verilog.parse_module(cmd, new_module);
-      Scope->push_back(new_module);
+      auto p = new MODEL_SUBCKT(new_module);
+      p->set_owner(owner());
+      p->set_label(new_module->short_label());
+      Scope->push_back(p);
     }catch(Exception const& e) {
       cmd.warn(bDANGER, e.message());
       for (;;) { untested();

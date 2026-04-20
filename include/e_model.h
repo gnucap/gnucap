@@ -83,6 +83,56 @@ public:
   const CARD* component_proto()const {itested(); return _component_proto;}
 };
 /*--------------------------------------------------------------------------*/
+class MODEL_SUBCKT : public MODEL_CARD {
+protected:
+  COMPONENT* _proto{nullptr};
+protected:
+  explicit MODEL_SUBCKT(MODEL_SUBCKT const& p) : MODEL_CARD(p){ }
+public:
+  explicit MODEL_SUBCKT(COMPONENT* c) : MODEL_CARD(c), _proto(c) { }
+  ~MODEL_SUBCKT() {
+    if(_proto){
+      reinterpret_cast<CARD*>(_proto)->purge();
+      assert((CARD*)_proto == component_proto());
+      delete component_proto();
+    }else{
+    }
+  }
+
+  CARD* clone()const override {
+    return new MODEL_SUBCKT(*this);
+  }
+  CARD* clone_instance()const override {
+    assert(component_proto());
+    return component_proto()->clone_instance();
+  }
+public:
+  void precalc_first()override {
+    MODEL_CARD::precalc_first();
+    if(_proto){
+      // ((CARD*)_proto)->precalc_first(); // not yet.
+    }else{
+    }
+  }
+  void expand()override { }
+  void precalc_last()override { }
+  CARD* deflate()override { return this; }
+  CARD_LIST* scope()override {
+    if(_proto){
+      return ((CARD*)_proto)->subckt();
+    }else{
+      return nullptr;
+    }
+  }
+  CARD_LIST const* scope()const override {
+    return const_cast<MODEL_SUBCKT*>(this)->scope();
+  }
+  bool makes_own_scope()const override { return scope(); }
+
+public:
+  char id_letter()const override{ untested();return 'X';}
+};
+/*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 #endif
 // vim:ts=8:sw=2:noet:

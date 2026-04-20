@@ -19,9 +19,7 @@ name   ...
 have 2 nodes. model: 0 sckt: 0
 
 
-thing 1 2 0
-0 -1
-1 -1
+thing
  
  thing.R1 2 2 0
  0 -1
