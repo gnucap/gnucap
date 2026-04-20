@@ -139,31 +139,6 @@ public:
   CARD_LIST*	   scope()override		{ untested(); return subckt();}
   const CARD_LIST* scope()const override	{ return subckt();}
   CARD*		clone()const override		{ return new DEV_MODULE_PROTO(*this);}
-private: // no-ops for prototype
-#if 0
-  void precalc_first()override { untested();}
-  void expand()override { untested();}
-  void precalc_last()override { untested();}
-  void make_fanout()override { untested();}
-  void map_nodes()override { untested();}
-  void tr_begin()override { untested();}
-  void tr_load()override { untested();}
-  TIME_PAIR tr_review() override { untested(); return TIME_PAIR(NEVER, NEVER);}
-  void tr_accept()override { untested();}
-  void tr_advance()override { untested();}
-  void tr_restore()override {untested();}
-  void tr_regress()override { untested();}
-  void dc_final()override { untested();}
-  void tr_final()override { untested();}
-  void dc_advance()override { untested();}
-  void ac_begin()override { untested();}
-  void do_ac()override { untested();}
-  void ac_load()override { untested();}
-  void ac_final()override { untested();}
-  bool do_tr()override { untested(); return true;}
-  bool tr_needs_eval()const override {untested(); return false;}
-  void tr_queue_eval()override { untested();}
-#endif
 } p0(&Default_SUBCKT);
 DISPATCHER<CARD>::INSTALL d0(&device_dispatcher, "module", &p0);
 /*--------------------------------------------------------------------------*/
@@ -190,31 +165,6 @@ public: // override virtual
   bool		makes_own_scope()const override	{return true;}
   CARD_LIST*	   scope()override		{return subckt();}
   const CARD_LIST* scope()const override	{return subckt();}
-private: // no-ops for prototype
-#if 0
-  void precalc_first()override { untested();}
-  void expand()override { untested();}
-  void precalc_last()override { untested();}
-  void make_fanout()override { untested();}
-  void map_nodes()override { untested();}
-  void tr_begin()override { untested();}
-  void tr_load()override { untested();}
-  TIME_PAIR tr_review() override { untested(); return TIME_PAIR(NEVER, NEVER);}
-  void tr_accept()override { untested();}
-  void tr_advance()override { untested();}
-  void tr_restore()override { untested();}
-  void tr_regress()override { untested();}
-  void dc_final()override { untested();}
-  void tr_final()override { untested();}
-  void dc_advance()override { untested();}
-  void ac_begin()override { untested();}
-  void do_ac()override { untested();}
-  void ac_load()override { untested();}
-  void ac_final()override { untested();}
-  bool do_tr()override { untested(); return true;}
-  bool tr_needs_eval()const override {untested(); return false;}
-  void tr_queue_eval()override { untested();}
-#endif
   std::string port_name(int i)const override;
 } pp(&Default_SUBCKT);
 DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt", &pp);

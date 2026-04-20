@@ -80,8 +80,8 @@ void CMD_NL::print( OMSTREAM o, const CARD_LIST* scope)
 	_indent += 2;
 	print(o, c->subckt());
 	_indent -= 2;
-      }else if (!c->makes_own_scope()){ untested();
-      }else if (c->scope()){ untested();
+      }else if (!c->makes_own_scope()){
+      }else if (c->scope()){
 	_indent += 2;
 	print(o, c->scope());
 	_indent -= 2;
