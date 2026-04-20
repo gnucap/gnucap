@@ -89,7 +89,6 @@ private:
   int set_param_by_name(std::string Name, std::string Value)override;
   void set_param_by_index(int i, std::string& Value, int j)override;
 private: // override virtual
-  bool		is_device()const override	{return true;}
   char		id_letter()const override	{return 'X';}
   bool		print_type_in_spice()const override {return true;}
   std::string   value_name()const override	{return "#";}
@@ -137,33 +136,33 @@ public:
   explicit	DEV_MODULE_PROTO(COMMON_COMPONENT* c=nullptr) : DEV_SUBCKT(c) {}
 		~DEV_MODULE_PROTO(){}
   bool		makes_own_scope()const override	{ return true;}
-  CARD_LIST*	   scope()override		{ return subckt();}
+  CARD_LIST*	   scope()override		{ untested(); return subckt();}
   const CARD_LIST* scope()const override	{ return subckt();}
   CARD*		clone()const override		{ return new DEV_MODULE_PROTO(*this);}
 private: // no-ops for prototype
 #if 0
-  void precalc_first()override {}
-  void expand()override {}
-  void precalc_last()override {}
-  void make_fanout()override {}
-  void map_nodes()override {}
-  void tr_begin()override {}
-  void tr_load()override {}
-  TIME_PAIR tr_review() override { return TIME_PAIR(NEVER, NEVER);}
-  void tr_accept()override {}
-  void tr_advance()override {}
+  void precalc_first()override { untested();}
+  void expand()override { untested();}
+  void precalc_last()override { untested();}
+  void make_fanout()override { untested();}
+  void map_nodes()override { untested();}
+  void tr_begin()override { untested();}
+  void tr_load()override { untested();}
+  TIME_PAIR tr_review() override { untested(); return TIME_PAIR(NEVER, NEVER);}
+  void tr_accept()override { untested();}
+  void tr_advance()override { untested();}
   void tr_restore()override {untested();}
-  void tr_regress()override {}
-  void dc_final()override {}
-  void tr_final()override {}
-  void dc_advance()override {}
-  void ac_begin()override {}
-  void do_ac()override {}
-  void ac_load()override {}
-  void ac_final()override {}
-  bool do_tr()override { return true;}
+  void tr_regress()override { untested();}
+  void dc_final()override { untested();}
+  void tr_final()override { untested();}
+  void dc_advance()override { untested();}
+  void ac_begin()override { untested();}
+  void do_ac()override { untested();}
+  void ac_load()override { untested();}
+  void ac_final()override { untested();}
+  bool do_tr()override { untested(); return true;}
   bool tr_needs_eval()const override {untested(); return false;}
-  void tr_queue_eval()override {}
+  void tr_queue_eval()override { untested();}
 #endif
 } p0(&Default_SUBCKT);
 DISPATCHER<CARD>::INSTALL d0(&device_dispatcher, "module", &p0);
@@ -188,33 +187,34 @@ public: // override virtual
   int		matrix_nodes()const override	{untested();return 0;}
   int		net_nodes()const override	{return _net_nodes;}
   CARD*		clone()const override		{return new DEV_SUBCKT_PROTO(*this);}
-  bool		is_device()const override	{return false;}
   bool		makes_own_scope()const override	{return true;}
   CARD_LIST*	   scope()override		{return subckt();}
   const CARD_LIST* scope()const override	{return subckt();}
 private: // no-ops for prototype
-  void precalc_first()override {}
-  void expand()override {}
-  void precalc_last()override {}
-  void make_fanout()override {}
-  void map_nodes()override {}
-  void tr_begin()override {}
-  void tr_load()override {}
-  TIME_PAIR tr_review() override { return TIME_PAIR(NEVER, NEVER);}
-  void tr_accept()override {}
-  void tr_advance()override {}
-  void tr_restore()override {}
-  void tr_regress()override {}
-  void dc_final()override {}
-  void tr_final()override {}
-  void dc_advance()override {}
-  void ac_begin()override {}
-  void do_ac()override {}
-  void ac_load()override {}
-  void ac_final()override {}
-  bool do_tr()override { return true;}
+#if 0
+  void precalc_first()override { untested();}
+  void expand()override { untested();}
+  void precalc_last()override { untested();}
+  void make_fanout()override { untested();}
+  void map_nodes()override { untested();}
+  void tr_begin()override { untested();}
+  void tr_load()override { untested();}
+  TIME_PAIR tr_review() override { untested(); return TIME_PAIR(NEVER, NEVER);}
+  void tr_accept()override { untested();}
+  void tr_advance()override { untested();}
+  void tr_restore()override { untested();}
+  void tr_regress()override { untested();}
+  void dc_final()override { untested();}
+  void tr_final()override { untested();}
+  void dc_advance()override { untested();}
+  void ac_begin()override { untested();}
+  void do_ac()override { untested();}
+  void ac_load()override { untested();}
+  void ac_final()override { untested();}
+  bool do_tr()override { untested(); return true;}
   bool tr_needs_eval()const override {untested(); return false;}
-  void tr_queue_eval()override {}
+  void tr_queue_eval()override { untested();}
+#endif
   std::string port_name(int i)const override;
 } pp(&Default_SUBCKT);
 DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "X|subckt", &pp);
@@ -305,7 +305,7 @@ CARD_LIST* DEV_SUBCKT::scope()
 {
   if(is_device()){
     return COMPONENT::scope();
-  }else{
+  }else{ untested();
     return subckt();
   }
 }
@@ -351,11 +351,11 @@ CARD* DEV_SUBCKT::clone()const
   }else if(_parent){
     new_instance->_parent = _parent;
     assert(new_instance->is_device());
-  }else{
+  }else{ untested();
     // verilog. build proto
     // assert(!new_instance->is_device());
     if(new_instance->subckt()){ untested();
-    }else{
+    }else{ untested();
      new_instance->new_subckt();
     }
   }
@@ -400,8 +400,8 @@ DEV_SUBCKT::DEV_SUBCKT(const DEV_SUBCKT& p)
     for (int ii = 0;  ii < net_nodes();  ++ii) {
       _nodes[ii] = p._nodes[ii];
     }
-  }else{
-    for (int ii = 0;  ii < net_nodes();  ++ii) {
+  }else{ untested();
+    for (int ii = 0;  ii < net_nodes();  ++ii) { untested();
       assert(!_nodes[ii].n_());
     }
   }
@@ -486,15 +486,19 @@ void DEV_SUBCKT::expand()
   trace4("DEV_SUBCKT::expand", long_label(), max_nodes(), is_device(), common());
 
   assert(is_device());
-  if(_parent == &pp){
+  if(_parent == &pp){ untested();
     COMMON_PARAMLIST const* c = prechecked_cast<COMMON_PARAMLIST const*>(common());
     assert(c);
     // first time spice
     assert(c->modelname()!="");
     const CARD* model = find_looking_out(c->modelname());
-    if (_parent == dynamic_cast<const DEV_SUBCKT_PROTO*>(model)) {
+    if (_parent == dynamic_cast<const DEV_SUBCKT_PROTO*>(model)) { untested();
       // good
-    }else if (_parent == dynamic_cast<const DEV_MODULE_PROTO*>(model)) {
+    }else if (auto ms = dynamic_cast<const MODEL_SUBCKT*>(model)) { untested();
+      // good
+      _parent = prechecked_cast<BASE_SUBCKT const*>(ms->component_proto());
+      assert(_parent);
+    }else if (_parent == dynamic_cast<const DEV_MODULE_PROTO*>(model)) { untested();
       // good
     }else if (dynamic_cast<const BASE_SUBCKT*>(model)) { untested();
       // bad
@@ -508,7 +512,7 @@ void DEV_SUBCKT::expand()
   trace1("DEV_SUBCKT::expand1", max_nodes());
 
 
-  if(!_parent || _parent==&pp){
+  if(!_parent || _parent==&pp){ untested();
     // not a device. probably a prototype
   }else{
     COMMON_PARAMLIST* c = prechecked_cast<COMMON_PARAMLIST*>(mutable_common());
@@ -548,9 +552,9 @@ void DEV_SUBCKT::precalc_first()
     // first time spice
     assert(c->modelname()!="");
     const CARD* model = find_looking_out(c->modelname());
-    if ((_parent = dynamic_cast<const DEV_SUBCKT_PROTO*>(model))) {
+    if ((_parent = dynamic_cast<const DEV_SUBCKT_PROTO*>(model))) { untested();
       // good
-    }else if ((_parent = dynamic_cast<const DEV_MODULE_PROTO*>(model))) {
+    }else if ((_parent = dynamic_cast<const DEV_MODULE_PROTO*>(model))) { untested();
       // good
     }else if (auto ms = dynamic_cast<const MODEL_SUBCKT*>(model)) {
       // good

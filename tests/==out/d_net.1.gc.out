@@ -24,6 +24,16 @@ have 1 nodes. model: 0 sckt: 1
 
 net
 main
+ 
+ main.r 2 2 0
+ 0 -1
+ 1 -1
+ main.i 2 2 0
+ 0 -1
+ 1 -1
+ main.n1 2 2 0
+ 0 -1
+ 1 -1
 m 0 0 0
  m.r 2 2 0
  0 1

@@ -13,6 +13,9 @@ name   ...
 have 1 nodes. model: 0 sckt: 0
 
 r
+ r.r 2 2 0
+ 0 -1
+ 1 -1
 i1 2 2 0
 0 0
 1 1

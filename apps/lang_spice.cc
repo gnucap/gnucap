@@ -951,15 +951,12 @@ class CMD_SUBCKT : public CMD {
     new_module->set_owner(nullptr);
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
-    assert(!new_module->is_device());
     lang_spice.parse_module(cmd, new_module);
-#if 0 // TODO
     auto p = new MODEL_SUBCKT(new_module);
+    assert(p->makes_own_scope());
+    p->set_label(new_module->short_label());
     p->set_owner(owner());
     Scope->push_back(p);
-#else
-    Scope->push_back(new_module);
-#endif
   }
 } p2;
 DISPATCHER<CMD>::INSTALL d2(&command_dispatcher, ".subckt|.macro", &p2);

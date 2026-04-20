@@ -103,8 +103,10 @@ std::string MODEL_CARD::param_value(int i)const
 void MODEL_CARD::precalc_first()
 {
   CARD::precalc_first();
-  assert(scope());
-  _tnom_c.e_val(OPT::tnom_c, scope()->params());
+  if(scope()){
+    _tnom_c.e_val(OPT::tnom_c, scope()->params());
+  }else{
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

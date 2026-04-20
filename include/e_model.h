@@ -111,7 +111,7 @@ public:
     MODEL_CARD::precalc_first();
     if(_proto){
       // ((CARD*)_proto)->precalc_first(); // not yet.
-    }else{ untested();
+    }else{
     }
   }
   void expand()override { }
@@ -124,7 +124,7 @@ public:
       return nullptr;
     }
   }
-  CARD_LIST const* scope()const override { untested();
+  CARD_LIST const* scope()const override {
     return const_cast<MODEL_SUBCKT*>(this)->scope();
   }
   bool makes_own_scope()const override { return scope(); }
