@@ -463,10 +463,10 @@ public:
   public:
     iterator() = default;
     iterator(iterator const& x) = default;
-    iterator(map::iterator const& x, PARAM_LIST& c) : _i(x), _ctx(&c) { untested();}
+    iterator(map::iterator const& x, PARAM_LIST& c) : _i(x), _ctx(&c) {itested();}
   public:
     bool operator!=(iterator const& p)const { untested();return _i!=p._i;}
-    bool operator==(iterator const& p)const { untested();return _i==p._i;}
+    bool operator==(iterator const& p)const {itested();return _i==p._i;}
     iterator& operator++(){ untested();++_i; return *this;}
     PARAM_INSTANCE& operator*(){ untested();assert(_ctx); return _ctx->_pv[_i->second-1].second;}
   };
@@ -508,8 +508,8 @@ public:
   void set_verilog(bool x=true) {_is_verilog = x;}
 
   iterator begin() { untested();return iterator(_pi.begin(), *this);}
-  iterator end() { untested();return iterator(_pi.end(), *this);}
-  iterator find(std::string const& k) { untested(); return iterator(_pi.find(k), *this); }
+  iterator end() {itested();return iterator(_pi.end(), *this);}
+  iterator find(std::string const& k) {itested(); return iterator(_pi.find(k), *this); }
   const_iterator begin()const {itested(); return const_iterator(_pi.begin(), *this);}
   const_iterator end()const { return const_iterator(_pi.end(), *this);}
   const_iterator find(std::string const& k) const { return const_iterator(_pi.find(k), *this); }

@@ -1046,7 +1046,6 @@ class CMD_MODULE : public CMD {
     new_module->set_owner(owner());
     assert(new_module->subckt());
     assert(new_module->subckt()->is_empty());
-    assert(!new_module->is_device());
     try {
       lang_verilog.parse_module(cmd, new_module);
       auto p = new MODEL_SUBCKT(new_module);

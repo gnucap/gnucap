@@ -136,18 +136,12 @@ private:
 public:
   explicit	DEV_MODULE_PROTO(COMMON_COMPONENT* c=nullptr) : DEV_SUBCKT(c) {}
 		~DEV_MODULE_PROTO(){}
-  bool		is_device()const override	{ return false;}
   bool		makes_own_scope()const override	{ return true;}
+  CARD_LIST*	   scope()override		{ return subckt();}
+  const CARD_LIST* scope()const override	{ return subckt();}
   CARD*		clone()const override		{ return new DEV_MODULE_PROTO(*this);}
-  CARD*		clone_instance()const override {
-    auto m = DEV_SUBCKT::clone();
-    auto s = prechecked_cast<DEV_SUBCKT*>(m);
-    s->_net_nodes = 0; // needed in v_instance: 274?? v_paramset.module.1.gc
-    s->_parent = this;
-    assert(s->is_device());
-    return m;
-  }
 private: // no-ops for prototype
+#if 0
   void precalc_first()override {}
   void expand()override {}
   void precalc_last()override {}
@@ -170,6 +164,7 @@ private: // no-ops for prototype
   bool do_tr()override { return true;}
   bool tr_needs_eval()const override {untested(); return false;}
   void tr_queue_eval()override {}
+#endif
 } p0(&Default_SUBCKT);
 DISPATCHER<CARD>::INSTALL d0(&device_dispatcher, "module", &p0);
 /*--------------------------------------------------------------------------*/
@@ -370,8 +365,12 @@ CARD* DEV_SUBCKT::clone()const
 /*--------------------------------------------------------------------------*/
 CARD* DEV_SUBCKT::clone_instance() const
 {
-  auto m = clone();
+  auto m = new DEV_SUBCKT(*this);
   auto s = prechecked_cast<DEV_SUBCKT*>(m);
+    for (int ii = 0;  ii < s->net_nodes();  ++ii) {
+      s->n_(ii) = nullptr;
+      assert(!s->n_(ii).is_connected());
+    }
   s->_net_nodes = 0; // needed in v_instance: 274?? v_paramset.module.1.gc
   s->_parent = this;
   assert(s->is_device());
@@ -562,7 +561,6 @@ void DEV_SUBCKT::precalc_first()
     }else{
       throw Exception_Type_Mismatch(long_label(), c->modelname(), "subckt");
     }
-    assert(!_parent->is_device()); // really?
   }else{itested();
   }
 

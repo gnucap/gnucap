@@ -111,7 +111,7 @@ public:
     MODEL_CARD::precalc_first();
     if(_proto){
       // ((CARD*)_proto)->precalc_first(); // not yet.
-    }else{
+    }else{ untested();
     }
   }
   void expand()override { }
