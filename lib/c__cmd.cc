@@ -31,7 +31,7 @@
  * parse, and act on, a command string
  */
 void CMD::cmdproc(CS& cmd)
-{
+{ itested();
   bool get_timer_was_running = ::status.get.is_running();
   ::status.get.stop();
   static TIMER timecheck;
@@ -43,7 +43,7 @@ void CMD::cmdproc(CS& cmd)
 
   if (OPT::acct) {untested();
     IO::mstdout.form("time=%8.2f\n", timecheck.check().elapsed());
-  }else{ untested();
+  }else{ itested();
   }
 
   plclose();

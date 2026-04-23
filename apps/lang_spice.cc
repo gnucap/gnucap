@@ -557,7 +557,7 @@ DEV_DOT* LANG_SPICE_BASE::parse_command(CS& cmd, DEV_DOT* x)
 
   std::string s;
   cmd >> s;
-  if(auto cc = dynamic_cast<CMD*>(x)){ untested();
+  if(auto cc = dynamic_cast<CMD*>(x)){itested();
     trace1("set??", s);
     if(s[0] == '.') {
       x->set(s.substr(1) + " " + cmd.tail());
