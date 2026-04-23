@@ -361,7 +361,7 @@ public:
       }else if(dynamic_cast<Integer const*>(v)){ itested();
 	*this = PARAMETER<Integer>();
 	*base() = v;
-      }else{ untested();
+      }else{itested();
 	incomplete();
       }
     }else if(dynamic_cast<PARA_BASE*>(base())) {

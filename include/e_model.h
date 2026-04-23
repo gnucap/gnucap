@@ -107,6 +107,10 @@ public:
     return component_proto()->clone_instance();
   }
 public:
+  double localparam_value(std::string const&n)const override {untested();
+    assert(component_proto());
+    return component_proto()->localparam_value(n);
+  }
   void precalc_first()override {
     MODEL_CARD::precalc_first();
     if(_proto){

@@ -104,7 +104,7 @@ void PARAM_LIST::eval_copy(PARAM_LIST const& p, const PARAM_LIST* scope)
 
   // BUG: wrong order.
   for (auto i = p._pv.begin(); i != p._pv.end(); ++i) {
-    if (i->first[0] == '$'){ untested();
+    if (i->first[0] == '$'){itested();
     }else if (i->second.has_hard_value()) {
       auto j = _pi.find(i->first);
       if(j == _pi.end()){

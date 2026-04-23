@@ -80,7 +80,7 @@ private:
       }else if(flat == 0){
       }else if(nm[flat] == INVALID_NODE){
 	nm[flat] = next(seek);
-      }else{ untested();
+      }else{ itested();
       }
     }else{
       // link to another node. possibly further up. ignore

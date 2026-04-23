@@ -194,11 +194,22 @@ DEV_DOT* LANG_SPECTRE::parse_command(CS& cmd, DEV_DOT* x)
   x->set(cmd.fullstring());
   CARD_LIST* scope = (x->owner()) ? x->owner()->subckt() : &CARD_LIST::card_list;
 
+  if(auto cc = dynamic_cast<CMD*>(x)){ untested();
+    // cc >> '-';
+    std::string s;
+    cmd >> s;
+    assert(scope == x->scope());
+    cc->cmdproc(cmd);
+    return x;
+  }else{
+  }
+
   cmd.reset().skipbl();
   if ((cmd >> "model |simulator |parameters |subckt ")) {
     cmd.reset();
     CMD::cmdproc(cmd, scope);
   }else{
+    trace1("dbg", cmd.fullstring());
     std::string label;
     cmd >> label;
     
@@ -249,7 +260,7 @@ BASE_SUBCKT* LANG_SPECTRE::parse_module(CS& cmd, BASE_SUBCKT* x)
     USER_NODE* gnd = prechecked_cast<USER_NODE*>(g);
     assert(gnd);
     gnd->set_to_ground();
-  }else{
+  }else{ untested();
   }
 
   // body

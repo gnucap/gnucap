@@ -547,26 +547,43 @@ DEV_COMMENT* LANG_SPICE_BASE::parse_comment(CS& cmd, DEV_COMMENT* x)
 DEV_DOT* LANG_SPICE_BASE::parse_command(CS& cmd, DEV_DOT* x)
 {
   assert(x);
-  x->set(cmd.fullstring());
   CARD_LIST* scope = (x->owner()) ? x->owner()->subckt() : &CARD_LIST::card_list;
 
   cmd.reset();
   skip_pre_stuff(cmd);
+  x->set(cmd.tail());
 
   size_t here = cmd.cursor();
 
   std::string s;
   cmd >> s;
+  if(auto cc = dynamic_cast<CMD*>(x)){itested();
+    trace1("set??", s);
+    if(s[0] == '.') {
+      x->set(s.substr(1) + " " + cmd.tail());
+    }else{
+      x->set(s + " " + cmd.tail());
+    }
+    assert(scope == x->scope());
+    cc->cmdproc(cmd);
+    return x;
+  }else{
+    x->set(cmd.fullstring());
+  }
+
   cmd.reset(here);
+
   if (!command_dispatcher[s]) {
     cmd.skip();
     ++here;
   }else{
   }
-  CMD::cmdproc(cmd, scope);
-
-  delete x;
-  return nullptr;
+  {
+    CMD::cmdproc(cmd, scope);
+    x->purge();
+    delete x;
+    return nullptr;
+  }
 }
 /*--------------------------------------------------------------------------*/
 MODEL_CARD* LANG_SPICE_BASE::parse_paramset(CS& cmd, MODEL_CARD* x)
