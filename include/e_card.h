@@ -154,6 +154,8 @@ public: // parameters
   virtual std::string param_name(int i,int j)const {return (j==0) ? param_name(i) : "";}
   virtual std::string param_value(int)const	   {untested(); return "";}
   virtual std::string value_name()const		   {untested();incomplete(); return "";}
+  virtual double localparam_value(std::string const& n)const
+				{untested(); throw Exception_Cant_Find(long_label(), n);}
   //--------------------------------------------------------------------
 public: // probes
 	  double      probe_num(const std::string&)const;
