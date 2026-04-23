@@ -564,7 +564,8 @@ DEV_DOT* LANG_SPICE_BASE::parse_command(CS& cmd, DEV_DOT* x)
     }else{
       x->set(s + " " + cmd.tail());
     }
-    cc->do_it(cmd, scope);
+    assert(scope == x->scope());
+    cc->cmdproc(cmd);
     return x;
   }else{
     x->set(cmd.fullstring());

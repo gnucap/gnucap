@@ -37,6 +37,7 @@ protected:
 public:
   std::string value_name()const override {return "";}
   virtual void do_it(CS&, CARD_LIST*) = 0;
+  void         cmdproc(CS&);
   static  void  cmdproc(CS&, CARD_LIST*);
   static  void	command(const std::string&, CARD_LIST*);
 //  CARD*   clone()const override {untested(); return new DEV_DOT;}

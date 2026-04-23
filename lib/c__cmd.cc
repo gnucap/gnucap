@@ -30,6 +30,34 @@
 /* cmdproc: process a command
  * parse, and act on, a command string
  */
+void CMD::cmdproc(CS& cmd)
+{
+  bool get_timer_was_running = ::status.get.is_running();
+  ::status.get.stop();
+  static TIMER timecheck;
+  error(bTRACE, ">>>>>" + cmd.fullstring() + "\n");
+  timecheck.stop().reset().start();
+
+  assert(scope());
+  do_it(cmd, scope());
+
+  if (OPT::acct) {untested();
+    IO::mstdout.form("time=%8.2f\n", timecheck.check().elapsed());
+  }else{ untested();
+  }
+
+  plclose();
+  outreset();
+
+  if (get_timer_was_running) {
+    ::status.get.start();
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
+/* cmdproc: process a command, static version with legacy stuff
+ * parse, and act on, a command string
+ */
 void CMD::cmdproc(CS& cmd, CARD_LIST* scope)
 {
   bool get_timer_was_running = ::status.get.is_running();

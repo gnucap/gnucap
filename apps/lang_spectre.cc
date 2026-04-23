@@ -198,7 +198,8 @@ DEV_DOT* LANG_SPECTRE::parse_command(CS& cmd, DEV_DOT* x)
     // cc >> '-';
     std::string s;
     cmd >> s;
-    cc->do_it(cmd, scope);
+    assert(scope == x->scope());
+    cc->cmdproc(cmd);
     return x;
   }else{
   }

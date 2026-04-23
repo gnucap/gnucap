@@ -432,7 +432,8 @@ DEV_DOT* LANG_VERILOG::parse_command(CS& cmd, DEV_DOT* x)
   if(auto cc=dynamic_cast<CMD*>(x)){ untested();
     std::string s;
     cmd >> s;
-    cc->do_it(cmd, scope);
+    assert(scope == x->scope());
+    cc->cmdproc(cmd);
     return x;
   }else{
     CMD::cmdproc(cmd, scope);
