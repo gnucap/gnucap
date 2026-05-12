@@ -1,5 +1,6 @@
 #Transmission lines 
 V1 ( 1 0 ) generator scale= 1.
+.param rs=50 
 *# matched 
 R1s ( 1 11 ) rs
 T1 ( 11 0 12 0 )  z0=50 f=10meg nl=.25

@@ -1,4 +1,9 @@
 Mutual inductance test circuit 
+.param L1 = .56 
+.param L2 = .79 
+.param K12 = .75 
+.param Rsource = 22 
+.param Rload = 75 
 * using 'k' pseudo element 
 .subckt trans2a ( a1 a2 b1 b2 )
 k1 ( l1 l2 ) K12
@@ -7,12 +12,14 @@ l2 ( b1 b2 ) L2
 .ends trans2a
 * T model, requires a common terminal 
 .subckt trans2b ( a com b )
+.param M12 = {K12*sqrt(L1*L2)} 
 l2a ( a 6 ) L1-M12
 l2b ( 6 com ) M12
 l2c ( 6 b ) L2-M12
 .ends trans2b
 * series model, using VCVS 
 .subckt trans2c ( a1 a2 b1 b2 )
+.param M12 = {K12*sqrt(L1*L2)} 
 l3a ( 10 a2 ) L1
 l3b ( 11 b2 ) L2
 e3a ( a1 10 11 b2 ) M12/L2
@@ -20,6 +27,7 @@ e3b ( b1 11 10 a2 ) M12/L1
 .ends trans2c
 * parallel model, using CCCS 
 .subckt trans2d ( a1 a2 b1 b2 )
+.param M12 = {K12*sqrt(L1*L2)} 
 l1 ( a1 a2 ) (1-K12*K12)*L1
 l2 ( b1 b2 ) (1-K12*K12)*L2
 f1 ( a1 a2 l2 ) -M12/L1
@@ -27,6 +35,7 @@ f2 ( b1 b2 l1 ) -M12/L2
 .ends trans2d
 * parallel model, using CCCS, split apart 
 .subckt trans2e ( a1 a2 b1 b2 )
+.param M12 = {K12*sqrt(L1*L2)} 
 l1 ( a1 a2 ) L1
 l2 ( b1 b2 ) L2
 l1m ( a1 a2 ) (1/(K12*K12)-1)*L1
@@ -38,6 +47,7 @@ f2m ( b1 b2 l1m ) -(M12/L2)
 .ends trans2e
 * nullor model 
 .subckt trans2f ( a1 a2 b1 b2 )
+.param M12 = {K12*sqrt(L1*L2)} 
 r1l1 ( a1 0 )  1.
 r2l1 ( a1 a3 ) -1.
 r3l1 ( a3 a2 )  1.
@@ -84,6 +94,11 @@ r3b ( 12 0 ) Rload
  0.008     -0.20913    0.31634   -0.20913    0.31634   -0.20913    0.31634   
  0.009     -0.17675    0.22132   -0.17675    0.22132   -0.17675    0.22132   
  0.01      -0.15163    0.14979   -0.15163    0.14979   -0.15163    0.14979   
+.param L1 = .56 
+.param L2 = .79 
+.param K12 = .75 
+.param Rsource = 22 
+.param Rload = 75 
 * using 'k' pseudo element 
 .subckt trans2a ( a1 a2 b1 b2 )
 k1 ( l1 l2 ) K12
@@ -92,12 +107,14 @@ l2 ( b1 b2 ) L2
 .ends trans2a
 * T model, requires a common terminal 
 .subckt trans2b ( a com b )
+.param M12 = {K12*sqrt(L1*L2)} 
 l2a ( a 6 ) L1-M12
 l2b ( 6 com ) M12
 l2c ( 6 b ) L2-M12
 .ends trans2b
 * series model, using VCVS 
 .subckt trans2c ( a1 a2 b1 b2 )
+.param M12 = {K12*sqrt(L1*L2)} 
 l3a ( 10 a2 ) L1
 l3b ( 11 b2 ) L2
 e3a ( a1 10 11 b2 ) M12/L2
@@ -105,6 +122,7 @@ e3b ( b1 11 10 a2 ) M12/L1
 .ends trans2c
 * parallel model, using CCCS 
 .subckt trans2d ( a1 a2 b1 b2 )
+.param M12 = {K12*sqrt(L1*L2)} 
 l1 ( a1 a2 ) (1-K12*K12)*L1
 l2 ( b1 b2 ) (1-K12*K12)*L2
 f1 ( a1 a2 l2 ) -M12/L1
@@ -112,6 +130,7 @@ f2 ( b1 b2 l1 ) -M12/L2
 .ends trans2d
 * parallel model, using CCCS, split apart 
 .subckt trans2e ( a1 a2 b1 b2 )
+.param M12 = {K12*sqrt(L1*L2)} 
 l1 ( a1 a2 ) L1
 l2 ( b1 b2 ) L2
 l1m ( a1 a2 ) (1/(K12*K12)-1)*L1
@@ -123,6 +142,7 @@ f2m ( b1 b2 l1m ) -(M12/L2)
 .ends trans2e
 * nullor model 
 .subckt trans2f ( a1 a2 b1 b2 )
+.param M12 = {K12*sqrt(L1*L2)} 
 r1l1 ( a1 0 )  1.
 r2l1 ( a1 a3 ) -1.
 r3l1 ( a3 a2 )  1.

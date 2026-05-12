@@ -1,6 +1,9 @@
 r1 ( 1 0 ) r
 i1 ( 0 1 ) i
 v1 ( 2 0 ) v
+.param r=1 
+.param i=1 
+.param v=1 
 #           v(1)       v(2)      
  0.         1.         1.        
 #           v(1)       v(2)      

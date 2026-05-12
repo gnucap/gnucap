@@ -465,7 +465,7 @@ public:
     iterator(iterator const& x) = default;
     iterator(map::iterator const& x, PARAM_LIST& c) : _i(x), _ctx(&c) {itested();}
   public:
-    bool operator!=(iterator const& p)const { untested();return _i!=p._i;}
+    bool operator!=(iterator const& p)const {itested();return _i!=p._i;}
     bool operator==(iterator const& p)const {itested();return _i==p._i;}
     iterator& operator++(){ untested();++_i; return *this;}
     PARAM_INSTANCE& operator*(){ untested();assert(_ctx); return _ctx->_pv[_i->second-1].second;}
