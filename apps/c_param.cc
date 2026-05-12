@@ -119,11 +119,11 @@ public:
   explicit CMD_PARAM() : CMD() {}
 private:
   explicit CMD_PARAM(CMD_PARAM const& p) : CMD(p) {}
-  CMD* clone()const override {untested(); return new CMD_PARAM(*this); }
+  CMD* clone()const override { return new CMD_PARAM(*this); }
 public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {
-    if(owner()){ untested();
-    }else{ untested();
+    if(owner()){
+    }else{
     }
     PARAM_LIST* pl = Scope->params();
     if (cmd.is_end()) {
