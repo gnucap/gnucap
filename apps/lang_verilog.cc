@@ -429,7 +429,7 @@ DEV_DOT* LANG_VERILOG::parse_command(CS& cmd, DEV_DOT* x)
     // "module" etc gets here.
   }
   parse_attributes(cmd, x->id_tag());
-  if(auto cc=dynamic_cast<CMD*>(x)){ untested();
+  if(auto cc=dynamic_cast<CMD*>(x)){
     std::string s;
     cmd >> s;
     assert(scope == x->scope());
@@ -476,25 +476,29 @@ MODEL_CARD* LANG_VERILOG::parse_paramset(CS& cmd, MODEL_CARD* x)
 /*--------------------------------------------------------------------------*/
 class CMD_MODULE_PARAM : public CMD {
 public:
+  explicit CMD_MODULE_PARAM() {}
+private:
+  explicit CMD_MODULE_PARAM(CMD_MODULE_PARAM const& p) : CMD(p) {}
+public:
+  CMD_MODULE_PARAM* clone()const override {
+    return new CMD_MODULE_PARAM(*this);
+  }
+public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {
+    CARD* Owner = owner();
     PARAM_LIST* pl = Scope->params();
+    assert(!Owner || Scope == Owner->subckt());
     if (cmd.is_end()) { untested();
       pl->print(IO::mstdout, OPT::language);
       IO::mstdout << '\n';
     }else{
       std::string tail = cmd.tail();
-      parse(cmd, pl);
-      DEV_DOT* dd = new DEV_DOT();
-      assert(dd);
-      // lang_verilog.move_attributes(tag_t(&cmd), dd->id_tag());
-      dd->set_owner(nullptr);
-      dd->set("parameter " + tail);
-      dd->set_owner(nullptr); // ?
-      Scope->push_back(dd);
+      parse(cmd, Owner);
+      set("parameter " + tail);
     }
   }
 private:
-  void parse(CS& cmd, PARAM_LIST* pl)const;
+  void parse(CS& cmd, CARD* pl)const;
   void parse_def(CS& cmd, PARAM_INSTANCE& par)const;
 } module_param;
 /*--------------------------------------------------------------------------*/
@@ -681,8 +685,15 @@ void CMD_MODULE_PARAM::parse_def(CS& cmd, PARAM_INSTANCE& par) const
   par = def;
 }
 /*--------------------------------------------------------------------------*/
-void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
+void CMD_MODULE_PARAM::parse(CS& cmd, CARD* Owner) const
 {
+  CARD_LIST* Scope;
+  if(Owner) {
+    Scope = Owner->subckt();
+  }else{ untested();
+    Scope = &CARD_LIST::card_list;
+  }
+  PARAM_LIST* pl = Scope->params();
   assert(pl);
   PARAM_INSTANCE par;
   if(cmd >> "real"){
@@ -724,8 +735,11 @@ void CMD_MODULE_PARAM::parse(CS& cmd, PARAM_LIST* pl) const
       notstd::to_lower(&Name);
     }else{
     }
-    trace2("parsed", Name, par.string());
     pl->set(Name, par);
+    if(Owner){
+      Owner->set_param_by_name(Name, "");
+    }else{
+    }
   }
   cmd.check(bDANGER, "syntax error");
 }
@@ -758,7 +772,10 @@ BASE_SUBCKT* LANG_VERILOG::parse_module(CS& cmd, BASE_SUBCKT* x)
     if (cmd >> "endmodule ") {
       break;
     }else if (cmd >> "parameter ") {
-      module_param.do_it(cmd, x->subckt());
+      auto p = module_param.clone();
+      p->set_owner(x);
+      p->do_it(cmd, x->subckt());
+      x->subckt()->push_back(p);
     }else if (cmd >> "wire |electrical |inout |input |output ") {
       net_decl.do_it(cmd, x->subckt());
     }else{

@@ -17,6 +17,7 @@ module c (.x(x),.y(y));
   b #(.$mfactor(3)) r (.x(x),.y(y));
 endmodule // c
 
+parameter mf = 1.
 ground gnd;
 resistor #(.r(1)) i (.p(gnd),.n(x));
 c #(.$mfactor(mf)) a1 (.x(gnd),.y(x));

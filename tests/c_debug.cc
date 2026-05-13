@@ -65,6 +65,10 @@ void CMD_NL::print( OMSTREAM o, const CARD_LIST* scope)
   std::string ind(" ", _indent);
  // const NODE_MAP * nm = scope->nodes();
   for (auto d : *scope){
+    if(dynamic_cast<CMD const*>(d)){
+      continue;
+    }else{
+    }
     o << ind << d->long_label();
     if(auto c = dynamic_cast<COMPONENT const*>(d)){
       o << " " << c->net_nodes() << " " << c->ext_nodes() << " " << c->int_nodes() << "\n";

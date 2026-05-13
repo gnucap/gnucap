@@ -194,7 +194,7 @@ DEV_DOT* LANG_SPECTRE::parse_command(CS& cmd, DEV_DOT* x)
   x->set(cmd.fullstring());
   CARD_LIST* scope = (x->owner()) ? x->owner()->subckt() : &CARD_LIST::card_list;
 
-  if(auto cc = dynamic_cast<CMD*>(x)){ untested();
+  if(auto cc = dynamic_cast<CMD*>(x)){
     // cc >> '-';
     std::string s;
     cmd >> s;

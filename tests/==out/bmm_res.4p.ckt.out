@@ -11,6 +11,7 @@ r2: t1: effective length is negative or zero
 #Freq       v(1)       v(2)      
 r2: short circuit
  0.         5.         50.n      
+.param pw=2u pl=1u 
 v1 ( 1 0 )  DC  2.  AC  5.
 r1 ( 1 2 )  1.K
 r2 ( 2 0 ) t1 l=pl w=pw

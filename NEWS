@@ -2,6 +2,9 @@ NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
 == 20260***-dev
+- access to localparam values in subcircuit devices
+- envelope to protect non-devices (prototypes, models..)
+- persistent commands; parameter declarations and listing
 - ..
 
 == 20260329-dev

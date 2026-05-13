@@ -28,10 +28,15 @@
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
-void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
+void parse(CS& cmd, PARAM_LIST* pl, CARD* owner)
 {
   assert(pl);
-  assert(Scope);
+  CARD_LIST* Scope;
+  if(!owner){
+    Scope = &CARD_LIST::card_list;
+  }else{
+    Scope = owner->scope();
+  }
   PARAM_INSTANCE par;
   int type = 0;
   if(cmd >> "real"){
@@ -101,19 +106,31 @@ void parse(CS& cmd, PARAM_LIST* pl, CARD_LIST* Scope)
     }else{
     }
     pl->set(Name, par);
+    if(owner){
+      owner->set_param_by_name(Name, "");
+    }else{
+    }
   }
   cmd.check(bDANGER, "syntax error");
 }
 /*--------------------------------------------------------------------------*/
 class CMD_PARAM : public CMD {
 public:
+  explicit CMD_PARAM() : CMD() {}
+private:
+  explicit CMD_PARAM(CMD_PARAM const& p) : CMD(p) {}
+  CMD* clone()const override { return new CMD_PARAM(*this); }
+public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {
+    if(owner()){
+    }else{
+    }
     PARAM_LIST* pl = Scope->params();
     if (cmd.is_end()) {
       pl->print(IO::mstdout, OPT::language);
       IO::mstdout << '\n';
     }else{
-      parse(cmd, pl, Scope);
+      parse(cmd, pl, owner());
     }
   }
 } p;

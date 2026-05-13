@@ -73,12 +73,15 @@
  193.75n    0.18972   
  200.n      0.11507   
 ".list "
+.param ppp=50n 
 .subckt esource ( a b )
 *.parameter p 
 v1 ( a b ) exp iv= 0. pv= 1. td1=p/20 tau1=p/4 td2=p/2 tau2=p/4 period=p
 .ends esource
 x1 ( 1 0 )  esource  p=ppp
 *x2 (2 0) esource p=20n 
+.param ppp=20n 
+.param ppp=50n 
 "*>.status notime "
 Gnucap   System status
 iterations: op=0, dc=0, tran=59, fourier=0, total=233

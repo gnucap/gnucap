@@ -491,3 +491,4 @@ V1 ( 1 0 ) sffm offset= 0. amplitude= 1. carrier= 10.K modindex= 0.1 signal= 1.K
 V2 ( 2 0 ) sffm offset= 0. amplitude= 1. carrier= 10.K modindex= 1. signal= 1.K
 V3 ( 3 0 ) sin offset=NA( 0.) amplitude=NA( 1.) frequency= 10.K delay=NA( 0.) damping=NA( 0.)
 V4 ( 4 0 ) sffm offset= 0. amplitude= 1. carrier= 10.K modindex= 2.4 signal= 1.K
+.param x=4 

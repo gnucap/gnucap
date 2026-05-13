@@ -2,6 +2,12 @@ Mutual inductance test circuit
 M12= 0.498848674449477
 (M12 / L2)= 0.631454018290477
 (M12 / L1)= 0.890801204374066
+.param L1 = .56 
+.param L2 = .79 
+.param K12 = .75 
+.param Rsource = 22 
+.param Rload = 75 
+.param M12 = 'K12*sqrt(L1*L2)' 
 v1 ( 1 0 ) pulse iv= 0. pv= 1. delay= 0.002 rise= 0.002 fall= 0.002 width= 0.002 period= 0.01  AC  1.
 r1a ( 1 2 ) Rsource
 k1 ( l1a l1b ) K12
@@ -43,6 +49,12 @@ r3b ( 12 0 ) Rload
  0.008     -0.20913    0.31634   -0.20913    0.31634   -0.20913    0.31634   
  0.009     -0.17675    0.22132   -0.17675    0.22132   -0.17675    0.22132   
  0.01      -0.15163    0.14979   -0.15163    0.14979   -0.15163    0.14979   
+.param L1 = .56 
+.param L2 = .79 
+.param K12 = .75 
+.param Rsource = 22 
+.param Rload = 75 
+.param M12 = 'K12*sqrt(L1*L2)' 
 v1 ( 1 0 ) pulse iv= 0. pv= 1. delay= 0.002 rise= 0.002 fall= 0.002 width= 0.002 period= 0.01  AC  1.
 r1a ( 1 2 ) Rsource
 k1 ( l1a l1b ) K12

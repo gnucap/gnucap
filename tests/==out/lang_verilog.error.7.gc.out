@@ -34,6 +34,7 @@ resistor #(.r(10*(1-gain))) Rin1 (.p(in),.n(amp_in));
 resistor #(.r(10*gain)) Rin2 (.p(amp_in),.n(\0 ));
 vsource #( DC  20.) Vcc (.p(V_cc),.n(\0 ));
 vsource #( AC  0.2) Vin (.p(in),.n(\0 ));
+parameter gain=.5;
 X1.Cout: invalid nodes
 X1.Cout: invalid nodes
 X1.Cout: invalid nodes

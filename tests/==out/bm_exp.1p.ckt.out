@@ -401,4 +401,5 @@
  19.9n      0.11525   
  19.95n     0.1141    
  20.n       0.11296   
+.param delay=10n 
 v1 ( 1 0 ) exp iv= 0. pv= 1. td1=delay/10 tau1=delay/2 td2=delay tau2=delay/2

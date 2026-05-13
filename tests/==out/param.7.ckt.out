@@ -5,6 +5,7 @@ v2 ( b c ) xxx
 .ends foo
 x1 ( 1 0 3 )  foo  zzz=a xxx=b
 x2 ( 2 0 4 )  foo  xxx=a zzz=83
+.param a=13 b=923 c=a 
 #           v(1)       v(2)       v(3)       v(4)      
  27.        13.        83.       -923.      -13.       
 .subckt foo ( a b c )
@@ -13,3 +14,4 @@ v2 ( b c ) xxx
 .ends foo
 x1 ( 1 0 3 )  foo  zzz=a xxx=b
 x2 ( 2 0 4 )  foo  xxx=a zzz=83
+.param a=13 b=923 c=a 

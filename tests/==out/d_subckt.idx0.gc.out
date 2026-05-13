@@ -6,6 +6,7 @@ module main (.a(a),.b(b));
 endmodule // main
 
 ground gnd;
+parameter x=2;
 main #(.x(x),.y(0),.z(-1)) m (.a(a),.b(gnd));
 #           v(a)       v(gnd)    
  27.        1.         0.        

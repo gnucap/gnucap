@@ -1,4 +1,11 @@
 module spice_diode (.\1 (\1 ),.\2 (\2 ));
+  parameter dummy=17. 
+  parameter area=1 
+  parameter N=1, cjo=10f 
+  parameter M=1, vj=.6 
+  parameter rs 
+  parameter Is=1e-15 
+  parameter tt=1e-15 
   paramset mydiode d;
  .tnom=NA( 27.); .is=Is; .rs=rs; .n=N; .tt=tt; .cjo=cjo; .pb=vj; .mj=M; .egap=NA( 1.11); .xti=NA( 3.); .fc=NA( 0.5);
 endparamset
@@ -21,7 +28,7 @@ module Diode (.\1 (\1 ),.\2 (\2 ));
   parameter Ikf=0, Kf=0., Af=1., Ffe=1., Bv=0., Ibv=1m, Temp=26.85, Xti=3.;
   parameter Eg=1.11, Tbv=0., Trs=0., Ttt1=0., Ttt2=0., Tm1=0., Tm2=0.;
   parameter Tnom=26.85;
-  spice_diode #(.area(Area),.Is(Is),.rs(Rs),.N(N),.cjo(Cj0),.vj(Vj),.M(M),.tt(Tt)) d1 (.\1 (\2 ),.\2 (\1 ));
+  spice_diode #(.area(Area),.N(N),.cjo(Cj0),.M(M),.vj(Vj),.rs(Rs),.Is(Is),.tt(Tt)) d1 (.\1 (\2 ),.\2 (\1 ));
 endmodule // Diode
 
 #           v(1)       v(2)      
