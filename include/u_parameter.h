@@ -132,11 +132,16 @@ public:
   void	set_default(const T& v)		{_v = v; _s = "";}
   void	set_fixed(const T& v)		{ untested();_v = v; _s = "#";}
   PARAMETER& operator=(Base const* v) override {
-    value_type* x = _v.assign(v);
-    assert(x);
-    _v = *x;
-    delete x;
-    _s = "#";
+    if(v){
+      value_type* x = _v.assign(v);
+      assert(x);
+      _v = *x;
+      _s = "#";
+      delete x;
+    }else{ itested();
+      _v = value_type();
+      _s = "NA";
+    }
     return *this;
   }
   void	operator=(const PARAMETER& p)	{_v = p._v; _s = p._s;}
