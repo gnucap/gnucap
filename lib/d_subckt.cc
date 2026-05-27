@@ -154,6 +154,7 @@ private: // override virtual
   bool		makes_own_scope()const override;
   int		is_valid()const override;
 
+  void		expand_first() override;
   void		expand() override;
 private:
   void		precalc_last()override;
@@ -487,10 +488,9 @@ std::string DEV_SUBCKT::port_name(int i)const
   }
 }
 /*--------------------------------------------------------------------------*/
-void DEV_SUBCKT::expand()
+void DEV_SUBCKT::expand_first()
 {
-  BASE_SUBCKT::expand();
-  trace3("DEV_SUBCKT::expand", long_label(), max_nodes(), common());
+  trace3("DEV_SUBCKT::expand_first", long_label(), max_nodes(), common());
 
   if(_parent == &pp){ untested();
     COMMON_PARAMLIST const* c = prechecked_cast<COMMON_PARAMLIST const*>(common());
@@ -513,9 +513,12 @@ void DEV_SUBCKT::expand()
     }
   }else{itested();
   }
-
-  trace1("DEV_SUBCKT::expand1", max_nodes());
-
+}
+/*--------------------------------------------------------------------------*/
+void DEV_SUBCKT::expand()
+{
+  BASE_SUBCKT::expand();
+  trace3("DEV_SUBCKT::expand", long_label(), max_nodes(), common());
 
   if(!_parent || _parent==&pp){ untested();
     // not a device. probably a prototype

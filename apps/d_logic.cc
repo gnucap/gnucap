@@ -302,7 +302,7 @@ void DEV_LOGIC::expand()
       _gatemode = OPT::mode;
       renew_subckt(s, nullptr/*&(c->_params)*/);
       subckt()->expand();
-    }else if(auto sss = dynamic_cast<const BASE_SUBCKT*>(model)) {
+    }else if(auto sss = dynamic_cast<const BASE_SUBCKT*>(model)) { untested();
       // reachable from spice
       _gatemode = OPT::mode;
       renew_subckt(sss, nullptr/*&(c->_params)*/);

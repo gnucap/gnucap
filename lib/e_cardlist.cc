@@ -658,7 +658,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   if(&CARD_LIST::card_list == this){
   }else if(!owner){ untested();
     incomplete(); // probably
-  }else if(owner->subckt()) { untested();
+  }else if(owner->subckt()) {
     assert(owner->subckt() == this);
   }else{
     // coming from e_card.cc:253, presumably
