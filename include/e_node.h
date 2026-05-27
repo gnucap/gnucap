@@ -44,10 +44,11 @@ protected:
   explicit NODE() : CARD() {}
 private: // inhibited
   explicit NODE(const NODE& p) : CARD(p) { untested();unreachable();}
-public:
+protected:
   explicit NODE(const NODE* p); // u_nodemap.cc:49 (deep copy)
   explicit NODE(const std::string& s, int idx=0)
     : CARD(s) {(void)idx; assert(!idx);}
+public:
   ~NODE();
 
   CARD* clone()const override	{untested(); return new NODE(*this);}
@@ -86,10 +87,6 @@ public: // virtuals
     return _sim->_ac[m_()];
   }
 };
-/*--------------------------------------------------------------------------*/
-#ifndef NDEBUG
-extern NODE ground_node;
-#endif
 /*--------------------------------------------------------------------------*/
 inline int NODE::user_number() const
 {

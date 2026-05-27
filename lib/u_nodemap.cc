@@ -25,7 +25,10 @@
 #include "u_nodemap.h"
 #include "e_usernode.h"
 /*--------------------------------------------------------------------------*/
-NODE ground_node("0", 0);
+class GROUND_NODE : public NODE {
+public:
+  explicit GROUND_NODE() : NODE("0", 0) {}
+} ground_node;
 /*--------------------------------------------------------------------------*/
 NODE_MAP::NODE_MAP()
 {
