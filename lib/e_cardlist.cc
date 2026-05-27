@@ -75,7 +75,6 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
   //set_owner(owner);
 
   _nm = model->subckt()->nodes()->clone();
-  map_subckt_nodes(model, owner);
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::~CARD_LIST()
@@ -224,6 +223,17 @@ CARD_LIST& CARD_LIST::set_slave()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+/* expand_first: prepare for expansion.
+ */
+CARD_LIST& CARD_LIST::expand_first()
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    trace_func_comp();
+    (**ci).expand_first();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
 /* expand: expand (flatten) a list of components (subckts)
  * Scan component list.  Expand each subckt: create actual elements
  * for flat representation to use for simulation.
@@ -232,11 +242,11 @@ CARD_LIST& CARD_LIST::expand()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
-    (**ci).precalc_first();
+    (**ci).precalc_first(); // remove
   }
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
-    (**ci).expand_first();
+    (**ci).expand_first(); // remove
   }
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();

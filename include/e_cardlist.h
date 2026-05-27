@@ -127,6 +127,7 @@ public: // add to it
   CARD_LIST& set_owner(CARD* owner);
   CARD_LIST& set_slave();
   CARD_LIST& precalc_first();
+  CARD_LIST& expand_first();
   CARD_LIST& expand();
   CARD_LIST& precalc_last();
   CARD_LIST& make_fanout();

@@ -862,6 +862,7 @@ void COMPONENT::precalc_first()
     assert(c);
     std::feclearexcept(FE_ALL_EXCEPT);
     try {
+      assert(scope());
       c->precalc_first_chain(scope()->params());
     }catch (Exception_Precalc& e) { untested();
       error(bWARNING, long_label() + ": " + e.message());
