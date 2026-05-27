@@ -240,14 +240,15 @@ CARD_LIST& CARD_LIST::expand_first()
  */
 CARD_LIST& CARD_LIST::expand()
 {
-  for (iterator ci=begin(); ci!=end(); ++ci) {
-    trace_func_comp();
-    (**ci).precalc_first(); // remove
-  }
-  for (iterator ci=begin(); ci!=end(); ++ci) {
-    trace_func_comp();
-    (**ci).expand_first(); // remove
-  }
+  precalc_first();
+  expand_first();
+  return expand_();
+}
+/*--------------------------------------------------------------------------*/
+/* expand_: like expand, but without {precalc,expand}_first
+ */
+CARD_LIST& CARD_LIST::expand_()
+{
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
     (**ci).expand();

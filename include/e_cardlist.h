@@ -129,6 +129,7 @@ public: // add to it
   CARD_LIST& precalc_first();
   CARD_LIST& expand_first();
   CARD_LIST& expand();
+  CARD_LIST& expand_();
   CARD_LIST& precalc_last();
   CARD_LIST& make_fanout();
   CARD_LIST& map_nodes();

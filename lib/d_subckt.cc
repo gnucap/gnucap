@@ -532,7 +532,7 @@ void DEV_SUBCKT::expand()
     trace3("expand", short_label(), net_nodes(), max_nodes());
     renew_subckt(_parent, &(c->_params));
 
-    subckt()->expand();
+    subckt()->expand_();
 
     // do connect port stuff here.
     // (part of allocate??)
