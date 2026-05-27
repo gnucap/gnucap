@@ -89,7 +89,7 @@ public:	// dc-tran
   virtual bool	 tr_needs_eval()const	{return false;}
   virtual void	 tr_queue_eval()	{}
   virtual bool	 do_tr()		{return true;}
-  virtual bool	 do_tr_last()		{untested();return true;}
+  virtual bool	 do_tr_last()		{return true;}
   virtual void	 tr_load()		{}
   virtual TIME_PAIR tr_review();	//{return TIME_PAIR(NEVER,NEVER);}
   virtual void	 tr_accept()		{}

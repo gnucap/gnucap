@@ -55,7 +55,7 @@ public:
 		~DEV_LOGIC()		{--_count;}
 private: // override virtuals
   char	   id_letter()const override	{return 'U';}
-  std::string value_name()const override{return "";}
+  std::string value_name()const override{ untested();return "";}
   bool	      print_type_in_spice()const override{return true;}
   std::string dev_type()const override{assert(has_common()); return common()->name();}
   int	   tail_size()const override {return 2;}
@@ -65,6 +65,7 @@ private: // override virtuals
   int	   net_nodes()const override {return _net_nodes;}
   CARD*	   clone()const override {return new DEV_LOGIC(*this);}
   void	   precalc_first()override {ELEMENT::precalc_first(); if (subckt()) {subckt()->precalc_first();}}
+  void	   expand_first()override;
   void	   expand()override;
   void	   precalc_last() override;
   //void   map_nodes();
@@ -271,16 +272,16 @@ void DEV_LOGIC::precalc_last()
   if (subckt()) {
     if(HS_PARAM const* h = hsparam()){
       h->precalc_hierarchy(scope()->params(), subckt()->params());
-    }else{
+    }else{ untested();
     }
     subckt()->precalc_last();
   }else{
   }
 }
 /*--------------------------------------------------------------------------*/
-void DEV_LOGIC::expand()
+void DEV_LOGIC::expand_first()
 {
-  ELEMENT::expand();
+  ELEMENT::expand_first();
   attach_model();
 
   const COMMON_LOGIC* c = prechecked_cast<const COMMON_LOGIC*>(common());
@@ -301,19 +302,26 @@ void DEV_LOGIC::expand()
       assert(s);
       _gatemode = OPT::mode;
       renew_subckt(s, nullptr/*&(c->_params)*/);
-      subckt()->expand();
     }else if(auto sss = dynamic_cast<const BASE_SUBCKT*>(model)) { untested();
       // reachable from spice
       _gatemode = OPT::mode;
       renew_subckt(sss, nullptr/*&(c->_params)*/);
-      subckt()->expand();
-    }else{
+    }else{ untested();
       error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)),
 	    long_label() + ": " + subckt_name + " is not a subckt, forcing digital\n");
     }
   }catch (Exception_Cant_Find&) {
     error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)), 
 	  long_label() + ": can't find subckt: " + subckt_name + ", forcing digital\n");
+  }
+}
+/*--------------------------------------------------------------------------*/
+void DEV_LOGIC::expand()
+{
+  ELEMENT::expand();
+  if(subckt()){
+    subckt()->expand_();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
