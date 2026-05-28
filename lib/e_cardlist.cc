@@ -31,6 +31,7 @@
 #include "m_union.h"
 #ifndef NDEBUG
 #include "d_coment.h"
+#include "c_comand.h"
 #endif
 /*--------------------------------------------------------------------------*/
 #define trace_func_comp() trace1(__func__, (**ci).short_label())
@@ -75,7 +76,6 @@ CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
   //set_owner(owner);
 
   _nm = model->subckt()->nodes()->clone();
-  map_subckt_nodes(model, owner);
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::~CARD_LIST()
@@ -224,20 +224,32 @@ CARD_LIST& CARD_LIST::set_slave()
   return *this;
 }
 /*--------------------------------------------------------------------------*/
+/* expand_first: prepare for expansion.
+ */
+CARD_LIST& CARD_LIST::expand_first()
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {
+    trace_func_comp();
+    (**ci).expand_first();
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
 /* expand: expand (flatten) a list of components (subckts)
  * Scan component list.  Expand each subckt: create actual elements
  * for flat representation to use for simulation.
  */
 CARD_LIST& CARD_LIST::expand()
 {
-  for (iterator ci=begin(); ci!=end(); ++ci) {
-    trace_func_comp();
-    (**ci).precalc_first();
-  }
-  for (iterator ci=begin(); ci!=end(); ++ci) {
-    trace_func_comp();
-    (**ci).expand_first();
-  }
+  precalc_first();
+  expand_first();
+  return expand_();
+}
+/*--------------------------------------------------------------------------*/
+/* expand_: like expand, but without {precalc,expand}_first
+ */
+CARD_LIST& CARD_LIST::expand_()
+{
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
     (**ci).expand();
@@ -630,9 +642,6 @@ static void connect_ports(NODE_MAP& nodes, CARD const* owner, CARD const* model)
 }
 /*--------------------------------------------------------------------------*/
 // set up the map of external to expanded node numbers
-#ifndef NDEBUG
-extern NODE ground_node;
-#endif
 void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 {
   if(owner){
@@ -647,11 +656,12 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   if(&CARD_LIST::card_list == this){
   }else if(!owner){ untested();
     incomplete(); // probably
-  }else if(owner->subckt()) { untested();
+  }else if(owner->subckt()) {
     assert(owner->subckt() == this);
   }else{
     // coming from e_card.cc:253, presumably
   }
+
   assert(nodes());
 
   NODE_MAP& node_map = *nodes();
@@ -667,16 +677,15 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
     if ((**ci).is_device()) {
       for (int ii = 0;  ii < (**ci).net_nodes();  ++ii) {
 	// for each connection node in card
-	(**ci).n_(ii).set_used(); // kludge
 	(**ci).n_(ii).map_subckt_node(&node_map[0], owner);
 	// assert(&node_map[(**ci).n_(ii).e_()].root() == &(**ci).n_(ii).root());
       }
     }else{
-#if 0 // revisit later. need to wrap into MODEL_CARD and such things.
+      assert(!(**ci).net_nodes());
       assert(dynamic_cast<MODEL_CARD*>(*ci)
-	   ||dynamic_cast<DEV_COMMENT*>(*ci));
-            ..      DEV_SUBCKT_PROTO etc.
-#endif
+	   ||dynamic_cast<DEV_COMMENT*>(*ci)
+	   ||dynamic_cast<NODE*>(*ci)
+	   ||dynamic_cast<CMD*>(*ci));
     }
   }
 }

@@ -71,7 +71,7 @@ public:
   //--------------------------------------------------------------------
 public:	// "elaborate"
   virtual void	 precalc_first()	{}
-  virtual void	 expand_first()		{}
+  virtual void	 expand_first();
   virtual void	 expand()		{}
   virtual void	 expand_last()		{}
   virtual void	 make_fanout();
@@ -89,7 +89,7 @@ public:	// dc-tran
   virtual bool	 tr_needs_eval()const	{return false;}
   virtual void	 tr_queue_eval()	{}
   virtual bool	 do_tr()		{return true;}
-  virtual bool	 do_tr_last()		{untested();return true;}
+  virtual bool	 do_tr_last()		{return true;}
   virtual void	 tr_load()		{}
   virtual TIME_PAIR tr_review();	//{return TIME_PAIR(NEVER,NEVER);}
   virtual void	 tr_accept()		{}

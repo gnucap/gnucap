@@ -24,8 +24,14 @@
 //testing=script,complete 2006.07.14
 #include "u_nodemap.h"
 #include "e_usernode.h"
+#ifdef TRACE_UNTESTED
+#include "e_node_type.h"
+#endif
 /*--------------------------------------------------------------------------*/
-NODE ground_node("0", 0);
+class GROUND_NODE : public NODE {
+public:
+  explicit GROUND_NODE() : NODE("0", 0) {}
+} ground_node;
 /*--------------------------------------------------------------------------*/
 NODE_MAP::NODE_MAP()
 {
@@ -145,7 +151,14 @@ std::string const& NODE_MAP::name(int i) const
     return l;
   }else if(_map){
     // fallback, getting here in a few corner cases,
-    // top level only.
+    // e.g. d_subckt.error4.ckt
+#ifdef TRACE_UNTESTED
+    if(dynamic_cast<NODE_TYPE const*>(n.n_())) { untested();
+      // top level
+    }else{
+      // module declaration
+    }
+#endif
     for(auto const& p : map()){
       assert(p.second);
       if(p.second->user_number() == i){

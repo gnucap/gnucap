@@ -154,6 +154,7 @@ private: // override virtual
   bool		makes_own_scope()const override;
   int		is_valid()const override;
 
+  void		expand_first() override;
   void		expand() override;
 private:
   void		precalc_last()override;
@@ -428,7 +429,7 @@ void DEV_SUBCKT::set_param_by_index(int i, std::string& Value, int Offset)
 }
 /*--------------------------------------------------------------------------*/
 double DEV_SUBCKT::localparam_value(std::string const& path) const
-{ untested();
+{ itested();
   CARD_LIST const* scope = subckt();
   auto dotplace = path.find(".");
   if(dotplace == std::string::npos){itested();
@@ -436,11 +437,11 @@ double DEV_SUBCKT::localparam_value(std::string const& path) const
     PARAM_LIST const* p = scope->params();
     assert(p);
     PARAM_LIST::const_iterator it = p->find(path);
-    if(it == p->end()){ untested();
+    if(it == p->end()){ itested();
 	PARAMETER<double> pd; pd = path;
 	pd.e_val(NOT_VALID, scope->params());
 	return pd;
-    }else{ untested();
+    }else{ itested();
       PARAM_INSTANCE const& pi = it.ref();
       if(auto f = dynamic_cast<Float const*>(pi.value())) {
 	PARAMETER<double> pd; pd = path;
@@ -487,10 +488,9 @@ std::string DEV_SUBCKT::port_name(int i)const
   }
 }
 /*--------------------------------------------------------------------------*/
-void DEV_SUBCKT::expand()
+void DEV_SUBCKT::expand_first()
 {
-  BASE_SUBCKT::expand();
-  trace3("DEV_SUBCKT::expand", long_label(), max_nodes(), common());
+  trace3("DEV_SUBCKT::expand_first", long_label(), max_nodes(), common());
 
   if(_parent == &pp){ untested();
     COMMON_PARAMLIST const* c = prechecked_cast<COMMON_PARAMLIST const*>(common());
@@ -513,9 +513,12 @@ void DEV_SUBCKT::expand()
     }
   }else{itested();
   }
-
-  trace1("DEV_SUBCKT::expand1", max_nodes());
-
+}
+/*--------------------------------------------------------------------------*/
+void DEV_SUBCKT::expand()
+{
+  BASE_SUBCKT::expand();
+  trace3("DEV_SUBCKT::expand", long_label(), max_nodes(), common());
 
   if(!_parent || _parent==&pp){ untested();
     // not a device. probably a prototype
@@ -532,7 +535,7 @@ void DEV_SUBCKT::expand()
     trace3("expand", short_label(), net_nodes(), max_nodes());
     renew_subckt(_parent, &(c->_params));
 
-    subckt()->expand();
+    subckt()->expand_();
 
     // do connect port stuff here.
     // (part of allocate??)

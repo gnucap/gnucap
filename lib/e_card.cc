@@ -270,6 +270,9 @@ void CARD::new_subckt(const CARD* Model, PARAM_LIST const* Params)
   _subckt = nullptr;
   _subckt = new CARD_LIST(Model, this, scope(), Params);
   _subckt->set_owner(this);
+  _subckt->precalc_first();
+  _subckt->expand_first();
+  _subckt->map_subckt_nodes(Model, this);
 }
 /*--------------------------------------------------------------------------*/
 void CARD::renew_subckt(const CARD* Model, PARAM_LIST const* Params)
@@ -279,6 +282,13 @@ void CARD::renew_subckt(const CARD* Model, PARAM_LIST const* Params)
   }else{untested();
     assert(subckt());
     subckt()->attach_params(Params, scope());
+  }
+}
+/*--------------------------------------------------------------------------*/
+void CARD::expand_first()
+{
+  for (int ii = 0;  ii < net_nodes();  ++ii) {
+    n_(ii).set_used(); // kludge
   }
 }
 /*--------------------------------------------------------------------------*/

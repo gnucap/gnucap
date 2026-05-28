@@ -33,6 +33,11 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_GROUND : public CMD {
 public:
+  explicit CMD_GROUND() : CMD() {}
+private:
+  explicit CMD_GROUND(CMD_GROUND const&p) : CMD(p) {}
+  CMD* clone()const override {return new CMD_GROUND(*this);}
+public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
     assert(Scope->nodes());
@@ -40,15 +45,13 @@ public:
     std::string full;
     full = "ground " + cmd.tail();
     cmd >> name >> ";";
-    DEV_DOT* dd = new DEV_DOT;
-    dd->set_owner(nullptr);
 
     assert(CARD_LIST::card_list.nodes()->size());
 
     if(name == "0" && cmd.fullstring()[0]=='.'){ untested();
       // spice
     }else{
-      dd->set(full);
+      set(full);
 
       // TODO: lang_verilog get_identifier
       if(name[0] == '\\'){
@@ -63,8 +66,6 @@ public:
     trace2("ground node", name, np->user_number());
     np->set_to_ground();
     trace2("ground node", name, np->user_number());
-
-    Scope->push_back(dd);
 
     if(cmd.more()){ untested();
       cmd.warn(bDANGER, "trailing characters");

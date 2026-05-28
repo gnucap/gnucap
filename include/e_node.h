@@ -44,10 +44,11 @@ protected:
   explicit NODE() : CARD() {}
 private: // inhibited
   explicit NODE(const NODE& p) : CARD(p) { untested();unreachable();}
-public:
+protected:
   explicit NODE(const NODE* p); // u_nodemap.cc:49 (deep copy)
   explicit NODE(const std::string& s, int idx=0)
     : CARD(s) {(void)idx; assert(!idx);}
+public:
   ~NODE();
 
   CARD* clone()const override	{untested(); return new NODE(*this);}
@@ -55,6 +56,7 @@ public:
 public: // raw data access (rvalues)
   virtual int user_number()const;
   virtual int flat_number()const {return INVALID_NODE;}
+  virtual int type_number()const {return INVALID_NODE;}
 public: // simple calculated data access (rvalues)
   virtual int matrix_number()const;
   int	m_()const		{return matrix_number();}
@@ -86,10 +88,6 @@ public: // virtuals
     return _sim->_ac[m_()];
   }
 };
-/*--------------------------------------------------------------------------*/
-#ifndef NDEBUG
-extern NODE ground_node;
-#endif
 /*--------------------------------------------------------------------------*/
 inline int NODE::user_number() const
 {
@@ -146,7 +144,9 @@ public: // topology
   bool is_input()const {return _dir & dir_in; }
   bool is_output()const {return _dir & dir_out; }
   bool is_inout()const {return _dir == dir_none || _dir == dir_io; }
+public:
   void allocate(int u=0);
+  NODE const* set_type(NODE const*);
 public: // BUG
   void clear();
 private:
