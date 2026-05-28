@@ -71,7 +71,7 @@ public:
   //--------------------------------------------------------------------
 public:	// "elaborate"
   virtual void	 precalc_first()	{}
-  virtual void	 expand_first()		{}
+  virtual void	 expand_first();
   virtual void	 expand()		{}
   virtual void	 expand_last()		{}
   virtual void	 make_fanout();
