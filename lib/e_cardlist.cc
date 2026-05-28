@@ -31,6 +31,7 @@
 #include "m_union.h"
 #ifndef NDEBUG
 #include "d_coment.h"
+#include "c_comand.h"
 #endif
 /*--------------------------------------------------------------------------*/
 #define trace_func_comp() trace1(__func__, (**ci).short_label())
@@ -641,9 +642,6 @@ static void connect_ports(NODE_MAP& nodes, CARD const* owner, CARD const* model)
 }
 /*--------------------------------------------------------------------------*/
 // set up the map of external to expanded node numbers
-#ifndef NDEBUG
-extern NODE ground_node;
-#endif
 void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 {
   if(owner){
@@ -663,6 +661,7 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
   }else{
     // coming from e_card.cc:253, presumably
   }
+
   assert(nodes());
 
   NODE_MAP& node_map = *nodes();
@@ -683,11 +682,11 @@ void CARD_LIST::map_subckt_nodes(const CARD* model, const CARD* owner)
 	// assert(&node_map[(**ci).n_(ii).e_()].root() == &(**ci).n_(ii).root());
       }
     }else{
-#if 0 // revisit later. need to wrap into MODEL_CARD and such things.
+      assert(!(**ci).net_nodes());
       assert(dynamic_cast<MODEL_CARD*>(*ci)
-	   ||dynamic_cast<DEV_COMMENT*>(*ci));
-            ..      DEV_SUBCKT_PROTO etc.
-#endif
+	   ||dynamic_cast<DEV_COMMENT*>(*ci)
+	   ||dynamic_cast<NODE*>(*ci)
+	   ||dynamic_cast<CMD*>(*ci));
     }
   }
 }

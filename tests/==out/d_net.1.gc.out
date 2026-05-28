@@ -24,7 +24,6 @@ have 1 nodes. model: 0 sckt: 1
 
 net
 main
- 
  main.r 2 2 0
  0 -1
  1 -1

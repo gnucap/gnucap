@@ -33,15 +33,18 @@ namespace {
 /*--------------------------------------------------------------------------*/
 class CMD_GLOBAL : public CMD {
 public:
+  explicit CMD_GLOBAL() : CMD() {}
+private:
+  explicit CMD_GLOBAL(CMD_GLOBAL const&p) : CMD(p) {}
+  CMD* clone()const override {return new CMD_GLOBAL(*this);}
+public:
   void do_it(CS& cmd, CARD_LIST* Scope)override {
     assert(Scope);
     assert(Scope->nodes());
     std::string name;
     size_t here = cmd.cursor();
     cmd >> name;
-    DEV_DOT* dd = new DEV_DOT;
-    dd->set_owner(nullptr);
-    dd->set(cmd.fullstring());
+    CMD::set(cmd.fullstring());
 
     assert(CARD_LIST::card_list.nodes()->size());
 
@@ -61,8 +64,6 @@ public:
       }
 
     }
-
-    Scope->push_back(dd);
 
     if(cmd.more()){ untested();
       cmd.warn(bDANGER, "trailing characters");
