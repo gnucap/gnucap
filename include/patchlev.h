@@ -1,1 +1,1 @@
-#define PATCHLEVEL "node_base 2026.05.05"
+#define PATCHLEVEL "node_type 2026.05.27"

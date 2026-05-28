@@ -56,6 +56,7 @@ public:
 public: // raw data access (rvalues)
   virtual int user_number()const;
   virtual int flat_number()const {return INVALID_NODE;}
+  virtual int type_number()const {return INVALID_NODE;}
 public: // simple calculated data access (rvalues)
   virtual int matrix_number()const;
   int	m_()const		{return matrix_number();}
@@ -143,7 +144,9 @@ public: // topology
   bool is_input()const {return _dir & dir_in; }
   bool is_output()const {return _dir & dir_out; }
   bool is_inout()const {return _dir == dir_none || _dir == dir_io; }
+public:
   void allocate(int u=0);
+  NODE const* set_type(NODE const*);
 public: // BUG
   void clear();
 private:

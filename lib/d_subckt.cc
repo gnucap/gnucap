@@ -429,7 +429,7 @@ void DEV_SUBCKT::set_param_by_index(int i, std::string& Value, int Offset)
 }
 /*--------------------------------------------------------------------------*/
 double DEV_SUBCKT::localparam_value(std::string const& path) const
-{ untested();
+{ itested();
   CARD_LIST const* scope = subckt();
   auto dotplace = path.find(".");
   if(dotplace == std::string::npos){itested();
@@ -437,11 +437,11 @@ double DEV_SUBCKT::localparam_value(std::string const& path) const
     PARAM_LIST const* p = scope->params();
     assert(p);
     PARAM_LIST::const_iterator it = p->find(path);
-    if(it == p->end()){ untested();
+    if(it == p->end()){ itested();
 	PARAMETER<double> pd; pd = path;
 	pd.e_val(NOT_VALID, scope->params());
 	return pd;
-    }else{ untested();
+    }else{ itested();
       PARAM_INSTANCE const& pi = it.ref();
       if(auto f = dynamic_cast<Float const*>(pi.value())) {
 	PARAMETER<double> pd; pd = path;
