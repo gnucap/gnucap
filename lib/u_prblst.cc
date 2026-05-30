@@ -305,9 +305,9 @@ bool PROBELIST::add_branches(const std::string&device,
       }
       { //components
 	CARD_LIST::const_iterator i = scope->find_(device);
-	if (i == scope->end()) { untested();
-	}else if(dynamic_cast<CMD const*>(*i)){ untested();
-	}else{ untested();
+	if (i == scope->end()) {
+	}else if(dynamic_cast<CMD const*>(*i)){
+	}else{
 	  push_new_probe(param, *i);
 	  found_something = true;
 	}

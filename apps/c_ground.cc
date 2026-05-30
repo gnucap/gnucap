@@ -34,6 +34,12 @@ namespace {
 class CMD_GROUND : public CMD {
 public:
   explicit CMD_GROUND() : CMD() {}
+  ~CMD_GROUND() {
+    if (_sim) {
+      _sim->uninit();
+    }else{
+    }
+  }
 private:
   explicit CMD_GROUND(CMD_GROUND const&p) : CMD(p) {}
   CMD* clone()const override {return new CMD_GROUND(*this);}
@@ -71,6 +77,19 @@ public:
       cmd.warn(bDANGER, "trailing characters");
     }else{
     }
+    set_label(name);
+  }
+  void expand_first()override {
+    CARD_LIST* scope;
+    if(owner()){ untested();
+      scope = owner()->subckt();
+    }else{
+      scope = &CARD_LIST::card_list;
+    }
+    NODE* n = scope->nodes()->new_node(short_label());
+    USER_NODE* np = prechecked_cast<USER_NODE*>(n);
+    assert(np);
+    np->set_to_ground();
   }
 } p12;
 DISPATCHER<CMD>::INSTALL d12(&command_dispatcher, "ground|.ground", &p12);
