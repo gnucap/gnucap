@@ -28,6 +28,7 @@
 #include "u_nodemap.h"
 #include "ap.h"
 #include "u_prblst.h"
+#include "c_comand.h"
 /*--------------------------------------------------------------------------*/
 void PROBE_LISTS::purge(CARD* brh)
 {
@@ -304,10 +305,11 @@ bool PROBELIST::add_branches(const std::string&device,
       }
       { //components
 	CARD_LIST::const_iterator i = scope->find_(device);
-	if (i != scope->end()) {
+	if (i == scope->end()) {
+	}else if(dynamic_cast<CMD const*>(*i)){
+	}else{
 	  push_new_probe(param, *i);
 	  found_something = true;
-	}else{
 	}
       }
     }

@@ -1,1 +1,1 @@
-#define PATCHLEVEL "expand_first 2026.05.28"
+#define PATCHLEVEL "cmdprobe 2026.05.30"

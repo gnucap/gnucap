@@ -1,0 +1,20 @@
+.global a
+module tt (.a(a));
+  .global a 
+endmodule // tt
+
+ground gnd
+resistor #(.r(1)) r (.p(b),.n(gnd));
+isource #(.dc(3)) i1 (.p(gnd),.n(a));
+tt #() mytt (.a(b));
+#           v(a)       v(b)       v(gnd)    
+ 27.        3.         3.         0.        
+#           v(a)       v(b)       v(gnd)    
+ 27.        6.         6.         0.        
+#           v(a)       v(b)       v(gnd)    
+ 27.        6.         6.         0.        
+Gnucap   System status
+iterations: op=2, dc=0, tran=0, fourier=0, total=6
+transient timesteps: accepted=0, rejected=0, total=0
+nodes: user=1, subckt=0, model=0, total=1
+dctran density=100.0%, ac density=100.0%

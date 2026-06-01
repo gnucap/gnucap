@@ -1,0 +1,27 @@
+verilog
+
+module rr (a, b);
+  resistor #(5) r(a, b);
+endmodule
+
+ground gnd;
+vsource #(3) v1(gnd, \2 );
+rr s(gnd, \2 );
+
+list
+
+print op v(nodes) i(v1)
+op
+delete v1
+vsource #(2) v1(gnd, \2 );
+print op v(nodes) i(v1)
+op
+
+delete gnd
+print op v(nodes) i(v1)
+op
+
+
+
+status notime
+end
