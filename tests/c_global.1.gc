@@ -1,0 +1,35 @@
+
+simulator lang=verilog
+.global a
+
+.subckt tt a
+.global a
+.ends
+
+ground gnd
+resistor #(1) r(b, gnd);
+isource #(3) i1(gnd, a);
+tt mytt(.a(b));
+
+list
+
+print op v(nodes)
+op
+
+delete r
+resistor #(2) r(b, gnd);
+
+print op v(nodes)
+op
+
+delete mytt
+.subckt tt2 a
+.global a
+.ends
+tt2 mytt(.a(b));
+
+print op v(nodes)
+op
+
+status notime
+end
