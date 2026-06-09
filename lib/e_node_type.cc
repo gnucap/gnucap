@@ -39,6 +39,7 @@ public:
     // set_continuous();
     // set_potential("Voltage");
     // set_flow("Current");
+    OPT::default_logic = this; // transition. need a type..
   }
   CARD* clone()const override {untested(); return new ELECTRICAL(*this);}
   NODE* deflate()override { untested();
