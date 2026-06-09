@@ -23,6 +23,8 @@
 #ifndef E_UNION_H
 #define E_UNION_H
 /*--------------------------------------------------------------------------*/
+#include "io_trace.h"
+/*--------------------------------------------------------------------------*/
 template<class T>
 T find_subset(T x)
 {
@@ -41,13 +43,13 @@ T build_union(T x, T y)
   x = find_subset(x);
   y = find_subset(y);
 
-  if(x == y){
+  if(x == y){ untested();
     return x;
-  }else if(rank(x) < rank(y)){
+  }else if(rank(x) < rank(y)){ untested();
     return set_parent(x, y);
-  }else if(rank(y) < rank(x)){
+  }else if(rank(y) < rank(x)){ untested();
     return set_parent(y, x);
-  }else{
+  }else{ untested();
     inc_rank(y); // new parent.
     return set_parent(x, y);
   }

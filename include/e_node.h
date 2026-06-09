@@ -27,6 +27,8 @@
 #include "u_sim_data.h"
 #include "e_card.h"
 /*--------------------------------------------------------------------------*/
+class NODE;
+/*--------------------------------------------------------------------------*/
 enum {
   OUT1 = 0,
   OUT2 = 1,
@@ -213,6 +215,7 @@ public:
       _m = _nnn->matrix_number();
       _link = nullptr;
     }else{
+      incomplete();
     }
     assert(!_nnn | !_link);
     return *this;
@@ -245,12 +248,13 @@ private:
 public: // top level kludge. u_sim_data.cc line 457
         // & used in set_parent.
   node_t& link_to(node_t* nn){
+    assert(nn);
     if(nn != this){
       assert(nn);
       assert(nn==&nn->root());
       if(_own){ untested();
 	delete _nnn;
-      }else if(_nnn){ untested();
+      }else if(_nnn){
       }else{
       }
       _nnn = nullptr;
