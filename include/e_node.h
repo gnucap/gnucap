@@ -215,7 +215,7 @@ public:
       _m = _nnn->matrix_number();
       _link = nullptr;
     }else{
-      incomplete();
+      // incomplete();
     }
     assert(!_nnn | !_link);
     return *this;

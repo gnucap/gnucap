@@ -327,7 +327,6 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
 {
   assert(m);
   if (e_() != INVALID_NODE) {
-    clear(); // keep index.
     m[e_()].connect(*this);
     assert(_link);
     assert(!_nnn);
