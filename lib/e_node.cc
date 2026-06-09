@@ -126,11 +126,12 @@ node_t& node_t::operator=(const node_t& p)
 {
   if(!p.n_()){
     return operator=(const_cast<node_t&>(p));
-  }else{ untested();
+  }else{ itested();
     // assert(dynamic_cast<USER_NODE const*>(p.n_()));
     clear();
     _dir = dir_none;
     _nnn = p._nnn;
+    _index = p._index;
     assert(!p._link);
     return *this;
   }
@@ -499,13 +500,12 @@ void node_t::connect(node_t& lower)
 	|| is_type(lower.root()._nnn));
   }
 
-  assert(!_own);
   assert(!lower._own);
   trace2("connect1", _nnn, lower._nnn);
   if(is_type(_nnn)) {
     _nnn = nullptr;
     _link = this;
-    _own = false;
+    assert(!_own);
   }else{
   }
   if(is_type(lower._nnn)) {
@@ -556,8 +556,7 @@ NODE const* node_t::set_type(NODE const* d)
   }
   if(!_nnn){
     assert(!_own);
-  }else if(_own){ untested();
-    assert(0);
+  }else if(_own){ itested();
     delete _nnn;
     _own = false;
   }else{
