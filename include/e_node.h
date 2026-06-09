@@ -42,8 +42,7 @@ enum {
 class NODE : public CARD {
 protected:
   explicit NODE() : CARD() {}
-private: // inhibited
-  explicit NODE(const NODE& p) : CARD(p) { untested();unreachable();}
+  explicit NODE(const NODE& p) : CARD(p) { untested();}
 protected:
   explicit NODE(const NODE* p); // u_nodemap.cc:49 (deep copy)
   explicit NODE(const std::string& s, int idx=0)

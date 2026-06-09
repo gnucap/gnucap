@@ -22,6 +22,7 @@
  */
 #include "e_node_type.h"
 #include "globals.h"
+#include "e_logicnode.h"
 /*--------------------------------------------------------------------------*/
 NODE_TYPE::NODE_TYPE(std::string const& name)
   : NODE(name)
@@ -32,11 +33,16 @@ NODE_TYPE::NODE_TYPE(std::string const& name)
 }
 /*--------------------------------------------------------------------------*/
 class ELECTRICAL : public NODE_TYPE {
+  ELECTRICAL(ELECTRICAL const& p) : NODE_TYPE(p) {untested();}
 public:
   explicit ELECTRICAL() : NODE_TYPE("electrical") {
     // set_continuous();
     // set_potential("Voltage");
     // set_flow("Current");
+  }
+  CARD* clone()const override {untested(); return new ELECTRICAL(*this);}
+  NODE* deflate()override { untested();
+    return new LOGIC_NODE(); // TODO
   }
 }electrical;
 /*--------------------------------------------------------------------------*/

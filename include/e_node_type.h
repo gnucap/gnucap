@@ -28,6 +28,8 @@ class NODE_TYPE : public NODE {
   int _type_number{INVALID_NODE};
 public:
   explicit NODE_TYPE(std::string const&);
+protected:
+  explicit NODE_TYPE(const NODE_TYPE& p) : NODE(p) {untested();}
 private:
   int user_number()const override   {unreachable(); return INVALID_NODE;}
   int flat_number()const override   {unreachable(); return INVALID_NODE;}
