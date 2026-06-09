@@ -314,6 +314,15 @@ void DEV_LOGIC::expand_first()
     error(((!_sim->is_first_expand()) ? (bDEBUG) : (bWARNING)), 
 	  long_label() + ": can't find subckt: " + subckt_name + ", forcing digital\n");
   }
+
+  NODE const* logic = OPT::default_logic;
+  assert(logic);
+  n_(0).set_type(logic);
+  n_(0).set_output();
+  for (int ii = 1;  ii < net_nodes();  ++ii) {
+    _nodes[ii].set_type(logic);
+    _nodes[ii].set_input();
+  }
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::expand()
