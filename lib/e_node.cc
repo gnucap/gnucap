@@ -196,7 +196,7 @@ NODE& node_t::data()const
     return *_nnn;
   }else if(auto e = root()._nnn){
     return *e;
-  }else{ untested();
+  }else{
     // why ground?
     return ground_node;
   }
@@ -246,7 +246,7 @@ XPROBE NODE::ac_probe_ext(const std::string& x)const
 {
   if (Umatch(x, "v ")) {
     return XPROBE(vac());
-  }else if (Umatch(x, "z ")) { untested();
+  }else if (Umatch(x, "z ")) {
     return XPROBE(port_impedance(node_t(const_cast<NODE*>(this)),
 				 node_t(&ground_node), _sim->_acx, COMPLEX(0.)));
   }else{untested();
@@ -315,6 +315,7 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
   _nnn = &electrical;
   _link = nullptr;
   _own = false;
+  set_used(); // TODO
   allocate(3);
 }
 /*--------------------------------------------------------------------------*/
@@ -338,7 +339,7 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
     }else{ untested();
     }
     _nnn = nullptr;
-  }else{ untested();
+  }else{
     (void)d; // probably floating. handle elsewhere
   }
 }
@@ -366,7 +367,8 @@ void node_t::allocate(int u /*, CARD* owner*/)
   }else{
   }
   assert(!dynamic_cast<USER_NODE const*>(_nnn));
-  if(is_type(_nnn)) {
+  if(!is_used()) {
+  }else if(is_type(_nnn)) {
     int flat_number = INVALID_NODE;
     switch(u) {
     case 0:
@@ -406,13 +408,13 @@ void node_t::set_to_ground(CARD* Owner)
   (void) idx;
   clear();
   assert(!_nnn);
-  if(Owner){ untested();
+  if(Owner){
     assert(Owner->scope());
     assert(Owner->scope()->nodes());
     NODE_MAP& nodes = *Owner->scope()->nodes();
     if(nodes.size() && nodes[0].is_grounded()){itested();
       // use that, maybe a spice scope?
-    }else{ untested();
+    }else{
       // there is no ground here. resort to global
       // (don't try to create one, makes no sense.)
       Owner = nullptr;
@@ -483,18 +485,11 @@ void node_t::connect(node_t& lower)
   bool used = is_used() || lower.is_used();
 
   if(!_nnn){
-    // incomplete();
-    set_type(&electrical);
   }else{
   }
 
   if(!tr._m){
   }else if(!tr._nnn){
-    // incomplete
-    //
-    // no discipline specified.
-    // lower.root().set_type(OPT::default_node);
-    tr.set_type(&electrical);
   }else{
     assert(lower.root()._nnn == &ground_node
 	|| is_type(lower.root()._nnn));
@@ -511,7 +506,7 @@ void node_t::connect(node_t& lower)
   if(is_type(lower._nnn)) {
     lower._nnn = nullptr;
     lower._link = &lower;
-  }else if(lower._nnn){
+  }else if(lower._nnn){ untested();
     trace1("connect??", typeid(*lower._nnn).name());
   }else if(lower._m){
     lower._link = &lower;
@@ -549,8 +544,8 @@ NODE const* node_t::set_type(NODE const* d)
 {
   assert(d);
   assert(!_nnn || !_link);
-  if(_link == this){
-    // unreachable();
+  if(_link == this){ untested();
+    unreachable();
     _link = nullptr;
   }else{
   }
@@ -564,7 +559,7 @@ NODE const* node_t::set_type(NODE const* d)
   _nnn = nullptr;
   _m = INVALID_NODE;
 
-  if(_link){
+  if(_link){ untested();
     // unreachable();
     assert(!_nnn);
     return nullptr;

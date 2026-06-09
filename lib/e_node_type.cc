@@ -20,6 +20,7 @@
  *------------------------------------------------------------------
  * discipline and nature
  */
+#include "u_xprobe.h"
 #include "e_node_type.h"
 #include "globals.h"
 #include "e_logicnode.h"
@@ -30,6 +31,11 @@ NODE_TYPE::NODE_TYPE(std::string const& name)
   set_label(name);
   static int k;
   _type_number = k++;
+}
+/*--------------------------------------------------------------------------*/
+XPROBE NODE_TYPE::ac_probe_ext(const std::string&) const
+{
+  return XPROBE(NOT_VALID);
 }
 /*--------------------------------------------------------------------------*/
 class ELECTRICAL : public NODE_TYPE {

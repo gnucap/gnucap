@@ -150,7 +150,7 @@ std::string const& NODE_MAP::name(int i) const
   }else if(_map){
     // fallback, getting here in a few corner cases,
     // e.g. d_subckt.error4.ckt
-    if(dynamic_cast<NODE_TYPE const*>(n.n_())) { untested();
+    if(dynamic_cast<NODE_TYPE const*>(n.n_())) {
       // top level
     }else{
       // module declaration

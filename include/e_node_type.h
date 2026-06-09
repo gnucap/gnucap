@@ -32,9 +32,12 @@ protected:
   explicit NODE_TYPE(const NODE_TYPE& p) : NODE(p) {untested();}
 private:
   int user_number()const override   {unreachable(); return INVALID_NODE;}
-  int flat_number()const override   {unreachable(); return INVALID_NODE;}
-  int matrix_number()const override {unreachable(); return INVALID_NODE;}
-  int type_number()const override   {untested(); return _type_number;}
+  int flat_number()const override   {return INVALID_NODE;}
+  int matrix_number()const override {return INVALID_NODE;}
+  int type_number()const override   { return _type_number;}
+private:
+  double tr_probe_num(const std::string&)const override {return NOT_VALID;}
+  XPROBE ac_probe_ext(const std::string&)const override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
