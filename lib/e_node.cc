@@ -345,10 +345,10 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
 /*--------------------------------------------------------------------------*/
 inline bool is_type(NODE const* n)
 {
-  bool t = n
+  bool t = n == &electrical || ( n
         && n->flat_number() == INVALID_NODE
-        && n->type_number() != INVALID_NODE;
-  assert(t == bool(dynamic_cast<NODE_TYPE const*>(n)));
+        && n->type_number() != INVALID_NODE);
+  assert(n == &electrical || t == bool(dynamic_cast<NODE_TYPE const*>(n)));
   return t;
 }
 /*--------------------------------------------------------------------------*/
@@ -568,7 +568,7 @@ NODE const* node_t::set_type(NODE const* d)
   _nnn = nullptr;
   _m = INVALID_NODE;
 
-  if(_link){ untested();
+  if(_link){
     // unreachable();
     assert(!_nnn);
     return nullptr;
