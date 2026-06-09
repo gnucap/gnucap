@@ -27,6 +27,8 @@
 #include "u_sim_data.h"
 #include "e_card.h"
 /*--------------------------------------------------------------------------*/
+class NODE;
+/*--------------------------------------------------------------------------*/
 enum {
   OUT1 = 0,
   OUT2 = 1,
@@ -42,8 +44,7 @@ enum {
 class NODE : public CARD {
 protected:
   explicit NODE() : CARD() {}
-private: // inhibited
-  explicit NODE(const NODE& p) : CARD(p) { untested();unreachable();}
+  explicit NODE(const NODE& p) : CARD(p) {}
 protected:
   explicit NODE(const NODE* p); // u_nodemap.cc:49 (deep copy)
   explicit NODE(const std::string& s, int idx=0)
@@ -60,6 +61,10 @@ public: // raw data access (rvalues)
 public: // simple calculated data access (rvalues)
   virtual int matrix_number()const;
   int	m_()const		{return matrix_number();}
+public: // maniputation
+  // NODE& set_user_number(int n)  {untested(); _user_number = n; return *this;}
+  virtual NODE& set_flat_number(int) {unreachable(); return *this;}
+
 public: // virtuals
   double	tr_probe_num(const std::string&)const override;
   XPROBE	ac_probe_ext(const std::string&)const override;
@@ -214,6 +219,7 @@ public:
       _m = _nnn->matrix_number();
       _link = nullptr;
     }else{
+      // incomplete();
     }
     assert(!_nnn | !_link);
     return *this;
@@ -246,12 +252,13 @@ private:
 public: // top level kludge. u_sim_data.cc line 457
         // & used in set_parent.
   node_t& link_to(node_t* nn){
+    assert(nn);
     if(nn != this){
       assert(nn);
       assert(nn==&nn->root());
       if(_own){ untested();
 	delete _nnn;
-      }else if(_nnn){ untested();
+      }else if(_nnn){
       }else{
       }
       _nnn = nullptr;

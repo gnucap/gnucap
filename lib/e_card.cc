@@ -288,6 +288,7 @@ void CARD::renew_subckt(const CARD* Model, PARAM_LIST const* Params)
 void CARD::expand_first()
 {
   for (int ii = 0;  ii < net_nodes();  ++ii) {
+    n_(ii).clear(); // TODO: set type.
     n_(ii).set_used(); // kludge
   }
 }

@@ -22,17 +22,56 @@
  */
 #ifndef E_NODE_TYPE
 #define E_NODE_TYPE
+#include "globals.h"
+#include "e_base.h"
 #include "e_node.h"
+#include "u_nodemap.h"
+#include "e_usernode.h"
+#include "d_dot.h"
+/*--------------------------------------------------------------------------*/
+class NATURE : public CKT_BASE {
+  std::list<std::pair<std::string, std::string> > _attribs;
+  double abstol{0.};
+};
 /*--------------------------------------------------------------------------*/
 class NODE_TYPE : public NODE {
+  typedef DISPATCHER<NODE>::INSTALL inst;
   int _type_number{INVALID_NODE};
+  inst* _installer{nullptr};
 public:
   explicit NODE_TYPE(std::string const&);
-private:
+protected:
+  explicit NODE_TYPE(const NODE_TYPE& p)
+    : NODE(p), _type_number(p._type_number) { }
+public:
+  ~NODE_TYPE();
+  CARD* clone_instance()const override { untested();
+    return nullptr;
+    // return new NODE_DECL(short_label());
+  }
+
+public:
+  int param_count()const override { return 3; }
+  using NODE::param_name;
+  std::string param_name(int i)const override {
+    switch(i){
+    case 0: return "domain";
+    case 1: return "potential";
+    case 2: return "flow";
+    default: unreachable(); return "???";
+    }
+  }
+protected:
   int user_number()const override   {unreachable(); return INVALID_NODE;}
-  int flat_number()const override   {unreachable(); return INVALID_NODE;}
-  int matrix_number()const override {unreachable(); return INVALID_NODE;}
-  int type_number()const override   {untested(); return _type_number;}
+  int flat_number()const override   {return INVALID_NODE;}
+  int matrix_number()const override {return INVALID_NODE;}
+public:
+  int type_number()const override   { return _type_number;}
+  void set_type_number(int t)       {_type_number = t;}
+  // void set_flat_number()const override {unreachable();}
+private:
+  double tr_probe_num(const std::string&)const override {return NOT_VALID;}
+  XPROBE ac_probe_ext(const std::string&)const override;
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

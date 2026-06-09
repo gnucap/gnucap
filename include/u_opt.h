@@ -27,8 +27,11 @@
 #include "mode.h"
 /*--------------------------------------------------------------------------*/
 class CS;
+class CARD;
+class NODE;
 class LANGUAGE;
 class CARD_LIST;
+class NODE;
 /*--------------------------------------------------------------------------*/
 /* integration method selector -- not all methods are implemented */
 enum method_t {meUNKNOWN=0,	// no method set
@@ -149,6 +152,9 @@ public:
   static phase_t phase;	    // how to print phase (degrees or radians)
   static order_t order;     // ordering method
   static smode_t mode;	    // mixed-mode mode preference
+  static NODE const* default_logic; // VAMS LRM Section 3.8, "default discipline"
+  static CARD const* connect_rules;
+  // static cmode_t connect_mode; // VAMS LRM 7.7.4
   static int transits;	    // number of good transitions for digital
   static bool dupcheck;	    // check for duplicates on read
   static bool bypass;	    // bypass model evaluation, if appropriate

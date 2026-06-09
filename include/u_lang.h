@@ -31,6 +31,7 @@ class CARD;
 class DEV_COMMENT;
 class DEV_DOT;
 class CARD_LIST;
+class NODE;
 /*--------------------------------------------------------------------------*/
 class INTERFACE LANGUAGE : public CKT_BASE {
 public:
@@ -60,6 +61,7 @@ public: // called by commands and parse_item
   virtual MODEL_CARD*	parse_paramset(CS&, MODEL_CARD*) = 0;
   virtual BASE_SUBCKT*  parse_module(CS&, BASE_SUBCKT*) = 0;
   virtual CARD*		parse_instance(CS&, COMPONENT*) = 0;
+  virtual CARD*		parse_node(CS&, NODE*)const;
   virtual std::string	find_type_in_string(CS&) = 0;
 
   // out
@@ -71,6 +73,7 @@ private: // called by print_item
   virtual void print_instance(OMSTREAM&, const COMPONENT*) = 0;
   virtual void print_comment(OMSTREAM&, const DEV_COMMENT*) = 0;
   virtual void print_command(OMSTREAM&, const DEV_DOT*) = 0;
+  virtual void print_node(OMSTREAM&, const NODE*)const {};
 };
 OMSTREAM& operator<<(OMSTREAM& o, LANGUAGE* x);
 bool Get(CS&, const std::string& key, LANGUAGE** val);

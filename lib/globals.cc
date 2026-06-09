@@ -50,6 +50,8 @@ DISPATCHER<FUNCTION> measure_dispatcher;
 DISPATCHER<CKT_BASE> status_dispatcher;
 DISPATCHER<CKT_BASE> help_dispatcher;
 DISPATCHER<PROBELIST> probe_dispatcher;
+DISPATCHER<NODE> node_dispatcher;
+// DISPATCHER<NATURE> nature_dispatcher;
 
 INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
 INDIRECT<CARD::owner_tag_t,CARD*> CARD::_owner_index;

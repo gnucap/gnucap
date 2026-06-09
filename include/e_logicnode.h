@@ -34,12 +34,6 @@ class MODEL_LOGIC;
 class INTERFACE LOGIC_NODE : public NODE {
 private:
   int _flat_number{INVALID_NODE};
-  int user_number()const override { return INVALID_NODE;}
-public:
-  int flat_number()const override { return _flat_number;}
-  int matrix_number()const override;
-
-private:
   const MODEL_LOGIC *_family;	/* logic family */
   int 	      _d_iter;		/* iteration of last update - digital */
   int 	      _a_iter;		/* iteration of last update - analog */
@@ -51,6 +45,12 @@ private:
   LOGICVAL    _old_lv;		/* in case it rejects a step */
   int	      _quality;		/* quality of digital mode */
   std::string _failure_mode;
+public:
+  int user_number()const override { return INVALID_NODE;}
+  int flat_number()const override { return _flat_number;}
+  int matrix_number()const override;
+public: // maniputation
+  NODE& set_flat_number(int n)override { _flat_number = n; return *this;}
 
   // so it is not pure virtual
   //const	      std::string long_label()const;

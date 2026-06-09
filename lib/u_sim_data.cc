@@ -225,6 +225,7 @@ extern NODE ground_node;
 /* prepare top level for node mapping
  * reset top level device ports to what was read in.
  */
+extern NODE electrical;
 static void clear_top_nodes(CARD_LIST* scope)
 {
   assert(scope);
@@ -234,10 +235,19 @@ static void clear_top_nodes(CARD_LIST* scope)
   assert(scope->nodes());
   NODE_MAP& top_nodes = *scope->nodes();
   // assert(top_nodes[0].n_() == &ground_node);
+  for (NODE_MAP::iterator p = top_nodes.begin(); p != top_nodes.end(); ++p ){
+    NODE* n = (*p).second;
+    USER_NODE* un = prechecked_cast<USER_NODE*>(n);
+    assert(un);
+    assert(n->net_nodes()==1);
+
+    n->n_(0).clear(); // TODO: set type.
+  }
 
   for (int i=0; i<top_nodes.size(); ++i) {
     node_t none;
     top_nodes[i] = none;
+    top_nodes[i].set_type(&electrical);
   }
 #if 0
   top_nodes[0].set_to_ground(nullptr); // link_to(top_nodes["0"]);

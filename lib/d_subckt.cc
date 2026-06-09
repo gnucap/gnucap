@@ -490,6 +490,7 @@ std::string DEV_SUBCKT::port_name(int i)const
 /*--------------------------------------------------------------------------*/
 void DEV_SUBCKT::expand_first()
 {
+  // BASE_SUBCKT::expand_first(); // BUG
   trace3("DEV_SUBCKT::expand_first", long_label(), max_nodes(), common());
 
   if(_parent == &pp){ untested();
@@ -512,6 +513,10 @@ void DEV_SUBCKT::expand_first()
       // bad
     }
   }else{itested();
+  }
+
+  for (int ii = 0;  ii < net_nodes();  ++ii) {
+    n_(ii).clear(); // TODO: set type.
   }
 }
 /*--------------------------------------------------------------------------*/

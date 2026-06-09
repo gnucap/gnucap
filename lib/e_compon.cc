@@ -199,6 +199,7 @@ void COMMON_COMPONENT::unlink_common(COMMON_COMPONENT*c)
   if(c->has_less()){
     assert(COMMON_COMPONENT::_commons.size());
     size_t howmany = COMMON_COMPONENT::_commons.unlink(c);
+    (void) howmany;
     assert(howmany);
   }else{
   }
