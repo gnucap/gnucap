@@ -21,12 +21,13 @@
  */
 // testing=script 2015.01.27
 #include "globals.h"
+#include "u_lang.h"
 #include "c_comand.h"
 #include "d_dot.h"
 #include "d_coment.h"
 #include "e_subckt.h"
 #include "e_model.h"
-#include "u_lang.h"
+#include "e_node.h"
 /*--------------------------------------------------------------------------*/
 LANGUAGE::~LANGUAGE()
 {
@@ -40,6 +41,12 @@ void LANGUAGE::parse_top_item(CS& cmd, CARD_LIST* Scope)
 {
   cmd.get_line(I_PROMPT);
   CMD::cmdproc(cmd, Scope);
+}
+/*--------------------------------------------------------------------------*/
+CARD* LANGUAGE::parse_node(CS&, NODE* n) const
+{
+  delete n;
+  throw Exception(name() + " does not support nodes");
 }
 /*--------------------------------------------------------------------------*/
 const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
@@ -72,6 +79,10 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
     return p;
   }else if ((p = model_dispatcher[Name])) {
     return p;
+#if 0
+  }else if ((p = discipline_dispatcher[Name])) {
+    return p;
+#endif
   }else{
     assert(!p);
     std::string s;
@@ -141,6 +152,8 @@ CARD* LANGUAGE::parse_item(CS& cmd, CARD* c)
     return parse_module(cmd, s);
   }else if (MODEL_CARD* m = dynamic_cast<MODEL_CARD*>(c)) {untested();
     return parse_paramset(cmd, m);
+  }else if (NODE* n = dynamic_cast<NODE*>(c)) {
+    return parse_node(cmd, n);
   }else if (DEV_COMMENT* com = dynamic_cast<DEV_COMMENT*>(c)) {
     return parse_comment(cmd, com);
   }else if (DEV_DOT* d = dynamic_cast<DEV_DOT*>(c)) {
@@ -164,6 +177,8 @@ void LANGUAGE::print_item(OMSTREAM& o, const CARD* c)
     print_instance(o, prechecked_cast<const COMPONENT*>(c));
   }else if (const BASE_SUBCKT* s = dynamic_cast<const BASE_SUBCKT*>(c)) {
     print_module(o, s);
+  }else if (const NODE* n = dynamic_cast<const NODE*>(c)) {
+    print_node(o, n);
   }else if (const MODEL_CARD* m = dynamic_cast<const MODEL_CARD*>(c)) {
     print_paramset(o, m);
   }else if (const DEV_COMMENT* com = dynamic_cast<const DEV_COMMENT*>(c)) {
