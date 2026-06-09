@@ -44,7 +44,7 @@ public:
 
   const_iterator begin()const		{assert(_map); return _map->begin();}
   const_iterator end()const		{assert(_map); return _map->end();}
-  size_t size()const{untested(); return _map?_map->size():0;}
+  size_t size()const{ return _map?_map->size():0;}
   bool empty()const {return !_map || _map->empty();}
 public:
   CKT_BASE* operator[](std::string s);

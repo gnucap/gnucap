@@ -41,7 +41,7 @@ LOGIC_NODE::LOGIC_NODE(int i)
    _failure_mode("initial")
 {
   if(i!=-1){
-  }else{ untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/

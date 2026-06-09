@@ -49,6 +49,8 @@ public:
   int user_number()const override { return INVALID_NODE;}
   int flat_number()const override { return _flat_number;}
   int matrix_number()const override;
+public: // maniputation
+  NODE& set_flat_number(int n)override { _flat_number = n; return *this;}
 
   // so it is not pure virtual
   //const	      std::string long_label()const;

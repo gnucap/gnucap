@@ -383,8 +383,18 @@ void node_t::allocate(int u /*, CARD* owner*/)
       unreachable();
     }
     trace3("node_t::allocate new", this, &root(), flat_number);
-    NODE* nn = new LOGIC_NODE(flat_number);
+    CARD* ni = _nnn->clone();
+    auto nn = prechecked_cast<NODE*>(ni);
+    assert(nn);
     nn->set_owner(nullptr);
+    CARD* dd = nn->deflate();
+    if(nn == dd) {
+    }else{
+      delete nn;
+      nn = prechecked_cast<NODE*>(dd);
+      assert(nn);
+    }
+    nn->set_flat_number(flat_number);
     set_own(nn);
     assert(_index == INVALID_NODE);
     // floating ports must be invalid because of is_connected
@@ -543,7 +553,7 @@ NODE const* node_t::set_type(NODE const* d)
 {
   assert(d);
   assert(!_nnn || !_link);
-  if(_link == this){ untested();
+  if(_link == this){
     unreachable();
     _link = nullptr;
   }else{

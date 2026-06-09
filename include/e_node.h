@@ -44,7 +44,7 @@ enum {
 class NODE : public CARD {
 protected:
   explicit NODE() : CARD() {}
-  explicit NODE(const NODE& p) : CARD(p) { untested();}
+  explicit NODE(const NODE& p) : CARD(p) {}
 protected:
   explicit NODE(const NODE* p); // u_nodemap.cc:49 (deep copy)
   explicit NODE(const std::string& s, int idx=0)
@@ -61,6 +61,10 @@ public: // raw data access (rvalues)
 public: // simple calculated data access (rvalues)
   virtual int matrix_number()const;
   int	m_()const		{return matrix_number();}
+public: // maniputation
+  // NODE& set_user_number(int n)  {untested(); _user_number = n; return *this;}
+  virtual NODE& set_flat_number(int) {unreachable(); return *this;}
+
 public: // virtuals
   double	tr_probe_num(const std::string&)const override;
   XPROBE	ac_probe_ext(const std::string&)const override;
