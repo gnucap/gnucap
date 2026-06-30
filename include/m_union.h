@@ -29,7 +29,7 @@ template<class T>
 T find_subset(T x)
 {
   if(!has_parent(x)) {
-    return set_parent(x, x);
+    return x;
   }else if(parent(x) != x) {
     return set_parent(x, find_subset(parent(x)));
   }else{

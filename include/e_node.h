@@ -256,7 +256,6 @@ public: // top level kludge. u_sim_data.cc line 457
     assert(nn);
     if(nn != this){
       assert(nn);
-      assert(nn==&nn->root());
       if(_own){ untested();
 	delete _nnn;
       }else if(_nnn){

@@ -528,7 +528,6 @@ void node_t::connect(node_t& lower)
   assert(u);
   node_t& r = *u;
 
-  assert(_nnn || _link);
   assert(!_nnn || !_link);
 
   if(r._nnn == &ground_node){
@@ -544,7 +543,6 @@ void node_t::connect(node_t& lower)
   }
 
   if(!r._nnn){
-    assert(r._link == &root());
     r._link = nullptr;
     r.set_type(electrical);
   }else{
