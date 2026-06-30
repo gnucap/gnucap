@@ -32,6 +32,7 @@
 #ifndef NDEBUG
 #include "e_node_type.h"
 #endif
+#include "globals.h"
 #include "m_union.h"
 #include "e_usernode.h" // BUG
 /*--------------------------------------------------------------------------*/
@@ -617,7 +618,7 @@ void node_t::connect(node_t& lower)
   }else{
   }
 
-  if(!new_type){ untested();
+  if(!new_type){
   }else if(!r._nnn){
     assert(!r._link);
     r.set_type(new_type);

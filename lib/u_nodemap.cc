@@ -132,7 +132,6 @@ NODE* NODE_MAP::new_node(std::string s)
   if (!node) {
     node = new USER_NODE(s, size());
     //                      ^^^^ is really the map number of the new node
-//    node->n_(0).set_type(&electrical);
     node->set_owner(nullptr); // here?
     _nodes.push_back(node_t());
     assert(node->user_number() == size()-1);

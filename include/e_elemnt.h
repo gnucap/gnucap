@@ -55,6 +55,7 @@ protected:
   
   void	   store_values()		{assert(_y[0]==_y[0]); _y1=_y[0];}
   //void   reject_values()		{ untested(); _y0 = _y1;}
+  void expand_first()override;
 public:
   void	set_value(double v);
   void	set_value(const std::string& v);

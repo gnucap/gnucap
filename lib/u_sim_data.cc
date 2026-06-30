@@ -30,7 +30,6 @@
 #include "e_cardlist.h"
 #include "e_usernode.h"
 #include "c_comand.h"
-#include "globals.h" // BUG
 /*--------------------------------------------------------------------------*/
 SIM_DATA::SIM_DATA()
   :_time0(0.),
@@ -245,12 +244,12 @@ static void clear_top_nodes(CARD_LIST* scope)
     n->n_(0).clear(); // TODO: set type.
   }
 
+  static NODE* wire = node_dispatcher["wire"];
+  assert(wire);
   for (int i=0; i<top_nodes.size(); ++i) {
     node_t none;
     top_nodes[i] = none;
-    static NODE* electrical = node_dispatcher["electrical"];
-    assert(electrical);
-    top_nodes[i].set_type(electrical);
+    top_nodes[i].set_type(wire);
   }
 #if 0
   top_nodes[0].set_to_ground(nullptr); // link_to(top_nodes["0"]);

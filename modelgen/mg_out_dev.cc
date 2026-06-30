@@ -289,6 +289,23 @@ static void make_dev_allocate_local_nodes(std::ofstream& out, const Port& p)
   }
 }
 /*--------------------------------------------------------------------------*/
+static void make_dev_expand_first(std::ofstream& out, const Device& d)
+{
+  make_tag();
+  out << "void DEV_" << d.name() << "::expand_first()\n"
+    "{\n"
+    "  BASE_SUBCKT::expand_first();\n"
+    "  static NODE* electrical = node_dispatcher[\"electrical\"];\n"
+    "  assert(electrical);\n"
+    "  for (int ii = 0;  ii < net_nodes();  ++ii) {\n"
+    "    n_(ii).set_type(electrical);\n"
+    "    n_(ii).set_used();\n"
+    "  }\n"
+    "}\n"
+    "/*--------------------------------------"
+    "------------------------------------*/\n";
+}
+/*--------------------------------------------------------------------------*/
 static void make_dev_expand(std::ofstream& out, const Device& d)
 {
   make_tag();
@@ -531,6 +548,7 @@ void make_cc_dev(std::ofstream& out, const Device& d)
   make_dev_evals(out, d);
   make_dev_default_constructor(out, d);
   make_dev_copy_constructor(out, d);
+  make_dev_expand_first(out, d);
   make_dev_expand(out, d);
   if(has_precalc_last(d)) { untested();
     make_dev_precalc_last(out, d);
