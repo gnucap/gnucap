@@ -1,0 +1,24 @@
+verilog
+
+module gg(out, clk);
+  nand #(1) n1(out, clk);
+  electrical out;
+endmodule;
+
+ground gnd;
+// vpulse #(.val0(0) .val1(5) .width(100p) .period(200p)) v1(clk, gnd);
+
+gg g(out, clk);
+
+.model logic logic
+
+list
+
+spice
+
+Ven clk 0 pulse iv=0 pv=5 rise=1n
+
+.print tran v(clk) v(out) l(nodes)
+.tran 20n
+
+.status notime
