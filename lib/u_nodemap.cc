@@ -54,9 +54,6 @@ NODE_MAP::NODE_MAP(const NODE_MAP& p)
     _nodes[idx] = i.second->n_(0);
     if(_nodes[idx].is_grounded()){
     }else{
-      NODE* electrical = node_dispatcher["electrical"];
-      assert(electrical);
-      _nodes[idx].set_type(electrical); // not here.
     }
     trace3("NODE_MAP::NODE_MAP1", idx, i.first, i.second->n_(0).n_());
 #if 0
