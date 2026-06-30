@@ -321,7 +321,7 @@ inline bool node_t::is_node() const
 inline bool node_t::is_link() const
 {
   assert(!_nnn || !_link);
-  return !_nnn && _link && _link != this;
+  return _link;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_root() const

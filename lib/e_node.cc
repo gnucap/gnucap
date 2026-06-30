@@ -365,7 +365,10 @@ void node_t::allocate(int u /*, CARD* owner*/)
   }else{
   }
   assert(!dynamic_cast<USER_NODE const*>(_nnn));
-  if(!is_used()) {
+  if(!_nnn){
+  }else if(!is_used()) {
+  }else if(_nnn->flat_number() != INVALID_NODE) {
+    // ground or already allocated.
   }else if(is_type(_nnn)) {
     int flat_number = INVALID_NODE;
     switch(u) {
@@ -387,7 +390,7 @@ void node_t::allocate(int u /*, CARD* owner*/)
     assert(nn);
     nn->set_owner(nullptr);
     CARD* dd = nn->deflate();
-    if(nn == dd) {
+    if(nn == dd) { untested();
     }else{
       delete nn;
       nn = prechecked_cast<NODE*>(dd);
@@ -399,12 +402,12 @@ void node_t::allocate(int u /*, CARD* owner*/)
     // floating ports must be invalid because of is_connected
     // (revisit later)
     _index = INVALID_NODE;
-  }else if(is_node()) {
+  }else if(is_node()) { untested();
     // done.
     trace3("node_t::allocate is_node", this, &root(), _nnn->short_label());
   }else if(_link==this) { untested();
     unreachable();
-  }else{
+  }else{ untested();
     trace2("node_t::allocate no allocate", _index, u);
   }
 }
@@ -477,6 +480,7 @@ void node_t::clear()
   }
   _own = false;
   _nnn = nullptr;
+//  _dir = dir_none;
 }
 /*--------------------------------------------------------------------------*/
 // make a connection to a node, usually further up the hierarchy.
@@ -492,59 +496,94 @@ void node_t::connect(node_t& lower)
   assert(electrical);
 
   trace2("connect0", this, &lower);
-  node_t& tr = lower.root();
   bool used = is_used() || lower.is_used();
 
   if(!_nnn){
   }else{
   }
 
-  if(!tr._m){
-  }else if(!tr._nnn){
+  node_t* old_root = find_subset(this); // &root();
+  node_t* lower_root = find_subset(&lower);
+
+  NODE const* upper_type = old_root->n_();
+
+  if(is_grounded()){
+    upper_type = electrical; // HACK.
   }else{
-    assert(lower.root()._nnn == &ground_node
-	|| is_type(lower.root()._nnn));
   }
+
+  NODE const* lower_type = lower_root->n_();
+  if(lower_type){
+    if(!upper_type){
+      upper_type = lower_type;
+    }else{
+    }
+  }else if(upper_type){
+    // untyped, propagate the type the caller wants.
+    lower_type = lower_root->set_type(upper_type);
+  }else{ untested();
+    lower_type = OPT::default_logic;
+    upper_type = OPT::default_logic;
+  }
+
+  assert(lower_type);
+  assert(lower_type->type_number()!=INVALID_NODE);
+  trace2("DBG connect", lower_type->short_label(), upper_type->short_label());
 
   assert(!lower._own);
   trace2("connect1", _nnn, lower._nnn);
   if(is_type(_nnn)) {
-    _nnn = nullptr;
-    _link = this;
     assert(!_own);
+  }else if(_nnn){
   }else{
   }
   if(is_type(lower._nnn)) {
     lower._nnn = nullptr;
-    lower._link = &lower;
+    assert(!lower._link);
   }else if(lower._nnn){ untested();
-    trace1("connect??", typeid(*lower._nnn).name());
-  }else if(lower._m){
-    lower._link = &lower;
   }else{
   }
-  node_t* u = build_union(&lower, this); // first linked to second.
+
+  node_t* u;
+  {
+    node_t* x = lower_root; // find_subset(&lower);
+    node_t* y = old_root;
+
+    if(x == y){
+      u = x;
+    }else if(x->rank() < y->rank()){
+      u = set_parent(x, y);
+    }else if(y->rank() < x->rank()){
+      u = set_parent(y, x);
+    }else{
+      y->inc_rank(); // new parent.
+      u = set_parent(x, y);
+    }
+  }
+
   trace3("connect2", u, this, &lower);
   assert(u);
   node_t& r = *u;
 
   assert(!_nnn || !_link);
 
-  if(r._nnn == &ground_node){
-    // HACK.
-    r.set_used();
+  NODE const* new_type = electrical; // TODO
+
+  assert(r._link == &r || !r._link);
+  if(r.is_grounded()){
+    assert(!r._link);
   }else if(used){
-//  }else if(!r._nnn){ untested();
-    assert(r._link == &root() || !r._link);
     r._link = nullptr;
-    r.set_type(electrical); // TODO
+    r.set_type(new_type);
     r.set_used();
+  }else if(r._link == &r){
+    incomplete();
   }else{
   }
 
   if(!r._nnn){
-    r._link = nullptr;
-    r.set_type(electrical);
+    assert(!r._link);
+    r.set_type(new_type);
   }else{
   }
 }
