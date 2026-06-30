@@ -77,27 +77,31 @@ public:
 template <class TT>
 class INTERFACE DISPATCHER : public DISPATCHER_BASE {
 public:
-  TT* operator[](std::string s);
-  TT* operator[](CS& cmd);
+  TT* operator[](std::string s)const;
+  TT* operator[](CS& cmd)const;
   TT* clone(std::string s);
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/
 template <class TT>
-TT* DISPATCHER<TT>::operator[](std::string s)
+TT* DISPATCHER<TT>::operator[](std::string s) const
 {
   assert(_map);
-  CKT_BASE* rv = (*_map)[s];
-  if (!rv && OPT::case_insensitive) {
+  const_iterator rv = _map->find(s);
+  if (rv == _map->end() && OPT::case_insensitive) {
     notstd::to_lower(&s);
-    rv = (*_map)[s];
+    rv = _map->find(s);
   }else{
   }
-  return prechecked_cast<TT*>(rv);
+  if (rv != _map->end()) {
+    return prechecked_cast<TT*>(rv->second);
+  }else{
+    return nullptr;
+  }
 }
 /*--------------------------------------------------------------------------*/
 template <class TT>
-TT* DISPATCHER<TT>::operator[](CS& cmd)
+TT* DISPATCHER<TT>::operator[](CS& cmd) const
 {
   size_t here = cmd.cursor();
   std::string s;
