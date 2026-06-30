@@ -526,7 +526,7 @@ void node_t::connect(node_t& lower)
   }else if(upper_type){
     // untyped, propagate the type the caller wants.
     lower_type = lower_root->set_type(upper_type);
-  }else{ untested();
+  }else{
     lower_type = OPT::default_logic;
     upper_type = OPT::default_logic;
   }

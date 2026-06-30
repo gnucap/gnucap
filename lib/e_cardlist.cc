@@ -33,7 +33,6 @@
 #include "d_coment.h"
 #include "c_comand.h"
 #endif
-#include "globals.h" // BUG
 /*--------------------------------------------------------------------------*/
 #define trace_func_comp() trace1(__func__, (**ci).short_label())
 /*--------------------------------------------------------------------------*/
@@ -634,11 +633,7 @@ static void connect_ports(NODE_MAP& nodes, CARD const* owner, CARD const* model)
     //assert(model->n_(port).e_() == port+1);
     int idx = model->n_(port).e_();
     if(owner->n_(port).is_connected()){
-      static NODE* electrical = node_dispatcher["electrical"];
-      assert(electrical);
-      owner->n_(port).set_type(electrical); // BUG, not if link.
       build_union(&nodes[idx], &owner->n_(port));
-      // assert(&node_map[idx].root()==&owner->n_(port).root());
     }else{
       // floating?
     }
