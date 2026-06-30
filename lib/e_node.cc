@@ -209,7 +209,6 @@ double NODE::tr_probe_num(const std::string& x)const
   }else if (Umatch(x, "z ")) {
     return port_impedance(node_t(const_cast<NODE*>(this)), node_t(&ground_node), _sim->_aa, 0.);
   }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) {
-    unreachable();
     return NOT_VALID;
   }else if (Umatch(x, "mdy ")) {
     // matrix diagonal admittance
@@ -351,6 +350,21 @@ inline bool is_type(NODE const* n)
   return t;
 }
 /*--------------------------------------------------------------------------*/
+static int new_flat_number(int u)
+{
+  switch(u) {
+  case 0:
+    return CKT_BASE::_sim->newnode_subckt();
+  case 1:
+    return CKT_BASE::_sim->newnode_user();
+  case 3:
+    return CKT_BASE::_sim->newnode_model();
+  default:
+    unreachable();
+    return INVALID_NODE;
+  }
+}
+/*--------------------------------------------------------------------------*/
 // nodes are all the same. only difference is counter
 // 0: subckt, module, DEV_SUBCKT "subckt_node"
 // 1: top level                  "user_node"
@@ -371,19 +385,6 @@ void node_t::allocate(int u /*, CARD* owner*/)
     // ground or already allocated.
   }else if(is_type(_nnn)) {
     int flat_number = INVALID_NODE;
-    switch(u) {
-    case 0:
-      flat_number = CKT_BASE::_sim->newnode_subckt();
-      break;
-    case 1:
-      flat_number = CKT_BASE::_sim->newnode_user();
-      break;
-    case 3:
-      flat_number = CKT_BASE::_sim->newnode_model();
-      break;
-    default:
-      unreachable();
-    }
     trace3("node_t::allocate new", this, &root(), flat_number);
     CARD* ni = _nnn->clone();
     auto nn = prechecked_cast<NODE*>(ni);
@@ -396,7 +397,11 @@ void node_t::allocate(int u /*, CARD* owner*/)
       nn = prechecked_cast<NODE*>(dd);
       assert(nn);
     }
-    nn->set_flat_number(flat_number);
+    if(!nn->is_digital()){
+      flat_number = new_flat_number(u);
+      nn->set_flat_number(flat_number);
+    }else{ untested();
+    }
     set_own(nn);
     assert(_index == INVALID_NODE);
     // floating ports must be invalid because of is_connected

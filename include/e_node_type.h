@@ -64,9 +64,9 @@ public:
     default: unreachable(); return "???";
     }
   }
-  smode_t domain()const {untested();return _domain;}
+  smode_t domain()const {return _domain;}
 protected:
-  int user_number()const override   {unreachable(); return INVALID_NODE;}
+  int user_number()const override   {return INVALID_NODE;}
   int flat_number()const override   {return INVALID_NODE;}
   int matrix_number()const override {return INVALID_NODE;}
 public:
