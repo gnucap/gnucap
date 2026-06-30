@@ -22,6 +22,7 @@
  * aux functions associated with the SIM class
  */
 //testing=script 2015.01.28
+#include "globals.h"
 #include "m_wave.h"
 #include "m_random.h"
 #include "u_nodemap.h"
@@ -301,6 +302,7 @@ static void map_user_nodes(CARD_LIST* scope)
  */
 void SIM_DATA::init(CARD_LIST* scope)
 {
+  assert(OPT::connect_rules);
   assert(scope);
   if (scope == &CARD_LIST::card_list) {
   }else{itested();
@@ -310,6 +312,11 @@ void SIM_DATA::init(CARD_LIST* scope)
     init_node_count(0, 0, 0);
     clear_top_nodes(scope);
     scope->precalc_first();
+    if(OPT::connect_rules->net_nodes() != int(node_dispatcher.size())) {
+      // missed it, because not user supplied. expand anyway
+      const_cast<CARD*>(OPT::connect_rules)->expand_first();
+    }else{
+    }
     scope->expand_first();
     scope->map_subckt_nodes(nullptr, nullptr);
     map_user_nodes(scope);
