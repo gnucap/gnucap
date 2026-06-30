@@ -35,8 +35,6 @@
 #include "m_union.h"
 #include "e_usernode.h" // BUG
 /*--------------------------------------------------------------------------*/
-extern NODE electrical;
-/*--------------------------------------------------------------------------*/
 /* constructor taking a pointer : it must be valid
  * supposedly not used, but used by a required function that is also not used
  */
@@ -210,7 +208,7 @@ double NODE::tr_probe_num(const std::string& x)const
     return floor(v0()/OPT::vfloor + .5) * OPT::vfloor;
   }else if (Umatch(x, "z ")) {
     return port_impedance(node_t(const_cast<NODE*>(this)), node_t(&ground_node), _sim->_aa, 0.);
-  }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) { untested();
+  }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) {
     unreachable();
     return NOT_VALID;
   }else if (Umatch(x, "mdy ")) {
@@ -308,11 +306,13 @@ node_t::~node_t()
  */
 void node_t::new_model_node(const std::string& node_name, CARD* Owner)
 {
+  static NODE* electrical = node_dispatcher["electrical"];
+  assert(electrical);
   (void) node_name;
   (void) Owner;
   assert(!_nnn);
   assert(!_own);
-  _nnn = &electrical;
+  _nnn = electrical;
   _link = nullptr;
   _own = false;
   set_used(); // TODO
@@ -345,10 +345,9 @@ void node_t::map_subckt_node(node_t* m, const CARD* d)
 /*--------------------------------------------------------------------------*/
 inline bool is_type(NODE const* n)
 {
-  bool t = n == &electrical || ( n
+  bool t = n
         && n->flat_number() == INVALID_NODE
-        && n->type_number() != INVALID_NODE);
-  assert(n == &electrical || t == bool(dynamic_cast<NODE_TYPE const*>(n)));
+        && n->type_number() != INVALID_NODE;
   return t;
 }
 /*--------------------------------------------------------------------------*/
@@ -489,6 +488,9 @@ void node_t::clear()
 // - map to resulting structure
 void node_t::connect(node_t& lower)
 {
+  static NODE* electrical = node_dispatcher["electrical"];
+  assert(electrical);
+
   trace2("connect0", this, &lower);
   node_t& tr = lower.root();
   bool used = is_used() || lower.is_used();
@@ -536,7 +538,7 @@ void node_t::connect(node_t& lower)
 //  }else if(!r._nnn){ untested();
     assert(r._link == &root() || !r._link);
     r._link = nullptr;
-    r.set_type(&electrical); // TODO
+    r.set_type(electrical); // TODO
     r.set_used();
   }else{
   }
@@ -544,7 +546,7 @@ void node_t::connect(node_t& lower)
   if(!r._nnn){
     assert(r._link == &root());
     r._link = nullptr;
-    r.set_type(&electrical);
+    r.set_type(electrical);
   }else{
   }
 }

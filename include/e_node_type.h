@@ -38,18 +38,21 @@ class NODE_TYPE : public NODE {
   typedef DISPATCHER<NODE>::INSTALL inst;
   int _type_number{INVALID_NODE};
   inst* _installer{nullptr};
+  smode_t _domain;
 public:
   explicit NODE_TYPE(std::string const&);
+  explicit NODE_TYPE() : NODE() { }
 protected:
   explicit NODE_TYPE(const NODE_TYPE& p)
-    : NODE(p), _type_number(p._type_number) { }
+    : NODE(p), _type_number(p._type_number), _domain(p._domain) { }
 public:
   ~NODE_TYPE();
   CARD* clone_instance()const override { untested();
     return nullptr;
     // return new NODE_DECL(short_label());
   }
-
+protected:
+  void install();
 public:
   int param_count()const override { return 3; }
   using NODE::param_name;
@@ -61,6 +64,7 @@ public:
     default: unreachable(); return "???";
     }
   }
+  smode_t domain()const {untested();return _domain;}
 protected:
   int user_number()const override   {unreachable(); return INVALID_NODE;}
   int flat_number()const override   {return INVALID_NODE;}
@@ -69,6 +73,11 @@ public:
   int type_number()const override   { return _type_number;}
   void set_type_number(int t)       {_type_number = t;}
   // void set_flat_number()const override {unreachable();}
+protected:
+  void unset_domain(){_domain = moUNKNOWN;}
+  void set_analog()  {_domain = moANALOG;}
+  void set_digital() {_domain = moDIGITAL;}
+  void set_mixed()   {_domain = moMIXED;}
 private:
   double tr_probe_num(const std::string&)const override {return NOT_VALID;}
   XPROBE ac_probe_ext(const std::string&)const override;

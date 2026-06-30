@@ -34,7 +34,7 @@ public:
 private: // override virtual
   std::string   value_name()const override {untested();return "";}
   char		id_letter()const override	{untested();return '\0';}
-  std::string	dev_type()const override		{untested();return "dotcard";}
+  std::string	dev_type()const override		{itested();return "dotcard";}
   CARD*		clone()const override		{return new DEV_DOT(*this);}
 public:
   void set(const std::string& S) {_s = S;}

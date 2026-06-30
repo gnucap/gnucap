@@ -152,7 +152,7 @@ public: // parameters
   virtual bool param_is_printable(int)const	   {return false;}
   virtual std::string param_name(int)const	   {return "";}
   virtual std::string param_name(int i,int j)const {return (j==0) ? param_name(i) : "";}
-  virtual std::string param_value(int)const	   {untested(); return "";}
+  virtual std::string param_value(int)const	   {itested(); return "";}
   virtual std::string value_name()const		   {untested();incomplete(); return "";}
   virtual double localparam_value(std::string const& n)const
 				{untested(); throw Exception_Cant_Find(long_label(), n);}

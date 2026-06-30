@@ -43,7 +43,7 @@ T build_union(T x, T y)
   x = find_subset(x);
   y = find_subset(y);
 
-  if(x == y){ untested();
+  if(x == y){itested();
     return x;
   }else if(rank(x) < rank(y)){
     return set_parent(x, y);

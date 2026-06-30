@@ -59,6 +59,7 @@ public: // raw data access (rvalues)
   virtual int flat_number()const {return INVALID_NODE;}
   virtual int type_number()const {return INVALID_NODE;}
 public: // simple calculated data access (rvalues)
+  virtual bool is_digital()const {return false;}
   virtual int matrix_number()const;
   int	m_()const		{return matrix_number();}
 public: // maniputation
