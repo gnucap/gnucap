@@ -191,68 +191,6 @@ private:
   node_t& n_(int i)const override {assert(i<num()); return _n[i*num()];}
 } p3;
 /*--------------------------------------------------------------------------*/
-class CONNECTRULES : public CARD {
-  mutable std::vector<node_t> _n;
-  int _net_nodes{0};
-public:
-  explicit CONNECTRULES() : CARD() {
-    OPT::connect_rules = this;
-  }
-  void expand_first()override {
-    int n = num();
-    _n.resize(n*n);
-
-    // {moUNKNOWN=0, moANALOG=1, moDIGITAL, moMIXED};
-    NODE* dom[16];
-    dom[0+0*4] = &wire;
-    dom[0+1*4] = &electrical;
-    dom[0+2*4] = &logic;
-    dom[0+3*4] = &hybrid;
-    dom[1+0*4] = &electrical;
-    dom[1+1*4] = &electrical;
-    dom[1+2*4] = &hybrid;
-    dom[1+3*4] = &hybrid;
-    dom[2+0*4] = &logic;
-    dom[2+1*4] = &hybrid;
-    dom[2+2*4] = &logic;
-    dom[2+3*4] = &hybrid;
-    dom[3+0*4] = &hybrid;
-    dom[3+1*4] = &hybrid;
-    dom[3+2*4] = &hybrid;
-    dom[3+3*4] = &hybrid;
-
-    for(auto a: node_dispatcher){
-      if(auto A = dynamic_cast<NODE_TYPE const*>(a.second)) {
-	int i = A->type_number();
-	if(i == INVALID_NODE){ untested();
-	}else{
-	  for(auto b: node_dispatcher){
-	    if(auto B = dynamic_cast<NODE_TYPE const*>(b.second)) {
-	      int j = B->type_number();
-	      if(j == INVALID_NODE){ untested();
-	      }else{
-		int x = A->domain();
-		int y = B->domain();
-		assert(dom[x+4*y]);
-		_n[i+j*n] = dom[x+4*y];
-	      }
-	    }else{ untested();
-	    }
-	  }
-	}
-      }else{ untested();
-      }
-    }
-
-    _net_nodes = num();
-  }
-private:
-  int num()const {return int(node_dispatcher.size());}
-  CARD* clone()const override { untested();unreachable(); return nullptr;}
-  int net_nodes()const override {return _net_nodes;}
-  node_t& n_(int i)const override { untested();assert(i<num()); return _n[i*num()];}
-} p3;
-/*--------------------------------------------------------------------------*/
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

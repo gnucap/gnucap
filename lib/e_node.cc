@@ -324,6 +324,11 @@ void node_t::new_model_node(const std::string& node_name, CARD* Owner)
  */
 void node_t::map_subckt_node(node_t* m, const CARD* d)
 {
+  if(_link == this){
+    // unreachable();
+    _link = nullptr;
+  }else{
+  }
   assert(m);
   if (e_() != INVALID_NODE) {
     m[e_()].connect(*this);
@@ -379,9 +384,10 @@ void node_t::allocate(int u /*, CARD* owner*/)
   }else{
   }
   assert(!dynamic_cast<USER_NODE const*>(_nnn));
-  if(!_nnn){
+  if(is_link()) {
+  }else if(!is_node()) {
   }else if(!is_used()) {
-  }else if(_nnn->flat_number() != INVALID_NODE) {
+  }else if(_nnn->flat_number() != INVALID_NODE) { untested();
     // ground or already allocated.
   }else if(is_type(_nnn)) {
     int flat_number = INVALID_NODE;
@@ -488,6 +494,28 @@ void node_t::clear()
 //  _dir = dir_none;
 }
 /*--------------------------------------------------------------------------*/
+static NODE const* resolve_type(NODE const* upper, NODE const* lower)
+{
+  NODE const* ret;
+  // assert(upper);
+  if(!upper){
+    ret = lower;
+  }else if(upper == lower){
+    ret = upper;
+  }else if(upper && lower && OPT::connect_rules){
+    int u = upper->type_number();
+    int l = lower->type_number();
+    assert(u<OPT::connect_rules->net_nodes());
+    assert(l<OPT::connect_rules->net_nodes());
+    ret = (&OPT::connect_rules->n_(u))[l].n_();
+  }else{
+    incomplete();
+    ret = OPT::default_logic;
+  }
+  trace3("resolve_type", upper->short_label(), lower->short_label(), ret->short_label());
+  return ret;
+}
+/*--------------------------------------------------------------------------*/
 // make a connection to a node, usually further up the hierarchy.
 // this will have to transport type information,
 // negotiate with the lower node, and flag it as used.
@@ -527,16 +555,17 @@ void node_t::connect(node_t& lower)
     // untyped, propagate the type the caller wants.
     lower_type = lower_root->set_type(upper_type);
   }else{
-    lower_type = OPT::default_logic;
-    upper_type = OPT::default_logic;
+    // incomplete();
+    static NODE* wire = node_dispatcher["wire"];
+    assert(wire);
+    lower_type = upper_type = wire;
   }
 
   assert(lower_type);
   assert(lower_type->type_number()!=INVALID_NODE);
-  trace2("DBG connect", lower_type->short_label(), upper_type->short_label());
+  trace2("connect", lower_type->short_label(), upper_type->short_label());
 
   assert(!lower._own);
-  trace2("connect1", _nnn, lower._nnn);
   if(is_type(_nnn)) {
     assert(!_own);
   }else if(_nnn){
@@ -572,21 +601,24 @@ void node_t::connect(node_t& lower)
 
   assert(!_nnn || !_link);
 
-  NODE const* new_type = electrical; // TODO
+  NODE const* new_type = resolve_type(upper_type, lower_type);
 
   assert(r._link == &r || !r._link);
   if(r.is_grounded()){
     assert(!r._link);
+    assert(!r._nnn || r._nnn == &ground_node);
+    r._nnn = &ground_node;
   }else if(used){
     r._link = nullptr;
     r.set_type(new_type);
     r.set_used();
-  }else if(r._link == &r){
+  }else if(r._link == &r){ untested();
     incomplete();
   }else{
   }
 
-  if(!r._nnn){
+  if(!new_type){ untested();
+  }else if(!r._nnn){
     assert(!r._link);
     r.set_type(new_type);
   }else{
@@ -595,13 +627,9 @@ void node_t::connect(node_t& lower)
 /*--------------------------------------------------------------------------*/
 NODE const* node_t::set_type(NODE const* d)
 {
-  assert(d);
+//  assert(d);
   assert(!_nnn || !_link);
-  if(_link == this){
-    unreachable();
-    _link = nullptr;
-  }else{
-  }
+  assert(_link != this);
   if(!_nnn){
     assert(!_own);
   }else if(_own){ itested();
@@ -619,7 +647,7 @@ NODE const* node_t::set_type(NODE const* d)
   }else{
     _link = nullptr;
     _nnn = const_cast<NODE*>(d);
-    assert(is_type(_nnn));
+    assert(!_nnn || is_type(_nnn));
     _dir = dir_none;
     _own = false;
     assert(!_link);
