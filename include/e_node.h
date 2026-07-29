@@ -59,6 +59,7 @@ public: // raw data access (rvalues)
   virtual int flat_number()const {return INVALID_NODE;}
   virtual int type_number()const {return INVALID_NODE;}
 public: // simple calculated data access (rvalues)
+  virtual bool is_digital()const {return false;}
   virtual int matrix_number()const;
   int	m_()const		{return matrix_number();}
 public: // maniputation
@@ -255,7 +256,6 @@ public: // top level kludge. u_sim_data.cc line 457
     assert(nn);
     if(nn != this){
       assert(nn);
-      assert(nn==&nn->root());
       if(_own){ untested();
 	delete _nnn;
       }else if(_nnn){
@@ -321,7 +321,7 @@ inline bool node_t::is_node() const
 inline bool node_t::is_link() const
 {
   assert(!_nnn || !_link);
-  return !_nnn && _link && _link != this;
+  return _link;
 }
 /*--------------------------------------------------------------------------*/
 inline bool node_t::is_root() const

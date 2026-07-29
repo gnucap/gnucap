@@ -1,0 +1,29 @@
+module gg (.out(out),.clk(clk));
+  nand #(.delay(1)) n1 (.out(out),.in1(clk));
+    electrical out;
+endmodule // gg
+
+ground gnd;
+// vpulse #(.val0(0) .val1(5) .width(100p) .period(200p)) v1(clk, gnd);
+gg #() g (.out(out),.clk(clk));
+paramset logic logic;
+ .delay=NA( 1.n); .vmax=NA( 5.); .vmin=NA( 0.); .unknown=NA( 2.5); .rise=NA( 500.p); .fall=NA( 500.p); .rs=NA( 100.); .rw=NA( 1.G); .thh=NA( 0.75); .thl=NA( 0.25); .mr=NA( 5.); .mf=NA( 5.); .over=NA( 0.1); .tnom=NA( 27.);
+endparamset
+
+g.n1: can't find subckt: logicnand1, forcing digital
+#Time       v(clk)     v(out)     l(clk)     l(gnd)     l(out)    
+ 0.         0.         5.         0.01       ??         3.        
+ 200.p      1.         5.         0.01       ??         3.        
+ 400.p      2.         5.         1.01       ??         3.        
+ 727.p      3.635      5.         1.01       ??         3.        
+ 1.n        5.         5.         3.01       ??         2.        
+ 2.n        5.         0.         3.01       ??         0.        
+ 2.667n     5.         0.         3.01       ??         0.        
+ 3.334n     5.         0.         3.01       ??         0.        
+ 4.446n     5.         0.         3.01       ??         0.        
+ 20.n       5.         0.         3.01       ??         0.        
+Gnucap   System status
+iterations: op=0, dc=0, tran=30, fourier=0, total=40
+transient timesteps: accepted=10, rejected=0, total=10
+nodes: user=2, subckt=0, model=0, total=2
+dctran density=50.0%, ac density=50.0%

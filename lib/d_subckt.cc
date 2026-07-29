@@ -523,7 +523,7 @@ void DEV_SUBCKT::expand_first()
 void DEV_SUBCKT::expand()
 {
   BASE_SUBCKT::expand();
-  trace3("DEV_SUBCKT::expand", long_label(), max_nodes(), common());
+  trace3("DEV_SUBCKT::expand", long_label(), max_nodes(), net_nodes());
 
   if(!_parent || _parent==&pp){ untested();
     // not a device. probably a prototype

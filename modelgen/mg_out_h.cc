@@ -251,6 +251,7 @@ static void make_device(std::ofstream& out, const Device& d)
     "  CARD*     clone()const override         {return new "
       << class_name << "(*this);}\n"
     "  void      precalc_first()override {COMPONENT::precalc_first(); if(subckt()) subckt()->precalc_first();}\n"
+    "  void      expand_first()override;\n"
     "  void      expand()override;\n";
   if(has_precalc_last(d)){ untested();
   out <<

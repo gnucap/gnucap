@@ -26,7 +26,6 @@
 #include "e_usernode.h"
 #include "e_node_type.h"
 /*--------------------------------------------------------------------------*/
-extern NODE electrical;
 class GROUND_NODE : public NODE {
 public:
   explicit GROUND_NODE() : NODE("0", 0) {}
@@ -55,7 +54,6 @@ NODE_MAP::NODE_MAP(const NODE_MAP& p)
     _nodes[idx] = i.second->n_(0);
     if(_nodes[idx].is_grounded()){
     }else{
-      _nodes[idx].set_type(&electrical); // not here.
     }
     trace3("NODE_MAP::NODE_MAP1", idx, i.first, i.second->n_(0).n_());
 #if 0
@@ -134,7 +132,6 @@ NODE* NODE_MAP::new_node(std::string s)
   if (!node) {
     node = new USER_NODE(s, size());
     //                      ^^^^ is really the map number of the new node
-//    node->n_(0).set_type(&electrical);
     node->set_owner(nullptr); // here?
     _nodes.push_back(node_t());
     assert(node->user_number() == size()-1);

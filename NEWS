@@ -1,12 +1,14 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
-== 20260***-dev
+== 20260729-dev
 - access to localparam values in subcircuit devices
 - envelope to protect non-devices (prototypes, models..)
 - persistent commands; parameter declarations and listing
 - fix top level ground persistence in re-init
-- ..
+- set node types in expand_first
+- introduce OPT::default_logic
+- resolve node types, OPT::connect_rules
 
 == 20260329-dev
 - common pool: prune duplicate commons

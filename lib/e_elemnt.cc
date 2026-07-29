@@ -27,6 +27,7 @@
 #include "e_aux.h"
 #include "e_elemnt.h"
 #include "bm.h"
+#include "globals.h"
 /*--------------------------------------------------------------------------*/
 // EVAL_BM_BASE already has a _value. but is protected.
 class COMMON_VALUE : public EVAL_BM_BASE {
@@ -214,6 +215,16 @@ void ELEMENT::set_param_by_index(int i, std::string& Value, int offset)
 bool ELEMENT::skip_dev_type(CS& cmd)
 {
   return cmd.umatch(dev_type() + ' ');
+}
+/*--------------------------------------------------------------------------*/
+void ELEMENT::expand_first()
+{
+  static NODE* electrical = node_dispatcher["electrical"];
+  assert(electrical);
+  for (int ii = 0;  ii < net_nodes();  ++ii) {
+    n_(ii).set_type(electrical);
+    n_(ii).set_used();
+  }
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_begin()

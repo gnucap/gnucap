@@ -315,7 +315,13 @@ void DEV_LOGIC::expand_first()
 	  long_label() + ": can't find subckt: " + subckt_name + ", forcing digital\n");
   }
 
-  NODE const* logic = OPT::default_logic;
+  static NODE* hybrid = node_dispatcher["hybrid"];
+  NODE const* logic = hybrid;
+  if(!subckt()) {
+    logic = OPT::default_logic;
+  }else{
+  }
+
   assert(logic);
   n_(0).set_type(logic);
   n_(0).set_output();

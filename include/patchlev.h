@@ -1,1 +1,1 @@
-#define PATCHLEVEL "node_types 2026.06.08"
+#define PATCHLEVEL "snapshot 2026.07.29"

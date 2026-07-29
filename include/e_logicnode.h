@@ -76,7 +76,7 @@ public: // simple calculated data access (rvalues)
   bool	 is_unknown()const	{return lv().is_unknown();}
   bool	 in_transit()const	{return final_time() < NEVER;}
 private:
-  bool	 is_digital()const	{return _mode == moDIGITAL;}
+  bool	 is_digital()const override {return _mode == moDIGITAL;}
   bool	 is_analog()const	{return _mode == moANALOG;}
   double annotated_logic_value()const;
 
