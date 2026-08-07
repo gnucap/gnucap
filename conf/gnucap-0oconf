@@ -102,8 +102,10 @@ elif [ -f $srcdir/NEWS ]; then
 	echo \* > .gitignore
 fi
 #------------------------------------------------------------------------
-echo srcdir $srcdir
-echo top_srcdir $top_srcdir
+if [ -n "$debug0o" ]; then
+	echo srcdir $srcdir
+	echo top_srcdir $top_srcdir
+fi
 #----------------------------------------------------------------
 MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/MakeList | sed 's/^.*= //g')
 SUBDIRS="${MAKE1_SUBDIRS%%\\}"
@@ -179,7 +181,7 @@ sub_makefile() {
 	echo "include \${srcdir}/MakeList" >> $1
 	echo "INCLUDE = " >> $1
 	echo "PRESET = default" >> $1
-	echo "include $top_builddir/MakeConf" >> $1
+	echo "include MakeConf" >> $1
 	echo "include $include_dir/MakeBase" >> $1
 	echo "-include Make.depend" >> $1
 }
@@ -219,22 +221,35 @@ echo "LDFLAGS = -L../lib" >>MakeConf
 if [ "$build_mode" = system ]; then
 	echo "GNUCAP_CONF = gnucap-conf" >>MakeConf
 else
-	echo "GNUCAP_CONF = $top_stcdir_/conf/gnucap-conf" >>MakeConf
+	echo "GNUCAP_CONF = $top_srcdir_/conf/gnucap-conf" >>MakeConf
 fi
 #------------------------------------------------------------------------
 # "MAKE_CPPFLAGS": not a user variable like CPPFLAGS
 #                  add ${INCLUDE} when overriding in MakeConf.*
 #------------------------------------------------------------------------
 echo "PRESET = ${preset}" >> MakeConf
-if [ "$top_srcdir_"x = x ]; then
-	include_dir_="${top_srcdir_}/include"
-elif [ "$build_mode" = system ]; then
+if [ "$build_mode" = system ]; then
 	include_dir_="${include_dir}"
+elif [ $top_srcdir_given = "yes" ]; then
+	include_dir_="${top_srcdir}/include"
 else
 	# needed?
 	include_dir_="${top_srcdir_}/include"
 fi
-echo "INCLUDE = -I${include_dir_} -I../conf" >>MakeConf
+#------------------------------------------------------------------------
+if [ -d $top_srcdir/conf ]; then
+	echo "INCLUDE_CONF = -I${top_builddir}/conf" >>MakeConf
+else
+	echo "# INCLUDE_CONF = -I${top_srcdir}/conf" >>MakeConf
+fi
+#------------------------------------------------------------------------
+if [ -d $top_srcdir/src ]; then
+	echo "INCLUDE_SRC = -I${top_srcdir}/src" >>MakeConf
+else
+	echo "# INCLUDE_SRC = -I${top_srcdir}/src" >>MakeConf
+fi
+#------------------------------------------------------------------------
+echo "INCLUDE = -I${include_dir_} \${INCLUDE_CONF} \${INCLUDE_SRC}" >>MakeConf
 echo "include ${include_dir_}/MakeConf.\${PRESET}" >>MakeConf
 #------------------------------------------------------------------------
 sub_configure() {
