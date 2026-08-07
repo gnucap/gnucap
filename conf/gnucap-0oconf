@@ -21,6 +21,10 @@ srcdir=$(dirname $0)
 top_srcdir=$(dirname $0)
 top_builddir=.
 submodules=
+if [ -z "$build_mode" ]; then
+       build_mode=system
+fi
+
 
 while [ 0 -ne $# ]; do
 	case "$1" in
@@ -55,12 +59,24 @@ while [ 0 -ne $# ]; do
 		--preset=*)
 			  preset=${1#--preset=}
 			  ;;
+		--build-mode=*)
+			  build_mode=${1#--build-mode=}
+			  ;;
 		*)
 			echo Warning: unrecognised: "$1", ignored. >&2
 			;;
 	esac
 	shift
 done
+#----------------------------------------------------------------
+if [ "$build_mode" = system ]; then
+	: # OK
+elif [ "$build_mode" = repo ]; then
+	: # OK
+else
+	echo invalid build mode \"$build_mode\"
+	exit 1
+fi
 #----------------------------------------------------------------
 # abs_srcdir=$(cd $srcdir; pwd)
 if [ -f $srcdir/NEWS ]; then
@@ -75,8 +91,7 @@ fi
 if [ -f $top_srcdir/NEWS ]; then
 	: # OK
 else
-	echo could not find top source directory
-	exit 1
+	top_srcdir=""
 fi
 #----------------------------------------------------------------
 if [ -d .git ]; then
@@ -112,12 +127,6 @@ else
 	:
 fi
 #----------------------------------------------------------------
-if [ ! -f $top_srcdir/include/MakeConf.$preset ]; then
-	echo "invalid preset" >&2
-	echo "can't find $srcdir/include/MakeConf.$preset" >&2
-	exit 1;
-fi
-#----------------------------------------------------------------
 echo prefix is $prefix
 echo preset is $preset
 #----------------------------------------------------------------
@@ -131,10 +140,26 @@ case $srcdir in
 		top_srcdir_=".."
 		out_of_tree=no
 		;;
+	"")
+		top_srcdir_=
+		;;
 	*)
 		top_srcdir_="../$srcdir"
 		;;
 esac
+#----------------------------------------------------------------
+if [ "$build_mode" = system ]; then
+	include_dir=$( gnucap-conf --includedir )
+else
+	include_dir=$top_srcdir/include
+fi
+echo include dir is $include_dir
+#----------------------------------------------------------------
+if [ ! -f $include_dir/MakeConf.$preset ]; then
+	echo "invalid preset" >&2
+	echo "can't find $srcdir/include/MakeConf.$preset" >&2
+	exit 1;
+fi
 #----------------------------------------------------------------
 sub_makefile() {
 	echo sub_makefile $1
@@ -148,7 +173,7 @@ sub_makefile() {
 	echo "INCLUDE = " >> $1
 	echo "PRESET = default" >> $1
 	echo "include ../MakeConf" >> $1
-	echo "include $top_srcdir/include/MakeBase" >> $1
+	echo "include $include_dir/MakeBase" >> $1
 	echo "-include Make.depend" >> $1
 }
 #------------------------------------------------------------------------
@@ -187,10 +212,18 @@ echo "GNUCAP_CONF = ../conf/gnucap-conf" >>MakeConf
 #------------------------------------------------------------------------
 # "MAKE_CPPFLAGS": not a user variable like CPPFLAGS
 #                  add ${INCLUDE} when overriding in MakeConf.*
-echo "INCLUDE = -I${top_srcdir_}/include -I../conf" >>MakeConf
 #------------------------------------------------------------------------
 echo "PRESET = ${preset}" >> MakeConf
-echo "include ${top_srcdir_}/include/MakeConf.\${PRESET}" >>MakeConf
+if [ "$top_srcdir_"x = x ]; then
+	include_dir_="${top_srcdir_}/include"
+elif [ "$build_mode" = system ]; then
+	include_dir_="${include_dir}"
+else
+	# needed?
+	include_dir_="${top_srcdir_}/include"
+fi
+echo "INCLUDE = -I${include_dir_} -I../conf" >>MakeConf
+echo "include ${include_dir_}/MakeConf.\${PRESET}" >>MakeConf
 #------------------------------------------------------------------------
 sub_configure() {
 	m="$1/Makefile"
@@ -207,10 +240,15 @@ sub_configure() {
 	echo "srcdir = $srcdir_" >> $m
 	echo "prefix = $prefix" >> $m
 	echo 'CONFIGURE_ARGS = --prefix="${prefix}" --srcdir="${srcdir}" \\' >> $m
+	if [ "$build_mode" = system ]; then
+	  echo '               --build-mode=system \\' >> $m
+	fi
 	echo '                 --top-builddir="${top_builddir}" --top-srcdir="${top_srcdir}"' >> $m
 
 	if [ -f $srcdir/$i/configure ]; then
-		echo 'CONFIGURE = "${srcdir}/configure"' >> $m
+		echo 'CONFIGURE = "${srcdir}/configure" # found local configure' >> $m
+	elif [ "$build_mode" = system ]; then
+		echo "CONFIGURE = \"$0\" # use system configure" >> $m
 	else
 		case "$0" in
 			[\\/]* | ?:[\\/]*)
@@ -220,7 +258,7 @@ sub_configure() {
 				conf_="../$0"
 				;;
 		esac
-		echo "CONFIGURE = \"$conf_\"" >> $m
+		echo "CONFIGURE = \"$conf_\" # alt" >> $m
 	fi
 
 	echo '%: ; ${CONFIGURE} ${CONFIGURE_ARGS} && ${MAKE} $@' >> $m
