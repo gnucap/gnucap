@@ -7,10 +7,10 @@ echo $0 "$@" >> config.log
 
 #-------------  transition
 find . -name makefile -exec false {} + || \
-	 echo "stale (lower case) makefiles. these may interfere."
+	echo "stale (lower case) makefiles. these may interfere."
 find . -name makefile >&2
 
-#-------------  Stuff added to enable --prefix  --------------
+#-------------  options  --------------
 prefix=/usr/local
 prefix_given=no
 srcdir_given=no
@@ -18,14 +18,12 @@ top_srcdir_given=no
 preset=default
 force_in_tree=no
 srcdir=$(dirname $0)
-top_srcdir=$(dirname $0)
 top_builddir=.
 submodules=
 if [ -z "$build_mode" ]; then
-       build_mode=system
+	build_mode=system
 fi
-
-
+#-------------  parse args  --------------
 while [ 0 -ne $# ]; do
 	case "$1" in
 		--prefix=*)
@@ -50,7 +48,7 @@ while [ 0 -ne $# ]; do
 			  top_srcdir_given=yes
 			  ;;
 		--top-builddir=*)
-			  top_builddir=${1#--top-srcdir=}
+			  top_builddir=${1#--top-builddir=}
 			  top_builddir_given=yes
 			  ;;
 		--force-in-tree)
@@ -68,7 +66,7 @@ while [ 0 -ne $# ]; do
 	esac
 	shift
 done
-#----------------------------------------------------------------
+#-------------  process args  --------------
 if [ "$build_mode" = system ]; then
 	: # OK
 elif [ "$build_mode" = repo ]; then
@@ -88,10 +86,14 @@ else
 	exit 1
 fi
 #----------------------------------------------------------------
-if [ -f $top_srcdir/NEWS ]; then
+if [ $top_srcdir_given = "yes" ]; then
+	: OK
+elif [ -f $top_srcdir/NEWS ]; then
 	: # OK
+elif [ "$build_mode" = system ]; then
+	top_srcdir=;
 else
-	top_srcdir=""
+	top_srcdir="$srcdir";
 fi
 #----------------------------------------------------------------
 if [ -d .git ]; then
@@ -99,6 +101,9 @@ if [ -d .git ]; then
 elif [ -f $srcdir/NEWS ]; then
 	echo \* > .gitignore
 fi
+#------------------------------------------------------------------------
+echo srcdir $srcdir
+echo top_srcdir $top_srcdir
 #----------------------------------------------------------------
 MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/MakeList | sed 's/^.*= //g')
 SUBDIRS="${MAKE1_SUBDIRS%%\\}"
@@ -127,11 +132,13 @@ else
 	:
 fi
 #----------------------------------------------------------------
-echo prefix is $prefix
-echo preset is $preset
+if [ -n "$debug0o" ]; then
+	echo prefix is $prefix
+	echo preset is $preset
+fi
 #----------------------------------------------------------------
 out_of_tree=yes
-top_srcdir_=top_srcdir
+top_srcdir_=
 case $srcdir in
 	[\\/]* | ?:[\\/]*)
 		top_srcdir_="$srcdir"
@@ -172,7 +179,7 @@ sub_makefile() {
 	echo "include \${srcdir}/MakeList" >> $1
 	echo "INCLUDE = " >> $1
 	echo "PRESET = default" >> $1
-	echo "include ../MakeConf" >> $1
+	echo "include $top_builddir/MakeConf" >> $1
 	echo "include $include_dir/MakeBase" >> $1
 	echo "-include Make.depend" >> $1
 }
@@ -201,7 +208,7 @@ elif [ -f NEWS ]; then
 else
 	: # configuring some subdir
 fi
-#------------------------------------------------------------------------
+#----------------------------------------------------------------
 echo \# created by $PWD/$0. do not edit >MakeConf
 echo \#------------------------------------------------------------------------ >>MakeConf
 echo "CXX = c++" >>MakeConf
@@ -251,9 +258,9 @@ sub_configure() {
 	echo '                 --top-builddir="${top_builddir}" --top-srcdir="${top_srcdir}"' >> $m
 
 	if [ -f $srcdir/$i/configure ]; then
-		echo 'CONFIGURE = "${srcdir}/configure" # found local configure' >> $m
+		echo 'CONFIGURE = ${srcdir}/configure # found local configure' >> $m
 	elif [ "$build_mode" = system ]; then
-		echo "CONFIGURE = \"$0\" # use system configure" >> $m
+		echo "CONFIGURE = $0 # use system configure" >> $m
 	else
 		case "$0" in
 			[\\/]* | ?:[\\/]*)
@@ -263,7 +270,7 @@ sub_configure() {
 				conf_="../$0"
 				;;
 		esac
-		echo "CONFIGURE = \"$conf_\" # alt" >> $m
+		echo "CONFIGURE = $conf_ # alt" >> $m
 	fi
 
 	echo '%: ; ${CONFIGURE} ${CONFIGURE_ARGS} && ${MAKE} $@' >> $m
