@@ -208,7 +208,12 @@ echo "CXX = c++" >>MakeConf
 echo "PREFIX = " $prefix >>MakeConf
 echo "ENV = LD_LIBRARY_PATH=../lib\${LD_LIBRARY_PATH:%=:%}" >>MakeConf
 echo "LDFLAGS = -L../lib" >>MakeConf
-echo "GNUCAP_CONF = ../conf/gnucap-conf" >>MakeConf
+#------------------------------------------------------------------------
+if [ "$build_mode" = system ]; then
+	echo "GNUCAP_CONF = gnucap-conf" >>MakeConf
+else
+	echo "GNUCAP_CONF = $top_stcdir_/conf/gnucap-conf" >>MakeConf
+fi
 #------------------------------------------------------------------------
 # "MAKE_CPPFLAGS": not a user variable like CPPFLAGS
 #                  add ${INCLUDE} when overriding in MakeConf.*
