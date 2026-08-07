@@ -1,1 +1,1 @@
-#define PATCHLEVEL "snapshot 2026.07.29"
+#define PATCHLEVEL "0oconf 2026.08.07"
