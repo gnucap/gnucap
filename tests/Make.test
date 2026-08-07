@@ -7,7 +7,7 @@ ref = ${REFDIR}
 testdir = ${srcdir}/${TESTDIR}
 TARGETDIR = check
 GNUCAP = ../main/gnucap
-TESTENV = GNUCAP_PLUGPATH=${top_builddir}:${top_builddir}/apps \
+TESTENV = GNUCAP_PLUGPATH=${top_builddir} \
           LD_LIBRARY_PATH=${top_builddir}/lib${LD_LIBRARY_PATH:%=:%}
 DIFF = diff
 DIFF_FLAGS = -rup

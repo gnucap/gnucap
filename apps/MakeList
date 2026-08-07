@@ -25,6 +25,9 @@ TARGET_LIB_EXT = .so
 INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
 INSTALL_DIR = $(PREFIX)/lib/gnucap
 #------------------------------------------------------------------------
+INSTALL_FILES_2 = $(TARGET_LIB)$(TARGET_LIB_EXT)
+INSTALL_DIR_2 = $(PREFIX)/lib/gnucap/apps
+#------------------------------------------------------------------------
 # These source files can be omitted, and supplied as plugins.
 # device models defined in high level .model files
 MODELS = \

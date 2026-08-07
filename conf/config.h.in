@@ -7,11 +7,9 @@
 /* user interface preferences */
 #define DEFAULT_LANGUAGE "command"
 /*--------------------------------------------------------------------------*/
+#define DEFAULT_PLUGINS "apps"
 /* installation setup */
 #if defined(__WIN32__)
-#if !defined(DEFAULT_PLUGINS)
-  #define DEFAULT_PLUGINS "gnucap-default-plugins.dll"
-#endif
 #if !defined(SYSTEMSTARTFILE)
   #define SYSTEMSTARTFILE "gnucap.rc"
 #endif
@@ -26,9 +24,6 @@
 #endif
 /*--------------------------------------------------------------------------*/
 #else
-#if !defined(DEFAULT_PLUGINS)
-  #define DEFAULT_PLUGINS "gnucap-default-plugins.so"
-#endif
 #if !defined(SYSTEMSTARTFILE)
   #define SYSTEMSTARTFILE "gnucap.rc"
 #endif
