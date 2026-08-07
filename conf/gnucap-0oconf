@@ -183,6 +183,9 @@ sub_makefile() {
 	echo "PRESET = default" >> $1
 	echo "include MakeConf" >> $1
 	echo "include $include_dir/MakeBase" >> $1
+	if [ -f $top_srcdir/MakeBase ]; then
+		echo "include $top_srcdir/MakeBase" >> $1
+	fi
 	echo "-include Make.depend" >> $1
 }
 #------------------------------------------------------------------------
