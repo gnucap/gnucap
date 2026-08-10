@@ -269,9 +269,13 @@ sub_configure() {
 	echo "top_builddir = .." >> $m
 	echo "srcdir = $srcdir_" >> $m
 	echo "prefix = $prefix" >> $m
-	echo 'CONFIGURE_ARGS = --prefix="${prefix}" --srcdir="${srcdir}" \\' >> $m
+	echo "preset = $preset" >> $m
+	echo 'CONFIGURE_ARGS = --prefix="${prefix}" --srcdir="${srcdir}" \' >> $m
 	if [ "$build_mode" = system ]; then
-	  echo '               --build-mode=system \\' >> $m
+	  echo '                 --build-mode=system \' >> $m
+	fi
+	if [ -n "$preset" ]; then
+	  echo '                 --preset=${preset} \' >> $m
 	fi
 	echo '                 --top-builddir="${top_builddir}" --top-srcdir="${top_srcdir}"' >> $m
 
