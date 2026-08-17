@@ -1,7 +1,7 @@
 load command
 Loads plugins
 Syntax: load plugin
-Plugin search path is: ..:../apps 
+Plugin search path is: .. 
 Path is set by GNUCAP_PLUGPATH environment variable
 With no arg, it lists plugins already loaded
 

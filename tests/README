@@ -3,9 +3,43 @@ on Spice and can be used for comparison.  Most are designed to test
 partcular features in hopes of clearly identifying the defective
 module.  Some are more general.
 
-You can run any ".ckt" file in batch mode by typing "gnucap -b name" from
-the shell.  You can run them interactively by starting gnucap then "get
-name".  Then play, change probes, rerun, change values, etc.
+You can run any ".gc" file from a shell with
+
+$ gnucap <name>.gc
+
+The ".ckt" files are meant for "spice batch mode",
+
+$ gnucap --acs -b <name>.ckt
+
+These sometimes work with Spice, too, sometimes with a few adaptions.
+You can run tests interactively by starting gnucap then
+
+gnucap> get <name>.ckt.
+
+Then play, change probes, rerun, change values, etc.
+
+== Running tests from build system
+
+To run all tests, do
+
+$ make check
+
+This will run all of them, and compare the output to the reference. The
+difference will be stored in check/.diff.  For each test, some limited
+diagnostics are printed.  A non-empty diff may hint at a problem, it is meant
+to draw your attention. Numerical differences may be due to FPU differences,
+and failing tests need to be considered with a grain of salt. There is no
+general way to decide in advance what is correct. The invocation
+
+$ make check TESTCASES=<prefix>
+
+will only run tests in filenames starting with a given string. The diffs will
+be collected in check/<prefix>.diff.
+
+If you are a packager, you may ignore the return value of "make check". It may
+be appropriate to include check/.diff with the package, to let others decide.
+
+== Testing an installation with a shell script
 
 The file "test" is a script to automate the testing.  It takes 4
 arguments, which all must be supplied.  The diagnostics are poor to

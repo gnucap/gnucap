@@ -124,6 +124,9 @@ public:
     } while (cmd.more() && !cmd.stuck(&here));
 
     load_or_unload(cmd, Scope, check | dl_scope);
+    while(cmd.more()) { itested();
+      load_or_unload(cmd, Scope, check | dl_scope);
+    }
   }
 
   std::string help_text()const override {
@@ -225,6 +228,9 @@ public:
     // the dispatcher's active instance blocks unload
 
     load_or_unload(cmd, Scope, 0);
+    while(cmd.more()) { untested();
+      load_or_unload(cmd, Scope, 0);
+    }
   }
 
   std::string help_text()const override {

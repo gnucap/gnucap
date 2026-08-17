@@ -53,6 +53,25 @@ static void sign_on(void)
     "core-lib version: " << lib_version() << "\n";
 }
 /*--------------------------------------------------------------------------*/
+static std::string discover_root_config(std::string const& argv0)
+{
+  std::string tmp = OS::getcwd();
+  size_t n = std::count(tmp.begin(), tmp.end(), ENDDIR[0]);
+
+  for(; n>1; --n){ itested();
+    std::string dir = tmp;
+    std::string f = findfile("/." + argv0, dir, R_OK);
+    if(f != ""){ itested();
+      tmp = f;
+      break;
+    }else{ untested();
+      tmp += std::string(ENDDIR) + "..";
+    }
+  }
+
+  return findfile(tmp + "/config", "/", R_OK);
+}
+/*--------------------------------------------------------------------------*/
 static void prepare_env()
 {
   static const char* plugpath="PLUGPATH=" GNUCAP_PLUGPATH
@@ -67,10 +86,13 @@ static void prepare_env()
   OS::setenv("GNUCAP_PLUGPATH", ldlpath + (plugpath+9), false);
 }
 /*--------------------------------------------------------------------------*/
-static void read_startup_files(void)
+static void read_startup_files(std::string const& argv0)
 {
-  {
-    std::string name = findfile(SYSTEMSTARTFILE, SYSTEMSTARTPATH, R_OK);
+  std::string name = discover_root_config(argv0);
+  if (name != ""){
+    CMD::command("include " + name, &CARD_LIST::card_list);
+  }else{
+    name = findfile(SYSTEMSTARTFILE, SYSTEMSTARTPATH, R_OK);
     if (name != "") {untested();
       CMD::command("include " + name, &CARD_LIST::card_list);
     }else{
@@ -78,7 +100,7 @@ static void read_startup_files(void)
     }
   }
   {
-    std::string name = findfile(USERSTARTFILE, USERSTARTPATH, R_OK);
+    name = findfile(USERSTARTFILE, USERSTARTPATH, R_OK);
     if (name != "") {untested();
       CMD::command("include " + name, &CARD_LIST::card_list);
     }else{
@@ -251,7 +273,8 @@ int main(int argc, const char *argv[])
 #if 0
       try {untested();
 #endif
-	read_startup_files();
+	assert(argv[0]);
+	read_startup_files(std::string(argv[0]));
 	setup_traps();
 	process_cmd_line(argc,argv);
 #if 0

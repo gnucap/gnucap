@@ -1,81 +1,92 @@
-
-CXX = $(shell $(GNUCAP_CONF) --cxx)
-GNUCAP_CPPFLAGS = $(shell $(GNUCAP_CONF) --cppflags) -DADD_VERSION -DPIC
-GNUCAP_CXXFLAGS = $(shell $(GNUCAP_CONF) --cxxflags) -std=c++11
-MAKE_CPPFLAGS = -I${top_srcdir}/src
-LN_S = ln -sf
-DIFF = diff -rup
-NUM_HDR_LINES=11
-
-TESTCASES =
-
-# untested;
-TARGETDIR = check
+# Makefile for Gnucap tests
+# (c) Felix Salfelder 2024
+#     Lukas Deutz 2026
+# GPLv3+
 
 ref = ${REFDIR}
-
+testdir = ${srcdir}/${TESTDIR}
+TARGETDIR = check
 GNUCAP = ../main/gnucap
-TESTENV = GNUCAP_PLUGPATH=${top_builddir}:${top_builddir}/apps \
-	   LD_LIBRARY_PATH=${top_builddir}/lib${LD_LIBRARY_PATH:%=:%}
+TESTENV = GNUCAP_PLUGPATH=${top_builddir} \
+          LD_LIBRARY_PATH=${top_builddir}/lib${LD_LIBRARY_PATH:%=:%}
+DIFF = diff
+DIFF_FLAGS = -rup
 
-glob_ckt = $(shell cd ${srcdir}; ls *.ckt)
-glob_gc = $(shell cd ${srcdir}; ls *.gc)
+glob_ckt = $(shell cd ${testdir}; ls *.ckt)
+glob_gc = $(shell cd ${testdir}; ls *.gc)
 
-filt_ckt = $(filter ${TESTCASES}%, ${glob_ckt})
-filt_gc = $(filter ${TESTCASES}%, ${glob_gc})
+test_patterns = $(if $(strip $(TESTCASES)),$(TESTCASES:%=%%),%)
+check_targets = $(if $(strip $(TESTCASES)),$(TESTCASES:%=$(TARGETDIR)/%.diff),$(TARGETDIR)/.diff)
 
-ckt_out = ${filt_ckt:%=${TARGETDIR}/%.out}
-gc_out = ${filt_gc:%=${TARGETDIR}/%.out}
+filt_ckt = $(filter ${test_patterns}, ${glob_ckt})
+filt_gc = $(filter ${test_patterns}, ${glob_gc})
 
-ckt_diff = ${ckt_out:%.out=%.diff}
-gc_diff = ${gc_out:%.out=%.diff}
+_filt_ckt = $(filter-out ${TESTEXCLUDE:%=%%}, ${filt_ckt})
+_filt_gc = $(filter-out ${TESTEXCLUDE:%=%%}, ${filt_gc})
 
-diff = ${ckt_diff} ${gc_diff}
+out_ckt = ${_filt_ckt:%=${TARGETDIR}/%.out}
+out_gc = ${_filt_gc:%=${TARGETDIR}/%.out}
+
+diff_ckt = ${_filt_ckt:%=${TARGETDIR}/%.diff}
+diff_gc = ${_filt_gc:%=${TARGETDIR}/%.diff}
+
+diff = ${diff_ckt} ${diff_gc}
+
+prep: symlinks ${TEST_PLUGINS}
+	# @[ ! -s "${TARGETDIR}" ]
+	-mkdir -p ${TARGETDIR}
+
+SHELL=/bin/bash
+${out_ckt}: ${TARGETDIR}/%.ckt.out: prep
+	-@${TESTENV} ${GNUCAP} --acs ${GNUCAP_ARGS} -b ${testdir}/$*.ckt |tail -n +${NUM_HDR_LINES} | \
+		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@; \
+	err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
+
+${out_gc}: ${TARGETDIR}/%.gc.out: prep
+	-@${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${testdir}/$*.gc |tail -n +${NUM_HDR_LINES} | \
+		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@; \
+	err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
 
 # TODO: maybe cat the diff, so it can be logged?
-check: ${TARGETDIR}/${TESTCASES}.diff
+check: $(check_targets)
 	@find ${TARGETDIR} -size 0 -delete;
 	@echo ==
-	@if [ -s ${TARGETDIR}/${TESTCASES}.diff ]; then \
-		echo test failures:; \
-		ls -larS ${TARGETDIR}/${TESTCASES}*.diff; \
-	else \
-		echo all ${TESTCASES} passed; \
-	fi
 
-${TARGETDIR}/${TESTCASES}.diff : ${diff}
-	@-cat $+ > $@
-
-${gc_out}: ${TEST_PLUGINS} prep
-${ckt_out}: ${TEST_PLUGINS} prep
+	@for f in $+; do \
+	  if [ -s $$f ]; then \
+		echo "test failures in $${f##*/}:"; \
+		ls -larS $${f%.diff}*.diff; \
+	  else \
+	    echo "all $${f##*/} passed"; \
+	  fi; \
+	done
 
 ${diff}: ${TARGETDIR}/%.diff: ${TARGETDIR}/%.out
 	@if [ ! -f ${ref}/$*.out ]; then \
 	  echo MISS: $*; \
-	elif ${DIFF} ${ref}/$*.out ${TARGETDIR}/$*.out > $@; then \
+	  echo "missing: $*.out" > $@; \
+	elif ${DIFF} ${DIFF_FLAGS} ${ref}/$*.out ${TARGETDIR}/$*.out > $@; then \
 	  echo pass: $*; \
 	else \
 	  echo FAIL: $*; \
 	fi
 
-# makefile: makefile.in
-# 	source config.log
-#
-prep: symlinks ${TEST_PLUGINS}
-	echo ${TEST_SYMLINKS}
-	# @[ ! -s "${TARGETDIR}" ]
-	-mkdir -p ${TARGETDIR}
+define make_diff_rule
+$(TARGETDIR)/$(1).diff: $$(filter $(TARGETDIR)/$(1)%, $(diff))
+	@rm -f $$@
+	@for i in $$^; do \
+	  [ -s "$$$$i" ] && (echo "--- $$$$i"; cat $$$$i) >> "$$@" || true; \
+	done; \
+	[ -s "$$@" ] || rm -f "$$@"
+endef
 
-SHELL=/bin/bash
-${gc_out}: ${TARGETDIR}/%.gc.out: prep
-	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${srcdir}/$*.gc |tail -n +${NUM_HDR_LINES} | \
-		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@; \
-   err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
-
-${ckt_out}: ${TARGETDIR}/%.ckt.out: prep
-	@-${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} --acs -b ${srcdir}/$*.ckt |tail -n +${NUM_HDR_LINES} | \
-		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@; \
-   err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
+# TESTCASES empty (no prefixes)
+ifeq ($(strip $(TESTCASES)),)
+  $(eval $(call make_diff_rule,))
+# TESTCASES not empty (one or more prefixes)
+else
+  $(foreach p,$(TESTCASES),$(eval $(call make_diff_rule,$(p))))
+endif
 
 ${PWD}/disciplines.vams:
 	-${LN_S} ${top_srcdir}/vams/disciplines.vams

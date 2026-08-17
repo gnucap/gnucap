@@ -1,0 +1,38 @@
+.\" Hey, Emacs!  This is an -*- nroff -*- source file.
+.TH GNUCAP-0OCONF 1 "March 2026" "Naught-Oh-Conf" "GNU"
+
+.SH NAME
+gnucap-o0conf \- GNU Circuit Analysis Package configure script
+.SH SYNOPSIS
+.B gnucap-0oconf [\fB--prefix=..\fP] [\fB--srcdir=..\fP]
+.br
+.SH DESCRIPTION
+.B Gnucap-0oconf
+is a universal configure script that implements "autotools" style build process
+without the overarching complexity. It relies on a shell and Make only.
+.PP
+A typical usage can be
+
+$ mkdir build
+.nf
+$ cd build
+.nf
+$ gnucap-0oconf --srcdir=..
+
+.SH OPTIONS
+
+.TP
+\fI--prefix=..\fI
+specify prefix. Used during "make install".
+.TP
+\fI--srcdir=..\fI
+specify source directory. Contains MakeList and sources
+
+.SH FILES
+.TP
+\fIMakeList\fI
+contains list of files and targets to build (Make syntax).
+
+.SH AUTHOR
+Gnucap-0oconf and this man page have been written by Felix Salfelder
+<felix@salfelder.org>.

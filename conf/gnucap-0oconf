@@ -1,0 +1,313 @@
+#!/bin/sh
+# top level configure for Gnucap
+
+echo -n '# ' > config.log
+date >> config.log
+echo $0 "$@" >> config.log
+
+#-------------  transition
+find . -name makefile -exec false {} + || \
+	echo "stale (lower case) makefiles. these may interfere."
+find . -name makefile >&2
+
+#-------------  options  --------------
+prefix=/usr/local
+prefix_given=no
+srcdir_given=no
+top_srcdir_given=no
+preset=default
+force_in_tree=no
+srcdir=$(dirname $0)
+top_builddir=.
+submodules=
+if [ -z "$build_mode" ]; then
+	build_mode=system
+fi
+#-------------  parse args  --------------
+while [ 0 -ne $# ]; do
+	case "$1" in
+		--prefix=*)
+			  prefix=${1#--prefix=}
+			  prefix_given=yes
+			  ;;
+		--enable-debug)
+			  preset=Debug
+			  ;;
+		--enable-submodules)
+			  submodules="yes"
+			  ;;
+		--disable-submodules)
+			  submodules="no"
+			  ;;
+		--srcdir=*)
+			  srcdir=${1#--srcdir=}
+			  srcdir_given=yes
+			  ;;
+		--top-srcdir=*)
+			  top_srcdir=${1#--top-srcdir=}
+			  top_srcdir_given=yes
+			  ;;
+		--top-builddir=*)
+			  top_builddir=${1#--top-builddir=}
+			  top_builddir_given=yes
+			  ;;
+		--force-in-tree)
+			  force_in_tree=yes
+			  ;;
+		--preset=*)
+			  preset=${1#--preset=}
+			  ;;
+		--build-mode=*)
+			  build_mode=${1#--build-mode=}
+			  ;;
+		*)
+			echo Warning: unrecognised: "$1", ignored. >&2
+			;;
+	esac
+	shift
+done
+#-------------  process args  --------------
+if [ "$build_mode" = system ]; then
+	: # OK
+elif [ "$build_mode" = repo ]; then
+	: # OK
+else
+	echo invalid build mode \"$build_mode\"
+	exit 1
+fi
+#----------------------------------------------------------------
+# abs_srcdir=$(cd $srcdir; pwd)
+if [ -f $srcdir/NEWS ]; then
+	: # OK
+elif [ $srcdir_given = "yes" ]; then
+	: # OK
+else
+	echo could not find source directory, please specify.
+	exit 1
+fi
+#----------------------------------------------------------------
+if [ $top_srcdir_given = "yes" ]; then
+	: OK
+elif [ -f $top_srcdir/NEWS ]; then
+	: # OK
+elif [ "$build_mode" = system ]; then
+	top_srcdir=;
+else
+	top_srcdir="$srcdir";
+fi
+#----------------------------------------------------------------
+if [ -d .git ]; then
+	:
+elif [ -f $srcdir/NEWS ]; then
+	echo \* > .gitignore
+fi
+#------------------------------------------------------------------------
+if [ -n "$debug0o" ]; then
+	echo srcdir $srcdir
+	echo top_srcdir $top_srcdir
+fi
+#----------------------------------------------------------------
+MAKE1_SUBDIRS=$(grep -m 1 SUBDIRS $srcdir/MakeList | sed 's/^.*= //g')
+SUBDIRS="${MAKE1_SUBDIRS%%\\}"
+#----------------------------------------------------------------
+SUBMODULES=
+if [ x$submodules != xno ]; then
+	for r in $(cd $srcdir; ls */NEWS 2>/dev/null ); do
+		dirname=$(dirname $r)
+		if [ -d ${srcdir}/${dirname} \
+		  -a -f ${srcdir}/${dirname}/MakeList \
+		  -a -x ${srcdir}/${dirname}/configure ]; then
+			SUBMODULES="$SUBMODULES $dirname"
+		else
+			:
+		fi
+	done
+else
+	:
+fi
+if [ "$SUBMODULES" ]; then
+	echo "found submodules (disable with --disable-submodules)"
+	for s in $SUBMODULES; do
+		echo " $s"
+	done
+else
+	:
+fi
+#----------------------------------------------------------------
+if [ -n "$debug0o" ]; then
+	echo prefix is $prefix
+	echo preset is $preset
+fi
+#----------------------------------------------------------------
+out_of_tree=yes
+top_srcdir_=
+case $srcdir in
+	[\\/]* | ?:[\\/]*)
+		top_srcdir_="$srcdir"
+		;;
+	\.)
+		top_srcdir_=".."
+		out_of_tree=no
+		;;
+	"")
+		top_srcdir_=
+		;;
+	*)
+		top_srcdir_="../$srcdir"
+		;;
+esac
+#----------------------------------------------------------------
+if [ "$build_mode" = system ]; then
+	include_dir=$( gnucap-conf --includedir )
+else
+	include_dir=$top_srcdir/include
+fi
+echo include dir is $include_dir
+#----------------------------------------------------------------
+if [ ! -f $include_dir/MakeConf.$preset ]; then
+	echo "invalid preset" >&2
+	echo "can't find $srcdir/include/MakeConf.$preset" >&2
+	exit 1;
+fi
+#----------------------------------------------------------------
+sub_makefile() {
+	echo sub_makefile $1
+	echo \# created by $0 do not edit >$1
+	echo \#------------------------------------------------------------------------ >>MakeConf
+	echo "top_srcdir = $top_srcdir" >> $1
+	echo "srcdir = ${srcdir}" >> $1
+	echo "VPATH = \${srcdir}" >> $1
+	echo "MAKE1_FIX = #" >> $1
+	echo "include \${srcdir}/MakeList" >> $1
+	echo "INCLUDE = " >> $1
+	echo "PRESET = default" >> $1
+	echo "include MakeConf" >> $1
+	echo "include $include_dir/MakeBase" >> $1
+	if [ -f $top_srcdir/MakeBase ]; then
+		echo "include $top_srcdir/MakeBase" >> $1
+	fi
+	echo "-include Make.depend" >> $1
+}
+#------------------------------------------------------------------------
+if [ -f $srcdir/Makefile.in ]; then
+	echo \# created by $PWD/$0. do not edit >Makefile
+	echo \#------------------------------------------------------------------------ >>Makefile
+	echo "srcdir = $srcdir" >> Makefile
+	echo "VPATH = \${srcdir}" >> Makefile
+	echo "SUBMODULES = ${SUBMODULES}" >> Makefile
+	cat $srcdir/Makefile.in >> Makefile
+else
+	sub_makefile Makefile
+fi
+#------------------------------------------------------------------------
+if [ $out_of_tree = "yes" ]; then
+	: # OK
+elif [ $force_in_tree = "yes" ]; then
+	: # OK
+elif [ -f NEWS ]; then
+	echo "Really configure in-tree?" >&2
+   echo "Hit ^C to avoid or wait for 1 minute." >&2
+   echo "Bypass this check with --force-in-tree." >&2
+	for i in `seq 60`; do sleep 1; echo -n '.' >&2 ; done
+	echo;
+else
+	: # configuring some subdir
+fi
+#----------------------------------------------------------------
+echo \# created by $PWD/$0. do not edit >MakeConf
+echo \#------------------------------------------------------------------------ >>MakeConf
+echo "CXX = c++" >>MakeConf
+echo "PREFIX = " $prefix >>MakeConf
+echo "ENV = LD_LIBRARY_PATH=../lib\${LD_LIBRARY_PATH:%=:%}" >>MakeConf
+echo "LDFLAGS = -L../lib" >>MakeConf
+#------------------------------------------------------------------------
+if [ "$build_mode" = system ]; then
+	echo "GNUCAP_CONF = gnucap-conf" >>MakeConf
+else
+	echo "GNUCAP_CONF = $top_srcdir_/conf/gnucap-conf" >>MakeConf
+fi
+#------------------------------------------------------------------------
+# "MAKE_CPPFLAGS": not a user variable like CPPFLAGS
+#                  add ${INCLUDE} when overriding in MakeConf.*
+#------------------------------------------------------------------------
+echo "PRESET = ${preset}" >> MakeConf
+if [ "$build_mode" = system ]; then
+	include_dir_="${include_dir}"
+elif [ $top_srcdir_given = "yes" ]; then
+	include_dir_="${top_srcdir}/include"
+else
+	# needed?
+	include_dir_="${top_srcdir_}/include"
+fi
+#------------------------------------------------------------------------
+if [ -d $top_srcdir/conf ]; then
+	echo "INCLUDE_CONF = -I${top_builddir}/conf" >>MakeConf
+else
+	echo "# INCLUDE_CONF = -I${top_srcdir}/conf" >>MakeConf
+fi
+#------------------------------------------------------------------------
+if [ -d $top_srcdir/src ]; then
+	echo "INCLUDE_SRC = -I${top_srcdir}/src" >>MakeConf
+else
+	echo "# INCLUDE_SRC = -I${top_srcdir}/src" >>MakeConf
+fi
+#------------------------------------------------------------------------
+echo "INCLUDE = -I${include_dir_} \${INCLUDE_CONF} \${INCLUDE_SRC}" >>MakeConf
+echo "include ${include_dir_}/MakeConf.\${PRESET}" >>MakeConf
+#------------------------------------------------------------------------
+sub_configure() {
+	m="$1/Makefile"
+	echo creating $m
+	rm -rf "$1/Make.depend"
+	if [ "$top_srcdir_" = ".." ]; then
+		srcdir_=".";
+	else
+		srcdir_="$top_srcdir_/$1";
+	fi
+	echo '#stub. need to run configure first' > $m
+	echo "top_srcdir = $top_srcdir_" >> $m
+	echo "top_builddir = .." >> $m
+	echo "srcdir = $srcdir_" >> $m
+	echo "prefix = $prefix" >> $m
+	echo "preset = $preset" >> $m
+	echo 'CONFIGURE_ARGS = --prefix="${prefix}" --srcdir="${srcdir}" \' >> $m
+	if [ "$build_mode" = system ]; then
+	  echo '                 --build-mode=system \' >> $m
+	fi
+	if [ -n "$preset" ]; then
+	  echo '                 --preset=${preset} \' >> $m
+	fi
+	echo '                 --top-builddir="${top_builddir}" --top-srcdir="${top_srcdir}"' >> $m
+
+	if [ -f $srcdir/$i/configure ]; then
+		echo 'CONFIGURE = ${srcdir}/configure # found local configure' >> $m
+	elif [ "$build_mode" = system ]; then
+		echo "CONFIGURE = $0 # use system configure" >> $m
+	else
+		case "$0" in
+			[\\/]* | ?:[\\/]*)
+				conf_="$0"
+				;;
+			*)
+				conf_="../$0"
+				;;
+		esac
+		echo "CONFIGURE = $conf_ # alt" >> $m
+	fi
+
+	echo '%: ; ${CONFIGURE} ${CONFIGURE_ARGS} && ${MAKE} $@' >> $m
+	echo 'all: ; ${CONFIGURE} ${CONFIGURE_ARGS} && ${MAKE}' >> $m
+	echo '.PHONY: all' >> $m
+}
+#------------------------------------------------------------------------
+for i in ${SUBDIRS}; do
+	mkdir -p $i;
+	sub_configure $i
+done
+#------------------------------------------------------------------------
+for i in ${SUBMODULES}; do
+	mkdir -p $i;
+	sub_configure $i
+done
+#------------------------------------------------------------------------
+exit 0

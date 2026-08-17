@@ -1,6 +1,10 @@
 NEWS for Gnucap. Each snapshot corresponds to a tag in the git repository and
 associated tarball. This file summarizes the important changes.
 
+== 2026****-dev
+- provide/dedup configure script, '0oconf'
+- ..
+
 == 20260729-dev
 - access to localparam values in subcircuit devices
 - envelope to protect non-devices (prototypes, models..)
