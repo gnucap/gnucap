@@ -19,26 +19,19 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET_LIB = gnucap-default-plugins
+TARGET_LIB = gnucap-${SECTION}
 TARGET_LIB_EXT = .so
+SECTION = mg
 #------------------------------------------------------------------------
 INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
-INSTALL_DIR = $(PREFIX)/lib/gnucap
+INSTALL_DIR = $(PREFIX)/lib/gnucap/${SECTION}
 #------------------------------------------------------------------------
-INSTALL_FILES_2 = $(TARGET_LIB)$(TARGET_LIB_EXT)
-INSTALL_DIR_2 = $(PREFIX)/lib/gnucap/apps
-#------------------------------------------------------------------------
-# These source files can be omitted, and supplied as plugins.
-
-# behavioral modeling functions
-BM_SRCS = \
-bm_complex.cc bm_exp.cc bm_fit.cc bm_generator.cc \
-bm_model.cc bm_poly.cc bm_posy.cc bm_pulse.cc bm_pwl.cc bm_sffm.cc \
-bm_sin.cc bm_tanh.cc bmm_table.cc bmm_semi.cc
-
-# other stuff
-OTHER_SRCS = \
-signon.cc
+# device models defined in high level .mg files
+MODELS = \
+d_mos1.mg d_mos2.mg d_mos3.mg \
+d_mos4.mg d_mos5.mg d_mos6.mg d_mos7.mg d_mos8.mg \
+d_mos123.mg d_mos_base.mg d_mos.mg \
+d_bjt.mg d_diode.mg
 #------------------------------------------------------------------------
 RAW_SRCS = \
 $(D_SRCS) \
@@ -48,7 +41,7 @@ $(LANG_SRCS) \
 $(FUNC_SRCS) \
 $(OTHER_SRCS)
 #------------------------------------------------------------------------
-RAW_OTHER = MakeList test_readline.cc
+RAW_OTHER = MakeList
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER) $(MODELS)
 #------------------------------------------------------------------------
@@ -59,8 +52,8 @@ IMPORTED_OTHER =
 IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-GENERATED_SRCS = ${MODELS:.model=.cc}
-GENERATED_HDRS = ${MODELS:.model=.h}
+GENERATED_SRCS = ${MODELS:.mg=.cc}
+GENERATED_HDRS = ${MODELS:.mg=.h}
 GENERATED_OTHER = Make.aux
 GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
 #------------------------------------------------------------------------
@@ -76,11 +69,11 @@ OBJS = ${SRCS:.cc=.o}
 TARGET_DEPENDS = $(OBJS) $(RAW) $(MODELS)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-LIBPATH = `pwd | sed 's/\(.*\)apps/\1lib/'`
-MODELGEN = `pwd | sed 's/\(.*\)apps/\1modelgen/'`/gnucap-modelgen
+LIBPATH = `pwd | sed 's/\(.*\)mg/\1lib/'`
+MODELGEN = `pwd | sed 's/\(.*\)mg/\1modelgen/'`/gnucap-modelgen
 #------------------------------------------------------------------------
-${MAKE1_FIX}%.h : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -h $<) # MakeList
+${MAKE1_FIX}%.h : %.mg ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -h $<) # MakeList
 #------------------------------------------------------------------------
-${MAKE1_FIX}%.cc : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<) # MakeList
+${MAKE1_FIX}%.cc : %.mg ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<) # MakeList
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------

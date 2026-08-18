@@ -550,9 +550,9 @@ void make_cc_dev(std::ofstream& out, const Device& d)
   make_dev_copy_constructor(out, d);
   make_dev_expand_first(out, d);
   make_dev_expand(out, d);
-  if(has_precalc_last(d)) { untested();
+  if(has_precalc_last(d)) {
     make_dev_precalc_last(out, d);
-  }else{ untested();
+  }else{
   }
   make_dev_probe(out, d);
   make_dev_aux(out, d);
