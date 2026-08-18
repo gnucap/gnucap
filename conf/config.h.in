@@ -7,7 +7,7 @@
 /* user interface preferences */
 #define DEFAULT_LANGUAGE "command"
 /*--------------------------------------------------------------------------*/
-#define DEFAULT_PLUGINS "apps logic"
+#define DEFAULT_PLUGINS "apps analysis logic"
 /* installation setup */
 #if defined(__WIN32__)
 #if !defined(SYSTEMSTARTFILE)

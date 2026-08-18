@@ -5,6 +5,7 @@ Plugin search path is: ..
 Path is set by GNUCAP_PLUGPATH environment variable
 With no arg, it lists plugins already loaded
 
+../analysis/gnucap-analysis.so
 ../apps/gnucap-default-plugins.so
 ../logic/gnucap-logic.so
 unload command
@@ -14,5 +15,6 @@ The name must match the name you loaded it with.
 Prohibited when there is a circuit
 With no arg, it lists plugins already loaded
 
+../analysis/gnucap-analysis.so
 ../apps/gnucap-default-plugins.so
 ../logic/gnucap-logic.so
