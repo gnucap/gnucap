@@ -42,10 +42,6 @@ bm_complex.cc bm_exp.cc bm_fit.cc bm_generator.cc \
 bm_model.cc bm_poly.cc bm_posy.cc bm_pulse.cc bm_pwl.cc bm_sffm.cc \
 bm_sin.cc bm_tanh.cc bmm_table.cc bmm_semi.cc
 
-# netlist languages
-LANG_SRCS = \
-lang_spice.cc lang_spectre.cc lang_verilog.cc
-
 # other stuff
 OTHER_SRCS = \
 signon.cc
