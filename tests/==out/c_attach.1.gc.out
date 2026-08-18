@@ -7,7 +7,39 @@ With no arg, it lists plugins already loaded
 
 ../analysis/gnucap-analysis.so
 ../apps/gnucap-default-plugins.so
+../devices/d_admit.so
+../devices/d_cap.so
+../devices/d_cccs.so
+../devices/d_ccvs.so
+../devices/d_coil.so
+../devices/d_cs.so
+../devices/d_meter.so
+../devices/d_poly_cap.so
+../devices/d_poly_g.so
+../devices/d_res.so
+../devices/d_switch.so
+../devices/d_trln.so
+../devices/d_vcg.so
+../devices/d_vcr.so
+../devices/d_vcvs.so
+../devices/d_vs.so
 ../logic/gnucap-logic.so
+../util/c_clear.so
+../util/c_comand.so
+../util/c_delete.so
+../util/c_exp.so
+../util/c_global.so
+../util/c_ground.so
+../util/c_help.so
+../util/c_list.so
+../util/c_measure.so
+../util/c_modify.so
+../util/c_param.so
+../util/c_prbcmd.so
+../util/c_sim.so
+../util/c_status.so
+../util/c_sweep.so
+../util/c_system.so
 unload command
 Unloads plugins
 Syntax: unload plugin
@@ -17,4 +49,36 @@ With no arg, it lists plugins already loaded
 
 ../analysis/gnucap-analysis.so
 ../apps/gnucap-default-plugins.so
+../devices/d_admit.so
+../devices/d_cap.so
+../devices/d_cccs.so
+../devices/d_ccvs.so
+../devices/d_coil.so
+../devices/d_cs.so
+../devices/d_meter.so
+../devices/d_poly_cap.so
+../devices/d_poly_g.so
+../devices/d_res.so
+../devices/d_switch.so
+../devices/d_trln.so
+../devices/d_vcg.so
+../devices/d_vcr.so
+../devices/d_vcvs.so
+../devices/d_vs.so
 ../logic/gnucap-logic.so
+../util/c_clear.so
+../util/c_comand.so
+../util/c_delete.so
+../util/c_exp.so
+../util/c_global.so
+../util/c_ground.so
+../util/c_help.so
+../util/c_list.so
+../util/c_measure.so
+../util/c_modify.so
+../util/c_param.so
+../util/c_prbcmd.so
+../util/c_sim.so
+../util/c_status.so
+../util/c_sweep.so
+../util/c_system.so

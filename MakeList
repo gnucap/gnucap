@@ -1,6 +1,6 @@
 
 # fragile syntax, see configure
-SUBDIRS = conf include lib modelgen main apps analysis logic tests \
+SUBDIRS = conf include lib modelgen main apps analysis devices logic util tests \
 			${SUBMODULES}
 
 # run these recursively in an attempt to provide legacy functionality.

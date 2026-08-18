@@ -36,26 +36,11 @@ d_mos4.model d_mos5.model d_mos6.model d_mos7.model d_mos8.model \
 d_mos123.model d_mos_base.model d_mos.model \
 d_bjt.model d_diode.model
 
-# device models hand coded in C++
-D_SRCS = \
-d_admit.cc d_cap.cc d_cccs.cc d_ccvs.cc d_coil.cc \
-d_cs.cc d_poly_g.cc d_poly_cap.cc d_res.cc d_switch.cc \
-d_trln.cc d_vcg.cc d_vcr.cc d_vcvs.cc d_vs.cc \
-d_meter.cc
-
 # behavioral modeling functions
 BM_SRCS = \
 bm_complex.cc bm_exp.cc bm_fit.cc bm_generator.cc \
 bm_model.cc bm_poly.cc bm_posy.cc bm_pulse.cc bm_pwl.cc bm_sffm.cc \
 bm_sin.cc bm_tanh.cc bmm_table.cc bmm_semi.cc
-
-# utility commands, usually one file per command
-# some have multiple commands in a file
-C_SRCS = \
-c_clear.cc c_comand.cc c_delete.cc c_exp.cc \
-c_global.cc c_ground.cc c_help.cc \
-c_list.cc c_measure.cc c_modify.cc c_param.cc c_prbcmd.cc \
-c_status.cc c_sweep.cc c_sim.cc c_system.cc
 
 # netlist languages
 LANG_SRCS = \
