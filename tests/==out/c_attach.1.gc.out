@@ -7,6 +7,20 @@ With no arg, it lists plugins already loaded
 
 ../analysis/gnucap-analysis.so
 ../apps/gnucap-default-plugins.so
+../bm/bm_complex.so
+../bm/bm_exp.so
+../bm/bm_fit.so
+../bm/bm_generator.so
+../bm/bm_model.so
+../bm/bm_poly.so
+../bm/bm_posy.so
+../bm/bm_pulse.so
+../bm/bm_pwl.so
+../bm/bm_sffm.so
+../bm/bm_sin.so
+../bm/bm_tanh.so
+../bm/bmm_semi.so
+../bm/bmm_table.so
 ../devices/d_admit.so
 ../devices/d_cap.so
 ../devices/d_cccs.so
@@ -35,7 +49,11 @@ With no arg, it lists plugins already loaded
 ../func/measure_min.so
 ../func/measure_rms.so
 ../func/measure_slewrate.so
+../lang/lang_spectre.so
+../lang/lang_spice.so
+../lang/lang_verilog.so
 ../logic/gnucap-logic.so
+../mg/gnucap-mg.so
 ../util/c_clear.so
 ../util/c_comand.so
 ../util/c_delete.so
@@ -61,6 +79,20 @@ With no arg, it lists plugins already loaded
 
 ../analysis/gnucap-analysis.so
 ../apps/gnucap-default-plugins.so
+../bm/bm_complex.so
+../bm/bm_exp.so
+../bm/bm_fit.so
+../bm/bm_generator.so
+../bm/bm_model.so
+../bm/bm_poly.so
+../bm/bm_posy.so
+../bm/bm_pulse.so
+../bm/bm_pwl.so
+../bm/bm_sffm.so
+../bm/bm_sin.so
+../bm/bm_tanh.so
+../bm/bmm_semi.so
+../bm/bmm_table.so
 ../devices/d_admit.so
 ../devices/d_cap.so
 ../devices/d_cccs.so
@@ -89,7 +121,11 @@ With no arg, it lists plugins already loaded
 ../func/measure_min.so
 ../func/measure_rms.so
 ../func/measure_slewrate.so
+../lang/lang_spectre.so
+../lang/lang_spice.so
+../lang/lang_verilog.so
 ../logic/gnucap-logic.so
+../mg/gnucap-mg.so
 ../util/c_clear.so
 ../util/c_comand.so
 ../util/c_delete.so

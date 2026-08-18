@@ -30,12 +30,6 @@ INSTALL_DIR_2 = $(PREFIX)/lib/gnucap/apps
 #------------------------------------------------------------------------
 # These source files can be omitted, and supplied as plugins.
 
-# behavioral modeling functions
-BM_SRCS = \
-bm_complex.cc bm_exp.cc bm_fit.cc bm_generator.cc \
-bm_model.cc bm_poly.cc bm_posy.cc bm_pulse.cc bm_pwl.cc bm_sffm.cc \
-bm_sin.cc bm_tanh.cc bmm_table.cc bmm_semi.cc
-
 # other stuff
 OTHER_SRCS = \
 signon.cc
@@ -48,7 +42,7 @@ $(LANG_SRCS) \
 $(FUNC_SRCS) \
 $(OTHER_SRCS)
 #------------------------------------------------------------------------
-RAW_OTHER = MakeList test_readline.cc
+RAW_OTHER = MakeList
 #------------------------------------------------------------------------
 RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER) $(MODELS)
 #------------------------------------------------------------------------
