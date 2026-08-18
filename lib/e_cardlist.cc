@@ -200,6 +200,11 @@ CARD_LIST& CARD_LIST::erase_all()
     }
     _cl.pop_back();
   }
+  if (!_parent) {
+    delete _params;
+    _params = nullptr;
+  }else{
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/
