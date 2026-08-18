@@ -64,7 +64,7 @@ static std::string discover_root_config(std::string const& argv0)
     if(f != ""){ itested();
       tmp = f;
       break;
-    }else{ untested();
+    }else{
       tmp += std::string(ENDDIR) + "..";
     }
   }
