@@ -46,13 +46,6 @@ bm_sin.cc bm_tanh.cc bmm_table.cc bmm_semi.cc
 LANG_SRCS = \
 lang_spice.cc lang_spectre.cc lang_verilog.cc
 
-# parameter functions
-FUNC_SRCS = \
-func_core.cc func_vams.cc measure_eval.cc \
-func_rdist.cc \
-measure_max.cc measure_min.cc measure_slewrate.cc measure_cross.cc \
-measure_integral.cc measure_average.cc measure_rms.cc measure_at.cc
-
 # other stuff
 OTHER_SRCS = \
 signon.cc
