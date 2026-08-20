@@ -21,9 +21,10 @@
 #------------------------------------------------------------------------
 TARGET_LIB = gnucap-logic
 TARGET_LIB_EXT = .so
+TARGET = $(TARGET_LIB)$(TARGET_LIB_EXT)
 SECTION = logic
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
+INSTALL_FILES = $(TARGET)
 INSTALL_DIR = $(PREFIX)/lib/gnucap/${SECTION}
 #------------------------------------------------------------------------
 # device models hand coded in C++

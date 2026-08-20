@@ -23,7 +23,8 @@ TARGET_LIB = gnucap-${SECTION}
 TARGET_LIB_EXT = .so
 SECTION = mg
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
+TARGET = $(TARGET_LIB)$(TARGET_LIB_EXT)
+INSTALL_FILES = $(TARGET)
 INSTALL_DIR = $(PREFIX)/lib/gnucap/${SECTION}
 #------------------------------------------------------------------------
 # device models defined in high level .mg files

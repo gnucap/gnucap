@@ -22,8 +22,9 @@
 SECTION = analysis
 TARGET_LIB = gnucap-analysis
 TARGET_LIB_EXT = .so
+TARGET = $(TARGET_LIB)$(TARGET_LIB_EXT)
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
+INSTALL_FILES = $(TARGET)
 INSTALL_DIR = $(PREFIX)/lib/gnucap/${SECTION}
 #------------------------------------------------------------------------
 # kludge. does not belong here.
