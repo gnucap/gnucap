@@ -19,60 +19,29 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #------------------------------------------------------------------------
-TARGET_LIB = gnucap-default-plugins
+TARGET_LIB = gnucap-logic
 TARGET_LIB_EXT = .so
-#------------------------------------------------------------------------
 TARGET = $(TARGET_LIB)$(TARGET_LIB_EXT)
+SECTION = logic
+#------------------------------------------------------------------------
 INSTALL_FILES = $(TARGET)
-INSTALL_DIR = $(PREFIX)/lib/gnucap/apps
+INSTALL_DIR = $(PREFIX)/lib/gnucap/${SECTION}
 #------------------------------------------------------------------------
-# These source files can be omitted, and supplied as plugins.
-
-# other stuff
-OTHER_SRCS = \
-signon.cc
+# device models hand coded in C++
 #------------------------------------------------------------------------
-RAW_SRCS = \
-$(D_SRCS) \
-$(BM_SRCS) \
-$(C_SRCS) \
-$(LANG_SRCS) \
-$(FUNC_SRCS) \
-$(OTHER_SRCS)
+RAW_SRCS = d_logic.cc
 #------------------------------------------------------------------------
 RAW_OTHER = MakeList
 #------------------------------------------------------------------------
-RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER) $(MODELS)
+RAW = $(RAW_HDRS) $(RAW_SRCS) $(RAW_OTHER)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-IMPORTED_SRCS =
-IMPORTED_HDRS =
-IMPORTED_OTHER =
-IMPORTED = $(IMPORTED_SRCS) $(IMPORTED_HDRS) $(IMPORTED_OTHER)
+DIST_FILES = $(RAW)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-GENERATED_SRCS = ${MODELS:.model=.cc}
-GENERATED_HDRS = ${MODELS:.model=.h}
-GENERATED_OTHER = Make.aux
-GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
-#------------------------------------------------------------------------
-#------------------------------------------------------------------------
-GENERATED_DIST = Make.depend
-IMPORTED_DIST = $(IMPORTED)
-DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
-#------------------------------------------------------------------------
-#------------------------------------------------------------------------
-SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
-HDRS = $(RAW_HDRS) $(GENERATED_HDRS) $(IMPORTED_HDRS)
+SRCS = $(RAW_SRCS)
+HDRS = $(RAW_HDRS)
 OBJS = ${SRCS:.cc=.o}
-TARGET_DEPENDS = $(OBJS) $(RAW) $(MODELS)
+TARGET_DEPENDS = $(OBJS) $(RAW)
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
-LIBPATH = `pwd | sed 's/\(.*\)apps/\1lib/'`
-MODELGEN = `pwd | sed 's/\(.*\)apps/\1modelgen/'`/gnucap-modelgen
-#------------------------------------------------------------------------
-${MAKE1_FIX}%.h : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -h $<) # MakeList
-#------------------------------------------------------------------------
-${MAKE1_FIX}%.cc : %.model ; (export LD_LIBRARY_PATH=$(LIBPATH); $(MODELGEN) -cc $<) # MakeList
-#-----------------------------------------------------------------------------
-#-----------------------------------------------------------------------------

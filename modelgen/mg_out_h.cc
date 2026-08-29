@@ -253,10 +253,10 @@ static void make_device(std::ofstream& out, const Device& d)
     "  void      precalc_first()override {COMPONENT::precalc_first(); if(subckt()) subckt()->precalc_first();}\n"
     "  void      expand_first()override;\n"
     "  void      expand()override;\n";
-  if(has_precalc_last(d)){ untested();
+  if(has_precalc_last(d)){
   out <<
     "  void    precalc_last()override;\n";
-  }else{ untested();
+  }else{
   out <<
     "  //void    precalc_last()override;//BASE_SUBCKT\n";
   }
@@ -432,9 +432,8 @@ void make_h_file(const File& in)
   std::string dump_name = in.name();
   { // chop suffix .model
     std::string::size_type loc = dump_name.rfind(".model");
-    if (loc == std::string::npos) { untested();
-      untested();
-      loc = dump_name.rfind(".vams");
+    if (loc == std::string::npos) {
+      loc = dump_name.rfind(".mg");
     }else{
     }
     if (loc != std::string::npos) {

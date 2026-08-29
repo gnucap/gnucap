@@ -3,7 +3,13 @@
 # Author: Felix Salfelder 2024
 #-----------------------------------------------------------------------------
 include ${srcdir}/MakeList
-RECURSIVE_TARGETS = all install clean depend distclean \
+#-----------------------------------------------------------------------------
+all: ${SUBDIRS:%=%-all}
+mg-all: modelgen-all
+${SUBDIRS:%=%-all}: %-all: lib-all
+	$(MAKE) -C $* all || [ -n "${K_FLAG}" ] || exit 1; \
+#-----------------------------------------------------------------------------
+RECURSIVE_TARGETS = install clean depend distclean \
                     ${EXTRA_RECURSIVE_TARGETS}
 #-----------------------------------------------------------------------------
 K_FLAG = $(findstring k,$(firstword -$(MAKEFLAGS)))
@@ -38,4 +44,5 @@ distclean-local:
 .PHONY: check-git install
 #-----------------------------------------------------------------------------
 .PHONY: ${RECURSIVE_TARGETS} ${RECURSIVE_TARGETS:%=%-recursive} \
+        all ${SUBDIRS:%=%-all} \
         install install-here check all distclean-local

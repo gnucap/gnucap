@@ -21,8 +21,9 @@
 #------------------------------------------------------------------------
 TARGET_LIB = libgnucap
 TARGET_LIB_EXT = .so
+TARGET = $(TARGET_LIB)$(TARGET_LIB_EXT)
 #------------------------------------------------------------------------
-INSTALL_FILES = $(TARGET_LIB)$(TARGET_LIB_EXT)
+INSTALL_FILES = $(TARGET)
 INSTALL_DIR = $(PREFIX)/lib
 #------------------------------------------------------------------------
 # enable readline according to MakeConf.$preset

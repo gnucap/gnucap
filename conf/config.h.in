@@ -7,7 +7,7 @@
 /* user interface preferences */
 #define DEFAULT_LANGUAGE "command"
 /*--------------------------------------------------------------------------*/
-#define DEFAULT_PLUGINS "apps"
+#define DEFAULT_PLUGINS "apps analysis bm devices func lang logic mg util"
 /* installation setup */
 #if defined(__WIN32__)
 #if !defined(SYSTEMSTARTFILE)
