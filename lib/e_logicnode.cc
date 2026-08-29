@@ -24,6 +24,7 @@
 //testing=script,sparse 2006.07.11
 #include "e_logicmod.h"
 #include "e_logicnode.h"
+#include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 LOGIC_NODE::LOGIC_NODE(int i)
   :NODE(),
@@ -326,6 +327,11 @@ void LOGIC_NODE::set_event(double delay, LOGICVAL v)
 	  long_label().c_str(), d_iter(), final_time());
   }
   set_last_change_time();
+  if(!subckt()){ untested();
+  }else if(is_cm_hack()){ untested();
+    subckt()->tr_accept();
+  }else{ untested();
+  }
 }
 /*--------------------------------------------------------------------------*/
 int LOGIC_NODE::matrix_number() const
