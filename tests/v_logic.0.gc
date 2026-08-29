@@ -18,7 +18,7 @@ spice
 
 Ven clk 0 pulse iv=0 pv=5 rise=1n
 
-.print tran v(clk) v(out) l(nodes)
+.print tran v(clk) v(out) l(nodes) control(0)
 .tran 20n
 
 .status notime

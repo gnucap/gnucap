@@ -11,17 +11,17 @@ paramset logic logic;
 endparamset
 
 g.n1: can't find subckt: logicnand1, forcing digital
-#Time       v(clk)     v(out)     l(clk)     l(gnd)     l(out)    
- 0.         0.         5.         0.01       ??         3.        
- 200.p      1.         5.         0.01       ??         3.        
- 400.p      2.         5.         1.01       ??         3.        
- 727.p      3.635      5.         1.01       ??         3.        
- 1.n        5.         5.         3.01       ??         2.        
- 2.n        5.         0.         3.01       ??         0.        
- 2.667n     5.         0.         3.01       ??         0.        
- 3.334n     5.         0.         3.01       ??         0.        
- 4.446n     5.         0.         3.01       ??         0.        
- 20.n       5.         0.         3.01       ??         0.        
+#Time       v(clk)     v(out)     l(clk)     l(gnd)     l(out)     control(0)
+ 0.         0.         5.         0.01       ??         3.         1.        
+ 200.p      1.         5.         0.01       ??         3.         9.        
+ 400.p      2.         5.         1.01       ??         3.         6.        
+ 727.p      3.635      5.         1.01       ??         3.         6.        
+ 1.n        5.         5.         3.01       ??         2.         7.        
+ 2.n        5.         0.         3.01       ??         0.         2.        
+ 2.667n     5.         0.         3.01       ??         0.         6.        
+ 3.334n     5.         0.         3.01       ??         0.         6.        
+ 4.446n     5.         0.         3.01       ??         0.         6.        
+ 20.n       5.         0.         3.01       ??         0.         1.        
 Gnucap   System status
 iterations: op=0, dc=0, tran=30, fourier=0, total=40
 transient timesteps: accepted=10, rejected=0, total=10

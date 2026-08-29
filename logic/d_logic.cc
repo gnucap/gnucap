@@ -436,6 +436,7 @@ void DEV_LOGIC::tr_advance()
     break;
   }
 }
+/*--------------------------------------------------------------------------*/
 void DEV_LOGIC::tr_regress()
 {
   ELEMENT::tr_regress();

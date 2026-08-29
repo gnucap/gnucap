@@ -35,5 +35,5 @@ spice
 
 Ven en 0 pulse iv=0 pv=5 rise=1n
 
-.print tran v(nodes)
+.print tran l(a) l(b) l(c) l(d) l(e) v(en) control(0)
 .tran .5u basic

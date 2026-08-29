@@ -14,7 +14,7 @@ U2   2 1  mos inv
 .print op v(1 2 3 4 5 6 7 8) logic(1 2 3 4 5 6 7 8)
 .op
 '.option trace
-'.print tran v(nodes) l(nodes)
+'.print tran v(nodes) l(nodes) control(0)
 '.tran 0 10 .05  watch
 .list
 .stat notime

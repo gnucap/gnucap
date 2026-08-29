@@ -6,7 +6,7 @@ F1  2  0  C1  1.
 R1  2  0  1.
 R2  3  0  1.
 .tcap C2  3  0  1  0  1.
-.print tran v nodes
+.print tran v nodes iter(0) control(0)
 .tran 0 1 .1 trace rejected
 .option trtol=1 reltol=.00001
 .tran 0 1 .1 trace rejected

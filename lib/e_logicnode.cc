@@ -166,11 +166,9 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f, double input)
 	  }
 	  break;
 	case lvFALLING:untested();
-	  untested();
 	  set_bad_quality("positive glitch in fall");
 	  break;
 	case lvSTABLE1:untested();
-	  untested();
 	  set_bad_quality("negative glitch in 1");
 	  break;
 	case lvUNKNOWN:
