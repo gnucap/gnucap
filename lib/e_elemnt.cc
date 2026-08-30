@@ -223,7 +223,8 @@ void ELEMENT::expand_first()
   assert(electrical);
   for (int ii = 0;  ii < net_nodes();  ++ii) {
     n_(ii).set_type(electrical);
-    n_(ii).set_used();
+    n_(ii).set_input();
+    n_(ii).set_output();
   }
 }
 /*--------------------------------------------------------------------------*/

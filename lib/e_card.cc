@@ -92,7 +92,8 @@ void CARD:: make_fanout()
 {
   if (is_device()) {
     for (int ii = 0;  ii < net_nodes();  ++ii) {
-      if (!n_(ii).is_grounded()) {
+      if (n_(ii).is_grounded()) {
+      }else if (n_(ii).is_input()) {
 	if (!n_(ii)->subckt()) {
 	  n_(ii)->new_subckt();
 	  assert(n_(ii)->subckt());
