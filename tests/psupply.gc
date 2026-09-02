@@ -40,7 +40,7 @@ R2 s2 0 10k
 param cfilter 5000u
 param rload 100
 
-print tran v(nodes) P(Rload) control(0)
+print tran v(nodes) P(Rload) control(0) iter(0)
 * print dc v(nodes) P(Rload)
 print dc method(Cfilter) method(X1.*) method(X*.D*.C*)
 

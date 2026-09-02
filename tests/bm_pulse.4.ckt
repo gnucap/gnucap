@@ -1,5 +1,6 @@
 * pulse test with 0 rise and fall time
 v1 (1 0) pulse (iv=0 pv=10)
-.print tran v(1)
+.print tran v(1) iter(0) control(0)
 .tran 0 10 1
+.status notime
 .end

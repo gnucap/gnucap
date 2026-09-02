@@ -5,7 +5,7 @@ Y1   2  3  pulse iv=20u pv=0 delay=500n period=1u
 Y2   3  0  pulse iv=0 pv=20u delay=500n period=1u
 C2   3  0  1.p
 .gen freq=100k
-.print tran v(nodes)
+.print tran v(nodes) iter(0) control(0)
 .tran 0 50u .1u
 .status notime
 .end
