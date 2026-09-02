@@ -327,10 +327,10 @@ void LOGIC_NODE::set_event(double delay, LOGICVAL v)
 	  long_label().c_str(), d_iter(), final_time());
   }
   set_last_change_time();
-  if(!subckt()){ untested();
+  if(!subckt()){
   }else if(is_cm_hack()){ untested();
     subckt()->tr_accept();
-  }else{ untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/

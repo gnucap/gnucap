@@ -327,12 +327,20 @@ void ELEMENT::tr_regress()
 TIME_PAIR ELEMENT::tr_review()
 {
   COMPONENT::tr_review();
+  assert(_time_by.dt_estimate() != NEVER || _time_by.is_ok());
   if (order() > 0 && _y[0].f0 != LINEAR) {
     double timestep = tr_review_trunc_error(_y);
-    double newtime = tr_review_check_and_convert(timestep);
-    _time_by.min_error_estimate(newtime);
+    if(tr_review_check(timestep)){
+    }else{
+      // event in the past indicates non-convergence.
+      //_time_by.min_event(_time[1] + timestep);
+      _time_by.set_nok();
+    }
+    _time_by.min_dt_estimate(timestep);
+    trace3("ELEMENT::tr_review", _time_by.is_ok(), timestep, _time_by.dt_estimate());
   }else{
   }
+  assert(_time_by.dt_estimate() != NEVER || _time_by.is_ok());
   return _time_by;
 }
 /*--------------------------------------------------------------------------*/
@@ -501,9 +509,7 @@ double ELEMENT::tr_probe_num(const std::string& x)const
   }else if (Umatch(x, "dt ")) {
     return _dt;
   }else if (Umatch(x, "dtr{equired} ")) {
-    return ((_time_by.error_estimate() - _time[0]) > 0)
-      ? _time_by.error_estimate() - _time[0]
-      : _time_by.error_estimate() - _time[1];
+    return _time_by.dt_estimate();
   }else if (Umatch(x, "time ")) {untested();
     return _time[0];
   }else if (Umatch(x, "timeo{ld} ")) {untested();
@@ -518,6 +524,14 @@ double ELEMENT::tr_probe_num(const std::string& x)const
     return port_impedance(n_(OUT1), n_(OUT2), _sim->_aa, mfactor()*(_m0.c1+_loss0));
   }else if (Umatch(x, "zraw ")) {
     return port_impedance(n_(OUT1), n_(OUT2), _sim->_aa, 0.);
+  }else if (Umatch(x, "timef{uture} ")) {
+    if (!_time_by.is_ok()){
+      return _time[1] + _time_by.dt_estimate();
+    }else if (_sim->_time0 + _time_by.dt_estimate() < _time_by.event()) {
+      return _sim->_time0 + _time_by.dt_estimate();
+    }else{
+      return _time_by.event();
+    }
   }else{
     return COMPONENT::tr_probe_num(x);
   }
@@ -627,12 +641,10 @@ double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
   return timestep;
 }
 /*--------------------------------------------------------------------------*/
-double ELEMENT::tr_review_check_and_convert(double timestep)
+bool ELEMENT::tr_review_check(double& timestep)const
 {
-  double time_future;
-  if (timestep == NEVER) {
-    time_future = NEVER;
-  }else{
+  bool ok = true;
+  {
     if (timestep < _sim->_dtmin) {
       timestep = _sim->_dtmin;
     }else{
@@ -648,16 +660,14 @@ double ELEMENT::tr_review_check_and_convert(double timestep)
 	error(bTRACE, "new=%g  old=%g  required=%g\n",
 	      timestep, _dt, _dt * OPT::trreject);
       }
-      time_future = _time[1] + timestep;
-      trace3("reject", timestep, _dt, time_future);
+      trace2("reject", timestep, _dt);
+      ok = false;
     }else{
-      time_future = _time[0] + timestep;
-      trace3("accept", timestep, _dt, time_future);
+      trace2("accept", timestep, _dt);
     }
   }
-  assert(time_future > 0.);
-  assert(time_future > _time[1]);
-  return time_future;
+  assert(timestep > 0.);
+  return ok;
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

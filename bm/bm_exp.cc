@@ -178,13 +178,13 @@ TIME_PAIR EVAL_BM_EXP::tr_review(COMPONENT* d)const
     d->_time_by.min_event(_td1 + time_offset);
     dt = (_tau2 > 0) ? _tau2 : NEVER;
   }
-  d->_time_by.min_error_estimate(d->_sim->_time0 + dt);
+  d->_time_by.min_dt_estimate(dt);
 
-  trace3("bm_exp", d->_sim->_time0, d->_time_by.event(), d->_time_by.error_estimate());
-  assert(d->_time_by.event() >  d->_sim->_time0);
-  assert(d->_time_by.error_estimate() > d->_sim->_time0);
-  assert(d->_time_by.event() >  d->_sim->_time0 + d->_sim->_dtmin);
-  assert(d->_time_by.error_estimate() > d->_sim->_time0 + d->_sim->_dtmin);
+  trace3("bm_exp", d->_sim->_time0, d->_time_by.event(), d->_time_by.dt_estimate());
+  assert(d->_time_by.event() > d->_sim->_time0);
+  assert(d->_time_by.dt_estimate() > 0);
+  assert(d->_time_by.event() > d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by.dt_estimate() > d->_sim->_dtmin);
 
   return d->_time_by;
 }

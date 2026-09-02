@@ -589,11 +589,11 @@ TIME_PAIR SWITCH_BASE::tr_review()
   }
   // _time_by_event is the predicted switch time
 
-  trace3("switch", _sim->_time0, _time_by.event(), _time_by.error_estimate());
-  //assert(_time_by.event() >  _sim->_time0);
-  assert(_time_by.error_estimate() > _sim->_time0);
-  //assert(_time_by.event() >  _sim->_time0 + _sim->_dtmin);
-  assert(_time_by.error_estimate() > _sim->_time0 + _sim->_dtmin);
+  trace3("switch", _sim->_time0, _time_by.event(), _time_by.dt_estimate());
+  //assert(_time_by.event() > _sim->_time0);
+  assert(_time_by.dt_estimate() > 0);
+  //assert(_time_by.event() > _sim->_time0 + _sim->_dtmin);
+  assert(_time_by.dt_estimate() > _sim->_dtmin);
 
   return _time_by;
 }

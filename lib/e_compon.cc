@@ -1135,11 +1135,17 @@ double COMPONENT::tr_probe_num(const std::string& x)const
     int nn = cmd.ctoi();
     return (nn > 0 && nn <= net_nodes()) ? n_(nn-1).v0() : NOT_VALID;
   }else if (Umatch(x, "error{time} |next{time} ")) {
-    return (_time_by.error_estimate() < BIGBIG) ? _time_by.error_estimate() : 0;
-  }else if (Umatch(x, "timef{uture} ")) {
-    return (_time_by.error_estimate() < _time_by.event())
-      ? _time_by.error_estimate()
-      : _time_by.event();
+    return (_time_by.dt_estimate() < BIGBIG) ? _sim->_time0 + _time_by.dt_estimate() : 0;
+#if 0
+  }else if (Umatch(x, "timef{uture} ")) { untested();
+    if (!_time_by.is_ok()){ untested();
+      return - _sim->_time0 - _time_by.dt_estimate();
+    }else if (_sim->_time0 + _time_by.dt_estimate() < _time_by.event()) { untested();
+      return _sim->_time0 + _time_by.dt_estimate();
+    }else{ untested();
+      return _time_by.event();
+    }
+#endif
   }else if (Umatch(x, "event{time} ")) {
     return (_time_by.event() < BIGBIG) ? _time_by.event() : 0;
   }else{

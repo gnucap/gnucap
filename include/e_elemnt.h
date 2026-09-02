@@ -188,7 +188,7 @@ protected: // in .cc
 
 public:
   double   tr_review_trunc_error(const FPOLY1* q);
-  double   tr_review_check_and_convert(double timestep);
+  bool     tr_review_check(double& timestep)const;
 
   double   tr_outvolts()const	{return dn_diff(n_(OUT1).v0(), n_(OUT2).v0());}
   double   tr_outvolts_limited()const{return volts_limited(n_(OUT1),n_(OUT2));}

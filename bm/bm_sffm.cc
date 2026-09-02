@@ -188,14 +188,14 @@ TIME_PAIR EVAL_BM_SFFM::tr_review(COMPONENT* d)const
     trace2("", time, N);
   } while (std::abs(dn_diff(time, old_time)) > 0);
 
-  d->_time_by.min_error_estimate(d->_sim->_time0 + 1. / (_samples * _carrier));
+  d->_time_by.min_dt_estimate(1. / (_samples * _carrier));
   d->_time_by.min_event(old_time);
 
-  trace3("bm_sffm", d->_sim->_time0, d->_time_by.event(), d->_time_by.error_estimate());
+  trace3("bm_sffm", d->_sim->_time0, d->_time_by.event(), d->_time_by.dt_estimate());
   assert(d->_time_by.event() >  d->_sim->_time0);
-  assert(d->_time_by.error_estimate() > d->_sim->_time0);
+  assert(d->_time_by.dt_estimate() > 0);
   assert(d->_time_by.event() >  d->_sim->_time0 + d->_sim->_dtmin);
-  assert(d->_time_by.error_estimate() > d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by.dt_estimate() > d->_sim->_dtmin);
   
   return d->_time_by;
 }

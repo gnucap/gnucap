@@ -139,7 +139,7 @@ public: // used by matrix
 
 private: // connectmodule hacks. transition
   bool _cm_hack{false};
-  bool is_cm_hack()const {untested();  return _cm_hack; }
+  bool is_cm_hack()const {  return _cm_hack; }
 public:
   void set_cm_hack() {untested(); _cm_hack = true;}
 };

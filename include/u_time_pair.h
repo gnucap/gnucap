@@ -27,26 +27,34 @@
 #include "constant.h"
 /*--------------------------------------------------------------------------*/
 class TIME_PAIR {
-  double _error_estimate;
+  double _dt_estimate;
   double _event;
 public:
-  explicit TIME_PAIR() : _error_estimate(NEVER), _event(NEVER) {}
-  explicit TIME_PAIR(double Error, double Event) : _error_estimate(Error), _event(Event) {}
-	   TIME_PAIR(const TIME_PAIR& P) : _error_estimate(P._error_estimate), _event(P._event) {}
+  explicit TIME_PAIR() : _dt_estimate(NEVER), _event(NEVER) { assert(is_ok()); }
+  explicit TIME_PAIR(double Error, double Event) : _dt_estimate(Error), _event(Event) {
+    assert(Error>0);
+  }
+	   TIME_PAIR(const TIME_PAIR& P) = default;
 
-  TIME_PAIR& operator=(const TIME_PAIR& P) {
-    _error_estimate = P._error_estimate;
-    _event = P._event;
-    return *this;
-  }
+  TIME_PAIR& operator=(const TIME_PAIR& P) = default;
   TIME_PAIR& reset() {
-    _error_estimate = NEVER;
+    _dt_estimate = NEVER;
     _event = NEVER;
+    assert(is_ok());
     return *this;
   }
-  TIME_PAIR& min_error_estimate(double E) {
-    if (E < _error_estimate) {
-      _error_estimate = E;
+  TIME_PAIR& min_dt_estimate(double E) {
+    assert(E > 0);
+    if (E < _dt_estimate) {
+      assert(is_ok());
+      _dt_estimate = E;
+    }else if (_dt_estimate > 0) {
+      assert(is_ok());
+    }else if (E < -_dt_estimate) {
+      assert(!is_ok());
+      _dt_estimate = -E;
+      assert(!is_ok());
+    }else if(is_ok()){ untested();
     }else{
     }
     return *this;
@@ -59,13 +67,28 @@ public:
     return *this;
   }
   TIME_PAIR& min(const TIME_PAIR& P) {
-    return min_error_estimate(P._error_estimate).min_event(P._event);
+    return min_dt_estimate(P.dt_estimate()).
+           min_event(P._event).set_nok(P.is_nok());
   }
   TIME_PAIR& min(double Error_Estimate, double Event) {untested();
-    return min_error_estimate(Error_Estimate).min_event(Event);
+    assert(Error_Estimate > 0);
+    return min_dt_estimate(Error_Estimate).min_event(Event);
   }
-  double error_estimate()const {return _error_estimate;}
+  TIME_PAIR& set_nok(bool nok=true) {
+    if(nok){
+      _dt_estimate = - dt_estimate();
+      assert(!is_ok());
+    }else{
+    }
+    return *this;
+  }
+  double dt_estimate()const {
+    assert(_dt_estimate != -NEVER);
+    return std::fabs(_dt_estimate);
+  }
   double event()const {return _event;}
+  double is_ok()const {return _dt_estimate > 0;}
+  double is_nok()const {return _dt_estimate < 0;}
 };
 /*--------------------------------------------------------------------------*/
 inline TIME_PAIR min(TIME_PAIR A, const TIME_PAIR& B)

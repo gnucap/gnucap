@@ -183,16 +183,16 @@ TIME_PAIR EVAL_BM_SIN::tr_review(COMPONENT* d)const
       d->_time_by.min_event(floor(reltime * 2 * _actual_frequency + 1) / (2 * _actual_frequency));
     }else{
     }
-    d->_time_by.min_error_estimate(d->_sim->_time0 + 1. / (_samples * _actual_frequency));
+    d->_time_by.min_dt_estimate(1. / (_samples * _actual_frequency));
   }else{
     d->_time_by.min_event(_delay);
   }
 
-  trace3("bm_sin", d->_sim->_time0, d->_time_by.event(), d->_time_by.error_estimate());
+  trace3("bm_sin", d->_sim->_time0, d->_time_by.event(), d->_time_by.dt_estimate());
   assert(d->_time_by.event() >  d->_sim->_time0);
-  assert(d->_time_by.error_estimate() > d->_sim->_time0);
+  assert(d->_time_by.dt_estimate() > 0);
   assert(d->_time_by.event() >  d->_sim->_time0 + d->_sim->_dtmin);
-  assert(d->_time_by.error_estimate() > d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by.dt_estimate() > d->_sim->_dtmin);
 
   return d->_time_by;
 }

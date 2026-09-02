@@ -77,6 +77,7 @@ public:
   bool   operator<(const TIME_t& B)const {return (_t < B._t);}
   bool   operator<=(const TIME_t& B)const {return (_t <= B._t);}
   bool   operator==(const TIME_t& B)const {return (_t == B._t);}
+  bool   operator!=(const TIME_t& B)const {untested(); return (_t != B._t);}
 
   double to_double()const {return _t*_dtmin;}
   int64_t ticks()const	  {return int64_t(_t);}
@@ -583,12 +584,17 @@ bool TRANSIENT::review()
   }else{//43184
   }
 
+  if (time_by.is_ok()) {
+    _time_by_error_estimate = _sim->_time0 + time_by.dt_estimate();
+  }else{
+    _time_by_error_estimate = _time1 + time_by.dt_estimate();
+    assert(_time_by_error_estimate < _sim->_time0);
+  }
   rejecttime = _sim->_time0 - 1.1*_sim->_dtmin;
   creeptime  = _sim->_time0 + 1.1*_sim->_dtmin;
-  if (time_by.error_estimate() < mintime) {//24
+  if (_time_by_error_estimate < mintime) {//24
     _time_by_error_estimate = mintime;
   }else{//43394
-    _time_by_error_estimate = time_by.error_estimate();
   }
   if (up_order(rejecttime, _time_by_error_estimate, creeptime)) {//25
     _time_by_error_estimate = creeptime;
