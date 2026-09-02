@@ -26,10 +26,10 @@
 #define U_TIME_PAIR_H_INCLUDED
 #include "constant.h"
 /*--------------------------------------------------------------------------*/
-struct TIME_PAIR {
+class TIME_PAIR {
   double _error_estimate;
   double _event;
-
+public:
   explicit TIME_PAIR() : _error_estimate(NEVER), _event(NEVER) {}
   explicit TIME_PAIR(double Error, double Event) : _error_estimate(Error), _event(Event) {}
 	   TIME_PAIR(const TIME_PAIR& P) : _error_estimate(P._error_estimate), _event(P._event) {}
@@ -64,6 +64,8 @@ struct TIME_PAIR {
   TIME_PAIR& min(double Error_Estimate, double Event) {untested();
     return min_error_estimate(Error_Estimate).min_event(Event);
   }
+  double error_estimate()const {return _error_estimate;}
+  double event()const {return _event;}
 };
 /*--------------------------------------------------------------------------*/
 inline TIME_PAIR min(TIME_PAIR A, const TIME_PAIR& B)

@@ -585,15 +585,15 @@ TIME_PAIR SWITCH_BASE::tr_review()
     double new_dt = old_dt * new_dv / old_dv;
     _time_by.min_event(_time[1] + new_dt);
   }else{
-    assert(_time_by._event == NEVER);
+    assert(_time_by.event() == NEVER);
   }
   // _time_by_event is the predicted switch time
 
-  trace3("switch", _sim->_time0, _time_by._event, _time_by._error_estimate);
-  //assert(_time_by._event >  _sim->_time0);
-  assert(_time_by._error_estimate > _sim->_time0);
-  //assert(_time_by._event >  _sim->_time0 + _sim->_dtmin);
-  assert(_time_by._error_estimate > _sim->_time0 + _sim->_dtmin);
+  trace3("switch", _sim->_time0, _time_by.event(), _time_by.error_estimate());
+  //assert(_time_by.event() >  _sim->_time0);
+  assert(_time_by.error_estimate() > _sim->_time0);
+  //assert(_time_by.event() >  _sim->_time0 + _sim->_dtmin);
+  assert(_time_by.error_estimate() > _sim->_time0 + _sim->_dtmin);
 
   return _time_by;
 }

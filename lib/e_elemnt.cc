@@ -501,9 +501,9 @@ double ELEMENT::tr_probe_num(const std::string& x)const
   }else if (Umatch(x, "dt ")) {
     return _dt;
   }else if (Umatch(x, "dtr{equired} ")) {
-    return ((_time_by._error_estimate - _time[0]) > 0)
-      ? _time_by._error_estimate - _time[0]
-      : _time_by._error_estimate - _time[1];
+    return ((_time_by.error_estimate() - _time[0]) > 0)
+      ? _time_by.error_estimate() - _time[0]
+      : _time_by.error_estimate() - _time[1];
   }else if (Umatch(x, "time ")) {untested();
     return _time[0];
   }else if (Umatch(x, "timeo{ld} ")) {untested();

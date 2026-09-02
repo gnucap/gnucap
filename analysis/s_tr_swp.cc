@@ -566,17 +566,17 @@ bool TRANSIENT::review()
 
 #if 0
   // not ready for this yet.
-  _time_by_ambiguous_event = TIME_t(time_by._event).to_double();
-  _time_by_error_estimate  = TIME_t(time_by._error_estimate).to_double();
+  _time_by_ambiguous_event = TIME_t(time_by.event()).to_double();
+  _time_by_error_estimate  = TIME_t(time_by.error_estimate()).to_double();
 #else
   double mintime    = _time1       + 2*_sim->_dtmin;
   double rejecttime = _sim->_time0 - 2*_sim->_dtmin;
   double creeptime  = _sim->_time0 + 2*_sim->_dtmin;
 
-  if (time_by._event < mintime) {//99
+  if (time_by.event() < mintime) {//99
     _time_by_ambiguous_event = mintime;
   }else{//43319
-    _time_by_ambiguous_event = time_by._event;
+    _time_by_ambiguous_event = time_by.event();
   }
   if (up_order(rejecttime, _time_by_ambiguous_event, creeptime)) {//234
     _time_by_ambiguous_event = creeptime;
@@ -585,10 +585,10 @@ bool TRANSIENT::review()
 
   rejecttime = _sim->_time0 - 1.1*_sim->_dtmin;
   creeptime  = _sim->_time0 + 1.1*_sim->_dtmin;
-  if (time_by._error_estimate < mintime) {//24
+  if (time_by.error_estimate() < mintime) {//24
     _time_by_error_estimate = mintime;
   }else{//43394
-    _time_by_error_estimate = time_by._error_estimate;
+    _time_by_error_estimate = time_by.error_estimate();
   }
   if (up_order(rejecttime, _time_by_error_estimate, creeptime)) {//25
     _time_by_error_estimate = creeptime;

@@ -1135,13 +1135,13 @@ double COMPONENT::tr_probe_num(const std::string& x)const
     int nn = cmd.ctoi();
     return (nn > 0 && nn <= net_nodes()) ? n_(nn-1).v0() : NOT_VALID;
   }else if (Umatch(x, "error{time} |next{time} ")) {
-    return (_time_by._error_estimate < BIGBIG) ? _time_by._error_estimate : 0;
+    return (_time_by.error_estimate() < BIGBIG) ? _time_by.error_estimate() : 0;
   }else if (Umatch(x, "timef{uture} ")) {
-    return (_time_by._error_estimate < _time_by._event) 
-      ? _time_by._error_estimate
-      : _time_by._event;
+    return (_time_by.error_estimate() < _time_by.event())
+      ? _time_by.error_estimate()
+      : _time_by.event();
   }else if (Umatch(x, "event{time} ")) {
-    return (_time_by._event < BIGBIG) ? _time_by._event : 0;
+    return (_time_by.event() < BIGBIG) ? _time_by.event() : 0;
   }else{
     return CARD::tr_probe_num(x);
   }

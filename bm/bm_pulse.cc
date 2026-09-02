@@ -205,11 +205,11 @@ TIME_PAIR EVAL_BM_PULSE::tr_review(COMPONENT* d)const
     }
   }
 
-  trace3("bm_pulse", d->_sim->_time0, d->_time_by._event, d->_time_by._error_estimate);
-  assert(d->_time_by._event >  d->_sim->_time0);
-  assert(d->_time_by._error_estimate > d->_sim->_time0);
-  assert(d->_time_by._event >  d->_sim->_time0 + d->_sim->_dtmin);
-  assert(d->_time_by._error_estimate > d->_sim->_time0 + d->_sim->_dtmin);
+  trace3("bm_pulse", d->_sim->_time0, d->_time_by.event(), d->_time_by.error_estimate());
+  assert(d->_time_by.event() >  d->_sim->_time0);
+  assert(d->_time_by.error_estimate() > d->_sim->_time0);
+  assert(d->_time_by.event() >  d->_sim->_time0 + d->_sim->_dtmin);
+  assert(d->_time_by.error_estimate() > d->_sim->_time0 + d->_sim->_dtmin);
 
   return d->_time_by;
 }
