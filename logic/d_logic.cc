@@ -682,11 +682,22 @@ void DEV_LOGIC::tr_accept()
       }else if (future_state != n_(OUTNODE)->lv()) {
 	assert(future_state != lvUNKNOWN);
 	switch (future_state) {
-	case lvSTABLE0:	/*nothing*/		break;
-	case lvRISING:  future_state=lvSTABLE0;	break;
-	case lvFALLING: future_state=lvSTABLE1;	break;
-	case lvSTABLE1:	/*nothing*/		break;
-	case lvUNKNOWN: unreachable();		break;
+	case lv00:	/*nothing*/		break;
+	case lv0Z:
+	case lv0X:
+	case lv01: future_state=lv00;		break;
+	case lv11:	/*nothing*/		break;
+	case lv1Z:
+	case lv1X:
+	case lv10: future_state=lv11;		break;
+	case lvZZ:	/*nothing*/		break;
+	case lvZ1:
+	case lvZX:
+	case lvZ0: future_state=lvZZ;		break;
+	case lvXX:	/*nothing*/		break;
+	case lvX1:
+	case lvXZ:
+	case lvX0: future_state=lvXX;		break;
 	}
 	/* This handling of rising and falling may seem backwards.
 	 * These states occur when the value has been contaminated 

@@ -24,40 +24,99 @@
 //testing=none
 #include "e_logicval.h"
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::or_truth[lvNUM_STATES][lvNUM_STATES] = { //
-  {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
-  {lvRISING,  lvRISING,  lvRISING,  lvSTABLE1, lvRISING},
-  {lvFALLING, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
-  {lvSTABLE1, lvSTABLE1, lvSTABLE1, lvSTABLE1, lvSTABLE1},
-  {lvUNKNOWN, lvRISING,  lvUNKNOWN, lvSTABLE1, lvUNKNOWN}
+const _LOGICVAL LOGICVAL::_or_truth[lvNUM_STATES][lvNUM_STATES] = {
+ {lv00,lv01,lv10,lv11, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv01,lv01,lv01,lv11, lv01,lv01,lv11,lv11, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1},
+ {lv10,lv01,lv10,lv11, lv1X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lv1X,lv1X,lv1X,lv1X},
+ {lv11,lv11,lv11,lv11, lv11,lv11,lv11,lv11, lv11,lv11,lv11,lv11, lv11,lv11,lv11,lv11},
+
+ {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv1X,lv1X,lv1X,lv11, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv1X,lv1X},
+ {lv1X,lv1X,lv1X,lv11, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv1X,lv1X},
+
+ {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvX1,lvX1,lvX1,lv11, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1},
+ {lvX1,lvX1,lvX1,lv11, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1},
+
+ {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
 };
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::xor_truth[lvNUM_STATES][lvNUM_STATES] = { //
-  {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
-  {lvRISING,  lvFALLING, lvRISING,  lvFALLING, lvUNKNOWN},
-  {lvFALLING, lvRISING,  lvFALLING, lvRISING,  lvUNKNOWN},
-  {lvSTABLE1, lvFALLING, lvRISING,  lvSTABLE0, lvUNKNOWN},
-  {lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN, lvUNKNOWN}
+const _LOGICVAL LOGICVAL::_xor_truth[lvNUM_STATES][lvNUM_STATES] = {
+ {lv00,lv01,lv10,lv11, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv01,lv10,lv01,lv10, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv10,lv01,lv10,lv01, lv1X,lv1X,lv0X,lv0X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv11,lv10,lv01,lv00, lv1X,lv1X,lv0X,lv0X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+
+ {lv0X,lv0X,lv1X,lv1X, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv0X,lv0X,lv1X,lv1X, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv1X,lv1X,lv0X,lv0X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv1X,lv1X,lv0X,lv0X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+
+ {lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+
+ {lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX}
 };
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::and_truth[lvNUM_STATES][lvNUM_STATES] = { //
-  {lvSTABLE0, lvSTABLE0, lvSTABLE0, lvSTABLE0, lvSTABLE0},
-  {lvSTABLE0, lvRISING,  lvFALLING, lvRISING,  lvUNKNOWN},
-  {lvSTABLE0, lvFALLING, lvFALLING, lvFALLING, lvFALLING},
-  {lvSTABLE0, lvRISING,  lvFALLING, lvSTABLE1, lvUNKNOWN},
-  {lvSTABLE0, lvUNKNOWN, lvFALLING, lvUNKNOWN, lvUNKNOWN}
+const _LOGICVAL LOGICVAL::_and_truth[lvNUM_STATES][lvNUM_STATES] = { //
+ {lv00,lv00,lv00,lv00, lv00,lv00,lv00,lv00, lv00,lv00,lv00,lv00, lv00,lv00,lv00,lv00},
+ {lv00,lv01,lv10,lv01, lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X},
+ {lv00,lv10,lv10,lv10, lv0X,lv0X,lv1X,lv1X, lvX0,lvX0,lvX0,lvX0, lvX0,lvX0,lvX0,lvX0},
+ {lv00,lv01,lv10,lv11, lv0X,lv0X,lv1X,lv1X, lvX0,lvX0,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+
+ {lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X, lv00,lv00,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X},
+ {lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X, lv00,lv00,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X},
+ {lv0X,lv0X,lv1X,lv1X, lv0X,lv0X,lv1X,lv1X, lvX0,lvX0,lvXX,lvXX, lv0X,lv0X,lv0X,lv0X},
+ {lv0X,lv0X,lv1X,lv1X, lv0X,lv0X,lv1X,lv1X, lvX0,lvX0,lvXX,lvXX, lv0X,lv0X,lv0X,lv0X},
+
+ {lv00,lv00,lvX0,lvX0, lv00,lv00,lvX0,lvX0, lvX0,lvX0,lvX0,lvX0, lvX0,lvX0,lvX0,lvX0},
+ {lv00,lv00,lvX0,lvX0, lv00,lv00,lvX0,lvX0, lvX0,lvX0,lvX0,lvX0, lvX0,lvX0,lvX0,lvX0},
+ {lv00,lv01,lvX0,lvX1, lv0X,lv0X,lvXX,lvXX, lvX0,lvX0,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+ {lv00,lv01,lvX0,lvX1, lv0X,lv0X,lvXX,lvXX, lvX0,lvX0,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+
+ {lv00,lv0X,lvX0,lvXX, lv0X,lv0X,lvXX,lvXX, lvX0,lvX0,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv00,lv0X,lvX0,lvXX, lv0X,lv0X,lvXX,lvXX, lvX0,lvX0,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv00,lv0X,lvX0,lvXX, lv0X,lv0X,lvXX,lvXX, lvX0,lvX0,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv00,lv0X,lvX0,lvXX, lv0X,lv0X,lvXX,lvXX, lvX0,lvX0,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX}
 };
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::not_truth[lvNUM_STATES] = { //
-  lvSTABLE1, lvFALLING, lvRISING,  lvSTABLE0, lvUNKNOWN
+const _LOGICVAL LOGICVAL::_not_truth[lvNUM_STATES] = {
+  lv11, lv10, lv01, lv00,
+  lv1X, lv1X, lv0X, lv0X,
+  lvX1, lvX1, lvX0, lvX0,
+  lvXX, lvXX, lvXX, lvXX
 };
 /*--------------------------------------------------------------------------*/
-const _LOGICVAL LOGICVAL::prop_truth[lvNUM_STATES][lvNUM_STATES] = { //
-  {lvSTABLE0, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
-  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
-  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN},
-  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvSTABLE1, lvUNKNOWN},
-  {lvFALLING, lvUNKNOWN, lvUNKNOWN, lvRISING,  lvUNKNOWN}
+const _LOGICVAL LOGICVAL::_prop_truth[lvNUM_STATES][lvNUM_STATES] = {
+ {lv00,lvXX,lvXX,lv01, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lv0Z,lvXX,lvXX,lvXX},
+ {lv10,lvXX,lvXX,lv01, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
+ {lv10,lvXX,lvXX,lv01, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
+ {lv10,lvXX,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lv1Z,lvXX,lvXX,lvXX},
+
+ {lvZ0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lv0Z,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvZ1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lv1Z,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
+
+ {lvZ0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lv0Z,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvZ1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lv1Z,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
+
+ {lvX0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvZZ,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
+ {lvX0,lvXX,lvXX,lvX1, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXZ,lvXX,lvXX,lvXX},
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

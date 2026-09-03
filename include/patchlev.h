@@ -1,1 +1,1 @@
-#define PATCHLEVEL "dtime 2026.08.05"
+#define PATCHLEVEL "logic_xz 2026.09.03"
