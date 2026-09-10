@@ -1,0 +1,10 @@
+#           v(v_cc)    v(in)      v(out)     iter(0)   
+ 27.        20.        0.         0.         3.        
+#Freq       v(v_cc)    v(in)      v(out)    
+ 1.K        0.         0.2        0.        
+#Time       v(v_cc)    v(in)      v(out)    
+ 0.         20.        0.         0.        
+ 1.         20.        0.         0.        
+Vcc ( v_cc 0 )  DC  20.
+Vin ( in 0 )  AC  0.2
+Rload ( out 0 )  100.K

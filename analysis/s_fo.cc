@@ -53,8 +53,9 @@ private:
     _fstep(f._fstep),
     _timesteps(f._timesteps),
     _fdata(NULL) {
+    set_label("fourier");
   }
-  // CMD* clone()const override {return new FOURIER(*this);}
+  CMD* clone()const override {return new FOURIER(*this);}
   std::string status()const override {untested();return "";}
   void	setup(CS&)override;
   void  allocate()override;

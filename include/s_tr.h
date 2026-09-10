@@ -63,7 +63,7 @@ public:
   {
   }
   ~TRANSIENT() {}
-  //CMD* clone()const override {return new TRANSIENT(*this);}
+  CMD* clone()const override {return new TRANSIENT(*this);}
 public:
   void	do_it(CS&, CARD_LIST* scope)override;
   std::string status()const override;
@@ -107,6 +107,7 @@ protected: // fourier...
     _cold(t._cold),
     _cont(t._cont),
     _stepno(t._stepno) {
+    set_label("tran");
   }
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:

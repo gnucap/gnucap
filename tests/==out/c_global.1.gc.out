@@ -1,9 +1,9 @@
-.global a
+// spice? ".global a"
 module tt (.a(a));
-  .global a 
+  // spice? ".global a "
 endmodule // tt
 
-ground gnd
+ground gnd;
 resistor #(.r(1)) r (.p(b),.n(gnd));
 isource #(.dc(3)) i1 (.p(gnd),.n(a));
 tt #() mytt (.a(b));

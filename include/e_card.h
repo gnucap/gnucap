@@ -59,6 +59,12 @@ public:   				// traversal functions
   const CARD* find_in_parent_scope(const std::string& name)const;
   const CARD* find_looking_out(const std::string& name)const;
   //--------------------------------------------------------------------
+public:   				// traversal functions, reverse
+  CARD* rfind_in_my_scope(const std::string& name);
+  const CARD* rfind_in_my_scope(const std::string& name)const;
+  const CARD* rfind_in_parent_scope(const std::string& name)const;
+  const CARD* rfind_looking_out(const std::string& name)const;
+  //--------------------------------------------------------------------
 protected: // create and destroy.
   explicit CARD();
   explicit CARD(const std::string& s);

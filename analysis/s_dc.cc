@@ -157,9 +157,9 @@ protected:
 class DC : public DCOP {
 public:
   explicit DC(): DCOP() {}
-  explicit DC(const DC& x): DCOP(x) {untested();}
+  explicit DC(const DC& x): DCOP(x) {set_label("dc");}
   ~DC() {}
-  //CARD* clone()const override {return new DC(*this);}
+  CARD* clone()const override {return new DC(*this);}
   void	do_it(CS&, CARD_LIST*)override;
 private:
   void	setup(CS&)override;
@@ -168,9 +168,9 @@ private:
 class OP : public DCOP {
 public:
   explicit OP(): DCOP() {}
-  explicit OP(const OP& x): DCOP(x) {untested();}
+  explicit OP(const OP& x): DCOP(x) {set_label("op");}
   ~OP() {}
-  //CARD* clone()const override {return new OP(*this);}
+  CARD* clone()const override {return new OP(*this);}
   void	do_it(CS&, CARD_LIST*)override;
 private:
   void	setup(CS&)override;
@@ -252,7 +252,7 @@ DCOP::DCOP(const DCOP& d)
    _trace(d._trace),
    _have_param(d._have_param)
 {
-  for (int ii = 0; ii < DCNEST; ++ii) { untested();
+  for (int ii = 0; ii < DCNEST; ++ii) {
     _start[ii] =      d._start[ii];
     _stop[ii] =       d._stop[ii];
     _step_in[ii] =    d._step_in[ii];

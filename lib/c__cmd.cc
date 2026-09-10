@@ -147,5 +147,11 @@ void CMD::command(const std::string& cs, CARD_LIST* scope)
   }
 }
 /*--------------------------------------------------------------------------*/
+void CMD::set_dev_type(std::string const& s)
+{
+  static int idx;
+  _type = s;
+  set_label(_type + to_string(++idx));
+}
 /*--------------------------------------------------------------------------*/
 // vim:ts=8:sw=2:noet:

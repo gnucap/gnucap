@@ -21,6 +21,7 @@ M2 ( 2 3 1 1 )  pmos  l=100.u w=100.u nrd=1. nrs=1.
 .ends mosinv1
 .model nmos nmos2 ( level=2 nfs=0. neff=1. delta=0. vto=0. gamma=0. phi=0.6 tox=100.n uo=600. tpg=1 tnom=NA( 27.) fc=0.5 pb=0.8 cj=0. mj=0.5 cjsw=0. mjsw=0.33 is=10.E-15 rsh=0. cgso=0. cgdo=0. cgbo=0. ld=0.)
 .model pmos pmos2 ( level=2 nfs=0. neff=1. delta=0. vto=0. gamma=0. phi=0.6 tox=100.n uo=600. tpg=1 tnom=NA( 27.) fc=0.5 pb=0.8 cj=0. mj=0.5 cjsw=0. mjsw=0.33 is=10.E-15 rsh=0. cgso=0. cgdo=0. cgbo=0. ld=0.)
+.op 
 *'.option trace 
 *'.print tran v(nodes) l(nodes) 
 *'.tran 0 10 .05 
@@ -53,6 +54,7 @@ paramset pmos pmos2;
 endparamset
 
 //*+(* vfb=-0.6 * kp= 20.71886u ) 
+op ;
 //'.option trace 
 //'.print tran v(nodes) l(nodes) 
 //'.tran 0 10 .05 

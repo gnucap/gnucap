@@ -30,10 +30,10 @@
 class CS;
 /*--------------------------------------------------------------------------*/
 class INTERFACE CMD : public DEV_DOT {
+  std::string _type;
 protected:
   explicit CMD() : DEV_DOT() {}
-  explicit CMD(CMD const& c) : DEV_DOT(c) {}
-  virtual ~CMD() {}
+  explicit CMD(CMD const& p) : DEV_DOT(p) {}
 public:
   std::string value_name()const override {return "";}
   virtual void do_it(CS&, CARD_LIST*) = 0;
@@ -41,6 +41,9 @@ public:
   static  void  cmdproc(CS&, CARD_LIST*);
   static  void	command(const std::string&, CARD_LIST*);
 //  CARD*   clone()const override {untested(); return new DEV_DOT;}
+public:	 // not a "dev". but still a type...
+  void set_dev_type(std::string const& s)override;
+  std::string dev_type()const override {return _type;}
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

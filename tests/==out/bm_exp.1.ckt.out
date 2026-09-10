@@ -402,6 +402,7 @@
  19.95n     0.1141    
  20.n       0.11296   
 v1 ( 1 0 ) exp iv= 0. pv= 1. td1= 1.n tau1= 5.n td2= 10.n tau2= 5.n
+.tran 0 20n .05n 
 Gnucap   System status
 iterations: op=0, dc=0, tran=1184, fourier=0, total=1586
 transient timesteps: accepted=402, rejected=0, total=402

@@ -69,5 +69,7 @@
 ".list "
 v1 ( 1 0 ) exp iv= 0. pv= 1. td1=p/20 tau1=p/4 td2=p/2 tau2=p/4 period=p
 .param p=20n 
+.tran 0 100n 100n trace all 
 .param p=50n 
+.tran trace all 
 ".end "

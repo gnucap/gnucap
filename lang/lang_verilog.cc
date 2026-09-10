@@ -23,7 +23,6 @@
 #include "u_nodemap.h"
 #include "globals.h"
 #include "c_comand.h"
-#include "d_dot.h"
 #include "d_coment.h"
 #include "e_subckt.h"
 #include "e_model.h"
@@ -1032,7 +1031,23 @@ void LANG_VERILOG::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 void LANG_VERILOG::print_command(OMSTREAM& o, const DEV_DOT* x)
 {
   assert(x);
-  o << x->s() << '\n';
+  std::string const& s = x->s();
+  if(s[0] == '.'){
+    o << "// spice? \"" << s << "\"\n";
+  }else if(s.size()) {
+    o << s;
+    if(s[s.size()-1] != ';'){
+      o << ';';
+    }else{
+    }
+    o << '\n';
+  }else if(auto c = dynamic_cast<CMD const*>(x)){ untested();
+    o << c->dev_type() << " label=\"" << x->short_label() << "\"\n";
+    // print_args ..
+  }else{
+    // TODO: "module" gets here.
+    // o << dot->s() << '\n';
+  }
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

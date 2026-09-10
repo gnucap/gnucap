@@ -98,6 +98,8 @@ public: // more types
 
   reverse_iterator rbegin()		{ return _cl.rbegin();}
   reverse_iterator rend()		{ return _cl.rend();}
+  reverse_iterator rfind_again(const std::string& short_name, reverse_iterator);
+  reverse_iterator rfind_(const std::string& short_name);
 
 public:
   // return a const_iterator
@@ -107,6 +109,12 @@ public:
   const_iterator find_again(const std::string& short_name, const_iterator)const;
   const_iterator find_(const std::string& short_name) const
 					{return const_cast<CARD_LIST*>(this)->find_(short_name);}
+  const_reverse_iterator rbegin()const	{return _cl.rbegin();}
+  const_reverse_iterator rend()const	{return _cl.rend();}
+  const CARD*	front()const		{untested();return _cl.front();}
+  const_reverse_iterator rfind_again(const std::string& short_name, const_reverse_iterator)const;
+  const_reverse_iterator rfind_(const std::string& short_name) const
+					{return const_cast<CARD_LIST*>(this)->rfind_(short_name);}
 private: // cache implementation
   void clear_find_cache();
   void add_to_find_cache(CARD*);

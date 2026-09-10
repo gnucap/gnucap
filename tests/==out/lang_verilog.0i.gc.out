@@ -8,3 +8,4 @@ module foo (.a(a),.b(b));
 endmodule // foo
 
 foo #(.a(2),.i(19)) f (.a(\1 ),.b(\0 ));
+`op;

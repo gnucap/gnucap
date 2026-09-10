@@ -61,8 +61,8 @@ private:
     _linswp(a._linswp),
     _prevopppoint(a._prevopppoint),
     _stepmode(a._stepmode)
-  {untested();}
-  // CARD* clone()const override {return new AC(*this);}
+  {set_label("ac");}
+  CARD* clone()const override {return new AC(*this);}
 public:
   ~AC() {}
 public:

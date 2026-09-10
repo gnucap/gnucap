@@ -23,6 +23,7 @@ R32 ( 3 0 )  2.
 C1 ( 4 0 )  5.
 C2 ( 4 5 )  5.
 C3 ( 5 0 )  2.
+.op 
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
@@ -35,6 +36,8 @@ R2 ( 2 0 )  1.
 C1 ( 4 0 )  5.
 C2 ( 4 5 )  5.
 C3 ( 5 0 )  2.
+.op 
+.op 
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
@@ -49,6 +52,9 @@ R2 ( 2 0 )  1.
 C1 ( 4 0 )  5.
 C2 ( 4 5 )  5.
 C3 ( 5 0 )  2.
+.op 
+.op 
+.op 
 >>>>>.print op v(nodes) 
 >>>>>.status notime 
 Gnucap   System status
@@ -64,6 +70,10 @@ dctran density=50.0%, ac density=50.0%
 V1 ( 1 0 )  DC  1.
 R1 ( 1 2 )  1.
 R2 ( 2 0 )  1.
+.op 
+.op 
+.op 
+.op 
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
@@ -72,6 +82,11 @@ R2 ( 2 0 )  1.
 >>>>>.list 
 V1 ( 1 0 )  DC  1.
 R1 ( 1 2 )  1.
+.op 
+.op 
+.op 
+.op 
+.op 
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      
@@ -79,6 +94,12 @@ R1 ( 1 2 )  1.
 >>>>>.delete r* 
 >>>>>.list 
 V1 ( 1 0 )  DC  1.
+.op 
+.op 
+.op 
+.op 
+.op 
+.op 
 >>>>>.print op v(nodes) 
 >>>>>.op 
 #           v(1)       v(2)       v(3)       v(4)       v(5)      

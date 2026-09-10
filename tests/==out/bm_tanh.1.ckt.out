@@ -59,6 +59,14 @@ v1 ( 1 0 ) generator scale= 1.
 e1 ( 2 0 1 0 ) tanh gain= 5. limit= 5.
 e2 ( 3 0 1 0 ) tanh gain=-5. limit= 3.
 e3 ( 4 0 1 0 ) tanh gain= 4. limit= 3.
+.dc -2 2 .1 
+.ac 
+.dc 1 
+.ac 
+.dc 0 
+.ac 
+.dc 1000 
+.ac 
 Gnucap   System status
 iterations: op=0, dc=4, tran=0, fourier=0, total=179
 transient timesteps: accepted=0, rejected=0, total=0

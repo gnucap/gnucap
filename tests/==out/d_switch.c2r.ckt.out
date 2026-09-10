@@ -84,3 +84,9 @@ Isig ( 7 0 ) pwl( 0., 0.  5.,-0.005  15., 0.005  25.,-0.005 )
 Rprobe ( 7 8 )  1.K
 Vprobe ( 8 0 )  DC  0.
 .model sss csw ( it=0. ih=.002 ion=NA( 0.002) ioff=NA(-0.002) ron=1.K roff=1.E+12 tnom=NA( 27.))
+.dc Isig .005 -.005 -.001 loop 
+.ac 1k 
+.tran 0 9 1 
+.tran 
+.tran 
+.ac 1k 

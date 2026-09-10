@@ -170,6 +170,7 @@
 V1 ( 1 0 ) sffm offset= 0. amplitude= 1. carrier= 10.K modindex= 2. signal= 1.K samples= 0.
 V3 ( 3 0 ) sin offset=NA( 0.) amplitude=NA( 1.) frequency= 10.K delay=NA( 0.) damping=NA( 0.) samples= 0.
 V4 ( 4 0 ) sin offset=NA( 0.) amplitude=NA( 1.) frequency= 1.K delay=NA( 0.) damping=NA( 0.) samples= 0.
+.tran 0 .002 .002 trace all 
 Gnucap   System status
 iterations: op=0, dc=0, tran=500, fourier=0, total=667
 transient timesteps: accepted=167, rejected=0, total=167

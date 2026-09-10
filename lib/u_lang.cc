@@ -57,14 +57,14 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
       if (Name == "") {
 	p = Scope->subckt()->back();
       }else{
-	p = Scope->find_looking_out(Name);
+	p = Scope->rfind_looking_out(Name);
       }
     }catch (Exception_Cant_Find& e) {
       assert(!p);
     }
-  }else{ // got here by paramset or model
-    CARD_LIST::const_iterator i = CARD_LIST::card_list.find_(Name);
-    if (i != CARD_LIST::card_list.end()) {
+  }else{ // got here by paramset or model, or top level..
+    CARD_LIST::const_reverse_iterator i = CARD_LIST::card_list.rfind_(Name);
+    if (i != CARD_LIST::card_list.rend()) {
       p = *i;
     }else{
       assert(!p);
@@ -156,8 +156,13 @@ CARD* LANGUAGE::parse_item(CS& cmd, CARD* c)
     return parse_node(cmd, n);
   }else if (DEV_COMMENT* com = dynamic_cast<DEV_COMMENT*>(c)) {
     return parse_comment(cmd, com);
+  }else if (CMD* cc = dynamic_cast<CMD*>(c)) {
+    return parse_command(cmd, cc);
   }else if (DEV_DOT* d = dynamic_cast<DEV_DOT*>(c)) {
-    return parse_command(cmd, d);
+    CARD* xx = parse_command(cmd, d);
+  //   assert(xx = d); // for now.
+  //   d->set(""); // HACK.
+    return xx;
   }else{untested();
     incomplete();
     unreachable();
@@ -183,6 +188,8 @@ void LANGUAGE::print_item(OMSTREAM& o, const CARD* c)
     print_paramset(o, m);
   }else if (const DEV_COMMENT* com = dynamic_cast<const DEV_COMMENT*>(c)) {
     print_comment(o, com);
+  }else if (const CMD* cc = dynamic_cast<const CMD*>(c)) {itested();
+    print_command(o, cc);
   }else if (const DEV_DOT* d = dynamic_cast<const DEV_DOT*>(c)) {itested();
     print_command(o, d);
   }else if (dynamic_cast<const CMD*>(c)) {itested();

@@ -22,4 +22,6 @@ module main (.\1 (\1 ),.b(\2 ));
   isource #(.dc(1)) i1 (.p(\0 ),.n(\1 ));
 endmodule // main
 
+op;
 main #() m (.\1 (\1 ),.b(\0 ));
+op;

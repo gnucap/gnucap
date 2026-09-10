@@ -40,3 +40,4 @@
  97.5n      0.18972    99.576n    100.n      6.        
  100.n      0.11507    105.n      101.n      1.        
 v1 ( 1 0 ) exp iv= 0. pv= 1. td1= 1.n tau1= 5.n td2= 10.n tau2= 5.n period= 20.n
+.tran 0 100n 100n trace all 
