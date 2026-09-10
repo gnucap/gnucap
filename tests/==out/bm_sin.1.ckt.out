@@ -203,6 +203,7 @@
  100.n      0.         0.        
 V1 ( 1 0 ) sin offset= 0. amplitude= 1. frequency= 100.Meg delay= 0. damping= 0.
 V2 ( 2 0 ) sin offset= 0. amplitude= 1. frequency= 100.Meg delay= 10.n damping= 20.Meg
+.tran 0 100n .5n 
 Gnucap   System status
 iterations: op=0, dc=0, tran=608, fourier=0, total=811
 transient timesteps: accepted=203, rejected=0, total=203

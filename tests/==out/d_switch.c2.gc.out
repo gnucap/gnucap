@@ -85,4 +85,5 @@ resistor #(.r(1k)) rprobe (.p(\7 ),.n(\8 ));
 vsource #(.dc(0)) vprobe (.p(\8 ),.n(\0 ));
 dc isig .005 -.005 -.001 loop;
 ac 1k;
+tran 0 25 1;
 ac 1k ;

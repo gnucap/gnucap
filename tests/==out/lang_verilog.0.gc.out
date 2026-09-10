@@ -39,3 +39,4 @@ vsource #( DC  20.) Vcc (.p(V_cc),.n(\0 ));
 vsource #( AC  0.2) Vin (.p(in),.n(\0 ));
 parameter gain=.5;
 op;
+tran 1;

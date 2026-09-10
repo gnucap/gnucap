@@ -27,6 +27,7 @@ G1 ( 5 0 3 0 )  1.
 Rg ( 5 0 )  1.
 .op 
 .ac dec 1 .1 1 
+.tran 1 10 0 
 Gnucap   System status
 iterations: op=3, dc=0, tran=107, fourier=0, total=148
 transient timesteps: accepted=32, rejected=4, total=36

@@ -517,6 +517,7 @@ M1 ( 0 2 0 0 )  m  l=50.u w=50.u nrd=1. nrs=1.
 + fc=0.5 pb=0.8 cj=NA( 0.) mj=0.5 cjsw=0. mjsw=0.33 is=10.f rsh=0. cbd=4.5f
 + cbs=4.5f cgso=1.5n cgdo=1.5n cgbo=0. ld=2.4485u)
 .op 
+.tran 10n 5000n 0 
 Gnucap   System status
 iterations: op=3, dc=0, tran=2562, fourier=0, total=3069
 transient timesteps: accepted=504, rejected=0, total=504
