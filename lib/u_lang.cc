@@ -57,14 +57,14 @@ const CARD* LANGUAGE::find_proto(const std::string& Name, const CARD* Scope)
       if (Name == "") {
 	p = Scope->subckt()->back();
       }else{
-	p = Scope->find_looking_out(Name);
+	p = Scope->rfind_looking_out(Name);
       }
     }catch (Exception_Cant_Find& e) {
       assert(!p);
     }
-  }else{ // got here by paramset or model
-    CARD_LIST::const_iterator i = CARD_LIST::card_list.find_(Name);
-    if (i != CARD_LIST::card_list.end()) {
+  }else{ // got here by paramset or model, or top level..
+    CARD_LIST::const_reverse_iterator i = CARD_LIST::card_list.rfind_(Name);
+    if (i != CARD_LIST::card_list.rend()) {
       p = *i;
     }else{
       assert(!p);

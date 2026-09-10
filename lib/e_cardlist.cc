@@ -113,14 +113,25 @@ PARAM_LIST const* CARD_LIST::params()const
 CARD_LIST::iterator CARD_LIST::find_again(const std::string& short_name,
 					  CARD_LIST::iterator Begin)
 {
-  trace0(("CARD_LIST::find_ name=" + short_name).c_str());
   return notstd::find_ptr(Begin, end(), short_name);
+}
+/*--------------------------------------------------------------------------*/
+CARD_LIST::reverse_iterator CARD_LIST::rfind_again(
+    const std::string& short_name, CARD_LIST::reverse_iterator Begin)
+{
+  return notstd::find_ptr(Begin, rend(), short_name);
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::const_iterator CARD_LIST::find_again(const std::string& short_name,
 						CARD_LIST::const_iterator Begin)const
 {
   return notstd::find_ptr(Begin, end(), short_name);
+}
+/*--------------------------------------------------------------------------*/
+CARD_LIST::const_reverse_iterator CARD_LIST::rfind_again(
+    const std::string& short_name, CARD_LIST::const_reverse_iterator Begin) const
+{
+  return notstd::find_ptr(Begin, rend(), short_name);
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::iterator CARD_LIST::find_(const std::string& name)
@@ -145,6 +156,35 @@ CARD_LIST::iterator CARD_LIST::find_(const std::string& name)
   }else{
     CARD_LIST::iterator r = find_again(name, begin());
     if(r == end()) {
+      record_miss(name);
+    }else{
+    }
+    return r;
+  }
+}
+/*--------------------------------------------------------------------------*/
+CARD_LIST::reverse_iterator CARD_LIST::rfind_(const std::string& name)
+{
+  bool miss = false;
+
+  if(!_misses) {
+  }else if(_misses->count(name)) {
+    miss = true;
+  }else if(OPT::case_insensitive) {
+    std::string low = name;
+    notstd::to_lower(&low);
+    if(_misses->count(low)) { untested();
+      miss = true;
+    }else{
+    }
+  }else{
+  }
+
+  if(miss){
+    return rend();
+  }else{
+    CARD_LIST::reverse_iterator r = rfind_again(name, rbegin());
+    if(r == rend()) {
       record_miss(name);
     }else{
     }

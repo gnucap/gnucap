@@ -192,7 +192,7 @@ CARD* CARD::find_in_my_scope(const std::string& name)
   if (i == scope()->end()) {
     throw Exception_Cant_Find(long_label(), name,
 			      ((owner()) ? owner()->long_label() : "(root)"));
-  }else if(scope()->find_again(name, ++j) != scope()->end()){
+  }else if(scope()->find_again(name, ++j) != scope()->end()){ untested();
     error(bWARNING, "duplicate match " + name + " in " + long_label() + "\n");
   }else{
   }
@@ -202,7 +202,7 @@ CARD* CARD::find_in_my_scope(const std::string& name)
 /* find_in_my_scope const. same as above, but const
  */
 const CARD* CARD::find_in_my_scope(const std::string& name) const
-{
+{ untested();
   return const_cast<CARD*>(this)->find_in_my_scope(name);
 }
 /*--------------------------------------------------------------------------*/
@@ -221,7 +221,25 @@ const CARD* CARD::find_in_parent_scope(const std::string& name)const
   CARD_LIST::const_iterator j = i;
   if (i == p_scope->end()) {
     throw Exception_Cant_Find(long_label(), name);
-  }else if(p_scope->find_again(name, ++j) != p_scope->end()){
+  }else if(p_scope->find_again(name, ++j) != p_scope->end()){ untested();
+    error(bWARNING, "duplicate match " + name + " in " + long_label() + "\n");
+  }else{
+  }
+  return *i;
+}
+/*--------------------------------------------------------------------------*/
+/* rfind_in_parent_scope: rfind in parent's scope
+ */
+const CARD* CARD::rfind_in_parent_scope(const std::string& name)const
+{
+  assert(name != "");
+  const CARD_LIST* p_scope = (scope()->parent()) ? scope()->parent() : scope();
+
+  CARD_LIST::const_reverse_iterator i = p_scope->rfind_(name);
+  CARD_LIST::const_reverse_iterator j = i;
+  if (i == p_scope->rend()) {
+    throw Exception_Cant_Find(long_label(), name);
+  }else if(p_scope->rfind_again(name, ++j) != p_scope->rend()){
     error(bWARNING, "duplicate match " + name + " in " + long_label() + "\n");
   }else{
   }
@@ -239,16 +257,40 @@ const CARD* CARD::find_looking_out(const std::string& name)const
   }catch (Exception_Cant_Find&) {
     if (owner()) {
       return owner()->find_looking_out(name);
-    }else if (makes_own_scope()) {
+    }else if (makes_own_scope()) { untested();
       // probably a subckt or "module"
       // BUG? why not "find_again?"
       auto i = CARD_LIST::card_list.find_(name);
-      if (i != CARD_LIST::card_list.end()) {
+      if (i != CARD_LIST::card_list.end()) { untested();
+	return *i;
+      }else{ untested();
+	throw;
+      }
+    }else{
+      throw;
+    }
+  }
+}
+/*--------------------------------------------------------------------------*/
+/* rfind_looking_out: find in my or enclosing scope, reversed
+ */
+const CARD* CARD::rfind_looking_out(const std::string& name)const
+{
+  try {
+    return rfind_in_parent_scope(name);
+  }catch (Exception_Cant_Find&) {
+    if (owner()) { untested();
+      return owner()->rfind_looking_out(name);
+    }else if (makes_own_scope()) {
+      // probably a subckt or "module"
+      // BUG? why not "find_again?"
+      auto i = CARD_LIST::card_list.rfind_(name);
+      if (i != CARD_LIST::card_list.rend()) {
 	return *i;
       }else{
 	throw;
       }
-    }else{
+    }else{ untested();
       throw;
     }
   }
