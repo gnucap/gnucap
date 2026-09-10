@@ -57,6 +57,7 @@ protected:
 public:
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 private:
+  // virtual SIM* clone()const override = 0;
   virtual void	setup(CS&)	= 0;
   virtual void	allocate(){untested(); unreachable();} // = 0;
   virtual void	sweep()		= 0;
@@ -66,8 +67,7 @@ private:
   virtual bool	is_step_rejected()const {return false;}
 
 protected:
-  explicit SIM(const SIM&):CMD(),_scope(nullptr) {untested(); incomplete();}
-protected:
+  explicit SIM(const SIM&s):CMD(s),_scope(nullptr) {untested(); incomplete();}
   explicit SIM(): CMD(),_scope(nullptr) {}
 public:
   ~SIM();

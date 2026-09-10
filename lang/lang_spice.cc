@@ -547,6 +547,11 @@ DEV_COMMENT* LANG_SPICE_BASE::parse_comment(CS& cmd, DEV_COMMENT* x)
 DEV_DOT* LANG_SPICE_BASE::parse_command(CS& cmd, DEV_DOT* x)
 {
   assert(x);
+  if(dynamic_cast<CMD*>(x)){
+  }else{
+    x->set(cmd.fullstring());
+    parse_type(cmd, x);
+  }
   CARD_LIST* scope = (x->owner()) ? x->owner()->subckt() : &CARD_LIST::card_list;
 
   cmd.reset();
@@ -833,11 +838,20 @@ void LANG_SPICE_BASE::print_comment(OMSTREAM& o, const DEV_COMMENT* x)
 void LANG_SPICE_BASE::print_command(OMSTREAM& o, const DEV_DOT* x)
 {itested();
   assert(x);
-  if(x->s()[0] != '.'){
-    o << '.';
-  }else{
+  if(x->s()[0] == '.'){
+    o << x->s() << '\n';
+  }else if(x->s().size()){
+    o << "." << x->s() << '\n';
+  }else if(auto cmd = dynamic_cast<CMD const*>(x)){ untested();
+    o << "." << cmd->dev_type() << " label=\"" << cmd->short_label() << "\"\n";
+  }else{ untested();
+    assert(dynamic_cast<DEV_DOT const*>(x));
+    if(x->s()[0] != '.'){ untested();
+      o << '.';
+    }else{ untested();
+    }
+    o << x->s() << '\n';
   }
-  o << x->s() << '\n';
 }
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

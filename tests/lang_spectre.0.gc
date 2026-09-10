@@ -1,0 +1,17 @@
+
+simulator lang=spectre
+
+
+simulator lang=spice insensitive=no
+Vin (in 0) vsource ac .2
+Vcc (V_cc 0) vsource  dc=20.
+.simulator lang=spectre
+
+Rload (out 0) resistor r=100k
+
+parameters gain=.5
+- probe op v(V_cc) v(in) v(out) iter(0)
+- op
+- list
+
+- end
