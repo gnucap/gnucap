@@ -58,6 +58,7 @@ public:
   int control;
   int hidden_steps;
   
+  double annotated_control()const;
   void compute_overhead()const {
     overhead = total - advance - queue - evaluate - load - lud - back 
       - output - review - accept;
@@ -97,6 +98,30 @@ private:
 /*--------------------------------------------------------------------------*/
 extern INTERFACE STATUS status;
 /*--------------------------------------------------------------------------*/
+inline double STATUS::annotated_control() const
+{
+  double ret = 0.;
+  double slot = 1.;
+  int idx = 0;
+  int i = 1;
+  for(i=1; i<1024; i*=2) {
+    idx += 1;
+    if (control & i){
+      ret += slot * idx;
+      slot *= .1;
+    }else{
+    }
+  }
+  int b = 10;
+  for(; i < 65536; i*=2) {
+    if(control & i){
+      ret += b;
+    }else{
+    }
+    b *= 2;
+  }
+  return ret;
+}
 /*--------------------------------------------------------------------------*/
 #endif
 // vim:ts=8:sw=2:noet:

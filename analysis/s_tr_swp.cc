@@ -51,6 +51,22 @@ namespace TR {
   };
 }
 /*--------------------------------------------------------------------------*/
+static std::string step_cause_string(int c)
+{
+  std::string const* cause = TR::step_cause;
+  std::string ret = (c)?"":*cause;
+  std::string sep;
+  for(int i = 1; i<1024; i*=2){
+    ++cause;
+    if (c & i){
+      ret += sep + *cause;
+      sep = ", ";
+    }else{
+    }
+  }
+  return ret;
+}
+/*--------------------------------------------------------------------------*/
 class TIME_t {
   static double _dtmin;
   double _t {0}; // used as a signed integer.  keeping double for overflow.
@@ -157,7 +173,7 @@ void TRANSIENT::sweep()
       assert(_converged);
       assert(_sim->_time0 <= _time_by_user_request + _sim->_dtmin);
       accept();
-      if (step_cause() == scUSER) {//27333
+      if (is_step_user()) {//27333
 	assert(up_order(_sim->_time0-_sim->_dtmin, _time_by_user_request, _sim->_time0+_sim->_dtmin));
 	++_stepno;
 	_time_by_user_request += _tstrobe;	/* advance user time */
@@ -172,7 +188,7 @@ void TRANSIENT::sweep()
       bool printnow =
 	(_trace >= tREJECTED)
 	|| (_accepted && (_trace >= tALLTIME
-			  || step_cause() == scUSER
+			  || is_step_user()
 			  || (!_tstrobe.has_hard_value() && _sim->_time0+_sim->_dtmin > _tstart)));
       int outflags = ofNONE;
       if (printnow) {//32959
@@ -194,35 +210,16 @@ void TRANSIENT::sweep()
 /*--------------------------------------------------------------------------*/
 void TRANSIENT::set_step_cause(STEP_CAUSE C)
 {//44477
-  switch (C) {
-  case scITER_A:untested();
-      // fall through
-  case scADT:untested();
-      // fall through
-  case scUSER:
-      // fall through
-  case scEVENTQ:
-      // fall through
-  case scSKIP:
-      // fall through
-  case scITER_R:
-      // fall through
-  case scTE:
-      // fall through
-  case scAMBEVENT:
-      // fall through
-  case scINITIAL:
+  if (C < scREJECT) {
     ::status.control = C;
-    break;
-  case scNO_ADVANCE:untested();
-      // fall through
-  case scZERO:untested();
-      // fall through
-  case scSMALL:
-      // fall through
-  case scREJECT:
-    ::status.control += C;
-    break;
+  }else if (C == scREJECT){
+    ::status.control |= C;
+  }else if (C == scSMALL){
+    ::status.control |= C;
+  }else if (C == scZERO){
+    ::status.control |= C;
+  }else{
+    unreachable();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -328,7 +325,9 @@ bool TRANSIENT::next()
   // device events that may not happen
   // not sure of exact time.  will be rescheduled if wrong.
   // ok to move by _sim->_dtmin.  time is not that accurate anyway.
-  if (TIME_t(_time_by_ambiguous_event) < newtime) {//3079
+  if (TIME_t(_time_by_ambiguous_event) == newtime) {//1630
+    // new_control |= scAMBEVENT;
+  }else if (TIME_t(_time_by_ambiguous_event) < newtime) {//3656
     newtime = TIME_t(_time_by_ambiguous_event);
     new_dt = newtime - reftime;
     new_control = scAMBEVENT;
@@ -340,7 +339,9 @@ bool TRANSIENT::next()
   check_consistency();
   
   // device error estimates
-  if (TIME_t(_time_by_error_estimate) < newtime) {//12904
+  if (TIME_t(_time_by_error_estimate) == newtime) {untested();
+    // new_control |= scTE;
+  }else if (TIME_t(_time_by_error_estimate) < newtime) {//28613
     newtime = TIME_t(_time_by_error_estimate);
     new_dt = newtime - reftime;
     new_control = scTE;
@@ -502,7 +503,7 @@ bool TRANSIENT::next()
   // trap time step too small
   if (new_dt < TIME_t(_sim->_dtmin)) {untested();
     unreachable();
-    error(bDANGER,"non-recoverable " + TR::step_cause[step_cause()] + "\n");
+    error(bDANGER,"non-recoverable " + step_cause_string(step_cause()) + "\n");
     error(bDANGER, "newtime=%e  rejectedtime=%e  oldtime=%e  using=%e\n",
 	  newtime.to_double(), _sim->_time0, _time1, _time1 + _sim->_dtmin);
     new_dt = TIME_t(_sim->_dtmin);

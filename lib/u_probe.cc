@@ -121,7 +121,7 @@ double PROBE::probe_node(void)const
   }else if (Umatch(_what, "bypass ")) {untested();
     return OPT::bypass + 10*_sim->_bypass_ok;
   }else if (Umatch(_what, "control ")) {
-    return ::status.control;
+    return ::status.annotated_control();
   }else if (Umatch(_what, "damp ")) {untested();
     return _sim->_damp;
   }else if (Umatch(_what, "gen{erator} ")) {untested();
