@@ -4,3 +4,4 @@ Vin (in 0) vsource  AC  0.2
 Vcc (V_cc 0) vsource  DC  20.
 Rload (out 0) resistor  r=100k
 parameters gain=.5 
+- op 

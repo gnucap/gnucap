@@ -10,3 +10,5 @@ v4 ( 4 0 )  DC  0.001
 r4 ( 4 0 )  10.Meg
 v5 ( 5 0 )  DC  1.n
 r5 ( 5 0 )  10.Meg
+.op 
+.op basic 

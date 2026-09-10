@@ -83,3 +83,6 @@ sss #() w3 (.p(\6 ),.n(\0 ),.in(isig));
 isource #(pwl( 0., 0.  5.,-0.005  15., 0.005  25.,-0.005 )) isig (.p(\7 ),.n(\0 ));
 resistor #(.r(1k)) rprobe (.p(\7 ),.n(\8 ));
 vsource #(.dc(0)) vprobe (.p(\8 ),.n(\0 ));
+dc isig .005 -.005 -.001 loop;
+ac 1k;
+ac 1k ;

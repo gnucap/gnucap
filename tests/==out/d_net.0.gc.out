@@ -9,6 +9,7 @@ endmodule // net
 resistor #(.r(1)) r (.p(n),.n(\0 ));
 isource #(.dc(1)) i (.p(\0 ),.n(m));
 net #() n1 (.a(n),.b(m));
+dc;
 Gnucap   System status
 iterations: op=0, dc=2, tran=0, fourier=0, total=2
 transient timesteps: accepted=0, rejected=0, total=0

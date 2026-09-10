@@ -15,3 +15,4 @@ v2 ( b c ) xxx
 x1 ( 1 0 3 )  foo  zzz=a xxx=b
 x2 ( 2 0 4 )  foo  xxx=a zzz=83
 .param a=13 b=923 c=a 
+.op 

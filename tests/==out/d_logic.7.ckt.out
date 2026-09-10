@@ -16,6 +16,7 @@ U4 ( 4 3 )  mos inv
 U3 ( 3 2 )  mos inv 
 U2 ( 2 1 )  mos inv 
 .model mos logic ( delay=1n vmax=5. vmin=0. unknown=NA( 2.5) rise=1n fall=1n rs=100. rw=1.G thh=0.75 thl=0.25 mr=5. mf=5. over=10k tnom=NA( 27.))
+.op 
 *'.option trace 
 *'.print tran v(nodes) l(nodes) control(0) 
 *'.tran 0 10 .05  watch 

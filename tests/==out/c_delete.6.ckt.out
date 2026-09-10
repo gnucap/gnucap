@@ -27,6 +27,8 @@ r1 ( 1 2 )  1.K
 .ends bb
 x1 ( 1 2 3 )  aa 
 v1 ( 1 0 )  DC  1.
+.op 
+.op 
 #           v(1)       v(2)       v(3)      
  27.        1.         999.u      999.u     
 .subckt aa ( a b c )
@@ -39,6 +41,9 @@ r1 ( 1 2 )  1.K
 .ends bb
 x1 ( 1 2 3 )  aa 
 v1 ( 1 0 )  DC  1.
+.op 
+.op 
+.op 
 .delete r1.v1 
         ^ ? no match
 .subckt aa ( a b c )
@@ -51,5 +56,8 @@ r1 ( 1 2 )  1.K
 .ends bb
 x1 ( 1 2 3 )  aa 
 v1 ( 1 0 )  DC  1.
+.op 
+.op 
+.op 
 #           v(1)       v(2)       v(3)      
  27.        1.         999.u      999.u     

@@ -167,6 +167,7 @@ v3 ( 8 0 ) pulse iv= 0. pv= 1. delay= 0.002 rise= 0.002 fall= 0.002 width= 0.002
 r3a ( 8 9 ) Rsource
 x3 ( 9 0 12 0 )  trans2e  l1=L1 l2=L2 k12=K12
 r3b ( 12 0 ) Rload
+.ac dec 2 .1 1k 
 Gnucap   System status
 iterations: op=0, dc=0, tran=398, fourier=0, total=542
 transient timesteps: accepted=132, rejected=3, total=135

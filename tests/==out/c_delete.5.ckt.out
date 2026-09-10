@@ -25,6 +25,7 @@ r1 ( 1 2 )  1.K
 .ends bb
 x1 ( 1 2 3 )  aa 
 v1 ( 1 0 )  DC  1.
+.op 
 .subckt aa ( a b c )
 r1 ( a b )  1.
 r3 ( b c )  1.
@@ -35,6 +36,7 @@ r1 ( 1 2 )  1.K
 .ends bb
 x1 ( 1 2 3 )  aa 
 v1 ( 1 0 )  DC  1.
+.op 
 .subckt aa ( a b c )
 r1 ( a b )  1.
 r3 ( b c )  1.
@@ -44,6 +46,7 @@ x1 ( a b )  bb
 .ends bb
 x1 ( 1 2 3 )  aa 
 v1 ( 1 0 )  DC  1.
+.op 
 .subckt aa ( a b c )
 x1 ( a b )  bb 
 .ends aa
@@ -51,3 +54,4 @@ x1 ( a b )  bb
 .ends bb
 x1 ( 1 2 3 )  aa 
 v1 ( 1 0 )  DC  1.
+.op 

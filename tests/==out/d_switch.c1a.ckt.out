@@ -268,6 +268,9 @@ Vsig ( 7 0 ) pwl( 0., 0.  5., 5.  15.,-5.  25., 5. )
 Rprobe ( 7 8 )  1.K
 Vprobe ( 8 0 )  DC  0.
 .model sss csw ( it=0. ih=.002 ion=NA( 0.002) ioff=NA(-0.002) ron=1.K roff=1.E+12 tnom=NA( 27.))
+.dc Vsig -5 5 1 loop 
+.ac 1k 
+.ac 1k 
 Gnucap   System status
 iterations: op=0, dc=84, tran=157, fourier=0, total=302
 transient timesteps: accepted=53, rejected=6, total=59

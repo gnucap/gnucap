@@ -27,6 +27,9 @@ vdd ( 1 0 )  DC  5.
 vin ( 2 0 )  DC  0.8
 .model MODELD nmos1 ( level=1 kp=28U vto=0.7 gamma= 0. phi= 0.6 lambda=0.01 uo=NA( 600.) tpg=1 tnom=NA( 27.) fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.5) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
 .model MODELL nmos1 ( level=1 kp=28U vto=0.7 gamma= 0. phi= 0.6 lambda=0.01 uo=NA( 600.) tpg=1 tnom=NA( 27.) fc=NA( 0.5) pb=NA( 0.8) cj=NA( 0.) mj=NA( 0.5) cjsw=NA( 0.) mjsw=NA( 0.5) is=NA( 10.f) cgso=NA( 0.) cgdo=NA( 0.) cgbo=NA( 0.) ld=NA( 0.))
+.op trace iter 
+.op 
+.op 
 name   ...
 have 3 nodes. model: 0 sckt: 0
 
