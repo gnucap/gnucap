@@ -25,31 +25,31 @@
 #include "e_logicval.h"
 /*--------------------------------------------------------------------------*/
 const _LOGICVAL LOGICVAL::_or_truth[lvNUM_STATES][lvNUM_STATES] = {
- {lv00,lv01,lv10,lv11, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lv01,lv01,lv01,lv11, lv01,lv01,lv11,lv11, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1},
- {lv10,lv01,lv10,lv11, lv1X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lv1X,lv1X,lv1X,lv1X},
+ {lv00,lv01,lv10,lv11, lv0X,lv0X,lv1X,lv1X, lvX0,lvX0,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+ {lv01,lv01,lvX1,lv11, lv01,lv01,lv11,lv11, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1},
+ {lv10,lvX1,lv10,lv11, lv1X,lv1X,lv1X,lv1X, lv10,lv10,lvX1,lvX1, lv1X,lv1X,lv1X,lv1X},
  {lv11,lv11,lv11,lv11, lv11,lv11,lv11,lv11, lv11,lv11,lv11,lv11, lv11,lv11,lv11,lv11},
 
- {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lv1X,lv1X,lv1X,lv11, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv1X,lv1X},
- {lv1X,lv1X,lv1X,lv11, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv1X,lv1X},
+ {lvXX,lvX1,lv1X,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lv1X,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+ {lv1X,lv1X,lv1X,lv11, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv11,lvX1, lv1X,lv1X,lv1X,lv1X},
+ {lv1X,lv1X,lv1X,lv11, lv1X,lv1X,lv1X,lv1X, lv1X,lv1X,lv11,lvX1, lv1X,lv1X,lv1X,lv1X},
 
- {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvX0,lvX1,lv10,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+ {lvX0,lvX1,lv10,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
  {lvX1,lvX1,lvX1,lv11, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1},
  {lvX1,lvX1,lvX1,lv11, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1, lvX1,lvX1,lvX1,lvX1},
 
- {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lvXX,lvX1,lvXX,lv11, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lv1X,lv11, lvXX,lvXX,lv1X,lv1X, lvXX,lvXX,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lv1X,lv11, lvXX,lvXX,lv1X,lv1X, lvXX,lvXX,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lv1X,lv11, lvXX,lvXX,lv1X,lv1X, lvXX,lvXX,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
+ {lvXX,lvX1,lv1X,lv11, lvXX,lvXX,lv1X,lv1X, lvXX,lvXX,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
 };
 /*--------------------------------------------------------------------------*/
 const _LOGICVAL LOGICVAL::_xor_truth[lvNUM_STATES][lvNUM_STATES] = {
  {lv00,lv01,lv10,lv11, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lv01,lv10,lv01,lv10, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
- {lv10,lv01,lv10,lv01, lv1X,lv1X,lv0X,lv0X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv01,lvX0,lvX1,lv10, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
+ {lv10,lvX1,lvX0,lv01, lv1X,lv1X,lv0X,lv0X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
  {lv11,lv10,lv01,lv00, lv1X,lv1X,lv0X,lv0X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
 
  {lv0X,lv0X,lv1X,lv1X, lv0X,lv0X,lv1X,lv1X, lvXX,lvXX,lvXX,lvXX, lvXX,lvXX,lvXX,lvXX},
@@ -70,8 +70,8 @@ const _LOGICVAL LOGICVAL::_xor_truth[lvNUM_STATES][lvNUM_STATES] = {
 /*--------------------------------------------------------------------------*/
 const _LOGICVAL LOGICVAL::_and_truth[lvNUM_STATES][lvNUM_STATES] = { //
  {lv00,lv00,lv00,lv00, lv00,lv00,lv00,lv00, lv00,lv00,lv00,lv00, lv00,lv00,lv00,lv00},
- {lv00,lv01,lv10,lv01, lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X},
- {lv00,lv10,lv10,lv10, lv0X,lv0X,lv1X,lv1X, lvX0,lvX0,lvX0,lvX0, lvX0,lvX0,lvX0,lvX0},
+ {lv00,lv01,lvX0,lv01, lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X},
+ {lv00,lvX0,lv10,lv10, lv0X,lv0X,lv1X,lv1X, lvX0,lvX0,lvX0,lvX0, lvX0,lvX0,lvX0,lvX0},
  {lv00,lv01,lv10,lv11, lv0X,lv0X,lv1X,lv1X, lvX0,lvX0,lvX1,lvX1, lvXX,lvXX,lvXX,lvXX},
 
  {lv0X,lv0X,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X, lv00,lv00,lv0X,lv0X, lv0X,lv0X,lv0X,lv0X},
