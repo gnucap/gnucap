@@ -671,9 +671,13 @@ void DEV_LOGIC::tr_accept()
 	|| _lastchangenode != OUTNODE
 	|| _sim->analysis_is_static()
 	|| _sim->analysis_is_restore()) {
+      // probably coming from tr_regress.
+      // input nodes may be accepted (new value queued)
+      // but not stabilised (tr_advance)
       LOGICVAL future_state = c->logic_eval(&n_(BEGIN_IN), net_nodes()-BEGIN_IN);
       //		         ^^^^^^^^^^
-      if ((n_(OUTNODE)->is_unknown()) &&
+      LOGICVAL out = n_(OUTNODE)->lv();
+      if ((out == lvXX || out == lvX0 || out == lvX1 || out == lvXZ) &&
 	  (_sim->analysis_is_static() || _sim->analysis_is_restore())) {
 	n_(OUTNODE)->force_initial_value(future_state);
 	n_(OUTNODE)->store_old_lv();
@@ -681,7 +685,13 @@ void DEV_LOGIC::tr_accept()
 	 * Answers could be wrong if order in netlist is reversed 
 	 */
       }else if (future_state != n_(OUTNODE)->lv()) {
-	assert(future_state != lvXX);
+	 trace1("DBG", _sim->_bypass_ok);
+	for(int i = 0; i<net_nodes(); ++i){
+	  trace3("DBG", future_state, i, n_(i)->lv());
+	}
+	if(future_state != lvXX){
+	}else{ untested();
+	}
 	switch (future_state) {
 	case lv00:	/*nothing*/		break;
 	case lv0Z:
@@ -696,9 +706,9 @@ void DEV_LOGIC::tr_accept()
 	case lvZX:
 	case lvZ0: future_state=lvZZ;		break;
 	case lvXX:	/*nothing*/		break;
-	case lvX1:
-	case lvXZ:
-	case lvX0: future_state=lvXX;		break;
+	case lvX1: future_state=lvX1;		break;
+	case lvXZ: future_state=lvXZ;		break;
+	case lvX0: future_state=lvX0;		break;
 	}
 	/* This handling of rising and falling may seem backwards.
 	 * These states occur when the value has been contaminated 
@@ -707,16 +717,20 @@ void DEV_LOGIC::tr_accept()
 	 * This code is planned for replacement as part of VHDL/Verilog
 	 * conversion, so the kluge stays in for now.
 	 */
-	assert(future_state.lv_old() == future_state.lv_future());
-	if (n_(OUTNODE)->lv() == lvXX
-	    || future_state.lv_future() != n_(OUTNODE)->lv_future()) {
-	  n_(OUTNODE)->set_event(c->_real_delay, future_state, this);
+	// assert(future_state.lv_old() == future_state.lv_future());
+	if (future_state == lvX1 || future_state == lvX0 || future_state == lvXZ){
+	  // regressed to a glitch. still a glitch.
+	  assert(n_(OUTNODE)->lv() == future_state || !_sim->_time0);
+	}else if (n_(OUTNODE)->lv() == lvXX ||
+	    future_state.lv_future_() != n_(OUTNODE)->lv().lv_future_()) {
 	  //assert(future_state == n_(OUTNODE).lv_future());
+	  n_(OUTNODE)->set_event(c->_real_delay, future_state, this);
 	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();
-	    error(bDANGER, "%s:%u:%g non-event state change\n",
-		  long_label().c_str(), _sim->iteration_tag(), _sim->_time0);
+	    error(bDANGER, "%s:%u:%g non-event state change to %d\n",
+		  long_label().c_str(), _sim->iteration_tag(), _sim->_time0, int(future_state));
 	  }else{
+	    // normal tr accept
 	  }
 	}else{
 	}

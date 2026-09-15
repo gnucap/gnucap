@@ -68,6 +68,8 @@ public:
   bool is_unknown()const	{return _lv > lv11;}
   bool lv_future()const		{assert(_lv!=lvXX); return (_lv & 1) && !(_lv & 4);}
   bool lv_old()const		{assert(_lv!=lvXX); return (_lv & 2) && !(_lv & 8);}
+  int lv_future_()const		{return bool(_lv & 1) + 2*bool(_lv & 4);}
+  int lv_old_()const		{return bool(_lv & 2) + 2*bool(_lv & 8);}
 
   bool is_rising() const	{return _lv == lv01 || _lv == lvX1 || _lv == lvZ1;}
   bool is_falling()const	{return _lv == lv10 || _lv == lvX0 || _lv == lvZ0;}
@@ -83,7 +85,9 @@ public:
 inline LOGICVAL& LOGICVAL::set_in_transition(LOGICVAL newval)
 {
   _lv = prop_truth(_lv, newval);
-  assert(_lv != lvXX);
+  if(_lv == lvXX){ untested();
+  }else{
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/

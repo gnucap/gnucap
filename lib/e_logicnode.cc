@@ -312,7 +312,7 @@ double LOGIC_NODE::to_analog(const MODEL_LOGIC* f)const
   case lv00:
     return process()->vmin;
   case lvZ1: untested(); // fall-through
-  case lvX1: untested(); // fall-through
+  case lvX1: // fall-through
   case lv01:
     start = process()->vmin;
     end = process()->vmax;
@@ -382,7 +382,7 @@ void LOGIC_NODE::force_initial_value(LOGICVAL v)
   }
   assert(_sim->analysis_is_static() || _sim->analysis_is_restore());
   assert(_sim->_time0 == 0.);
-  assert(is_unknown());
+  assert(is_unknown() || _lv == lvX0 || _lv == lvX1 || _lv == lvXZ);
   assert(is_digital());
   set_lv(v); // BUG ??
   set_good_quality("initial dc");
