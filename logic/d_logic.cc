@@ -234,7 +234,7 @@ private:
 public:
   explicit LOGIC_NONE(int c=0)		  :COMMON_LOGIC(c) {}
   LOGICVAL logic_eval(const node_l*, int)const override {untested();
-    return lvUNKNOWN;
+    return lvXX;
   }
   std::string name()const override	  {untested();return "error";}
 };
@@ -680,7 +680,7 @@ void DEV_LOGIC::tr_accept()
 	 * Answers could be wrong if order in netlist is reversed 
 	 */
       }else if (future_state != n_(OUTNODE)->lv()) {
-	assert(future_state != lvUNKNOWN);
+	assert(future_state != lvXX);
 	switch (future_state) {
 	case lv00:	/*nothing*/		break;
 	case lv0Z:
@@ -707,7 +707,7 @@ void DEV_LOGIC::tr_accept()
 	 * conversion, so the kluge stays in for now.
 	 */
 	assert(future_state.lv_old() == future_state.lv_future());
-	if (n_(OUTNODE)->lv() == lvUNKNOWN
+	if (n_(OUTNODE)->lv() == lvXX
 	    || future_state.lv_future() != n_(OUTNODE)->lv_future()) {
 	  n_(OUTNODE)->set_event(c->_real_delay, future_state, this);
 	  //assert(future_state == n_(OUTNODE).lv_future());
