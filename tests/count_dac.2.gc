@@ -180,7 +180,7 @@ V1 clk 0 pulse width={tclk/2} rise=tt fall=tt pv=5 iv=0 period=tclk
 Vr reset 0 pulse delay={tclk*1.1} rise=tt fall=tt pv=5 iv=0
 Vdd 8 0 dc 5.
 
-.print tran v(d0) v(d1) v(d2) v(clk) v(aout) iter(0)
+.print tran v(d0) v(d1) v(d2) v(clk) v(aout) control(0) iter(0)
 
 .dc
 
