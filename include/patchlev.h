@@ -1,1 +1,1 @@
-#define PATCHLEVEL "step_cause 2026.09.10"
+#define PATCHLEVEL "logic_glitch 2026.09.15"
