@@ -353,6 +353,7 @@ void DEV_LOGIC::tr_iwant_matrix()
 void DEV_LOGIC::tr_begin()
 {
   ELEMENT::tr_begin();
+  n_(OUTNODE)->tr_begin();
   if (!subckt()) {
     _gatemode = moDIGITAL;
     n_(OUTNODE)->set_mode(_gatemode);

@@ -46,6 +46,20 @@ LOGIC_NODE::LOGIC_NODE(int i)
   }
 }
 /*--------------------------------------------------------------------------*/
+void LOGIC_NODE::tr_begin()
+{
+  _family = nullptr;
+  _d_iter = -1;
+  _a_iter = 0;
+  _final_time = 0;
+  _lastchange = 0;
+  _old_lastchange = 0;
+  _mode = moANALOG;
+  _lv = _old_lv = lvXX;
+  _quality = qBAD;
+  _failure_mode = "initial";
+}
+/*--------------------------------------------------------------------------*/
 double LOGIC_NODE::tr_probe_num(const std::string& x)const
 {
   if (Umatch(x, "l{ogic} ")) {
