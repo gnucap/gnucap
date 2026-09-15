@@ -46,7 +46,7 @@ private:
   static const _LOGICVAL _not_truth[lvNUM_STATES];
   static const _LOGICVAL _prop_truth[lvNUM_STATES][lvNUM_STATES];
 public:
-  LOGICVAL() :_lv(lvUNKNOWN)			{}
+  LOGICVAL() :_lv(lvXX)			{}
   LOGICVAL(const LOGICVAL& p)	:_lv(p._lv)	{}
   LOGICVAL(_LOGICVAL p)		:_lv(p)		{}
   ~LOGICVAL() {}
@@ -66,8 +66,10 @@ public:
   LOGICVAL  operator!()const	{return not_truth(_lv);}
   
   bool is_unknown()const	{return _lv > lv11;}
-  bool lv_future()const		{assert(_lv!=lvUNKNOWN); return (_lv & 1) && !(_lv & 4);}
-  bool lv_old()const		{assert(_lv!=lvUNKNOWN); return (_lv & 2) && !(_lv & 8);}
+  bool lv_future()const		{assert(_lv!=lvXX); return (_lv & 1) && !(_lv & 4);}
+  bool lv_old()const		{assert(_lv!=lvXX); return (_lv & 2) && !(_lv & 8);}
+  int lv_future_()const		{return bool(_lv & 1) + 2*bool(_lv & 4);}
+  int lv_old_()const		{return bool(_lv & 2) + 2*bool(_lv & 8);}
 
   bool is_rising() const	{return _lv == lv01 || _lv == lvX1 || _lv == lvZ1;}
   bool is_falling()const	{return _lv == lv10 || _lv == lvX0 || _lv == lvZ0;}
@@ -83,7 +85,9 @@ public:
 inline LOGICVAL& LOGICVAL::set_in_transition(LOGICVAL newval)
 {
   _lv = prop_truth(_lv, newval);
-  assert(_lv != lvUNKNOWN);
+  if(_lv == lvXX){ untested();
+  }else{
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/

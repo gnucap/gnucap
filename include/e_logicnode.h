@@ -55,6 +55,7 @@ public: // maniputation
   // so it is not pure virtual
   //const	      std::string long_label()const;
 public: // virtuals
+  void		tr_begin()override;
   double	tr_probe_num(const std::string&)const override;
   //XPROBE	ac_probe_ext(const std::string&)const;
 
