@@ -55,7 +55,7 @@ ein 0 2 1 0 1
 *.plot dc cgs(m7)(5f 7f)
 *.dc
 *
-.print tran v(vin) v(6)
+.print tran v(vin) v(6) control(0) iter(0)
 .option dampstrategy=1
 .tran 0 .001 31.25u
 .print fourier v(vin) v(6)
