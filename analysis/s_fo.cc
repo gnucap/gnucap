@@ -115,7 +115,7 @@ void FOURIER::store_results(double X)
 {
   TRANSIENT::store_results(X);
 
-  if (step_cause() == scUSER) {
+  if (step_cause() & scUSER) {
     int ii = 0;
     for (PROBELIST::const_iterator
 	   p=printlist().begin();  p!=printlist().end();  ++p) {
