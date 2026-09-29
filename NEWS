@@ -12,6 +12,7 @@ associated tarball. This file summarizes the important changes.
 - change search order. Find last matching proto
 - persistent sim commands
 - fix tr_regress in coil
+- storage: fix error factor for gear
 - ..
 
 == 20260729-dev

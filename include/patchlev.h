@@ -1,1 +1,1 @@
-#define PATCHLEVEL "stepcause 2026.09.16"
+#define PATCHLEVEL "gear_factor 2026.09.27"

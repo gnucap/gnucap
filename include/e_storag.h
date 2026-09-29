@@ -62,7 +62,7 @@ private:
     return ord;
   }
   double   error_factor()const override {
-    const double f[]={1./2., 1./2., 1./12., 1./6., 1./2.};
+    const double f[]={1./2., 1./2., 1./12., 2./9., 1./2.};
     return f[_method_a];
   }
 public: // used by commons
