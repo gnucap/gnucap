@@ -11,6 +11,7 @@ associated tarball. This file summarizes the important changes.
 - logic: support XZ states (backend only)
 - change search order. Find last matching proto
 - persistent sim commands
+- fix tr_regress in coil
 - ..
 
 == 20260729-dev
