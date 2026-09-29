@@ -69,6 +69,15 @@ NODE::~NODE()
   }
 }
 /*--------------------------------------------------------------------------*/
+void NODE::tr_advance_recursive()
+{
+  if (tr_needs_advance()) {untested();
+    assert(subckt());
+    subckt()->tr_advance_recursive();
+  }else{untested();
+  }
+}
+/*--------------------------------------------------------------------------*/
 node_t::node_t(const node_t& p)
   :_nnn(p._nnn),
    _link(p._link),

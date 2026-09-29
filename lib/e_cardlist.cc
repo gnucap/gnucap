@@ -417,7 +417,21 @@ CARD_LIST& CARD_LIST::tr_advance()
 {
   for (iterator ci=begin(); ci!=end(); ++ci) {
     trace_func_comp();
-    (**ci).tr_advance();
+    if ((**ci).tr_needs_advance()) {
+      (**ci).tr_advance();
+    }else{untested();
+    }
+  }
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+/* tr_advance_recursive:
+ */
+CARD_LIST& CARD_LIST::tr_advance_recursive()
+{
+  for (iterator ci=begin(); ci!=end(); ++ci) {untested();
+    trace_func_comp();
+    (**ci).tr_advance_recursive();
   }
   return *this;
 }

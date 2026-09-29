@@ -341,7 +341,7 @@ bool TRANSIENT::next()
   check_consistency();
   
   // device error estimates
-  if (TIME_t(_time_by_error_estimate) == newtime) {untested();
+  if (TIME_t(_time_by_error_estimate) == newtime) {//4
     new_control |= scTE;
   }else if (TIME_t(_time_by_error_estimate) < newtime) {//29728
     newtime = TIME_t(_time_by_error_estimate);
