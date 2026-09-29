@@ -30,26 +30,24 @@
  */
 /*--------------------------------------------------------------------------*/
 #include "io_trace.h"
-#if 0
+#include "md.h"
+/*--------------------------------------------------------------------------*/
 template<class T1, class T2>
 inline void divided_differences(T1 c[], int n, const T2 t[])
-{ untested();
-  untested();
-  for (int d=1; d<n; ++d) { untested();
-    untested();
-    for (int i=n-1; i>=d; --i) { untested();
-      untested();
+{
+  for (int d=1; d<n; ++d) {
+    for (int i=n-1; i>=d; --i) {
       c[i] = (c[i-1] - c[i]) / (t[i-d] - t[i]);
     }
   }
 }
-#endif
 /*--------------------------------------------------------------------------*/
 template<class T1, class T2>
 inline void derivatives(T1 c[], int n, const T2 t[])
 {
   for (int d=1; d<n; ++d) {
     for (int i=n-1; i>=d; --i) {
+      assert(t[i-d] - t[i]);
       c[i] = d * (c[i-1] - c[i]) / (t[i-d] - t[i]);
     }
   }

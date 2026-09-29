@@ -579,6 +579,16 @@ XPROBE ELEMENT::ac_probe_ext(const std::string& x)const
   }
 }
 /*--------------------------------------------------------------------------*/
+inline double invf(int i)
+{
+  assert(i>3);
+  double ret = 1./24.;
+  for(int j = 5; j<=i; ++j){ untested();
+    ret /= j;
+  }
+  return ret;
+}
+/*--------------------------------------------------------------------------*/
 double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
 {
   double timestep;
@@ -608,18 +618,18 @@ double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
     }
     
     double c[OPT::_keep_time_steps];
-    for (int i=0; i<OPT::_keep_time_steps; ++i) {
+    for (int i=0; i<error_deriv+1; ++i) {
       c[i] = q[i].f0;
     }
-    derivatives(c, OPT::_keep_time_steps, _time);
-    // now c[i] is i'th derivative
+    divided_differences(c, error_deriv+1, _time);
+    // now c[i]*i! is i'th derivative
     
     assert(OPT::_keep_time_steps >= 5);
     trace4(("ts " + long_label()).c_str(), error_deriv, error_factor(),
 	   OPT::trsteporder, OPT::trstepcoef[OPT::trsteporder] );
     trace5("time", _time[0], _time[1], _time[2], _time[3], _time[4]);
     trace5("charge", q[0].f0, q[1].f0, q[2].f0, q[3].f0, q[4].f0);
-    trace5("deriv", c[0], c[1], c[2], c[3], c[4]);
+    trace5("ddiff", c[0], c[1], c[2], c[3], c[4]);
     
     if (c[error_deriv] == 0) {
       // avoid divide by zero
@@ -633,9 +643,9 @@ double ELEMENT::tr_review_trunc_error(const FPOLY1* q)
       assert(denom > 0.);
       switch (error_deriv) { // pow is slow.
       case 1:  timestep = tol / denom; break;
-      case 2:  timestep = sqrt(tol / denom); break;
-      case 3:  timestep = cbrt(tol / denom); break;
-      default: timestep = pow((tol / denom), 1./(error_deriv)); break;
+      case 2:  timestep = sqrt(tol / denom * .5); break;
+      case 3:  timestep = cbrt(tol / denom * (1./6.)); break;
+      default: timestep = pow((tol / denom * invf(error_deriv)), 1./(error_deriv)); break;
       }
       trace4("", chargetol, tol, denom, timestep);
     }
