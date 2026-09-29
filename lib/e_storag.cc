@@ -112,11 +112,15 @@ void STORAGE::tr_advance()
 bool STORAGE::tr_needs_eval()const
 {
   //assert(!is_q_for_eval());
-  return (!OPT::lcbypass
+  if(_sim->_time0 == _time[0]){
+    return (!OPT::lcbypass
 	  || !converged() 
 	  || _sim->is_advance_or_first_iteration()
 	  || !conchk(_y[0].x, tr_input(), OPT::abstol)
 	  || _sim->uic_now());
+  }else{
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* differentiate: this is what Spice calls "integrate".

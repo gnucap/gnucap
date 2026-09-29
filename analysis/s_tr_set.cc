@@ -189,6 +189,7 @@ void TRANSIENT::setup(CS& Cmd)
     }
     _sim->_dtmin = newdtmin;
   }
+  _event_queue = &_sim->_eq;
 }
 /*--------------------------------------------------------------------------*/
 /* tr_options: set options common to transient and fourier analysis

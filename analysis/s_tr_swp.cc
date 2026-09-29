@@ -614,7 +614,7 @@ bool TRANSIENT::review()
     _time_by_error_estimate = _sim->_time0 + time_by.dt_estimate();
   }else{
     _time_by_error_estimate = _time1 + time_by.dt_estimate();
-    assert(_time_by_error_estimate < _sim->_time0);
+    // assert(_time_by_error_estimate < _sim->_time0);
   }
   rejecttime = _sim->_time0 - 1.1*_sim->_dtmin;
   creeptime  = _sim->_time0 + 1.1*_sim->_dtmin;

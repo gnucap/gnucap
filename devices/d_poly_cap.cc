@@ -59,7 +59,13 @@ protected: // override virtual
   int	   net_nodes()const override	{return _n_ports*2;}
   CARD*	   clone()const override        {unreachable();return new DEV_CPOLY_CAP(*this);}
   void	   tr_iwant_matrix()override;
-  bool	   tr_needs_eval()const override	{/*assert(!is_q_for_eval());*/ return true;}
+  bool	   tr_needs_eval()const override	{ // /*assert(!is_q_for_eval());*/ return true;}
+    if(_sim->_time0 == _time[0]){
+      return true;
+    }else{ untested();
+      return false;
+    }
+  }
   bool	   do_tr()override;
   void	   tr_load()override;
   TIME_PAIR tr_review()override		{return _time_by.reset();}//BUG//review(_i0.f0, _it1.f0);}

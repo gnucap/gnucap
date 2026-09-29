@@ -56,7 +56,7 @@ bool SIM::solve(OPT::ITL itl, TRACE trace)
     }
     set_flags();
     clear_arrays();
-    finish_building_evalq();
+    finish_building_evalq(_sim->iteration_number());
     
     _sim->count_iterations(iPRINTSTEP);
     _sim->count_iterations(iSTEP);
@@ -137,14 +137,21 @@ bool SIM::solve_with_homotopy(OPT::ITL itl, TRACE trace)
  * only those nodes needing eval will be scanned.
  * Its purpose is to catch nodes that wake up after being dormant
  */
-void SIM::finish_building_evalq(void)
+void SIM::finish_building_evalq(int iter)
 {
   ::status.queue.start();
   assert(_scope);
   if (_scope == &CARD_LIST::card_list) {
   }else{untested();
   }
-  _scope->tr_queue_eval();
+  if(OPT::traceadv){
+    if(1||iter){
+      _scope->tr_queue_eval();
+    }else{ untested();
+    }
+  }else{
+    _scope->tr_queue_eval();
+  }
   ::status.queue.stop();
 }
 /*--------------------------------------------------------------------------*/
@@ -175,7 +182,16 @@ void SIM::advance_time(void)
       }else{//847 // first step, no history
 	std::copy_n(_sim->_vt1, _sim->_total_nodes+1, _sim->_v0);
       }
-      _scope->tr_advance();
+      if(OPT::traceadv){
+	if(is_step_event()){
+	  assert(_event_queue);
+	  _event_queue->tr_advance_recursive();
+	}else{
+	  _scope->tr_advance();
+	}
+      }else{
+	_scope->tr_advance();
+      }
     }else{//767 // moving backward
       /* don't save voltages.  They're wrong! */
       /* instead, restore a clean start for iteration */

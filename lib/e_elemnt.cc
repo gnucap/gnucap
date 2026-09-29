@@ -312,17 +312,17 @@ void ELEMENT::tr_advance()
 }
 /*--------------------------------------------------------------------------*/
 void ELEMENT::tr_advance_recursive()
-{ untested();
-  if (tr_needs_advance()) { untested();
+{
+  if (tr_needs_advance()) {
     tr_advance();
-    for (int ii=0; ii<net_nodes(); ++ii) { untested();
+    for (int ii=0; ii<net_nodes(); ++ii) {
       assert(n_(ii));
-      if(n_(ii).is_output()){ untested();
+      if(n_(ii).is_output()){
 	n_(ii)->tr_advance_recursive();
-      }else{ untested();
+      }else{
       }
     }
-  }else{ untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -337,7 +337,7 @@ void ELEMENT::tr_regress()
     _time[0] = _sim->_time0;
 
     _dt = _time[0] - _time[1];
-  }else{untested(); // not moving backwards
+  }else{ // not moving backwards
     tr_advance();
   }
 }

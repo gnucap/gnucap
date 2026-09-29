@@ -52,6 +52,7 @@ protected:
     ofKEEP  = 4
   };
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+  EVENT_QUEUE* _event_queue{nullptr};
   CARD_LIST* _scope;
   OMSTREAM   _out;		/* places to send the results		*/
 public:
@@ -65,6 +66,7 @@ private:
   virtual void	finish()	= 0;
 
   virtual bool	is_step_rejected()const {return false;}
+  virtual bool	is_step_event()const {return false;}
 
 protected:
   explicit SIM(const SIM&s): CMD(s), _scope(nullptr) {}
@@ -93,7 +95,7 @@ protected:				/* s__solve.cc */
   bool	solve_with_homotopy(OPT::ITL,TRACE);
   void	advance_time();
 private:
-	void	finish_building_evalq();
+	void	finish_building_evalq(int);
 	void	set_flags();
 	void	clear_arrays();
 	void	evaluate_models();

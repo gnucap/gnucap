@@ -93,6 +93,7 @@ public:
 private:
   bool	is_step_user()const {return step_cause() & scUSER;}
   bool	is_step_rejected()const override {return (step_cause() > scREJECT);}
+  bool	is_step_event()const override {return (step_cause() == scEVENTQ);}
 protected: // fourier...
   explicit TRANSIENT(const TRANSIENT&t): SIM(t),
     _tstart(t._tstart),

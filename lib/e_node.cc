@@ -71,10 +71,11 @@ NODE::~NODE()
 /*--------------------------------------------------------------------------*/
 void NODE::tr_advance_recursive()
 {
-  if (tr_needs_advance()) {untested();
-    assert(subckt());
+  if(!subckt()){
+//    error(bTRACE, "adv: no fanout " + long_label() + "\n");
+  }else if (tr_needs_advance()) {
     subckt()->tr_advance_recursive();
-  }else{untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/
