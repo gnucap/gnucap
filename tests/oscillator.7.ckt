@@ -6,7 +6,7 @@ C2 2 0 1
 L2 2 0 1 ic=5
 
 .width out=80
-.print tran v(1) v(2) iter(0)
+.print tran v(1) v(2) iter(0) control(0)
 .tran .1 100 0 uic trace rejected
 *.tran
 *.tran

@@ -1,0 +1,81 @@
+paramset logic logic;
+ .delay=.1n; .vmax=5.; .vmin=0.; .unknown=NA( 2.5); .rise=1n; .fall=1n; .rs=100.; .rw=1.G; .thh=0.75; .thl=0.25; .mr=5.; .mf=5.; .over=10k; .tnom=NA( 27.);
+endparamset
+
+module chain (.out(out),.in(in));
+  inv #(.delay(500)) b0 (.out(out),.in1(l3));
+  inv #(.delay(400)) b1 (.out(l3),.in1(l2));
+  inv #(.delay(500)) b2 (.out(l2),.in1(l1));
+  inv #(.delay(400)) b3 (.out(l1),.in1(in));
+endmodule // chain
+
+module clock (.out(ii),.en(en));
+  nand #(.delay(1000)) i0 (.out(ii),.in1(ii),.in2(en));
+endmodule // clock
+
+module main (.cc(cc),.en(en),.clk(clk),.out(out));
+  ground gnd;
+  chain #() t1 (.out(out),.in(clk));
+  clock #() c1 (.out(clk),.en(en));
+  resistor #(.r(100)) r1 (.p(out),.n(cc));
+  capacitor #(.c(10p),.$method("euler")) c1 (.p(gnd),.n(cc));
+endmodule // main
+
+m.t1.b0: can't find subckt: logicinv1, forcing digital
+m.t1.b1: can't find subckt: logicinv1, forcing digital
+m.t1.b2: can't find subckt: logicinv1, forcing digital
+m.t1.b3: can't find subckt: logicinv1, forcing digital
+m.c1.i0: can't find subckt: logicnand2, forcing digital
+#Time       l(clk)     v(cc)      control(0) iter(0)   
+ 0.         3.         5.         1.         7.        
+ 1.E-9      2.         5.         7.         3.        
+ 2.E-9      2.         5.         6.         3.        
+ 101.E-9    1.         5.         2.         3.        
+ 141.E-9    1.         5.         2.         3.        
+ 191.E-9    1.         5.         2.         3.        
+ 201.E-9    2.         5.         2.         3.        
+ 231.E-9    2.         5.         2.         3.        
+ 241.E-9    2.         5.         2.         3.        
+ 281.E-9    2.         0.2381     2.         3.        
+ 291.E-9    2.         0.039683   2.         3.        
+ 301.E-9    1.         0.0066138  2.         3.        
+ 331.E-9    1.         413.36E-6  2.         3.        
+ 341.E-9    1.         68.893E-6  2.         3.        
+ 381.E-9    1.         4.7619     2.         3.        
+ 391.E-9    1.         4.9603     2.         3.        
+ 401.E-9    2.         4.9934     2.         3.        
+ 431.E-9    2.         4.9996     2.         3.        
+ 441.E-9    2.         4.9999     2.         3.        
+ 481.E-9    2.         0.23809    2.         3.        
+ 491.E-9    2.         0.039682   2.         3.        
+ 501.E-9    1.         0.0066137  2.         3.        
+ 531.E-9    1.         413.35E-6  2.         3.        
+ 541.E-9    1.         68.892E-6  2.         3.        
+ 581.E-9    1.         4.7619     2.         3.        
+ 591.E-9    1.         4.9603     2.         3.        
+ 601.E-9    2.         4.9934     2.         3.        
+ 631.E-9    2.         4.9996     2.         3.        
+ 641.E-9    2.         4.9999     2.         3.        
+ 681.E-9    2.         0.23809    2.         3.        
+ 691.E-9    2.         0.039682   2.         3.        
+ 701.E-9    1.         0.0066137  2.         3.        
+ 731.E-9    1.         413.35E-6  2.         3.        
+ 741.E-9    1.         68.892E-6  2.         3.        
+ 781.E-9    1.         4.7619     2.         3.        
+ 791.E-9    1.         4.9603     2.         3.        
+ 801.E-9    2.         4.9934     2.         3.        
+ 831.E-9    2.         4.9996     2.         3.        
+ 841.E-9    2.         4.9999     2.         3.        
+ 881.E-9    2.         0.23809    2.         3.        
+ 891.E-9    2.         0.039682   2.         3.        
+ 901.E-9    1.         0.0066137  2.         3.        
+ 931.E-9    1.         413.35E-6  2.         3.        
+ 941.E-9    1.         68.892E-6  2.         3.        
+ 981.E-9    1.         4.7619     2.         3.        
+ 991.E-9    1.         4.9603     2.         3.        
+ 1.E-6      1.         4.9928     1.         3.        
+Gnucap   System status
+iterations: op=0, dc=0, tran=145, fourier=0, total=192
+transient timesteps: accepted=47, rejected=0, total=47
+nodes: user=4, subckt=3, model=0, total=7
+dctran density=26.5%, ac density=26.5%

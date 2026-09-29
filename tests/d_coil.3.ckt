@@ -22,12 +22,12 @@ e3b 12 11 10 0 .890801204
 r3b 12 0 75
 
 .options nopage
-.width out=170
+.width out=200
 .print ac v(4) v(2) v(3) v(5) v(7) v(9) v(12) i(r1a) i(r2a) i(r3a) i(l1a) i(l2a) i(l3a)
 .ac dec 2 .1 1k
 .print ac vp(4) vp(2) vp(3) vp(5) vp(7) vp(9) vp(12) ip(r1a) ip(r2a) ip(r3a) ip(l1a) ip(l2a) ip(l3a)
 .ac dec 2 .1 1k
-.print tran v(4) v(2) v(3) v(5) v(7) v(9) v(12) i(r1a) i(r2a) i(r3a) i(l1a) i(l2a) i(l3a)
+.print tran v(4) v(2) v(3) v(5) v(7) v(9) v(12) i(r1a) i(r2a) i(r3a) i(l1a) i(l2a) i(l3a) control(0) iter(0)
 .tran .001 .01 0 .0001
 .status notime
 .end
