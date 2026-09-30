@@ -95,7 +95,7 @@ protected:				/* s__solve.cc */
   bool	solve_with_homotopy(OPT::ITL,TRACE);
   void	advance_time();
 private:
-	void	finish_building_evalq(int);
+	void	finish_building_evalq();
 	void	set_flags();
 	void	clear_arrays();
 	void	evaluate_models();

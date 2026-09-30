@@ -56,7 +56,7 @@ bool SIM::solve(OPT::ITL itl, TRACE trace)
     }
     set_flags();
     clear_arrays();
-    finish_building_evalq(_sim->iteration_number());
+    finish_building_evalq();
     
     _sim->count_iterations(iPRINTSTEP);
     _sim->count_iterations(iSTEP);
@@ -137,7 +137,7 @@ bool SIM::solve_with_homotopy(OPT::ITL itl, TRACE trace)
  * only those nodes needing eval will be scanned.
  * Its purpose is to catch nodes that wake up after being dormant
  */
-void SIM::finish_building_evalq(int iter)
+void SIM::finish_building_evalq()
 {
   ::status.queue.start();
   assert(_scope);
@@ -145,10 +145,7 @@ void SIM::finish_building_evalq(int iter)
   }else{untested();
   }
   if(OPT::traceadv){
-    if(1||iter){
-      _scope->tr_queue_eval();
-    }else{ untested();
-    }
+    _scope->tr_queue_eval();
   }else{
     _scope->tr_queue_eval();
   }
