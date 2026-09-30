@@ -1,6 +1,5 @@
-/*$Id: m_divdiff.h,v 26.81 2008/05/27 05:34:00 al Exp $ -*- C++ -*-
- * Copyright (C) 2001 Albert Davis
- * Author: Albert Davis <aldavis@gnu.org>
+/*                     -*- C++ -*-
+ * Copyright (C) 2026 Felix Salfelder
  *
  * This file is part of "Gnucap", the Gnu Circuit Analysis Package
  *
@@ -19,36 +18,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  *------------------------------------------------------------------
- * divided differences
- * in:
- *   c = numerator (data points) (lost)
- *   t = denominator (time)
- *   n = size of array
- *   # of divided differences == n-1
- * out:
- *   c = "divided differences" (mult by n! to get derivative)
+ * events
  */
+#include "u_event.h"
+#include "e_card.h"
 /*--------------------------------------------------------------------------*/
-#include "io_trace.h"
-#include "md.h"
-/*--------------------------------------------------------------------------*/
-template<class T1, class T2>
-inline void divided_differences(T1 c[], int n, const T2 t[])
+void EVENT_QUEUE::tr_advance_recursive()
 {
-  for (int d=1; d<n; ++d) {
-    for (int i=n-1; i>=d; --i) {
-      c[i] = (c[i-1] - c[i]) / (t[i-d] - t[i]);
-    }
-  }
-}
-/*--------------------------------------------------------------------------*/
-template<class T1, class T2>
-inline void derivatives(T1 c[], int n, const T2 t[])
-{
-  for (int d=1; d<n; ++d) {
-    for (int i=n-1; i>=d; --i) {
-      assert(t[i-d] - t[i]);
-      c[i] = d * (c[i-1] - c[i]) / (t[i-d] - t[i]);
+  assert(!empty());
+  double now = top();
+  for(auto i = base::c.begin(); i!=base::c.end(); ++i) {
+    assert(i->time() >= now);
+    if(i->time() == now) {
+      i->owner()->tr_advance_recursive();
+    }else{
+      break;
     }
   }
 }

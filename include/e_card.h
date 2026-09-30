@@ -24,6 +24,7 @@
 //testing=script 2007.07.13
 #ifndef E_CARD_H
 #define E_CARD_H
+#include "u_sim_data.h"
 #include "e_base.h"
 /*--------------------------------------------------------------------------*/
 // this file
@@ -46,6 +47,7 @@ class INTERFACE CARD : public CKT_BASE {
 private:
   CARD_LIST*	_subckt;
   owner_tag_t 	_owner_tag;
+  mutable int	_adv_iter{-1};
   mutable short _probes;	// number of probes set
   bool		_constant;	// eval stays the same every iteration
   // padding 1 byte (see NODE, COMPONENT)
@@ -91,7 +93,13 @@ public:	// dc-tran
   virtual void	 tr_restore()		{}
   virtual void	 dc_advance()		{}
   virtual void	 tr_advance()		{}
+  virtual void	 tr_advance_recursive()	{incomplete();}
   virtual void	 tr_regress()		{}
+  virtual bool	 tr_needs_advance()const {
+    bool status = _adv_iter != _sim->_iter[iTOTAL];
+    _adv_iter = _sim->_iter[iTOTAL];
+    return status;
+  }
   virtual bool	 tr_needs_eval()const	{return false;}
   virtual void	 tr_queue_eval()	{}
   virtual bool	 do_tr()		{return true;}

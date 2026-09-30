@@ -1,1 +1,1 @@
-#define PATCHLEVEL "logic_glitch 2026.09.15"
+#define PATCHLEVEL "trace_adv 2026.09.25"

@@ -149,6 +149,13 @@ bool DEV_CAPACITANCE::do_tr()
   store_values();
   q_load();
 
+  if(!OPT::traceadv){
+  }else if(_time[0] != _sim->_time0) { untested();
+    error(bTRACE, "no advance: unrequested do_tr " + long_label());
+    return true;
+  }else{
+  }
+
   trace3("q", _y[0].x, _y[0].f0, _y[0].f1);
   _i[0] = differentiate(_y, _i, _time, _method_a);
   trace3("i", _i[0].x, _i[0].f0, _i[0].f1);

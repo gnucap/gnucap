@@ -1,0 +1,40 @@
+options traceadv
+
+.model logic logic ( delay=.1n rise=1n fall=1n  rs= 100.  rw= 1.G
++ thh= 0.75  thl= 0.25  mr= 5.  mf= 5.  over=10k vmax= 5.  vmin= 0. )
+
+module chain(out, in);
+	inv #(500) b0(out, l3);
+	inv #(400) b1(l3, l2);
+	inv #(500) b2(l2, l1);
+	inv #(400) b3(l1, in);
+endmodule
+
+module clock(.out(ii), .en(en));
+	nand #(1000) i0 (ii, ii, en);
+endmodule
+
+module main(cc, en, clk, out);
+	ground gnd;
+
+	chain t1(out, clk);
+	clock c1(clk, en);
+
+	resistor #(100) r1(out, cc);
+	capacitor #(.c(10p), .$method("gear")) c1(gnd, cc);
+endmodule
+
+verilog
+list
+
+main m(cc, en, clk, out);
+
+spice
+
+Ven en 0 pulse iv=0 pv=5 rise=1n
+
+.print tran l(clk) v(cc) control(0) iter(0)
+.tran 1u basic trace r
+.status notime
+.end
+

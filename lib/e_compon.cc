@@ -1252,7 +1252,7 @@ void COMPONENT::q_eval()
   if(!is_q_for_eval()) {
     mark_q_for_eval();
     _sim->_evalq_uc->push_back(this);
-  }else{untested();
+  }else{
   }
 }
 /*--------------------------------------------------------------------------*/

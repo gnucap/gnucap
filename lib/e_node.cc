@@ -69,6 +69,16 @@ NODE::~NODE()
   }
 }
 /*--------------------------------------------------------------------------*/
+void NODE::tr_advance_recursive()
+{
+  if(!subckt()){
+//    error(bTRACE, "adv: no fanout " + long_label() + "\n");
+  }else if (tr_needs_advance()) {
+    subckt()->tr_advance_recursive();
+  }else{
+  }
+}
+/*--------------------------------------------------------------------------*/
 node_t::node_t(const node_t& p)
   :_nnn(p._nnn),
    _link(p._link),

@@ -32,19 +32,19 @@ class TRANSIENT : public SIM {
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 protected:
   enum STEP_CAUSE {
-    scUSER      =    1, /* user requested				*/
-    scEVENTQ    =    2, /* an "event" from the queue			*/
-    scSKIP      =    4, /* effect of "skip" parameter			*/
-    scITER_R    =    8, /* iter count exceeds itl4 (reducing)		*/
-    scITER_A    =   16, /* iter count exceeds itl3 (holding)		*/
-    scTE	=   32, /* truncation error, or device stuff		*/
-    scAMBEVENT	=   64, /* ambiguous event				*/
-    scADT	=  128, /* by iter count limited by max(rdt, 2*adt)	*/
-    scINITIAL	=  256, /* initial guess				*/
-    scREJECT    = 1024, /* rejected previous time step			*/
-    scZERO      = 2048, /* fixed zero time step				*/
-    scSMALL     = 4096, /* time step too small				*/
-    scNO_ADVANCE= 32768 /* after all that it still didn't advance	*/
+    scUSER      = 1<< 0, /* user requested				*/
+    scEVENTQ    = 1<< 1, /* an "event" from the queue			*/
+    scSKIP      = 1<< 2, /* effect of "skip" parameter			*/
+    scITER_R    = 1<< 3, /* iter count exceeds itl4 (reducing)		*/
+    scITER_A    = 1<< 4, /* iter count exceeds itl3 (holding)		*/
+    scTE	= 1<< 5, /* truncation error, or device stuff		*/
+    scAMBEVENT	= 1<< 6, /* ambiguous event				*/
+    scADT	= 1<< 7, /* by iter count limited by max(rdt, 2*adt)	*/
+    scINITIAL	= 1<< 8, /* initial guess				*/
+    scREJECT    = 1<<10, /* rejected previous time step			*/
+    scZERO      = 1<<11, /* fixed zero time step			*/
+    scSMALL     = 1<<12, /* time step too small				*/
+    scNO_ADVANCE= 1<<15  /* after all that it still didn't advance	*/
   };
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */ 
 public:
@@ -82,7 +82,7 @@ protected:
 protected:		// s_tr_swp.cc
   void	sweep()override;
 private:
-  void	set_step_cause(STEP_CAUSE);
+  void	set_step_cause(int);
 public:
   int	step_cause()const;
   void	first();
@@ -93,6 +93,7 @@ public:
 private:
   bool	is_step_user()const {return step_cause() & scUSER;}
   bool	is_step_rejected()const override {return (step_cause() > scREJECT);}
+  bool	is_step_event()const override {return (step_cause() == scEVENTQ);}
 protected: // fourier...
   explicit TRANSIENT(const TRANSIENT&t): SIM(t),
     _tstart(t._tstart),

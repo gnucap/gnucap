@@ -11,6 +11,9 @@ associated tarball. This file summarizes the important changes.
 - logic: support XZ states (backend only)
 - change search order. Find last matching proto
 - persistent sim commands
+- fix tr_regress in coil
+- storage: fix error factor for gear
+- integrate: fall back to euler in small steps
 - ..
 
 == 20260729-dev

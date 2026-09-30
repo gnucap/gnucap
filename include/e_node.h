@@ -67,6 +67,7 @@ public: // maniputation
   virtual NODE& set_flat_number(int) {unreachable(); return *this;}
 
 public: // virtuals
+  void		tr_advance_recursive()override;
   double	tr_probe_num(const std::string&)const override;
   XPROBE	ac_probe_ext(const std::string&)const override;
 

@@ -112,11 +112,15 @@ void STORAGE::tr_advance()
 bool STORAGE::tr_needs_eval()const
 {
   //assert(!is_q_for_eval());
-  return (!OPT::lcbypass
+  if(_sim->_time0 == _time[0]){
+    return (!OPT::lcbypass
 	  || !converged() 
 	  || _sim->is_advance_or_first_iteration()
 	  || !conchk(_y[0].x, tr_input(), OPT::abstol)
 	  || _sim->uic_now());
+  }else{
+    return false;
+  }
 }
 /*--------------------------------------------------------------------------*/
 /* differentiate: this is what Spice calls "integrate".
@@ -136,12 +140,14 @@ FPOLY1 differentiate(const FPOLY1* q, const FPOLY1* i, double* time, METHOD meth
     return i[0];
   }else{
     assert(CKT_BASE::_sim->analysis_is_tran_dynamic());
-    if (time[1] == time[2]) {
-      method = mEULER;	// Bogus current in previous step.  Force Euler.
-    }else{
-    }
     double dt = time[0] - time[1];
     assert(dt > 0.);
+    if (time[1] == time[2]) {//13080
+      method = mEULER;	// Bogus current in previous step.  Force Euler.
+    }else if (dt < CKT_BASE::_sim->_dtmin*1.01) {//556
+      method = mEULER; // small time step. Force Euler
+    }else{
+    }
     switch (method) {
     case mTRAPGEAR:untested();
       incomplete();
@@ -184,9 +190,11 @@ double STORAGE::tr_c_to_g(double c, double g)const
   }else{
     assert(_sim->analysis_is_tran_dynamic());
     METHOD method;
-    if (_time[1] == _time[2]) {
+    if (_time[1] == _time[2]) {//2507
       assert(_time[1] == 0);
       method = mEULER; // Bogus current in previous step.  Force Euler.
+    }else if (_dt < CKT_BASE::_sim->_dtmin*1.01) {untested();
+      method = mEULER; // small time step. Force Euler
     }else{
       assert(_time[1] != 0);
       method = _method_a;
