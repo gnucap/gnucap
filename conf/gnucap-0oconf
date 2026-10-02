@@ -198,6 +198,7 @@ if [ -f $srcdir/Makefile.in ]; then
 	cat $srcdir/Makefile.in >> Makefile
 else
 	sub_makefile Makefile
+	rm -rf Make.depend
 fi
 #------------------------------------------------------------------------
 if [ $out_of_tree = "yes" ]; then
