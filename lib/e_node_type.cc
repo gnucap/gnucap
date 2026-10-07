@@ -23,6 +23,7 @@
 #include "globals.h"
 #include "u_xprobe.h"
 #include "e_node_type.h"
+#include "e_matrixnode.h"
 #include "e_logicnode.h"
 /*--------------------------------------------------------------------------*/
 NODE_TYPE::NODE_TYPE(std::string const& name)
@@ -70,7 +71,10 @@ public:
   }
   ~WIRE() {}
   CARD* clone()const override { return new WIRE(*this);}
-  NODE* deflate()override {
+  NODE* deflate()override { untested();
+    unreachable();
+    return nullptr;
+    // incomplete
     return new LOGIC_NODE(); // TODO
   }
 }wire;
@@ -89,7 +93,7 @@ public:
   ~ELECTRICAL() {}
   CARD* clone()const override { return new ELECTRICAL(*this);}
   NODE* deflate()override {
-    return new LOGIC_NODE(); // TODO
+    return new MATRIX_NODE();
   }
 }electrical;
 DISPATCHER<NODE>::INSTALL d1(&node_dispatcher, "electrical", &electrical);

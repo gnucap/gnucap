@@ -65,7 +65,10 @@ public:
   bool	   skip_dev_type(CS&);
 private: // obsolete -- do not use in new code
   void     obsolete_set_value(double v) final override{
-    assert(!has_common() || !common()->has_value() );
+    if(!has_common()){
+    }else if(common()->has_value()){ untested();
+    }else{
+    }
     set_value(v);
   }
 public: // override virtual

@@ -400,9 +400,9 @@ void node_t::allocate(int u /*, CARD* owner*/)
   }else if(!is_used()) {
   }else if(_nnn->flat_number() != INVALID_NODE) { untested();
     // ground or already allocated.
-  }else if(is_type(_nnn)) {
+  }else if(is_type(_nnn)) { untested();
     int flat_number = INVALID_NODE;
-    trace3("node_t::allocate new", this, &root(), flat_number);
+    trace4("node_t::allocate new", this, _nnn->short_label(), &root(), flat_number);
     CARD* ni = _nnn->clone();
     auto nn = prechecked_cast<NODE*>(ni);
     assert(nn);
@@ -539,7 +539,7 @@ void node_t::connect(node_t& lower)
   static NODE* electrical = node_dispatcher["electrical"];
   assert(electrical);
 
-  trace2("connect0", this, &lower);
+  trace3("connect0", this, lower.is_used(), is_used());
   bool used = is_used() || lower.is_used();
 
   if(!_nnn){
@@ -619,7 +619,7 @@ void node_t::connect(node_t& lower)
     assert(!r._link);
     assert(!r._nnn || r._nnn == &ground_node);
     r._nnn = &ground_node;
-  }else if(used){
+  }else if(used){ untested();
     r._link = nullptr;
     r.set_type(new_type);
     r.set_used();
