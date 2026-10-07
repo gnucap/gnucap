@@ -56,7 +56,7 @@ DISPATCHER<NODE> node_dispatcher;
 INDIRECT<ATTRIB_LIST_p> CKT_BASE::_attribs;
 INDIRECT<CARD::owner_tag_t,CARD*> CARD::_owner_index;
 INDIRECT<CARD::owner_scope_t,CARD::owner_tag_t> CARD::_owners;
-CARD_LIST CARD_LIST::card_list(CARD_LIST::_with_ground); // root circuit 
+CARD_LIST CARD_LIST::card_list; // root circuit
 HS_PARAM HS_PARAM::hs_param(CC_STATIC);
 POOL<COMMON_COMPONENT> COMMON_COMPONENT::_commons;
 

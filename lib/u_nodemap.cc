@@ -142,6 +142,15 @@ NODE* NODE_MAP::new_node(std::string s)
   return node;
 }
 /*--------------------------------------------------------------------------*/
+void NODE_MAP::clear()
+{
+  if(_map){
+    _map->clear();
+  }else{ untested();
+  }
+  _nodes.resize(0);
+}
+/*--------------------------------------------------------------------------*/
 std::string const& NODE_MAP::name(int i) const
 {
   assert(i<size());

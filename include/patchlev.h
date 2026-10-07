@@ -1,1 +1,1 @@
-#define PATCHLEVEL "trace_adv 2026.09.25"
+#define PATCHLEVEL "fix_clear 2026.10.07"
