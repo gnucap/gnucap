@@ -786,7 +786,7 @@ int DEV_LOGIC::_count = -1;
 /*--------------------------------------------------------------------------*/
 static LOGIC_NONE Default_LOGIC(CC_STATIC);
 static DEV_LOGIC p1(&Default_LOGIC);
-static DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "logic", &p1);
+static DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "logic|__assign|__udp", &p1);
 
 static LOGIC_AND  c_and(CC_STATIC);
 DISPATCHER<COMMON_COMPONENT>::INSTALL dc_and(&bm_dispatcher, "and", &c_and);

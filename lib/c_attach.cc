@@ -179,7 +179,9 @@ void attach_file(CS& cmd, std::string const& file_name,
   if (void* handle = attach_list[file_name]) {itested();
     if (Scope->is_empty()) {itested();
       cmd.warn(bDANGER, here, "\"" + file_name + "\": already loaded, replacing");
-      dlclose(handle);
+      int err = dlclose(handle);
+
+      trace2("detachhandle dlclose", file_name, err);
       attach_list[file_name] = nullptr;
     }else{untested();
       cmd.reset(here);
@@ -203,8 +205,12 @@ void detach_file(CS& cmd, std::string const& file_name,
 {itested();
   if (Scope->is_empty()) {itested();
     void* handle = attach_list[file_name];
-    if (handle) {itested();
-      dlclose(handle);
+    if (handle) {
+      trace1("detachhandle", file_name);
+      int err = dlclose(handle);
+
+      trace2("detachhandle dlclose", file_name, err);
+      trace1("detachhandle2", file_name);
       attach_list[file_name] = nullptr;
     }else{untested();
       cmd.reset(here);
