@@ -1,1 +1,1 @@
-#define PATCHLEVEL "matrix_node 2026.09.29"
+#define PATCHLEVEL "logic 2026.10.07"

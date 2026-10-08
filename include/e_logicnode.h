@@ -145,6 +145,8 @@ public:
   void set_cm_hack() {untested(); _cm_hack = true;}
 };
 /*--------------------------------------------------------------------------*/
+extern LOGIC_NODE logic_ground;
+/*--------------------------------------------------------------------------*/
 struct node_l : node_t {
   LOGIC_NODE*       operator->()      { return &data(); }
   LOGIC_NODE const* operator->()const { return &data(); }
@@ -154,8 +156,7 @@ private:
       // tmp hack.
       // think of it as an autoinserted connect module
       // mimics traditional behaviour but probably wrong.
-      static LOGIC_NODE lg(0);
-      return lg;
+      return logic_ground;
     }else{
       auto n = prechecked_cast<LOGIC_NODE const*>(n_());
       assert(n);

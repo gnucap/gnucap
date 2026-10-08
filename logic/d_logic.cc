@@ -38,6 +38,7 @@
 namespace {
 /*--------------------------------------------------------------------------*/
 class DEV_LOGIC : public ELEMENT {
+  double* _delay{nullptr};
 public:
   enum {OUTNODE=0,BEGIN_IN=1}; //node labels
   enum {PORTS_PER_GATE = 10};
@@ -117,7 +118,40 @@ private:
   bool	   tr_eval_digital();
   bool	   want_analog()const;
   bool	   want_digital()const;
+public:
+  void set_parameters(const std::string& Label, CARD* Parent,
+		      COMMON_COMPONENT* Common, double Value,
+		      int state_count, double state[],
+		      int node_count, const node_t nodes[])override;
 };
+/*--------------------------------------------------------------------------*/
+void DEV_LOGIC::set_parameters(const std::string& Label, CARD *Owner,
+			       COMMON_COMPONENT *Common, double Value,
+			       int num_states, double States[],
+			       int node_count, const node_t Nodes[])
+{ untested();
+  set_label(Label);
+  set_owner(Owner);
+  if(Value==0.){
+  }else if(Common){ untested();
+    Common = Common->clone();
+    Common->set_param_by_name("delay", to_string(Value));
+  }else{ untested();
+    incomplete();
+  }
+  attach_common(Common);
+
+  assert(node_count <= max_nodes());
+  _net_nodes = short(node_count);
+  if(node_count){
+    std::copy_n(Nodes, node_count, (node_t*)&n_(0));
+  }else{itested();
+  }
+  if(num_states == 1){ untested();
+    _delay = States;
+  }else{ untested();
+  }
+}
 /*--------------------------------------------------------------------------*/
 class LOGIC_AND : public COMMON_LOGIC {
 private:
@@ -723,8 +757,14 @@ void DEV_LOGIC::tr_accept()
 	  assert(n_(OUTNODE)->lv() == future_state || !_sim->_time0);
 	}else if (n_(OUTNODE)->lv() == lvXX ||
 	    future_state.lv_future_() != n_(OUTNODE)->lv().lv_future_()) {
+	  double dly;
+	  if(_delay){
+	    dly = m->delay * *_delay;
+	  }else{
+	    dly = c->_real_delay;
+	  }
 	  //assert(future_state == n_(OUTNODE).lv_future());
-	  n_(OUTNODE)->set_event(c->_real_delay, future_state, this);
+	  n_(OUTNODE)->set_event(dly, future_state, this);
 	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();
 	    error(bDANGER, "%s:%u:%g non-event state change to %d\n",
