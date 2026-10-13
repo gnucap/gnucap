@@ -471,7 +471,7 @@ TIME_PAIR DEV_TRANSLINE::tr_review()
   q_accept();
   const COMMON_TRANSLINE* c=prechecked_cast<const COMMON_TRANSLINE*>(common());
   assert(c);
-  return TIME_PAIR(_sim->_time0 + c->real_td, NEVER); // ok to miss the spikes, for now
+  return TIME_PAIR(c->real_td, NEVER); // ok to miss the spikes, for now
 }
 /*--------------------------------------------------------------------------*/
 /* after this step is all done, determine the reflections and send them on.
