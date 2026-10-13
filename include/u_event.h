@@ -54,7 +54,7 @@ public:
       return false;
     }
   }
-  bool operator>=(double const& t)const { untested();
+  bool operator>=(double const& t)const {
     return _time >= t;
   }
   struct greater{

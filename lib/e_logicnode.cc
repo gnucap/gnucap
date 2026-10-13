@@ -134,7 +134,7 @@ void LOGIC_NODE::to_logic(const MODEL_LOGIC*f, double input)
   set_process(f);
 
   if (is_analog() &&  d_iter() < a_iter()) {
-    if (_sim->analysis_is_restore()) {untested();
+    if (_sim->analysis_is_restore()) {
     }else if (_sim->analysis_is_static()) {
     }else{
     }
@@ -380,10 +380,15 @@ void LOGIC_NODE::force_initial_value(LOGICVAL v)
   }else if (_sim->analysis_is_static()) {
   }else{untested();
   }
-  assert(_sim->analysis_is_static() || _sim->analysis_is_restore());
-  assert(_sim->_time0 == 0.);
-  assert(is_unknown() || _lv == lvX0 || _lv == lvX1 || _lv == lvXZ);
+  if(_sim->_time0){
+    assert(_sim->analysis_is_restore());
+  }else{
+    assert(!_sim->analysis_is_restore());
+    assert(_sim->analysis_is_static());
+  }
+  // assert(is_unknown() || _lv == lvX0 || _lv == lvX1 || _lv == lvXZ);
   assert(is_digital());
+
   set_lv(v); // BUG ??
   set_good_quality("initial dc");
   set_d_iter();
@@ -413,7 +418,7 @@ void LOGIC_NODE::set_event(double delay, LOGICVAL v, CARD* Device)
   }
   set_last_change_time();
   if(!subckt()){
-  }else if(is_cm_hack()){ untested();
+  }else if(is_cm_hack()){itested();
     subckt()->tr_accept();
   }else{
   }

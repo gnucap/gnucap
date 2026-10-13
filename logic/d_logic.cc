@@ -84,6 +84,7 @@ private: // override virtuals
   void	   tr_unload()override;
   TIME_PAIR tr_review()override;
   void	   tr_accept()override;
+  void	   accept(SIM_PHASE);
   double   tr_involts()const override	{ untested();unreachable(); return 0;}
   //double tr_input()const		//ELEMENT
   double   tr_involts_limited()const override { untested();unreachable(); return 0;}
@@ -129,10 +130,10 @@ void DEV_LOGIC::set_parameters(const std::string& Label, CARD *Owner,
 			       COMMON_COMPONENT *Common, double Value,
 			       int num_states, double States[],
 			       int node_count, const node_t Nodes[])
-{ untested();
+{itested();
   set_label(Label);
   set_owner(Owner);
-  if(Value==0.){
+  if(Value==0.){itested();
   }else if(Common){ untested();
     Common = Common->clone();
     Common->set_param_by_name("delay", to_string(Value));
@@ -143,13 +144,13 @@ void DEV_LOGIC::set_parameters(const std::string& Label, CARD *Owner,
 
   assert(node_count <= max_nodes());
   _net_nodes = short(node_count);
-  if(node_count){
+  if(node_count){itested();
     std::copy_n(Nodes, node_count, (node_t*)&n_(0));
   }else{itested();
   }
-  if(num_states == 1){ untested();
+  if(num_states == 1){itested();
     _delay = States;
-  }else{ untested();
+  }else{itested();
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -401,9 +402,9 @@ void DEV_LOGIC::tr_begin()
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::tr_restore()
-{untested();
+{
   ELEMENT::tr_restore();
-  if (!subckt()) {untested();
+  if (!subckt()) {
     _gatemode = moDIGITAL;
   }else{untested();
     _gatemode = (OPT::mode==moMIXED) ? moANALOG : OPT::mode;
@@ -513,7 +514,7 @@ bool DEV_LOGIC::tr_needs_eval()const
   case moMIXED:   unreachable(); break;
   case moDIGITAL:
     //assert(!is_q_for_eval());
-    if (_sim->analysis_is_restore()) {untested();
+    if (_sim->analysis_is_restore()) {
     }else if (_sim->analysis_is_static()) {
     }else{
     }
@@ -541,12 +542,12 @@ void DEV_LOGIC::tr_queue_eval()
 bool DEV_LOGIC::tr_eval_digital()
 {
   assert(_gatemode == moDIGITAL);
-  if (_sim->analysis_is_restore()) {untested();
+  if (_sim->analysis_is_restore()) {
   }else if (_sim->analysis_is_static()) {
   }else{
   }
   if (_sim->analysis_is_static() || _sim->analysis_is_restore()) {
-    tr_accept();
+    accept(p_INIT_DC);
   }else{
     assert(_sim->analysis_is_tran_dynamic());
   }
@@ -638,6 +639,11 @@ TIME_PAIR DEV_LOGIC::tr_review()
  */
 void DEV_LOGIC::tr_accept()
 {
+  accept(p_TRAN);
+}
+/*--------------------------------------------------------------------------*/
+void DEV_LOGIC::accept(SIM_PHASE Ph)
+{
   assert(_gatemode == moDIGITAL || _gatemode == moANALOG);
   const COMMON_LOGIC* c = prechecked_cast<const COMMON_LOGIC*>(common());
   assert(c);
@@ -697,7 +703,7 @@ void DEV_LOGIC::tr_accept()
     }else{
     }
     assert(_gatemode == moDIGITAL);
-    if (_sim->analysis_is_restore()) {untested();
+    if (_sim->analysis_is_restore()) {
     }else if (_sim->analysis_is_static()) {
     }else{
     }
@@ -705,24 +711,23 @@ void DEV_LOGIC::tr_accept()
 	|| _lastchangenode != OUTNODE
 	|| _sim->analysis_is_static()
 	|| _sim->analysis_is_restore()) {
-      // probably coming from tr_regress.
+      // when coming from tr_regress.
       // input nodes may be accepted (new value queued)
       // but not stabilised (tr_advance)
       LOGICVAL future_state = c->logic_eval(&n_(BEGIN_IN), net_nodes()-BEGIN_IN);
       //		         ^^^^^^^^^^
       LOGICVAL out = n_(OUTNODE)->lv();
-      if ((out == lvXX || out == lvX0 || out == lvX1 || out == lvXZ) &&
-	  (_sim->analysis_is_static() || _sim->analysis_is_restore())) {
+      if ((out == lvXX || out == lvX0 || out == lvX1 || out == lvXZ || Ph == p_INIT_DC) &&
+	  _sim->analysis_is_static()) {
 	n_(OUTNODE)->force_initial_value(future_state);
 	n_(OUTNODE)->store_old_lv();
 	/* This happens when initial DC is digital.
-	 * Answers could be wrong if order in netlist is reversed 
 	 */
+      }else if ((out == lvXX || out == lvX0 || out == lvX1 || out == lvXZ) &&
+	  (_sim->analysis_is_restore())) { untested();
+	n_(OUTNODE)->force_initial_value(future_state);
+	n_(OUTNODE)->store_old_lv();
       }else if (future_state != n_(OUTNODE)->lv()) {
-	 trace1("DBG", _sim->_bypass_ok);
-	for(int i = 0; i<net_nodes(); ++i){
-	  trace3("DBG", future_state, i, n_(i)->lv());
-	}
 	if(future_state != lvXX){
 	}else{ untested();
 	}
@@ -752,13 +757,13 @@ void DEV_LOGIC::tr_accept()
 	 * conversion, so the kluge stays in for now.
 	 */
 	// assert(future_state.lv_old() == future_state.lv_future());
-	if (future_state == lvX1 || future_state == lvX0 || future_state == lvXZ){
+	if (future_state == lvX1 || future_state == lvX0 || future_state == lvXZ){ untested();
 	  // regressed to a glitch. still a glitch.
 	  assert(n_(OUTNODE)->lv() == future_state || !_sim->_time0);
 	}else if (n_(OUTNODE)->lv() == lvXX ||
 	    future_state.lv_future_() != n_(OUTNODE)->lv().lv_future_()) {
 	  double dly;
-	  if(_delay){
+	  if(_delay){itested();
 	    dly = m->delay * *_delay;
 	  }else{
 	    dly = c->_real_delay;

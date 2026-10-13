@@ -148,6 +148,7 @@ void TRANSIENT::sweep()
   }
   review(); 
   _accepted = true;
+  // _sim->_phase = p_TRAN; ?
   accept();
   
   {//385
