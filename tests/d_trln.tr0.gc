@@ -12,7 +12,7 @@ spice
 .options noinsensitive
 V30 nin 0 pulse(0 1.8 0p 100p 100p .5n 1n) ac 1
 
-.print tr v(nodes)
+.print tr v(nodes) dtr(t1) iter(0) control(0)
 .tr 1n basic
 
 .status notime

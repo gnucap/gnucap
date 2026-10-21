@@ -1,0 +1,40 @@
+* Felix Salfelder 2020
+* GPLv3+
+
+* bug? not used in measure or eval output
+options numdgt=5
+parameter pi=3.141592653589793
+
+spice
+V1 1 0 sin f={1./2./pi}
+.verilog
+
+store tran v(1)
+print tran v(1)
+
+parameter xx = .4
+
+dc > /dev/null
+print tran v(1)
+tran {pi/2.}
+measure v01 at(probe='v(1)' x=xx)
+
+options trtol=1
+dc > /dev/null
+tran {pi/2.} > /dev/null
+measure v11 at(probe='v(1)' x=xx)
+
+options trtol=.1
+dc > /dev/null
+tran {pi/2.} > /dev/null
+measure v21 at(probe='v(1)' x=xx)
+
+options trtol=.01
+dc > /dev/null
+tran {pi/2.} > /dev/null
+measure v31 at(probe='v(1)' x=xx)
+
+eval abs(v01 - sin(xx))
+eval abs(v11 - sin(xx))
+eval abs(v21 - sin(xx))
+eval abs(v31 - sin(xx))
