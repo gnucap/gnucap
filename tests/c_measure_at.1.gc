@@ -17,24 +17,55 @@ parameter xx = .4
 dc > /dev/null
 print tran v(1)
 tran {pi/2.}
-measure v01 at(probe='v(1)' x=xx deriv=1)
+measure v00 at(probe='v(1)' x=xx deriv=1 order=0)
+measure v10 at(probe='v(1)' x=xx deriv=1 order=1)
+measure v20 at(probe='v(1)' x=xx deriv=1 order=2)
+measure v30 at(probe='v(1)' x=xx deriv=1 order=3)
+measure v40 at(probe='v(1)' x=xx deriv=1 order=4)
+eval abs(v00 - cos(xx))
+eval abs(v10 - cos(xx))
+eval abs(v20 - cos(xx))
+eval abs(v30 - cos(xx))
+eval abs(v40 - cos(xx))
 
 options trtol=1
 dc > /dev/null
 tran {pi/2.} > /dev/null
-measure v11 at(probe='v(1)' x=xx deriv=1)
-
-options trtol=.1
-dc > /dev/null
-tran {pi/2.} > /dev/null
-measure v21 at(probe='v(1)' x=xx deriv=1)
-
-options trtol=.01
-dc > /dev/null
-tran {pi/2.} > /dev/null
-measure v31 at(probe='v(1)' x=xx deriv=1)
-
+measure v01 at(probe='v(1)' x=xx deriv=1 order=0)
+measure v11 at(probe='v(1)' x=xx deriv=1 order=1)
+measure v21 at(probe='v(1)' x=xx deriv=1 order=2)
+measure v31 at(probe='v(1)' x=xx deriv=1 order=3)
+measure v41 at(probe='v(1)' x=xx deriv=1 order=4)
 eval abs(v01 - cos(xx))
 eval abs(v11 - cos(xx))
 eval abs(v21 - cos(xx))
 eval abs(v31 - cos(xx))
+eval abs(v41 - cos(xx))
+
+options trtol=.1
+dc > /dev/null
+tran {pi/2.} > /dev/null
+measure v02 at(probe='v(1)' x=xx deriv=1 order=0)
+measure v12 at(probe='v(1)' x=xx deriv=1 order=1)
+measure v22 at(probe='v(1)' x=xx deriv=1 order=2)
+measure v32 at(probe='v(1)' x=xx deriv=1 order=3)
+measure v42 at(probe='v(1)' x=xx deriv=1 order=4)
+eval abs(v02 - cos(xx))
+eval abs(v12 - cos(xx))
+eval abs(v22 - cos(xx))
+eval abs(v32 - cos(xx))
+eval abs(v42 - cos(xx))
+
+options trtol=.01
+dc > /dev/null
+tran {pi/2.} > /dev/null
+measure v03 at(probe='v(1)' x=xx deriv=1 order=0)
+measure v13 at(probe='v(1)' x=xx deriv=1 order=1)
+measure v23 at(probe='v(1)' x=xx deriv=1 order=2)
+measure v33 at(probe='v(1)' x=xx deriv=1 order=3)
+measure v43 at(probe='v(1)' x=xx deriv=1 order=4)
+eval abs(v03 - cos(xx))
+eval abs(v13 - cos(xx))
+eval abs(v23 - cos(xx))
+eval abs(v33 - cos(xx))
+eval abs(v43 - cos(xx))
