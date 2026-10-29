@@ -1,1 +1,1 @@
-#define PATCHLEVEL "logic 2026.10.26"
+#define PATCHLEVEL "logic 2026.10.28"
