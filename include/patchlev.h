@@ -1,1 +1,1 @@
-#define PATCHLEVEL "interpolate 2026.10.22"
+#define PATCHLEVEL "logic 2026.10.26"

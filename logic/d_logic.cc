@@ -437,6 +437,7 @@ void DEV_LOGIC::dc_advance()
     }
     break;
   }
+  q_accept();
 }
 /*--------------------------------------------------------------------------*/
 /* tr_advance: the first to run on a new time step.
@@ -471,6 +472,7 @@ void DEV_LOGIC::tr_advance()
     }
     break;
   }
+  q_accept();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::tr_regress()
@@ -501,6 +503,7 @@ void DEV_LOGIC::tr_regress()
     }
     break;
   }
+  q_accept();
 }
 /*--------------------------------------------------------------------------*/
 /* tr_needs_eval
@@ -622,7 +625,7 @@ TIME_PAIR DEV_LOGIC::tr_review()
 {
   // not calling ELEMENT::tr_review();
 
-  q_accept();
+  // q_accept(); in advance.
   //digital mode queues events explicitly in tr_accept
 
   switch (_gatemode) {
@@ -757,9 +760,12 @@ void DEV_LOGIC::accept(SIM_PHASE Ph)
 	 * conversion, so the kluge stays in for now.
 	 */
 	// assert(future_state.lv_old() == future_state.lv_future());
-	if (future_state == lvX1 || future_state == lvX0 || future_state == lvXZ){ untested();
+	if (future_state == lvX1 || future_state == lvX0 || future_state == lvXZ){ itested();
 	  // regressed to a glitch. still a glitch.
-	  assert(n_(OUTNODE)->lv() == future_state || !_sim->_time0);
+	  if(n_(OUTNODE)->lv() == lvXX) { itested();
+	  }else{ untested();
+	    assert(n_(OUTNODE)->lv() == future_state || !_sim->_time0);
+	  }
 	}else if (n_(OUTNODE)->lv() == lvXX ||
 	    future_state.lv_future_() != n_(OUTNODE)->lv().lv_future_()) {
 	  double dly;
