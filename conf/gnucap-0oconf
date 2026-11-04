@@ -186,6 +186,9 @@ sub_makefile() {
 	if [ -f $top_srcdir/MakeBase ]; then
 		echo "include $top_srcdir/MakeBase" >> $1
 	fi
+	if grep TESTDIR $srcdir/MakeList > /dev/null; then
+		echo "include $include_dir/MakeTest" >> $1
+	fi
 	echo "-include Make.depend" >> $1
 }
 #------------------------------------------------------------------------
