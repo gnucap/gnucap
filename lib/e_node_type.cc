@@ -38,7 +38,7 @@ NODE_TYPE::NODE_TYPE(std::string const& name)
 NODE_TYPE::~NODE_TYPE()
 {
   if (!_installer){
-  }else if(_sim) { untested();
+  }else if(_sim) { itested();
     _sim->uninit();
   }else{ untested();
   }
@@ -52,9 +52,9 @@ XPROBE NODE_TYPE::ac_probe_ext(const std::string&) const
 }
 /*--------------------------------------------------------------------------*/
 void NODE_TYPE::install()
-{ untested();
+{ itested();
   if(_installer){ untested();
-  }else{ untested();
+  }else{ itested();
     _installer = new inst(&node_dispatcher, short_label(), this);
     set_type_number(int(node_dispatcher.size())-1);
   }
