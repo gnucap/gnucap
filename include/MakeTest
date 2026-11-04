@@ -3,7 +3,7 @@
 #     Lukas Deutz 2026
 # GPLv3+
 
-ref = ${REFDIR}
+ref = ${srcdir}/${REFDIR}
 testdir = ${srcdir}/${TESTDIR}
 TARGETDIR = check
 TESTENV = GNUCAP_PLUGPATH=${top_builddir} \
