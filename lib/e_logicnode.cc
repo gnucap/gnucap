@@ -27,19 +27,7 @@
 #include "e_cardlist.h"
 /*--------------------------------------------------------------------------*/
 LOGIC_NODE::LOGIC_NODE(int i)
-  :NODE(),
-   _flat_number(i),
-   _family(0),
-   _d_iter(-1), // initially d_iter is older than a_iter
-   _a_iter(0),
-   _final_time(0),
-   _lastchange(0),
-   _old_lastchange(0),
-   _mode(moANALOG),
-   _lv(),
-   _old_lv(),
-   _quality(qBAD),
-   _failure_mode("initial")
+  :NODE(), _flat_number(i)
 {
   if(i!=-1){
   }else{

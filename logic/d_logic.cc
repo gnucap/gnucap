@@ -43,11 +43,11 @@ public:
   enum {OUTNODE=0,BEGIN_IN=1}; //node labels
   enum {PORTS_PER_GATE = 10};
 private:
-  int		_lastchangenode;
-  int		_quality;
-  std::string	_failuremode;
-  smode_t	_oldgatemode;
-  smode_t	_gatemode;
+  int		_lastchangenode{0};
+  int		_quality{qGOOD};
+  std::string	_failuremode{"ok"};
+  smode_t	_oldgatemode{moUNKNOWN};
+  smode_t	_gatemode{moUNKNOWN};
   static int	_count;
   mutable node_l _nodes[PORTS_PER_GATE];	/* PORTS_PER_GATE <= PORTSPERSUBCKT */
 public:
@@ -274,24 +274,12 @@ public:
   std::string name()const override	  {untested();return "error";}
 };
 /*--------------------------------------------------------------------------*/
-DEV_LOGIC::DEV_LOGIC(COMMON_COMPONENT* c)
-  :ELEMENT(c),
-   _lastchangenode(0),
-   _quality(qGOOD),
-   _failuremode("ok"),
-   _oldgatemode(moUNKNOWN),
-   _gatemode(moUNKNOWN)   
+DEV_LOGIC::DEV_LOGIC(COMMON_COMPONENT* c) : ELEMENT(c)
 {
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
-DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
-  :ELEMENT(p),
-   _lastchangenode(0),
-   _quality(qGOOD),
-   _failuremode("ok"),
-   _oldgatemode(moUNKNOWN),
-   _gatemode(moUNKNOWN)   
+DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p) : ELEMENT(p)
 {
   assert(max_nodes() == PORTS_PER_GATE);
   for (int ii = 0;  ii < max_nodes();  ++ii) {

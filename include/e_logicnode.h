@@ -34,17 +34,17 @@ class MODEL_LOGIC;
 class INTERFACE LOGIC_NODE : public NODE {
 private:
   int _flat_number{INVALID_NODE};
-  const MODEL_LOGIC *_family;	/* logic family */
-  int 	      _d_iter;		/* iteration of last update - digital */
-  int 	      _a_iter;		/* iteration of last update - analog */
-  double      _final_time;	/* time logic transition attains final state */
-  double      _lastchange;	/* time of last change */
-  double      _old_lastchange;	/* in case it rejects a step */
-  smode_t     _mode;		/* simulation mode (analog or digital)*/
+  const MODEL_LOGIC *_family{nullptr};	/* logic family */
+  int 	      _d_iter{-1};		/* iteration of last update - digital */
+  int 	      _a_iter{0};		/* iteration of last update - analog */
+  double      _final_time{0.};	/* time logic transition attains final state */
+  double      _lastchange{0.};	/* time of last change */
+  double      _old_lastchange{0.};	/* in case it rejects a step */
+  smode_t     _mode{moANALOG};		/* simulation mode (analog or digital)*/
   LOGICVAL    _lv;		/* "logic value" (real type is LOGICVAL) */
   LOGICVAL    _old_lv;		/* in case it rejects a step */
-  int	      _quality;		/* quality of digital mode */
-  std::string _failure_mode;
+  int	      _quality{qBAD};		/* quality of digital mode */
+  std::string _failure_mode{"initial"};
 public:
   int user_number()const override { return INVALID_NODE;}
   int flat_number()const override { return _flat_number;}
