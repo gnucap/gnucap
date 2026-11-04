@@ -87,13 +87,6 @@ else
   $(foreach p,$(TESTCASES),$(eval $(call make_diff_rule,$(p))))
 endif
 
-${PWD}/disciplines.vams:
-	-${LN_S} ${top_srcdir}/vams/disciplines.vams
-${PWD}/constants.vams:
-	-${LN_S} ${top_srcdir}/vams/constants.vams
-${PWD}/sub:
-	-${LN_S} ${srcdir}/sub
-
 symlinks: ${TEST_SYMLINKS:%=${PWD}/%}
 
 ${TEST_SYMLINKS:%=${PWD}/%} : ${PWD}/%:
