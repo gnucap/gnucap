@@ -26,6 +26,10 @@ LIBS =
 #------------------------------------------------------------------------
 DELETED =
 #------------------------------------------------------------------------
+RAW_MAKEFILES = \
+MakeBase MakeTest \
+MakeConf.default MakeConf.g++ MakeConf.Debug MakeConf.afldebug
+#------------------------------------------------------------------------
 RAW_SRCS =
 #------------------------------------------------------------------------
 RAW_HDRS = \
@@ -46,9 +50,7 @@ u_parameter.h u_prblst.h u_probe.h u_sdp.h u_sim_data.h u_status.h \
 u_event.h \
 u_time_pair.h u_xprobe.h u_attrib.h u_node.h e_hsparam.h
 #------------------------------------------------------------------------
-RAW_OTHER_INSTALL = \
-MakeBase MakeConf.default MakeConf.g++ MakeConf.Debug \
-MakeConf.afldebug
+RAW_OTHER_INSTALL = ${RAW_MAKEFILES}
 #------------------------------------------------------------------------
 RAW_OTHER_NO_INSTALL = MakeList configure config.h
 # -- config.h is installed by conf
@@ -71,7 +73,7 @@ GENERATED = $(GENERATED_HDRS) $(GENERATED_SRCS) $(GENERATED_OTHER)
 #------------------------------------------------------------------------
 GENERATED_DIST =
 IMPORTED_DIST = $(IMPORTED)
-DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST)
+DIST_FILES = $(RAW) $(GENERATED_DIST) $(IMPORTED_DIST) ${RAW_MAKEFILES}
 #------------------------------------------------------------------------
 #------------------------------------------------------------------------
 SRCS = $(RAW_SRCS) $(GENERATED_SRCS) $(IMPORTED_SRCS)
