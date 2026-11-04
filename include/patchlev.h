@@ -1,1 +1,1 @@
-#define PATCHLEVEL "logic 2026.10.28"
+#define PATCHLEVEL "conchk 2026.11.01"
