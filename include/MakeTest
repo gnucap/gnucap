@@ -37,12 +37,12 @@ prep: symlinks ${TEST_PLUGINS}
 
 SHELL=/bin/bash
 ${out_ckt}: ${TARGETDIR}/%.ckt.out: prep
-	-@${TESTENV} ${GNUCAP} --acs ${GNUCAP_ARGS} -b ${testdir}/$*.ckt |tail -n +${NUM_HDR_LINES} | \
+	-@${TESTENV} ${GNUCAP} --acs ${GNUCAP_ARGS} -b ${testdir}/$*.ckt |tail -n +${TEST_HDR_LINES} | \
 		grep -v '^stashing as' | grep -v 'already installed' | grep -v ^make > $@; \
 	err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
 
 ${out_gc}: ${TARGETDIR}/%.gc.out: prep
-	-@${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${testdir}/$*.gc |tail -n +${NUM_HDR_LINES} | \
+	-@${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${testdir}/$*.gc |tail -n +${TEST_HDR_LINES} | \
 		grep -v '^stashing as' | grep -v 'already installed' | grep -v ^make > $@; \
 	err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
 
