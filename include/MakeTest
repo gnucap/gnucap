@@ -11,8 +11,8 @@ TESTENV = GNUCAP_PLUGPATH=${top_builddir} \
 DIFF = diff
 DIFF_FLAGS = -rup
 
-glob_ckt = $(shell cd ${testdir}; ls *.ckt)
-glob_gc = $(shell cd ${testdir}; ls *.gc)
+glob_ckt = $(shell cd ${testdir}; ls *.ckt 2>/dev/null)
+glob_gc = $(shell cd ${testdir}; ls *.gc 2>/dev/null)
 
 test_patterns = $(if $(strip $(TESTCASES)),$(TESTCASES:%=%%),%)
 check_targets = $(if $(strip $(TESTCASES)),$(TESTCASES:%=$(TARGETDIR)/%.diff),$(TARGETDIR)/.diff)
