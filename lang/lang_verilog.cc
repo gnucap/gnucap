@@ -1036,7 +1036,8 @@ void LANG_VERILOG::print_command(OMSTREAM& o, const DEV_DOT* x)
     o << "// spice? \"" << s << "\"\n";
   }else if(s.size()) {
     o << s;
-    if(s[s.size()-1] != ';'){
+    if(s[0] == '`'){
+    }else if(s[s.size()-1] != ';'){
       o << ';';
     }else{
     }

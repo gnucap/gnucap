@@ -1,1 +1,1 @@
-#define PATCHLEVEL "make_test 2026.11.04"
+#define PATCHLEVEL "print_cmd 2026.11.05"
