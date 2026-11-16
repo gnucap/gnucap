@@ -31,24 +31,24 @@ T5 51 0 52 0 z=50 f=10meg nl=.25
 R5l 52 0 100
 
 .list
-.print tran v nodes
+.print tran v nodes iter(0) control(0)
 
 # nominal-z drive
 .tran 0 100n 5n trace all
 
 # very lo-z drive
 .modify R?s=.1
-.print tran v nodes
+.print tran v nodes iter(0) control(0)
 .tr 0 300n 5n trace all
 
 # slightly lo-z drive
 .modify R?s=25
-.print tran v nodes
+.print tran v nodes iter(0) control(0)
 .tr 0 300n 5n trace all
 
 # hi-z drive
 .modify R?s=100
-.print tran v nodes
+.print tran v nodes iter(0) control(0)
 .tr 0 100n 5n trace all
 .tr 600n 5n trace all
 
