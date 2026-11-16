@@ -26,6 +26,7 @@
 #define E_ELEMNT_H
 #include "m_cpoly.h"
 #include "m_matrix.h"
+#include "m_divdiff.h"
 #include "l_denoise.h"
 #include "e_compon.h"
 #include "e_node.h"
@@ -191,7 +192,8 @@ protected: // in .cc
   void	   ac_iwant_matrix_active()     {ac_iwant_matrix_control();}
 
 public:
-  double   tr_review_trunc_error(const FPOLY1* q);
+  template<class iter>
+  double   tr_review_trunc_error(iter q, double const* first=nullptr) const;
   bool     tr_review_check(double& timestep)const;
 
   double   tr_outvolts()const	{return dn_diff(n_(OUT1).v0(), n_(OUT2).v0());}
@@ -508,6 +510,99 @@ inline void ELEMENT::ac_eval()
   }
 }
 /*--------------------------------------------------------------------------*/
+namespace{
+template<class iter>
+double getf0(iter f){return f->f0;}
+}
+/*--------------------------------------------------------------------------*/
+template<class iter>
+double ELEMENT::tr_review_trunc_error(iter q, double const* first) const
+{
+  struct invf_ {
+    double operator()(int i)const {
+      assert(i>3);
+      double ret = 1./24.;
+      for(int j = 5; j<=i; ++j){ untested();
+	ret /= j;
+      }
+      return ret;
+    }
+  } invf;
+  double timestep;
+  if (_time[0] <= 0.) {
+    // DC, I know nothing
+    timestep = NEVER;
+  }else{
+    int error_deriv; // which derivative to use for error estimate
+    if (order() >= OPT::_keep_time_steps - 2) {
+      error_deriv = OPT::_keep_time_steps - 1;
+    }else if (order() < 0) {untested();
+      error_deriv = 1;
+    }else{
+      error_deriv = order()+1;
+    }
+    for (int i=error_deriv; i>0; --i) {
+      if (_time[i-1] <= _time[i]) {
+	// not enough info to use that derivative, use a lower order derivative
+	error_deriv = i-1;
+      }else{
+      }
+    }
+    assert(error_deriv > 0);
+    assert(error_deriv < OPT::_keep_time_steps);
+    for (int i=error_deriv; i>0; --i) {
+      assert(_time[i] < _time[i-1]);
+    }
+
+    double c[OPT::_keep_time_steps];
+    iter a = q;
+    if(first){
+      *c = *first;
+    }else{
+    }
+    for (int i=!!first; i<error_deriv+1; ++i) {
+      // assert(a!=e);
+      c[i] = getf0(a++);
+    }
+    divided_differences(c, error_deriv+1, _time);
+    // now c[i]*i! is i'th derivative
+
+    assert(OPT::_keep_time_steps >= 5);
+    trace4(("ts " + long_label()).c_str(), error_deriv, error_factor(),
+	   OPT::trsteporder, OPT::trstepcoef[OPT::trsteporder] );
+    trace5("time", _time[0], _time[1], _time[2], _time[3], _time[4]);
+//    trace5("ddiff", c[0], c[1], c[2], c[3], c[4]);
+
+    if (c[error_deriv] == 0) {
+      // avoid divide by zero
+      timestep = NEVER;
+    }else{
+      assert(error_deriv);
+      a = q;
+      double m;
+      if(first){
+	m = std::abs(*first);
+      }else{
+	m = std::abs(getf0(a++));
+      }
+      m = std::max(m, std::abs(getf0(a)));
+      double chargetol = std::max(OPT::chgtol, OPT::reltol * m);
+      double tol = OPT::trtol * chargetol;
+      double denom = error_factor() * std::abs(c[error_deriv]);
+      assert(tol > 0.);
+      assert(denom > 0.);
+      switch (error_deriv) { // pow is slow.
+      case 1:  timestep = tol / denom; break;
+      case 2:  timestep = sqrt(tol / denom * .5); break;
+      case 3:  timestep = cbrt(tol / denom * (1./6.)); break;
+      default: timestep = pow((tol / denom * invf(error_deriv)), 1./(error_deriv)); break;
+      }
+      trace4("", chargetol, tol, denom, timestep);
+    }
+  }
+  assert(timestep > 0.);
+  return timestep;
+}
 /*--------------------------------------------------------------------------*/
 #endif
 // vim:ts=8:sw=2:noet:
