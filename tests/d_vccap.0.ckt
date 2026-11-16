@@ -1,0 +1,12 @@
+
+.model dd d is=1e-14
+V1 1 0 sin(0 1 1k)
+R1 1 2 1k
+D1 2 0 dd
+R2 2 3 1k
+.vccap C1 3 0 2 0 1n
+R3 3 0 10k
+.print tran v(2) v(3)
+.list
+.tran 2m
+.end
