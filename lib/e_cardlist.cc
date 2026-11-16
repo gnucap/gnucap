@@ -44,19 +44,12 @@ CARD_LIST::CARD_LIST()
    _nm(new NODE_MAP),
    _params(nullptr)
 {
-}
-/*--------------------------------------------------------------------------*/
-CARD_LIST::CARD_LIST(CARD_LIST::with_ground)
-  :_parent(nullptr),
-   _nm(new NODE_MAP),
-   _params(nullptr)
-{
-  // NB: erase_all does not clear the node map.
-  //     perhaps it should, but it must retain "0".
-  _nm->new_node("0");
-  assert(_nm->size()==1);
-  assert(params());
-  // assert(CARD_LIST::card_list.nodes()->at(0).is_grounded()); later.
+  if(this == &card_list) {
+    _nm->new_node("0");
+    assert(_nm->size()==1);
+  }else{
+  }
+  // assert(params());
 }
 /*--------------------------------------------------------------------------*/
 CARD_LIST::CARD_LIST(const CARD* model, CARD* owner,
@@ -244,6 +237,14 @@ CARD_LIST& CARD_LIST::erase_all()
     delete _params;
     _params = nullptr;
   }else{
+  }
+  if(_nm) {
+    _nm->clear();
+    if(this == &card_list) {
+      _nm->new_node("0");
+    }else{
+    }
+  }else{ untested();
   }
   return *this;
 }

@@ -186,6 +186,9 @@ sub_makefile() {
 	if [ -f $top_srcdir/MakeBase ]; then
 		echo "include $top_srcdir/MakeBase" >> $1
 	fi
+	if grep TESTDIR $srcdir/MakeList > /dev/null; then
+		echo "include $include_dir/MakeTest" >> $1
+	fi
 	echo "-include Make.depend" >> $1
 }
 #------------------------------------------------------------------------
@@ -198,6 +201,7 @@ if [ -f $srcdir/Makefile.in ]; then
 	cat $srcdir/Makefile.in >> Makefile
 else
 	sub_makefile Makefile
+	rm -rf Make.depend
 fi
 #------------------------------------------------------------------------
 if [ $out_of_tree = "yes" ]; then

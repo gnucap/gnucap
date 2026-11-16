@@ -54,6 +54,7 @@ public:
   node_t&          operator[](int i) {return at(i);}
 
   NODE*     new_node(std::string);
+  void      clear();
 
   iterator begin()			{return map().begin();}
   iterator end()			{return map().end();}

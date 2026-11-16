@@ -57,7 +57,7 @@ public:
   virtual std::string port_name(int i)const {
     assert(i >= 0);
     assert(i < PORTS_PER_GATE);
-    static std::string names[PORTS_PER_GATE] = {"out",
+    std::string names[PORTS_PER_GATE] = {"out",
 			"in1", "in2", "in3", "in4", "in5", "in6", "in7", "in8", "in9"};
     return names[i];
   }

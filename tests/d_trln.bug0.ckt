@@ -1,0 +1,10 @@
+transmission line tran continuation
+.gen freq=10meg
+
+T1 11 0 12 0 z=50 f=100meg nl=.25
+
+.list
+
+.tran 100n trace all basic
+.tr 0 300n trace iter basic
+.end

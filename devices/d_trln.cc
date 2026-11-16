@@ -398,8 +398,9 @@ void DEV_TRANSLINE::tr_begin()
   ELEMENT::tr_begin();
   const COMMON_TRANSLINE* c=prechecked_cast<const COMMON_TRANSLINE*>(common());
   assert(c);
-  _forward.initialize().push(0.-c->real_td, 0.).push(0., 0.);
-  _reflect.initialize().push(0.-c->real_td, 0.).push(0., 0.);
+  _forward.initialize().push(0.-c->real_td, 0.);
+  _reflect.initialize().push(0.-c->real_td, 0.);
+  _time_by.min_dt_estimate(c->real_td);
 }
 /*--------------------------------------------------------------------------*/
 /* before anything else .. see what is coming out
@@ -471,14 +472,15 @@ TIME_PAIR DEV_TRANSLINE::tr_review()
   q_accept();
   const COMMON_TRANSLINE* c=prechecked_cast<const COMMON_TRANSLINE*>(common());
   assert(c);
-  return TIME_PAIR(_sim->_time0 + c->real_td, NEVER); // ok to miss the spikes, for now
+  assert(_time_by.dt_estimate() == c->real_td);
+  return _time_by; // ok to miss the spikes, for now
 }
 /*--------------------------------------------------------------------------*/
 /* after this step is all done, determine the reflections and send them on.
  */
 void DEV_TRANSLINE::tr_accept()
 {
-  trace1(short_label().c_str(), _sim->_time0);
+  trace3("TRLN::tr_acc", short_label(), _sim->_time0, _sim->is_advance_iteration());
   _reflect.push(_sim->_time0, _forward.v_reflect(_sim->_time0, tr_outvolts()));
   _forward.push(_sim->_time0, _reflect.v_reflect(_sim->_time0, tr_involts()));
 }

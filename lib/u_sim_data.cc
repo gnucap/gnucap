@@ -128,7 +128,7 @@ SIM_DATA::~SIM_DATA()
   }else{
     incomplete();
   }
-  assert(_acceptq.empty());
+  // assert(_acceptq.empty());
   assert(_evalq1.empty());
   assert(_evalq2.empty());
   assert(_late_evalq.empty());

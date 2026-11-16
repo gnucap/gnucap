@@ -38,15 +38,16 @@
 namespace {
 /*--------------------------------------------------------------------------*/
 class DEV_LOGIC : public ELEMENT {
+  double* _delay{nullptr};
 public:
   enum {OUTNODE=0,BEGIN_IN=1}; //node labels
   enum {PORTS_PER_GATE = 10};
 private:
-  int		_lastchangenode;
-  int		_quality;
-  std::string	_failuremode;
-  smode_t	_oldgatemode;
-  smode_t	_gatemode;
+  int		_lastchangenode{0};
+  int		_quality{qGOOD};
+  std::string	_failuremode{"ok"};
+  smode_t	_oldgatemode{moUNKNOWN};
+  smode_t	_gatemode{moUNKNOWN};
   static int	_count;
   mutable node_l _nodes[PORTS_PER_GATE];	/* PORTS_PER_GATE <= PORTSPERSUBCKT */
 public:
@@ -83,6 +84,7 @@ private: // override virtuals
   void	   tr_unload()override;
   TIME_PAIR tr_review()override;
   void	   tr_accept()override;
+  void	   accept(SIM_PHASE);
   double   tr_involts()const override	{ untested();unreachable(); return 0;}
   //double tr_input()const		//ELEMENT
   double   tr_involts_limited()const override { untested();unreachable(); return 0;}
@@ -117,7 +119,40 @@ private:
   bool	   tr_eval_digital();
   bool	   want_analog()const;
   bool	   want_digital()const;
+public:
+  void set_parameters(const std::string& Label, CARD* Parent,
+		      COMMON_COMPONENT* Common, double Value,
+		      int state_count, double state[],
+		      int node_count, const node_t nodes[])override;
 };
+/*--------------------------------------------------------------------------*/
+void DEV_LOGIC::set_parameters(const std::string& Label, CARD *Owner,
+			       COMMON_COMPONENT *Common, double Value,
+			       int num_states, double States[],
+			       int node_count, const node_t Nodes[])
+{itested();
+  set_label(Label);
+  set_owner(Owner);
+  if(Value==0.){itested();
+  }else if(Common){ untested();
+    Common = Common->clone();
+    Common->set_param_by_name("delay", to_string(Value));
+  }else{ untested();
+    incomplete();
+  }
+  attach_common(Common);
+
+  assert(node_count <= max_nodes());
+  _net_nodes = short(node_count);
+  if(node_count){itested();
+    std::copy_n(Nodes, node_count, (node_t*)&n_(0));
+  }else{itested();
+  }
+  if(num_states == 1){itested();
+    _delay = States;
+  }else{itested();
+  }
+}
 /*--------------------------------------------------------------------------*/
 class LOGIC_AND : public COMMON_LOGIC {
 private:
@@ -239,24 +274,12 @@ public:
   std::string name()const override	  {untested();return "error";}
 };
 /*--------------------------------------------------------------------------*/
-DEV_LOGIC::DEV_LOGIC(COMMON_COMPONENT* c)
-  :ELEMENT(c),
-   _lastchangenode(0),
-   _quality(qGOOD),
-   _failuremode("ok"),
-   _oldgatemode(moUNKNOWN),
-   _gatemode(moUNKNOWN)   
+DEV_LOGIC::DEV_LOGIC(COMMON_COMPONENT* c) : ELEMENT(c)
 {
   ++_count;
 }
 /*--------------------------------------------------------------------------*/
-DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p)
-  :ELEMENT(p),
-   _lastchangenode(0),
-   _quality(qGOOD),
-   _failuremode("ok"),
-   _oldgatemode(moUNKNOWN),
-   _gatemode(moUNKNOWN)   
+DEV_LOGIC::DEV_LOGIC(const DEV_LOGIC& p) : ELEMENT(p)
 {
   assert(max_nodes() == PORTS_PER_GATE);
   for (int ii = 0;  ii < max_nodes();  ++ii) {
@@ -367,9 +390,9 @@ void DEV_LOGIC::tr_begin()
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::tr_restore()
-{untested();
+{
   ELEMENT::tr_restore();
-  if (!subckt()) {untested();
+  if (!subckt()) {
     _gatemode = moDIGITAL;
   }else{untested();
     _gatemode = (OPT::mode==moMIXED) ? moANALOG : OPT::mode;
@@ -402,6 +425,7 @@ void DEV_LOGIC::dc_advance()
     }
     break;
   }
+  q_accept();
 }
 /*--------------------------------------------------------------------------*/
 /* tr_advance: the first to run on a new time step.
@@ -436,6 +460,7 @@ void DEV_LOGIC::tr_advance()
     }
     break;
   }
+  q_accept();
 }
 /*--------------------------------------------------------------------------*/
 void DEV_LOGIC::tr_regress()
@@ -466,6 +491,7 @@ void DEV_LOGIC::tr_regress()
     }
     break;
   }
+  q_accept();
 }
 /*--------------------------------------------------------------------------*/
 /* tr_needs_eval
@@ -479,7 +505,7 @@ bool DEV_LOGIC::tr_needs_eval()const
   case moMIXED:   unreachable(); break;
   case moDIGITAL:
     //assert(!is_q_for_eval());
-    if (_sim->analysis_is_restore()) {untested();
+    if (_sim->analysis_is_restore()) {
     }else if (_sim->analysis_is_static()) {
     }else{
     }
@@ -507,12 +533,12 @@ void DEV_LOGIC::tr_queue_eval()
 bool DEV_LOGIC::tr_eval_digital()
 {
   assert(_gatemode == moDIGITAL);
-  if (_sim->analysis_is_restore()) {untested();
+  if (_sim->analysis_is_restore()) {
   }else if (_sim->analysis_is_static()) {
   }else{
   }
   if (_sim->analysis_is_static() || _sim->analysis_is_restore()) {
-    tr_accept();
+    accept(p_INIT_DC);
   }else{
     assert(_sim->analysis_is_tran_dynamic());
   }
@@ -587,7 +613,7 @@ TIME_PAIR DEV_LOGIC::tr_review()
 {
   // not calling ELEMENT::tr_review();
 
-  q_accept();
+  // q_accept(); in advance.
   //digital mode queues events explicitly in tr_accept
 
   switch (_gatemode) {
@@ -603,6 +629,11 @@ TIME_PAIR DEV_LOGIC::tr_review()
  * It sets up and queues transitions, and sometimes determines logic states.
  */
 void DEV_LOGIC::tr_accept()
+{
+  accept(p_TRAN);
+}
+/*--------------------------------------------------------------------------*/
+void DEV_LOGIC::accept(SIM_PHASE Ph)
 {
   assert(_gatemode == moDIGITAL || _gatemode == moANALOG);
   const COMMON_LOGIC* c = prechecked_cast<const COMMON_LOGIC*>(common());
@@ -663,7 +694,7 @@ void DEV_LOGIC::tr_accept()
     }else{
     }
     assert(_gatemode == moDIGITAL);
-    if (_sim->analysis_is_restore()) {untested();
+    if (_sim->analysis_is_restore()) {
     }else if (_sim->analysis_is_static()) {
     }else{
     }
@@ -671,24 +702,23 @@ void DEV_LOGIC::tr_accept()
 	|| _lastchangenode != OUTNODE
 	|| _sim->analysis_is_static()
 	|| _sim->analysis_is_restore()) {
-      // probably coming from tr_regress.
+      // when coming from tr_regress.
       // input nodes may be accepted (new value queued)
       // but not stabilised (tr_advance)
       LOGICVAL future_state = c->logic_eval(&n_(BEGIN_IN), net_nodes()-BEGIN_IN);
       //		         ^^^^^^^^^^
       LOGICVAL out = n_(OUTNODE)->lv();
-      if ((out == lvXX || out == lvX0 || out == lvX1 || out == lvXZ) &&
-	  (_sim->analysis_is_static() || _sim->analysis_is_restore())) {
+      if ((out == lvXX || out == lvX0 || out == lvX1 || out == lvXZ || Ph == p_INIT_DC) &&
+	  _sim->analysis_is_static()) {
 	n_(OUTNODE)->force_initial_value(future_state);
 	n_(OUTNODE)->store_old_lv();
 	/* This happens when initial DC is digital.
-	 * Answers could be wrong if order in netlist is reversed 
 	 */
+      }else if ((out == lvXX || out == lvX0 || out == lvX1 || out == lvXZ) &&
+	  (_sim->analysis_is_restore())) { untested();
+	n_(OUTNODE)->force_initial_value(future_state);
+	n_(OUTNODE)->store_old_lv();
       }else if (future_state != n_(OUTNODE)->lv()) {
-	 trace1("DBG", _sim->_bypass_ok);
-	for(int i = 0; i<net_nodes(); ++i){
-	  trace3("DBG", future_state, i, n_(i)->lv());
-	}
 	if(future_state != lvXX){
 	}else{ untested();
 	}
@@ -718,13 +748,22 @@ void DEV_LOGIC::tr_accept()
 	 * conversion, so the kluge stays in for now.
 	 */
 	// assert(future_state.lv_old() == future_state.lv_future());
-	if (future_state == lvX1 || future_state == lvX0 || future_state == lvXZ){
+	if (future_state == lvX1 || future_state == lvX0 || future_state == lvXZ){ itested();
 	  // regressed to a glitch. still a glitch.
-	  assert(n_(OUTNODE)->lv() == future_state || !_sim->_time0);
+	  if(n_(OUTNODE)->lv() == lvXX) { itested();
+	  }else{ untested();
+	    assert(n_(OUTNODE)->lv() == future_state || !_sim->_time0);
+	  }
 	}else if (n_(OUTNODE)->lv() == lvXX ||
 	    future_state.lv_future_() != n_(OUTNODE)->lv().lv_future_()) {
+	  double dly;
+	  if(_delay){itested();
+	    dly = m->delay * *_delay;
+	  }else{
+	    dly = c->_real_delay;
+	  }
 	  //assert(future_state == n_(OUTNODE).lv_future());
-	  n_(OUTNODE)->set_event(c->_real_delay, future_state, this);
+	  n_(OUTNODE)->set_event(dly, future_state, this);
 	  if (_lastchangenode == OUTNODE) {untested();
 	    unreachable();
 	    error(bDANGER, "%s:%u:%g non-event state change to %d\n",
@@ -786,7 +825,7 @@ int DEV_LOGIC::_count = -1;
 /*--------------------------------------------------------------------------*/
 static LOGIC_NONE Default_LOGIC(CC_STATIC);
 static DEV_LOGIC p1(&Default_LOGIC);
-static DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "logic", &p1);
+static DISPATCHER<CARD>::INSTALL d1(&device_dispatcher, "logic|__assign|__udp", &p1);
 
 static LOGIC_AND  c_and(CC_STATIC);
 DISPATCHER<COMMON_COMPONENT>::INSTALL dc_and(&bm_dispatcher, "and", &c_and);

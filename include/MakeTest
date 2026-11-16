@@ -3,17 +3,16 @@
 #     Lukas Deutz 2026
 # GPLv3+
 
-ref = ${REFDIR}
+ref = ${srcdir}/${REFDIR}
 testdir = ${srcdir}/${TESTDIR}
 TARGETDIR = check
-GNUCAP = ../main/gnucap
 TESTENV = GNUCAP_PLUGPATH=${top_builddir} \
           LD_LIBRARY_PATH=${top_builddir}/lib${LD_LIBRARY_PATH:%=:%}
 DIFF = diff
 DIFF_FLAGS = -rup
 
-glob_ckt = $(shell cd ${testdir}; ls *.ckt)
-glob_gc = $(shell cd ${testdir}; ls *.gc)
+glob_ckt = $(shell cd ${testdir}; ls *.ckt 2>/dev/null)
+glob_gc = $(shell cd ${testdir}; ls *.gc 2>/dev/null)
 
 test_patterns = $(if $(strip $(TESTCASES)),$(TESTCASES:%=%%),%)
 check_targets = $(if $(strip $(TESTCASES)),$(TESTCASES:%=$(TARGETDIR)/%.diff),$(TARGETDIR)/.diff)
@@ -38,13 +37,13 @@ prep: symlinks ${TEST_PLUGINS}
 
 SHELL=/bin/bash
 ${out_ckt}: ${TARGETDIR}/%.ckt.out: prep
-	-@${TESTENV} ${GNUCAP} --acs ${GNUCAP_ARGS} -b ${testdir}/$*.ckt |tail -n +${NUM_HDR_LINES} | \
-		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@; \
+	-@${TESTENV} ${GNUCAP} --acs ${GNUCAP_ARGS} -b ${testdir}/$*.ckt |tail -n +${TEST_HDR_LINES} | \
+		grep -v '^stashing as' | grep -v 'already installed' | grep -v ^make > $@; \
 	err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
 
 ${out_gc}: ${TARGETDIR}/%.gc.out: prep
-	-@${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${testdir}/$*.gc |tail -n +${NUM_HDR_LINES} | \
-		grep -v '^stashing\ as' | grep -v 'already\ installed' | grep -v ^make > $@; \
+	-@${TESTENV} ${GNUCAP} ${GNUCAP_ARGS} < ${testdir}/$*.gc |tail -n +${TEST_HDR_LINES} | \
+		grep -v '^stashing as' | grep -v 'already installed' | grep -v ^make > $@; \
 	err=$${PIPESTATUS[0]}; [ $$err == 0 ] || echo "error $$err" >> $@;
 
 # TODO: maybe cat the diff, so it can be logged?
@@ -87,13 +86,6 @@ ifeq ($(strip $(TESTCASES)),)
 else
   $(foreach p,$(TESTCASES),$(eval $(call make_diff_rule,$(p))))
 endif
-
-${PWD}/disciplines.vams:
-	-${LN_S} ${top_srcdir}/vams/disciplines.vams
-${PWD}/constants.vams:
-	-${LN_S} ${top_srcdir}/vams/constants.vams
-${PWD}/sub:
-	-${LN_S} ${srcdir}/sub
 
 symlinks: ${TEST_SYMLINKS:%=${PWD}/%}
 

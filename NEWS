@@ -14,6 +14,8 @@ associated tarball. This file summarizes the important changes.
 - fix tr_regress in coil
 - storage: fix error factor for gear
 - integrate: fall back to euler in small steps
+- no more logic in electrical node
+- provide MakeTest alongside 0oconf
 - ..
 
 == 20260729-dev

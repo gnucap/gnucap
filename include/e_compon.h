@@ -29,6 +29,7 @@
 #include "u_parameter.h"
 #include "l_pool.h"
 #include "e_card.h"
+#include "m_conchk.h"
 /*--------------------------------------------------------------------------*/
 // this file
 class COMMON_COMPONENT;
@@ -40,12 +41,6 @@ class CS;
 class ELEMENT;
 class CARD_LIST;
 class HS_PARAM;
-/*--------------------------------------------------------------------------*/
-inline bool conchk(double o, double n,
-		   double a=OPT::abstol, double r=OPT::reltol)
-{
-  return (std::abs(n-o) <= (r * std::abs(n) + a));
-}
 /*--------------------------------------------------------------------------*/
 struct Exception_Precalc :public Exception{
   Exception_Precalc(const std::string& Message) 

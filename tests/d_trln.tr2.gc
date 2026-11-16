@@ -1,0 +1,18 @@
+verilog
+
+options trsteporder 1
+options trtol 1
+
+ground g;
+
+tline #(.len(5), .r(.1), .l(.01n), .g(.1u), .c(2f)) t1(nin , g, \4 , g);
+resistor #(10.) r1(g, \4 );
+
+spice
+.options noinsensitive
+V30 nin 0 pulse(0 1.8 0p 100p 100p .5n 1n) ac 1
+
+.print tr v(nodes) dtr(t1) iter(0) control(0)
+.tr 1n basic
+
+.status notime

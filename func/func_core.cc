@@ -340,7 +340,7 @@ DISPATCHER<FUNCTION>::INSTALL d_sinh(&function_dispatcher, "sinh", &p_sinh);
 /*--------------------------------------------------------------------------*/
 class cos : public FUNCTION {
 public:
-  std::string eval(CS& Cmd, const PARAM_LIST* Scope)const override { untested();
+  std::string eval(CS& Cmd, const PARAM_LIST* Scope)const override {
     PARAMETER<double> x;
     Cmd >> x;
     x.e_val(NOT_INPUT, Scope);

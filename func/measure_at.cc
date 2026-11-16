@@ -33,6 +33,7 @@ public:
     std::string probe_name;
     PARAMETER<double> x;
     bool derivative = false;
+    int order = 1;
 
     size_t here = Cmd.cursor();
     Cmd >> probe_name;
@@ -50,8 +51,19 @@ public:
 	|| Get(Cmd, "x",	    &x)
 	|| Get(Cmd, "at",	    &x)
 	|| Get(Cmd, "deriv{ative}", &derivative)
+	|| Get(Cmd, "ord{er}",      &order)
 	;
     }while (Cmd.more() && !Cmd.stuck(&here));
+
+    if(order < 0){
+      error(bWARNING, "need nonnegative order. Using 1.\n");
+      order = 1;
+    }else if(order >= OPT::_keep_time_steps){
+      error(bWARNING, "order " + to_string(order) + " not implemented."
+	 " Using " + to_string(OPT::_keep_time_steps-1) + ".\n");
+      order = OPT::_keep_time_steps - 1;
+    }else{
+    }
 
     if (!w) {
       w = find_wave(probe_name);
@@ -60,7 +72,7 @@ public:
     
     if (w) {
       x.e_val(BIGBIG, Scope);
-      return to_string((derivative) ? (w->v_out(x).f1) : (w->v_out(x).f0));
+      return to_string((derivative) ? (w->v_out(x,order).f1) : (w->v_out(x,order).f0));
     }else{ untested();
       throw Exception_No_Match(probe_name);
     }
