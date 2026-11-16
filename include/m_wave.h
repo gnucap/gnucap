@@ -42,6 +42,7 @@ public:
 	  ~WAVE() {}
   WAVE&	   set_delay(double d);
   WAVE&	   initialize();
+  WAVE&    reinit(double time);
   WAVE&	   push(double t, double v);
   FPOLY1   v_out(double t, int order=1)const;
   double   latest()const;
@@ -79,6 +80,14 @@ inline WAVE& WAVE::push(double t, double v)
 inline WAVE& WAVE::initialize()
 {
   _w.clear();
+  return *this;
+}
+/*--------------------------------------------------------------------------*/
+inline WAVE& WAVE::reinit(double t)
+{
+  while(_w.size() && _w.back().first >= t+_delay) {
+    _w.pop_back();
+  }
   return *this;
 }
 /*--------------------------------------------------------------------------*/

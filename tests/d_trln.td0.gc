@@ -1,0 +1,21 @@
+verilog
+
+ground g;
+
+resistor #(50.) r1(nin, \1 );
+parameter td = 20p;
+tline #(.len(1), .z0(50), .td(td)) t1(nin , g, \4 , g);
+resistor #(50.) r1(g, \4 );
+
+spice
+.options noinsensitive
+V30 1 0 pulse(0 1.8 10p 100p 100p .5n 1n) ac 1
+
+.print tr v(nodes) dtr(t1) iter(0) control(0)
+.tr 1n 10p basic
+.parameter td 400p
+.tr 2n 10p basic
+.parameter td 20p
+.tr 3n 10p basic
+
+.status notime
