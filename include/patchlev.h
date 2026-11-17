@@ -1,1 +1,1 @@
-#define PATCHLEVEL "trunc_tpl 2026.11.16"
+#define PATCHLEVEL "logicnode_plugin 2026.11.17"

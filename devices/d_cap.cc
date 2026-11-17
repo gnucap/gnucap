@@ -110,7 +110,7 @@ private:
 public:
   explicit DEV_VCCAP()		:DEV_CAPACITANCE() {}
 private: // override virtual
-  char     id_letter()const override	{untested();return '\0';}
+  char     id_letter()const override	{return '\0';}
   std::string value_name()const override{untested(); return "c";}
   std::string dev_type()const override	{return "vccap";}
   int	   max_nodes()const override	{return 4;}

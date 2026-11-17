@@ -27,24 +27,24 @@
 #include "e_logicval.h"
 #include "e_node.h"
 /*--------------------------------------------------------------------------*/
-class MODEL_LOGIC;
-#define	qBAD	 (0)
-#define qGOOD	 (OPT::transits)
-/*--------------------------------------------------------------------------*/
-class INTERFACE LOGIC_NODE : public NODE {
+class INTERFACE LOGIC_NODE_BASE : public NODE {
 private:
   int _flat_number{INVALID_NODE};
-  const MODEL_LOGIC *_family{nullptr};	/* logic family */
   int 	      _d_iter{-1};		/* iteration of last update - digital */
   int 	      _a_iter{0};		/* iteration of last update - analog */
   double      _final_time{0.};	/* time logic transition attains final state */
   double      _lastchange{0.};	/* time of last change */
   double      _old_lastchange{0.};	/* in case it rejects a step */
+protected:
   smode_t     _mode{moANALOG};		/* simulation mode (analog or digital)*/
   LOGICVAL    _lv;		/* "logic value" (real type is LOGICVAL) */
   LOGICVAL    _old_lv;		/* in case it rejects a step */
-  int	      _quality{qBAD};		/* quality of digital mode */
-  std::string _failure_mode{"initial"};
+protected:
+  explicit LOGIC_NODE_BASE(const LOGIC_NODE_BASE&) : NODE() {}
+  LOGIC_NODE_BASE(int i=INVALID_NODE) : NODE(), _flat_number(i) {}
+  explicit LOGIC_NODE_BASE(std::string const& s) : NODE(s), _flat_number{INVALID_NODE} {}
+  ~LOGIC_NODE_BASE() {}
+
 public:
   int user_number()const override { return INVALID_NODE;}
   int flat_number()const override { return _flat_number;}
@@ -61,14 +61,10 @@ public: // virtuals
 
 public: // raw data access (rvalues)
   LOGICVAL lv()const			{return _lv;}
-  int	   quality()const		{return _quality;}
-  const std::string& failure_mode()const {return _failure_mode;}
   int	   d_iter()const		{return _d_iter;}
   int	   a_iter()const		{return _a_iter;}
   double   final_time()const		{return _final_time;}
   double   last_change_time()const	{return _lastchange;}
-private:
-  const MODEL_LOGIC* process()const	{return _family;}
   double   old_last_change_time()const	{return _old_lastchange;}
   const LOGICVAL old_lv()const		{return _old_lv;}
 
@@ -76,93 +72,37 @@ public: // simple calculated data access (rvalues)
   bool	 lv_future()const	{return lv().lv_future();}
   bool	 is_unknown()const	{return lv().is_unknown();}
   bool	 in_transit()const	{return final_time() < NEVER;}
-private:
+protected:
   bool	 is_digital()const override {return _mode == moDIGITAL;}
   bool	 is_analog()const	{return _mode == moANALOG;}
-  double annotated_logic_value()const;
 
-private: // calculated data access (rvalues)
-  bool	just_reached_stable()const;
-
-private: // raw data access (lvalues)
-  void	set_quality(int q)		{_quality = q;}
-  void	set_failure_mode(const std::string& f) {_failure_mode = f;}
+protected: // raw data access (lvalues)
   void	set_final_time(double t)	{_final_time = t;}
   
   void	set_d_iter()			{_d_iter = _sim->iteration_tag();}
   void	set_last_change_time()		{_lastchange = _sim->_time0;}
+public:
   void	set_last_change_time(double t)	{_lastchange = t;}
   void	set_lv(LOGICVAL v)		{_lv = v;}
-  void	set_process(const MODEL_LOGIC* f) {_family = f;}
 public:
   void  store_old_last_change_time()	{_old_lastchange = last_change_time();}
   void	store_old_lv()			{_old_lv = lv();}
   void	set_mode(smode_t m)		{_mode = m;}
-
-private: // other internal
-  void  set_bad_quality(const std::string& f) {
-    set_quality(qBAD);
-    set_failure_mode(f);
-  }
-  void  set_good_quality(const std::string& f = "ok") {
-    set_quality(qGOOD);
-    set_failure_mode(f);
-  }
-  void	dont_set_quality(const std::string& f = "don't know") {
-    set_failure_mode(f);
-  }
-  void	improve_quality() {
-    if (quality() < qGOOD) {
-      ++_quality;
-    }
-  }
 
 public: // action, used by logic
   void	      set_event(double delay, LOGICVAL v, CARD* c=nullptr);
   void	      force_initial_value(LOGICVAL v);
   void	      propagate();
   void	      unpropagate();
-  double      to_analog(const MODEL_LOGIC*f) const;
-  void	      to_logic(const MODEL_LOGIC*f, double input);
-  void	      to_logic(const MODEL_LOGIC*f){itested();
-    to_logic(f, v0());
-  }
-
-private: // inhibited
-  explicit LOGIC_NODE(const LOGIC_NODE&):NODE(){incomplete();unreachable();}
-public: // general use
-  explicit LOGIC_NODE(std::string const& s) : NODE(s), _flat_number{INVALID_NODE} {}
-  explicit LOGIC_NODE(int i=-1);
-	   ~LOGIC_NODE() {}
 
 public: // used by matrix
-  LOGIC_NODE&	set_a_iter()	{_a_iter = _sim->iteration_tag(); return *this;}
+  LOGIC_NODE_BASE& set_a_iter() {_a_iter = _sim->iteration_tag(); return *this;}
 
-private: // connectmodule hacks. transition
+protected: // connectmodule hacks. transition
   bool _cm_hack{false};
   bool is_cm_hack()const {  return _cm_hack; }
 public:
   void set_cm_hack() {untested(); _cm_hack = true;}
-};
-/*--------------------------------------------------------------------------*/
-extern LOGIC_NODE logic_ground;
-/*--------------------------------------------------------------------------*/
-struct node_l : node_t {
-  LOGIC_NODE*       operator->()      { return &data(); }
-  LOGIC_NODE const* operator->()const { return &data(); }
-private:
-  LOGIC_NODE& data() const {
-    if(n_()->m_()==0) {
-      // tmp hack.
-      // think of it as an autoinserted connect module
-      // mimics traditional behaviour but probably wrong.
-      return logic_ground;
-    }else{
-      auto n = prechecked_cast<LOGIC_NODE const*>(n_());
-      assert(n);
-      return *const_cast<LOGIC_NODE*>(n);
-    }
-  }
 };
 /*--------------------------------------------------------------------------*/
 /*--------------------------------------------------------------------------*/

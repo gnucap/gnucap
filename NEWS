@@ -16,6 +16,7 @@ associated tarball. This file summarizes the important changes.
 - integrate: fall back to euler in small steps
 - no more logic in electrical node
 - provide MakeTest alongside 0oconf
+- logic nodes are plugins
 - ..
 
 == 20260729-dev

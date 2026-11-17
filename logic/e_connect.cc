@@ -42,7 +42,9 @@ public:
   CARD* clone()const override { return new HYBRID(*this);}
   // bool is_mixed()const override {return true;}
   NODE* deflate()override {
-    return new LOGIC_NODE();
+    static NODE* l = node_dispatcher["__hybrid"];
+    assert(l);
+    return prechecked_cast<NODE*>(l->clone());
   }
 }hybrid;
 DISPATCHER<NODE>::INSTALL d2(&node_dispatcher, "hybrid", &hybrid);
@@ -58,8 +60,11 @@ public:
   }
   ~LOGIC() {}
   CARD* clone()const override { return new LOGIC(*this);}
+  bool is_digital()const override {untested(); return true;}
   NODE* deflate()override {
-    return new LOGIC_NODE(); // TODO
+    static NODE* l = node_dispatcher["__logic"];
+    assert(l);
+    return prechecked_cast<NODE*>(l->clone());
   }
 }logic;
 DISPATCHER<NODE>::INSTALL d3(&node_dispatcher, "logic", &logic);
@@ -118,7 +123,7 @@ public:
 	    }
 	  }
 	}
-      }else{ itested();
+      }else{
       }
     }
 

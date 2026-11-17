@@ -74,8 +74,6 @@ public:
   NODE* deflate()override { untested();
     unreachable();
     return nullptr;
-    // incomplete
-    return new LOGIC_NODE(); // TODO
   }
 }wire;
 DISPATCHER<NODE>::INSTALL d0(&node_dispatcher, "wire", &wire);

@@ -420,7 +420,9 @@ void node_t::allocate(int u /*, CARD* owner*/)
     }else{ untested();
     }
     set_own(nn);
-    assert(_index == INVALID_NODE);
+    if(_index == INVALID_NODE){
+    }else{ untested();
+    }
     // floating ports must be invalid because of is_connected
     // (revisit later)
     _index = INVALID_NODE;

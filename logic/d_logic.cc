@@ -33,7 +33,7 @@
 #include "e_logic.h"
 #include "e_elemnt.h"
 #include "e_hsparam.h"
-#include "e_logicnode.h"
+#include "e_logicnode__.cc"
 /*--------------------------------------------------------------------------*/
 namespace {
 /*--------------------------------------------------------------------------*/
@@ -711,6 +711,7 @@ void DEV_LOGIC::accept(SIM_PHASE Ph)
       if ((out == lvXX || out == lvX0 || out == lvX1 || out == lvXZ || Ph == p_INIT_DC) &&
 	  _sim->analysis_is_static()) {
 	n_(OUTNODE)->force_initial_value(future_state);
+	n_(OUTNODE)->set_good_quality("initial dc");
 	n_(OUTNODE)->store_old_lv();
 	/* This happens when initial DC is digital.
 	 */
