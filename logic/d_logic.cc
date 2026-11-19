@@ -547,15 +547,25 @@ bool DEV_LOGIC::tr_eval_digital()
   assert(c);
   const MODEL_LOGIC* m = prechecked_cast<const MODEL_LOGIC*>(c->model());
   assert(m);
-  _y[0].x = 0.;
-  _y[0].f1 = n_(OUTNODE)->to_analog(m);
-  _y[0].f0 = 0.;
-  _m0.x = 0.;
-  _m0.c1 = 1./m->rs;
-  _m0.c0 = _y[0].f1 / m->rs;
-  set_converged(conv_check());
-  store_values();
-  q_load();
+  if(n_(OUTNODE).m_()!=INVALID_NODE){
+    _y[0].x = 0.;
+    _y[0].f1 = n_(OUTNODE)->to_analog(m);
+    _y[0].f0 = 0.;
+    _m0.x = 0.;
+    _m0.c1 = 1./m->rs;
+    _m0.c0 = _y[0].f1 / m->rs;
+    set_converged(conv_check());
+    store_values();
+    q_load();
+  }else if(!_sim->analysis_is_static()) {
+    if(converged()){
+    }else{ untested();
+    }
+  }else{
+    _y[0].f1 = n_(OUTNODE)->lv();
+    set_converged(_y1.f1 == _y[0].f1);
+    _y1.f1 = _y[0].f1;
+  }
   
   return converged();
 }
@@ -645,7 +655,10 @@ void DEV_LOGIC::accept(SIM_PHASE Ph)
   /* side effect --- generate digital values for analog nodes */
   assert(PORTS_PER_GATE == max_nodes());
   {
-    n_(OUTNODE)->to_logic(m, n_(OUTNODE)->v0());
+    if(n_(OUTNODE).m_() != INVALID_NODE){
+      n_(OUTNODE)->to_logic(m, n_(OUTNODE)->v0());
+    }else{
+    }
     _quality = n_(OUTNODE)->quality();  /* the worst quality on this device */
     _failuremode = n_(OUTNODE)->failure_mode();    /* what is wrong with it? */
     _lastchangenode = OUTNODE;		/* which node changed most recently */
@@ -654,7 +667,10 @@ void DEV_LOGIC::accept(SIM_PHASE Ph)
     trace2(n_(OUTNODE)->failure_mode().c_str(), OUTNODE, n_(OUTNODE)->quality());
     
     for (int ii = BEGIN_IN;  ii < net_nodes();  ++ii) {
-      n_(ii)->to_logic(m, n_(ii)->v0());
+      if(n_(ii).m_()!=INVALID_NODE){
+	n_(ii)->to_logic(m, n_(ii)->v0());
+      }else{
+      }
       if (n_(ii)->quality() < _quality) {
 	_quality = n_(ii)->quality();
 	_failuremode = n_(ii)->failure_mode();

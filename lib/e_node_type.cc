@@ -28,7 +28,7 @@
 /*--------------------------------------------------------------------------*/
 NODE_TYPE::NODE_TYPE(std::string const& name)
   : NODE(name)
-{ untested();
+{itested();
   trace2("NODE_TYPE", name, type_number());
   assert(!_installer);
   set_label(name);

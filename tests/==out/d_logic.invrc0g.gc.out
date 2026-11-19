@@ -198,7 +198,7 @@ m.c1.i0: can't find subckt: logicnand2, forcing digital
  488.15E-9  2.         0.10562    6.         3.        
  488.86E-9  2.         0.073156   6.         3.        
  489.58E-9  2.         0.05035    6.         3.        
- 490.05E-9  2.         0.039102   6.         3.        
+ 490.05E-9  2.         0.039102   6.         2.        
  491.E-9    2.         0.024002   2.         3.        
  492.67E-9  2.         0.0097516  6.         3.        
  494.33E-9  2.         0.003215   6.         3.        
@@ -309,7 +309,7 @@ m.c1.i0: can't find subckt: logicnand2, forcing digital
  688.15E-9  2.         0.10562    6.         2.        
  688.86E-9  2.         0.073156   6.         3.        
  689.58E-9  2.         0.05035    6.         3.        
- 690.05E-9  2.         0.039102   6.         3.        
+ 690.05E-9  2.         0.039102   6.         2.        
  691.E-9    2.         0.024002   2.         3.        
  692.67E-9  2.         0.0097516  6.         3.        
  694.33E-9  2.         0.003215   6.         3.        
@@ -475,7 +475,7 @@ m.c1.i0: can't find subckt: logicnand2, forcing digital
  997.E-9    1.         5.0039     6.         3.        
  1.E-6      1.         5.0023     1.         3.        
 Gnucap   System status
-iterations: op=0, dc=0, tran=1255, fourier=0, total=1702
+iterations: op=0, dc=0, tran=1253, fourier=0, total=1700
 transient timesteps: accepted=363, rejected=84, total=447
-nodes: user=4, subckt=3, model=0, total=7
-dctran density=26.5%, ac density=26.5%
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=77.8%, ac density=77.8%

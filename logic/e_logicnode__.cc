@@ -384,7 +384,7 @@ void LOGIC_NODE::set_event(double delay, LOGICVAL v, CARD* Device)
   }
   set_last_change_time();
   if(!subckt()){
-  }else if(is_cm_hack()){ untested();
+  }else if(is_cm_hack()){itested();
     subckt()->tr_accept();
   }else{
   }

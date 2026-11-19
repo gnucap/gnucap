@@ -215,8 +215,13 @@ NODE& node_t::data()const
 double NODE::tr_probe_num(const std::string& x)const
 {
   if (Umatch(x, "v ")) {
+    assert(!is_digital());
     // return v0(); denoised
-    return floor(v0()/OPT::vfloor + .5) * OPT::vfloor;
+    if(is_digital()){ untested();
+      return NOT_VALID;
+    }else{
+      return floor(v0()/OPT::vfloor + .5) * OPT::vfloor;
+    }
   }else if (Umatch(x, "z ")) {
     return port_impedance(node_t(const_cast<NODE*>(this)), node_t(&ground_node), _sim->_aa, 0.);
   }else if (Umatch(x, "l{ogic} |la{stchange} |fi{naltime} |di{ter} |ai{ter} |count ")) {
@@ -398,7 +403,7 @@ void node_t::allocate(int u /*, CARD* owner*/)
   if(is_link()) {
   }else if(!is_node()) {
   }else if(!is_used()) {
-  }else if(_nnn->flat_number() != INVALID_NODE) { untested();
+  }else if(_nnn->flat_number() != INVALID_NODE) {itested();
     // ground or already allocated.
   }else if(is_type(_nnn)) {
     int flat_number = INVALID_NODE;
@@ -417,7 +422,11 @@ void node_t::allocate(int u /*, CARD* owner*/)
     if(!nn->is_digital()){
       flat_number = new_flat_number(u);
       nn->set_flat_number(flat_number);
+    }else if(LOGIC_NODE_BASE* ln = dynamic_cast<LOGIC_NODE_BASE*>(nn)){
+      // for some reason logicnodes want to start analog.
+      ln->set_mode(moANALOG);
     }else{ untested();
+      unreachable();
     }
     set_own(nn);
     if(_index == INVALID_NODE){

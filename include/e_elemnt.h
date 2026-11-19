@@ -67,7 +67,7 @@ public:
 private: // obsolete -- do not use in new code
   void     obsolete_set_value(double v) final override{
     if(!has_common()){
-    }else if(common()->has_value()){ untested();
+    }else if(common()->has_value()){itested();
     }else{
     }
     set_value(v);

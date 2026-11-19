@@ -4,7 +4,7 @@ module main (.out0(out0),.en(en));
 endmodule // main
 
 #Time       v(a)       v(en)     
- 0.         0.         0.        
- 1.E-9      0.         5.        
- 2.E-9      5.         5.        
- 500.E-9    5.         5.        
+ 0.         ??         0.        
+ 1.E-9      ??         5.        
+ 2.E-9      ??         5.        
+ 500.E-9    ??         5.        

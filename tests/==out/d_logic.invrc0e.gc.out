@@ -85,5 +85,5 @@ m.c1.i0: can't find subckt: logicnand2, forcing digital
 Gnucap   System status
 iterations: op=0, dc=0, tran=169, fourier=0, total=224
 transient timesteps: accepted=55, rejected=0, total=55
-nodes: user=4, subckt=3, model=0, total=7
-dctran density=26.5%, ac density=26.5%
+nodes: user=3, subckt=0, model=0, total=3
+dctran density=77.8%, ac density=77.8%

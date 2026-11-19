@@ -64,7 +64,10 @@ public:
   NODE* deflate()override {
     static NODE* l = node_dispatcher["__logic"];
     assert(l);
-    return prechecked_cast<NODE*>(l->clone());
+    auto ln = prechecked_cast<LOGIC_NODE_BASE*>(l->clone());
+    assert(ln);
+    ln->set_mode(moDIGITAL);
+    return ln;
   }
 }logic;
 DISPATCHER<NODE>::INSTALL d3(&node_dispatcher, "logic", &logic);

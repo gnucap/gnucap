@@ -37,7 +37,14 @@ void LOGIC_NODE_BASE::tr_begin()
 /*--------------------------------------------------------------------------*/
 double LOGIC_NODE_BASE::tr_probe_num(const std::string& x) const
 {
-  if (Umatch(x, "la{stchange} ")) {
+  if (Umatch(x, "v ")) {
+    if(is_digital()){
+      return NOT_VALID;
+    }else{
+      // defer to MATRIX_NODE?
+      return floor(v0()/OPT::vfloor + .5) * OPT::vfloor;
+    }
+  }else if (Umatch(x, "la{stchange} ")) {
     return _lastchange;
   }else if (Umatch(x, "fi{naltime} ")) {
     return final_time();
@@ -101,7 +108,11 @@ void LOGIC_NODE_BASE::set_event(double delay, LOGICVAL v, CARD* Device)
 /*--------------------------------------------------------------------------*/
 int LOGIC_NODE_BASE::matrix_number() const
 {
-  return _sim->_nm[flat_number()]; // TODO: -> MATRIX_NODE
+  if(flat_number() != INVALID_NODE){
+    return _sim->_nm[flat_number()]; // TODO: -> MATRIX_NODE
+  }else{
+    return INVALID_NODE;
+  }
 }
 /*--------------------------------------------------------------------------*/
 void LOGIC_NODE_BASE::propagate()

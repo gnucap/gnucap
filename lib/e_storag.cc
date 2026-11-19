@@ -193,7 +193,7 @@ double STORAGE::tr_c_to_g(double c, double g)const
     if (_time[1] == _time[2]) {//2507
       assert(_time[1] == 0);
       method = mEULER; // Bogus current in previous step.  Force Euler.
-    }else if (_dt < CKT_BASE::_sim->_dtmin*1.01) {untested();
+    }else if (_dt < CKT_BASE::_sim->_dtmin*1.01) {itested();
       method = mEULER; // small time step. Force Euler
     }else{
       assert(_time[1] != 0);
