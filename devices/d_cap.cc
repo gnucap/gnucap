@@ -53,7 +53,7 @@ protected: // override virtual
   CARD*	   clone()const override		{return new DEV_CAPACITANCE(*this);}
   void	   tr_iwant_matrix()override	{tr_iwant_matrix_passive();}
   bool	   do_tr()override;
-  void	   tr_load()override		{tr_load_passive();}
+  void	   tr_load()override;
   void	   tr_unload()override		{tr_unload_passive();}
   double   tr_involts()const override	{return tr_outvolts();}
   double   tr_involts_limited()const override {return tr_outvolts_limited();}
@@ -122,6 +122,7 @@ private: // override virtual
   CARD*	   clone()const override	{return new DEV_VCCAP(*this);}
   void	   tr_iwant_matrix()override	{tr_iwant_matrix_all();}
   bool     do_tr()override;
+  void     tr_load()override {tr_load_passive();}
   double   tr_involts()const override	{return dn_diff(n_(IN1).v0(),n_(IN2).v0());}
   double   tr_involts_limited()const override {return volts_limited(n_(IN1),n_(IN2));}
   void	   ac_iwant_matrix()override	{ac_iwant_matrix_all();}
@@ -147,7 +148,6 @@ bool DEV_CAPACITANCE::do_tr()
     assert(converged());
   }
   store_values();
-  q_load();
 
   if(!OPT::traceadv){
   }else if(_time[0] != _sim->_time0) { untested();
@@ -160,7 +160,36 @@ bool DEV_CAPACITANCE::do_tr()
   _i[0] = differentiate(_y, _i, _time, _method_a);
   trace3("i", _i[0].x, _i[0].f0, _i[0].f1);
   _m0 = CPOLY1(_i[0]);
+
+  assert(_m0.c1 == _m1.c1 || !_sim->is_advance_iteration());
+
+  if(using_tr_eval()) {
+    if(!_sim->is_advance_iteration()){//698600
+    }else{//8
+      // uic stuff. perhaps no need.
+    }
+    q_load();
+  }else if(_m0.c1 != _m1.c1 && _sim->is_first_iteration()){//99028
+    q_load();
+  }else if(_m0.c0 != _m1.c0){//124143
+    q_load();
+  }else{//275377
+  }
+
   return converged();
+}
+/*--------------------------------------------------------------------------*/
+void DEV_CAPACITANCE::tr_load()
+{
+  if( !_sim->is_inc_mode()){//158659
+    tr_load_shunt(n_(OUT1), n_(OUT2), &_m0.c1, &_m1.c1);
+  }else if(using_tr_eval()) {//624328
+    tr_load_shunt(n_(OUT1), n_(OUT2), &_m0.c1, &_m1.c1);
+  }else if(_sim->is_advance_or_first_iteration()){//97821
+    tr_load_shunt(n_(OUT1), n_(OUT2), &_m0.c1, &_m1.c1);
+  }else{//45087
+  }
+  tr_load_source(n_(OUT1), n_(OUT2),&_m0.c0, &_m1.c0);
 }
 /*--------------------------------------------------------------------------*/
 void DEV_CAPACITANCE::do_ac()

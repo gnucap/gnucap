@@ -1,1 +1,1 @@
-#define PATCHLEVEL "logicnode_plugin 2026.11.17"
+#define PATCHLEVEL "cap_load 2026.11.14"
