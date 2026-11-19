@@ -362,7 +362,6 @@ bool DEV_INDUCTANCE::do_tr()
     assert(converged());
   }
   store_values();
-  q_load();
   
   // i is really voltage ..
   // _i[0].x = current, _i[0].f0 = voltage, _i[0].f1 = ohms
@@ -377,6 +376,15 @@ bool DEV_INDUCTANCE::do_tr()
     _m0.x = NOT_VALID;
     _m0.c1 = -_loss0 * _loss0 * _i[0].c1();
     _m0.c0 =  _loss0 * _loss0 * _i[0].c0();
+  }
+
+  if (using_tr_eval()) {
+    q_load();
+  }else if(_m0.c1 != _m1.c1 && _sim->is_advance_or_first_iteration()){
+    q_load();
+  }else if(_m0.c0 != _m1.c0){
+    q_load();
+  }else{
   }
 
   return converged();
@@ -427,7 +435,13 @@ bool DEV_MUTUAL_L::do_tr_last()
 void DEV_INDUCTANCE::tr_load()
 {
   if (!_c_model) {
-    tr_load_passive();
+    if( !_sim->is_inc_mode()){//4294
+      tr_load_shunt(n_(OUT1), n_(OUT2), &_m0.c1, &_m1.c1);
+    }else if(using_tr_eval() || _sim->is_advance_or_first_iteration()){//62127
+      tr_load_shunt(n_(OUT1), n_(OUT2), &_m0.c1, &_m1.c1);
+    }else{//5663
+    }
+    tr_load_source(n_(OUT1), n_(OUT2),&_m0.c0, &_m1.c0);
   }else{
     tr_load_inode();
     tr_load_diagonal_point(n_(IN1), &_m0.c1, &_m1.c1);
