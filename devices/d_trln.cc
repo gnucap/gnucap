@@ -428,6 +428,7 @@ void DEV_TRANSLINE::dc_advance()
   assert(c);
   _if0 = _forward.v_out(_sim->_time0).f0/c->real_z0;
   _ir0 = _reflect.v_out(_sim->_time0).f0/c->real_z0;
+  q_accept();
 }
 void DEV_TRANSLINE::tr_advance()
 {
@@ -436,6 +437,7 @@ void DEV_TRANSLINE::tr_advance()
   assert(c);
   _if0 = _forward.v_out(_sim->_time0).f0/c->real_z0;
   _ir0 = _reflect.v_out(_sim->_time0).f0/c->real_z0;
+  q_accept();
 }
 void DEV_TRANSLINE::tr_regress()
 {
@@ -444,6 +446,7 @@ void DEV_TRANSLINE::tr_regress()
   assert(c);
   _if0 = _forward.v_out(_sim->_time0).f0/c->real_z0;
   _ir0 = _reflect.v_out(_sim->_time0).f0/c->real_z0;
+  q_accept();
 }
 /*--------------------------------------------------------------------------*/
 /* usually nothing, always converged.  It is all done in advance and accept.
@@ -481,7 +484,6 @@ void DEV_TRANSLINE::tr_load()
  */
 TIME_PAIR DEV_TRANSLINE::tr_review()
 {
-  q_accept();
   const COMMON_TRANSLINE* c=prechecked_cast<const COMMON_TRANSLINE*>(common());
   assert(c);
   assert(_time_by.dt_estimate() == c->real_td);
