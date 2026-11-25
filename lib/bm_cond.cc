@@ -76,6 +76,7 @@ EVAL_BM_COND::EVAL_BM_COND(int c)
 {
   std::fill_n(_func, sCOUNT, nullptr);
   std::fill_n(_set, sCOUNT, false);
+  attach_common(&func_zero(), _func);
 }
 /*--------------------------------------------------------------------------*/
 EVAL_BM_COND::EVAL_BM_COND(const EVAL_BM_COND& p)
@@ -238,7 +239,7 @@ void EVAL_BM_COND::parse_common_obsolete_callback(CS& cmd) //used
   
   for (int i = 0; i < sCOUNT; ++i) {
     trace3("parsed", cmd.fullstring(), i, _func[i]);
-    assert(!i || _func[i]);
+    assert(_func[i]);
   }
 }
 /*--------------------------------------------------------------------------*/
@@ -267,7 +268,9 @@ void EVAL_BM_COND::expand(const COMPONENT* d)
 // Return the one thing that is attached, so the caller can replace it.
 COMMON_COMPONENT* EVAL_BM_COND::deflate()
 {
+  assert(_func[s_NONE]);
   for (int i = 1; i < sCOUNT; ++i) {
+    assert(_func[i]);
     if (_func[i] == _func[s_NONE]) {
     }else if (*_func[i] == *_func[s_NONE]) { untested();
     }else{

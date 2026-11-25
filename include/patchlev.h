@@ -1,1 +1,1 @@
-#define PATCHLEVEL "trln_q 2026.11.24"
+#define PATCHLEVEL "bm_cond 2026.11.25"
