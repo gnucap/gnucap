@@ -44,7 +44,10 @@ protected:
      _real_delay(p._real_delay) {++_count;}
 public:
 		~COMMON_LOGIC()			{--_count;}
-  bool operator==(const COMMON_COMPONENT&)const override;
+  bool operator==(const COMMON_COMPONENT& x)const override
+  { return !COMMON_LOGIC::compare(x); }
+  int compare(const COMMON_COMPONENT&)const override;
+  bool has_less()const override {return true;}
   static  int	count()				{untested();return _count;}
   virtual LOGICVAL logic_eval(const node_l*, int)const	= 0;
 

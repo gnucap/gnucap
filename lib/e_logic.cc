@@ -28,16 +28,23 @@
 /*--------------------------------------------------------------------------*/
 int COMMON_LOGIC::_count = -1;
 /*--------------------------------------------------------------------------*/
-bool COMMON_LOGIC::operator==(const COMMON_COMPONENT& x)const
+int COMMON_LOGIC::compare(const COMMON_COMPONENT& x)const
 {
-  const COMMON_LOGIC* p = dynamic_cast<const COMMON_LOGIC*>(&x);
-  bool rv = p
-    && _delay == p->_delay
-    && COMMON_COMPONENT::operator==(x);
-  if (rv) {
+  int c;
+  if(this == &x) {
+   return 0;
+  }else if((c = COMMON_COMPONENT::compare(x))) {
+    return c;
   }else{
   }
-  return rv;
+
+  const COMMON_LOGIC* p = prechecked_cast<const COMMON_LOGIC*>(&x);
+  assert(p);
+  if((c = _delay.compare(p->_delay))) {
+    return c;
+  }else{
+    return 0;
+  }
 }
 /*--------------------------------------------------------------------------*/
 void COMMON_LOGIC::set_param_by_index(int I, std::string& Value, int Offset)

@@ -1,0 +1,2 @@
+load logic 
+     ^ ? "../logic/gnucap-logic.so": already loaded, replacing

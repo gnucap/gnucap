@@ -157,7 +157,11 @@ void COMMON_COMPONENT::unique_common(COMMON_COMPONENT**c)
   int ac = (*c)->_attach_count;
   trace1("unique_common", (*c)->_attach_count);
 
-  if(!(*c)->has_less()){
+  if(ac == CC_STATIC){
+    // static objects are already unique..
+    // (and may become invalid)
+    // leave them alone
+  }else if(!(*c)->has_less()){
   }else if(ac == 0){
     d = COMMON_COMPONENT::_commons[*c];
     if(d == *c){
@@ -169,9 +173,6 @@ void COMMON_COMPONENT::unique_common(COMMON_COMPONENT**c)
       delete *c;
       *c = d;
     }
-  }else if(ac == CC_STATIC){
-    d = COMMON_COMPONENT::_commons[*c];
-    // assert(d == *c); //no. multiple static COMMON_PARAMLIST..
   }else if(ac > CC_STATIC){
   }else{
     assert(*c == COMMON_COMPONENT::_commons[*c]);
